@@ -239,7 +239,7 @@ the launching of a Spring Boot application in pretty much any way you like as lo
 Java runtime is available (which is a standard feature you can ask for at OpenShift).
 To do this you can use the
 https://www.openshift.com/developers/do-it-yourself[DIY Cartridge] and hooks in your
-repository under `.openshift/action_scripts`:
+repository under `.openshift/action_hooks`:
 
 The basic model is to:
 
@@ -394,6 +394,9 @@ With Gradle, the equivalent configuration would be:
 	}
 ----
 
+You can then run your application by typing `./my-application.jar` (where
+`my-application` is the name of your artifact).
+
 NOTE: Fully executable jars work by embedding an extra script at the front of the file.
 Not all tools currently accept this format so you may not always be able to use this
 technique.
@@ -415,9 +418,13 @@ or `systemd`.
 
 [[deployment-initd-service]]
 ==== Installation as an init.d service (System V)
-The default executable script that can be embedded into Spring Boot jars will act as an
-`init.d` script when it is symlinked to `/etc/init.d`. The standard `start`, `stop`,
-`restart` and `status` commands can be used. The script supports the following features:
+If you've configured Spring Boot's Maven or Gradle plugin to generate a
+<<deployment-install,fully executable jar>>, and you're not using a custom
+`embeddedLaunchScript`, then your application can be used as an `init.d` service. Simply
+symlink the jar to `init.d` to support the standard `start`, `stop`, `restart` and
+`status` commands.
+
+The script supports the following features:
 
 * Starts the services as the user that owns the jar file
 * Tracks application's PID using `/var/run/<appname>/<appname>.pid`
@@ -431,14 +438,26 @@ Spring Boot application as an `init.d` service simply create a symlink:
 	$ sudo ln -s /var/myapp/myapp.jar /etc/init.d/myapp
 ----
 
-Once installed, you can start and stop the service in the usual way. You can also flag the
-application to start automatically using your standard operating system tools. For example,
-if you use Debian:
+Once installed, you can start and stop the service in the usual way. For example, on a
+Debian based system:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ service myapp start
+----
+
+TIP: If your application fails to start, check the log file written to
+`/var/log/<appname>.log` for errors.
+
+You can also flag the application to start automatically using your standard operating
+system tools. For example, on Debian:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
 	$ update-rc.d myapp defaults <priority>
 ----
+
+
 
 [[deployment-initd-service-securing]]
 ===== Securing an init.d service
@@ -548,8 +567,69 @@ Refer to `man systemctl` for more details.
 
 [[deployment-script-customization]]
 ==== Customizing the startup script
-The script accepts the following parameters as environment variables, so you can change
-the default behavior in a script or on the command line:
+The default embedded startup script written by the Maven or Gradle plugin can be
+customized in a number of ways. For most people, using the default script along with
+a few customizations is usually enough. If you find you can't customize something that
+you need to, you can always use the `embeddedLaunchScript` option to write your own
+file entirely.
+
+
+
+[[deployment-script-customization-when-it-written]]
+===== Customizing script when it's written
+It often makes sense to customize elements of the start script as it's written into the
+jar file. For example, init.d scripts can provide a "`description`" and, since you know
+this up front (and it won't change), you may as well provide it when the jar is generated.
+
+To customize written elements, use the `embeddedLaunchScriptProperties` option of the
+Spring Boot Maven or Gradle plugins.
+
+The following property substitutions are supported with the default script:
+
+[cols="1,6"]
+|===
+|Name |Description
+
+|`mode`
+|The script mode. Defaults to `auto`.
+
+|`initInfoProvides`
+|The `Provides` section of "`INIT INFO`". Defaults to `spring-boot-application` for Gradle
+ and to `${project.artifactId}` for Maven.
+
+|`initInfoShortDescription`
+|The `Short-Description` section of "`INIT INFO`". Defaults to `Spring Boot Application`
+for Gradle and to `${project.name}` for Maven.
+
+|`initInfoDescription`
+|The `Description` section of "`INIT INFO`". Defaults to `Spring Boot Application` for
+ Gradle and to `${project.description}` (falling back to `${project.name}`) for Maven.
+
+|`initInfoChkconfig`
+|The `chkconfig` section of "`INIT INFO`". Defaults to `2345 99 01`.
+
+|`confFolder`
+|The default value for `CONF_FOLDER`. Defaults to the folder containing the jar.
+
+|`logFolder`
+|The default value for `LOG_FOLDER`. Only valid for an `init.d` service.
+
+|`pidFolder`
+|The default value for `PID_FOLDER`. Only valid for an `init.d` service.
+
+|`useStartStopDaemon`
+|If the `start-stop-daemon` command, when it's available, should be used to control the
+ process. Defaults to `true`.
+|===
+
+
+[[deployment-script-customization-when-it-runs]]
+===== Customizing script when it runs
+For items of the script that need to be customized _after_ the jar has been written you
+can use environment variables or a
+<<deployment-script-customization-conf-file, config file>>.
+
+The following environment properties are supported with the default script:
 
 [cols="1,6"]
 |===
@@ -608,64 +688,24 @@ script. Check the
 http://www.freedesktop.org/software/systemd/man/systemd.service.html[service unit
 configuration man page] for more details.
 
-In addition, the following properties can be changed when the script is written by using
-the `embeddedLaunchScriptProperties` option of the Spring Boot Maven or Gradle plugins.
-
-[cols="1,6"]
-|===
-|Name |Description
-
-|`mode`
-|The script mode. Defaults to `auto`.
-
-|`initInfoProvides`
-|The `Provides` section of "`INIT INFO`". Defaults to `spring-boot-application` for Gradle
- and to `${project.artifactId}` for Maven.
-
-|`initInfoShortDescription`
-|The `Short-Description` section of "`INIT INFO`". Defaults to `Spring Boot Application`
-for Gradle and to `${project.name}` for Maven.
-
-|`initInfoDescription`
-|The `Description` section of "`INIT INFO`". Defaults to `Spring Boot Application` for
- Gradle and to `${project.description}` (falling back to `${project.name}`) for Maven.
-
-|`initInfoChkconfig`
-|The `chkconfig` section of "`INIT INFO`". Defaults to `2345 99 01`.
-
-|`logFolder`
-|The default value for `LOG_FOLDER`. Only valid for an `init.d` service.
-
-|`pidFolder`
-|The default value for `PID_FOLDER`. Only valid for an `init.d` service.
-
-|`useStartStopDaemon`
-|If the `start-stop-daemon` command, when it's available, should be used to control the
- process. Defaults to `true`.
-|===
-
-
-
 [[deployment-script-customization-conf-file]]
-==== Customizing the startup script with a conf file
-
 With the exception of `JARFILE` and `APP_NAME`, the above settings can be configured using
-a `.conf` file,
+a `.conf` file. The file is expected next to the jar file and have the same name but
+suffixed with `.conf` rather than `.jar`. For example, a jar named `/var/myapp/myapp.jar`
+will use the configuration file named `/var/myapp/myapp.conf`.
 
+.myapp.conf
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
 	JAVA_OPTS=-Xmx1024M
 	LOG_FOLDER=/custom/log/folder
 ----
 
-The file is expected next to the jar file and have the same name but suffixed with
-`.conf` rather than `.jar`. For example, a jar named `/var/myapp/myapp.jar` will use the
-configuration file named `/var/myapp/myapp.conf` if it exists. You can also use the
-`CONF_FOLDER` property to customize the location of that file.
+TIP: You can use a `CONF_FOLDER` environment variable to customize the location of the
+config file if you don't like it living next to the jar.
 
 To learn about securing this file appropriately, please refer to
 <<deployment-initd-service-securing,the guidelines for securing an init.d service>>.
-
 
 
 [[deployment-windows]]

@@ -22,9 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -44,7 +43,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-@RunWith(MockitoJUnitRunner.class)
 public class ImportAutoConfigurationImportSelectorTests {
 
 	private final ImportAutoConfigurationImportSelector importSelector = new ImportAutoConfigurationImportSelector();
@@ -55,7 +53,8 @@ public class ImportAutoConfigurationImportSelectorTests {
 	private Environment environment;
 
 	@Before
-	public void configureImportSelector() {
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
 		this.importSelector.setBeanFactory(this.beanFactory);
 		this.importSelector.setEnvironment(this.environment);
 		this.importSelector.setResourceLoader(new DefaultResourceLoader());
@@ -64,7 +63,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 	@Test
 	public void importsAreSelected() throws Exception {
 		AnnotationMetadata annotationMetadata = new SimpleMetadataReaderFactory()
-				.getMetadataReader(ImportFreemarker.class.getName())
+				.getMetadataReader(ImportFreeMarker.class.getName())
 				.getAnnotationMetadata();
 		String[] imports = this.importSelector.selectImports(annotationMetadata);
 		assertThat(imports).containsExactly(FreeMarkerAutoConfiguration.class.getName());
@@ -73,7 +72,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 	@Test
 	public void propertyExclusionsAreNotApplied() throws Exception {
 		AnnotationMetadata annotationMetadata = new SimpleMetadataReaderFactory()
-				.getMetadataReader(ImportFreemarker.class.getName())
+				.getMetadataReader(ImportFreeMarker.class.getName())
 				.getAnnotationMetadata();
 		this.importSelector.selectImports(annotationMetadata);
 		verifyZeroInteractions(this.environment);
@@ -99,7 +98,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@ImportAutoConfiguration(FreeMarkerAutoConfiguration.class)
-	static class ImportFreemarker {
+	static class ImportFreeMarker {
 
 	}
 

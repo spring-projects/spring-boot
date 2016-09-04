@@ -27,6 +27,7 @@ import static org.hamcrest.Matchers.nullValue;
  * Tests for {@link DefaultRestartInitializer}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class DefaultRestartInitializerTests {
 
@@ -78,6 +79,11 @@ public class DefaultRestartInitializerTests {
 	@Test
 	public void skipsDueToSpringTest() throws Exception {
 		testSkipStack("org.springframework.boot.test.Something", true);
+	}
+
+	@Test
+	public void skipsDueToCucumber() throws Exception {
+		testSkipStack("cucumber.runtime.Runtime.run", true);
 	}
 
 	private void testSkipStack(String className, boolean expected) {

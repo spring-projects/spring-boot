@@ -100,8 +100,8 @@ public @interface SpyBean {
 	 * The classes to spy. Each class specified here will result in a spy being applied.
 	 * Classes can be omitted when the annotation is used on a field.
 	 * <p>
-	 * When {@code @SpyBean} also defines a {@code name} this attribute can only contain
-	 * a single value.
+	 * When {@code @SpyBean} also defines a {@code name} this attribute can only contain a
+	 * single value.
 	 * <p>
 	 * If this is the only specified attribute consider using the {@code value} alias
 	 * instead.

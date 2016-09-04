@@ -33,7 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JerseyProperties {
 
 	/**
-	 * Jersey integration type. Can be either "servlet" or "filter".
+	 * Jersey integration type.
 	 */
 	private Type type = Type.SERVLET;
 

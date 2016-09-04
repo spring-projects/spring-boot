@@ -63,6 +63,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
+import org.springframework.data.mongodb.core.MongoClientFactoryBean;
 import org.springframework.util.Assert;
 
 /**
@@ -219,7 +220,7 @@ public class EmbeddedMongoAutoConfiguration {
 	 * {@code embeddedMongoServer} bean.
 	 */
 	@Configuration
-	@ConditionalOnClass(MongoClient.class)
+	@ConditionalOnClass({ MongoClient.class, MongoClientFactoryBean.class })
 	protected static class EmbeddedMongoDependencyConfiguration
 			extends MongoClientDependsOnBeanFactoryPostProcessor {
 

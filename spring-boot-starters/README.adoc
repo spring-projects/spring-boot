@@ -94,7 +94,16 @@ do as they were designed before this was clarified.
 | http://resteasy.jboss.org/[RESTEasy]
 | https://github.com/paypal/resteasy-spring-boot
 
-| JSF (https://javaserverfaces.java.net/[Mojarra], http://primefaces.org/[Prime Faces] and http://omnifaces.org/[OmniFaces])
-| https://github.com/persapiens/jsf-spring-boot-starter
+| JSF (http://primefaces.org/[PrimeFaces], http://primefaces-extensions.github.io/[PrimeFaces Extensions], http://bootsfaces.net/[BootsFaces], http://butterfaces.org/[ButterFaces], http://omnifaces.org/[OmniFaces], http://angularfaces.net/[AngularFaces], https://javaserverfaces.java.net/[Mojarra] and http://myfaces.apache.org[MyFaces])
+| http://joinfaces.org
+
+| Charon reverse proxy
+| https://github.com/mkopylec/charon-spring-boot-starter
+
+| http://www.wiremock.org[WireMock] and Spring RESTDocs
+| https://github.com/ePages-de/restdocs-wiremock
+
+| https://cxf.apache.org/docs/springboot.html[Apache CXF]
+| https://github.com/apache/cxf
 
 |===

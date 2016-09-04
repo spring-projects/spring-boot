@@ -19,6 +19,7 @@ package org.springframework.boot;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import sampleconfig.MyComponentInPackageWithoutDot;
 
 import org.springframework.boot.sampleconfig.MyComponent;
 import org.springframework.context.support.StaticApplicationContext;
@@ -121,6 +122,16 @@ public class BeanDefinitionLoaderTests {
 				MyComponent.class.getPackage().getName());
 		assertThat(loader.load()).isEqualTo(1);
 		assertThat(this.registry.containsBean("myComponent")).isTrue();
+	}
+
+	@Test
+	public void loadPackageNameWithoutDot() throws Exception {
+		// See gh-6126
+		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
+				MyComponentInPackageWithoutDot.class.getPackage().getName());
+		int loaded = loader.load();
+		assertThat(loaded).isEqualTo(1);
+		assertThat(this.registry.containsBean("myComponentInPackageWithoutDot")).isTrue();
 	}
 
 	@Test

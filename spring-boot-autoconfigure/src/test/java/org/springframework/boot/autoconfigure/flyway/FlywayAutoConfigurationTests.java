@@ -41,6 +41,7 @@ import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -101,7 +102,8 @@ public class FlywayAutoConfigurationTests {
 				EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
-		assertThat(flyway.getDataSource()).isNotNull();
+		assertThat(flyway.getDataSource())
+				.isEqualTo(this.context.getBean("flywayDataSource"));
 	}
 
 	@Test
@@ -240,6 +242,13 @@ public class FlywayAutoConfigurationTests {
 
 	@Configuration
 	protected static class FlywayDataSourceConfiguration {
+
+		@Bean
+		@Primary
+		public DataSource normalDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:normal").username("sa")
+					.build();
+		}
 
 		@FlywayDataSource
 		@Bean

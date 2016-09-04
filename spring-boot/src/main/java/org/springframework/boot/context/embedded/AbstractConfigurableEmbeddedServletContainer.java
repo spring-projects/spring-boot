@@ -18,10 +18,14 @@ package org.springframework.boot.context.embedded;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +43,7 @@ import org.springframework.util.ClassUtils;
  * @author Stephane Nicoll
  * @author Ivan Sopov
  * @author Eddú Meléndez
+ * @author Brian Clozel
  * @see AbstractEmbeddedServletContainerFactory
  */
 public abstract class AbstractConfigurableEmbeddedServletContainer
@@ -80,6 +85,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	private Compression compression;
 
 	private String serverHeader;
+
+	private Map<Locale, Charset> localeCharsetMappings = new HashMap<Locale, Charset>();
 
 	/**
 	 * Create a new {@link AbstractConfigurableEmbeddedServletContainer} instance.
@@ -325,6 +332,20 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	@Override
 	public void setServerHeader(String serverHeader) {
 		this.serverHeader = serverHeader;
+	}
+
+	/**
+	 * Return the Locale to Charset mappings.
+	 * @return the charset mappings
+	 */
+	public Map<Locale, Charset> getLocaleCharsetMappings() {
+		return this.localeCharsetMappings;
+	}
+
+	@Override
+	public void setLocaleCharsetMappings(Map<Locale, Charset> localeCharsetMappings) {
+		Assert.notNull(localeCharsetMappings, "localeCharsetMappings must not be null");
+		this.localeCharsetMappings = localeCharsetMappings;
 	}
 
 	/**

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.4.0.BUILD-SNAPSHOT</version>
+		<version>1.4.1.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-docs</artifactId>
@@ -25,11 +25,15 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-autoconfigure</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-actuator</artifactId>
+			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -38,6 +42,14 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-loader-tools</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-test</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-test-autoconfigure</artifactId>
 		</dependency>
 		<!-- Optional deps required when generating Javadoc with Java 8 -->
 		<dependency>
@@ -86,6 +98,16 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-parameter-names</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<optional>true</optional>
@@ -103,6 +125,11 @@
 		<dependency>
 			<groupId>com.hazelcast</groupId>
 			<artifactId>hazelcast-spring</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -131,13 +158,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-pool2</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
+			<groupId>de.flapdoodle.embed</groupId>
+			<artifactId>de.flapdoodle.embed.mongo</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -162,6 +184,11 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>io.searchbox</groupId>
+			<artifactId>jest</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>io.undertow</groupId>
 			<artifactId>undertow-websockets-jsr</artifactId>
 			<optional>true</optional>
@@ -171,6 +198,11 @@
 					<groupId>io.undertow</groupId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>javax.cache</groupId>
+			<artifactId>cache-api</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>javax.jms</groupId>
@@ -195,6 +227,11 @@
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.htmlunit</groupId>
+			<artifactId>htmlunit</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -228,6 +265,16 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
 			<optional>true</optional>
@@ -253,11 +300,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-logging-juli</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-jdbc</artifactId>
 			<optional>true</optional>
@@ -270,6 +312,11 @@
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-tools</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -334,8 +381,23 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -366,6 +428,11 @@
 		<dependency>
 			<groupId>org.jboss.narayana.jts</groupId>
 			<artifactId>narayana-jts-integration</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -409,6 +476,16 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.skyscreamer</groupId>
+			<artifactId>jsonassert</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<optional>true</optional>
@@ -416,6 +493,16 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jul-to-slf4j</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>htmlunit-driver</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -454,6 +541,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-websocket</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.amqp</groupId>
 			<artifactId>spring-rabbit</artifactId>
 			<optional>true</optional>
@@ -486,6 +578,11 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -569,8 +666,13 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.security.oauth</groupId>
-			<artifactId>spring-security-oauth2</artifactId>
+			<groupId>org.springframework.restdocs</groupId>
+			<artifactId>spring-restdocs-mockmvc</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-data</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -579,8 +681,18 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.social</groupId>
 			<artifactId>spring-social-config</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.ws</groupId>
+			<artifactId>spring-ws-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -600,6 +712,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.thymeleaf.extras</groupId>
+			<artifactId>thymeleaf-extras-java8time</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-springsecurity4</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -613,7 +730,27 @@
 			<artifactId>jedis</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!-- Test dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot</artifactId>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+				<excludes>
+					<exclude>**</exclude>
+				</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 	<profiles>
 		<profile>
 			<id>full</id>
@@ -764,6 +901,25 @@
 									</artifactItems>
 								</configuration>
 							</execution>
+							<execution>
+								<id>unpack-test-slices</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>unpack</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>org.springframework.boot</groupId>
+											<artifactId>spring-boot-test-autoconfigure</artifactId>
+											<version>${project.version}</version>
+											<outputDirectory>
+												${project.build.directory}/test-auto-config
+											</outputDirectory>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
 						</executions>
 					</plugin>
 					<plugin>
@@ -810,6 +966,7 @@
 							<scripts>
 								<script>file:///${project.basedir}/src/main/groovy/generateAutoConfigurationClassTables.groovy</script>
 								<script>file:///${project.basedir}/src/main/groovy/generateStarterTables.groovy</script>
+								<script>file:///${project.basedir}/src/main/groovy/generateTestSlicesTable.groovy</script>
 							</scripts>
 						</configuration>
 						<dependencies>
@@ -817,6 +974,11 @@
 								<groupId>org.codehaus.groovy</groupId>
 								<artifactId>groovy-all</artifactId>
 								<version>${groovy.version}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.springframework</groupId>
+								<artifactId>spring-core</artifactId>
+								<version>${spring.version}</version>
 							</dependency>
 						</dependencies>
 					</plugin>
@@ -827,7 +989,7 @@
 						<executions>
 							<execution>
 								<id>generate-docbook</id>
-								<phase>generate-resources</phase>
+								<phase>prepare-package</phase>
 								<goals>
 									<goal>process-asciidoc</goal>
 								</goals>
@@ -885,7 +1047,7 @@
 								<goals>
 									<goal>generate-html</goal>
 								</goals>
-								<phase>generate-resources</phase>
+								<phase>prepare-package</phase>
 								<configuration>
 									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-singlepage.xsl</htmlCustomization>
 									<targetDirectory>${basedir}/target/docbook/htmlsingle</targetDirectory>
@@ -911,7 +1073,7 @@
 								<goals>
 									<goal>generate-html</goal>
 								</goals>
-								<phase>generate-resources</phase>
+								<phase>prepare-package</phase>
 								<configuration>
 									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-multipage.xsl</htmlCustomization>
 									<targetDirectory>${basedir}/target/docbook/html</targetDirectory>
@@ -938,7 +1100,7 @@
 								<goals>
 									<goal>generate-pdf</goal>
 								</goals>
-								<phase>generate-resources</phase>
+								<phase>prepare-package</phase>
 								<configuration>
 									<foCustomization>${basedir}/src/main/docbook/xsl/pdf.xsl</foCustomization>
 									<targetDirectory>${basedir}/target/docbook/pdf</targetDirectory>
@@ -957,7 +1119,7 @@
 								<goals>
 									<goal>generate-epub3</goal>
 								</goals>
-								<phase>generate-resources</phase>
+								<phase>prepare-package</phase>
 								<configuration>
 									<epubCustomization>${basedir}/src/main/docbook/xsl/epub.xsl</epubCustomization>
 									<targetDirectory>${basedir}/target/docbook/epub</targetDirectory>

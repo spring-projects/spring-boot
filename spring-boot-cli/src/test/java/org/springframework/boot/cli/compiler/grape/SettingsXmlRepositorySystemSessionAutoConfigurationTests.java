@@ -29,13 +29,13 @@ import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
 import org.eclipse.aether.repository.Proxy;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.cli.testutil.SystemProperties;
@@ -50,7 +50,6 @@ import static org.mockito.Matchers.eq;
  *
  * @author Andy Wilkinson
  */
-@RunWith(MockitoJUnitRunner.class)
 public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 
 	@Rule
@@ -58,6 +57,11 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 
 	@Mock
 	private RepositorySystem repositorySystem;
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+	}
 
 	@Test
 	public void basicSessionCustomization() throws SettingsBuildingException {

@@ -200,6 +200,10 @@ public class JarFile extends java.util.jar.JarFile {
 		return (JarEntry) getEntry(name);
 	}
 
+	public boolean containsEntry(String name) {
+		return this.entries.containsEntry(name);
+	}
+
 	@Override
 	public ZipEntry getEntry(String name) {
 		return this.entries.getEntry(name);
@@ -320,8 +324,7 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public String getName() {
-		String path = this.pathFromRoot;
-		return this.rootFile.getFile() + path;
+		return this.rootFile.getFile() + this.pathFromRoot;
 	}
 
 	boolean isSigned() {
@@ -364,12 +367,16 @@ public class JarFile extends java.util.jar.JarFile {
 		this.entries.clearCache();
 	}
 
+	protected String getPathFromRoot() {
+		return this.pathFromRoot;
+	}
+
 	/**
 	 * Register a {@literal 'java.protocol.handler.pkgs'} property so that a
 	 * {@link URLStreamHandler} will be located to deal with jar URLs.
 	 */
 	public static void registerUrlProtocolHandler() {
-		String handlers = System.getProperty(PROTOCOL_HANDLER);
+		String handlers = System.getProperty(PROTOCOL_HANDLER, "");
 		System.setProperty(PROTOCOL_HANDLER, ("".equals(handlers) ? HANDLERS_PACKAGE
 				: handlers + "|" + HANDLERS_PACKAGE));
 		resetCachedUrlHandlers();

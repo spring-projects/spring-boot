@@ -71,7 +71,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
@@ -299,6 +298,7 @@ public class SpringApplication {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
+		FailureAnalyzers analyzers = null;
 		configureHeadlessProperty();
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.started();
@@ -309,6 +309,7 @@ public class SpringApplication {
 					applicationArguments);
 			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
+			analyzers = new FailureAnalyzers(context);
 			prepareContext(context, environment, listeners, applicationArguments,
 					printedBanner);
 			refreshContext(context);
@@ -322,7 +323,7 @@ public class SpringApplication {
 			return context;
 		}
 		catch (Throwable ex) {
-			handleRunFailure(context, listeners, ex);
+			handleRunFailure(context, listeners, analyzers, ex);
 			throw new IllegalStateException(ex);
 		}
 	}
@@ -602,15 +603,10 @@ public class SpringApplication {
 	 * @param context the application context
 	 */
 	protected void postProcessApplicationContext(ConfigurableApplicationContext context) {
-		if (this.webEnvironment) {
-			if (context instanceof ConfigurableWebApplicationContext) {
-				ConfigurableWebApplicationContext configurableContext = (ConfigurableWebApplicationContext) context;
-				if (this.beanNameGenerator != null) {
-					configurableContext.getBeanFactory().registerSingleton(
-							AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
-							this.beanNameGenerator);
-				}
-			}
+		if (this.beanNameGenerator != null) {
+			context.getBeanFactory().registerSingleton(
+					AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
+					this.beanNameGenerator);
 		}
 		if (this.resourceLoader != null) {
 			if (context instanceof GenericApplicationContext) {
@@ -809,14 +805,15 @@ public class SpringApplication {
 	}
 
 	private void handleRunFailure(ConfigurableApplicationContext context,
-			SpringApplicationRunListeners listeners, Throwable exception) {
+			SpringApplicationRunListeners listeners, FailureAnalyzers analyzers,
+			Throwable exception) {
 		try {
 			try {
 				handleExitCode(context, exception);
 				listeners.finished(context, exception);
 			}
 			finally {
-				reportFailure(exception, context);
+				reportFailure(analyzers, exception);
 				if (context != null) {
 					context.close();
 				}
@@ -828,11 +825,9 @@ public class SpringApplication {
 		ReflectionUtils.rethrowRuntimeException(exception);
 	}
 
-	private void reportFailure(Throwable failure,
-			ConfigurableApplicationContext context) {
+	private void reportFailure(FailureAnalyzers analyzers, Throwable failure) {
 		try {
-			if (FailureAnalyzers.analyzeAndReport(failure, getClass().getClassLoader(),
-					context)) {
+			if (analyzers != null && analyzers.analyzeAndReport(failure)) {
 				registerLoggedException(failure);
 				return;
 			}
@@ -932,6 +927,15 @@ public class SpringApplication {
 	 */
 	public void setMainApplicationClass(Class<?> mainApplicationClass) {
 		this.mainApplicationClass = mainApplicationClass;
+	}
+
+	/**
+	 * Returns whether this {@link SpringApplication} is running within a web environment.
+	 * @return {@code true} if running within a web environment, otherwise {@code false}.
+	 * @see #setWebEnvironment(boolean)
+	 */
+	public boolean isWebEnvironment() {
+		return this.webEnvironment;
 	}
 
 	/**

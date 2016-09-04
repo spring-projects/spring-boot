@@ -40,6 +40,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -55,6 +56,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Brian Clozel
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
@@ -79,18 +81,10 @@ public class DispatcherServletAutoConfiguration {
 	@EnableConfigurationProperties(WebMvcProperties.class)
 	protected static class DispatcherServletConfiguration {
 
-		private final ServerProperties server;
-
 		private final WebMvcProperties webMvcProperties;
 
-		private final MultipartConfigElement multipartConfig;
-
-		public DispatcherServletConfiguration(ServerProperties server,
-				WebMvcProperties webMvcProperties,
-				ObjectProvider<MultipartConfigElement> multipartConfigProvider) {
-			this.server = server;
+		public DispatcherServletConfiguration(WebMvcProperties webMvcProperties) {
 			this.webMvcProperties = webMvcProperties;
-			this.multipartConfig = multipartConfigProvider.getIfAvailable();
 		}
 
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
@@ -105,10 +99,43 @@ public class DispatcherServletAutoConfiguration {
 			return dispatcherServlet;
 		}
 
+		@Bean
+		@ConditionalOnBean(MultipartResolver.class)
+		@ConditionalOnMissingBean(name = DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME)
+		public MultipartResolver multipartResolver(MultipartResolver resolver) {
+			// Detect if the user has created a MultipartResolver but named it incorrectly
+			return resolver;
+		}
+
+	}
+
+	@Configuration
+	@Conditional(DispatcherServletRegistrationCondition.class)
+	@ConditionalOnClass(ServletRegistration.class)
+	@EnableConfigurationProperties(WebMvcProperties.class)
+	@Import(DispatcherServletConfiguration.class)
+	protected static class DispatcherServletRegistrationConfiguration {
+
+		private final ServerProperties serverProperties;
+
+		private final WebMvcProperties webMvcProperties;
+
+		private final MultipartConfigElement multipartConfig;
+
+		public DispatcherServletRegistrationConfiguration(
+				ServerProperties serverProperties, WebMvcProperties webMvcProperties,
+				ObjectProvider<MultipartConfigElement> multipartConfigProvider) {
+			this.serverProperties = serverProperties;
+			this.webMvcProperties = webMvcProperties;
+			this.multipartConfig = multipartConfigProvider.getIfAvailable();
+		}
+
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
-		public ServletRegistrationBean dispatcherServletRegistration() {
+		@ConditionalOnBean(value = DispatcherServlet.class, name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
+		public ServletRegistrationBean dispatcherServletRegistration(
+				DispatcherServlet dispatcherServlet) {
 			ServletRegistrationBean registration = new ServletRegistrationBean(
-					dispatcherServlet(), this.server.getServletMapping());
+					dispatcherServlet, this.serverProperties.getServletMapping());
 			registration.setName(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 			registration.setLoadOnStartup(
 					this.webMvcProperties.getServlet().getLoadOnStartup());
@@ -116,14 +143,6 @@ public class DispatcherServletAutoConfiguration {
 				registration.setMultipartConfig(this.multipartConfig);
 			}
 			return registration;
-		}
-
-		@Bean
-		@ConditionalOnBean(MultipartResolver.class)
-		@ConditionalOnMissingBean(name = DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME)
-		public MultipartResolver multipartResolver(MultipartResolver resolver) {
-			// Detect if the user has created a MultipartResolver but named it incorrectly
-			return resolver;
 		}
 
 	}
@@ -135,40 +154,56 @@ public class DispatcherServletAutoConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-			ConditionOutcome outcome = checkServlets(beanFactory);
+			List<String> dispatchServletBeans = Arrays.asList(beanFactory
+					.getBeanNamesForType(DispatcherServlet.class, false, false));
+			if (dispatchServletBeans.contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
+				return ConditionOutcome.noMatch("found DispatcherServlet named "
+						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
+			}
+			if (beanFactory.containsBean(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
+				return ConditionOutcome.noMatch("found non-DispatcherServlet named "
+						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
+			}
+			if (dispatchServletBeans.isEmpty()) {
+				return ConditionOutcome.match("no DispatcherServlet found");
+			}
+			return ConditionOutcome
+					.match("one or more DispatcherServlets found and none is named "
+							+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
+		}
+
+	}
+
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
+	private static class DispatcherServletRegistrationCondition
+			extends SpringBootCondition {
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+			ConditionOutcome outcome = checkDefaultDispatcherName(beanFactory);
 			if (!outcome.isMatch()) {
 				return outcome;
 			}
-			return checkServletRegistrations(beanFactory);
+			return checkServletRegistration(beanFactory);
 		}
 
-		private ConditionOutcome checkServlets(
+		private ConditionOutcome checkDefaultDispatcherName(
 				ConfigurableListableBeanFactory beanFactory) {
 			List<String> servlets = Arrays.asList(beanFactory
 					.getBeanNamesForType(DispatcherServlet.class, false, false));
 			boolean containsDispatcherBean = beanFactory
 					.containsBean(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
-			if (servlets.isEmpty()) {
-				if (containsDispatcherBean) {
-					return ConditionOutcome.noMatch("found no DispatcherServlet "
-							+ "but a non-DispatcherServlet named "
-							+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
-				}
-				return ConditionOutcome.match("no DispatcherServlet found");
-			}
-			if (servlets.contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
-				return ConditionOutcome.noMatch("found DispatcherServlet named "
-						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
-			}
-			if (containsDispatcherBean) {
+			if (containsDispatcherBean
+					&& !servlets.contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
 				return ConditionOutcome.noMatch("found non-DispatcherServlet named "
 						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 			}
-			return ConditionOutcome.match("one or more DispatcherServlets "
-					+ "found and none is named " + DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
+			return ConditionOutcome.match();
 		}
 
-		private ConditionOutcome checkServletRegistrations(
+		private ConditionOutcome checkServletRegistration(
 				ConfigurableListableBeanFactory beanFactory) {
 			List<String> registrations = Arrays.asList(beanFactory
 					.getBeanNamesForType(ServletRegistrationBean.class, false, false));
@@ -194,7 +229,6 @@ public class DispatcherServletAutoConfiguration {
 			return ConditionOutcome
 					.match("one or more ServletRegistrationBeans is found and none is named "
 							+ DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME);
-
 		}
 	}
 

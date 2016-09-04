@@ -29,11 +29,10 @@ import org.springframework.boot.autoconfigure.data.jpa.city.City;
 import org.springframework.boot.autoconfigure.data.jpa.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.neo4j.country.Country;
 import org.springframework.boot.autoconfigure.data.neo4j.country.CountryRepository;
+import org.springframework.boot.autoconfigure.data.neo4j.empty.EmptyMarker;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfigurationTests;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -113,7 +112,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration
-	@TestAutoConfigurationPackage(Neo4jAutoConfigurationTests.class)
+	@TestAutoConfigurationPackage(EmptyMarker.class)
 	// Not this package or its parent
 	@EnableNeo4jRepositories(basePackageClasses = Country.class)
 	protected static class TestConfiguration {
@@ -121,7 +120,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration
-	@TestAutoConfigurationPackage(Neo4jAutoConfigurationTests.class)
+	@TestAutoConfigurationPackage(EmptyMarker.class)
 	@EnableNeo4jRepositories(basePackageClasses = Country.class)
 	@EntityScan(basePackageClasses = City.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
@@ -130,7 +129,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration
-	@TestAutoConfigurationPackage(Neo4jAutoConfigurationTests.class)
+	@TestAutoConfigurationPackage(EmptyMarker.class)
 	@EntityScan(basePackageClasses = City.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
 	protected static class JpaConfiguration {
@@ -159,7 +158,8 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 			List<String> names = new ArrayList<String>();
 			for (Class<?> type : new Class<?>[] { DataSourceAutoConfiguration.class,
 					HibernateJpaAutoConfiguration.class,
-					JpaRepositoriesAutoConfiguration.class, Neo4jAutoConfiguration.class,
+					JpaRepositoriesAutoConfiguration.class,
+					Neo4jDataAutoConfiguration.class,
 					Neo4jRepositoriesAutoConfiguration.class }) {
 				names.add(type.getName());
 			}

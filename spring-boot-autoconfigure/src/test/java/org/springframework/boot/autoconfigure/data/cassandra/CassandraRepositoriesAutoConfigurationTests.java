@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
+import java.util.Set;
+
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import org.junit.After;
@@ -34,7 +36,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.data.cassandra.mapping.BasicCassandraMappingContext;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -43,6 +47,8 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link CassandraRepositoriesAutoConfiguration}.
  *
  * @author Eddú Meléndez
+ * @author Mark Paluch
+ * @author Stephane Nicoll
  */
 public class CassandraRepositoriesAutoConfigurationTests {
 
@@ -63,18 +69,29 @@ public class CassandraRepositoriesAutoConfigurationTests {
 		addConfigurations(TestConfiguration.class);
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 		assertThat(this.context.getBean(Cluster.class)).isNotNull();
+		assertThat(getInitialEntitySet()).hasSize(1);
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() {
 		addConfigurations(TestExcludeConfiguration.class, EmptyConfiguration.class);
 		assertThat(this.context.getBean(Cluster.class)).isNotNull();
+		assertThat(getInitialEntitySet()).hasSize(1).containsOnly(City.class);
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		addConfigurations(TestExcludeConfiguration.class, CustomizedConfiguration.class);
 		assertThat(this.context.getBean(CityCassandraRepository.class)).isNotNull();
+		assertThat(getInitialEntitySet()).hasSize(1).containsOnly(City.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Set<Class<?>> getInitialEntitySet() {
+		BasicCassandraMappingContext mappingContext = this.context
+				.getBean(BasicCassandraMappingContext.class);
+		return (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
+				"initialEntitySet");
 	}
 
 	private void addConfigurations(Class<?>... configurations) {

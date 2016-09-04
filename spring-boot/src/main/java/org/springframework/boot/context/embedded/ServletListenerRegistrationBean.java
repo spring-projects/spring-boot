@@ -48,7 +48,7 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
  * @author Dave Syer
  * @author Phillip Webb
  * @deprecated as of 1.4 in favor of
- * org.springframework.boot.web.ServletListenerRegistrationBean
+ * {@link org.springframework.boot.web.servlet.ServletListenerRegistrationBean}
  */
 @Deprecated
 public class ServletListenerRegistrationBean<T extends EventListener>

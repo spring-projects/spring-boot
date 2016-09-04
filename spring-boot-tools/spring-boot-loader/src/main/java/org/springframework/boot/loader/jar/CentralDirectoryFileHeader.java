@@ -65,7 +65,7 @@ final class CentralDirectoryFileHeader implements FileHeader {
 	}
 
 	void load(byte[] data, int dataOffset, RandomAccessData variableData,
-			int variableOffset) throws IOException {
+			int variableOffset, JarEntryFilter filter) throws IOException {
 		// Load fixed part
 		this.header = data;
 		this.headerOffset = dataOffset;
@@ -81,6 +81,9 @@ final class CentralDirectoryFileHeader implements FileHeader {
 			dataOffset = 0;
 		}
 		this.name = new AsciiBytes(data, dataOffset, (int) nameLength);
+		if (filter != null) {
+			this.name = filter.apply(this.name);
+		}
 		this.extra = NO_EXTRA;
 		this.comment = NO_COMMENT;
 		if (extraLength > 0) {
@@ -172,10 +175,10 @@ final class CentralDirectoryFileHeader implements FileHeader {
 	}
 
 	public static CentralDirectoryFileHeader fromRandomAccessData(RandomAccessData data,
-			int offset) throws IOException {
+			int offset, JarEntryFilter filter) throws IOException {
 		CentralDirectoryFileHeader fileHeader = new CentralDirectoryFileHeader();
 		byte[] bytes = Bytes.get(data.getSubsection(offset, 46));
-		fileHeader.load(bytes, 0, data, offset);
+		fileHeader.load(bytes, 0, data, offset, filter);
 		return fileHeader;
 	}
 

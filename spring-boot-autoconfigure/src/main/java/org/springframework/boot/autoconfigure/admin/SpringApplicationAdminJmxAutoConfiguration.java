@@ -22,6 +22,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.admin.SpringApplicationAdminMXBean;
 import org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +35,7 @@ import org.springframework.jmx.export.MBeanExporter;
  * for internal use only.
  *
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  * @since 1.3.0
  * @see SpringApplicationAdminMXBean
  */
@@ -65,6 +67,7 @@ public class SpringApplicationAdminJmxAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	public SpringApplicationAdminMXBeanRegistrar springApplicationAdminRegistrar()
 			throws MalformedObjectNameException {
 		String jmxName = this.environment.getProperty(JMX_NAME_PROPERTY,

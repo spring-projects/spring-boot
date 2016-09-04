@@ -24,16 +24,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.MinimalActuatorHypermediaApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,19 +60,17 @@ public class HalBrowserMvcEndpointBrowserPathIntegrationTests {
 	}
 
 	@Test
-	public void browser() throws Exception {
-		MvcResult response = this.mockMvc
-				.perform(get("/actuator/").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
-		assertThat(response.getResponse().getForwardedUrl())
-				.isEqualTo("/actuator/browser.html");
+	public void requestWithTrailingSlashIsRedirectedToBrowserHtml() throws Exception {
+		this.mockMvc.perform(get("/actuator/").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isFound()).andExpect(header().string(
+						HttpHeaders.LOCATION, "http://localhost/actuator/browser.html"));
 	}
 
 	@Test
-	public void redirect() throws Exception {
+	public void requestWithoutTrailingSlashIsRedirectedToBrowserHtml() throws Exception {
 		this.mockMvc.perform(get("/actuator").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isFound())
-				.andExpect(header().string("location", "/actuator/"));
+				.andExpect(status().isFound()).andExpect(header().string("location",
+						"http://localhost/actuator/browser.html"));
 	}
 
 	@MinimalActuatorHypermediaApplication

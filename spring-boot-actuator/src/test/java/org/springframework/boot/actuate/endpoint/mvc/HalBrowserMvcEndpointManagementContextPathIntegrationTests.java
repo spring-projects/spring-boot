@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.MinimalActuatorHypermediaApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
@@ -34,9 +35,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -81,8 +84,16 @@ public class HalBrowserMvcEndpointManagementContextPathIntegrationTests {
 	@Test
 	public void actuatorHomeHtml() throws Exception {
 		this.mockMvc.perform(get("/admin/").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isFound()).andExpect(header().string(
+						HttpHeaders.LOCATION, "http://localhost/admin/browser.html"));
+	}
+
+	@Test
+	public void actuatorBrowserHtml() throws Exception {
+		this.mockMvc
+				.perform(get("/admin/browser.html").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(forwardedUrl("/admin/browser.html"));
+				.andExpect(content().string(containsString("entryPoint: '/admin'")));
 	}
 
 	@Test

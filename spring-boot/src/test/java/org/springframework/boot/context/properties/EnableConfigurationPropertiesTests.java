@@ -226,6 +226,20 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void testCollectionPropertiesBindingWithOver256Elements() {
+		this.context.register(TestConfiguration.class);
+		List<String> pairs = new ArrayList<String>();
+		pairs.add("name:foo");
+		for (int i = 0; i < 1000; i++) {
+			pairs.add("list[" + i + "]:" + i);
+		}
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				pairs.toArray(new String[] {}));
+		this.context.refresh();
+		assertThat(this.context.getBean(TestProperties.class).getList()).hasSize(1000);
+	}
+
+	@Test
 	public void testPropertiesBindingWithoutAnnotation() {
 		this.context.register(InvalidConfiguration.class);
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,

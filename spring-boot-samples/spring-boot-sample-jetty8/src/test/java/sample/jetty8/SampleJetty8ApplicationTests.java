@@ -23,7 +23,7 @@ import java.util.zip.GZIPInputStream;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -49,13 +49,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 public class SampleJetty8ApplicationTests {
 
-	@LocalServerPort
-	private int port;
+	@Autowired
+	private TestRestTemplate restTemplate;
 
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate()
-				.getForEntity("http://localhost:" + this.port, String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
 	}
@@ -65,10 +64,8 @@ public class SampleJetty8ApplicationTests {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Accept-Encoding", "gzip");
 		HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
-		TestRestTemplate restTemplate = new TestRestTemplate();
-		ResponseEntity<byte[]> entity = restTemplate.exchange(
-				"http://localhost:" + this.port, HttpMethod.GET, requestEntity,
-				byte[].class);
+		ResponseEntity<byte[]> entity = this.restTemplate.exchange("/", HttpMethod.GET,
+				requestEntity, byte[].class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		GZIPInputStream inflater = new GZIPInputStream(
 				new ByteArrayInputStream(entity.getBody()));

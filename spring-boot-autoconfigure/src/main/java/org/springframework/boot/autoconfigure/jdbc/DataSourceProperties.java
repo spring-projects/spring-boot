@@ -164,6 +164,17 @@ public class DataSourceProperties
 				.get(this.classLoader);
 	}
 
+	/**
+	 * Initialize a {@link DataSourceBuilder} with the state of this instance.
+	 * @return a {@link DataSourceBuilder} initialized with the customizations defined on
+	 * this instance
+	 */
+	public DataSourceBuilder initializeDataSourceBuilder() {
+		return DataSourceBuilder.create(getClassLoader()).type(getType())
+				.driverClassName(determineDriverClassName()).url(determineUrl())
+				.username(determineUsername()).password(determinePassword());
+	}
+
 	public String getName() {
 		return this.name;
 	}

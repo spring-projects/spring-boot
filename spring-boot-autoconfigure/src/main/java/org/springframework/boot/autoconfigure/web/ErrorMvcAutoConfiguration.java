@@ -189,14 +189,11 @@ public class ErrorMvcAutoConfiguration {
 
 		private final String template;
 
-		private final Map<String, Expression> expressions;
+		private volatile Map<String, Expression> expressions;
 
 		SpelView(String template) {
 			this.helper = new NonRecursivePropertyPlaceholderHelper("${", "}");
 			this.template = template;
-			ExpressionCollector expressionCollector = new ExpressionCollector();
-			this.helper.replacePlaceholders(this.template, expressionCollector);
-			this.expressions = expressionCollector.getExpressions();
 		}
 
 		@Override
@@ -212,9 +209,20 @@ public class ErrorMvcAutoConfiguration {
 			}
 			Map<String, Object> map = new HashMap<String, Object>(model);
 			map.put("path", request.getContextPath());
-			PlaceholderResolver resolver = new ExpressionResolver(this.expressions, map);
+			PlaceholderResolver resolver = new ExpressionResolver(getExpressions(), map);
 			String result = this.helper.replacePlaceholders(this.template, resolver);
 			response.getWriter().append(result);
+		}
+
+		private Map<String, Expression> getExpressions() {
+			if (this.expressions == null) {
+				synchronized (this) {
+					ExpressionCollector expressionCollector = new ExpressionCollector();
+					this.helper.replacePlaceholders(this.template, expressionCollector);
+					this.expressions = expressionCollector.getExpressions();
+				}
+			}
+			return this.expressions;
 		}
 
 	}

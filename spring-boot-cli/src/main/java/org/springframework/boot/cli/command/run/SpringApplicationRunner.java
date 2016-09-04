@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,8 @@ public class SpringApplicationRunner {
 
 	private static int runnerCounter = 0;
 
+	private final Object monitor = new Object();
+
 	private final SpringApplicationRunnerConfiguration configuration;
 
 	private final String[] sources;
@@ -84,34 +86,38 @@ public class SpringApplicationRunner {
 	}
 
 	/**
-	 * Compile and run the application. This method is synchronized as it can be called by
-	 * file monitoring threads.
+	 * Compile and run the application.
+	 *
 	 * @throws Exception on error
 	 */
-	public synchronized void compileAndRun() throws Exception {
-		try {
-			stop();
-			Object[] compiledSources = compile();
-			monitorForChanges();
-			// Run in new thread to ensure that the context classloader is setup
-			this.runThread = new RunThread(compiledSources);
-			this.runThread.start();
-			this.runThread.join();
-		}
-		catch (Exception ex) {
-			if (this.fileWatchThread == null) {
-				throw ex;
+	public void compileAndRun() throws Exception {
+		synchronized (this.monitor) {
+			try {
+				stop();
+				Object[] compiledSources = compile();
+				monitorForChanges();
+				// Run in new thread to ensure that the context classloader is setup
+				this.runThread = new RunThread(compiledSources);
+				this.runThread.start();
+				this.runThread.join();
 			}
-			else {
-				ex.printStackTrace();
+			catch (Exception ex) {
+				if (this.fileWatchThread == null) {
+					throw ex;
+				}
+				else {
+					ex.printStackTrace();
+				}
 			}
 		}
 	}
 
 	public void stop() {
-		if (this.runThread != null) {
-			this.runThread.shutdown();
-			this.runThread = null;
+		synchronized (this.monitor) {
+			if (this.runThread != null) {
+				this.runThread.shutdown();
+				this.runThread = null;
+			}
 		}
 	}
 
@@ -136,6 +142,8 @@ public class SpringApplicationRunner {
 	 */
 	private class RunThread extends Thread {
 
+		private final Object monitor = new Object();
+
 		private final Object[] compiledSources;
 
 		private Object applicationContext;
@@ -155,33 +163,38 @@ public class SpringApplicationRunner {
 
 		@Override
 		public void run() {
-			try {
-				this.applicationContext = new SpringApplicationLauncher(
-						getContextClassLoader()).launch(this.compiledSources,
-								SpringApplicationRunner.this.args);
-			}
-			catch (Exception ex) {
-				ex.printStackTrace();
+			synchronized (this.monitor) {
+				try {
+					this.applicationContext = new SpringApplicationLauncher(
+							getContextClassLoader()).launch(this.compiledSources,
+									SpringApplicationRunner.this.args);
+				}
+				catch (Exception ex) {
+					ex.printStackTrace();
+				}
 			}
 		}
 
 		/**
 		 * Shutdown the thread, closing any previously opened application context.
 		 */
-		public synchronized void shutdown() {
-			if (this.applicationContext != null) {
-				try {
-					Method method = this.applicationContext.getClass().getMethod("close");
-					method.invoke(this.applicationContext);
-				}
-				catch (NoSuchMethodException ex) {
-					// Not an application context that we can close
-				}
-				catch (Exception ex) {
-					ex.printStackTrace();
-				}
-				finally {
-					this.applicationContext = null;
+		public void shutdown() {
+			synchronized (this.monitor) {
+				if (this.applicationContext != null) {
+					try {
+						Method method = this.applicationContext.getClass()
+								.getMethod("close");
+						method.invoke(this.applicationContext);
+					}
+					catch (NoSuchMethodException ex) {
+						// Not an application context that we can close
+					}
+					catch (Exception ex) {
+						ex.printStackTrace();
+					}
+					finally {
+						this.applicationContext = null;
+					}
 				}
 			}
 		}

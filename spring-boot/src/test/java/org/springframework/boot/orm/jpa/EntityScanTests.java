@@ -26,6 +26,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +41,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
+@Deprecated
 public class EntityScanTests {
 
 	@Rule
@@ -57,6 +59,15 @@ public class EntityScanTests {
 	@Test
 	public void simpleValue() throws Exception {
 		this.context = new AnnotationConfigApplicationContext(ValueConfig.class);
+		assertSetPackagesToScan("com.mycorp.entity");
+	}
+
+	@Test
+	public void simpleValueAsm() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.registerBeanDefinition("valueConfig",
+				new RootBeanDefinition(ValueConfig.class.getName()));
+		this.context.refresh();
 		assertSetPackagesToScan("com.mycorp.entity");
 	}
 
@@ -94,16 +105,19 @@ public class EntityScanTests {
 	}
 
 	@EntityScan("com.mycorp.entity")
+	@SuppressWarnings("deprecation")
 	static class ValueConfig extends BaseConfig {
 	}
 
 	@Configuration
 	@EntityScan("com.mycorp.entity")
+	@SuppressWarnings("deprecation")
 	static class MissingEntityManager {
 	}
 
 	@Configuration
 	@EntityScan("com.mycorp.entity")
+	@SuppressWarnings("deprecation")
 	static class BeanPostProcessorConfiguration {
 
 		protected final EntityManagerFactory entityManagerFactory;

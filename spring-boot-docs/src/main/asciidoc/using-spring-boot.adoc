@@ -694,11 +694,8 @@ You might also want to use the useful operating system environment variable:
 
 [indent=0,subs="attributes"]
 ----
-	$ export MAVEN_OPTS=-Xmx1024m -XX:MaxPermSize=128M -Djava.security.egd=file:/dev/./urandom
+	$ export MAVEN_OPTS=-Xmx1024m -XX:MaxPermSize=128M
 ----
-
-(The "`egd`" setting is to speed up Tomcat startup by giving it a faster source of
-entropy for session keys.)
 
 
 
@@ -717,7 +714,7 @@ You might also want to use this useful operating system environment variable:
 
 [indent=0,subs="attributes"]
 ----
-	$ export JAVA_OPTS=-Xmx1024m -XX:MaxPermSize=128M -Djava.security.egd=file:/dev/./urandom
+	$ export JAVA_OPTS=-Xmx1024m -XX:MaxPermSize=128M
 ----
 
 
@@ -817,10 +814,9 @@ Project`) will have the same effect.
 ====
 You can also start your application via the supported build plugins (i.e. Maven and
 Gradle) as long as forking is enabled since DevTools need an isolated application
-classloader to operate properly. You can force the plugin to fork the process as
-follows:
+classloader to operate properly. Gradle does this by default and you can force the Maven
+plugin to fork the process as follows:
 
-.Maven
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	<build>
@@ -836,13 +832,6 @@ follows:
 	</build>
 ----
 
-.Gradle
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-	bootRun {
-		addResources = true
-	}
-----
 ====
 
 TIP: Automatic restart works very well when used with LiveReload.
@@ -936,7 +925,9 @@ with a specific library, you need to set a `System` property before calling
 If you work with an IDE that continuously compiles changed files, you might prefer to
 trigger restarts only at specific times. To do this you can use a "`trigger file`", which
 is a special file that must be modified when you want to actually trigger a restart check.
-The trigger file could be updated manually, or via an IDE plugin.
+Changing the file only triggers the check and the restart will only occur if Devtools has
+detected it has to do something. The trigger file could be updated manually, or via an IDE
+plugin.
 
 To use a trigger file use the `spring.devtools.restart.trigger-file` property.
 

@@ -37,7 +37,7 @@ public class ElasticsearchHealthIndicatorProperties {
 	private List<String> indices = new ArrayList<String>();
 
 	/**
-	 * The time, in milliseconds, to wait for a response from the cluster.
+	 * Time, in milliseconds, to wait for a response from the cluster.
 	 */
 	private long responseTimeout = 100L;
 

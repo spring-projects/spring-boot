@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.bind.RelaxedBindingNotWritablePropertyException;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,6 +61,9 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	@Rule
+	public InternalOutputCapture output = new InternalOutputCapture();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -334,6 +338,15 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("No ConfigurationProperties annotation found");
 		this.context.refresh();
+	}
+
+	@Test
+	public void multiplePropertySourcesPlaceholderConfigurer() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(MultiplePropertySourcesPlaceholderConfigurer.class);
+		this.context.refresh();
+		assertThat(this.output.toString()).contains(
+				"Multiple PropertySourcesPlaceholderConfigurer beans registered");
 	}
 
 	private void assertBindingFailure(int errorCount) {
@@ -729,6 +742,22 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	@Configuration
 	@EnableConfigurationProperties(PropertyWithoutConfigurationPropertiesAnnotation.class)
 	public static class ConfigurationPropertiesWithoutAnnotation {
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	public static class MultiplePropertySourcesPlaceholderConfigurer {
+
+		@Bean
+		public static PropertySourcesPlaceholderConfigurer configurer1() {
+			return new PropertySourcesPlaceholderConfigurer();
+		}
+
+		@Bean
+		public static PropertySourcesPlaceholderConfigurer configurer2() {
+			return new PropertySourcesPlaceholderConfigurer();
+		}
 
 	}
 

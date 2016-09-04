@@ -65,7 +65,7 @@ class CentralDirectoryParser {
 		CentralDirectoryFileHeader fileHeader = new CentralDirectoryFileHeader();
 		int dataOffset = 0;
 		for (int i = 0; i < endRecord.getNumberOfRecords(); i++) {
-			fileHeader.load(bytes, dataOffset, null, 0);
+			fileHeader.load(bytes, dataOffset, null, 0, null);
 			visitFileHeader(dataOffset, fileHeader);
 			dataOffset += this.CENTRAL_DIRECTORY_HEADER_BASE_SIZE
 					+ fileHeader.getName().length() + fileHeader.getComment().length()

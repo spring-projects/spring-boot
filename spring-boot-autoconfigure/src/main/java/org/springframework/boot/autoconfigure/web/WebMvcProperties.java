@@ -42,9 +42,15 @@ public class WebMvcProperties {
 	private DefaultMessageCodesResolver.Format messageCodesResolverFormat;
 
 	/**
-	 * Locale to use.
+	 * Locale to use. By default, this locale is overridden by the "Accept-Language"
+	 * header.
 	 */
 	private Locale locale;
+
+	/**
+	 * Define how the locale should be resolved.
+	 */
+	private LocaleResolver localeResolver = LocaleResolver.ACCEPT_HEADER;
 
 	/**
 	 * Date format to use (e.g. dd/MM/yyyy).
@@ -71,6 +77,11 @@ public class WebMvcProperties {
 	 * a request.
 	 */
 	private boolean throwExceptionIfNoHandlerFound = false;
+
+	/**
+	 * Enable warn logging of exceptions resolved by a "HandlerExceptionResolver".
+	 */
+	private boolean logResolvedException = false;
 
 	/**
 	 * Maps file extensions to media types for content negotiation, e.g. yml->text/yaml.
@@ -105,6 +116,14 @@ public class WebMvcProperties {
 		this.locale = locale;
 	}
 
+	public LocaleResolver getLocaleResolver() {
+		return this.localeResolver;
+	}
+
+	public void setLocaleResolver(LocaleResolver localeResolver) {
+		this.localeResolver = localeResolver;
+	}
+
 	public String getDateFormat() {
 		return this.dateFormat;
 	}
@@ -128,6 +147,14 @@ public class WebMvcProperties {
 	public void setThrowExceptionIfNoHandlerFound(
 			boolean throwExceptionIfNoHandlerFound) {
 		this.throwExceptionIfNoHandlerFound = throwExceptionIfNoHandlerFound;
+	}
+
+	public boolean isLogResolvedException() {
+		return this.logResolvedException;
+	}
+
+	public void setLogResolvedException(boolean logResolvedException) {
+		this.logResolvedException = logResolvedException;
 	}
 
 	public Map<String, MediaType> getMediaTypes() {
@@ -237,6 +264,21 @@ public class WebMvcProperties {
 		public void setSuffix(String suffix) {
 			this.suffix = suffix;
 		}
+
+	}
+
+	public enum LocaleResolver {
+
+		/**
+		 * Always use the configured locale.
+		 */
+		FIXED,
+
+		/**
+		 * Use the "Accept-Language" header or the configured locale if the header is not
+		 * set.
+		 */
+		ACCEPT_HEADER
 
 	}
 

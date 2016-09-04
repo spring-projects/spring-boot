@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -88,17 +89,20 @@ class ImportAutoConfigurationImportSelector
 	private void collectCandidateConfigurations(Class<?> source, Annotation annotation,
 			Set<String> candidates, Set<Class<?>> seen) {
 		if (ANNOTATION_NAMES.contains(annotation.annotationType().getName())) {
-			String[] value = (String[]) AnnotationUtils
-					.getAnnotationAttributes(annotation, true).get("value");
-			if (value.length > 0) {
-				candidates.addAll(Arrays.asList(value));
-			}
-			else {
-				candidates.addAll(SpringFactoriesLoader.loadFactoryNames(source,
-						getClass().getClassLoader()));
-			}
+			candidates.addAll(getConfigurationsForAnnotation(source, annotation));
 		}
 		collectCandidateConfigurations(annotation.annotationType(), candidates, seen);
+	}
+
+	private Collection<String> getConfigurationsForAnnotation(Class<?> source,
+			Annotation annotation) {
+		String[] value = (String[]) AnnotationUtils
+				.getAnnotationAttributes(annotation, true).get("value");
+		if (value.length > 0) {
+			return Arrays.asList(value);
+		}
+		return SpringFactoriesLoader.loadFactoryNames(source,
+				getClass().getClassLoader());
 	}
 
 	@Override

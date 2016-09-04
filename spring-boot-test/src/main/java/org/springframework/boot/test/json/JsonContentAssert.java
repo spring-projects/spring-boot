@@ -18,6 +18,7 @@ package org.springframework.boot.test.json;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ import org.assertj.core.api.AbstractMapAssert;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.Assert;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.ObjectAssert;
 import org.skyscreamer.jsonassert.JSONCompare;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.JSONCompareResult;
@@ -43,6 +45,7 @@ import org.springframework.util.StringUtils;
  * AssertJ {@link Assert} for {@link JsonContent}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.4.0
  */
 public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSequence> {
@@ -50,13 +53,26 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	private final JsonLoader loader;
 
 	/**
-	 * Create a new {@link JsonContentAssert} instance.
+	 * Create a new {@link JsonContentAssert} instance that will load resources as UTF-8.
 	 * @param resourceLoadClass the source class used to load resources
 	 * @param json the actual JSON content
 	 */
 	public JsonContentAssert(Class<?> resourceLoadClass, CharSequence json) {
+		this(resourceLoadClass, null, json);
+	}
+
+	/**
+	 * Create a new {@link JsonContentAssert} instance that will load resources in the
+	 * given {@code charset}.
+	 * @param resourceLoadClass the source class used to load resources
+	 * @param charset the charset of the JSON resources
+	 * @param json the actual JSON content
+	 * @since 1.4.1
+	 */
+	public JsonContentAssert(Class<?> resourceLoadClass, Charset charset,
+			CharSequence json) {
 		super(json, JsonContentAssert.class);
-		this.loader = new JsonLoader(resourceLoadClass);
+		this.loader = new JsonLoader(resourceLoadClass, charset);
 	}
 
 	/**
@@ -935,7 +951,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @throws AssertionError if the path is not valid or does not result in an array
 	 */
 	@SuppressWarnings("unchecked")
-	public AbstractListAssert<?, ?, Object> extractingJsonPathArrayValue(
+	public AbstractListAssert<?, ?, Object, ObjectAssert<Object>> extractingJsonPathArrayValue(
 			CharSequence expression, Object... args) {
 		return Assertions.assertThat(
 				extractingJsonPathValue(expression, args, List.class, "an array"));

@@ -17,7 +17,9 @@
 package org.springframework.boot.context.embedded.tomcat;
 
 import org.apache.catalina.Container;
+import org.apache.catalina.Manager;
 import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.session.ManagerBase;
 
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -47,6 +49,14 @@ class TomcatEmbeddedContext extends StandardContext {
 			return true;
 		}
 		return super.loadOnStartup(children);
+	}
+
+	@Override
+	public void setManager(Manager manager) {
+		if (manager instanceof ManagerBase) {
+			((ManagerBase) manager).setSessionIdGenerator(new LazySessionIdGenerator());
+		}
+		super.setManager(manager);
 	}
 
 	public void deferredLoadOnStartup() {

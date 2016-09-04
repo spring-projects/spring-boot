@@ -33,35 +33,45 @@ public class ConfigurationMetadataTests {
 	}
 
 	@Test
+	public void toDashedCaseUpperCamelCaseSuffix() {
+		assertThat(toDashedCase("myDLQ")).isEqualTo("my-d-l-q");
+	}
+
+	@Test
+	public void toDashedCaseUpperCamelCaseMiddle() {
+		assertThat(toDashedCase("someDLQKey")).isEqualTo("some-d-l-q-key");
+	}
+
+	@Test
 	public void toDashedCaseWordsUnderscore() {
 		assertThat(toDashedCase("Word_With_underscore"))
-				.isEqualTo("word_with_underscore");
+				.isEqualTo("word-with-underscore");
 	}
 
 	@Test
 	public void toDashedCaseWordsSeveralUnderscores() {
 		assertThat(toDashedCase("Word___With__underscore"))
-				.isEqualTo("word___with__underscore");
+				.isEqualTo("word---with--underscore");
 	}
 
 	@Test
 	public void toDashedCaseLowerCaseUnderscore() {
-		assertThat(toDashedCase("lower_underscore")).isEqualTo("lower_underscore");
+		assertThat(toDashedCase("lower_underscore")).isEqualTo("lower-underscore");
 	}
 
 	@Test
-	public void toDashedCaseUpperUnderscore() {
-		assertThat(toDashedCase("UPPER_UNDERSCORE")).isEqualTo("upper_underscore");
+	public void toDashedCaseUpperUnderscoreSuffix() {
+		assertThat(toDashedCase("my_DLQ")).isEqualTo("my-d-l-q");
+	}
+
+	@Test
+	public void toDashedCaseUpperUnderscoreMiddle() {
+		assertThat(toDashedCase("some_DLQ_key")).isEqualTo("some-d-l-q-key");
 	}
 
 	@Test
 	public void toDashedCaseMultipleUnderscores() {
-		assertThat(toDashedCase("super___crazy")).isEqualTo("super___crazy");
-	}
-
-	@Test
-	public void toDashedCaseUppercase() {
-		assertThat(toDashedCase("UPPERCASE")).isEqualTo("uppercase");
+		assertThat(toDashedCase("super___crazy")).isEqualTo("super---crazy");
 	}
 
 	@Test

@@ -16,12 +16,14 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -40,9 +42,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc(alwaysPrint = false)
+@AutoConfigureMockMvc(print = MockMvcPrint.SYSTEM_ERR)
 @WithMockUser(username = "user", password = "secret")
 public class MockMvcSpringBootTestIntegrationTests {
+
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	@MockBean
 	private ExampleMockableService service;
@@ -57,6 +62,7 @@ public class MockMvcSpringBootTestIntegrationTests {
 	public void shouldFindController1() throws Exception {
 		this.mvc.perform(get("/one")).andExpect(content().string("one"))
 				.andExpect(status().isOk());
+		assertThat(this.output.toString()).contains("Request URI = /one");
 	}
 
 	@Test

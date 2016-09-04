@@ -36,7 +36,7 @@ import org.springframework.web.WebApplicationInitializer;
  * @author Phillip Webb
  * @see WebApplicationInitializer
  * @deprecated as of 1.4 in favor of
- * org.springframework.boot.web.ServletContextInitializer
+ * {@link org.springframework.boot.web.servlet.ServletContextInitializer}
  */
 @Deprecated
 public interface ServletContextInitializer

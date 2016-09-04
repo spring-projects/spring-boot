@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.amqp;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 
+import com.rabbitmq.client.Address;
 import org.aopalliance.aop.Advice;
 import org.junit.After;
 import org.junit.Rule;
@@ -112,6 +113,8 @@ public class RabbitAutoConfigurationTests {
 		com.rabbitmq.client.ConnectionFactory rcf = (com.rabbitmq.client.ConnectionFactory) dfa
 				.getPropertyValue("rabbitConnectionFactory");
 		assertThat(rcf.getConnectionTimeout()).isEqualTo(123);
+		assertThat((Address[]) dfa.getPropertyValue("addresses")).hasSize(1);
+
 	}
 
 	@Test

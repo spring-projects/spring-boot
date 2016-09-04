@@ -21,10 +21,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotationConfigurationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 
 /**
  * Tests for {@link ServletComponentScanRegistrar}
@@ -55,6 +59,18 @@ public class ServletComponentScanRegistrarTests {
 	}
 
 	@Test
+	public void packagesConfiguredWithValueAsm() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.registerBeanDefinition("valuePackages",
+				new RootBeanDefinition(ValuePackages.class.getName()));
+		this.context.refresh();
+		ServletComponentRegisteringPostProcessor postProcessor = this.context
+				.getBean(ServletComponentRegisteringPostProcessor.class);
+		assertThat(postProcessor.getPackagesToScan()).contains("com.example.foo",
+				"com.example.bar");
+	}
+
+	@Test
 	public void packagesConfiguredWithBackPackages() {
 		this.context = new AnnotationConfigApplicationContext(BasePackages.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
@@ -74,14 +90,11 @@ public class ServletComponentScanRegistrarTests {
 
 	@Test
 	public void packagesConfiguredWithBothValueAndBasePackages() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("@ServletComponentScan basePackages and value"
-				+ " attributes are mutually exclusive");
+		this.thrown.expect(AnnotationConfigurationException.class);
+		this.thrown.expectMessage(allOf(containsString("'value'"),
+				containsString("'basePackages'"), containsString("com.example.foo"),
+				containsString("com.example.bar")));
 		this.context = new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
-		ServletComponentRegisteringPostProcessor postProcessor = this.context
-				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan())
-				.contains(getClass().getPackage().getName());
 	}
 
 	@Test

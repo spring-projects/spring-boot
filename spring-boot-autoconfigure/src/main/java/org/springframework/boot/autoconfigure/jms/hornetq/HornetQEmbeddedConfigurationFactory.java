@@ -34,7 +34,9 @@ import org.springframework.boot.autoconfigure.jms.hornetq.HornetQProperties.Embe
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @since 1.1.0
+ * @deprecated as of 1.4 in favor of the Artemis support
  */
+@Deprecated
 class HornetQEmbeddedConfigurationFactory {
 
 	private static final Log logger = LogFactory

@@ -47,7 +47,7 @@ public class TemplateAvailabilityProviders {
 	private static final TemplateAvailabilityProvider NONE = new NoTemplateAvailabilityProvider();
 
 	/**
-	 * resolved template views, returning already cached instances without a global lock.
+	 * Resolved template views, returning already cached instances without a global lock.
 	 */
 	private final Map<String, TemplateAvailabilityProvider> resolved = new ConcurrentHashMap<String, TemplateAvailabilityProvider>(
 			CACHE_LIMIT);

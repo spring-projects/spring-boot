@@ -90,18 +90,18 @@ public class RabbitAutoConfiguration {
 		public CachingConnectionFactory rabbitConnectionFactory(RabbitProperties config)
 				throws Exception {
 			RabbitConnectionFactoryBean factory = new RabbitConnectionFactoryBean();
-			if (config.getHost() != null) {
-				factory.setHost(config.getHost());
-				factory.setPort(config.getPort());
+			if (config.determineHost() != null) {
+				factory.setHost(config.determineHost());
 			}
-			if (config.getUsername() != null) {
-				factory.setUsername(config.getUsername());
+			factory.setPort(config.determinePort());
+			if (config.determineUsername() != null) {
+				factory.setUsername(config.determineUsername());
 			}
-			if (config.getPassword() != null) {
-				factory.setPassword(config.getPassword());
+			if (config.determinePassword() != null) {
+				factory.setPassword(config.determinePassword());
 			}
-			if (config.getVirtualHost() != null) {
-				factory.setVirtualHost(config.getVirtualHost());
+			if (config.determineVirtualHost() != null) {
+				factory.setVirtualHost(config.determineVirtualHost());
 			}
 			if (config.getRequestedHeartbeat() != null) {
 				factory.setRequestedHeartbeat(config.getRequestedHeartbeat());
@@ -123,7 +123,7 @@ public class RabbitAutoConfiguration {
 			factory.afterPropertiesSet();
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
 					factory.getObject());
-			connectionFactory.setAddresses(config.getAddresses());
+			connectionFactory.setAddresses(config.determineAddresses());
 			connectionFactory.setPublisherConfirms(config.isPublisherConfirms());
 			connectionFactory.setPublisherReturns(config.isPublisherReturns());
 			if (config.getCache().getChannel().getSize() != null) {

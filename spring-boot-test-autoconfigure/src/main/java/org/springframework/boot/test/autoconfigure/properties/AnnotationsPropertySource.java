@@ -109,20 +109,32 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 			PropertyMapping typeMapping, Map<String, Object> properties) {
 		PropertyMapping attributeMapping = AnnotationUtils.getAnnotation(attribute,
 				PropertyMapping.class);
-		if (isMapped(typeMapping, attributeMapping)) {
-			String name = getName(typeMapping, attributeMapping, attribute);
-			ReflectionUtils.makeAccessible(attribute);
-			Object value = ReflectionUtils.invokeMethod(attribute, annotation);
-			putProperties(name, value, properties);
+		SkipPropertyMapping skip = getMappingType(typeMapping, attributeMapping);
+		if (skip == SkipPropertyMapping.YES) {
+			return;
 		}
+		String name = getName(typeMapping, attributeMapping, attribute);
+		ReflectionUtils.makeAccessible(attribute);
+		Object value = ReflectionUtils.invokeMethod(attribute, annotation);
+		if (skip == SkipPropertyMapping.ON_DEFAULT_VALUE) {
+			Object defaultValue = AnnotationUtils.getDefaultValue(annotation,
+					attribute.getName());
+			if (ObjectUtils.nullSafeEquals(value, defaultValue)) {
+				return;
+			}
+		}
+		putProperties(name, value, properties);
 	}
 
-	private boolean isMapped(PropertyMapping typeMapping,
+	private SkipPropertyMapping getMappingType(PropertyMapping typeMapping,
 			PropertyMapping attributeMapping) {
 		if (attributeMapping != null) {
-			return attributeMapping.map();
+			return attributeMapping.skip();
 		}
-		return (typeMapping != null && typeMapping.map());
+		if (typeMapping != null) {
+			return typeMapping.skip();
+		}
+		return SkipPropertyMapping.YES;
 	}
 
 	private String getName(PropertyMapping typeMapping, PropertyMapping attributeMapping,

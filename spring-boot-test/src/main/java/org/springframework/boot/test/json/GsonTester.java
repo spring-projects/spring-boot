@@ -58,6 +58,15 @@ public class GsonTester<T> extends AbstractJsonMarshalTester<T> {
 	private final Gson gson;
 
 	/**
+	 * Create a new uninitialized {@link GsonTester} instance.
+	 * @param gson the Gson instance
+	 */
+	protected GsonTester(Gson gson) {
+		Assert.notNull(gson, "Gson must not be null");
+		this.gson = gson;
+	}
+
+	/**
 	 * Create a new {@link GsonTester} instance.
 	 * @param resourceLoadClass the source class used to load resources
 	 * @param type the type under test

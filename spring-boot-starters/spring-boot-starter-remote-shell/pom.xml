@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starters</artifactId>
-		<version>1.4.0.BUILD-SNAPSHOT</version>
+		<version>1.4.1.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-remote-shell</artifactId>
 	<name>Spring Boot Remote Shell Starter</name>
@@ -117,4 +117,26 @@
 			<artifactId>javax.mail</artifactId>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.basepom.maven</groupId>
+				<artifactId>duplicate-finder-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>duplicate-dependencies</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<ignoredResourcePatterns>
+								<ignoredResourcePattern>crash/crash.properties</ignoredResourcePattern>
+							</ignoredResourcePatterns>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

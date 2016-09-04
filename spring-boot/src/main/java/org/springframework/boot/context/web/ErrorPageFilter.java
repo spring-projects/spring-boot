@@ -37,7 +37,8 @@ import org.springframework.stereotype.Component;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @since 1.4.0
- * @deprecated as of 1.4 in favor of org.springframework.boot.web.support.ErrorPageFilter
+ * @deprecated as of 1.4 in favor of
+ * {@link org.springframework.boot.web.support.ErrorPageFilter}
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)

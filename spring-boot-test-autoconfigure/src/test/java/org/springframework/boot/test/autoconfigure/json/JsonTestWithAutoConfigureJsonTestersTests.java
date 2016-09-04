@@ -19,6 +19,7 @@ package org.springframework.boot.test.autoconfigure.json;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.json.BasicJsonTester;
 import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
@@ -33,13 +34,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @JsonTest
-@AutoConfigureJsonTesters(initFields = false)
+@AutoConfigureJsonTesters(enabled = false)
 public class JsonTestWithAutoConfigureJsonTestersTests {
 
+	@Autowired(required = false)
 	private BasicJsonTester basicJson;
 
+	@Autowired(required = false)
 	private JacksonTester<ExampleBasicObject> jacksonTester;
 
+	@Autowired(required = false)
 	private GsonTester<ExampleBasicObject> gsonTester;
 
 	@Test

@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.context.ApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,6 +49,9 @@ public class DataJpaTestIntegrationTests {
 
 	@Autowired
 	private TestEntityManager entities;
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	private ExampleRepository repository;
@@ -72,6 +76,9 @@ public class DataJpaTestIntegrationTests {
 		Long id = this.entities.persistAndGetId(new ExampleEntity("spring", "123"),
 				Long.class);
 		assertThat(id).isNotNull();
+		String reference = this.jdbcTemplate.queryForObject(
+				"SELECT REFERENCE FROM EXAMPLE_ENTITY WHERE ID = ?", new Object[] {id}, String.class);
+		assertThat(reference).isEqualTo("123");
 	}
 
 	@Test

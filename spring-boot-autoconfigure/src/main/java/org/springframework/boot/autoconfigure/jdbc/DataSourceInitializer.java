@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.config.SortedResourcesFactoryBean;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.util.StringUtils;
@@ -129,21 +130,27 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 	}
 
 	private List<Resource> getResources(String locations) {
-		List<Resource> resources = new ArrayList<Resource>();
-		for (String location : StringUtils.commaDelimitedListToStringArray(locations)) {
-			try {
-				for (Resource resource : this.applicationContext.getResources(location)) {
-					if (resource.exists()) {
-						resources.add(resource);
-					}
+		return getResources(
+				Arrays.asList(StringUtils.commaDelimitedListToStringArray(locations)));
+	}
+
+	private List<Resource> getResources(List<String> locations) {
+		SortedResourcesFactoryBean factory = new SortedResourcesFactoryBean(
+				this.applicationContext, locations);
+		try {
+			factory.afterPropertiesSet();
+			List<Resource> resources = new ArrayList<Resource>();
+			for (Resource resource : factory.getObject()) {
+				if (resource.exists()) {
+					resources.add(resource);
 				}
 			}
-			catch (IOException ex) {
-				throw new IllegalStateException(
-						"Unable to load resource from " + location, ex);
-			}
+			return resources;
 		}
-		return resources;
+		catch (Exception ex) {
+			throw new IllegalStateException("Unable to load resources from " + locations,
+					ex);
+		}
 	}
 
 	private void runScripts(List<Resource> resources, String username, String password) {

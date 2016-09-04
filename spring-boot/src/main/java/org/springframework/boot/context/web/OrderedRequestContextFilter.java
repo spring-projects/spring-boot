@@ -25,7 +25,7 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Phillip Webb
  * @since 1.3.0
  * @deprecated as of 1.4 in favor of
- * org.springframework.boot.web.filter.OrderedRequestContextFilter
+ * {@link org.springframework.boot.web.filter.OrderedRequestContextFilter}
  */
 @Deprecated
 public class OrderedRequestContextFilter

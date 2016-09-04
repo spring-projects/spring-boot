@@ -29,6 +29,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 
 /**
  * Stop a spring application that has been started by the "start" goal. Typically invoked
@@ -41,9 +42,17 @@ import org.apache.maven.plugins.annotations.Parameter;
 public class StopMojo extends AbstractMojo {
 
 	/**
-	 * Flag to indicate if the run processes should be forked. Must be aligned to the
-	 * value used to {@link StartMojo start} the process
-	 * @since 1.2
+	 * The Maven project.
+	 * @since 1.4.1
+	 */
+	@Parameter(defaultValue = "${project}", readonly = true, required = true)
+	private MavenProject project;
+
+	/**
+	 * Flag to indicate if process to stop was forked. By default, the value is inherited
+	 * from the {@link MavenProject}. If it is set, it must match the value used to
+	 * {@link StartMojo start} the process.
+	 * @since 1.3
 	 */
 	@Parameter(property = "fork")
 	private Boolean fork;
@@ -77,7 +86,7 @@ public class StopMojo extends AbstractMojo {
 		}
 		getLog().info("Stopping application...");
 		try {
-			if (Boolean.TRUE.equals(this.fork)) {
+			if (isForked()) {
 				stopForkedProcess();
 			}
 			else {
@@ -88,6 +97,15 @@ public class StopMojo extends AbstractMojo {
 			// The response won't be received as the server has died - ignoring
 			getLog().debug("Service is not reachable anymore (" + ex.getMessage() + ")");
 		}
+	}
+
+	private boolean isForked() {
+		if (this.fork != null) {
+			return this.fork;
+		}
+		String property = this.project.getProperties()
+				.getProperty("_spring.boot.fork.enabled");
+		return Boolean.valueOf(property);
 	}
 
 	private void stopForkedProcess()

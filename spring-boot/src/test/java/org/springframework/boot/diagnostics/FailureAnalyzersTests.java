@@ -16,47 +16,116 @@
 
 package org.springframework.boot.diagnostics;
 
-import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Enumeration;
 
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.PortInUseException;
-import org.springframework.boot.testutil.InternalOutputCapture;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link FailureAnalyzers}
+ * Tests for {@link FailureAnalyzers}.
  *
  * @author Andy Wilkinson
  */
 public class FailureAnalyzersTests {
 
-	@Rule
-	public InternalOutputCapture outputCapture = new InternalOutputCapture();
+	private static BeanFactoryAwareFailureAnalyzer failureAnalyzer;
+
+	@Before
+	public void configureMock() {
+		failureAnalyzer = mock(BeanFactoryAwareFailureAnalyzer.class);
+	}
 
 	@Test
-	public void analysisIsPerformed() {
-		try {
-			new SpringApplicationBuilder(TestConfiguration.class).web(false).run();
-			fail("Application started successfully");
+	public void analyzersAreLoadedAndCalled() {
+		RuntimeException failure = new RuntimeException();
+		analyzeAndReport("basic.factories", failure);
+		verify(failureAnalyzer, times(2)).analyze(failure);
+	}
+
+	@Test
+	public void beanFactoryIsInjectedIntoBeanFactoryAwareFailureAnalyzers() {
+		RuntimeException failure = new RuntimeException();
+		analyzeAndReport("basic.factories", failure);
+		verify(failureAnalyzer).setBeanFactory(any(BeanFactory.class));
+	}
+
+	@Test
+	public void brokenAnalyzerDoesNotPreventOtherAnalyzersFromBeingCalled() {
+		RuntimeException failure = new RuntimeException();
+		analyzeAndReport("broken.factories", failure);
+		verify(failureAnalyzer, times(1)).analyze(failure);
+	}
+
+	private void analyzeAndReport(String factoriesName, Throwable failure) {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		ClassLoader classLoader = new CustomSpringFactoriesClassLoader(factoriesName);
+		new FailureAnalyzers(context, classLoader).analyzeAndReport(failure);
+	}
+
+	static class BasicFailureAnalyzer implements FailureAnalyzer {
+
+		@Override
+		public FailureAnalysis analyze(Throwable failure) {
+			return failureAnalyzer.analyze(failure);
 		}
-		catch (Exception ex) {
-			assertThat(this.outputCapture.toString())
-					.contains("APPLICATION FAILED TO START");
+
+	}
+
+	static class BrokenFailureAnalyzer implements FailureAnalyzer {
+
+		static {
+			Object foo = null;
+			foo.toString();
+		}
+
+		@Override
+		public FailureAnalysis analyze(Throwable failure) {
+			return null;
 		}
 	}
 
-	@Configuration
-	static class TestConfiguration {
+	interface BeanFactoryAwareFailureAnalyzer extends BeanFactoryAware, FailureAnalyzer {
 
-		@PostConstruct
-		public void fail() {
-			throw new PortInUseException(8080);
+	}
+
+	static class StandardBeanFactoryAwareFailureAnalyzer extends BasicFailureAnalyzer
+			implements BeanFactoryAwareFailureAnalyzer {
+
+		@Override
+		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+			failureAnalyzer.setBeanFactory(beanFactory);
+		}
+
+	}
+
+	static class CustomSpringFactoriesClassLoader extends ClassLoader {
+
+		private final String factoriesName;
+
+		CustomSpringFactoriesClassLoader(String factoriesName) {
+			super(CustomSpringFactoriesClassLoader.class.getClassLoader());
+			this.factoriesName = factoriesName;
+		}
+
+		@Override
+		public Enumeration<URL> getResources(String name) throws IOException {
+			if ("META-INF/spring.factories".equals(name)) {
+				return super.getResources(
+						"failure-analyzers-tests/" + this.factoriesName);
+			}
+			return super.getResources(name);
 		}
 
 	}

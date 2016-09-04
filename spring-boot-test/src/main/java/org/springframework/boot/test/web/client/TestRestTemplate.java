@@ -18,10 +18,11 @@ package org.springframework.boot.test.web.client;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,20 +38,19 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
+import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.util.Assert;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RequestCallback;
@@ -69,6 +69,12 @@ import org.springframework.web.util.UriTemplateHandler;
  * Note: To prevent injection problems this class internally does not extend
  * {@link RestTemplate}. If you need access to the underlying {@link RestTemplate} use
  * {@link #getRestTemplate()}.
+ * <p>
+ * If you are using the
+ * {@link org.springframework.boot.test.context.SpringBootTest @SpringBootTest}
+ * annotation, a {@link TestRestTemplate} is automatically available and can be
+ * {@code @Autowired} into you test. If you need customizations (for example to adding
+ * additional message converters) use a {@link RestTemplateBuilder} {@code @Bean}.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -76,9 +82,19 @@ import org.springframework.web.util.UriTemplateHandler;
  */
 public class TestRestTemplate {
 
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
-
 	private final RestTemplate restTemplate;
+
+	private final HttpClientOption[] httpClientOptions;
+
+	/**
+	 * Create a new {@link TestRestTemplate} instance.
+	 * @param restTemplateBuilder builder used to configure underlying
+	 * {@link RestTemplate}
+	 * @since 1.4.1
+	 */
+	public TestRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+		this(buildRestTemplate(restTemplateBuilder));
+	}
 
 	/**
 	 * Create a new {@link TestRestTemplate} instance.
@@ -96,31 +112,30 @@ public class TestRestTemplate {
 	 */
 	public TestRestTemplate(String username, String password,
 			HttpClientOption... httpClientOptions) {
-		this.restTemplate = createRestTemplate(username, password, httpClientOptions);
+		this(new RestTemplate(), username, password, httpClientOptions);
 	}
 
-	/**
-	 * Factory method used to create the underlying {@link RestTemplate}.
-	 * @param username the username to use (or {@code null})
-	 * @param password the password (or {@code null})
-	 * @param httpClientOptions client options to use if the Apache HTTP Client is used
-	 * @return the delegate {@link RestTemplate}
-	 */
-	protected RestTemplate createRestTemplate(String username, String password,
+	public TestRestTemplate(RestTemplate restTemplate) {
+		this(restTemplate, null, null);
+	}
+
+	public TestRestTemplate(RestTemplate restTemplate, String username, String password,
 			HttpClientOption... httpClientOptions) {
-		RestTemplate restTemplate = new RestTemplate();
+		Assert.notNull(restTemplate, "RestTemplate must not be null");
+		this.httpClientOptions = httpClientOptions;
 		if (ClassUtils.isPresent("org.apache.http.client.config.RequestConfig", null)) {
 			restTemplate.setRequestFactory(
 					new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
 		}
 		addAuthentication(restTemplate, username, password);
 		restTemplate.setErrorHandler(new NoOpResponseErrorHandler());
-		return restTemplate;
+		this.restTemplate = restTemplate;
 	}
 
-	public TestRestTemplate(RestTemplate restTemplate) {
-		Assert.notNull(restTemplate, "RestTemplate must not be null");
-		this.restTemplate = restTemplate;
+	private static RestTemplate buildRestTemplate(
+			RestTemplateBuilder restTemplateBuilder) {
+		Assert.notNull(restTemplateBuilder, "RestTemplateBuilder must not be null");
+		return restTemplateBuilder.build();
 	}
 
 	private void addAuthentication(RestTemplate restTemplate, String username,
@@ -891,6 +906,40 @@ public class TestRestTemplate {
 	}
 
 	/**
+	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
+	 * except that it will send basic authorization headers using the given
+	 * {@code username} and {@code password}.
+	 * @param username the username
+	 * @param password the password
+	 * @return the new template
+	 * @since 1.4.1
+	 */
+	public TestRestTemplate withBasicAuth(String username, String password) {
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.setErrorHandler(getRestTemplate().getErrorHandler());
+		restTemplate.setMessageConverters(getRestTemplate().getMessageConverters());
+		restTemplate.setInterceptors(
+				removeBasicAuthInterceptorIfPresent(getRestTemplate().getInterceptors()));
+		restTemplate.setRequestFactory(getRestTemplate().getRequestFactory());
+		restTemplate.setUriTemplateHandler(getRestTemplate().getUriTemplateHandler());
+		return new TestRestTemplate(restTemplate, username, password,
+				this.httpClientOptions);
+	}
+
+	private List<ClientHttpRequestInterceptor> removeBasicAuthInterceptorIfPresent(
+			List<ClientHttpRequestInterceptor> interceptors) {
+		List<ClientHttpRequestInterceptor> updatedInterceptors = new ArrayList<ClientHttpRequestInterceptor>(
+				interceptors);
+		Iterator<ClientHttpRequestInterceptor> iterator = updatedInterceptors.iterator();
+		while (iterator.hasNext()) {
+			if (iterator.next() instanceof BasicAuthorizationInterceptor) {
+				iterator.remove();
+			}
+		}
+		return interceptors;
+	}
+
+	/**
 	 * Options used to customize the Apache Http Client if it is used.
 	 */
 	public enum HttpClientOption {
@@ -909,29 +958,6 @@ public class TestRestTemplate {
 		 * Use a {@link SSLConnectionSocketFactory} with {@link TrustSelfSignedStrategy}.
 		 */
 		SSL
-
-	}
-
-	private static class BasicAuthorizationInterceptor
-			implements ClientHttpRequestInterceptor {
-
-		private final String username;
-
-		private final String password;
-
-		BasicAuthorizationInterceptor(String username, String password) {
-			this.username = username;
-			this.password = (password == null ? "" : password);
-		}
-
-		@Override
-		public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-				ClientHttpRequestExecution execution) throws IOException {
-			String token = Base64Utils.encodeToString(
-					(this.username + ":" + this.password).getBytes(UTF_8));
-			request.getHeaders().add("Authorization", "Basic " + token);
-			return execution.execute(request, body);
-		}
 
 	}
 

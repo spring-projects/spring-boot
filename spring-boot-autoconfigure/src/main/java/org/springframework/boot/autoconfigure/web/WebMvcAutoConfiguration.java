@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.Servlet;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,6 +58,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.validation.DefaultMessageCodesResolver;
@@ -68,6 +70,7 @@ import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
@@ -78,11 +81,15 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceChainRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
+import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
+import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
+import org.springframework.web.servlet.mvc.ParameterizableViewController;
+import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
@@ -102,6 +109,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Andy Wilkinson
  * @author Sébastien Deleuze
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnWebApplication
@@ -191,13 +199,6 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean({ RequestContextListener.class,
-				RequestContextFilter.class })
-		public RequestContextFilter requestContextFilter() {
-			return new OrderedRequestContextFilter();
-		}
-
-		@Bean
 		@ConditionalOnBean(View.class)
 		@ConditionalOnMissingBean
 		public BeanNameViewResolver beanNameViewResolver() {
@@ -223,7 +224,13 @@ public class WebMvcAutoConfiguration {
 		@ConditionalOnMissingBean
 		@ConditionalOnProperty(prefix = "spring.mvc", name = "locale")
 		public LocaleResolver localeResolver() {
-			return new FixedLocaleResolver(this.mvcProperties.getLocale());
+			if (this.mvcProperties
+					.getLocaleResolver() == WebMvcProperties.LocaleResolver.FIXED) {
+				return new FixedLocaleResolver(this.mvcProperties.getLocale());
+			}
+			AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
+			localeResolver.setDefaultLocale(this.mvcProperties.getLocale());
+			return localeResolver;
 		}
 
 		@Bean
@@ -284,6 +291,12 @@ public class WebMvcAutoConfiguration {
 			}
 		}
 
+		@Bean
+		public WelcomePageHandlerMapping welcomePageHandlerMapping(
+				ResourceProperties resourceProperties) {
+			return new WelcomePageHandlerMapping(resourceProperties.getWelcomePage());
+		}
+
 		private void customizeResourceHandlerRegistration(
 				ResourceHandlerRegistration registration) {
 			if (this.resourceHandlerRegistrationCustomizer != null) {
@@ -292,13 +305,11 @@ public class WebMvcAutoConfiguration {
 
 		}
 
-		@Override
-		public void addViewControllers(ViewControllerRegistry registry) {
-			Resource page = this.resourceProperties.getWelcomePage();
-			if (page != null) {
-				logger.info("Adding welcome page: " + page);
-				registry.addViewController("/").setViewName("forward:index.html");
-			}
+		@Bean
+		@ConditionalOnMissingBean({ RequestContextListener.class,
+				RequestContextFilter.class })
+		public static RequestContextFilter requestContextFilter() {
+			return new OrderedRequestContextFilter();
 		}
 
 		@Configuration
@@ -342,10 +353,14 @@ public class WebMvcAutoConfiguration {
 
 		private final ListableBeanFactory beanFactory;
 
+		private final WebMvcRegistrations mvcRegistrations;
+
 		public EnableWebMvcConfiguration(
 				ObjectProvider<WebMvcProperties> mvcPropertiesProvider,
+				ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider,
 				ListableBeanFactory beanFactory) {
 			this.mvcProperties = mvcPropertiesProvider.getIfAvailable();
+			this.mvcRegistrations = mvcRegistrationsProvider.getIfUnique();
 			this.beanFactory = beanFactory;
 		}
 
@@ -358,6 +373,15 @@ public class WebMvcAutoConfiguration {
 			return adapter;
 		}
 
+		@Override
+		protected RequestMappingHandlerAdapter createRequestMappingHandlerAdapter() {
+			if (this.mvcRegistrations != null
+					&& this.mvcRegistrations.getRequestMappingHandlerAdapter() != null) {
+				return this.mvcRegistrations.getRequestMappingHandlerAdapter();
+			}
+			return super.createRequestMappingHandlerAdapter();
+		}
+
 		@Bean
 		@Primary
 		@Override
@@ -367,12 +391,47 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Override
+		protected RequestMappingHandlerMapping createRequestMappingHandlerMapping() {
+			if (this.mvcRegistrations != null
+					&& this.mvcRegistrations.getRequestMappingHandlerMapping() != null) {
+				return this.mvcRegistrations.getRequestMappingHandlerMapping();
+			}
+			return super.createRequestMappingHandlerMapping();
+		}
+
+		@Override
 		protected ConfigurableWebBindingInitializer getConfigurableWebBindingInitializer() {
 			try {
 				return this.beanFactory.getBean(ConfigurableWebBindingInitializer.class);
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				return super.getConfigurableWebBindingInitializer();
+			}
+		}
+
+		@Override
+		protected ExceptionHandlerExceptionResolver createExceptionHandlerExceptionResolver() {
+			if (this.mvcRegistrations != null && this.mvcRegistrations
+					.getExceptionHandlerExceptionResolver() != null) {
+				return this.mvcRegistrations.getExceptionHandlerExceptionResolver();
+			}
+			return super.createExceptionHandlerExceptionResolver();
+		}
+
+		@Override
+		protected void configureHandlerExceptionResolvers(
+				List<HandlerExceptionResolver> exceptionResolvers) {
+			super.configureHandlerExceptionResolvers(exceptionResolvers);
+			if (exceptionResolvers.isEmpty()) {
+				addDefaultHandlerExceptionResolvers(exceptionResolvers);
+			}
+			if (this.mvcProperties.isLogResolvedException()) {
+				for (HandlerExceptionResolver resolver : exceptionResolvers) {
+					if (resolver instanceof AbstractHandlerExceptionResolver) {
+						((AbstractHandlerExceptionResolver) resolver)
+								.setWarnLogCategory(resolver.getClass().getName());
+					}
+				}
 			}
 		}
 
@@ -435,6 +494,34 @@ public class WebMvcAutoConfiguration {
 				resolver.addContentVersionStrategy(paths);
 			}
 			return resolver;
+		}
+
+	}
+
+	static final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
+
+		private static final Log logger = LogFactory
+				.getLog(WelcomePageHandlerMapping.class);
+
+		private WelcomePageHandlerMapping(Resource welcomePage) {
+			if (welcomePage != null) {
+				logger.info("Adding welcome page: " + welcomePage);
+				ParameterizableViewController controller = new ParameterizableViewController();
+				controller.setViewName("forward:index.html");
+				setRootHandler(controller);
+				setOrder(0);
+			}
+		}
+
+		@Override
+		public Object getHandlerInternal(HttpServletRequest request) throws Exception {
+			for (MediaType mediaType : MediaType
+					.parseMediaTypes(request.getHeader(HttpHeaders.ACCEPT))) {
+				if (mediaType.includes(MediaType.TEXT_HTML)) {
+					return super.getHandlerInternal(request);
+				}
+			}
+			return null;
 		}
 
 	}

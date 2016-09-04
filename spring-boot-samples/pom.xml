@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.4.0.BUILD-SNAPSHOT</version>
+		<version>1.4.1.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-starters/spring-boot-starter-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-samples</artifactId>
@@ -46,6 +46,7 @@
 		<module>spring-boot-sample-flyway</module>
 		<module>spring-boot-sample-hateoas</module>
 		<module>spring-boot-sample-hibernate4</module>
+		<module>spring-boot-sample-hibernate52</module>
 		<module>spring-boot-sample-hornetq</module>
 		<module>spring-boot-sample-hypermedia</module>
 		<module>spring-boot-sample-hypermedia-gson</module>
@@ -55,10 +56,11 @@
 		<module>spring-boot-sample-jersey</module>
 		<module>spring-boot-sample-jersey1</module>
 		<module>spring-boot-sample-jetty</module>
+		<module>spring-boot-sample-jetty-jsp</module>
 		<module>spring-boot-sample-jetty-ssl</module>
 		<module>spring-boot-sample-jetty8</module>
 		<module>spring-boot-sample-jetty8-ssl</module>
-		<module>spring-boot-sample-jetty93</module>
+		<module>spring-boot-sample-jetty92</module>
 		<module>spring-boot-sample-jooq</module>
 		<module>spring-boot-sample-jpa</module>
 		<module>spring-boot-sample-jta-atomikos</module>
@@ -86,6 +88,8 @@
 		<module>spring-boot-sample-tomcat-ssl</module>
 		<module>spring-boot-sample-tomcat-multi-connectors</module>
 		<module>spring-boot-sample-tomcat7-jsp</module>
+		<module>spring-boot-sample-tomcat7-ssl</module>
+		<module>spring-boot-sample-tomcat80-ssl</module>
 		<module>spring-boot-sample-traditional</module>
 		<module>spring-boot-sample-undertow</module>
 		<module>spring-boot-sample-undertow-ssl</module>
@@ -93,6 +97,7 @@
 		<module>spring-boot-sample-war</module>
 		<module>spring-boot-sample-web-freemarker</module>
 		<module>spring-boot-sample-web-groovy-templates</module>
+		<module>spring-boot-sample-web-jsp</module>
 		<module>spring-boot-sample-web-method-security</module>
 		<module>spring-boot-sample-web-mustache</module>
 		<module>spring-boot-sample-web-secure</module>
@@ -100,7 +105,7 @@
 		<module>spring-boot-sample-web-secure-github</module>
 		<module>spring-boot-sample-web-secure-jdbc</module>
 		<module>spring-boot-sample-web-static</module>
-		<module>spring-boot-sample-web-jsp</module>
+		<module>spring-boot-sample-web-thymeleaf3</module>
 		<module>spring-boot-sample-web-ui</module>
 		<module>spring-boot-sample-web-velocity</module>
 		<module>spring-boot-sample-websocket-jetty</module>
@@ -173,7 +178,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore />
 									</action>
 								</pluginExecution>
 							</pluginExecutions>

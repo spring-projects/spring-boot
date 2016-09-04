@@ -94,16 +94,25 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public void beforeInitialize() {
+		LoggerContext loggerContext = getLoggerContext();
+		if (isAlreadyInitialized(loggerContext)) {
+			return;
+		}
 		super.beforeInitialize();
-		getLogger(null).getLoggerContext().getTurboFilterList().add(FILTER);
+		loggerContext.getTurboFilterList().add(FILTER);
 		configureJBossLoggingToUseSlf4j();
 	}
 
 	@Override
 	public void initialize(LoggingInitializationContext initializationContext,
 			String configLocation, LogFile logFile) {
-		getLogger(null).getLoggerContext().getTurboFilterList().remove(FILTER);
+		LoggerContext loggerContext = getLoggerContext();
+		if (isAlreadyInitialized(loggerContext)) {
+			return;
+		}
+		loggerContext.getTurboFilterList().remove(FILTER);
 		super.initialize(initializationContext, configLocation, logFile);
+		markAsInitialized(loggerContext);
 		if (StringUtils.hasText(System.getProperty(CONFIGURATION_FILE_PROPERTY))) {
 			getLogger(LogbackLoggingSystem.class.getName()).warn(
 					"Ignoring '" + CONFIGURATION_FILE_PROPERTY + "' system property. "
@@ -184,6 +193,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public void cleanUp() {
+		markAsUninitialized(getLoggerContext());
 		super.cleanUp();
 		getLoggerContext().getStatusManager().clear();
 	}
@@ -241,6 +251,18 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			// Unable to determine location
 		}
 		return "unknown location";
+	}
+
+	private boolean isAlreadyInitialized(LoggerContext loggerContext) {
+		return loggerContext.getObject(LoggingSystem.class.getName()) != null;
+	}
+
+	private void markAsInitialized(LoggerContext loggerContext) {
+		loggerContext.putObject(LoggingSystem.class.getName(), new Object());
+	}
+
+	private void markAsUninitialized(LoggerContext loggerContext) {
+		loggerContext.removeObject(LoggingSystem.class.getName());
 	}
 
 	private final class ShutdownHandler implements Runnable {

@@ -84,7 +84,8 @@ public class DataSourceBuilder {
 
 	private void bind(DataSource result) {
 		MutablePropertyValues properties = new MutablePropertyValues(this.properties);
-		new RelaxedDataBinder(result).withAlias("url", "jdbcUrl").bind(properties);
+		new RelaxedDataBinder(result).withAlias("url", "jdbcUrl")
+				.withAlias("username", "user").bind(properties);
 	}
 
 	public DataSourceBuilder type(Class<? extends DataSource> type) {

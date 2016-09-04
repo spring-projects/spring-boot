@@ -220,8 +220,7 @@ public class ConfigurationPropertiesReportEndpoint
 				annotation = override;
 			}
 		}
-		return (StringUtils.hasLength(annotation.value()) ? annotation.value()
-				: annotation.prefix());
+		return annotation.prefix();
 	}
 
 	/**
@@ -309,8 +308,8 @@ public class ConfigurationPropertiesReportEndpoint
 		}
 
 		private boolean isReadable(BeanDescription beanDesc, BeanPropertyWriter writer) {
-			String parentType = beanDesc.getType().getRawClass().getName();
-			String type = writer.getType().getTypeName();
+			Class<?> parentType = beanDesc.getType().getRawClass();
+			Class<?> type = writer.getType().getRawClass();
 			AnnotatedMethod setter = findSetter(beanDesc, writer);
 			// If there's a setter, we assume it's OK to report on the value,
 			// similarly, if there's no setter but the package names match, we assume

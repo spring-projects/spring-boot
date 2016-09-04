@@ -24,6 +24,8 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
+import org.springframework.format.support.DefaultFormattingConversionService;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 
 /**
@@ -48,6 +50,8 @@ public class BackgroundPreinitializer
 					runSafely(new MessageConverterInitializer());
 					runSafely(new MBeanFactoryInitializer());
 					runSafely(new ValidationInitializer());
+					runSafely(new JacksonInitializer());
+					runSafely(new ConversionServiceInitializer());
 				}
 
 				public void runSafely(Runnable runnable) {
@@ -101,6 +105,30 @@ public class BackgroundPreinitializer
 		@Override
 		public void run() {
 			Validation.byDefaultProvider().configure();
+		}
+
+	}
+
+	/**
+	 * Early initializer for Jackson.
+	 */
+	private static class JacksonInitializer implements Runnable {
+
+		@Override
+		public void run() {
+			Jackson2ObjectMapperBuilder.json().build();
+		}
+
+	}
+
+	/**
+	 * Early initializer for Spring's ConversionService.
+	 */
+	private static class ConversionServiceInitializer implements Runnable {
+
+		@Override
+		public void run() {
+			new DefaultFormattingConversionService();
 		}
 
 	}

@@ -21,7 +21,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -44,14 +44,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 public class InsecureSampleActuatorApplicationTests {
 
-	@LocalServerPort
-	private int port;
+	@Autowired
+	private TestRestTemplate restTemplate;
 
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate()
-				.getForEntity("http://localhost:" + this.port, Map.class);
+		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();

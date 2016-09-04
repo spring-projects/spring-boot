@@ -22,7 +22,6 @@ import java.util.Map;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -62,11 +61,6 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 		registry.addViewController("/access").setViewName("access");
 	}
 
-	@Bean
-	public ApplicationSecurity applicationSecurity() {
-		return new ApplicationSecurity();
-	}
-
 	public static void main(String[] args) throws Exception {
 		new SpringApplicationBuilder(SampleMethodSecurityApplication.class).run(args);
 	}
@@ -85,6 +79,7 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 
 	}
 
+	@Configuration
 	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 

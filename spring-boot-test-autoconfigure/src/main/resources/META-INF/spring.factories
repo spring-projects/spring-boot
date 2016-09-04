@@ -8,6 +8,7 @@ org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration,\
+org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
@@ -17,12 +18,20 @@ org.springframework.boot.test.autoconfigure.json.AutoConfigureJson=\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 
+# AutoConfigureJsonTesters auto-configuration imports
+org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters=\
+org.springframework.boot.test.autoconfigure.json.JsonTestersAutoConfiguration
+
 # AutoConfigureMockMvc auto-configuration imports
 org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc=\
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration,\
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityAutoConfiguration,\
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcWebClientAutoConfiguration,\
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcWebDriverAutoConfiguration
+
+# AutoConfigureMockRestServiceServer
+org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer=\
+org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerAutoConfiguration
 
 # AutoConfigureRestDocs auto-configuration imports
 org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs=\
@@ -36,6 +45,14 @@ org.springframework.boot.test.autoconfigure.orm.jpa.TestDatabaseAutoConfiguratio
 org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager=\
 org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManagerAutoConfiguration
 
+# AutoConfigureWebClient auto-configuration imports
+org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient=\
+org.springframework.boot.test.autoconfigure.web.client.WebClientRestTemplateAutoConfiguration,\
+org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
+org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration
+
 # AutoConfigureWebMvc auto-configuration imports
 org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc=\
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration,\
@@ -43,6 +60,7 @@ org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfigu
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
 org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration,\
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
+org.springframework.boot.autoconfigure.MessageSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration,\
@@ -57,5 +75,5 @@ org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCus
 # Test Execution Listeners
 org.springframework.test.context.TestExecutionListener=\
 org.springframework.boot.test.autoconfigure.AutoConfigureReportTestExecutionListener,\
-org.springframework.boot.test.autoconfigure.json.JsonTesterInitializationTestExecutionListener,\
-org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener
+org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener,\
+org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener

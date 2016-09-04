@@ -20,9 +20,8 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -48,7 +47,6 @@ import static org.mockito.BDDMockito.given;
  *
  */
 @SuppressWarnings("deprecation")
-@RunWith(MockitoJUnitRunner.class)
 public class EnableAutoConfigurationImportSelectorTests {
 
 	private final EnableAutoConfigurationImportSelector importSelector = new EnableAutoConfigurationImportSelector();
@@ -64,7 +62,8 @@ public class EnableAutoConfigurationImportSelectorTests {
 	private AnnotationAttributes annotationAttributes;
 
 	@Before
-	public void configureImportSelector() {
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
 		this.importSelector.setBeanFactory(this.beanFactory);
 		this.importSelector.setEnvironment(this.environment);
 		this.importSelector.setResourceLoader(new DefaultResourceLoader());

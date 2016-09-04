@@ -29,12 +29,13 @@ import org.springframework.context.annotation.Configuration;
  * Auto-configuration for {@link TestEntityManager}.
  *
  * @author Phillip Webb
+ * @since 1.4.0
  * @see AutoConfigureTestEntityManager
  */
 @Configuration
 @ConditionalOnClass({ EntityManagerFactory.class })
 @AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
-class TestEntityManagerAutoConfiguration {
+public class TestEntityManagerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

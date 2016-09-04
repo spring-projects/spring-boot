@@ -40,7 +40,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -399,9 +399,23 @@ public class SpringApplicationTests {
 		application.setBeanNameGenerator(beanNameGenerator);
 		this.context = application.run();
 		verify(application.getLoader()).setBeanNameGenerator(beanNameGenerator);
-		Object bean = this.context
+		Object actualGenerator = this.context
 				.getBean(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR);
-		assertThat(bean).isSameAs(beanNameGenerator);
+		assertThat(actualGenerator).isSameAs(beanNameGenerator);
+	}
+
+	@Test
+	public void customBeanNameGeneratorWithNonWebApplication() throws Exception {
+		TestSpringApplication application = new TestSpringApplication(
+				ExampleWebConfig.class);
+		application.setWebEnvironment(false);
+		BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+		application.setBeanNameGenerator(beanNameGenerator);
+		this.context = application.run();
+		verify(application.getLoader()).setBeanNameGenerator(beanNameGenerator);
+		Object actualGenerator = this.context
+				.getBean(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR);
+		assertThat(actualGenerator).isSameAs(beanNameGenerator);
 	}
 
 	@Test
@@ -682,20 +696,17 @@ public class SpringApplicationTests {
 		application.setApplicationContextClass(SpyApplicationContext.class);
 		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<ApplicationEvent>();
 		application.addListeners(new ApplicationListener<ApplicationEvent>() {
+
 			@Override
 			public void onApplicationEvent(ApplicationEvent event) {
 				events.add(event);
 			}
+
 		});
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
 		assertThat(events).hasAtLeastOneElementOfType(ContextRefreshedEvent.class);
-
-		ApplicationListener<ApplicationEvent> listener = this.context.getBean(
-				"testApplicationListener", ApplicationListener.class);
-		verify(listener).onApplicationEvent(argThat(isA(ContextRefreshedEvent.class)));
-		verify(listener).onApplicationEvent(argThat(isA(ApplicationReadyEvent.class)));
-		verifyNoMoreInteractions(listener);
+		verifyTestListenerEvents();
 	}
 
 	@Test
@@ -705,17 +716,23 @@ public class SpringApplicationTests {
 		application.setApplicationContextClass(SpyApplicationContext.class);
 		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<ApplicationEvent>();
 		application.addListeners(new ApplicationListener<ApplicationEvent>() {
+
 			@Override
 			public void onApplicationEvent(ApplicationEvent event) {
 				events.add(event);
 			}
+
 		});
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
 		assertThat(events).hasAtLeastOneElementOfType(ContextRefreshedEvent.class);
+		verifyTestListenerEvents();
+	}
 
-		ApplicationListener<ApplicationEvent> listener = this.context.getBean(
-				"testApplicationListener", ApplicationListener.class);
+	@SuppressWarnings("unchecked")
+	private void verifyTestListenerEvents() {
+		ApplicationListener<ApplicationEvent> listener = this.context
+				.getBean("testApplicationListener", ApplicationListener.class);
 		verify(listener).onApplicationEvent(argThat(isA(ContextRefreshedEvent.class)));
 		verify(listener).onApplicationEvent(argThat(isA(ApplicationReadyEvent.class)));
 		verifyNoMoreInteractions(listener);
@@ -954,8 +971,8 @@ public class SpringApplicationTests {
 	static class ExampleWebConfig {
 
 		@Bean
-		public JettyEmbeddedServletContainerFactory container() {
-			return new JettyEmbeddedServletContainerFactory(0);
+		public TomcatEmbeddedServletContainerFactory container() {
+			return new TomcatEmbeddedServletContainerFactory(0);
 		}
 
 	}

@@ -91,7 +91,7 @@ public final class RemoteSpringApplication {
 				Thread.sleep(1000);
 			}
 			catch (InterruptedException ex) {
-				// Ignore
+				Thread.currentThread().interrupt();
 			}
 		}
 	}

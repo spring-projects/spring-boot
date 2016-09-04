@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.hornetq.core.remoting.impl.netty.NettyConnectorFactory;
 import org.hornetq.core.remoting.impl.netty.TransportConstants;
 import org.hornetq.jms.client.HornetQConnectionFactory;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -39,7 +40,9 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @since 1.2.0
+ * @deprecated as of 1.4 in favor of the Artemis support
  */
+@Deprecated
 class HornetQConnectionFactoryFactory {
 
 	static final String EMBEDDED_JMS_CLASS = "org.hornetq.jms.server.embedded.EmbeddedJMS";
@@ -111,8 +114,10 @@ class HornetQConnectionFactoryFactory {
 					this.properties.getEmbedded().generateTransportParameters());
 			ServerLocator serviceLocator = HornetQClient
 					.createServerLocatorWithoutHA(transportConfiguration);
-			return factoryClass.getConstructor(ServerLocator.class)
-					.newInstance(serviceLocator);
+			Constructor<T> constructor = factoryClass
+					.getDeclaredConstructor(HornetQProperties.class, ServerLocator.class);
+			return BeanUtils.instantiateClass(constructor, this.properties,
+					serviceLocator);
 		}
 		catch (NoClassDefFoundError ex) {
 			throw new IllegalStateException("Unable to create InVM "
@@ -128,9 +133,9 @@ class HornetQConnectionFactoryFactory {
 		params.put(TransportConstants.PORT_PROP_NAME, this.properties.getPort());
 		TransportConfiguration transportConfiguration = new TransportConfiguration(
 				NettyConnectorFactory.class.getName(), params);
-		Constructor<T> constructor = factoryClass.getConstructor(boolean.class,
-				TransportConfiguration[].class);
-		return constructor.newInstance(false,
+		Constructor<T> constructor = factoryClass.getDeclaredConstructor(
+				HornetQProperties.class, boolean.class, TransportConfiguration[].class);
+		return BeanUtils.instantiateClass(constructor, this.properties, false,
 				new TransportConfiguration[] { transportConfiguration });
 	}
 

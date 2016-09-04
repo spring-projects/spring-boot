@@ -26,7 +26,6 @@ import java.lang.annotation.Target;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.MockSettings;
-import org.mockito.Mockito;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AliasFor;
@@ -139,16 +138,5 @@ public @interface MockBean {
 	 * @return the reset mode
 	 */
 	MockReset reset() default MockReset.AFTER;
-
-	/**
-	 * Indicates that Mockito methods such as {@link Mockito#verify(Object) verify(mock)}
-	 * should use the {@code target} of AOP advised beans, rather than the proxy itself.
-	 * If set to {@code false} you may need to use the result of
-	 * {@link org.springframework.test.util.AopTestUtils#getUltimateTargetObject(Object)
-	 * AopTestUtils.getUltimateTargetObject(...)} when calling Mockito methods.
-	 * @return {@code true} if the target of AOP advised beans is used or {@code false} if
-	 * the proxy is used directly
-	 */
-	boolean proxyTargetAware() default true;
 
 }

@@ -17,8 +17,10 @@
 package org.springframework.boot.context.embedded.jetty;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -136,6 +138,8 @@ public class JettyEmbeddedServletContainerFactoryTests
 				.getConnectionFactory(SslConnectionFactory.class);
 		assertThat(connectionFactory.getSslContextFactory().getIncludeCipherSuites())
 				.containsExactly("ALPHA", "BRAVO", "CHARLIE");
+		assertThat(connectionFactory.getSslContextFactory().getExcludeCipherSuites())
+				.isEmpty();
 	}
 
 	@Override
@@ -322,6 +326,14 @@ public class JettyEmbeddedServletContainerFactoryTests
 		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container)
 				.getServer().getHandler();
 		return context.getMimeTypes().getMimeMap();
+	}
+
+	@Override
+	protected Charset getCharset(Locale locale) {
+		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container)
+				.getServer().getHandler();
+		String charsetName = context.getLocaleEncoding(locale);
+		return (charsetName != null) ? Charset.forName(charsetName) : null;
 	}
 
 }

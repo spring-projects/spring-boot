@@ -37,14 +37,14 @@ while [[ -L "$jarfile" ]]; do
   cd "$(dirname "$jarfile")" || exit 1
   jarfile=$(pwd)/$(basename "$jarfile")
 done
-jarfolder="$( (cd $(dirname "$jarfile") && pwd -P) )"
+jarfolder="$( (cd "$(dirname "$jarfile")" && pwd -P) )"
 cd "$WORKING_DIR" || exit 1
 
 # Source any config file
 configfile="$(basename "${jarfile%.*}.conf")"
 
 # Initialize CONF_FOLDER location defaulting to jarfolder
-[[ -z "$CONF_FOLDER" ]] && CONF_FOLDER="${jarfolder}"
+[[ -z "$CONF_FOLDER" ]] && CONF_FOLDER="{{confFolder:${jarfolder}}}"
 
 # shellcheck source=/dev/null
 [[ -r "${CONF_FOLDER}/${configfile}" ]] && source "${CONF_FOLDER}/${configfile}"
@@ -144,8 +144,8 @@ start() {
 do_start() {
   working_dir=$(dirname "$jarfile")
   pushd "$working_dir" > /dev/null
+  mkdir "$PID_FOLDER" &> /dev/null
   if [[ -n "$run_user" ]]; then
-    mkdir "$PID_FOLDER" &> /dev/null
     checkPermissions || return $?
     chown "$run_user" "$PID_FOLDER"
     chown "$run_user" "$pid_file"

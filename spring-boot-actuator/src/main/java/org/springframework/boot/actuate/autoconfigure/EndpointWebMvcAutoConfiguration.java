@@ -16,12 +16,15 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.lang.reflect.Modifier;
+
 import javax.servlet.Servlet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -157,10 +160,19 @@ public class EndpointWebMvcAutoConfiguration
 						+ "through JMX)");
 			}
 		}
-		if (managementPort == ManagementServerPort.SAME && this.applicationContext
-				.getEnvironment() instanceof ConfigurableEnvironment) {
-			addLocalManagementPortPropertyAlias(
-					(ConfigurableEnvironment) this.applicationContext.getEnvironment());
+		if (managementPort == ManagementServerPort.SAME) {
+			if (new RelaxedPropertyResolver(this.applicationContext.getEnvironment(),
+					"management.ssl.").getProperty("enabled") != null) {
+				throw new IllegalStateException(
+						"Management-specific SSL cannot be configured as the management "
+								+ "server is not listening on a separate port");
+			}
+			if (this.applicationContext
+					.getEnvironment() instanceof ConfigurableEnvironment) {
+				addLocalManagementPortPropertyAlias(
+						(ConfigurableEnvironment) this.applicationContext
+								.getEnvironment());
+			}
 		}
 	}
 
@@ -183,18 +195,36 @@ public class EndpointWebMvcAutoConfiguration
 	private void registerEmbeddedServletContainerFactory(
 			AnnotationConfigEmbeddedWebApplicationContext childContext) {
 		try {
-			EmbeddedServletContainerFactory servletContainerFactory = this.applicationContext
-					.getBean(EmbeddedServletContainerFactory.class);
 			ConfigurableListableBeanFactory beanFactory = childContext.getBeanFactory();
 			if (beanFactory instanceof BeanDefinitionRegistry) {
 				BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
 				registry.registerBeanDefinition("embeddedServletContainerFactory",
-						new RootBeanDefinition(servletContainerFactory.getClass()));
+						new RootBeanDefinition(
+								determineEmbeddedServletContainerFactoryClass()));
 			}
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			// Ignore and assume auto-configuration
 		}
+	}
+
+	private Class<?> determineEmbeddedServletContainerFactoryClass()
+			throws NoSuchBeanDefinitionException {
+		Class<?> servletContainerFactoryClass = this.applicationContext
+				.getBean(EmbeddedServletContainerFactory.class).getClass();
+		if (cannotBeInstantiated(servletContainerFactoryClass)) {
+			throw new FatalBeanException("EmbeddedServletContainerFactory implementation "
+					+ servletContainerFactoryClass.getName() + " cannot be instantiated. "
+					+ "To allow a separate management port to be used, a top-level class "
+					+ "or static inner class should be used instead");
+		}
+		return servletContainerFactoryClass;
+	}
+
+	private boolean cannotBeInstantiated(Class<?> clazz) {
+		return clazz.isLocalClass()
+				|| (clazz.isMemberClass() && !Modifier.isStatic(clazz.getModifiers()))
+				|| clazz.isAnonymousClass();
 	}
 
 	/**

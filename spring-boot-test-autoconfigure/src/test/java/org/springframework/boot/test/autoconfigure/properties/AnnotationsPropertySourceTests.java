@@ -185,6 +185,20 @@ public class AnnotationsPropertySourceTests {
 		assertThat(source.getProperty("aliasing.value")).isEqualTo("baz");
 	}
 
+	@Test
+	public void enumValueMapped() throws Exception {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(
+				EnumValueMapped.class);
+		assertThat(source.getProperty("testenum.value")).isEqualTo(EnumItem.TWO);
+	}
+
+	@Test
+	public void enumValueNotMapped() throws Exception {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(
+				EnumValueNotMapped.class);
+		assertThat(source.containsProperty("testenum.value")).isFalse();
+	}
+
 	static class NoAnnotation {
 
 	}
@@ -248,7 +262,7 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@PropertyMapping(map = false)
+	@PropertyMapping(skip = SkipPropertyMapping.YES)
 	static @interface NotMappedAtTypeLevelAnnotation {
 
 		@PropertyMapping
@@ -269,7 +283,7 @@ public class AnnotationsPropertySourceTests {
 
 		String value();
 
-		@PropertyMapping(map = false)
+		@PropertyMapping(skip = SkipPropertyMapping.YES)
 		String ignore() default "xyz";
 
 	}
@@ -348,9 +362,7 @@ public class AnnotationsPropertySourceTests {
 	static @interface AttributeWithAliasAnnotation {
 
 		@AliasFor(annotation = AliasedAttributeAnnotation.class, attribute = "value")
-		String value()
-
-		default "foo";
+		String value() default "foo";
 
 		String someOtherAttribute() default "shouldNotBeMapped";
 
@@ -381,6 +393,35 @@ public class AnnotationsPropertySourceTests {
 
 	static class AliasedPropertyMappedAnnotationOnSuperClass
 			extends PropertyMappedAttributeWithAnAlias {
+
+	}
+
+	@EnumAnnotation(EnumItem.TWO)
+	static class EnumValueMapped {
+
+	}
+
+	@EnumAnnotation(EnumItem.DEFAULT)
+	static class EnumValueNotMapped {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@PropertyMapping("testenum")
+	static @interface EnumAnnotation {
+
+		@PropertyMapping(skip = SkipPropertyMapping.ON_DEFAULT_VALUE)
+		EnumItem value() default EnumItem.DEFAULT;
+
+	}
+
+	enum EnumItem {
+
+		DEFAULT,
+
+		ONE,
+
+		TWO
 
 	}
 

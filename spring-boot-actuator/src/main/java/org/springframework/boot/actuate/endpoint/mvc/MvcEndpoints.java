@@ -30,7 +30,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 /**
  * A registry for all {@link MvcEndpoint} beans, and a factory for a set of generic ones
@@ -102,9 +101,7 @@ public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 		ConfigurationProperties configurationProperties = AnnotationUtils
 				.findAnnotation(endpoint.getClass(), ConfigurationProperties.class);
 		if (configurationProperties != null) {
-			String prefix = StringUtils.hasText(configurationProperties.prefix())
-					? configurationProperties.prefix() : configurationProperties.value();
-			return environment.getProperty(prefix + ".path");
+			return environment.getProperty(configurationProperties.prefix() + ".path");
 		}
 		return null;
 	}

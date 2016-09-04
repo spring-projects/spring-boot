@@ -30,7 +30,9 @@ import org.springframework.util.StringUtils;
  * values (interpreted as regexes).
  *
  * @author Dave Syer
+ * @deprecated as of 1.4.1 in favor of exact String-based matching
  */
+@Deprecated
 public class ArrayDocumentMatcher implements DocumentMatcher {
 
 	private final String key;

@@ -28,14 +28,21 @@ public class Snake {
 
 	private static final int DEFAULT_LENGTH = 5;
 
+	private final Deque<Location> tail = new ArrayDeque<Location>();
+
+	private final Object monitor = new Object();
+
 	private final int id;
+
 	private final WebSocketSession session;
 
-	private Direction direction;
-	private int length = DEFAULT_LENGTH;
-	private Location head;
-	private final Deque<Location> tail = new ArrayDeque<Location>();
 	private final String hexColor;
+
+	private Direction direction;
+
+	private int length = DEFAULT_LENGTH;
+
+	private Location head;
 
 	public Snake(int id, WebSocketSession session) {
 		this.id = id;
@@ -51,43 +58,49 @@ public class Snake {
 		this.length = DEFAULT_LENGTH;
 	}
 
-	private synchronized void kill() throws Exception {
-		resetState();
-		sendMessage("{'type': 'dead'}");
+	private void kill() throws Exception {
+		synchronized (this.monitor) {
+			resetState();
+			sendMessage("{'type': 'dead'}");
+		}
 	}
 
-	private synchronized void reward() throws Exception {
-		this.length++;
-		sendMessage("{'type': 'kill'}");
+	private void reward() throws Exception {
+		synchronized (this.monitor) {
+			this.length++;
+			sendMessage("{'type': 'kill'}");
+		}
 	}
 
 	protected void sendMessage(String msg) throws Exception {
 		this.session.sendMessage(new TextMessage(msg));
 	}
 
-	public synchronized void update(Collection<Snake> snakes) throws Exception {
-		Location nextLocation = this.head.getAdjacentLocation(this.direction);
-		if (nextLocation.x >= SnakeUtils.PLAYFIELD_WIDTH) {
-			nextLocation.x = 0;
-		}
-		if (nextLocation.y >= SnakeUtils.PLAYFIELD_HEIGHT) {
-			nextLocation.y = 0;
-		}
-		if (nextLocation.x < 0) {
-			nextLocation.x = SnakeUtils.PLAYFIELD_WIDTH;
-		}
-		if (nextLocation.y < 0) {
-			nextLocation.y = SnakeUtils.PLAYFIELD_HEIGHT;
-		}
-		if (this.direction != Direction.NONE) {
-			this.tail.addFirst(this.head);
-			if (this.tail.size() > this.length) {
-				this.tail.removeLast();
+	public void update(Collection<Snake> snakes) throws Exception {
+		synchronized (this.monitor) {
+			Location nextLocation = this.head.getAdjacentLocation(this.direction);
+			if (nextLocation.x >= SnakeUtils.PLAYFIELD_WIDTH) {
+				nextLocation.x = 0;
 			}
-			this.head = nextLocation;
-		}
+			if (nextLocation.y >= SnakeUtils.PLAYFIELD_HEIGHT) {
+				nextLocation.y = 0;
+			}
+			if (nextLocation.x < 0) {
+				nextLocation.x = SnakeUtils.PLAYFIELD_WIDTH;
+			}
+			if (nextLocation.y < 0) {
+				nextLocation.y = SnakeUtils.PLAYFIELD_HEIGHT;
+			}
+			if (this.direction != Direction.NONE) {
+				this.tail.addFirst(this.head);
+				if (this.tail.size() > this.length) {
+					this.tail.removeLast();
+				}
+				this.head = nextLocation;
+			}
 
-		handleCollisions(snakes);
+			handleCollisions(snakes);
+		}
 	}
 
 	private void handleCollisions(Collection<Snake> snakes) throws Exception {
@@ -104,29 +117,37 @@ public class Snake {
 		}
 	}
 
-	public synchronized Location getHead() {
-		return this.head;
-	}
-
-	public synchronized Collection<Location> getTail() {
-		return this.tail;
-	}
-
-	public synchronized void setDirection(Direction direction) {
-		this.direction = direction;
-	}
-
-	public synchronized String getLocationsJson() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(this.head.x),
-				Integer.valueOf(this.head.y)));
-		for (Location location : this.tail) {
-			sb.append(',');
-			sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(location.x),
-					Integer.valueOf(location.y)));
+	public Location getHead() {
+		synchronized (this.monitor) {
+			return this.head;
 		}
-		return String.format("{'id':%d,'body':[%s]}", Integer.valueOf(this.id),
-				sb.toString());
+	}
+
+	public Collection<Location> getTail() {
+		synchronized (this.monitor) {
+			return this.tail;
+		}
+	}
+
+	public void setDirection(Direction direction) {
+		synchronized (this.monitor) {
+			this.direction = direction;
+		}
+	}
+
+	public String getLocationsJson() {
+		synchronized (this.monitor) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(this.head.x),
+					Integer.valueOf(this.head.y)));
+			for (Location location : this.tail) {
+				sb.append(',');
+				sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(location.x),
+						Integer.valueOf(location.y)));
+			}
+			return String.format("{'id':%d,'body':[%s]}", Integer.valueOf(this.id),
+					sb.toString());
+		}
 	}
 
 	public int getId() {

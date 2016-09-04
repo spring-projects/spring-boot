@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,11 +28,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.resource.ResourceTransformer;
 import org.springframework.web.servlet.resource.ResourceTransformerChain;
 import org.springframework.web.servlet.resource.TransformedResource;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * {@link MvcEndpoint} to expose a HAL browser.
@@ -38,6 +42,7 @@ import org.springframework.web.servlet.resource.TransformedResource;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 1.3.0
  */
 public class HalBrowserMvcEndpoint extends HalJsonMvcEndpoint
@@ -60,12 +65,12 @@ public class HalBrowserMvcEndpoint extends HalJsonMvcEndpoint
 
 	@RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
 	public String browse(HttpServletRequest request) {
-		String contextPath = getManagementServletContext().getContextPath()
-				+ (getPath().endsWith("/") ? getPath() : getPath() + "/");
-		if (request.getRequestURI().endsWith("/")) {
-			return "forward:" + contextPath + this.location.getHtmlFile();
-		}
-		return "redirect:" + contextPath;
+		ServletUriComponentsBuilder builder = ServletUriComponentsBuilder
+				.fromRequest(request);
+		String uriString = builder.build().toUriString();
+
+		return "redirect:" + uriString + (uriString.endsWith("/") ? "" : "/")
+				+ this.location.getHtmlFile();
 	}
 
 	@Override
@@ -142,15 +147,20 @@ public class HalBrowserMvcEndpoint extends HalJsonMvcEndpoint
 			resource = transformerChain.transform(request, resource);
 			if (resource.getFilename().equalsIgnoreCase(
 					HalBrowserMvcEndpoint.this.location.getHtmlFile())) {
-				return replaceInitialLink(resource);
+				return replaceInitialLink(request, resource);
 			}
 			return resource;
 		}
 
-		private Resource replaceInitialLink(Resource resource) throws IOException {
+		private Resource replaceInitialLink(HttpServletRequest request, Resource resource)
+				throws IOException {
 			byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
 			String content = new String(bytes, DEFAULT_CHARSET);
-			String initial = getManagementServletContext().getContextPath() + getPath();
+			List<String> pathSegments = new ArrayList<String>(ServletUriComponentsBuilder
+					.fromRequest(request).build().getPathSegments());
+			pathSegments.remove(pathSegments.size() - 1);
+			String initial = "/"
+					+ StringUtils.collectionToDelimitedString(pathSegments, "/");
 			content = content.replace("entryPoint: '/'", "entryPoint: '" + initial + "'");
 			return new TransformedResource(resource, content.getBytes(DEFAULT_CHARSET));
 		}

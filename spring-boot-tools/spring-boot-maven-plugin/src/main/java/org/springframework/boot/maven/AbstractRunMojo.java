@@ -90,6 +90,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * JVM arguments that should be associated with the forked process used to run the
 	 * application. On command line, make sure to wrap multiple values between quotes.
+	 * NOTE: the use of JVM arguments means that processes will be started by forking a
+	 * new JVM.
 	 * @since 1.1
 	 */
 	@Parameter(property = "run.jvmArguments")
@@ -137,8 +139,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private File classesDirectory;
 
 	/**
-	 * Flag to indicate if the run processes should be forked. By default process forking
-	 * is only used if an agent or jvmArguments are specified.
+	 * Flag to indicate if the run processes should be forked. {@code fork } is
+	 * automatically enabled if an agent or jvmArguments are specified, or if devtools is
+	 * present.
 	 * @since 1.2
 	 */
 	@Parameter(property = "fork")
@@ -158,13 +161,31 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	@Parameter(defaultValue = "false")
 	private boolean skip;
 
+	@Override
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (this.skip) {
+			getLog().debug("skipping run as per configuration.");
+			return;
+		}
+		run(getStartClass());
+	}
+
 	/**
 	 * Specify if the application process should be forked.
 	 * @return {@code true} if the application process should be forked
 	 */
 	protected boolean isFork() {
 		return (Boolean.TRUE.equals(this.fork)
-				|| (this.fork == null && (hasAgent() || hasJvmArgs())));
+				|| (this.fork == null && enableForkByDefault()));
+	}
+
+	/**
+	 * Specify if fork should be enabled by default.
+	 * @return {@code true} if fork should be enabled by default
+	 * @see #logDisabledFork()
+	 */
+	protected boolean enableForkByDefault() {
+		return hasAgent() || hasJvmArgs();
 	}
 
 	private boolean hasAgent() {
@@ -173,16 +194,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private boolean hasJvmArgs() {
 		return (this.jvmArguments != null && this.jvmArguments.length() > 0);
-	}
-
-	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException {
-		if (this.skip) {
-			getLog().debug("skipping run as per configuration.");
-			return;
-		}
-		final String startClassName = getStartClass();
-		run(startClassName);
 	}
 
 	private void findAgent() {
@@ -212,18 +223,30 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private void run(String startClassName)
 			throws MojoExecutionException, MojoFailureException {
 		findAgent();
-		if (isFork()) {
+		boolean fork = isFork();
+		this.project.getProperties().setProperty("_spring.boot.fork.enabled",
+				Boolean.toString(fork));
+		if (fork) {
 			doRunWithForkedJvm(startClassName);
 		}
 		else {
-			if (hasAgent()) {
-				getLog().warn("Fork mode disabled, ignoring agent");
-			}
-			if (hasJvmArgs()) {
-				getLog().warn("Fork mode disabled, ignoring JVM argument(s) ["
-						+ this.jvmArguments + "]");
-			}
+			logDisabledFork();
 			runWithMavenJvm(startClassName, resolveApplicationArguments().asArray());
+		}
+	}
+
+	/**
+	 * Log a warning indicating that fork mode has been explicitly disabled while some
+	 * conditions are present that require to enable it.
+	 * @see #enableForkByDefault()
+	 */
+	protected void logDisabledFork() {
+		if (hasAgent()) {
+			getLog().warn("Fork mode disabled, ignoring agent");
+		}
+		if (hasJvmArgs()) {
+			getLog().warn("Fork mode disabled, ignoring JVM argument(s) ["
+					+ this.jvmArguments + "]");
 		}
 	}
 
@@ -426,6 +449,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	class IsolatedThreadGroup extends ThreadGroup {
 
+		private final Object monitor = new Object();
+
 		private Throwable exception;
 
 		IsolatedThreadGroup(String name) {
@@ -435,18 +460,21 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		@Override
 		public void uncaughtException(Thread thread, Throwable ex) {
 			if (!(ex instanceof ThreadDeath)) {
-				synchronized (this) {
+				synchronized (this.monitor) {
 					this.exception = (this.exception == null ? ex : this.exception);
 				}
 				getLog().warn(ex);
 			}
 		}
 
-		public synchronized void rethrowUncaughtException()
-				throws MojoExecutionException {
-			if (this.exception != null) {
-				throw new MojoExecutionException("An exception occurred while running. "
-						+ this.exception.getMessage(), this.exception);
+		public void rethrowUncaughtException() throws MojoExecutionException {
+			synchronized (this.monitor) {
+				if (this.exception != null) {
+					throw new MojoExecutionException(
+							"An exception occurred while running. "
+									+ this.exception.getMessage(),
+							this.exception);
+				}
 			}
 		}
 

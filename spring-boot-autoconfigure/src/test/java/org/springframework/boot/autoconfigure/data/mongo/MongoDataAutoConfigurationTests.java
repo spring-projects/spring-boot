@@ -30,6 +30,8 @@ import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.city.City;
+import org.springframework.boot.autoconfigure.data.mongo.country.Country;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -139,6 +141,21 @@ public class MongoDataAutoConfigurationTests {
 		}
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	public void entityScanShouldSetInitialEntitySet() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EntityScanConfig.class,
+				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class);
+		this.context.refresh();
+		MongoMappingContext mappingContext = this.context
+				.getBean(MongoMappingContext.class);
+		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils
+				.getField(mappingContext, "initialEntitySet");
+		assertThat(initialEntitySet).containsOnly(City.class, Country.class);
+	}
+
 	public void testFieldNamingStrategy(String strategy,
 			Class<? extends FieldNamingStrategy> expectedType) {
 		this.context = new AnnotationConfigApplicationContext();
@@ -171,6 +188,12 @@ public class MongoDataAutoConfigurationTests {
 		public CustomConversions customConversions() {
 			return new CustomConversions(Arrays.asList(new MyConverter()));
 		}
+	}
+
+	@Configuration
+	@EntityScan("org.springframework.boot.autoconfigure.data.mongo")
+	static class EntityScanConfig {
+
 	}
 
 	private static class MyConverter implements Converter<Mongo, Boolean> {

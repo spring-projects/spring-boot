@@ -88,8 +88,7 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			ConfigurationProperties annotation = AnnotationUtils.findAnnotation(type,
 					ConfigurationProperties.class);
 			if (annotation != null) {
-				return (StringUtils.hasLength(annotation.value()) ? annotation.value()
-						: annotation.prefix());
+				return annotation.prefix();
 			}
 			return "";
 		}

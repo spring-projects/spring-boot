@@ -276,7 +276,6 @@ public class RelaxedDataBinder extends DataBinder {
 		if (path.name(++index) == null) {
 			return path.toString();
 		}
-
 		String name = path.prefix(index);
 		TypeDescriptor descriptor = wrapper.getPropertyTypeDescriptor(name);
 		if (descriptor == null || descriptor.isMap()) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  * @since 1.1.0
+ * @deprecated as of 1.4 in favor of the Artemis support
  */
 @ConfigurationProperties(prefix = "spring.hornetq")
+@Deprecated
 public class HornetQProperties {
 
 	/**
-	 * HornetQ deployment mode, auto-detected by default. Can be explicitly set to
-	 * "native" or "embedded".
+	 * HornetQ deployment mode, auto-detected by default.
 	 */
 	private HornetQMode mode;
 
@@ -49,6 +50,16 @@ public class HornetQProperties {
 	 * HornetQ broker port.
 	 */
 	private int port = 5445;
+
+	/**
+	 * Login user of the broker.
+	 */
+	private String user;
+
+	/**
+	 * Login password of the broker.
+	 */
+	private String password;
 
 	private final Embedded embedded = new Embedded();
 
@@ -74,6 +85,22 @@ public class HornetQProperties {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public String getUser() {
+		return this.user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getPassword() {
+		return this.password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public Embedded getEmbedded() {
@@ -188,6 +215,7 @@ public class HornetQProperties {
 		/**
 		 * Creates the minimal transport parameters for an embedded transport
 		 * configuration.
+		 *
 		 * @return the transport parameters
 		 * @see TransportConstants#SERVER_ID_PROP_NAME
 		 */

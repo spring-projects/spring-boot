@@ -36,7 +36,8 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
  * @author Phillip Webb
  * @see ServletContextInitializer
  * @see ServletContext#addServlet(String, Servlet)
- * @deprecated as of 1.4 in favor of org.springframework.boot.web.ServletRegistrationBean
+ * @deprecated as of 1.4 in favor of
+ * {@link org.springframework.boot.web.servlet.ServletRegistrationBean}
  */
 @Deprecated
 public class ServletRegistrationBean

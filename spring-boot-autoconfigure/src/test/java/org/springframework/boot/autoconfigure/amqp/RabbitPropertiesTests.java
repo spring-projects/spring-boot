@@ -31,91 +31,199 @@ public class RabbitPropertiesTests {
 	private final RabbitProperties properties = new RabbitProperties();
 
 	@Test
-	public void addressesNotSet() {
+	public void hostDefaultsToLocalhost() {
 		assertThat(this.properties.getHost()).isEqualTo("localhost");
+	}
+
+	@Test
+	public void customHost() {
+		this.properties.setHost("rabbit.example.com");
+		assertThat(this.properties.getHost()).isEqualTo("rabbit.example.com");
+	}
+
+	@Test
+	public void hostIsDeterminedFromFirstAddress() {
+		this.properties.setAddresses("rabbit1.example.com:1234,rabbit2.example.com:2345");
+		assertThat(this.properties.determineHost()).isEqualTo("rabbit1.example.com");
+	}
+
+	@Test
+	public void determineHostReturnsHostPropertyWhenNoAddresses() {
+		this.properties.setHost("rabbit.example.com");
+		assertThat(this.properties.determineHost()).isEqualTo("rabbit.example.com");
+	}
+
+	@Test
+	public void portDefaultsTo5672() {
 		assertThat(this.properties.getPort()).isEqualTo(5672);
 	}
 
 	@Test
-	public void addressesSingleValued() {
-		this.properties.setAddresses("myhost:9999");
-		assertThat(this.properties.getHost()).isEqualTo("myhost");
-		assertThat(this.properties.getPort()).isEqualTo(9999);
+	public void customPort() {
+		this.properties.setPort(1234);
+		assertThat(this.properties.getPort()).isEqualTo(1234);
 	}
 
 	@Test
-	public void addressesDoubleValued() {
-		this.properties.setAddresses("myhost:9999,otherhost:1111");
-		assertThat(this.properties.getHost()).isNull();
-		assertThat(this.properties.getPort()).isEqualTo(9999);
+	public void determinePortReturnsPortOfFirstAddress() {
+		this.properties.setAddresses("rabbit1.example.com:1234,rabbit2.example.com:2345");
+		assertThat(this.properties.determinePort()).isEqualTo(1234);
 	}
 
 	@Test
-	public void addressesDoubleValuedWithCredentials() {
-		this.properties.setAddresses("myhost:9999,root:password@otherhost:1111/host");
-		assertThat(this.properties.getHost()).isNull();
-		assertThat(this.properties.getPort()).isEqualTo(9999);
-		assertThat(this.properties.getUsername()).isEqualTo("root");
-		assertThat(this.properties.getVirtualHost()).isEqualTo("host");
+	public void determinePortReturnsPortPropertyWhenNoAddresses() {
+		this.properties.setPort(1234);
+		assertThat(this.properties.determinePort()).isEqualTo(1234);
 	}
 
 	@Test
-	public void addressesDoubleValuedPreservesOrder() {
-		this.properties.setAddresses("myhost:9999,ahost:1111/host");
-		assertThat(this.properties.getHost()).isNull();
-		assertThat(this.properties.getAddresses()).isEqualTo("myhost:9999,ahost:1111");
+	public void determinePortReturnsDefaultAmqpPortWhenFirstAddressHasNoExplicitPort() {
+		this.properties.setPort(1234);
+		this.properties.setAddresses("rabbit1.example.com,rabbit2.example.com:2345");
+		assertThat(this.properties.determinePort()).isEqualTo(5672);
 	}
 
 	@Test
-	public void addressesSingleValuedWithCredentials() {
-		this.properties.setAddresses("amqp://root:password@otherhost:1111/host");
-		assertThat(this.properties.getHost()).isEqualTo("otherhost");
-		assertThat(this.properties.getPort()).isEqualTo(1111);
-		assertThat(this.properties.getUsername()).isEqualTo("root");
-		assertThat(this.properties.getVirtualHost()).isEqualTo("host");
+	public void virtualHostDefaultsToNull() {
+		assertThat(this.properties.getVirtualHost()).isNull();
 	}
 
 	@Test
-	public void addressesSingleValuedWithCredentialsDefaultPort() {
-		this.properties.setAddresses("amqp://root:password@lemur.cloudamqp.com/host");
-		assertThat(this.properties.getHost()).isEqualTo("lemur.cloudamqp.com");
-		assertThat(this.properties.getPort()).isEqualTo(5672);
-		assertThat(this.properties.getUsername()).isEqualTo("root");
-		assertThat(this.properties.getVirtualHost()).isEqualTo("host");
-		assertThat(this.properties.getAddresses()).isEqualTo("lemur.cloudamqp.com:5672");
+	public void customVirtualHost() {
+		this.properties.setVirtualHost("alpha");
+		assertThat(this.properties.getVirtualHost()).isEqualTo("alpha");
 	}
 
 	@Test
-	public void addressWithTrailingSlash() {
+	public void virtualHostRetainsALeadingSlash() {
+		this.properties.setVirtualHost("/alpha");
+		assertThat(this.properties.getVirtualHost()).isEqualTo("/alpha");
+	}
+
+	@Test
+	public void determineVirtualHostReturnsVirtualHostOfFirstAddress() {
+		this.properties.setAddresses(
+				"rabbit1.example.com:1234/alpha,rabbit2.example.com:2345/bravo");
+		assertThat(this.properties.determineVirtualHost()).isEqualTo("alpha");
+	}
+
+	@Test
+	public void determineVirtualHostReturnsPropertyWhenNoAddresses() {
+		this.properties.setVirtualHost("alpha");
+		assertThat(this.properties.determineVirtualHost()).isEqualTo("alpha");
+	}
+
+	@Test
+	public void determineVirtualHostReturnsPropertyWhenFirstAddressHasNoVirtualHost() {
+		this.properties.setVirtualHost("alpha");
+		this.properties
+				.setAddresses("rabbit1.example.com:1234,rabbit2.example.com:2345/bravo");
+		assertThat(this.properties.determineVirtualHost()).isEqualTo("alpha");
+	}
+
+	@Test
+	public void determineVirtualHostIsSlashWhenAddressHasTrailingSlash() {
 		this.properties.setAddresses("amqp://root:password@otherhost:1111/");
-		assertThat(this.properties.getHost()).isEqualTo("otherhost");
-		assertThat(this.properties.getPort()).isEqualTo(1111);
-		assertThat(this.properties.getUsername()).isEqualTo("root");
-		assertThat(this.properties.getVirtualHost()).isEqualTo("/");
+		assertThat(this.properties.determineVirtualHost()).isEqualTo("/");
 	}
 
 	@Test
-	public void testDefaultVirtualHost() {
-		this.properties.setVirtualHost("/");
-		assertThat(this.properties.getVirtualHost()).isEqualTo("/");
-	}
-
-	@Test
-	public void testEmptyVirtualHost() {
+	public void emptyVirtualHostIsCoercedToASlash() {
 		this.properties.setVirtualHost("");
 		assertThat(this.properties.getVirtualHost()).isEqualTo("/");
 	}
 
 	@Test
-	public void testCustomVirtualHost() {
-		this.properties.setVirtualHost("myvHost");
-		assertThat(this.properties.getVirtualHost()).isEqualTo("myvHost");
+	public void usernameDefaultsToNull() {
+		assertThat(this.properties.getUsername()).isNull();
 	}
 
 	@Test
-	public void testCustomFalsyVirtualHost() {
-		this.properties.setVirtualHost("/myvHost");
-		assertThat(this.properties.getVirtualHost()).isEqualTo("/myvHost");
+	public void customUsername() {
+		this.properties.setUsername("user");
+		assertThat(this.properties.getUsername()).isEqualTo("user");
+	}
+
+	@Test
+	public void determineUsernameReturnsUsernameOfFirstAddress() {
+		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha,"
+				+ "rabbit2.example.com:2345/bravo");
+		assertThat(this.properties.determineUsername()).isEqualTo("user");
+	}
+
+	@Test
+	public void determineUsernameReturnsPropertyWhenNoAddresses() {
+		this.properties.setUsername("alice");
+		assertThat(this.properties.determineUsername()).isEqualTo("alice");
+	}
+
+	@Test
+	public void determineUsernameReturnsPropertyWhenFirstAddressHasNoUsername() {
+		this.properties.setUsername("alice");
+		this.properties.setAddresses("rabbit1.example.com:1234/alpha,"
+				+ "user:secret@rabbit2.example.com:2345/bravo");
+		assertThat(this.properties.determineUsername()).isEqualTo("alice");
+	}
+
+	@Test
+	public void passwordDefaultsToNull() {
+		assertThat(this.properties.getPassword()).isNull();
+	}
+
+	@Test
+	public void customPassword() {
+		this.properties.setPassword("secret");
+		assertThat(this.properties.getPassword()).isEqualTo("secret");
+	}
+
+	@Test
+	public void determinePasswordReturnsPasswordOfFirstAddress() {
+		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha,"
+				+ "rabbit2.example.com:2345/bravo");
+		assertThat(this.properties.determinePassword()).isEqualTo("secret");
+	}
+
+	@Test
+	public void determinePasswordReturnsPropertyWhenNoAddresses() {
+		this.properties.setPassword("secret");
+		assertThat(this.properties.determinePassword()).isEqualTo("secret");
+	}
+
+	@Test
+	public void determinePasswordReturnsPropertyWhenFirstAddressHasNoPassword() {
+		this.properties.setPassword("12345678");
+		this.properties.setAddresses("rabbit1.example.com:1234/alpha,"
+				+ "user:secret@rabbit2.example.com:2345/bravo");
+		assertThat(this.properties.determinePassword()).isEqualTo("12345678");
+	}
+
+	@Test
+	public void addressesDefaultsToNull() {
+		assertThat(this.properties.getAddresses()).isNull();
+	}
+
+	@Test
+	public void customAddresses() {
+		this.properties.setAddresses(
+				"user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
+		assertThat(this.properties.getAddresses()).isEqualTo(
+				"user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
+	}
+
+	@Test
+	public void determineAddressesReturnsAddressesWithJustHostAndPort() {
+		this.properties.setAddresses(
+				"user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
+		assertThat(this.properties.determineAddresses())
+				.isEqualTo("rabbit1.example.com:1234,rabbit2.example.com:5672");
+	}
+
+	@Test
+	public void determineAddressesUsesHostAndPortPropertiesWhenNoAddressesSet() {
+		this.properties.setHost("rabbit.example.com");
+		this.properties.setPort(1234);
+		assertThat(this.properties.determineAddresses())
+				.isEqualTo("rabbit.example.com:1234");
 	}
 
 }

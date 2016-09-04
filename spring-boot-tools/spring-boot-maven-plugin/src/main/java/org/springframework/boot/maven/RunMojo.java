@@ -16,6 +16,7 @@
 
 package org.springframework.boot.maven;
 
+import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
 
@@ -39,13 +40,40 @@ import org.springframework.boot.loader.tools.RunProcess;
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
 public class RunMojo extends AbstractRunMojo {
 
+	private static final int EXIT_CODE_SIGINT = 130;
+
+	private static final String RESTARTER_CLASS_LOCATION = "org/springframework/boot/devtools/restart/Restarter.class";
+
+	/**
+	 * Devtools presence flag to avoid checking for it several times per execution.
+	 */
+	private Boolean hasDevtools;
+
+	@Override
+	protected boolean enableForkByDefault() {
+		return super.enableForkByDefault() || hasDevtools();
+	}
+
+	@Override
+	protected void logDisabledFork() {
+		super.logDisabledFork();
+		if (hasDevtools()) {
+			getLog().warn("Fork mode disabled, devtools will be disabled");
+		}
+	}
+
 	@Override
 	protected void runWithForkedJvm(List<String> args) throws MojoExecutionException {
 		try {
 			RunProcess runProcess = new RunProcess(new JavaExecutable().toString());
 			Runtime.getRuntime()
 					.addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
-			runProcess.run(true, args.toArray(new String[args.size()]));
+			int exitCode = runProcess.run(true, args.toArray(new String[args.size()]));
+			if (exitCode == 0 || exitCode == EXIT_CODE_SIGINT) {
+				return;
+			}
+			throw new MojoExecutionException(
+					"Application finished with exit code: " + exitCode);
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not exec java", ex);
@@ -83,6 +111,25 @@ public class RunMojo extends AbstractRunMojo {
 			}
 		}
 		while (hasNonDaemonThreads);
+	}
+
+	private boolean hasDevtools() {
+		if (this.hasDevtools == null) {
+			this.hasDevtools = checkForDevtools();
+		}
+		return this.hasDevtools;
+	}
+
+	@SuppressWarnings("resource")
+	private boolean checkForDevtools() {
+		try {
+			URL[] urls = getClassPathUrls();
+			URLClassLoader classLoader = new URLClassLoader(urls);
+			return (classLoader.findResource(RESTARTER_CLASS_LOCATION) != null);
+		}
+		catch (Exception ex) {
+			return false;
+		}
 	}
 
 	private static final class RunProcessKiller implements Runnable {

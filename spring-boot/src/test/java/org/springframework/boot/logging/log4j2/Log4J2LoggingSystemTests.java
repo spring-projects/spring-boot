@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -43,6 +46,10 @@ import org.springframework.util.StringUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link Log4J2LoggingSystem}.
@@ -62,6 +69,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Before
 	public void setup() {
+		this.loggingSystem.cleanUp();
 		this.logger = LogManager.getLogger(getClass());
 	}
 
@@ -195,6 +203,13 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	public void beforeInitializeFilterDisablesErrorLogging() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		assertThat(this.logger.isErrorEnabled()).isFalse();
+		this.loggingSystem.initialize(null, null, getLogFile(null, tmpDir()));
+	}
+
+	@Test
 	public void customExceptionConversionWord() throws Exception {
 		System.setProperty("LOG_EXCEPTION_CONVERSION_WORD", "%ex");
 		try {
@@ -214,6 +229,24 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		finally {
 			System.clearProperty("LOG_EXCEPTION_CONVERSION_WORD");
 		}
+	}
+
+	@Test
+	public void initializationIsOnlyPerformedOnceUntilCleanedUp() throws Exception {
+		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		PropertyChangeListener listener = mock(PropertyChangeListener.class);
+		loggerContext.addPropertyChangeListener(listener);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		verify(listener, times(2)).propertyChange(any(PropertyChangeEvent.class));
+		this.loggingSystem.cleanUp();
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		verify(listener, times(4)).propertyChange(any(PropertyChangeEvent.class));
 	}
 
 	private static class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {

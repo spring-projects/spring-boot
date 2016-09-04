@@ -88,8 +88,8 @@ public class MailHealthIndicatorTests {
 		}
 
 		@Override
-		public synchronized void connect(String host, int port, String user,
-				String password) throws MessagingException {
+		public void connect(String host, int port, String user, String password)
+				throws MessagingException {
 		}
 
 		@Override

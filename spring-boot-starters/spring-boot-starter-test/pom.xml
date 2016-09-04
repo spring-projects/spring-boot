@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starters</artifactId>
-		<version>1.4.0.BUILD-SNAPSHOT</version>
+		<version>1.4.1.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-test</artifactId>
 	<name>Spring Boot Test Starter</name>
@@ -70,4 +70,37 @@
 			<artifactId>spring-test</artifactId>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.basepom.maven</groupId>
+				<artifactId>duplicate-finder-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>duplicate-dependencies</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<exceptions>
+								<exception>
+									<conflictingDependencies>
+										<dependency>
+											<groupId>org.ow2.asm</groupId>
+											<artifactId>asm</artifactId>
+										</dependency>
+										<dependency>
+											<groupId>net.minidev</groupId>
+											<artifactId>accessors-smart</artifactId>
+										</dependency>
+									</conflictingDependencies>
+								</exception>
+							</exceptions>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

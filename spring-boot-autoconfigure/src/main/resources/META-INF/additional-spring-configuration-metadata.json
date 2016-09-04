@@ -326,6 +326,17 @@
     ]
   },
   {
+    "name": "spring.data.cassandra.schema-action",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.springframework.data.cassandra.config.SchemaAction"
+        }
+      }
+    ]
+  },
+  {
     "name": "spring.data.mongodb.field-naming-strategy",
     "providers": [
       {

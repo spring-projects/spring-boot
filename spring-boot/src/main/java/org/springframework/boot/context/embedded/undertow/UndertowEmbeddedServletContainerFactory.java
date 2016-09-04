@@ -19,6 +19,7 @@ package org.springframework.boot.context.embedded.undertow;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
@@ -27,6 +28,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.net.ssl.KeyManager;
@@ -118,6 +121,10 @@ public class UndertowEmbeddedServletContainerFactory
 	private File accessLogDirectory;
 
 	private String accessLogPattern;
+
+	private String accessLogPrefix;
+
+	private String accessLogSuffix;
 
 	private boolean accessLogEnabled = false;
 
@@ -300,11 +307,12 @@ public class UndertowEmbeddedServletContainerFactory
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
 					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 			Ssl ssl = getSsl();
-			String keyPassword = ssl.getKeyPassword();
-			if (keyPassword == null) {
-				keyPassword = ssl.getKeyStorePassword();
+			char[] keyPassword = (ssl.getKeyPassword() != null
+					? ssl.getKeyPassword().toCharArray() : null);
+			if (keyPassword == null && ssl.getKeyStorePassword() != null) {
+				keyPassword = ssl.getKeyStorePassword().toCharArray();
 			}
-			keyManagerFactory.init(keyStore, keyPassword.toCharArray());
+			keyManagerFactory.init(keyStore, keyPassword);
 			return keyManagerFactory.getKeyManagers();
 		}
 		catch (Exception ex) {
@@ -351,7 +359,7 @@ public class UndertowEmbeddedServletContainerFactory
 		}
 		KeyStore store = KeyStore.getInstance(type);
 		URL url = ResourceUtils.getURL(resource);
-		store.load(url.openStream(), password.toCharArray());
+		store.load(url.openStream(), password == null ? null : password.toCharArray());
 		return store;
 	}
 
@@ -381,6 +389,7 @@ public class UndertowEmbeddedServletContainerFactory
 			File dir = getValidSessionStoreDir();
 			deployment.setSessionPersistenceManager(new FileSessionPersistence(dir));
 		}
+		addLocaleMappings(deployment);
 		DeploymentManager manager = Servlets.newContainer().addDeployment(deployment);
 		manager.deploy();
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
@@ -403,8 +412,11 @@ public class UndertowEmbeddedServletContainerFactory
 	private AccessLogHandler createAccessLogHandler(HttpHandler handler) {
 		try {
 			createAccessLogDirectoryIfNecessary();
+			String prefix = (this.accessLogPrefix != null ? this.accessLogPrefix
+					: "access_log.");
 			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
-					createWorker(), this.accessLogDirectory, "access_log.");
+					createWorker(), this.accessLogDirectory, prefix,
+					this.accessLogSuffix);
 			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
 					: "common";
 			return new AccessLogHandler(handler, accessLogReceiver, formatString,
@@ -427,6 +439,14 @@ public class UndertowEmbeddedServletContainerFactory
 		Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
 		return xnio.createWorker(
 				OptionMap.builder().set(Options.THREAD_DAEMON, true).getMap());
+	}
+
+	private void addLocaleMappings(DeploymentInfo deployment) {
+		for (Map.Entry<Locale, Charset> entry : getLocaleCharsetMappings().entrySet()) {
+			Locale locale = entry.getKey();
+			Charset charset = entry.getValue();
+			deployment.addLocaleCharsetMapping(locale.toString(), charset.toString());
+		}
 	}
 
 	private void registerServletContainerInitializerToDriveServletContextInitializers(
@@ -546,6 +566,18 @@ public class UndertowEmbeddedServletContainerFactory
 
 	public void setAccessLogPattern(String accessLogPattern) {
 		this.accessLogPattern = accessLogPattern;
+	}
+
+	public String getAccessLogPrefix() {
+		return this.accessLogPrefix;
+	}
+
+	public void setAccessLogPrefix(String accessLogPrefix) {
+		this.accessLogPrefix = accessLogPrefix;
+	}
+
+	public void setAccessLogSuffix(String accessLogSuffix) {
+		this.accessLogSuffix = accessLogSuffix;
 	}
 
 	public void setAccessLogEnabled(boolean accessLogEnabled) {

@@ -80,6 +80,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-hibernate4[spring-boot-sample-hibernate4]
 | Demonstrates how to use Hibernate 4
 
+| link:spring-boot-sample-hibernate4[spring-boot-sample-hibernate52]
+| Demonstrates how to use Hibernate 5.2
+
 | link:spring-boot-sample-hornetq[spring-boot-sample-hornetq]
 | Message-oriented application using HornetQ
 
@@ -111,14 +114,17 @@ The following sample applications are provided:
 | link:spring-boot-sample-jetty-ssl[spring-boot-sample-jetty-ssl]
 | Embedded Jetty configured to use SSL
 
+| link:spring-boot-sample-jetty-jsp[spring-boot-sample-jetty-jsp]
+| Web application that uses JSP templates with Jetty
+
 | link:spring-boot-sample-jetty8[spring-boot-sample-jetty8]
 | Embedded Jetty 8
 
 | link:spring-boot-sample-jetty8-ssl[spring-boot-sample-jetty8-ssl]
 | Embedded Jetty 8 SSL
 
-| link:spring-boot-sample-jetty93[spring-boot-sample-jetty93]
-| Embedded Jetty 9.3
+| link:spring-boot-sample-jetty92[spring-boot-sample-jetty92]
+| Embedded Jetty 9.2
 
 | link:spring-boot-sample-jooq[spring-boot-sample-jooq]
 | Stores data using jOOQ
@@ -190,7 +196,7 @@ The following sample applications are provided:
 | Embedded Tomcat
 
 | link:spring-boot-sample-tomcat-jsp[spring-boot-sample-tomcat-jsp]
-| Web application that uses JSP templates with Tomcat 8
+| Web application that uses JSP templates with Tomcat
 
 | link:spring-boot-sample-tomcat-multi-connectors[spring-boot-sample-tomcat-multi-connectors]
 | Web application that uses Tomcat configured with multiple connectors
@@ -200,6 +206,12 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-tomcat7-jsp[spring-boot-sample-tomcat7-jsp]
 | Web application that uses JSP templates with Tomcat 7
+
+| link:spring-boot-sample-tomcat7-ssl[spring-boot-sample-tomcat7-ssl]
+| Web application that uses Tomcat 7 configured with SSL
+
+| link:spring-boot-sample-tomcat80-ssl[spring-boot-sample-tomcat80-ssl]
+| Web application that uses Tomcat 8.0 configured with SSL
 
 | link:spring-boot-sample-traditional[spring-boot-sample-traditional]
 | Traditional WAR packaging  (but also executable using `java -jar`)
@@ -217,7 +229,7 @@ The following sample applications are provided:
 | Web application packaged as a war file
 
 | link:spring-boot-sample-web-freemarker[spring-boot-sample-web-freemarker]
-| Web application that uses Freemarker templates
+| Web application that uses FreeMarker templates
 
 | link:spring-boot-sample-web-groovy-templates[spring-boot-sample-web-groovy-templates]
 | Web application that uses Groovy templates

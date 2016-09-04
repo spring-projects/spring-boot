@@ -18,42 +18,35 @@ package org.springframework.boot.test.autoconfigure.json;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 import org.springframework.boot.test.json.BasicJsonTester;
 import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.TestExecutionListeners.MergeMode;
 
 /**
  * Annotation that can be applied to a test class to enable and configure
  * auto-configuration of JSON testers.
- * <p>
- * NOTE: {@code @AutoConfigureJsonTesters} works in conjunction with
- * {@link JsonTesterInitializationTestExecutionListener}. If you declare your own
- * {@link TestExecutionListeners @TestExecutionListeners} and don't
- * {@link MergeMode#MERGE_WITH_DEFAULTS merge with defaults} you must include
- * {@link JsonTesterInitializationTestExecutionListener} to use this annotation.
  *
  * @author Phillip Webb
- * @see JsonTesterInitializationTestExecutionListener
+ * @since 1.4.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Inherited
+@ImportAutoConfiguration
+@PropertyMapping("spring.test.jsontesters")
 public @interface AutoConfigureJsonTesters {
 
 	/**
-	 * If {@link BasicJsonTester}, {@link JacksonTester} and {@link GsonTester} fields
-	 * should be initialized using marshallers from the {@link ApplicationContext}.
-	 * @return if JSON tester fields should be initialized
+	 * If {@link BasicJsonTester}, {@link JacksonTester} and {@link GsonTester} beans
+	 * should be registered. Defaults to {@code true}
+	 * @return if tester support is enabled
 	 */
-	boolean initFields() default true;
+	boolean enabled() default true;
 
 }

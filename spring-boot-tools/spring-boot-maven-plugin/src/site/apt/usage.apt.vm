@@ -92,8 +92,22 @@ Usage
 </build>
 ---
 
-  The layout property defaults to a guess based on the archive type (jar or war). For the
-  <<<PropertiesLauncher>>> the layout is <<<ZIP>>> (even though the output might be a jar file).
+  The <<<layout>>> property defaults to a guess based on the archive type (<<<jar>>> or <<<war>>>). The
+  following layouts are available:
+
+    * <<<JAR>>>: regular executable JAR layout.
+
+    * <<<WAR>>>: executable WAR layout. <<<provided>>> dependencies are placed in <<<WEB-INF/lib-provided>>>
+      to avoid any clash when the <<<war>>> is deployed in a servlet container.
+
+    * <<<ZIP>>> (alias to <<<DIR>>>): similar to the <<<JAR>>> layout using <<<PropertiesLauncher>>>.
+
+    * <<<MODULE>>>: Bundle dependencies (excluding those with <<<provided>>> scope) and project resources.
+      Does not bundle a bootstrap loader.
+
+    * <<<NONE>>>: Bundle all dependencies and project resources. Does not bundle a bootstrap loader.
+
+    []
 
   For more detailed examples of how to configure this goal see:
 
@@ -114,7 +128,7 @@ mvn spring-boot:run
 
   By default the application is executed directly from the Maven JVM. If you need to run
   in a forked process you can use the 'fork' option. Forking will also occur if the
-  'jvmArguments' or 'agent' options are specified.
+  'jvmArguments' or 'agent' options are specified, or if devtools is present.
 
   If you need to specify some JVM arguments (i.e. for debugging purposes), you can use
   the <<<jvmArguments>>> parameter, see {{{./examples/run-debug.html}Debug the application}}
@@ -150,7 +164,7 @@ spring.devtools.remote.restart.enabled=false
 ---
 
   Prior to <<<devtools>>>, the plugin supported hot refreshing of resources by default which has
-  now be disabled in favor of the solution described above. You can restore it at any time by
+  now be disabled in favour of the solution described above. You can restore it at any time by
   configuring your project:
 
 ---
