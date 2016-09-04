@@ -106,4 +106,7 @@ do as they were designed before this was clarified.
 | https://cxf.apache.org/docs/springboot.html[Apache CXF]
 | https://github.com/apache/cxf
 
+| LDAP
+| https://github.com/eddumelendez/ldap-spring-boot
+
 |===
