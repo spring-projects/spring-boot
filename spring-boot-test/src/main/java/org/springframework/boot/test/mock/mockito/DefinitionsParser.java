@@ -125,8 +125,8 @@ class DefinitionsParser {
 	private Set<ResolvableType> getOrDeduceTypes(AnnotatedElement element,
 			Class<?>[] value) {
 		Set<ResolvableType> types = new LinkedHashSet<ResolvableType>();
-		for (Class<?> type : value) {
-			types.add(ResolvableType.forClass(type));
+		for (Class<?> clazz : value) {
+			types.add(ResolvableType.forClass(clazz));
 		}
 		if (types.isEmpty() && element instanceof Field) {
 			types.add(ResolvableType.forField((Field) element));

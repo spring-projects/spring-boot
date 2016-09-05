@@ -77,7 +77,7 @@ class MockDefinition extends Definition {
 
 	/**
 	 * Return the type that should be mocked.
-	 * @return the class to mock; never {@code null}
+	 * @return the type to mock; never {@code null}
 	 */
 	public ResolvableType getTypeToMock() {
 		return this.typeToMock;
