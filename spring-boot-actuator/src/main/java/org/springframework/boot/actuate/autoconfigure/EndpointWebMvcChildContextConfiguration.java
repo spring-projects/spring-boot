@@ -375,11 +375,6 @@ public class EndpointWebMvcChildContextConfiguration {
 		}
 
 		@Override
-		public int getOrder() {
-			return 1;
-		}
-
-		@Override
 		public void customize(TomcatEmbeddedServletContainerFactory container) {
 			AccessLogValve accessLogValve = findAccessLogValve(container);
 			if (accessLogValve == null) {
