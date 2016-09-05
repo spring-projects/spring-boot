@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**
- * Integration tests for {@link HalBrowserMvcEndpoint} when a custom server context path
+ * Integration tests for {@link HalBrowserMvcEndpoint} when a custom server servlet path
  * has been configured.
  *
  * @author Dave Syer

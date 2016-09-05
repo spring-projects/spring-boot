@@ -256,7 +256,7 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void testLiquibaseDateSource() {
+	public void testLiquibaseDataSource() {
 		this.context.register(LiquibaseDataSourceConfiguration.class,
 				EmbeddedDataSourceConfiguration.class, LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
