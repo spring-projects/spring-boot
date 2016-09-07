@@ -891,7 +891,7 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.listener.retry.enabled=false # Whether or not publishing retries are enabled.
 	spring.rabbitmq.listener.retry.initial-interval=1000 # Interval between the first and second attempt to deliver a message.
 	spring.rabbitmq.listener.retry.max-attempts=3 # Maximum number of attempts to deliver a message.
-	spring.rabbitmq.listener.retry.max-interval=10000 # Maximum number of attempts to deliver a message.
+	spring.rabbitmq.listener.retry.max-interval=10000 # Maximum interval between attempts.
 	spring.rabbitmq.listener.retry.multiplier=1.0 # A multiplier to apply to the previous delivery retry interval.
 	spring.rabbitmq.listener.retry.stateless=true # Whether or not retry is stateless or stateful.
 	spring.rabbitmq.listener.transaction-size= # Number of messages to be processed in a transaction. For best results it should be less than or equal to the prefetch count.
