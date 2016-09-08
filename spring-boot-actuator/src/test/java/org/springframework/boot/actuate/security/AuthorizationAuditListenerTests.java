@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
@@ -34,7 +33,6 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -58,7 +56,11 @@ public class AuthorizationAuditListenerTests {
 		this.listener.onApplicationEvent(new AuthenticationCredentialsNotFoundEvent(this,
 				Arrays.<ConfigAttribute>asList(new SecurityConfig("USER")),
 				new AuthenticationCredentialsNotFoundException("Bad user")));
-		verify(this.publisher).publishEvent((ApplicationEvent) anyObject());
+		ArgumentCaptor<AuditApplicationEvent> eventArgumentCaptor = ArgumentCaptor
+				.forClass(AuditApplicationEvent.class);
+		verify(this.publisher).publishEvent(eventArgumentCaptor.capture());
+		assertThat(eventArgumentCaptor.getValue().getAuditEvent().getType())
+				.isEqualTo(AuthenticationAuditListener.AUTHENTICATION_FAILURE);
 	}
 
 	@Test
@@ -67,7 +69,11 @@ public class AuthorizationAuditListenerTests {
 				Arrays.<ConfigAttribute>asList(new SecurityConfig("USER")),
 				new UsernamePasswordAuthenticationToken("user", "password"),
 				new AccessDeniedException("Bad user")));
-		verify(this.publisher).publishEvent((ApplicationEvent) anyObject());
+		ArgumentCaptor<AuditApplicationEvent> eventArgumentCaptor = ArgumentCaptor
+				.forClass(AuditApplicationEvent.class);
+		verify(this.publisher).publishEvent(eventArgumentCaptor.capture());
+		assertThat(eventArgumentCaptor.getValue().getAuditEvent().getType())
+				.isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);
 	}
 
 	@Test
@@ -79,11 +85,13 @@ public class AuthorizationAuditListenerTests {
 		this.listener.onApplicationEvent(new AuthorizationFailureEvent(this,
 				Arrays.<ConfigAttribute>asList(new SecurityConfig("USER")),
 				authentication, new AccessDeniedException("Bad user")));
-		ArgumentCaptor<AuditApplicationEvent> auditApplicationEvent = ArgumentCaptor
+		ArgumentCaptor<AuditApplicationEvent> eventArgumentCaptor = ArgumentCaptor
 				.forClass(AuditApplicationEvent.class);
-		verify(this.publisher).publishEvent(auditApplicationEvent.capture());
-		assertThat(auditApplicationEvent.getValue().getAuditEvent().getData())
-				.containsEntry("details", details);
+		verify(this.publisher).publishEvent(eventArgumentCaptor.capture());
+		AuditApplicationEvent event = eventArgumentCaptor.getValue();
+		assertThat(event.getAuditEvent().getType())
+				.isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);
+		assertThat(event.getAuditEvent().getData()).containsEntry("details", details);
 	}
 
 }
