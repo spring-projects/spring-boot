@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,9 @@ public class AuthorizationAuditListener extends AbstractAuthorizationAuditListen
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("type", event.getAccessDeniedException().getClass().getName());
 		data.put("message", event.getAccessDeniedException().getMessage());
+		if (event.getAuthentication().getDetails() != null) {
+			data.put("details", event.getAuthentication().getDetails());
+		}
 		publish(new AuditEvent(event.getAuthentication().getName(),
 				"AUTHORIZATION_FAILURE", data));
 	}
