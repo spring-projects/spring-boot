@@ -41,6 +41,10 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>org.mortbay.jasper</groupId>
+			<artifactId>apache-el</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
