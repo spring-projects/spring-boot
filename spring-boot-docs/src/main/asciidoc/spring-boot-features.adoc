@@ -1598,7 +1598,7 @@ The auto-configuration adds the following features on top of Spring's defaults:
 
 If you want to keep Spring Boot MVC features, and
 you just want to add additional {spring-reference}#mvc[MVC configuration] (interceptors,
-formatters, view controllers etc.) you can add your own `@Bean` of type
+formatters, view controllers etc.) you can add your own `@Configuration` class of type
 `WebMvcConfigurerAdapter`, but *without* `@EnableWebMvc`. If you wish to provide custom
 instances of `RequestMappingHandlerMapping`, `RequestMappingHandlerAdapter` or
 `ExceptionHandlerExceptionResolver` you can declare a `WebMvcRegistrationsAdapter`
