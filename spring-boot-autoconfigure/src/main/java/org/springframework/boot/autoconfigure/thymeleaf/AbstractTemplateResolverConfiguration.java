@@ -37,7 +37,7 @@ abstract class AbstractTemplateResolverConfiguration {
 	private static final Log logger = LogFactory
 			.getLog(AbstractTemplateResolverConfiguration.class);
 
-	private final ThymeleafProperties properties;
+	protected final ThymeleafProperties properties;
 
 	private final ApplicationContext applicationContext;
 

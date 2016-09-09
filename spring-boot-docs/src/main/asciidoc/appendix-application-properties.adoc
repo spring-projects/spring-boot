@@ -394,6 +394,7 @@ content into your application; rather pick only the properties that you need.
 
 	# THYMELEAF ({sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[ThymeleafAutoConfiguration])
 	spring.thymeleaf.cache=true # Enable template caching.
+	spring.thymeleaf.check-template=true # Check that the template exists before rendering it.
 	spring.thymeleaf.check-template-location=true # Check that the templates location exists.
 	spring.thymeleaf.content-type=text/html # Content-Type value.
 	spring.thymeleaf.enabled=true # Enable MVC Thymeleaf view resolution.
