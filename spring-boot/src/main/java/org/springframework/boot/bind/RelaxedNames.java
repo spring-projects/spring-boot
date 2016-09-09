@@ -232,7 +232,13 @@ public final class RelaxedNames implements Iterable<String> {
 	 * @return the relaxed names
 	 */
 	public static RelaxedNames forCamelCase(String name) {
-		return new RelaxedNames(Manipulation.CAMELCASE_TO_HYPHEN.apply(name));
+		StringBuffer result = new StringBuffer();
+		for (char c : name.toCharArray()) {
+			result.append(Character.isUpperCase(c) && result.length() > 0
+					&& result.charAt(result.length() - 1) != '-'
+							? "-" + Character.toLowerCase(c) : c);
+		}
+		return new RelaxedNames(result.toString());
 	}
 
 }

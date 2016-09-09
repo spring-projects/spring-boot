@@ -653,6 +653,17 @@ public class RelaxedDataBinderTests {
 		assertThat(target.getObjects()).containsExactly("teststring");
 	}
 
+	@Test
+	public void testMixedWithUpperCaseWord() throws Exception {
+		// gh-6803
+		VanillaTarget target = new VanillaTarget();
+		RelaxedDataBinder binder = getBinder(target, "test");
+		MutablePropertyValues values = new MutablePropertyValues();
+		values.add("test.mixed-u-p-p-e-r", "foo");
+		binder.bind(values);
+		assertThat(target.getMixedUPPER()).isEqualTo("foo");
+	}
+
 	private void doTestBindCaseInsensitiveEnums(VanillaTarget target) throws Exception {
 		BindingResult result = bind(target, "bingo: THIS");
 		assertThat(result.getErrorCount()).isEqualTo(0);
@@ -1013,6 +1024,8 @@ public class RelaxedDataBinderTests {
 
 		private List<Object> objects;
 
+		private String mixedUPPER;
+
 		public char[] getBar() {
 			return this.bar;
 		}
@@ -1075,6 +1088,14 @@ public class RelaxedDataBinderTests {
 
 		public void setObjects(List<Object> objects) {
 			this.objects = objects;
+		}
+
+		public String getMixedUPPER() {
+			return this.mixedUPPER;
+		}
+
+		public void setMixedUPPER(String mixedUPPER) {
+			this.mixedUPPER = mixedUPPER;
 		}
 
 	}
