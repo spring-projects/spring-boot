@@ -106,12 +106,18 @@ public class LogFileMvcEndpoint extends AbstractMvcEndpoint {
 
 		Handler(Resource resource) {
 			this.resource = resource;
+			getLocations().add(resource);
 			try {
 				afterPropertiesSet();
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException(ex);
 			}
+		}
+
+		@Override
+		protected void initAllowedLocations() {
+			this.getLocations().clear();
 		}
 
 		@Override
