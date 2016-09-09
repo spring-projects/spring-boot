@@ -135,7 +135,7 @@ part of the log file's content.
 |true
 
 |`trace`
-|Displays trace information (by default the last few HTTP requests).
+|Displays trace information (by default the last 100 HTTP requests).
 |true
 |===
 
@@ -1369,7 +1369,7 @@ use that directly, or you can simply publish `AuditApplicationEvent` via the Spr
 [[production-ready-tracing]]
 == Tracing
 Tracing is automatically enabled for all HTTP requests. You can view the `trace` endpoint
-and obtain basic information about the last few requests:
+and obtain basic information about the last 100 requests:
 
 [source,json,indent=0]
 ----
