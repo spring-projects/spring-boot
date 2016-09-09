@@ -68,7 +68,7 @@ public class MultipartAutoConfiguration {
 	@ConditionalOnMissingBean(MultipartResolver.class)
 	public StandardServletMultipartResolver multipartResolver() {
 		StandardServletMultipartResolver multipartResolver = new StandardServletMultipartResolver();
-		multipartResolver.setResolveLazily(multipartProperties.isResolveLazily());
+		multipartResolver.setResolveLazily(this.multipartProperties.isResolveLazily());
 		return multipartResolver;
 	}
 

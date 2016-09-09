@@ -123,7 +123,7 @@ public class MultipartProperties {
 	}
 
 	public boolean isResolveLazily() {
-		return resolveLazily;
+		return this.resolveLazily;
 	}
 
 	public void setResolveLazily(boolean resolveLazily) {

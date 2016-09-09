@@ -109,7 +109,7 @@ public class ThymeleafProperties {
 	}
 
 	public boolean isCheckTemplate() {
-		return checkTemplate;
+		return this.checkTemplate;
 	}
 
 	public void setCheckTemplate(boolean checkTemplate) {

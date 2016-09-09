@@ -158,12 +158,12 @@ public class Handler extends URLStreamHandler {
 			String path = name.substring(FILE_PROTOCOL.length());
 			File file = new File(URLDecoder.decode(path, "UTF-8"));
 			Map<File, JarFile> cache = rootFileCache.get();
-			JarFile jarFile = (cache == null ? null : cache.get(file));
-			if (jarFile == null) {
-				jarFile = new JarFile(file);
-				addToRootFileCache(file, jarFile);
+			JarFile result = (cache == null ? null : cache.get(file));
+			if (result == null) {
+				result = new JarFile(file);
+				addToRootFileCache(file, result);
 			}
-			return jarFile;
+			return result;
 		}
 		catch (Exception ex) {
 			throw new IOException("Unable to open root Jar file '" + name + "'", ex);

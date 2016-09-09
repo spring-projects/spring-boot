@@ -137,9 +137,10 @@ public class ThymeleafAutoConfiguration {
 			@Override
 			public SpringResourceTemplateResolver defaultTemplateResolver() {
 				SpringResourceTemplateResolver resolver = super.defaultTemplateResolver();
-				Method setCheckExistence = ReflectionUtils
-						.findMethod(resolver.getClass(), "setCheckExistence", boolean.class);
-				ReflectionUtils.invokeMethod(setCheckExistence, resolver, this.properties.isCheckTemplate());
+				Method setCheckExistence = ReflectionUtils.findMethod(resolver.getClass(),
+						"setCheckExistence", boolean.class);
+				ReflectionUtils.invokeMethod(setCheckExistence, resolver,
+						getProperties().isCheckTemplate());
 				return resolver;
 			}
 

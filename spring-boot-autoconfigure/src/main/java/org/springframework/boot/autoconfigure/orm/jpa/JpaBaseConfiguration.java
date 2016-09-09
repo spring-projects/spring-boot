@@ -69,7 +69,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Import(DataSourceInitializedPublisher.Registrar.class)
 public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private static final Log logger = LogFactory.getLog(JpaBaseConfiguration.class);
 
 	private final DataSource dataSource;
 
@@ -197,8 +197,8 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 			return ResourceUtils.extractJarFileURL(url);
 		}
 		catch (Exception ex) {
-			logger.info("Could not determine persistence "
-					+ "unit root location from " + source + " : " + ex);
+			logger.info("Could not determine persistence " + "unit root location from "
+					+ source + " : " + ex);
 		}
 		return null;
 	}
