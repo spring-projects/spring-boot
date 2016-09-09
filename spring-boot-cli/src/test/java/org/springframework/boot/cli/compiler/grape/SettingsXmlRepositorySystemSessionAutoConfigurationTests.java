@@ -38,6 +38,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
+import org.springframework.boot.cli.util.SystemProperties;
+
 import static org.hamcrest.Matchers.endsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -88,25 +90,30 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 							}
 						});
 
-		System.setProperty("foo", "bar");
-		try {
-			new SettingsXmlRepositorySystemSessionAutoConfiguration(
-					"src/test/resources/maven-settings/property-interpolation")
-							.apply(session, this.repositorySystem);
-		}
-		finally {
-			System.clearProperty("foo");
-		}
+		SystemProperties.doWithSystemProperties(new Runnable() {
+			@Override
+			public void run() {
+				new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(session,
+						SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem);
+			}
+		}, "user.home:src/test/resources/maven-settings/property-interpolation",
+				"foo:bar");
 
 		assertThat(session.getLocalRepository().getBasedir().getAbsolutePath(),
 				endsWith(File.separatorChar + "bar" + File.separatorChar + "repository"));
 	}
 
 	private void assertSessionCustomization(String userHome) {
-		DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
+		final DefaultRepositorySystemSession session = MavenRepositorySystemUtils
+				.newSession();
 
-		new SettingsXmlRepositorySystemSessionAutoConfiguration(userHome).apply(session,
-				this.repositorySystem);
+		SystemProperties.doWithSystemProperties(new Runnable() {
+			@Override
+			public void run() {
+				new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(session,
+						SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem);
+			}
+		}, "user.home:" + userHome);
 
 		RemoteRepository repository = new RemoteRepository.Builder("my-server", "default",
 				"http://maven.example.com").build();
@@ -151,4 +158,5 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 		assertEquals("tester", authenticationContext.get(AuthenticationContext.USERNAME));
 		assertEquals("secret", authenticationContext.get(AuthenticationContext.PASSWORD));
 	}
+
 }

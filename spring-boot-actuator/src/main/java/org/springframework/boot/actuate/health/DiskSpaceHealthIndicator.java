@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.io.File;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -31,12 +33,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 
-	private static Log logger = LogFactory.getLog(DiskSpaceHealthIndicator.class);
+	private static final Log logger = LogFactory.getLog(DiskSpaceHealthIndicator.class);
 
 	private final DiskSpaceHealthIndicatorProperties properties;
 
 	/**
-	 * Create a new {@code DiskSpaceHealthIndicator}
+	 * Create a new {@code DiskSpaceHealthIndicator}.
 	 * @param properties the disk space properties
 	 */
 	@Autowired
@@ -46,7 +48,8 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		long diskFreeInBytes = this.properties.getPath().getFreeSpace();
+		File path = this.properties.getPath();
+		long diskFreeInBytes = path.getFreeSpace();
 		if (diskFreeInBytes >= this.properties.getThreshold()) {
 			builder.up();
 		}
@@ -57,7 +60,8 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 					diskFreeInBytes, this.properties.getThreshold()));
 			builder.down();
 		}
-		builder.withDetail("free", diskFreeInBytes).withDetail("threshold",
-				this.properties.getThreshold());
+		builder.withDetail("total", path.getTotalSpace())
+				.withDetail("free", diskFreeInBytes)
+				.withDetail("threshold", this.properties.getThreshold());
 	}
 }

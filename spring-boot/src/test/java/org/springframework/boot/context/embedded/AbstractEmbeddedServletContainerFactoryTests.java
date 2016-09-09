@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,18 +19,27 @@ package org.springframework.boot.context.embedded;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLException;
 import javax.servlet.GenericServlet;
@@ -38,12 +47,18 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.InputStreamFactory;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,6 +66,8 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
 
+import org.springframework.boot.ApplicationHome;
+import org.springframework.boot.ApplicationTemp;
 import org.springframework.boot.context.embedded.Ssl.ClientAuth;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -65,13 +82,18 @@ import org.springframework.util.concurrent.ListenableFuture;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -93,13 +115,16 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	protected EmbeddedServletContainer container;
 
+	private final HttpClientContext httpClientContext = HttpClientContext.create();
+
 	@After
-	public void teardown() {
+	public void tearDown() {
 		if (this.container != null) {
 			try {
 				this.container.stop();
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 	}
@@ -211,7 +236,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void specificPort() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		int specificPort = SocketUtils.findAvailableTcpPort(40000);
+		int specificPort = SocketUtils.findAvailableTcpPort(41000);
 		factory.setPort(specificPort);
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
@@ -234,14 +259,14 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void contextPathMustStartWithSlash() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ContextPath must start with '/ and not end with '/'");
+		this.thrown.expectMessage("ContextPath must start with '/' and not end with '/'");
 		getFactory().setContextPath("missingslash");
 	}
 
 	@Test
 	public void contextPathMustNotEndWithSlash() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ContextPath must start with '/ and not end with '/'");
+		this.thrown.expectMessage("ContextPath must start with '/' and not end with '/'");
 		getFactory().setContextPath("extraslash/");
 	}
 
@@ -319,6 +344,19 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	@Test
+	public void errorPageFromPutRequest() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.addErrorPages(new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/hello"));
+		this.container = factory.getEmbeddedServletContainer(exampleServletRegistration(),
+				errorServletRegistration());
+		this.container.start();
+		assertThat(getResponse(getLocalUrl("/hello"), HttpMethod.PUT),
+				equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/bang"), HttpMethod.PUT),
+				equalTo("Hello World"));
+	}
+
+	@Test
 	public void basicSslFromClassPath() throws Exception {
 		testBasicSslWithKeyStore("classpath:test.jks");
 	}
@@ -335,7 +373,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		ssl.setEnabled(false);
 		factory.setSsl(ssl);
 		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(true), "/hello"));
+				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
@@ -353,7 +391,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
 		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(true), "/hello"));
+				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
@@ -491,6 +529,14 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	@Test
+	public void disableJspServletRegistration() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.getJspServlet().setRegistered(false);
+		this.container = factory.getEmbeddedServletContainer();
+		assertThat(getJspServlet(), is(nullValue()));
+	}
+
+	@Test
 	public void cannotReadClassPathFiles() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory
@@ -535,6 +581,115 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	@Test
+	public void persistSession() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setPersistSession(true);
+		this.container = factory
+				.getEmbeddedServletContainer(sessionServletRegistration());
+		this.container.start();
+		String s1 = getResponse(getLocalUrl("/session"));
+		String s2 = getResponse(getLocalUrl("/session"));
+		this.container.stop();
+		this.container = factory
+				.getEmbeddedServletContainer(sessionServletRegistration());
+		this.container.start();
+		String s3 = getResponse(getLocalUrl("/session"));
+		System.out.println(s1);
+		System.out.println(s2);
+		System.out.println(s3);
+		String message = "Session error s1=" + s1 + " s2=" + s2 + " s3=" + s3;
+		assertThat(message, s2.split(":")[0], equalTo(s1.split(":")[1]));
+		assertThat(message, s3.split(":")[0], equalTo(s2.split(":")[1]));
+	}
+
+	@Test
+	public void persistSessionInSpecificSessionStoreDir() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		File sessionStoreDir = this.temporaryFolder.newFolder();
+		factory.setPersistSession(true);
+		factory.setSessionStoreDir(sessionStoreDir);
+		this.container = factory
+				.getEmbeddedServletContainer(sessionServletRegistration());
+		this.container.start();
+		getResponse(getLocalUrl("/session"));
+		this.container.stop();
+		File[] dirContents = sessionStoreDir.listFiles(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return !(".".equals(name) || "..".equals(name));
+			}
+
+		});
+		assertThat(dirContents.length, greaterThan(0));
+	}
+
+	@Test
+	public void getValidSessionStoreWhenSessionStoreNotSet() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		File dir = factory.getValidSessionStoreDir(false);
+		assertThat(dir.getName(), equalTo("servlet-sessions"));
+		assertThat(dir.getParentFile(), equalTo(new ApplicationTemp().getDir()));
+	}
+
+	@Test
+	public void getValidSessionStoreWhenSessionStoreIsRelative() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSessionStoreDir(new File("sessions"));
+		File dir = factory.getValidSessionStoreDir(false);
+		assertThat(dir.getName(), equalTo("sessions"));
+		assertThat(dir.getParentFile(), equalTo(new ApplicationHome().getDir()));
+	}
+
+	@Test
+	public void getValidSessionStoreWhenSessionStoreReferencesFile() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSessionStoreDir(this.temporaryFolder.newFile());
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("points to a file");
+		factory.getValidSessionStoreDir(false);
+	}
+
+	@Test
+	public void compression() throws Exception {
+		assertTrue(doTestCompression(10000, null, null));
+	}
+
+	@Test
+	public void noCompressionForSmallResponse() throws Exception {
+		assertFalse(doTestCompression(100, null, null));
+	}
+
+	@Test
+	public void noCompressionForMimeType() throws Exception {
+		String[] mimeTypes = new String[] { "text/html", "text/xml", "text/css" };
+		assertFalse(doTestCompression(10000, mimeTypes, null));
+	}
+
+	@Test
+	public void noCompressionForUserAgent() throws Exception {
+		assertFalse(doTestCompression(10000, null, new String[] { "testUserAgent" }));
+	}
+
+	@Test
+	public void compressionWithoutContentSizeHeader() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		Compression compression = new Compression();
+		compression.setEnabled(true);
+		factory.setCompression(compression);
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new ExampleServlet(false, true), "/hello"));
+		this.container.start();
+		TestGzipInputStreamFactory inputStreamFactory = new TestGzipInputStreamFactory();
+		Map<String, InputStreamFactory> contentDecoderMap = Collections
+				.singletonMap("gzip", (InputStreamFactory) inputStreamFactory);
+		getResponse(getLocalUrl("/hello"),
+				new HttpComponentsClientHttpRequestFactory(HttpClientBuilder.create()
+						.setContentDecoderRegistry(contentDecoderMap).build()));
+		assertThat(inputStreamFactory.wasCompressionUsed(), equalTo(true));
+	}
+
+	@Test
 	public void mimeMappingsAreCorrectlyConfigured() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory.getEmbeddedServletContainer();
@@ -551,6 +706,76 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		}
 		assertThat(configuredMimeMappings.size(),
 				is(equalTo(expectedMimeMappings.size())));
+	}
+
+	@Test
+	public void rootServletContextResource() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		final AtomicReference<URL> rootResource = new AtomicReference<URL>();
+		this.container = factory
+				.getEmbeddedServletContainer(new ServletContextInitializer() {
+					@Override
+					public void onStartup(ServletContext servletContext)
+							throws ServletException {
+						try {
+							rootResource.set(servletContext.getResource("/"));
+						}
+						catch (MalformedURLException ex) {
+							throw new ServletException(ex);
+						}
+					}
+				});
+		this.container.start();
+		assertThat(rootResource.get(), is(not(nullValue())));
+	}
+
+	@Test
+	public void customServerHeader() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setServerHeader("MyServer");
+		this.container = factory
+				.getEmbeddedServletContainer(exampleServletRegistration());
+		this.container.start();
+		ClientHttpResponse response = getClientResponse(getLocalUrl("/hello"));
+		assertThat(response.getHeaders().getFirst("server"), equalTo("MyServer"));
+	}
+
+	private boolean doTestCompression(int contentSize, String[] mimeTypes,
+			String[] excludedUserAgents) throws Exception {
+		String testContent = setUpFactoryForCompression(contentSize, mimeTypes,
+				excludedUserAgents);
+		TestGzipInputStreamFactory inputStreamFactory = new TestGzipInputStreamFactory();
+		Map<String, InputStreamFactory> contentDecoderMap = Collections
+				.singletonMap("gzip", (InputStreamFactory) inputStreamFactory);
+		String response = getResponse(getLocalUrl("/test.txt"),
+				new HttpComponentsClientHttpRequestFactory(
+						HttpClientBuilder.create().setUserAgent("testUserAgent")
+								.setContentDecoderRegistry(contentDecoderMap).build()));
+		assertThat(response, equalTo(testContent));
+		return inputStreamFactory.wasCompressionUsed();
+	}
+
+	protected String setUpFactoryForCompression(int contentSize, String[] mimeTypes,
+			String[] excludedUserAgents) throws Exception {
+		char[] chars = new char[contentSize];
+		Arrays.fill(chars, 'F');
+		String testContent = new String(chars);
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		FileCopyUtils.copy(testContent,
+				new FileWriter(this.temporaryFolder.newFile("test.txt")));
+		factory.setDocumentRoot(this.temporaryFolder.getRoot());
+		Compression compression = new Compression();
+		compression.setEnabled(true);
+		if (mimeTypes != null) {
+			compression.setMimeTypes(mimeTypes);
+		}
+		if (excludedUserAgents != null) {
+			compression.setExcludedUserAgents(excludedUserAgents);
+		}
+		factory.setCompression(compression);
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+		return testContent;
 	}
 
 	protected abstract Map<String, String> getActualMimeMappings();
@@ -578,8 +803,14 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		return "http://localhost:" + port + resourcePath;
 	}
 
-	protected String getResponse(String url) throws IOException, URISyntaxException {
-		ClientHttpResponse response = getClientResponse(url);
+	protected String getResponse(String url, String... headers)
+			throws IOException, URISyntaxException {
+		return getResponse(url, HttpMethod.GET, headers);
+	}
+
+	protected String getResponse(String url, HttpMethod method, String... headers)
+			throws IOException, URISyntaxException {
+		ClientHttpResponse response = getClientResponse(url, method, headers);
 		try {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
 		}
@@ -589,9 +820,16 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	protected String getResponse(String url,
-			HttpComponentsClientHttpRequestFactory requestFactory)
+			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
 					throws IOException, URISyntaxException {
-		ClientHttpResponse response = getClientResponse(url, requestFactory);
+		return getResponse(url, HttpMethod.GET, requestFactory, headers);
+	}
+
+	protected String getResponse(String url, HttpMethod method,
+			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
+					throws IOException, URISyntaxException {
+		ClientHttpResponse response = getClientResponse(url, method, requestFactory,
+				headers);
 		try {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
 		}
@@ -600,21 +838,50 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		}
 	}
 
-	protected ClientHttpResponse getClientResponse(String url)
+	protected ClientHttpResponse getClientResponse(String url, String... headers)
 			throws IOException, URISyntaxException {
-		return getClientResponse(url, new HttpComponentsClientHttpRequestFactory());
+		return getClientResponse(url, HttpMethod.GET, headers);
 	}
 
-	protected ClientHttpResponse getClientResponse(String url,
-			HttpComponentsClientHttpRequestFactory requestFactory)
+	protected ClientHttpResponse getClientResponse(String url, HttpMethod method,
+			String... headers) throws IOException, URISyntaxException {
+		return getClientResponse(url, method,
+				new HttpComponentsClientHttpRequestFactory() {
+
+					@Override
+					protected HttpContext createHttpContext(HttpMethod httpMethod,
+							URI uri) {
+						return AbstractEmbeddedServletContainerFactoryTests.this.httpClientContext;
+					}
+
+				}, headers);
+	}
+
+	protected ClientHttpResponse getClientResponse(String url, HttpMethod method,
+			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
 					throws IOException, URISyntaxException {
-		ClientHttpRequest request = requestFactory.createRequest(new URI(url),
-				HttpMethod.GET);
+		ClientHttpRequest request = requestFactory.createRequest(new URI(url), method);
+		request.getHeaders().add("Cookie", "JSESSIONID=" + "123");
+		for (String header : headers) {
+			String[] parts = header.split(":");
+			request.getHeaders().add(parts[0], parts[1]);
+		}
 		ClientHttpResponse response = request.execute();
 		return response;
 	}
 
+	protected void assertForwardHeaderIsUsed(EmbeddedServletContainerFactory factory)
+			throws IOException, URISyntaxException {
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
+		this.container.start();
+		assertThat(getResponse(getLocalUrl("/hello"), "X-Forwarded-For:140.211.11.130"),
+				containsString("remoteaddr=140.211.11.130"));
+	}
+
 	protected abstract AbstractEmbeddedServletContainerFactory getFactory();
+
+	protected abstract Object getJspServlet();
 
 	protected ServletContextInitializer exampleServletRegistration() {
 		return new ServletRegistrationBean(new ExampleServlet(), "/hello");
@@ -623,14 +890,55 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@SuppressWarnings("serial")
 	private ServletContextInitializer errorServletRegistration() {
 		ServletRegistrationBean bean = new ServletRegistrationBean(new ExampleServlet() {
+
 			@Override
 			public void service(ServletRequest request, ServletResponse response)
 					throws ServletException, IOException {
 				throw new RuntimeException("Planned");
 			}
+
 		}, "/bang");
 		bean.setName("error");
 		return bean;
+	}
+
+	protected final ServletContextInitializer sessionServletRegistration() {
+		ServletRegistrationBean bean = new ServletRegistrationBean(new ExampleServlet() {
+
+			@Override
+			public void service(ServletRequest request, ServletResponse response)
+					throws ServletException, IOException {
+				HttpSession session = ((HttpServletRequest) request).getSession(true);
+				long value = System.currentTimeMillis();
+				Object existing = session.getAttribute("boot");
+				session.setAttribute("boot", value);
+				PrintWriter writer = response.getWriter();
+				writer.append(String.valueOf(existing) + ":" + value);
+			}
+
+		}, "/session");
+		bean.setName("session");
+		return bean;
+	}
+
+	private class TestGzipInputStreamFactory implements InputStreamFactory {
+
+		private final AtomicBoolean requested = new AtomicBoolean(false);
+
+		@Override
+		public InputStream create(InputStream in) throws IOException {
+			if (this.requested.get()) {
+				throw new IllegalStateException(
+						"On deflated InputStream already requested");
+			}
+			this.requested.set(true);
+			return new GZIPInputStream(in);
+		}
+
+		public boolean wasCompressionUsed() {
+			return this.requested.get();
+		}
+
 	}
 
 	@SuppressWarnings("serial")
@@ -651,6 +959,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		public int getInitCount() {
 			return this.initCount;
 		}
+
 	};
 
 }

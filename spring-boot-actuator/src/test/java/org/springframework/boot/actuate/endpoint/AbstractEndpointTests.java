@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.MapPropertySource;
@@ -42,7 +44,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 
 	protected AnnotationConfigApplicationContext context;
 
-	private final Class<?> configClass;
+	protected final Class<?> configClass;
 
 	private final Class<?> type;
 
@@ -64,7 +66,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@Before
 	public void setup() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(this.configClass);
+		this.context.register(JacksonAutoConfiguration.class, this.configClass);
 		this.context.refresh();
 	}
 
@@ -100,6 +102,19 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		PropertySource<?> propertySource = new MapPropertySource("test",
 				Collections.<String, Object>singletonMap(this.property + ".sensitive",
 						String.valueOf(!this.sensitive)));
+		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
+		this.context.register(this.configClass);
+		this.context.refresh();
+		assertThat(getEndpointBean().isSensitive(), equalTo(!this.sensitive));
+	}
+
+	@Test
+	public void isSensitiveOverrideWithGlobal() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put("endpoint.sensitive", this.sensitive);
+		properties.put(this.property + ".sensitive", String.valueOf(!this.sensitive));
+		PropertySource<?> propertySource = new MapPropertySource("test", properties);
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
@@ -157,6 +172,34 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.register(this.configClass);
 		this.context.refresh();
 		assertThat(getEndpointBean().isEnabled(), equalTo(true));
+	}
+
+	@Test
+	public void serialize() throws Exception {
+		Object result = getEndpointBean().invoke();
+		if (result != null) {
+			this.context.getBean(ObjectMapper.class).writeValue(System.out, result);
+		}
+	}
+
+	@Test
+	public void isAllEndpointsSensitive() throws Exception {
+		testGlobalEndpointsSensitive(true);
+	}
+
+	@Test
+	public void isAllEndpointsNotSensitive() throws Exception {
+		testGlobalEndpointsSensitive(false);
+	}
+
+	private void testGlobalEndpointsSensitive(boolean sensitive) {
+		this.context = new AnnotationConfigApplicationContext();
+		PropertySource<?> propertySource = new MapPropertySource("test", Collections
+				.<String, Object>singletonMap("endpoints.sensitive", sensitive));
+		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
+		this.context.register(this.configClass);
+		this.context.refresh();
+		assertThat(getEndpointBean().isSensitive(), equalTo(sensitive));
 	}
 
 	@SuppressWarnings("unchecked")

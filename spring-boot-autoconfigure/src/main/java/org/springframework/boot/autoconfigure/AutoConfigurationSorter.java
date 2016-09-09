@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
@@ -47,7 +46,7 @@ class AutoConfigurationSorter {
 
 	private final CachingMetadataReaderFactory metadataReaderFactory;
 
-	public AutoConfigurationSorter(ResourceLoader resourceLoader) {
+	AutoConfigurationSorter(ResourceLoader resourceLoader) {
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
 		this.metadataReaderFactory = new CachingMetadataReaderFactory(resourceLoader);
 	}
@@ -75,27 +74,27 @@ class AutoConfigurationSorter {
 
 	private List<String> sortByAnnotation(AutoConfigurationClasses classes,
 			List<String> classNames) {
-		List<String> tosort = new ArrayList<String>(classNames);
+		List<String> toSort = new ArrayList<String>(classNames);
 		Set<String> sorted = new LinkedHashSet<String>();
 		Set<String> processing = new LinkedHashSet<String>();
-		while (!tosort.isEmpty()) {
-			doSortByAfterAnnotation(classes, tosort, sorted, processing, null);
+		while (!toSort.isEmpty()) {
+			doSortByAfterAnnotation(classes, toSort, sorted, processing, null);
 		}
 		return new ArrayList<String>(sorted);
 	}
 
 	private void doSortByAfterAnnotation(AutoConfigurationClasses classes,
-			List<String> tosort, Set<String> sorted, Set<String> processing,
+			List<String> toSort, Set<String> sorted, Set<String> processing,
 			String current) {
 		if (current == null) {
-			current = tosort.remove(0);
+			current = toSort.remove(0);
 		}
 		processing.add(current);
 		for (String after : classes.getClassesRequestedAfter(current)) {
 			Assert.state(!processing.contains(after),
 					"AutoConfigure cycle detected between " + current + " and " + after);
-			if (!sorted.contains(after) && tosort.contains(after)) {
-				doSortByAfterAnnotation(classes, tosort, sorted, processing, after);
+			if (!sorted.contains(after) && toSort.contains(after)) {
+				doSortByAfterAnnotation(classes, toSort, sorted, processing, after);
 			}
 		}
 		processing.remove(current);
@@ -106,7 +105,7 @@ class AutoConfigurationSorter {
 
 		private final Map<String, AutoConfigurationClass> classes = new HashMap<String, AutoConfigurationClass>();
 
-		public AutoConfigurationClasses(MetadataReaderFactory metadataReaderFactory,
+		AutoConfigurationClasses(MetadataReaderFactory metadataReaderFactory,
 				Collection<String> classNames) throws IOException {
 			for (String className : classNames) {
 				MetadataReader metadataReader = metadataReaderFactory
@@ -136,13 +135,13 @@ class AutoConfigurationSorter {
 
 		private final AnnotationMetadata metadata;
 
-		public AutoConfigurationClass(MetadataReader metadataReader) {
+		AutoConfigurationClass(MetadataReader metadataReader) {
 			this.metadata = metadataReader.getAnnotationMetadata();
 		}
 
 		public int getOrder() {
 			Map<String, Object> orderedAnnotation = this.metadata
-					.getAnnotationAttributes(Order.class.getName());
+					.getAnnotationAttributes(AutoConfigureOrder.class.getName());
 			return (orderedAnnotation == null ? Ordered.LOWEST_PRECEDENCE
 					: (Integer) orderedAnnotation.get("value"));
 		}

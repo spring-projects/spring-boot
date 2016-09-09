@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,28 @@ public class BindingPreparationTests {
 		wrapper.setPropertyValue("nested[foo].foo", "bar");
 		assertNotNull(wrapper.getPropertyValue("nested"));
 		assertNotNull(wrapper.getPropertyValue("nested[foo]"));
+	}
+
+	@Test
+	public void testListOfBeansWithList() throws Exception {
+		TargetWithNestedListOfBeansWithList target = new TargetWithNestedListOfBeansWithList();
+		BeanWrapperImpl wrapper = new BeanWrapperImpl(target);
+		wrapper.setAutoGrowNestedPaths(true);
+		RelaxedDataBinder binder = new RelaxedDataBinder(target);
+		binder.normalizePath(wrapper, "nested[0].list[1]");
+		assertNotNull(wrapper.getPropertyValue("nested"));
+		assertNotNull(wrapper.getPropertyValue("nested[0].list[1]"));
+	}
+
+	@Test
+	public void testListOfBeansWithListAndNoPeriod() throws Exception {
+		TargetWithNestedListOfBeansWithList target = new TargetWithNestedListOfBeansWithList();
+		BeanWrapperImpl wrapper = new BeanWrapperImpl(target);
+		wrapper.setAutoGrowNestedPaths(true);
+		RelaxedDataBinder binder = new RelaxedDataBinder(target);
+		binder.normalizePath(wrapper, "nested[0]list[1]");
+		assertNotNull(wrapper.getPropertyValue("nested"));
+		assertNotNull(wrapper.getPropertyValue("nested[0].list[1]"));
 	}
 
 	@Test
@@ -167,7 +189,7 @@ public class BindingPreparationTests {
 		wrapper.setPropertyValue("nested[foo]", new LinkedHashMap<String, Object>());
 		// But it might equally well be a collection, if nested[foo][0]
 		wrapper.setPropertyValue("nested[foo]", new ArrayList<Object>());
-		// Then it would have to be actually bound to get the list to autogrow
+		// Then it would have to be actually bound to get the list to auto-grow
 		wrapper.setPropertyValue("nested[foo][0]", "bar");
 		assertNotNull(wrapper.getPropertyValue("nested[foo][0]"));
 	}
@@ -260,6 +282,31 @@ public class BindingPreparationTests {
 		}
 	}
 
+	public static class TargetWithNestedListOfBeansWithList {
+		private List<TargetWithList> nested;
+
+		public List<TargetWithList> getNested() {
+			return this.nested;
+		}
+
+		public void setNested(List<TargetWithList> nested) {
+			this.nested = nested;
+		}
+	}
+
+	public static class TargetWithList {
+		private List<VanillaTarget> list;
+
+		public List<VanillaTarget> getList() {
+			return this.list;
+		}
+
+		public void setList(List<VanillaTarget> list) {
+			this.list = list;
+		}
+
+	}
+
 	public static class TargetWithNestedMapOfBean {
 		private Map<String, VanillaTarget> nested;
 
@@ -283,5 +330,7 @@ public class BindingPreparationTests {
 		public void setFoo(String foo) {
 			this.foo = foo;
 		}
+
 	}
+
 }

@@ -34,7 +34,10 @@ import org.springframework.boot.loader.tools.LogbackInitializer;
  * @see #main(String...)
  * @see CommandRunner
  */
-public class SpringCli {
+public final class SpringCli {
+
+	private SpringCli() {
+	}
 
 	public static void main(String... args) {
 		System.setProperty("java.awt.headless", Boolean.toString(true));

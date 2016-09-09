@@ -102,4 +102,15 @@ public class ConditionOutcome {
 	public String toString() {
 		return (this.message == null ? "" : this.message);
 	}
+
+	/**
+	 * Return the inverse of the specified condition outcome.
+	 * @param outcome the outcome to inverse
+	 * @return the inverse of the condition outcome
+	 * @since 1.3.0
+	 */
+	public static ConditionOutcome inverse(ConditionOutcome outcome) {
+		return new ConditionOutcome(!outcome.isMatch(), outcome.getMessage());
+	}
+
 }

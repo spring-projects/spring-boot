@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,6 +26,10 @@ import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.boot.ApplicationHome;
+import org.springframework.boot.ApplicationTemp;
+import org.springframework.util.Assert;
 
 /**
  * Abstract base class for {@link EmbeddedServletContainerFactory} implementations.
@@ -55,7 +59,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	}
 
 	/**
-	 * Returns the absolute document root when it points to a valid folder, logging a
+	 * Returns the absolute document root when it points to a valid directory, logging a
 	 * warning and returning {@code null} otherwise.
 	 * @return the valid document root
 	 */
@@ -137,6 +141,47 @@ public abstract class AbstractEmbeddedServletContainerFactory
 		}
 		catch (IOException ex) {
 			return null;
+		}
+	}
+
+	protected final File getValidSessionStoreDir() {
+		return getValidSessionStoreDir(true);
+	}
+
+	protected final File getValidSessionStoreDir(boolean mkdirs) {
+		File dir = getSessionStoreDir();
+		if (dir == null) {
+			return new ApplicationTemp().getDir("servlet-sessions");
+		}
+		if (!dir.isAbsolute()) {
+			dir = new File(new ApplicationHome().getDir(), dir.getPath());
+		}
+		if (!dir.exists() && mkdirs) {
+			dir.mkdirs();
+		}
+		Assert.state(!mkdirs || dir.exists(), "Session dir " + dir + " does not exist");
+		Assert.state(!dir.isFile(), "Session dir " + dir + " points to a file");
+		return dir;
+	}
+
+	/**
+	 * Returns the absolute temp dir for given servlet container.
+	 * @param prefix servlet container name
+	 * @return The temp dir for given servlet container.
+	 */
+	protected File createTempDir(String prefix) {
+		try {
+			File tempDir = File.createTempFile(prefix + ".", "." + getPort());
+			tempDir.delete();
+			tempDir.mkdir();
+			tempDir.deleteOnExit();
+			return tempDir;
+		}
+		catch (IOException ex) {
+			throw new EmbeddedServletContainerException(
+					"Unable to create tempDir. java.io.tmpdir is set to "
+							+ System.getProperty("java.io.tmpdir"),
+					ex);
 		}
 	}
 

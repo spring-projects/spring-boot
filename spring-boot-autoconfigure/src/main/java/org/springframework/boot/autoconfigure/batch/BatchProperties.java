@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for Spring Batch.
  *
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 1.2.0
  */
 @ConfigurationProperties("spring.batch")
@@ -34,6 +35,11 @@ public class BatchProperties {
 	 * Path to the SQL file to use to initialize the database schema.
 	 */
 	private String schema = DEFAULT_SCHEMA_LOCATION;
+
+	/**
+	 * Table prefix for all the batch meta-data tables.
+	 */
+	private String tablePrefix;
 
 	private final Initializer initializer = new Initializer();
 
@@ -53,6 +59,14 @@ public class BatchProperties {
 
 	public Job getJob() {
 		return this.job;
+	}
+
+	public void setTablePrefix(String tablePrefix) {
+		this.tablePrefix = tablePrefix;
+	}
+
+	public String getTablePrefix() {
+		return this.tablePrefix;
 	}
 
 	public static class Initializer {

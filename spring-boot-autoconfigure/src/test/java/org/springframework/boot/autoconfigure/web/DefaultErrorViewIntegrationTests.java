@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * @author Dave Syer
  */
-@SpringApplicationConfiguration(classes = TestConfiguration.class)
+@SpringApplicationConfiguration(TestConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @DirtiesContext
@@ -106,6 +106,10 @@ public class DefaultErrorViewIntegrationTests {
 		assertFalse("Wrong content: " + content, content.contains("injection"));
 	}
 
+	public static String injectCall() {
+		return "injection";
+	}
+
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
@@ -114,7 +118,7 @@ public class DefaultErrorViewIntegrationTests {
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
-	protected static @interface MinimalWebConfiguration {
+	protected @interface MinimalWebConfiguration {
 	}
 
 	@Configuration
@@ -126,10 +130,6 @@ public class DefaultErrorViewIntegrationTests {
 			SpringApplication.run(TestConfiguration.class, args);
 		}
 
-	}
-
-	public static String injectCall() {
-		return "injection";
 	}
 
 }

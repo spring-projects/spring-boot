@@ -51,14 +51,16 @@ import org.springframework.util.ClassUtils;
  * <li>{@link HttpSessionListener}</li>
  * <li>{@link ServletContextListener}</li>
  * </ul>
+ *
+ * @param <T> the type of listener
  * @author Dave Syer
  * @author Phillip Webb
- * @param <T> the type of listener
  */
 public class ServletListenerRegistrationBean<T extends EventListener>
 		extends RegistrationBean {
 
-	private static Log logger = LogFactory.getLog(ServletListenerRegistrationBean.class);
+	private static final Log logger = LogFactory
+			.getLog(ServletListenerRegistrationBean.class);
 
 	private static final Set<Class<?>> SUPPORTED_TYPES;
 
@@ -136,7 +138,8 @@ public class ServletListenerRegistrationBean<T extends EventListener>
 	}
 
 	/**
-	 * @return the supportedTypes for this registration
+	 * Return the supported types for this registration.
+	 * @return the supported types
 	 */
 	public static Set<Class<?>> getSupportedTypes() {
 		return SUPPORTED_TYPES;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 
 package org.springframework.boot.test;
 
+import javax.servlet.ServletContext;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -31,11 +34,14 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertSame;
 
 /**
  * Tests for {@link IntegrationTest}
@@ -43,7 +49,7 @@ import static org.junit.Assert.assertNotEquals;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Config.class)
+@SpringApplicationConfiguration(Config.class)
 @WebAppConfiguration
 @IntegrationTest({ "server.port=0", "value=123" })
 public class SpringApplicationIntegrationTestTests {
@@ -53,6 +59,12 @@ public class SpringApplicationIntegrationTestTests {
 
 	@Value("${value}")
 	private int value = 0;
+
+	@Autowired
+	private WebApplicationContext context;
+
+	@Autowired
+	private ServletContext servletContext;
 
 	@Test
 	public void runAndTestHttpEndpoint() {
@@ -66,6 +78,12 @@ public class SpringApplicationIntegrationTestTests {
 	@Test
 	public void annotationAttributesOverridePropertiesFile() throws Exception {
 		assertEquals(123, this.value);
+	}
+
+	@Test
+	public void validateWebApplicationContextIsSet() {
+		assertSame(this.context,
+				WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
 	}
 
 	@Configuration

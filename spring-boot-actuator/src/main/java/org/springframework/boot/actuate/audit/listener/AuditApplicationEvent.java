@@ -83,6 +83,7 @@ public class AuditApplicationEvent extends ApplicationEvent {
 	}
 
 	/**
+	 * Get the audit event.
 	 * @return the audit event
 	 */
 	public AuditEvent getAuditEvent() {

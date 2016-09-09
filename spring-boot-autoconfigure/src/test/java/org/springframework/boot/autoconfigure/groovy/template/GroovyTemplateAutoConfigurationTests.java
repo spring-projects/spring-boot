@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public class GroovyTemplateAutoConfigurationTests {
 	@Test
 	public void emptyTemplateLocation() {
 		new File("target/test-classes/templates/empty-directory").mkdir();
-		registerAndRefreshContext("spring.groovy.template.prefix:"
+		registerAndRefreshContext("spring.groovy.template.resource-loader-path:"
 				+ "classpath:/templates/empty-directory/");
 	}
 
@@ -132,8 +132,7 @@ public class GroovyTemplateAutoConfigurationTests {
 
 	@Test
 	public void customPrefix() throws Exception {
-		registerAndRefreshContext(
-				"spring.groovy.template.prefix:classpath:/templates/prefix/");
+		registerAndRefreshContext("spring.groovy.template.prefix:prefix/");
 		MockHttpServletResponse response = render("prefixed");
 		String result = response.getContentAsString();
 		assertThat(result, containsString("prefixed"));
@@ -150,7 +149,7 @@ public class GroovyTemplateAutoConfigurationTests {
 	@Test
 	public void customTemplateLoaderPath() throws Exception {
 		registerAndRefreshContext(
-				"spring.groovy.template.prefix:classpath:/custom-templates/");
+				"spring.groovy.template.resource-loader-path:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
 		String result = response.getContentAsString();
 		assertThat(result, containsString("custom"));

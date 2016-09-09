@@ -26,6 +26,8 @@ import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpointContextPathTests.Config;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpointContextPathTests.ContextPathListener;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -56,9 +58,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class JolokiaMvcEndpointContextPathTests {
 
 	@Autowired
-	private MvcEndpoints endpoints;
-
-	@Autowired
 	private WebApplicationContext context;
 
 	private MockMvc mvc;
@@ -80,7 +79,9 @@ public class JolokiaMvcEndpointContextPathTests {
 	@Configuration
 	@EnableConfigurationProperties
 	@EnableWebMvc
-	@Import({ EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class,
+	@Import({ JacksonAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class })
 	public static class Config {
 	}

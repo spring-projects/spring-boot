@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.hamcrest.Matcher;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -28,10 +31,14 @@ import org.junit.runners.model.Statement;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 
+import static org.hamcrest.Matchers.allOf;
+import static org.junit.Assert.assertThat;
+
 /**
  * JUnit {@code @Rule} to capture output from System.out and System.err.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class OutputCapture implements TestRule {
 
@@ -40,6 +47,8 @@ public class OutputCapture implements TestRule {
 	private CaptureOutputStream captureErr;
 
 	private ByteArrayOutputStream copy;
+
+	private List<Matcher<? super String>> matchers = new ArrayList<Matcher<? super String>>();
 
 	@Override
 	public Statement apply(final Statement base, Description description) {
@@ -51,7 +60,15 @@ public class OutputCapture implements TestRule {
 					base.evaluate();
 				}
 				finally {
-					releaseOutput();
+					try {
+						if (!OutputCapture.this.matchers.isEmpty()) {
+							String output = OutputCapture.this.toString();
+							assertThat(output, allOf(OutputCapture.this.matchers));
+						}
+					}
+					finally {
+						releaseOutput();
+					}
 				}
 			}
 		};
@@ -89,13 +106,22 @@ public class OutputCapture implements TestRule {
 		return this.copy.toString();
 	}
 
+	/**
+	 * Verify that the output is matched by the supplied {@code matcher}. Verification is
+	 * performed after the test method has executed.
+	 * @param matcher the matcher
+	 */
+	public void expect(Matcher<? super String> matcher) {
+		this.matchers.add(matcher);
+	}
+
 	private static class CaptureOutputStream extends OutputStream {
 
 		private final PrintStream original;
 
 		private final OutputStream copy;
 
-		public CaptureOutputStream(PrintStream original, OutputStream copy) {
+		CaptureOutputStream(PrintStream original, OutputStream copy) {
 			this.original = original;
 			this.copy = copy;
 		}

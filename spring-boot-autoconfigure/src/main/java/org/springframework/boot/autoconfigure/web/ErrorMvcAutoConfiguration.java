@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.aop.framework.autoproxy.AutoProxyUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -63,11 +62,12 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.util.HtmlUtils;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} to render errors via a MVC error
+ * {@link EnableAutoConfiguration Auto-configuration} to render errors via an MVC error
  * controller.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnWebApplication
@@ -75,19 +75,10 @@ import org.springframework.web.util.HtmlUtils;
 // available
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
 @Configuration
-public class ErrorMvcAutoConfiguration
-		implements EmbeddedServletContainerCustomizer, Ordered {
-
-	@Value("${error.path:/error}")
-	private String errorPath = "/error";
+public class ErrorMvcAutoConfiguration {
 
 	@Autowired
 	private ServerProperties properties;
-
-	@Override
-	public int getOrder() {
-		return 0;
-	}
 
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
@@ -98,13 +89,12 @@ public class ErrorMvcAutoConfiguration
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorController.class, search = SearchStrategy.CURRENT)
 	public BasicErrorController basicErrorController(ErrorAttributes errorAttributes) {
-		return new BasicErrorController(errorAttributes);
+		return new BasicErrorController(errorAttributes, this.properties.getError());
 	}
 
-	@Override
-	public void customize(ConfigurableEmbeddedServletContainer container) {
-		container.addErrorPages(
-				new ErrorPage(this.properties.getServletPrefix() + this.errorPath));
+	@Bean
+	public ErrorPageCustomizer errorPageCustomizer() {
+		return new ErrorPageCustomizer(this.properties);
 	}
 
 	@Bean
@@ -113,7 +103,7 @@ public class ErrorMvcAutoConfiguration
 	}
 
 	@Configuration
-	@ConditionalOnProperty(prefix = "error.whitelabel", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "server.error.whitelabel", name = "enabled", matchIfMissing = true)
 	@Conditional(ErrorTemplateMissingCondition.class)
 	protected static class WhitelabelErrorViewConfiguration {
 
@@ -179,7 +169,7 @@ public class ErrorMvcAutoConfiguration
 
 		private final Map<String, Expression> expressions;
 
-		public SpelView(String template) {
+		SpelView(String template) {
 			this.helper = new NonRecursivePropertyPlaceholderHelper("${", "}");
 			this.template = template;
 			ExpressionCollector expressionCollector = new ExpressionCollector();
@@ -257,6 +247,32 @@ public class ErrorMvcAutoConfiguration
 
 		private String escape(Object value) {
 			return HtmlUtils.htmlEscape(value == null ? null : value.toString());
+		}
+
+	}
+
+	/**
+	 * {@link EmbeddedServletContainerCustomizer} that configures the container's error
+	 * pages.
+	 */
+	private static class ErrorPageCustomizer
+			implements EmbeddedServletContainerCustomizer, Ordered {
+
+		private final ServerProperties properties;
+
+		protected ErrorPageCustomizer(ServerProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public void customize(ConfigurableEmbeddedServletContainer container) {
+			container.addErrorPages(new ErrorPage(this.properties.getServletPrefix()
+					+ this.properties.getError().getPath()));
+		}
+
+		@Override
+		public int getOrder() {
+			return 0;
 		}
 
 	}

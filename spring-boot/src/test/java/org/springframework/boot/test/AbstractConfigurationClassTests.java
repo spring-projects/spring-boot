@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@ import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Abstract base class for {@code @Configuration} sanity checks.
+ *
  * @author Andy Wilkinson
  */
 public abstract class AbstractConfigurationClassTests {
@@ -57,7 +59,6 @@ public abstract class AbstractConfigurationClassTests {
 				}
 			}
 		}
-
 		assertEquals("Found non-public @Bean methods: " + nonPublicBeanMethods, 0,
 				nonPublicBeanMethods.size());
 	}
@@ -66,7 +67,6 @@ public abstract class AbstractConfigurationClassTests {
 		Set<AnnotationMetadata> configurationClasses = new HashSet<AnnotationMetadata>();
 		Resource[] resources = this.resolver.getResources("classpath*:"
 				+ getClass().getPackage().getName().replace(".", "/") + "/**/*.class");
-
 		for (Resource resource : resources) {
 			if (!isTestClass(resource)) {
 				MetadataReader metadataReader = new SimpleMetadataReaderFactory()
@@ -90,7 +90,6 @@ public abstract class AbstractConfigurationClassTests {
 	private boolean isPublic(MethodMetadata methodMetadata) {
 		int access = (Integer) new DirectFieldAccessor(methodMetadata)
 				.getPropertyValue("access");
-
 		return (access & Opcodes.ACC_PUBLIC) != 0;
 	}
 

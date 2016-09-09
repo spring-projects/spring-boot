@@ -31,8 +31,6 @@ import org.springframework.core.env.Environment;
  */
 public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAware {
 
-	private static final String ENDPOINTS_ENABLED_PROPERTY = "endpoints.enabled";
-
 	private Environment environment;
 
 	/**
@@ -43,10 +41,12 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	@Pattern(regexp = "\\w+", message = "ID must only contains letters, numbers and '_'")
 	private String id;
 
+	private final boolean sensitiveDefault;
+
 	/**
 	 * Mark if the endpoint exposes sensitive information.
 	 */
-	private boolean sensitive;
+	private Boolean sensitive;
 
 	/**
 	 * Enable the endpoint.
@@ -54,7 +54,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	private Boolean enabled;
 
 	/**
-	 * Create a new sensitive endpoint instance. The enpoint will enabled flag will be
+	 * Create a new sensitive endpoint instance. The endpoint will enabled flag will be
 	 * based on the spring {@link Environment} unless explicitly set.
 	 * @param id the endpoint ID
 	 */
@@ -63,14 +63,14 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	}
 
 	/**
-	 * Create a new endpoint instance. The enpoint will enabled flag will be based on the
+	 * Create a new endpoint instance. The endpoint will enabled flag will be based on the
 	 * spring {@link Environment} unless explicitly set.
 	 * @param id the endpoint ID
-	 * @param sensitive if the endpoint is sensitive
+	 * @param sensitive if the endpoint is sensitive by default
 	 */
 	public AbstractEndpoint(String id, boolean sensitive) {
 		this.id = id;
-		this.sensitive = sensitive;
+		this.sensitiveDefault = sensitive;
 	}
 
 	/**
@@ -81,7 +81,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	 */
 	public AbstractEndpoint(String id, boolean sensitive, boolean enabled) {
 		this.id = id;
-		this.sensitive = sensitive;
+		this.sensitiveDefault = sensitive;
 		this.enabled = enabled;
 	}
 
@@ -105,14 +105,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 
 	@Override
 	public boolean isEnabled() {
-		if (this.enabled != null) {
-			return this.enabled;
-		}
-		if (this.environment != null) {
-			return this.environment.getProperty(ENDPOINTS_ENABLED_PROPERTY, Boolean.class,
-					true);
-		}
-		return true;
+		return EndpointProperties.isEnabled(this.environment, this.enabled);
 	}
 
 	public void setEnabled(Boolean enabled) {
@@ -121,10 +114,11 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 
 	@Override
 	public boolean isSensitive() {
-		return this.sensitive;
+		return EndpointProperties.isSensitive(this.environment, this.sensitive,
+				this.sensitiveDefault);
 	}
 
-	public void setSensitive(boolean sensitive) {
+	public void setSensitive(Boolean sensitive) {
 		this.sensitive = sensitive;
 	}
 

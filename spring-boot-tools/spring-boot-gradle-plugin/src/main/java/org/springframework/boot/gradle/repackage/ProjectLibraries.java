@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,18 +48,23 @@ class ProjectLibraries implements Libraries {
 
 	private final SpringBootPluginExtension extension;
 
+	private final boolean excludeDevtools;
+
 	private String providedConfigurationName = "providedRuntime";
 
 	private String customConfigurationName = null;
 
 	/**
-	 * Create a new {@link ProjectLibraries} instance of the specified {@link Project} .
+	 * Create a new {@link ProjectLibraries} instance of the specified {@link Project}.
 	 * @param project the gradle project
 	 * @param extension the extension
+	 * @param excludeDevTools whether Spring Boot Devtools should be excluded
 	 */
-	public ProjectLibraries(Project project, SpringBootPluginExtension extension) {
+	ProjectLibraries(Project project, SpringBootPluginExtension extension,
+			boolean excludeDevTools) {
 		this.project = project;
 		this.extension = extension;
+		this.excludeDevtools = excludeDevTools;
 	}
 
 	/**
@@ -156,10 +161,24 @@ class ProjectLibraries implements Libraries {
 		if (libraries != null) {
 			Set<String> duplicates = getDuplicates(libraries);
 			for (GradleLibrary library : libraries) {
-				library.setIncludeGroupName(duplicates.contains(library.getName()));
-				callback.library(library);
+				if (!isExcluded(library)) {
+					library.setIncludeGroupName(duplicates.contains(library.getName()));
+					callback.library(library);
+				}
 			}
 		}
+	}
+
+	private boolean isExcluded(GradleLibrary library) {
+		if (this.excludeDevtools && isDevToolsJar(library)) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isDevToolsJar(GradleLibrary library) {
+		return "org.springframework.boot".equals(library.getGroup())
+				&& library.getName().startsWith("spring-boot-devtools");
 	}
 
 	private Set<String> getDuplicates(Set<GradleLibrary> libraries) {
@@ -179,13 +198,17 @@ class ProjectLibraries implements Libraries {
 
 		private boolean includeGroupName;
 
-		public GradleLibrary(String group, File file, LibraryScope scope) {
+		GradleLibrary(String group, File file, LibraryScope scope) {
 			super(file, scope);
 			this.group = group;
 		}
 
 		public void setIncludeGroupName(boolean includeGroupName) {
 			this.includeGroupName = includeGroupName;
+		}
+
+		public String getGroup() {
+			return this.group;
 		}
 
 		@Override
@@ -223,7 +246,7 @@ class ProjectLibraries implements Libraries {
 
 		private final ResolvedArtifact artifact;
 
-		public ResolvedArtifactLibrary(ResolvedArtifact artifact, LibraryScope scope) {
+		ResolvedArtifactLibrary(ResolvedArtifact artifact, LibraryScope scope) {
 			super(artifact.getModuleVersion().getId().getGroup(), artifact.getFile(),
 					scope);
 			this.artifact = artifact;

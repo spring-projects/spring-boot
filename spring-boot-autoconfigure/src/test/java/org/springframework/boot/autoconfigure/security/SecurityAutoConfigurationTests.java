@@ -16,7 +16,9 @@
 
 package org.springframework.boot.autoconfigure.security;
 
-import java.util.List;
+import java.util.EnumSet;
+
+import javax.servlet.DispatcherType;
 
 import org.junit.After;
 import org.junit.Test;
@@ -28,10 +30,12 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.context.embedded.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -46,17 +50,23 @@ import org.springframework.security.authentication.event.AuthenticationFailureBa
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.FilterChainProxy;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -64,6 +74,8 @@ import static org.junit.Assert.fail;
  * Tests for {@link SecurityAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Rob Winch
+ * @author Andy Wilkinson
  */
 public class SecurityAutoConfigurationTests {
 
@@ -85,10 +97,39 @@ public class SecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
-		// 5 for static resources and one for the rest
-		List<SecurityFilterChain> filterChains = this.context
-				.getBean(FilterChainProxy.class).getFilterChains();
-		assertEquals(5, filterChains.size());
+		// 4 for static resources and one for the rest
+		assertEquals(5,
+				this.context.getBean(FilterChainProxy.class).getFilterChains().size());
+	}
+
+	@Test
+	public void testDefaultFilterOrderWithSecurityAdapter() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(WebSecurity.class, SecurityAutoConfiguration.class,
+				SecurityFilterAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100,
+				this.context.getBean("securityFilterChainRegistration",
+						DelegatingFilterProxyRegistrationBean.class).getOrder());
+	}
+
+	@Test
+	public void testFilterIsNotRegisteredInNonWeb() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(SecurityAutoConfiguration.class,
+				SecurityFilterAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		try {
+			context.refresh();
+			assertFalse(context.containsBean("securityFilterChainRegistration"));
+		}
+		finally {
+			context.close();
+		}
 	}
 
 	@Test
@@ -96,12 +137,13 @@ public class SecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
+				SecurityFilterAutoConfiguration.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(0, this.context
-				.getBean("securityFilterChainRegistration", FilterRegistrationBean.class)
-				.getOrder());
+		assertEquals(FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100,
+				this.context.getBean("securityFilterChainRegistration",
+						DelegatingFilterProxyRegistrationBean.class).getOrder());
 	}
 
 	@Test
@@ -110,12 +152,12 @@ public class SecurityAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "security.filter-order:12345");
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
+				SecurityFilterAutoConfiguration.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(12345, this.context
-				.getBean("securityFilterChainRegistration", FilterRegistrationBean.class)
-				.getOrder());
+		assertEquals(12345, this.context.getBean("securityFilterChainRegistration",
+				DelegatingFilterProxyRegistrationBean.class).getOrder());
 	}
 
 	@Test
@@ -261,6 +303,8 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.url:jdbc:hsqldb:mem:testsecdb");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:false");
 		this.context.register(EntityConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
@@ -308,10 +352,60 @@ public class SecurityAutoConfigurationTests {
 			fail("Expected Exception");
 		}
 		catch (AuthenticationException success) {
+			// Expected
 		}
 
 		token = new UsernamePasswordAuthenticationToken("foo", "bar");
 		assertNotNull(manager.authenticate(token));
+	}
+
+	@Test
+	public void testSecurityEvaluationContextExtensionSupport() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(AuthenticationManagerCustomizer.class,
+				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(SecurityEvaluationContextExtension.class));
+	}
+
+	@Test
+	public void defaultFilterDispatcherTypes() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(SecurityAutoConfiguration.class,
+				SecurityFilterAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DelegatingFilterProxyRegistrationBean bean = this.context.getBean(
+				"securityFilterChainRegistration",
+				DelegatingFilterProxyRegistrationBean.class);
+		@SuppressWarnings("unchecked")
+		EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
+				.getField(bean, "dispatcherTypes");
+		assertThat(dispatcherTypes, is(nullValue()));
+	}
+
+	@Test
+	public void customFilterDispatcherTypes() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(SecurityAutoConfiguration.class,
+				SecurityFilterAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"security.filter-dispatcher-types:INCLUDE,ERROR");
+		this.context.refresh();
+		DelegatingFilterProxyRegistrationBean bean = this.context.getBean(
+				"securityFilterChainRegistration",
+				DelegatingFilterProxyRegistrationBean.class);
+		@SuppressWarnings("unchecked")
+		EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
+				.getField(bean, "dispatcherTypes");
+		assertThat(dispatcherTypes,
+				is(EnumSet.of(DispatcherType.INCLUDE, DispatcherType.ERROR)));
 	}
 
 	private static final class AuthenticationListener
@@ -355,7 +449,7 @@ public class SecurityAutoConfigurationTests {
 	protected static class SecurityCustomizer extends WebSecurityConfigurerAdapter {
 
 		@Autowired
-		private AuthenticationManager authenticationManager;
+		AuthenticationManager authenticationManager;
 
 	}
 
@@ -409,6 +503,12 @@ public class SecurityAutoConfigurationTests {
 		public UserDetailsService getUserDetails() {
 			return this.userDetails;
 		}
+
+	}
+
+	@Configuration
+	@EnableWebSecurity
+	static class WebSecurity extends WebSecurityConfigurerAdapter {
 
 	}
 

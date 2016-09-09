@@ -22,12 +22,13 @@ import java.util.List;
 
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.CommandFactory;
+import org.springframework.boot.cli.command.archive.JarCommand;
+import org.springframework.boot.cli.command.archive.WarCommand;
 import org.springframework.boot.cli.command.core.VersionCommand;
 import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.boot.cli.command.init.InitCommand;
 import org.springframework.boot.cli.command.install.InstallCommand;
 import org.springframework.boot.cli.command.install.UninstallCommand;
-import org.springframework.boot.cli.command.jar.JarCommand;
 import org.springframework.boot.cli.command.run.RunCommand;
 import org.springframework.boot.cli.command.test.TestCommand;
 
@@ -40,8 +41,8 @@ public class DefaultCommandFactory implements CommandFactory {
 
 	private static final List<Command> DEFAULT_COMMANDS = Arrays.<Command>asList(
 			new VersionCommand(), new RunCommand(), new TestCommand(), new GrabCommand(),
-			new JarCommand(), new InstallCommand(), new UninstallCommand(),
-			new InitCommand());
+			new JarCommand(), new WarCommand(), new InstallCommand(),
+			new UninstallCommand(), new InitCommand());
 
 	@Override
 	public Collection<Command> getCommands() {

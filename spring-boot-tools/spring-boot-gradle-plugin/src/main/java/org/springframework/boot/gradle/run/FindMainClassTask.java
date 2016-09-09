@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,10 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.ApplicationPluginConvention;
-import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.plugins.ExtraPropertiesExtension;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.SourceSetOutput;
 import org.gradle.api.tasks.TaskAction;
 
 import org.springframework.boot.gradle.SpringBootPluginExtension;
@@ -34,14 +37,32 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class FindMainClassTask extends DefaultTask {
+
+	@Input
+	private SourceSetOutput mainClassSourceSetOutput;
+
+	public void setMainClassSourceSetOutput(SourceSetOutput sourceSetOutput) {
+		this.mainClassSourceSetOutput = sourceSetOutput;
+		this.dependsOn(this.mainClassSourceSetOutput.getBuildDependencies());
+	}
 
 	@TaskAction
 	public void setMainClassNameProperty() {
 		Project project = getProject();
-		if (project.property("mainClassName") == null) {
-			project.setProperty("mainClassName", findMainClass());
+		if (!project.hasProperty("mainClassName")
+				|| project.property("mainClassName") == null) {
+			String mainClass = findMainClass();
+			if (project.hasProperty("mainClassName")) {
+				project.setProperty("mainClassName", mainClass);
+			}
+			else {
+				ExtraPropertiesExtension extraProperties = (ExtraPropertiesExtension) project
+						.getExtensions().getByName("ext");
+				extraProperties.set("mainClassName", mainClass);
+			}
 		}
 	}
 
@@ -59,25 +80,32 @@ public class FindMainClassTask extends DefaultTask {
 
 		ApplicationPluginConvention application = (ApplicationPluginConvention) project
 				.getConvention().getPlugins().get("application");
-		// Try the Application extension setting
-		if (mainClass == null && application.getMainClassName() != null) {
+
+		if (mainClass == null && application != null) {
+			// Try the Application extension setting
 			mainClass = application.getMainClassName();
 		}
 
-		Task runTask = getProject().getTasks().getByName("run");
-		if (mainClass == null && runTask.hasProperty("main")) {
-			mainClass = (String) runTask.property("main");
+		JavaExec runTask = findRunTask(project);
+		if (mainClass == null && runTask != null) {
+			mainClass = runTask.getMain();
+		}
+
+		if (mainClass == null) {
+			Task bootRunTask = project.getTasks().findByName("bootRun");
+			if (bootRunTask != null) {
+				mainClass = (String) bootRunTask.property("main");
+			}
 		}
 
 		if (mainClass == null) {
 			// Search
-			SourceSet mainSourceSet = SourceSets.findMainSourceSet(project);
-			if (mainSourceSet != null) {
+			if (this.mainClassSourceSetOutput != null) {
 				project.getLogger().debug("Looking for main in: "
-						+ mainSourceSet.getOutput().getClassesDir());
+						+ this.mainClassSourceSetOutput.getClassesDir());
 				try {
 					mainClass = MainClassFinder.findSingleMainClass(
-							mainSourceSet.getOutput().getClassesDir());
+							this.mainClassSourceSetOutput.getClassesDir());
 					project.getLogger().info("Computed main class: " + mainClass);
 				}
 				catch (IOException ex) {
@@ -91,13 +119,22 @@ public class FindMainClassTask extends DefaultTask {
 		if (bootExtension.getMainClass() == null) {
 			bootExtension.setMainClass(mainClass);
 		}
-		if (application.getMainClassName() == null) {
+		if (application != null && application.getMainClassName() == null) {
 			application.setMainClassName(mainClass);
 		}
-		if (!runTask.hasProperty("main")) {
-			runTask.setProperty("main", mainClass);
+		if (runTask != null && !runTask.hasProperty("main")) {
+			runTask.setMain(mainClass);
 		}
 
 		return mainClass;
 	}
+
+	private JavaExec findRunTask(Project project) {
+		Task runTask = project.getTasks().findByName("run");
+		if (runTask instanceof JavaExec) {
+			return (JavaExec) runTask;
+		}
+		return null;
+	}
+
 }

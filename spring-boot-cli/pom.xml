@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.2.9.BUILD-SNAPSHOT</version>
+		<version>1.3.8.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-cli</artifactId>
@@ -19,6 +19,7 @@
 		<main.basedir>${basedir}/..</main.basedir>
 		<start-class>org.springframework.boot.cli.SpringCli</start-class>
 		<spring.profiles.active>default</spring.profiles.active>
+		<generated.pom.dir>${project.build.directory}/generated-resources/org/springframework/boot/cli/compiler/dependencies</generated.pom.dir>
 	</properties>
 	<profiles>
 		<profile>
@@ -33,10 +34,6 @@
 	</profiles>
 	<dependencies>
 		<!-- Compile -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-dependency-tools</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-loader-tools</artifactId>
@@ -126,12 +123,35 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<build>
+		<resources>
+			<resource>
+				<directory>${project.build.directory}/generated-resources</directory>
+			</resource>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -155,6 +175,26 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
+					<execution>
+						<id>copy-effective-pom</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.springframework.boot</groupId>
+									<artifactId>spring-boot-dependencies</artifactId>
+									<version>${project.version}</version>
+									<type>effective-pom</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${generated.pom.dir}</outputDirectory>
+									<destFileName>effective-pom.xml</destFileName>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
 					<execution>
 						<id>unpack</id>
 						<phase>prepare-package</phase>
@@ -272,7 +312,7 @@
 								<stringutil string="${version-type}" property="repo">
 									<lowercase />
 								</stringutil>
-								<checksum algorithm="sha-1" file="${project.build.directory}/spring-boot-cli-${project.version}-bin.tar.gz" property="checksum" />
+								<checksum algorithm="sha-256" file="${project.build.directory}/spring-boot-cli-${project.version}-bin.tar.gz" property="checksum" />
 								<echo message="Customizing homebrew for ${project.version} with checksum ${checksum} in ${repo} repo" />
 								<copy file="${basedir}/src/main/homebrew/springboot.rb" tofile="${project.build.directory}/springboot.rb" overwrite="true">
 									<filterchain>

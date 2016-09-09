@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -29,18 +30,31 @@ import org.springframework.context.annotation.Configuration;
  * Configuration for Spring AMQP annotation driven endpoints.
  *
  * @author Stephane Nicoll
+ * @author Josh Thornhill
  * @since 1.2.0
  */
 @Configuration
 @ConditionalOnClass(EnableRabbit.class)
 class RabbitAnnotationDrivenConfiguration {
 
+	@Autowired
+	private RabbitProperties properties;
+
+	@Bean
+	@ConditionalOnMissingBean
+	public SimpleRabbitListenerContainerFactoryConfigurer rabbitListenerContainerFactoryConfigurer() {
+		SimpleRabbitListenerContainerFactoryConfigurer configurer = new SimpleRabbitListenerContainerFactoryConfigurer();
+		configurer.setRabbitProperties(this.properties);
+		return configurer;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-			ConnectionFactory connectionFactory, RabbitProperties config) {
+			SimpleRabbitListenerContainerFactoryConfigurer configurer,
+			ConnectionFactory connectionFactory) {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-		factory.setConnectionFactory(connectionFactory);
+		configurer.configure(factory, connectionFactory);
 		return factory;
 	}
 

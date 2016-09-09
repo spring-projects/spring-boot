@@ -23,14 +23,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
+import org.json.JSONException;
+
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
 
 /**
- * A {@code MetadataStore} is responsible for the storage of metadata on the filesystem
+ * A {@code MetadataStore} is responsible for the storage of metadata on the filesystem.
  *
  * @author Andy Wilkinson
  * @since 1.2.2
@@ -82,6 +86,12 @@ public class MetadataStore {
 		}
 		catch (IOException ex) {
 			return null;
+		}
+		catch (JSONException ex) {
+			throw new InvalidConfigurationMetadataException(
+					"Invalid additional meta-data in '" + METADATA_PATH + "': "
+							+ ex.getMessage(),
+					Diagnostic.Kind.ERROR);
 		}
 		finally {
 			in.close();

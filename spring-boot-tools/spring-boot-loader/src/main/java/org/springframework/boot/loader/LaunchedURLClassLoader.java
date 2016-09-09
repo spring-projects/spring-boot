@@ -27,6 +27,7 @@ import java.util.Enumeration;
 
 import org.springframework.boot.loader.jar.Handler;
 import org.springframework.boot.loader.jar.JarFile;
+import org.springframework.lang.UsesJava7;
 
 /**
  * {@link ClassLoader} used by the {@link Launcher}.
@@ -61,6 +62,11 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		return null;
 	}
 
+	/**
+	 * Gets the resource with the given {@code name}. Unlike a standard
+	 * {@link ClassLoader}, this method will first search the root class loader. If the
+	 * resource is not found, this method will call {@link #findResource(String)}.
+	 */
 	@Override
 	public URL getResource(String name) {
 		URL url = null;
@@ -107,6 +113,12 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		return getURLs().length > 0;
 	}
 
+	/**
+	 * Gets the resources with the given {@code name}. Returns a combination of the
+	 * resources found by {@link #findResources(String)} and from
+	 * {@link ClassLoader#getResources(String) getResources(String)} on the root class
+	 * loader, if any.
+	 */
 	@Override
 	public Enumeration<URL> getResources(String name) throws IOException {
 		if (this.rootClassLoader == null) {
@@ -149,7 +161,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			}
 		}
 		catch (Exception ex) {
-
+			// Ignore and continue
 		}
 
 		// 2) Try to find locally
@@ -159,7 +171,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			return cls;
 		}
 		catch (Exception ex) {
-
+			// Ignore and continue
 		}
 
 		// 3) Use standard loading
@@ -221,6 +233,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
+	@UsesJava7
 	private static LockProvider setupLockProvider() {
 		try {
 			ClassLoader.registerAsParallelCapable();
@@ -245,6 +258,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	/**
 	 * Java 7 specific {@link LockProvider}.
 	 */
+	@UsesJava7
 	private static class Java7LockProvider extends LockProvider {
 
 		@Override

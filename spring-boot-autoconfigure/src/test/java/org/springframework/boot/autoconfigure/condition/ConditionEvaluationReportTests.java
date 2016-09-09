@@ -223,7 +223,6 @@ public class ConditionEvaluationReportTests {
 		List<String> messages = new ArrayList<String>();
 		for (ConditionAndOutcome outcome : outcomes) {
 			messages.add(outcome.getOutcome().getMessage());
-			System.out.println(outcome.getOutcome().getMessage());
 		}
 
 		Matcher<String> onClassMessage = containsString("@ConditionalOnClass "
@@ -293,9 +292,10 @@ public class ConditionEvaluationReportTests {
 			implements ConfigurationCondition {
 
 		private final ConfigurationPhase phase;
+
 		private final boolean match;
 
-		public TestMatchCondition(ConfigurationPhase phase, boolean match) {
+		TestMatchCondition(ConfigurationPhase phase, boolean match) {
 			this.phase = phase;
 			this.match = match;
 		}
@@ -315,7 +315,7 @@ public class ConditionEvaluationReportTests {
 
 	static class MatchParseCondition extends TestMatchCondition {
 
-		public MatchParseCondition() {
+		MatchParseCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION, true);
 		}
 
@@ -323,7 +323,7 @@ public class ConditionEvaluationReportTests {
 
 	static class MatchBeanCondition extends TestMatchCondition {
 
-		public MatchBeanCondition() {
+		MatchBeanCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN, true);
 		}
 
@@ -331,7 +331,7 @@ public class ConditionEvaluationReportTests {
 
 	static class NoMatchParseCondition extends TestMatchCondition {
 
-		public NoMatchParseCondition() {
+		NoMatchParseCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION, false);
 		}
 
@@ -339,7 +339,7 @@ public class ConditionEvaluationReportTests {
 
 	static class NoMatchBeanCondition extends TestMatchCondition {
 
-		public NoMatchBeanCondition() {
+		NoMatchBeanCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN, false);
 		}
 

@@ -23,7 +23,6 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.boot.dependency.tools.ManagedDependencies;
 import org.springframework.boot.test.OutputCapture;
 
 import static org.hamcrest.Matchers.containsString;
@@ -36,8 +35,7 @@ import static org.junit.Assert.assertThat;
  */
 public class BootRunResourceTests {
 
-	private static final String BOOT_VERSION = ManagedDependencies.get()
-			.find("spring-boot").getVersion();
+	private static final String BOOT_VERSION = Versions.getBootVersion();
 
 	private static ProjectConnection project;
 

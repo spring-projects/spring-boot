@@ -30,9 +30,9 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
-import org.springframework.boot.autoconfigure.jta.JtaAutoConfiguration;
-import org.springframework.boot.autoconfigure.jta.JtaProperties;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.jta.JtaProperties;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -67,7 +67,7 @@ public class HibernateJpaAutoConfigurationTests
 				"spring.datasource.schema:classpath:/ddl.sql");
 		setupTestConfiguration();
 		this.context.refresh();
-		assertEquals(new Integer(1),
+		assertEquals(Integer.valueOf(1),
 				new JdbcTemplate(this.context.getBean(DataSource.class))
 						.queryForObject("SELECT COUNT(*) from CITY", Integer.class));
 	}
@@ -80,7 +80,7 @@ public class HibernateJpaAutoConfigurationTests
 				"spring.datasource.data:classpath:/city.sql");
 		setupTestConfiguration();
 		this.context.refresh();
-		assertEquals(new Integer(1),
+		assertEquals(Integer.valueOf(1),
 				new JdbcTemplate(this.context.getBean(DataSource.class))
 						.queryForObject("SELECT COUNT(*) from CITY", Integer.class));
 	}
@@ -91,21 +91,6 @@ public class HibernateJpaAutoConfigurationTests
 				"spring.jpa.hibernate.namingStrategy:"
 						+ "org.hibernate.cfg.EJB3NamingStrategy");
 		setupTestConfiguration();
-		this.context.refresh();
-		LocalContainerEntityManagerFactoryBean bean = this.context
-				.getBean(LocalContainerEntityManagerFactoryBean.class);
-		String actual = (String) bean.getJpaPropertyMap()
-				.get("hibernate.ejb.naming_strategy");
-		assertThat(actual, equalTo("org.hibernate.cfg.EJB3NamingStrategy"));
-	}
-
-	@Test
-	public void testNamingStrategyThatWorkedInOneDotOhContinuesToWork() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jpa.hibernate.namingstrategy:"
-						+ "org.hibernate.cfg.EJB3NamingStrategy");
-		setupTestConfiguration();
-
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean bean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);

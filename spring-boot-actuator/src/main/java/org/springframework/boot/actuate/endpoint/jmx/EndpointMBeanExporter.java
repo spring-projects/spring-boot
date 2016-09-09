@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.endpoint.jmx;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
@@ -26,12 +27,12 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
@@ -56,13 +57,17 @@ import org.springframework.util.ObjectUtils;
  * context.
  *
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  */
 public class EndpointMBeanExporter extends MBeanExporter
-		implements SmartLifecycle, BeanFactoryAware, ApplicationContextAware {
+		implements SmartLifecycle, ApplicationContextAware {
 
+	/**
+	 * The default JMX domain.
+	 */
 	public static final String DEFAULT_DOMAIN = "org.springframework.boot";
 
-	private static Log logger = LogFactory.getLog(EndpointMBeanExporter.class);
+	private static final Log logger = LogFactory.getLog(EndpointMBeanExporter.class);
 
 	private final AnnotationJmxAttributeSource attributeSource = new AnnotationJmxAttributeSource();
 
@@ -92,8 +97,21 @@ public class EndpointMBeanExporter extends MBeanExporter
 
 	private Properties objectNameStaticProperties = new Properties();
 
+	private final ObjectMapper objectMapper;
+
+	/**
+	 * Create a new {@link EndpointMBeanExporter} instance.
+	 */
 	public EndpointMBeanExporter() {
-		super();
+		this(null);
+	}
+
+	/**
+	 * Create a new {@link EndpointMBeanExporter} instance.
+	 * @param objectMapper the object mapper
+	 */
+	public EndpointMBeanExporter(ObjectMapper objectMapper) {
+		this.objectMapper = (objectMapper == null ? new ObjectMapper() : objectMapper);
 		setAutodetect(false);
 		setNamingStrategy(this.defaultNamingStrategy);
 		setAssembler(this.assembler);
@@ -171,9 +189,9 @@ public class EndpointMBeanExporter extends MBeanExporter
 
 	protected EndpointMBean getEndpointMBean(String beanName, Endpoint<?> endpoint) {
 		if (endpoint instanceof ShutdownEndpoint) {
-			return new ShutdownEndpointMBean(beanName, endpoint);
+			return new ShutdownEndpointMBean(beanName, endpoint, this.objectMapper);
 		}
-		return new DataEndpointMBean(beanName, endpoint);
+		return new DataEndpointMBean(beanName, endpoint, this.objectMapper);
 	}
 
 	@Override
@@ -224,8 +242,8 @@ public class EndpointMBeanExporter extends MBeanExporter
 		}
 		StringBuilder builder = new StringBuilder();
 
-		for (Object key : this.objectNameStaticProperties.keySet()) {
-			builder.append("," + key + "=" + this.objectNameStaticProperties.get(key));
+		for (Entry<Object, Object> name : this.objectNameStaticProperties.entrySet()) {
+			builder.append("," + name.getKey() + "=" + name.getValue());
 		}
 		return builder.toString();
 	}

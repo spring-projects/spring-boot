@@ -20,10 +20,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -46,21 +43,11 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Arthur Kalimullin
  * @since 1.1.0
  */
 public class DataSourceHealthIndicator extends AbstractHealthIndicator
 		implements InitializingBean {
-
-	private static final Map<String, String> PRODUCT_SPECIFIC_QUERIES;
-
-	static {
-		Map<String, String> queries = new HashMap<String, String>();
-		queries.put("HSQL Database Engine",
-				"SELECT COUNT(*) FROM " + "INFORMATION_SCHEMA.SYSTEM_USERS");
-		queries.put("Oracle", "SELECT 'Hello' from DUAL");
-		queries.put("Apache Derby", "SELECT 1 FROM SYSIBM.SYSDUMMY1");
-		PRODUCT_SPECIFIC_QUERIES = Collections.unmodifiableMap(queries);
-	}
 
 	private static final String DEFAULT_QUERY = "SELECT 1";
 
@@ -144,7 +131,10 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 	protected String getValidationQuery(String product) {
 		String query = this.query;
 		if (!StringUtils.hasText(query)) {
-			query = PRODUCT_SPECIFIC_QUERIES.get(product);
+			Product specific = Product.forProduct(product);
+			if (specific != null) {
+				query = specific.getQuery();
+			}
 		}
 		if (!StringUtils.hasText(query)) {
 			query = DEFAULT_QUERY;
@@ -191,6 +181,76 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 				throw new IncorrectResultSetColumnCountException(1, columns);
 			}
 			return JdbcUtils.getResultSetValue(rs, 1);
+		}
+
+	}
+
+	/**
+	 * Known database products.
+	 */
+	protected enum Product {
+
+		HSQLDB("HSQL Database Engine",
+				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.SYSTEM_USERS"),
+
+		ORACLE("Oracle", "SELECT 'Hello' from DUAL"),
+
+		DERBY("Apache Derby", "SELECT 1 FROM SYSIBM.SYSDUMMY1"),
+
+		DB2("DB2", "SELECT 1 FROM SYSIBM.SYSDUMMY1") {
+
+			@Override
+			protected boolean matchesProduct(String product) {
+				return super.matchesProduct(product)
+						|| product.toLowerCase().startsWith("db2/");
+			}
+
+		},
+
+		DB2_AS400("DB2 UDB for AS/400", "SELECT 1 FROM SYSIBM.SYSDUMMY1") {
+			@Override
+			protected boolean matchesProduct(String product) {
+				return super.matchesProduct(product)
+						|| product.toLowerCase().contains("as/400");
+			}
+		},
+
+		INFORMIX("Informix Dynamic Server", "select count(*) from systables"),
+
+		FIREBIRD("Firebird", "SELECT 1 FROM RDB$DATABASE") {
+
+			@Override
+			protected boolean matchesProduct(String product) {
+				return super.matchesProduct(product)
+						|| product.toLowerCase().startsWith("firebird");
+			}
+
+		};
+
+		private final String product;
+
+		private final String query;
+
+		Product(String product, String query) {
+			this.product = product;
+			this.query = query;
+		}
+
+		protected boolean matchesProduct(String product) {
+			return this.product.equalsIgnoreCase(product);
+		}
+
+		public String getQuery() {
+			return this.query;
+		}
+
+		public static Product forProduct(String product) {
+			for (Product candidate : values()) {
+				if (candidate.matchesProduct(product)) {
+					return candidate;
+				}
+			}
+			return null;
 		}
 
 	}

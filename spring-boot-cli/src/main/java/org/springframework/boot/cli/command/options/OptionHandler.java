@@ -95,7 +95,7 @@ public class OptionHandler {
 	 * Run the command using the specified parsed {@link OptionSet}.
 	 * @param options the parsed option set
 	 * @return an ExitStatus
-	 * @throws Exception
+	 * @throws Exception in case of errors
 	 */
 	protected ExitStatus run(OptionSet options) throws Exception {
 		if (this.closure != null) {
@@ -180,7 +180,7 @@ public class OptionHandler {
 
 		private final String description;
 
-		public OptionHelpAdapter(OptionDescriptor descriptor) {
+		OptionHelpAdapter(OptionDescriptor descriptor) {
 			this.options = new LinkedHashSet<String>();
 			for (String option : descriptor.options()) {
 				this.options.add((option.length() == 1 ? "-" : "--") + option);

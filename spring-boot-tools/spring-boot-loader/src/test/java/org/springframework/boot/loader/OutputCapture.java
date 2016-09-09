@@ -90,7 +90,7 @@ public class OutputCapture implements TestRule {
 
 		private final OutputStream copy;
 
-		public CaptureOutputStream(PrintStream original, OutputStream copy) {
+		CaptureOutputStream(PrintStream original, OutputStream copy) {
 			this.original = original;
 			this.copy = copy;
 		}

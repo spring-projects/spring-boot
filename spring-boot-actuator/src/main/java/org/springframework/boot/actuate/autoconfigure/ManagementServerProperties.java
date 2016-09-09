@@ -57,7 +57,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 			- 1;
 
 	/**
-	 * Management endpoint HTTP port. Use the same port as the applicationby default.
+	 * Management endpoint HTTP port. Use the same port as the application by default.
 	 */
 	private Integer port;
 
@@ -78,6 +78,13 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	private boolean addApplicationContextHeader = true;
 
 	private final Security security = maybeCreateSecurity();
+
+	private Security maybeCreateSecurity() {
+		if (ClassUtils.isPresent(SECURITY_CHECK_CLASS, null)) {
+			return new Security();
+		}
+		return null;
+	}
 
 	/**
 	 * Returns the management port or {@code null} if the
@@ -182,13 +189,6 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 			this.enabled = enabled;
 		}
 
-	}
-
-	private static Security maybeCreateSecurity() {
-		if (ClassUtils.isPresent(SECURITY_CHECK_CLASS, null)) {
-			return new Security();
-		}
-		return null;
 	}
 
 }

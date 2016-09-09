@@ -38,7 +38,7 @@ class StartupInfoLogger {
 
 	private final Class<?> sourceClass;
 
-	public StartupInfoLogger(Class<?> sourceClass) {
+	StartupInfoLogger(Class<?> sourceClass) {
 		this.sourceClass = sourceClass;
 	}
 

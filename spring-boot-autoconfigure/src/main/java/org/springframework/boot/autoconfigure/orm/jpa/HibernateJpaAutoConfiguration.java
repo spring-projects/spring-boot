@@ -32,7 +32,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jta.JtaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration.HibernateEntityManagerCondition;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.context.annotation.ConditionContext;
@@ -60,7 +59,7 @@ import org.springframework.util.ClassUtils;
 @ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class,
 		EnableTransactionManagement.class, EntityManager.class })
 @Conditional(HibernateEntityManagerCondition.class)
-@AutoConfigureAfter({ DataSourceAutoConfiguration.class, JtaAutoConfiguration.class })
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class })
 public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 
 	private static final Log logger = LogFactory
@@ -71,7 +70,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	/**
 	 * {@code NoJtaPlatform} implementations for various Hibernate versions.
 	 */
-	private static final String NO_JTA_PLATFORM_CLASSES[] = {
+	private static final String[] NO_JTA_PLATFORM_CLASSES = {
 			"org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform",
 			"org.hibernate.service.jta.platform.internal.NoJtaPlatform" };
 
@@ -79,7 +78,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	 * {@code WebSphereExtendedJtaPlatform} implementations for various Hibernate
 	 * versions.
 	 */
-	private static final String WEBSHERE_JTA_PLATFORM_CLASSES[] = {
+	private static final String[] WEBSPHERE_JTA_PLATFORM_CLASSES = {
 			"org.hibernate.engine.transaction.jta.platform.internal.WebSphereExtendedJtaPlatform",
 			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform", };
 
@@ -115,7 +114,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 		if (jtaTransactionManager != null) {
 			if (runningOnWebSphere()) {
 				// We can never use SpringJtaPlatform on WebSphere as
-				// WebSphereUowTransactionManger has a null TransactionManager
+				// WebSphereUowTransactionManager has a null TransactionManager
 				// which will cause Hibernate to NPE
 				configureWebSphereTransactionPlatform(vendorProperties);
 			}
@@ -140,7 +139,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	}
 
 	private Object getWebSphereJtaPlatformManager() {
-		return getJtaPlatformManager(WEBSHERE_JTA_PLATFORM_CLASSES);
+		return getJtaPlatformManager(WEBSPHERE_JTA_PLATFORM_CLASSES);
 	}
 
 	private void configureSpringJtaPlatform(Map<String, Object> vendorProperties,

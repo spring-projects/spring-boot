@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.boot.ansi.AnsiOutputEnabledValue;
 import org.springframework.boot.context.config.AnsiOutputApplicationListener;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
@@ -43,10 +44,19 @@ import static org.junit.Assert.assertThat;
  */
 public class AnsiOutputApplicationListenerTests {
 
+	private ConfigurableApplicationContext context;
+
 	@Before
-	@After
 	public void resetAnsi() {
 		AnsiOutput.setEnabled(Enabled.DETECT);
+	}
+
+	@After
+	public void cleanUp() {
+		resetAnsi();
+		if (this.context != null) {
+			this.context.close();
+		}
 	}
 
 	@Test
@@ -56,7 +66,7 @@ public class AnsiOutputApplicationListenerTests {
 		Map<String, Object> props = new HashMap<String, Object>();
 		props.put("spring.output.ansi.enabled", "ALWAYS");
 		application.setDefaultProperties(props);
-		application.run();
+		this.context = application.run();
 		assertThat(AnsiOutputEnabledValue.get(), equalTo(Enabled.ALWAYS));
 	}
 
@@ -67,18 +77,18 @@ public class AnsiOutputApplicationListenerTests {
 		Map<String, Object> props = new HashMap<String, Object>();
 		props.put("spring.output.ansi.enabled", "never");
 		application.setDefaultProperties(props);
-		application.run();
+		this.context = application.run();
 		assertThat(AnsiOutputEnabledValue.get(), equalTo(Enabled.NEVER));
 	}
 
 	@Test
-	public void disabledViaApplcationProperties() throws Exception {
+	public void disabledViaApplicationProperties() throws Exception {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		EnvironmentTestUtils.addEnvironment(environment, "spring.config.name:ansi");
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		application.setEnvironment(environment);
-		application.run();
+		this.context = application.run();
 		assertThat(AnsiOutputEnabledValue.get(), equalTo(Enabled.NEVER));
 	}
 

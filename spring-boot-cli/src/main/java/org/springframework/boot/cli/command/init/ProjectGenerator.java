@@ -39,7 +39,7 @@ class ProjectGenerator {
 
 	private final InitializrService initializrService;
 
-	public ProjectGenerator(InitializrService initializrService) {
+	ProjectGenerator(InitializrService initializrService) {
 		this.initializrService = initializrService;
 	}
 
@@ -70,6 +70,9 @@ class ProjectGenerator {
 
 	/**
 	 * Detect if the project should be extracted.
+	 * @param request the generation request
+	 * @param response the generation response
+	 * @return if the project should be extracted
 	 */
 	private boolean shouldExtract(ProjectGenerationRequest request,
 			ProjectGenerationResponse response) {
@@ -90,6 +93,7 @@ class ProjectGenerator {
 				return ZIP_MIME_TYPE.equals(entity.getContentType().getMimeType());
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return false;

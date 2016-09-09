@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,11 @@ import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.boot.context.config.RandomValuePropertySource;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.mock.env.MockPropertySource;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
@@ -53,30 +55,9 @@ public class PropertiesConfigurationFactoryTests {
 	private String targetName = null;
 
 	@Test
-	public void testValidPropertiesLoadsWithNoErrors() throws Exception {
-		Foo foo = createFoo("name: blah\nbar: blah");
-		assertEquals("blah", foo.bar);
-		assertEquals("blah", foo.name);
-	}
-
-	@Test
-	public void testValidPropertiesLoadsWithUpperCase() throws Exception {
-		Foo foo = createFoo("NAME: blah\nbar: blah");
-		assertEquals("blah", foo.bar);
-		assertEquals("blah", foo.name);
-	}
-
-	@Test
 	public void testValidPropertiesLoadsWithDash() throws Exception {
 		Foo foo = createFoo("na-me: blah\nbar: blah");
 		assertEquals("blah", foo.bar);
-		assertEquals("blah", foo.name);
-	}
-
-	@Test
-	public void testUnderscore() throws Exception {
-		Foo foo = createFoo("spring_foo_baz: blah\nname: blah");
-		assertEquals("blah", foo.spring_foo_baz);
 		assertEquals("blah", foo.name);
 	}
 
@@ -109,10 +90,33 @@ public class PropertiesConfigurationFactoryTests {
 	}
 
 	@Test
-	public void testBindToNamedTarget() throws Exception {
-		this.targetName = "foo";
-		Foo foo = createFoo("hi: hello\nfoo.name: foo\nfoo.bar: blah");
-		assertEquals("blah", foo.bar);
+	public void systemEnvironmentBindingFailuresAreIgnored() throws Exception {
+		setupFactory();
+		MutablePropertySources propertySources = new MutablePropertySources();
+		MockPropertySource propertySource = new MockPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+		propertySource.setProperty("doesNotExist", "foo");
+		propertySource.setProperty("name", "bar");
+		propertySources.addFirst(propertySource);
+		this.factory.setPropertySources(propertySources);
+		this.factory.setIgnoreUnknownFields(false);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertEquals("bar", foo.name);
+	}
+
+	@Test
+	public void systemPropertyBindingFailuresAreIgnored() throws Exception {
+		setupFactory();
+		MutablePropertySources propertySources = new MutablePropertySources();
+		MockPropertySource propertySource = new MockPropertySource(
+				StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
+		propertySource.setProperty("doesNotExist", "foo");
+		propertySource.setProperty("name", "bar");
+		propertySources.addFirst(propertySource);
+		this.factory.setPropertySources(propertySources);
+		this.factory.setIgnoreUnknownFields(false);
+		this.factory.afterPropertiesSet();
 	}
 
 	@Test
@@ -122,12 +126,54 @@ public class PropertiesConfigurationFactoryTests {
 		MutablePropertySources propertySources = new MutablePropertySources();
 		propertySources.addLast(new SystemEnvironmentPropertySource("systemEnvironment",
 				Collections.<String, Object>singletonMap("FOO_BAR_NAME", "blah")));
+		propertySources.addLast(new RandomValuePropertySource());
+		setupFactory();
+		this.factory.setPropertySources(propertySources);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertEquals("blah", foo.name);
+	}
+
+	@Test
+	public void testBindWithDelimitedPrefixUsingMatchingDelimiter() throws Exception {
+		this.targetName = "env_foo";
+		this.ignoreUnknownFields = false;
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addLast(new SystemEnvironmentPropertySource("systemEnvironment",
+				Collections.<String, Object>singletonMap("ENV_FOO_NAME", "blah")));
 		propertySources.addLast(new RandomValuePropertySource("random"));
 		setupFactory();
 		this.factory.setPropertySources(propertySources);
 		this.factory.afterPropertiesSet();
 		Foo foo = this.factory.getObject();
 		assertEquals("blah", foo.name);
+	}
+
+	@Test
+	public void testBindWithDelimitedPrefixUsingDifferentDelimiter() throws Exception {
+		this.targetName = "env.foo";
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addLast(new SystemEnvironmentPropertySource("systemEnvironment",
+				Collections.<String, Object>singletonMap("ENV_FOO_NAME", "blah")));
+		propertySources.addLast(new RandomValuePropertySource("random"));
+		this.ignoreUnknownFields = false;
+		setupFactory();
+		this.factory.setPropertySources(propertySources);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertEquals("blah", foo.name);
+	}
+
+	@Test
+	public void propertyWithAllUpperCaseSuffixCanBeBound() throws Exception {
+		Foo foo = createFoo("foo-bar-u-r-i:baz");
+		assertEquals("baz", foo.fooBarURI);
+	}
+
+	@Test
+	public void propertyWithAllUpperCaseInTheMiddleCanBeBound() throws Exception {
+		Foo foo = createFoo("foo-d-l-q-bar:baz");
+		assertEquals("baz", foo.fooDLQBar);
 	}
 
 	private Foo createFoo(final String values) throws Exception {
@@ -161,6 +207,10 @@ public class PropertiesConfigurationFactoryTests {
 
 		private String fooBar;
 
+		private String fooBarURI;
+
+		private String fooDLQBar;
+
 		public String getSpringFooBaz() {
 			return this.spring_foo_baz;
 		}
@@ -193,6 +243,21 @@ public class PropertiesConfigurationFactoryTests {
 			this.fooBar = fooBar;
 		}
 
+		public String getFooBarURI() {
+			return this.fooBarURI;
+		}
+
+		public void setFooBarURI(String fooBarURI) {
+			this.fooBarURI = fooBarURI;
+		}
+
+		public String getFooDLQBar() {
+			return this.fooDLQBar;
+		}
+
+		public void setFooDLQBar(String fooDLQBar) {
+			this.fooDLQBar = fooDLQBar;
+		}
 	}
 
 }

@@ -56,6 +56,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link DataSourceAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class DataSourceAutoConfigurationTests {
 
@@ -72,9 +73,7 @@ public class DataSourceAutoConfigurationTests {
 	@After
 	public void restore() {
 		EmbeddedDatabaseConnection.override = null;
-		if (this.context != null) {
-			this.context.close();
-		}
+		this.context.close();
 	}
 
 	@Test
@@ -154,6 +153,20 @@ public class DataSourceAutoConfigurationTests {
 		org.apache.tomcat.jdbc.pool.DataSource pool = (org.apache.tomcat.jdbc.pool.DataSource) bean;
 		assertEquals("org.hsqldb.jdbcDriver", pool.getDriverClassName());
 		assertEquals("sa", pool.getUsername());
+	}
+
+	@Test
+	public void explicitType() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
+				"spring.datasource.type:" + HikariDataSource.class.getName());
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource bean = this.context.getBean(DataSource.class);
+		assertNotNull(bean);
+		assertEquals(HikariDataSource.class, bean.getClass());
 	}
 
 	@Test
@@ -257,6 +270,7 @@ public class DataSourceAutoConfigurationTests {
 
 	}
 
+	// see testExplicitDriverClassClearsUserName
 	public static class DatabaseDriver implements Driver {
 
 		@Override

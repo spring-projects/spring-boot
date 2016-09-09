@@ -66,9 +66,9 @@ public class Shell {
 
 	/**
 	 * Create a new {@link Shell} instance.
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
-	public Shell() throws IOException {
+	Shell() throws IOException {
 		attachSignalHandler();
 		this.consoleReader = new ConsoleReader();
 		this.commandRunner = createCommandRunner();
@@ -175,7 +175,7 @@ public class Shell {
 	}
 
 	/**
-	 * Final handle an interrup signal (CTRL-C)
+	 * Final handle an interrupt signal (CTRL-C).
 	 */
 	protected void handleSigInt() {
 		if (this.commandRunner.handleSigInt()) {
@@ -195,7 +195,7 @@ public class Shell {
 
 		private final Map<String, String> aliases = new HashMap<String, String>();
 
-		public ShellCommandRunner() {
+		ShellCommandRunner() {
 			super(null);
 		}
 

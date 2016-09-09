@@ -42,7 +42,7 @@ public class WarLauncher extends ExecutableArchiveLauncher {
 		super();
 	}
 
-	WarLauncher(Archive archive) {
+	protected WarLauncher(Archive archive) {
 		super(archive);
 	}
 

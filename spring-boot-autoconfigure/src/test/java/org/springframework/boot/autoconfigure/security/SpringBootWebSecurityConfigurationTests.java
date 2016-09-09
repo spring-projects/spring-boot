@@ -37,23 +37,33 @@ import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -61,6 +71,8 @@ import static org.junit.Assert.assertTrue;
  * Tests for {@link SpringBootWebSecurityConfiguration}.
  *
  * @author Dave Syer
+ * @author Rob Winch
+ * @author Andy Wilkinson
  */
 public class SpringBootWebSecurityConfigurationTests {
 
@@ -158,6 +170,73 @@ public class SpringBootWebSecurityConfigurationTests {
 				.authenticate(new UsernamePasswordAuthenticationToken("dave", "secret")));
 	}
 
+	// gh-3447
+	@Test
+	public void testHiddenHttpMethodFilterOrderedFirst() throws Exception {
+		this.context = SpringApplication.run(DenyPostRequestConfig.class,
+				"--server.port=0");
+		int port = Integer
+				.parseInt(this.context.getEnvironment().getProperty("local.server.port"));
+		TestRestTemplate rest = new TestRestTemplate();
+
+		// not overriding causes forbidden
+		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+
+		ResponseEntity<Object> result = rest
+				.postForEntity("http://localhost:" + port + "/", form, Object.class);
+		assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
+
+		// override method with GET
+		form = new LinkedMultiValueMap<String, String>();
+		form.add("_method", "GET");
+
+		result = rest.postForEntity("http://localhost:" + port + "/", form, Object.class);
+		assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+	}
+
+	@Test
+	public void defaultHeaderConfiguration() throws Exception {
+		this.context = SpringApplication.run(VanillaWebConfiguration.class,
+				"--server.port=0");
+		MockMvc mockMvc = MockMvcBuilders
+				.webAppContextSetup((WebApplicationContext) this.context)
+				.addFilters((FilterChainProxy) this.context
+						.getBean("springSecurityFilterChain", Filter.class))
+				.build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/"))
+				.andExpect(MockMvcResultMatchers.header().string("X-Content-Type-Options",
+						is(notNullValue())))
+				.andExpect(MockMvcResultMatchers.header().string("X-XSS-Protection",
+						is(notNullValue())))
+				.andExpect(MockMvcResultMatchers.header().string("Cache-Control",
+						is(notNullValue())))
+				.andExpect(MockMvcResultMatchers.header().string("X-Frame-Options",
+						is(notNullValue())));
+	}
+
+	@Test
+	public void securityHeadersCanBeDisabled() throws Exception {
+		this.context = SpringApplication.run(VanillaWebConfiguration.class,
+				"--server.port=0", "--security.headers.content-type=false",
+				"--security.headers.xss=false", "--security.headers.cache=false",
+				"--security.headers.frame=false");
+
+		MockMvc mockMvc = MockMvcBuilders
+				.webAppContextSetup((WebApplicationContext) this.context)
+				.addFilters(
+						this.context.getBean("springSecurityFilterChain", Filter.class))
+				.build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/"))
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+				.andExpect(MockMvcResultMatchers.header()
+						.doesNotExist("X-Content-Type-Options"))
+				.andExpect(
+						MockMvcResultMatchers.header().doesNotExist("X-XSS-Protection"))
+				.andExpect(MockMvcResultMatchers.header().doesNotExist("Cache-Control"))
+				.andExpect(
+						MockMvcResultMatchers.header().doesNotExist("X-Frame-Options"));
+	}
+
 	@Configuration
 	@Import(TestWebConfiguration.class)
 	@Order(Ordered.LOWEST_PRECEDENCE)
@@ -213,8 +292,18 @@ public class SpringBootWebSecurityConfigurationTests {
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
-	protected static @interface MinimalWebConfiguration {
+	protected @interface MinimalWebConfiguration {
 
 	}
 
+	@MinimalWebConfiguration
+	@Import(SecurityAutoConfiguration.class)
+	protected static class DenyPostRequestConfig extends WebSecurityConfigurerAdapter {
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.authorizeRequests().antMatchers(HttpMethod.POST, "/**").denyAll();
+		}
+
+	}
 }

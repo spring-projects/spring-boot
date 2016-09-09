@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
  * {@link Archive} implementation backed by an exploded archive directory.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class ExplodedArchive extends Archive {
 
@@ -116,7 +117,7 @@ public class ExplodedArchive extends Archive {
 	public URL getUrl() throws MalformedURLException {
 		FilteredURLStreamHandler handler = this.filtered ? new FilteredURLStreamHandler()
 				: null;
-		return new URL("file", "", -1, this.root.toURI().getPath(), handler);
+		return new URL("file", "", -1, this.root.toURI().toURL().getPath(), handler);
 	}
 
 	@Override
@@ -175,7 +176,7 @@ public class ExplodedArchive extends Archive {
 
 		private final File file;
 
-		public FileEntry(AsciiBytes name, File file) {
+		FileEntry(AsciiBytes name, File file) {
 			this.name = name;
 			this.file = file;
 		}
@@ -200,9 +201,6 @@ public class ExplodedArchive extends Archive {
 	 */
 	private class FilteredURLStreamHandler extends URLStreamHandler {
 
-		public FilteredURLStreamHandler() {
-		}
-
 		@Override
 		protected URLConnection openConnection(URL url) throws IOException {
 			String name = url.getPath()
@@ -221,7 +219,7 @@ public class ExplodedArchive extends Archive {
 
 		private final String name;
 
-		public FileNotFoundURLConnection(URL url, String name) {
+		FileNotFoundURLConnection(URL url, String name) {
 			super(url);
 			this.name = name;
 		}

@@ -31,7 +31,7 @@ public interface Endpoint<T> {
 
 	/**
 	 * The logical ID of the endpoint. Must only contain simple letters, numbers and '_'
-	 * characters (ie a {@literal "\w"} regex).
+	 * characters (i.e. a {@literal "\w"} regex).
 	 * @return the endpoint ID
 	 */
 	String getId();

@@ -55,7 +55,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
  * features:
  * <ul>
  * <li>{@link CompilerAutoConfiguration} strategies will be read from
- * <code>META-INF/services/org.springframework.boot.cli.compiler.CompilerAutoConfiguration</code>
+ * {@code META-INF/services/org.springframework.boot.cli.compiler.CompilerAutoConfiguration}
  * (per the standard java {@link ServiceLoader} contract) and applied during compilation
  * </li>
  *
@@ -107,7 +107,8 @@ public class GroovyCompiler {
 		}
 
 		this.transformations = new ArrayList<ASTTransformation>();
-		this.transformations.add(new GrabMetadataTransformation(resolutionContext));
+		this.transformations
+				.add(new DependencyManagementBomTransformation(resolutionContext));
 		this.transformations.add(new DependencyAutoConfigurationTransformation(
 				this.loader, resolutionContext, this.compilerAutoConfigurations));
 		this.transformations.add(new GroovyBeansTransformation());
@@ -172,8 +173,9 @@ public class GroovyCompiler {
 	 * returned from this method.
 	 * @param sources the sources to compile
 	 * @return compiled classes
-	 * @throws CompilationFailedException
-	 * @throws IOException
+	 * @throws CompilationFailedException in case of compilation failures
+	 * @throws IOException in case of I/O errors
+	 * @throws CompilationFailedException in case of compilation errors
 	 */
 	public Class<?>[] compile(String... sources)
 			throws CompilationFailedException, IOException {
@@ -201,7 +203,7 @@ public class GroovyCompiler {
 		for (Object loadedClass : collector.getLoadedClasses()) {
 			classes.add((Class<?>) loadedClass);
 		}
-		ClassNode mainClassNode = getMainClass(compilationUnit);
+		ClassNode mainClassNode = MainClass.get(compilationUnit);
 
 		Class<?> mainClass = null;
 		for (Class<?> loadedClass : classes) {
@@ -266,7 +268,7 @@ public class GroovyCompiler {
 	 */
 	private class CompilerAutoConfigureCustomizer extends CompilationCustomizer {
 
-		public CompilerAutoConfigureCustomizer() {
+		CompilerAutoConfigureCustomizer() {
 			super(CompilePhase.CONVERSION);
 		}
 
@@ -276,7 +278,7 @@ public class GroovyCompiler {
 
 			ImportCustomizer importCustomizer = new SmartImportCustomizer(source, context,
 					classNode);
-			ClassNode mainClassNode = getMainClass(source.getAST().getClasses());
+			ClassNode mainClassNode = MainClass.get(source.getAST().getClasses());
 
 			// Additional auto configuration
 			for (CompilerAutoConfiguration autoConfiguration : GroovyCompiler.this.compilerAutoConfigurations) {
@@ -300,22 +302,26 @@ public class GroovyCompiler {
 
 	}
 
-	@SuppressWarnings("unchecked")
-	private static ClassNode getMainClass(CompilationUnit source) {
-		return getMainClass(source.getAST().getClasses());
-	}
+	private static class MainClass {
 
-	private static ClassNode getMainClass(List<ClassNode> classes) {
-		for (ClassNode node : classes) {
-			if (AstUtils.hasAtLeastOneAnnotation(node, "Enable*AutoConfiguration")) {
-				return null; // No need to enhance this
-			}
-			if (AstUtils.hasAtLeastOneAnnotation(node, "*Controller", "Configuration",
-					"Component", "*Service", "Repository", "Enable*")) {
-				return node;
-			}
+		@SuppressWarnings("unchecked")
+		public static ClassNode get(CompilationUnit source) {
+			return get(source.getAST().getClasses());
 		}
-		return (classes.isEmpty() ? null : classes.get(0));
+
+		public static ClassNode get(List<ClassNode> classes) {
+			for (ClassNode node : classes) {
+				if (AstUtils.hasAtLeastOneAnnotation(node, "Enable*AutoConfiguration")) {
+					return null; // No need to enhance this
+				}
+				if (AstUtils.hasAtLeastOneAnnotation(node, "*Controller", "Configuration",
+						"Component", "*Service", "Repository", "Enable*")) {
+					return node;
+				}
+			}
+			return (classes.isEmpty() ? null : classes.get(0));
+		}
+
 	}
 
 }

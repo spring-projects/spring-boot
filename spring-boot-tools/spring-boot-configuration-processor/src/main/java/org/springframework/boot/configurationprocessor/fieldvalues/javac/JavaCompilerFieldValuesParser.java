@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesPa
  * {@link FieldValuesParser} implementation for the standard Java compiler.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 1.2.0
  */
 public class JavaCompilerFieldValuesParser implements FieldValuesParser {
@@ -53,6 +54,9 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 		return Collections.emptyMap();
 	}
 
+	/**
+	 * {@link TreeVisitor} to collect fields.
+	 */
 	private static class FieldCollector implements TreeVisitor {
 
 		private static final Map<String, Class<?>> WRAPPER_TYPES;
@@ -123,6 +127,10 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			Object literalValue = expression.getLiteralValue();
 			if (literalValue != null) {
 				return literalValue;
+			}
+			Object factoryValue = expression.getFactoryValue();
+			if (factoryValue != null) {
+				return factoryValue;
 			}
 			List<? extends ExpressionTree> arrayValues = expression.getArrayExpression();
 			if (arrayValues != null) {

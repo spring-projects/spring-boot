@@ -83,11 +83,11 @@ public class JndiConnectionFactoryAutoConfiguration {
 	}
 
 	/**
-	 * Condition for JNDI name or a specific property
+	 * Condition for JNDI name or a specific property.
 	 */
 	static class JndiOrPropertyCondition extends AnyNestedCondition {
 
-		public JndiOrPropertyCondition() {
+		JndiOrPropertyCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 

@@ -34,7 +34,7 @@ import static org.junit.Assert.assertEquals;
  * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleJpaApplication.class)
+@SpringApplicationConfiguration(SampleJpaApplication.class)
 public class JpaTagRepositoryIntegrationTests {
 
 	@Autowired

@@ -16,9 +16,7 @@
 
 package org.springframework.boot.bind;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,7 +30,7 @@ import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
-import org.springframework.core.env.StandardEnvironment;
+import org.springframework.util.Assert;
 import org.springframework.validation.DataBinder;
 
 /**
@@ -45,78 +43,81 @@ import org.springframework.validation.DataBinder;
  */
 public class PropertySourcesPropertyValues implements PropertyValues {
 
-	private static final Collection<String> PATTERN_MATCHED_PROPERTY_SOURCES = Arrays
-			.asList(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-					StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
-
 	private static final Pattern COLLECTION_PROPERTY = Pattern.compile("\\[(\\d+)\\]");
 
 	private final PropertySources propertySources;
+
+	private final Collection<String> nonEnumerableFallbackNames;
+
+	private final PropertyNamePatternsMatcher includes;
 
 	private final Map<String, PropertyValue> propertyValues = new LinkedHashMap<String, PropertyValue>();
 
 	private final ConcurrentHashMap<String, PropertySource<?>> collectionOwners = new ConcurrentHashMap<String, PropertySource<?>>();
 
 	/**
-	 * Create a new PropertyValues from the given PropertySources
+	 * Create a new PropertyValues from the given PropertySources.
 	 * @param propertySources a PropertySources instance
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources) {
-		this(propertySources, (PropertyNamePatternsMatcher) null,
-				(Collection<String>) null);
+		this(propertySources, (Collection<String>) null, PropertyNamePatternsMatcher.ALL);
 	}
 
 	/**
-	 * Create a new PropertyValues from the given PropertySources
+	 * Create a new PropertyValues from the given PropertySources.
 	 * @param propertySources a PropertySources instance
 	 * @param includePatterns property name patterns to include from system properties and
 	 * environment variables
-	 * @param names exact property names to include
+	 * @param nonEnumerableFallbackNames the property names to try in lieu of an
+	 * {@link EnumerablePropertySource}.
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources,
-			Collection<String> includePatterns, Collection<String> names) {
-		this(propertySources, new SimplePropertyNamePatternsMatcher(includePatterns),
-				names);
+			Collection<String> includePatterns,
+			Collection<String> nonEnumerableFallbackNames) {
+		this(propertySources, nonEnumerableFallbackNames,
+				new PatternPropertyNamePatternsMatcher(includePatterns));
 	}
 
 	/**
-	 * Create a new PropertyValues from the given PropertySources
+	 * Create a new PropertyValues from the given PropertySources.
 	 * @param propertySources a PropertySources instance
-	 * @param includes property name patterns to include from system properties and
-	 * environment variables
-	 * @param names exact property names to include
+	 * @param nonEnumerableFallbackNames the property names to try in lieu of an
+	 * {@link EnumerablePropertySource}.
+	 * @param includes the property name patterns to include
 	 */
 	PropertySourcesPropertyValues(PropertySources propertySources,
-			PropertyNamePatternsMatcher includes, Collection<String> names) {
+			Collection<String> nonEnumerableFallbackNames,
+			PropertyNamePatternsMatcher includes) {
+		Assert.notNull(propertySources, "PropertySources must not be null");
+		Assert.notNull(includes, "Includes must not be null");
 		this.propertySources = propertySources;
-		if (includes == null) {
-			includes = PropertyNamePatternsMatcher.NONE;
-		}
-		if (names == null) {
-			names = Collections.emptySet();
-		}
+		this.nonEnumerableFallbackNames = nonEnumerableFallbackNames;
+		this.includes = includes;
 		PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
 				propertySources);
 		for (PropertySource<?> source : propertySources) {
-			processPropertySource(source, resolver, includes, names);
+			processPropertySource(source, resolver);
 		}
 	}
 
 	private void processPropertySource(PropertySource<?> source,
-			PropertySourcesPropertyResolver resolver,
-			PropertyNamePatternsMatcher includes, Collection<String> exacts) {
+			PropertySourcesPropertyResolver resolver) {
 		if (source instanceof CompositePropertySource) {
-			processCompositePropertySource((CompositePropertySource) source, resolver,
-					includes, exacts);
+			processCompositePropertySource((CompositePropertySource) source, resolver);
 		}
 		else if (source instanceof EnumerablePropertySource) {
 			processEnumerablePropertySource((EnumerablePropertySource<?>) source,
-					resolver, includes);
+					resolver, this.includes);
 		}
 		else {
-			// We can only do exact matches for non-enumerable property names, but
-			// that's better than nothing...
-			processDefaultPropertySource(source, resolver, includes, exacts);
+			processNonEnumerablePropertySource(source, resolver);
+		}
+	}
+
+	private void processCompositePropertySource(CompositePropertySource source,
+			PropertySourcesPropertyResolver resolver) {
+		for (PropertySource<?> nested : source.getPropertySources()) {
+			processPropertySource(nested, resolver);
 		}
 	}
 
@@ -125,12 +126,10 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 			PropertyNamePatternsMatcher includes) {
 		if (source.getPropertyNames().length > 0) {
 			for (String propertyName : source.getPropertyNames()) {
-				if (PropertySourcesPropertyValues.PATTERN_MATCHED_PROPERTY_SOURCES
-						.contains(source.getName()) && !includes.matches(propertyName)) {
-					continue;
+				if (includes.matches(propertyName)) {
+					Object value = getEnumerableProperty(source, resolver, propertyName);
+					putIfAbsent(propertyName, value, source);
 				}
-				Object value = getEnumerableProperty(source, resolver, propertyName);
-				putIfAbsent(propertyName, value, source);
 			}
 		}
 	}
@@ -146,18 +145,14 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 		}
 	}
 
-	private void processCompositePropertySource(CompositePropertySource source,
-			PropertySourcesPropertyResolver resolver,
-			PropertyNamePatternsMatcher includes, Collection<String> exacts) {
-		for (PropertySource<?> nested : source.getPropertySources()) {
-			processPropertySource(nested, resolver, includes, exacts);
+	private void processNonEnumerablePropertySource(PropertySource<?> source,
+			PropertySourcesPropertyResolver resolver) {
+		// We can only do exact matches for non-enumerable property names, but
+		// that's better than nothing...
+		if (this.nonEnumerableFallbackNames == null) {
+			return;
 		}
-	}
-
-	private void processDefaultPropertySource(PropertySource<?> source,
-			PropertySourcesPropertyResolver resolver,
-			PropertyNamePatternsMatcher includes, Collection<String> exacts) {
-		for (String propertyName : exacts) {
+		for (String propertyName : this.nonEnumerableFallbackNames) {
 			if (!source.containsProperty(propertyName)) {
 				continue;
 			}
@@ -166,14 +161,12 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 				value = resolver.getProperty(propertyName, Object.class);
 			}
 			catch (RuntimeException ex) {
-				// Probably could not convert to Object, weird, but ignoreable
+				// Probably could not convert to Object, weird, but ignorable
 			}
 			if (value == null) {
 				value = source.getProperty(propertyName.toUpperCase());
 			}
-			if (putIfAbsent(propertyName, value, source) != null) {
-				continue;
-			}
+			putIfAbsent(propertyName, value, source);
 		}
 	}
 
@@ -205,8 +198,8 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 			PropertySource<?> collectionOwner = this.collectionOwners.putIfAbsent(
 					COLLECTION_PROPERTY.matcher(propertyName).replaceAll("[]"), source);
 			if (collectionOwner == null || collectionOwner == source) {
-				this.collectionOwners.get(this.collectionOwners);
-				PropertyValue propertyValue = new PropertyValue(propertyName, value);
+				PropertyValue propertyValue = new OriginCapablePropertyValue(propertyName,
+						value, propertyName, source);
 				this.propertyValues.put(propertyName, propertyValue);
 				return propertyValue;
 			}

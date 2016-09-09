@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import org.springframework.boot.autoconfigure.data.mongo.country.CountryReposito
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfigurationTests;
-import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -138,7 +137,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 
 	}
 
-	// In this one the Jpa repositories and the autoconfiguration packages overlap, so
+	// In this one the Jpa repositories and the auto-configuration packages overlap, so
 	// Mongo will try and configure the same repositories
 	@Configuration
 	@TestAutoConfigurationPackage(CityRepository.class)

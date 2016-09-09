@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
 
 package org.springframework.boot.test;
 
-import java.io.IOException;
-import java.io.StringReader;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
@@ -39,7 +37,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextLoader;
@@ -63,8 +60,8 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * {@code @WebAppConfiguration}) to indicate that you want to use a real servlet container
  * or {@code @WebAppConfiguration} alone to use a {@link MockServletContext}.
  * <p>
- * If <code>@ActiveProfiles</code> are provided in the test class they will be used to
- * create the application context.
+ * If {@code @ActiveProfiles} are provided in the test class they will be used to create
+ * the application context.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -74,8 +71,6 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @see TestRestTemplate
  */
 public class SpringApplicationContextLoader extends AbstractContextLoader {
-
-	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	@Override
 	public ApplicationContext loadContext(final MergedContextConfiguration config)
@@ -128,7 +123,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		Set<Object> sources = new LinkedHashSet<Object>();
 		sources.addAll(Arrays.asList(mergedConfig.getClasses()));
 		sources.addAll(Arrays.asList(mergedConfig.getLocations()));
-		Assert.state(sources.size() > 0, "No configuration classes "
+		Assert.state(!sources.isEmpty(), "No configuration classes "
 				+ "or locations found in @SpringApplicationConfiguration. "
 				+ "For default configuration detection to work you need "
 				+ "Spring 4.0.3 or better (found " + SpringVersion.getVersion() + ").");
@@ -146,9 +141,9 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		Map<String, Object> properties = new LinkedHashMap<String, Object>();
 		// JMX bean names will clash if the same bean is used in multiple contexts
 		disableJmx(properties);
-		properties.putAll(
-				extractEnvironmentProperties(config.getPropertySourceProperties()));
-		if (!isIntegrationTest(config.getTestClass())) {
+		properties.putAll(TestPropertySourceUtils
+				.convertInlinedPropertiesToMap(config.getPropertySourceProperties()));
+		if (!TestAnnotations.isIntegrationTest(config)) {
 			properties.putAll(getDefaultEnvironmentProperties());
 		}
 		return properties;
@@ -156,31 +151,6 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 
 	private void disableJmx(Map<String, Object> properties) {
 		properties.put("spring.jmx.enabled", "false");
-	}
-
-	final Map<String, Object> extractEnvironmentProperties(String[] values) {
-		// Instead of parsing the keys ourselves, we rely on standard handling
-		if (values == null) {
-			return Collections.emptyMap();
-		}
-		String content = StringUtils.arrayToDelimitedString(values, LINE_SEPARATOR);
-		Properties properties = new Properties();
-		try {
-			properties.load(new StringReader(content));
-			return asMap(properties);
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException(
-					"Unexpected could not load properties from '" + content + "'", ex);
-		}
-	}
-
-	private Map<String, Object> asMap(Properties properties) {
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
-		for (String name : properties.stringPropertyNames()) {
-			map.put(name, properties.getProperty(name));
-		}
-		return map;
 	}
 
 	private Map<String, String> getDefaultEnvironmentProperties() {
@@ -200,7 +170,6 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
 		initializers.add(new PropertySourceLocationsInitializer(
 				mergedConfig.getPropertySourceLocations()));
-		initializers.add(new ServerPortInfoApplicationContextInitializer());
 		initializers.addAll(application.getInitializers());
 		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : mergedConfig
 				.getContextInitializerClasses()) {
@@ -212,7 +181,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	@Override
 	public void processContextConfiguration(
 			ContextConfigurationAttributes configAttributes) {
-		if (!configAttributes.hasLocations() && !configAttributes.hasClasses()) {
+		super.processContextConfiguration(configAttributes);
+		if (!configAttributes.hasResources()) {
 			Class<?>[] defaultConfigClasses = detectDefaultConfigurationClasses(
 					configAttributes.getDeclaringClass());
 			configAttributes.setClasses(defaultConfigClasses);
@@ -240,8 +210,13 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	}
 
 	@Override
+	protected String[] getResourceSuffixes() {
+		return new String[] { "-context.xml", "Context.groovy" };
+	}
+
+	@Override
 	protected String getResourceSuffix() {
-		return "-context.xml";
+		throw new IllegalStateException();
 	}
 
 	/**
@@ -254,8 +229,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		void configure(MergedContextConfiguration configuration,
 				SpringApplication application,
 				List<ApplicationContextInitializer<?>> initializers) {
-			WebMergedContextConfiguration webConfiguration = (WebMergedContextConfiguration) configuration;
-			if (!isIntegrationTest(webConfiguration.getTestClass())) {
+			if (!TestAnnotations.isIntegrationTest(configuration)) {
+				WebMergedContextConfiguration webConfiguration = (WebMergedContextConfiguration) configuration;
 				addMockServletContext(initializers, webConfiguration);
 				application.setApplicationContextClass(WEB_CONTEXT_CLASS);
 			}
@@ -264,19 +239,12 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		private void addMockServletContext(
 				List<ApplicationContextInitializer<?>> initializers,
 				WebMergedContextConfiguration webConfiguration) {
-			MockServletContext servletContext = new MockServletContext(
-					webConfiguration.getResourceBasePath(),
-					new FileSystemResourceLoader());
-			initializers.add(0,
-					new ServletContextApplicationContextInitializer(servletContext));
+			SpringBootMockServletContext servletContext = new SpringBootMockServletContext(
+					webConfiguration.getResourceBasePath());
+			initializers.add(0, new ServletContextApplicationContextInitializer(
+					servletContext, true));
 		}
 
-	}
-
-	private static boolean isIntegrationTest(Class<?> testClass) {
-		return ((AnnotationUtils.findAnnotation(testClass, IntegrationTest.class) != null)
-				|| (AnnotationUtils.findAnnotation(testClass,
-						WebIntegrationTest.class) != null));
 	}
 
 	/**
@@ -287,7 +255,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 
 		private final String[] propertySourceLocations;
 
-		public PropertySourceLocationsInitializer(String[] propertySourceLocations) {
+		PropertySourceLocationsInitializer(String[] propertySourceLocations) {
 			this.propertySourceLocations = propertySourceLocations;
 		}
 
@@ -295,6 +263,22 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		public void initialize(ConfigurableApplicationContext applicationContext) {
 			TestPropertySourceUtils.addPropertiesFilesToEnvironment(applicationContext,
 					this.propertySourceLocations);
+		}
+
+	}
+
+	private static class TestAnnotations {
+
+		public static boolean isIntegrationTest(
+				MergedContextConfiguration configuration) {
+			return (hasAnnotation(configuration, IntegrationTest.class)
+					|| hasAnnotation(configuration, WebIntegrationTest.class));
+		}
+
+		private static boolean hasAnnotation(MergedContextConfiguration configuration,
+				Class<? extends Annotation> annotation) {
+			return (AnnotationUtils.findAnnotation(configuration.getTestClass(),
+					annotation) != null);
 		}
 
 	}

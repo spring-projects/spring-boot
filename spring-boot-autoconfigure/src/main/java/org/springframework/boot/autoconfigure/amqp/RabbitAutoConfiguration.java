@@ -21,6 +21,7 @@ import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -67,6 +68,7 @@ import org.springframework.context.annotation.Import;
  * </ul>
  * @author Greg Turnquist
  * @author Josh Long
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
@@ -86,7 +88,7 @@ public class RabbitAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(RabbitTemplate.class)
-	public RabbitTemplate rabbitTemplate(RabbitProperties config) {
+	public RabbitTemplate rabbitTemplate() {
 		return new RabbitTemplate(this.connectionFactory);
 	}
 
@@ -95,10 +97,9 @@ public class RabbitAutoConfiguration {
 	protected static class RabbitConnectionFactoryCreator {
 
 		@Bean
-		public ConnectionFactory rabbitConnectionFactory(RabbitProperties config) {
-			CachingConnectionFactory factory = new CachingConnectionFactory();
-			String addresses = config.getAddresses();
-			factory.setAddresses(addresses);
+		public CachingConnectionFactory rabbitConnectionFactory(RabbitProperties config)
+				throws Exception {
+			RabbitConnectionFactoryBean factory = new RabbitConnectionFactoryBean();
 			if (config.getHost() != null) {
 				factory.setHost(config.getHost());
 				factory.setPort(config.getPort());
@@ -112,7 +113,25 @@ public class RabbitAutoConfiguration {
 			if (config.getVirtualHost() != null) {
 				factory.setVirtualHost(config.getVirtualHost());
 			}
-			return factory;
+			if (config.getRequestedHeartbeat() != null) {
+				factory.setRequestedHeartbeat(config.getRequestedHeartbeat());
+			}
+			RabbitProperties.Ssl ssl = config.getSsl();
+			if (ssl.isEnabled()) {
+				factory.setUseSSL(true);
+				if (ssl.getAlgorithm() != null) {
+					factory.setSslAlgorithm(ssl.getAlgorithm());
+				}
+				factory.setKeyStore(ssl.getKeyStore());
+				factory.setKeyStorePassphrase(ssl.getKeyStorePassword());
+				factory.setTrustStore(ssl.getTrustStore());
+				factory.setTrustStorePassphrase(ssl.getTrustStorePassword());
+			}
+			factory.afterPropertiesSet();
+			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
+					factory.getObject());
+			connectionFactory.setAddresses(config.getAddresses());
+			return connectionFactory;
 		}
 
 	}

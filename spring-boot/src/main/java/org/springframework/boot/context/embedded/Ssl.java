@@ -208,8 +208,21 @@ public class Ssl {
 		this.protocol = protocol;
 	}
 
+	/**
+	 * Client authentication types.
+	 */
 	public enum ClientAuth {
-		WANT, NEED
+
+		/**
+		 * Client authentication is wanted but not mandatory.
+		 */
+		WANT,
+
+		/**
+		 * Client authentication is needed and mandatory.
+		 */
+		NEED
+
 	}
 
 }

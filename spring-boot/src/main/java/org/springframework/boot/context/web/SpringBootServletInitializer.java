@@ -63,7 +63,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 public abstract class SpringBootServletInitializer implements WebApplicationInitializer {
 
-	protected final Log logger = LogFactory.getLog(getClass());
+	protected Log logger; // Don't initialize early
 
 	private boolean registerErrorPageFilter = true;
 
@@ -79,6 +79,9 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
+		// Logger initialization is deferred in case a ordered
+		// LogServletContextInitializer is being used
+		this.logger = LogFactory.getLog(getClass());
 		WebApplicationContext rootAppContext = createRootApplicationContext(
 				servletContext);
 		if (rootAppContext != null) {
@@ -98,7 +101,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	protected WebApplicationContext createRootApplicationContext(
 			ServletContext servletContext) {
-		SpringApplicationBuilder builder = new SpringApplicationBuilder();
+		SpringApplicationBuilder builder = createSpringApplicationBuilder();
 		builder.main(getClass());
 		ApplicationContext parent = getExistingRootWebApplicationContext(servletContext);
 		if (parent != null) {
@@ -116,7 +119,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 				.findAnnotation(getClass(), Configuration.class) != null) {
 			application.getSources().add(getClass());
 		}
-		Assert.state(application.getSources().size() > 0,
+		Assert.state(!application.getSources().isEmpty(),
 				"No SpringApplication sources have been defined. Either override the "
 						+ "configure method or add an @Configuration annotation");
 		// Ensure error pages are registered
@@ -124,6 +127,17 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 			application.getSources().add(ErrorPageFilter.class);
 		}
 		return run(application);
+	}
+
+	/**
+	 * Returns the {@code SpringApplicationBuilder} that is used to configure and create
+	 * the {@link SpringApplication}. The default implementation returns a new
+	 * {@code SpringApplicationBuilder} in its default state.
+	 * @return the {@code SpringApplicationBuilder}.
+	 * @since 1.3.0
+	 */
+	protected SpringApplicationBuilder createSpringApplicationBuilder() {
+		return new SpringApplicationBuilder();
 	}
 
 	/**

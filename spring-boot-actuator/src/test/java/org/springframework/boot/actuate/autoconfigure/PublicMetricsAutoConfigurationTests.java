@@ -30,6 +30,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.CachePublicMetrics;
 import org.springframework.boot.actuate.endpoint.DataSourcePublicMetrics;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
@@ -42,19 +43,26 @@ import org.springframework.boot.actuate.metrics.rich.RichGaugeReader;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
+import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.SocketUtils;
 
+import static org.hamcrest.Matchers.hasKey;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -68,7 +76,7 @@ import static org.mockito.Mockito.mock;
  */
 public class PublicMetricsAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+	private ConfigurableApplicationContext context;
 
 	@After
 	public void after() {
@@ -95,27 +103,22 @@ public class PublicMetricsAutoConfigurationTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				RichGaugeReaderConfig.class, MetricRepositoryAutoConfiguration.class,
 				PublicMetricsAutoConfiguration.class);
-
 		RichGaugeReader richGaugeReader = context.getBean(RichGaugeReader.class);
 		assertNotNull(richGaugeReader);
 		given(richGaugeReader.findAll())
 				.willReturn(Collections.singletonList(new RichGauge("bar", 3.7d)));
-
 		RichGaugeReaderPublicMetrics publicMetrics = context
 				.getBean(RichGaugeReaderPublicMetrics.class);
 		assertNotNull(publicMetrics);
-
 		Collection<Metric<?>> metrics = publicMetrics.metrics();
 		assertNotNull(metrics);
 		assertEquals(metrics.size(), 6);
-
 		assertHasMetric(metrics, new Metric<Double>("bar.val", 3.7d));
 		assertHasMetric(metrics, new Metric<Double>("bar.avg", 3.7d));
 		assertHasMetric(metrics, new Metric<Double>("bar.min", 3.7d));
 		assertHasMetric(metrics, new Metric<Double>("bar.max", 3.7d));
 		assertHasMetric(metrics, new Metric<Double>("bar.alpha", -1.d));
 		assertHasMetric(metrics, new Metric<Long>("bar.count", 1L));
-
 		context.close();
 	}
 
@@ -190,8 +193,31 @@ public class PublicMetricsAutoConfigurationTests {
 
 	@Test
 	public void tomcatMetrics() throws Exception {
-		load(TomcatConfiguration.class);
+		loadWeb(TomcatConfiguration.class);
 		assertEquals(1, this.context.getBeansOfType(TomcatPublicMetrics.class).size());
+	}
+
+	@Test
+	public void noCacheMetrics() {
+		load();
+		assertEquals(0, this.context.getBeansOfType(CachePublicMetrics.class).size());
+	}
+
+	@Test
+	public void autoCacheManager() {
+		load(CacheConfiguration.class);
+		CachePublicMetrics bean = this.context.getBean(CachePublicMetrics.class);
+		Collection<Metric<?>> metrics = bean.metrics();
+		assertMetrics(metrics, "cache.books.size", "cache.speakers.size");
+	}
+
+	@Test
+	public void multipleCacheManagers() {
+		load(MultipleCacheConfiguration.class);
+		CachePublicMetrics bean = this.context.getBean(CachePublicMetrics.class);
+		Collection<Metric<?>> metrics = bean.metrics();
+		assertMetrics(metrics, "cache.books.size", "cache.second_speakers.size",
+				"cache.first_speakers.size", "cache.users.size");
 	}
 
 	private void assertHasMetric(Collection<Metric<?>> metrics, Metric<?> metric) {
@@ -210,18 +236,33 @@ public class PublicMetricsAutoConfigurationTests {
 			content.put(metric.getName(), metric.getValue());
 		}
 		for (String key : keys) {
-			assertTrue("Key '" + key + "' was not found", content.containsKey(key));
+			assertThat(content, hasKey(key));
 		}
 	}
 
-	private void load(Class<?>... config) {
-		this.context = new AnnotationConfigApplicationContext();
+	private void loadWeb(Class<?>... config) {
+		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
 		if (config.length > 0) {
-			this.context.register(config);
+			context.register(config);
 		}
-		this.context.register(DataSourcePoolMetadataProvidersConfiguration.class,
+		context.register(DataSourcePoolMetadataProvidersConfiguration.class,
+				CacheStatisticsAutoConfiguration.class,
+				PublicMetricsAutoConfiguration.class,
+				MockEmbeddedServletContainerFactory.class);
+		context.refresh();
+		this.context = context;
+	}
+
+	private void load(Class<?>... config) {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		if (config.length > 0) {
+			context.register(config);
+		}
+		context.register(DataSourcePoolMetadataProvidersConfiguration.class,
+				CacheStatisticsAutoConfiguration.class,
 				PublicMetricsAutoConfiguration.class);
-		this.context.refresh();
+		context.refresh();
+		this.context = context;
 	}
 
 	@Configuration
@@ -229,18 +270,18 @@ public class PublicMetricsAutoConfigurationTests {
 
 		@Bean
 		public DataSource tomcatDataSource() {
-			return initializeBuilder().type(org.apache.tomcat.jdbc.pool.DataSource.class)
-					.build();
+			return InitializedBuilder.create()
+					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 
 		@Bean
 		public DataSource hikariDS() {
-			return initializeBuilder().type(HikariDataSource.class).build();
+			return InitializedBuilder.create().type(HikariDataSource.class).build();
 		}
 
 		@Bean
 		public DataSource commonsDbcpDataSource() {
-			return initializeBuilder().type(BasicDataSource.class).build();
+			return InitializedBuilder.create().type(BasicDataSource.class).build();
 		}
 	}
 
@@ -250,13 +291,13 @@ public class PublicMetricsAutoConfigurationTests {
 		@Bean
 		@Primary
 		public DataSource myDataSource() {
-			return initializeBuilder().type(org.apache.tomcat.jdbc.pool.DataSource.class)
-					.build();
+			return InitializedBuilder.create()
+					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 
 		@Bean
 		public DataSource commonsDbcpDataSource() {
-			return initializeBuilder().type(BasicDataSource.class).build();
+			return InitializedBuilder.create().type(BasicDataSource.class).build();
 		}
 	}
 
@@ -266,13 +307,13 @@ public class PublicMetricsAutoConfigurationTests {
 		@Bean
 		@Primary
 		public DataSource myDataSource() {
-			return initializeBuilder().type(org.apache.tomcat.jdbc.pool.DataSource.class)
-					.build();
+			return InitializedBuilder.create()
+					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 
 		@Bean
 		public DataSource dataSource() {
-			return initializeBuilder().type(BasicDataSource.class).build();
+			return InitializedBuilder.create().type(BasicDataSource.class).build();
 		}
 	}
 
@@ -289,11 +330,6 @@ public class PublicMetricsAutoConfigurationTests {
 				}
 			};
 		}
-	}
-
-	private static DataSourceBuilder initializeBuilder() {
-		return DataSourceBuilder.create().driverClassName("org.hsqldb.jdbc.JDBCDriver")
-				.url("jdbc:hsqldb:mem:test").username("sa");
 	}
 
 	@Configuration
@@ -318,4 +354,40 @@ public class PublicMetricsAutoConfigurationTests {
 
 	}
 
+	@Configuration
+	static class CacheConfiguration {
+
+		@Bean
+		public CacheManager cacheManager() {
+			return new ConcurrentMapCacheManager("books", "speakers");
+		}
+
+	}
+
+	@Configuration
+	static class MultipleCacheConfiguration {
+
+		@Bean
+		@Order(1)
+		public CacheManager first() {
+			return new ConcurrentMapCacheManager("books", "speakers");
+		}
+
+		@Bean
+		@Order(2)
+		public CacheManager second() {
+			return new ConcurrentMapCacheManager("users", "speakers");
+		}
+
+	}
+
+	private static class InitializedBuilder {
+
+		public static DataSourceBuilder create() {
+			return DataSourceBuilder.create()
+					.driverClassName("org.hsqldb.jdbc.JDBCDriver")
+					.url("jdbc:hsqldb:mem:test").username("sa");
+		}
+
+	}
 }

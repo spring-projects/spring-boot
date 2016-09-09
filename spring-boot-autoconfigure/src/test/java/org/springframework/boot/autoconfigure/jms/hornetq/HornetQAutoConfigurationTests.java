@@ -42,15 +42,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.core.SessionCallback;
@@ -149,7 +146,7 @@ public class HornetQAutoConfigurationTests {
 	}
 
 	@Test
-	public void embeddedConnectionFactorEvenIfEmbeddedServiceDisabled() {
+	public void embeddedConnectionFactoryEvenIfEmbeddedServiceDisabled() {
 		// No mode is specified
 		load(EmptyConfiguration.class, "spring.hornetq.mode:embedded",
 				"spring.hornetq.embedded.enabled:false");
@@ -321,14 +318,14 @@ public class HornetQAutoConfigurationTests {
 			String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(config);
-		applicationContext.register(HornetQAutoConfigurationWithoutXA.class,
+		applicationContext.register(HornetQAutoConfiguration.class,
 				JmsAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.refresh();
 		return applicationContext;
 	}
 
-	private static class DestinationChecker {
+	private final static class DestinationChecker {
 
 		private final JmsTemplate jmsTemplate;
 
@@ -406,9 +403,6 @@ public class HornetQAutoConfigurationTests {
 	@Configuration
 	protected static class CustomHornetQConfiguration {
 
-		@Autowired
-		private HornetQProperties properties;
-
 		@Bean
 		public HornetQConfigurationCustomizer myHornetQCustomize() {
 			return new HornetQConfigurationCustomizer() {
@@ -420,13 +414,6 @@ public class HornetQAutoConfigurationTests {
 				}
 			};
 		}
-	}
-
-	@Configuration
-	@EnableConfigurationProperties(HornetQProperties.class)
-	@Import({ HornetQEmbeddedServerConfiguration.class,
-			HornetQConnectionFactoryConfiguration.class })
-	protected static class HornetQAutoConfigurationWithoutXA {
 	}
 
 }

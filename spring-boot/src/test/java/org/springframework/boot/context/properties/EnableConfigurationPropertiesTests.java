@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,13 +47,14 @@ import static org.junit.Assert.assertNotNull;
  * Tests for {@link EnableConfigurationProperties}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class EnableConfigurationPropertiesTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Rule
-	public ExpectedException expected = ExpectedException.none();
+	public ExpectedException thrown = ExpectedException.none();
 
 	@After
 	public void close() {
@@ -158,7 +159,7 @@ public class EnableConfigurationPropertiesTests {
 	public void testExceptionOnValidation() {
 		this.context.register(ExceptionIfInvalidTestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
-		this.expected.expectCause(Matchers.<Throwable>instanceOf(BindException.class));
+		this.thrown.expectCause(Matchers.<Throwable>instanceOf(BindException.class));
 		this.context.refresh();
 	}
 
@@ -210,7 +211,30 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void testCollectionPropertiesBindingWithOver256Elements() {
+		this.context.register(TestConfiguration.class);
+		List<String> pairs = new ArrayList<String>();
+		pairs.add("name:foo");
+		for (int i = 0; i < 1000; i++) {
+			pairs.add("list[" + i + "]:" + i);
+		}
+		EnvironmentTestUtils.addEnvironment(this.context, pairs.toArray(new String[] {}));
+		this.context.refresh();
+		assertEquals(1000, this.context.getBean(TestProperties.class).getList().size());
+	}
+
+	@Test
 	public void testPropertiesBindingWithoutAnnotation() {
+		this.context.register(InvalidConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
+
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("No ConfigurationProperties annotation found");
+		this.context.refresh();
+	}
+
+	@Test
+	public void testPropertiesBindingWithoutAnnotationValue() {
 		this.context.register(MoreConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
 		this.context.refresh();
@@ -378,18 +402,6 @@ public class EnableConfigurationPropertiesTests {
 		assertEquals("foo", this.context.getBean(External.class).getName());
 	}
 
-	@Configuration
-	@EnableConfigurationProperties
-	public static class TestConfigurationWithAnnotatedBean {
-
-		@Bean
-		@ConfigurationProperties(prefix = "spam")
-		public External testProperties() {
-			return new External();
-		}
-
-	}
-
 	/**
 	 * Strict tests need a known set of properties so we remove system items which may be
 	 * environment specific.
@@ -402,43 +414,63 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Configuration
+	@EnableConfigurationProperties
+	public static class TestConfigurationWithAnnotatedBean {
+
+		@Bean
+		@ConfigurationProperties(prefix = "spam")
+		public External testProperties() {
+			return new External();
+		}
+
+	}
+
+	@Configuration
 	@EnableConfigurationProperties(TestProperties.class)
 	protected static class TestConfiguration {
+
 	}
 
 	@Configuration
 	@EnableConfigurationProperties(StrictTestProperties.class)
 	protected static class StrictTestConfiguration {
+
 	}
 
 	@Configuration
 	@EnableConfigurationProperties(EmbeddedTestProperties.class)
 	protected static class EmbeddedTestConfiguration {
+
 	}
 
 	@Configuration
 	@EnableConfigurationProperties(IgnoreNestedTestProperties.class)
 	protected static class IgnoreNestedTestConfiguration {
+
 	}
 
 	@Configuration
 	@EnableConfigurationProperties(ExceptionIfInvalidTestProperties.class)
 	protected static class ExceptionIfInvalidTestConfiguration {
+
 	}
 
 	@Configuration
 	@EnableConfigurationProperties(NoExceptionIfInvalidTestProperties.class)
 	protected static class NoExceptionIfInvalidTestConfiguration {
+
 	}
 
 	@Configuration
 	@EnableConfigurationProperties(DerivedProperties.class)
 	protected static class DerivedConfiguration {
+
 	}
 
 	@Configuration
 	@EnableConfigurationProperties(NestedProperties.class)
 	protected static class NestedConfiguration {
+
 	}
 
 	@Configuration
@@ -456,6 +488,7 @@ public class EnableConfigurationPropertiesTests {
 	@Configuration
 	@ImportResource("org/springframework/boot/context/properties/testProperties.xml")
 	protected static class DefaultXmlConfiguration {
+
 	}
 
 	@EnableConfigurationProperties
@@ -472,16 +505,19 @@ public class EnableConfigurationPropertiesTests {
 	@EnableConfigurationProperties(External.class)
 	@Configuration
 	public static class AnotherExampleConfig {
+
 	}
 
 	@EnableConfigurationProperties({ External.class, Another.class })
 	@Configuration
 	public static class FurtherExampleConfig {
+
 	}
 
 	@EnableConfigurationProperties({ SystemEnvVar.class })
 	@Configuration
 	public static class SystemExampleConfig {
+
 	}
 
 	@ConfigurationProperties(prefix = "external")
@@ -496,6 +532,7 @@ public class EnableConfigurationPropertiesTests {
 		public void setName(String name) {
 			this.name = name;
 		}
+
 	}
 
 	@ConfigurationProperties(prefix = "another")
@@ -510,10 +547,13 @@ public class EnableConfigurationPropertiesTests {
 		public void setName(String name) {
 			this.name = name;
 		}
+
 	}
 
 	@ConfigurationProperties(prefix = "spring_test_external")
 	public static class SystemEnvVar {
+
+		private String val;
 
 		public String getVal() {
 			return this.val;
@@ -522,8 +562,6 @@ public class EnableConfigurationPropertiesTests {
 		public void setVal(String val) {
 			this.val = val;
 		}
-
-		private String val;
 
 	}
 
@@ -541,11 +579,19 @@ public class EnableConfigurationPropertiesTests {
 		public String getName() {
 			return this.properties.name;
 		}
+
 	}
 
 	@Configuration
 	@EnableConfigurationProperties(MoreProperties.class)
 	protected static class MoreConfiguration {
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(InvalidConfiguration.class)
+	protected static class InvalidConfiguration {
+
 	}
 
 	@ConfigurationProperties
@@ -587,6 +633,7 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	protected static class DerivedProperties extends BaseProperties {
+
 	}
 
 	@ConfigurationProperties
@@ -620,14 +667,17 @@ public class EnableConfigurationPropertiesTests {
 
 	@ConfigurationProperties(ignoreUnknownFields = false)
 	protected static class StrictTestProperties extends TestProperties {
+
 	}
 
 	@ConfigurationProperties(prefix = "spring.foo")
 	protected static class EmbeddedTestProperties extends TestProperties {
+
 	}
 
 	@ConfigurationProperties(ignoreUnknownFields = false, ignoreNestedProperties = true)
 	protected static class IgnoreNestedTestProperties extends TestProperties {
+
 	}
 
 	@ConfigurationProperties
@@ -662,6 +712,7 @@ public class EnableConfigurationPropertiesTests {
 
 	}
 
+	@ConfigurationProperties
 	protected static class MoreProperties {
 
 		private String name;
@@ -671,6 +722,21 @@ public class EnableConfigurationPropertiesTests {
 		}
 
 		// No getter - you should be able to bind to a write-only bean
+	}
+
+	// No annotation
+	protected static class InvalidProperties {
+
+		private String name;
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
 	}
 
 	@ConfigurationProperties(locations = "${binding.location:classpath:name.yml}")
@@ -698,5 +764,7 @@ public class EnableConfigurationPropertiesTests {
 		public Map<String, String> getMymap() {
 			return this.mymap;
 		}
+
 	}
+
 }

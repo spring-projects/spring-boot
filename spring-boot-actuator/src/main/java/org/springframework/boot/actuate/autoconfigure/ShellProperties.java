@@ -36,16 +36,16 @@ import org.springframework.util.StringUtils;
  *
  * @author Christian Dupuis
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 @ConfigurationProperties(prefix = "shell", ignoreUnknownFields = true)
 public class ShellProperties {
 
-	private static Log logger = LogFactory.getLog(ShellProperties.class);
+	private static final Log logger = LogFactory.getLog(ShellProperties.class);
 
 	/**
-	 * Authentication type (can be "simple", "spring", "key" or "jaas"). Auto-detected
-	 * according to the environment (i.e. if Spring Security is available, "spring" is
-	 * used by default).
+	 * Authentication type. Auto-detected according to the environment (i.e. if Spring
+	 * Security is available, "spring" is used by default).
 	 */
 	private String auth = "simple";
 
@@ -224,7 +224,7 @@ public class ShellProperties {
 	}
 
 	/**
-	 * SSH properties
+	 * SSH properties.
 	 */
 	public static class Ssh extends CrshShellProperties {
 
@@ -243,10 +243,22 @@ public class ShellProperties {
 		 */
 		private Integer port = 2000;
 
+		/**
+		 * Number of milliseconds after user will be prompted to login again.
+		 */
+		private Integer authTimeout = 600000;
+
+		/**
+		 * Number of milliseconds after which unused connections are closed.
+		 */
+		private Integer idleTimeout = 600000;
+
 		@Override
 		protected void applyToCrshShellConfig(Properties config) {
 			if (this.enabled) {
 				config.put("crash.ssh.port", String.valueOf(this.port));
+				config.put("crash.ssh.auth_timeout", String.valueOf(this.authTimeout));
+				config.put("crash.ssh.idle_timeout", String.valueOf(this.idleTimeout));
 				if (this.keyPath != null) {
 					config.put("crash.ssh.keypath", this.keyPath);
 				}
@@ -279,10 +291,25 @@ public class ShellProperties {
 			return this.port;
 		}
 
+		public Integer getIdleTimeout() {
+			return this.idleTimeout;
+		}
+
+		public void setIdleTimeout(Integer idleTimeout) {
+			this.idleTimeout = idleTimeout;
+		}
+
+		public Integer getAuthTimeout() {
+			return this.authTimeout;
+		}
+
+		public void setAuthTimeout(Integer authTimeout) {
+			this.authTimeout = authTimeout;
+		}
 	}
 
 	/**
-	 * Telnet properties
+	 * Telnet properties.
 	 */
 	public static class Telnet extends CrshShellProperties {
 
@@ -325,7 +352,7 @@ public class ShellProperties {
 	}
 
 	/**
-	 * Auth specific properties for JAAS authentication
+	 * Auth specific properties for JAAS authentication.
 	 */
 	@ConfigurationProperties(prefix = "shell.auth.jaas", ignoreUnknownFields = false)
 	public static class JaasAuthenticationProperties
@@ -354,7 +381,7 @@ public class ShellProperties {
 	}
 
 	/**
-	 * Auth specific properties for key authentication
+	 * Auth specific properties for key authentication.
 	 */
 	@ConfigurationProperties(prefix = "shell.auth.key", ignoreUnknownFields = false)
 	public static class KeyAuthenticationProperties
@@ -385,13 +412,13 @@ public class ShellProperties {
 	}
 
 	/**
-	 * Auth specific properties for simple authentication
+	 * Auth specific properties for simple authentication.
 	 */
 	@ConfigurationProperties(prefix = "shell.auth.simple", ignoreUnknownFields = false)
 	public static class SimpleAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 
-		private static Log logger = LogFactory
+		private static final Log logger = LogFactory
 				.getLog(SimpleAuthenticationProperties.class);
 
 		private User user = new User();
@@ -460,7 +487,7 @@ public class ShellProperties {
 	}
 
 	/**
-	 * Auth specific properties for Spring authentication
+	 * Auth specific properties for Spring authentication.
 	 */
 	@ConfigurationProperties(prefix = "shell.auth.spring", ignoreUnknownFields = false)
 	public static class SpringAuthenticationProperties

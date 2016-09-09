@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.support.StaticApplicationContext;
 
 import static org.junit.Assert.assertEquals;
@@ -63,6 +65,20 @@ public class MvcEndpointsTests {
 		assertEquals(1, this.endpoints.getEndpoints().size());
 	}
 
+	@Test
+	public void changesPath() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"endpoints.test.path=/foo/bar/");
+		this.context.getDefaultListableBeanFactory().registerSingleton("endpoint",
+				new TestEndpoint());
+		this.endpoints.setApplicationContext(this.context);
+		this.endpoints.afterPropertiesSet();
+		assertEquals(1, this.endpoints.getEndpoints().size());
+		assertEquals("/foo/bar",
+				this.endpoints.getEndpoints().iterator().next().getPath());
+	}
+
+	@ConfigurationProperties("endpoints.test")
 	protected static class TestEndpoint extends AbstractEndpoint<String> {
 
 		public TestEndpoint() {

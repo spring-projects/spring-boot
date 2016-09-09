@@ -21,7 +21,7 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for some health properties
+ * Configuration properties for some health properties.
  *
  * @author Christian Dupuis
  * @since 1.2.0
@@ -39,7 +39,7 @@ public class HealthIndicatorAutoConfigurationProperties {
 	}
 
 	public void setOrder(List<String> statusOrder) {
-		if (statusOrder != null && statusOrder.size() > 0) {
+		if (statusOrder != null && !statusOrder.isEmpty()) {
 			this.order = statusOrder;
 		}
 	}

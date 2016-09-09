@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.configurationprocessor;
 
 import java.io.File;
@@ -41,6 +42,8 @@ public class TestConfigurationMetadataAnnotationProcessor
 
 	static final String NESTED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.NestedConfigurationProperty";
 
+	static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.DeprecatedConfigurationProperty";
+
 	private ConfigurationMetadata metadata;
 
 	private final File outputLocation;
@@ -57,6 +60,11 @@ public class TestConfigurationMetadataAnnotationProcessor
 	@Override
 	protected String nestedConfigurationPropertyAnnotation() {
 		return NESTED_CONFIGURATION_PROPERTY_ANNOTATION;
+	}
+
+	@Override
+	protected String deprecatedConfigurationPropertyAnnotation() {
+		return DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION;
 	}
 
 	@Override

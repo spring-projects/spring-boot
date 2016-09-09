@@ -42,12 +42,12 @@ abstract class TomcatResources {
 
 	private final Context context;
 
-	public TomcatResources(Context context) {
+	TomcatResources(Context context) {
 		this.context = context;
 	}
 
 	/**
-	 * Add resources from the classpath
+	 * Add resources from the classpath.
 	 */
 	public void addClasspathResources() {
 		ClassLoader loader = getClass().getClassLoader();
@@ -108,7 +108,7 @@ abstract class TomcatResources {
 
 		private final Method addResourceJarUrlMethod;
 
-		public Tomcat7Resources(Context context) {
+		Tomcat7Resources(Context context) {
 			super(context);
 			this.addResourceJarUrlMethod = ReflectionUtils.findMethod(context.getClass(),
 					"addResourceJarUrl", URL.class);
@@ -116,7 +116,7 @@ abstract class TomcatResources {
 
 		@Override
 		protected void addJar(String jar) {
-			URL url = getJarUlr(jar);
+			URL url = getJarUrl(jar);
 			if (url != null) {
 				try {
 					this.addResourceJarUrlMethod.invoke(getContext(), url);
@@ -127,7 +127,7 @@ abstract class TomcatResources {
 			}
 		}
 
-		private URL getJarUlr(String jar) {
+		private URL getJarUrl(String jar) {
 			try {
 				return new URL(jar);
 			}
@@ -164,7 +164,7 @@ abstract class TomcatResources {
 	 */
 	static class Tomcat8Resources extends TomcatResources {
 
-		public Tomcat8Resources(Context context) {
+		Tomcat8Resources(Context context) {
 			super(context);
 		}
 

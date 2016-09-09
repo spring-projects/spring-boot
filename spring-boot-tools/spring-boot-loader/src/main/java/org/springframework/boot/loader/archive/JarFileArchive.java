@@ -186,7 +186,7 @@ public class JarFileArchive extends Archive {
 
 		private final JarEntryData entryData;
 
-		public JarFileEntry(JarEntryData entryData) {
+		JarFileEntry(JarEntryData entryData) {
 			this.entryData = entryData;
 		}
 

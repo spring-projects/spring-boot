@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jms;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.Session;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
@@ -145,6 +146,25 @@ public class JmsAutoConfigurationTests {
 	}
 
 	@Test
+	public void testJmsListenerContainerFactoryWithCustomSettings() {
+		load(EnableJmsConfiguration.class, "spring.jms.listener.autoStartup=false",
+				"spring.jms.listener.acknowledgeMode=client",
+				"spring.jms.listener.concurrency=2",
+				"spring.jms.listener.maxConcurrency=10");
+		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context.getBean(
+				"jmsListenerContainerFactory", JmsListenerContainerFactory.class);
+		assertEquals(DefaultJmsListenerContainerFactory.class,
+				jmsListenerContainerFactory.getClass());
+		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
+				.createListenerContainer(mock(JmsListenerEndpoint.class));
+		assertEquals(false, listenerContainer.isAutoStartup());
+		assertEquals(Session.CLIENT_ACKNOWLEDGE,
+				listenerContainer.getSessionAcknowledgeMode());
+		assertEquals(2, listenerContainer.getConcurrentConsumers());
+		assertEquals(10, listenerContainer.getMaxConcurrentConsumers());
+	}
+
+	@Test
 	public void testDefaultContainerFactoryWithJtaTransactionManager() {
 		this.context = createContext(TestConfiguration7.class,
 				EnableJmsConfiguration.class);
@@ -190,6 +210,23 @@ public class JmsAutoConfigurationTests {
 				listenerContainer.isSessionTransacted());
 		assertNull(new DirectFieldAccessor(listenerContainer)
 				.getPropertyValue("transactionManager"));
+	}
+
+	@Test
+	public void testCustomContainerFactoryWithConfigurer() {
+		this.context = doLoad(
+				new Class<?>[] { TestConfiguration9.class, EnableJmsConfiguration.class },
+				"spring.jms.listener.autoStartup=false");
+		assertTrue(this.context.containsBean("jmsListenerContainerFactory"));
+		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context.getBean(
+				"customListenerContainerFactory", JmsListenerContainerFactory.class);
+		assertEquals(DefaultJmsListenerContainerFactory.class,
+				jmsListenerContainerFactory.getClass());
+		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
+				.createListenerContainer(mock(JmsListenerEndpoint.class));
+		assertEquals(DefaultMessageListenerContainer.CACHE_CONSUMER,
+				listenerContainer.getCacheLevel());
+		assertFalse(listenerContainer.isAutoStartup());
 	}
 
 	@Test
@@ -425,6 +462,21 @@ public class JmsAutoConfigurationTests {
 			return mock(DataSourceTransactionManager.class);
 		}
 
+	}
+
+	@Configuration
+	protected static class TestConfiguration9 {
+
+		@Bean
+		JmsListenerContainerFactory<?> customListenerContainerFactory(
+				DefaultJmsListenerContainerFactoryConfigurer configurer,
+				ConnectionFactory connectionFactory) {
+			DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+			configurer.configure(factory, connectionFactory);
+			factory.setCacheLevel(DefaultMessageListenerContainer.CACHE_CONSUMER);
+			return factory;
+
+		}
 	}
 
 	@Configuration

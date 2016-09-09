@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,7 +105,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 	public void errorPageNotAvailableWithWhitelabelDisabled() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(
 				WebMvcIncludedConfiguration.class).run("--server.port=0",
-						"--error.whitelabel.enabled=false"));
+						"--server.error.whitelabel.enabled=false"));
 		this.thrown.expect(ServletException.class);
 		this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML));
 	}
@@ -129,8 +129,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
-	protected static @interface MinimalWebConfiguration {
-
+	protected @interface MinimalWebConfiguration {
 	}
 
 	@Configuration

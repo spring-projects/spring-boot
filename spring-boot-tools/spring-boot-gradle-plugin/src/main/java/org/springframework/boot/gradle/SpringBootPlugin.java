@@ -20,15 +20,12 @@ import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.plugins.ApplicationPlugin;
-import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.compile.JavaCompile;
 
 import org.springframework.boot.gradle.agent.AgentPluginFeatures;
-import org.springframework.boot.gradle.exclude.ExcludePluginFeatures;
+import org.springframework.boot.gradle.dependencymanagement.DependencyManagementPluginFeatures;
 import org.springframework.boot.gradle.repackage.RepackagePluginFeatures;
-import org.springframework.boot.gradle.resolve.ResolvePluginFeatures;
 import org.springframework.boot.gradle.run.RunPluginFeatures;
 
 /**
@@ -36,21 +33,18 @@ import org.springframework.boot.gradle.run.RunPluginFeatures;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class SpringBootPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().apply(BasePlugin.class);
 		project.getExtensions().create("springBoot", SpringBootPluginExtension.class);
-		project.getConfigurations().create(VersionManagedDependencies.CONFIGURATION);
 		project.getPlugins().apply(JavaPlugin.class);
-		project.getPlugins().apply(ApplicationPlugin.class);
 		new AgentPluginFeatures().apply(project);
 		new RepackagePluginFeatures().apply(project);
 		new RunPluginFeatures().apply(project);
-		new ResolvePluginFeatures().apply(project);
-		new ExcludePluginFeatures().apply(project);
+		new DependencyManagementPluginFeatures().apply(project);
 		project.getTasks().withType(JavaCompile.class).all(new SetUtf8EncodingAction());
 	}
 

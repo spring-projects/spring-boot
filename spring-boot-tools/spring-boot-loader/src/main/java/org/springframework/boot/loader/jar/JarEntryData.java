@@ -97,10 +97,11 @@ public final class JarEntryData {
 	}
 
 	/**
-	 * @return the underlying {@link RandomAccessData} for this entry. Generally this
+	 * Return the underlying {@link RandomAccessData} for this entry. Generally this
 	 * method should not be called directly and instead data should be accessed via
 	 * {@link JarFile#getInputStream(ZipEntry)}.
-	 * @throws IOException
+	 * @return the data
+	 * @throws IOException if the data cannot be read
 	 */
 	public RandomAccessData getData() throws IOException {
 		if (this.data == null) {
@@ -154,7 +155,7 @@ public final class JarEntryData {
 	}
 
 	/**
-	 * Decode MSDOS Date Time details. See
+	 * Decode MS-DOS Date Time details. See
 	 * <a href="http://mindprod.com/jgloss/zip.html">mindprod.com/jgloss/zip.html</a> for
 	 * more details of the format.
 	 * @param date the date part
@@ -200,7 +201,7 @@ public final class JarEntryData {
 	 * @param source the source {@link JarFile}
 	 * @param inputStream the input stream to load data from
 	 * @return a {@link JarEntryData} or {@code null}
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	static JarEntryData fromInputStream(JarFile source, InputStream inputStream)
 			throws IOException {

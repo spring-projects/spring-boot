@@ -90,9 +90,9 @@ public class Repackager {
 	}
 
 	/**
-	 * Repackage the source file so that it can be run using '{@literal java -jar}'
+	 * Repackage the source file so that it can be run using '{@literal java -jar}'.
 	 * @param libraries the libraries required to run the archive
-	 * @throws IOException
+	 * @throws IOException if the file cannot be repackaged
 	 */
 	public void repackage(Libraries libraries) throws IOException {
 		repackage(this.source, libraries);
@@ -100,23 +100,35 @@ public class Repackager {
 
 	/**
 	 * Repackage to the given destination so that it can be launched using '
-	 * {@literal java -jar}'
+	 * {@literal java -jar}'.
 	 * @param destination the destination file (may be the same as the source)
 	 * @param libraries the libraries required to run the archive
-	 * @throws IOException
+	 * @throws IOException if the file cannot be repackaged
 	 */
 	public void repackage(File destination, Libraries libraries) throws IOException {
+		repackage(destination, libraries, null);
+	}
+
+	/**
+	 * Repackage to the given destination so that it can be launched using '
+	 * {@literal java -jar}'.
+	 * @param destination the destination file (may be the same as the source)
+	 * @param libraries the libraries required to run the archive
+	 * @param launchScript an optional launch script prepended to the front of the jar
+	 * @throws IOException if the file cannot be repackaged
+	 * @since 1.3.0
+	 */
+	public void repackage(File destination, Libraries libraries,
+			LaunchScript launchScript) throws IOException {
 		if (destination == null || destination.isDirectory()) {
 			throw new IllegalArgumentException("Invalid destination");
 		}
 		if (libraries == null) {
 			throw new IllegalArgumentException("Libraries must not be null");
 		}
-
 		if (alreadyRepackaged()) {
 			return;
 		}
-
 		destination = destination.getAbsoluteFile();
 		File workingSource = this.source;
 		if (this.source.equals(destination)) {
@@ -129,7 +141,7 @@ public class Repackager {
 		try {
 			JarFile jarFileSource = new JarFile(workingSource);
 			try {
-				repackage(jarFileSource, destination, libraries);
+				repackage(jarFileSource, destination, libraries, launchScript);
 			}
 			finally {
 				jarFileSource.close();
@@ -154,9 +166,9 @@ public class Repackager {
 		}
 	}
 
-	private void repackage(JarFile sourceJar, File destination, Libraries libraries)
-			throws IOException {
-		JarWriter writer = new JarWriter(destination);
+	private void repackage(JarFile sourceJar, File destination, Libraries libraries,
+			LaunchScript launchScript) throws IOException {
+		JarWriter writer = new JarWriter(destination, launchScript);
 		try {
 			final List<Library> unpackLibraries = new ArrayList<Library>();
 			final List<Library> standardLibraries = new ArrayList<Library>();

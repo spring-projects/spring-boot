@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.template.AbstractTemplateViewResol
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring FreeMarker
+ * {@link ConfigurationProperties} for configuring FreeMarker.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
@@ -48,6 +48,12 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 	 */
 	private String[] templateLoaderPath = new String[] { DEFAULT_TEMPLATE_LOADER_PATH };
 
+	/**
+	 * Prefer file system access for template loading. File system access enables hot
+	 * detection of template changes.
+	 */
+	private boolean preferFileSystemAccess = true;
+
 	public FreeMarkerProperties() {
 		super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
 	}
@@ -62,6 +68,14 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 
 	public String[] getTemplateLoaderPath() {
 		return this.templateLoaderPath;
+	}
+
+	public boolean isPreferFileSystemAccess() {
+		return this.preferFileSystemAccess;
+	}
+
+	public void setPreferFileSystemAccess(boolean preferFileSystemAccess) {
+		this.preferFileSystemAccess = preferFileSystemAccess;
 	}
 
 	public void setTemplateLoaderPath(String... templateLoaderPaths) {

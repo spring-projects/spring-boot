@@ -32,7 +32,7 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 
 /**
- * {@link CompilerAutoConfiguration} for Spring Test
+ * {@link CompilerAutoConfiguration} for Spring Test.
  *
  * @author Dave Syer
  * @since 1.1.0
@@ -56,10 +56,10 @@ public class SpringTestCompilerAutoConfiguration extends CompilerAutoConfigurati
 			GeneratorContext generatorContext, SourceUnit source, ClassNode classNode)
 					throws CompilationFailedException {
 		if (!AstUtils.hasAtLeastOneAnnotation(classNode, "RunWith")) {
-			AnnotationNode runwith = new AnnotationNode(ClassHelper.make("RunWith"));
-			runwith.addMember("value",
+			AnnotationNode runWith = new AnnotationNode(ClassHelper.make("RunWith"));
+			runWith.addMember("value",
 					new ClassExpression(ClassHelper.make("SpringJUnit4ClassRunner")));
-			classNode.addAnnotation(runwith);
+			classNode.addAnnotation(runWith);
 		}
 	}
 

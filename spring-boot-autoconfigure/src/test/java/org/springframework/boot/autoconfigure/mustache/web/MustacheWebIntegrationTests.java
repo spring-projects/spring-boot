@@ -62,7 +62,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringApplicationConfiguration(Application.class)
 @IntegrationTest("server.port:0")
 @WebAppConfiguration
 public class MustacheWebIntegrationTests {
@@ -106,7 +106,7 @@ public class MustacheWebIntegrationTests {
 			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
-	protected static @interface MinimalWebConfiguration {
+	protected @interface MinimalWebConfiguration {
 	}
 
 	@Configuration

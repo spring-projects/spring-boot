@@ -32,6 +32,7 @@ import org.gradle.api.tasks.bundling.Jar;
 
 import org.springframework.boot.gradle.PluginFeatures;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
+import org.springframework.boot.gradle.run.FindMainClassTask;
 import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.util.StringUtils;
@@ -45,6 +46,9 @@ import org.springframework.util.StringUtils;
  */
 public class RepackagePluginFeatures implements PluginFeatures {
 
+	/**
+	 * The name of the repackage task.
+	 */
 	public static final String REPACKAGE_TASK_NAME = "bootRepackage";
 
 	@Override
@@ -70,6 +74,7 @@ public class RepackagePluginFeatures implements PluginFeatures {
 				runtimeProjectDependencyJarTasks);
 		registerOutput(project, task);
 		ensureTaskRunsOnAssembly(project, task);
+		ensureMainClassHasBeenFound(project, task);
 	}
 
 	private void registerOutput(Project project, final RepackageTask task) {
@@ -90,8 +95,13 @@ public class RepackagePluginFeatures implements PluginFeatures {
 		project.getTasks().getByName(BasePlugin.ASSEMBLE_TASK_NAME).dependsOn(task);
 	}
 
+	private void ensureMainClassHasBeenFound(Project project, Task task) {
+		task.dependsOn(project.getTasks().withType(FindMainClassTask.class));
+	}
+
 	/**
-	 * Register BootRepackage so that we can use task {@code foo(type: BootRepackage)} .
+	 * Register BootRepackage so that we can use task {@code foo(type: BootRepackage)}.
+	 * @param project the source project
 	 */
 	private void registerRepackageTaskProperty(Project project) {
 		project.getExtensions().getExtraProperties().set("BootRepackage",
@@ -99,7 +109,7 @@ public class RepackagePluginFeatures implements PluginFeatures {
 	}
 
 	/**
-	 * Register task input/outputs when classifiers are used
+	 * Register task input/outputs when classifiers are used.
 	 */
 	private static class RegisterInputsOutputsAction implements Action<Jar> {
 
@@ -107,7 +117,7 @@ public class RepackagePluginFeatures implements PluginFeatures {
 
 		private final Project project;
 
-		public RegisterInputsOutputsAction(RepackageTask task) {
+		RegisterInputsOutputsAction(RepackageTask task) {
 			this.task = task;
 			this.project = task.getProject();
 		}

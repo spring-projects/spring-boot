@@ -1,0 +1,14 @@
+=== /info
+This endpoint is empty and marked as `sensitive=false` by default (so it is
+unauthenticated by default if Spring Security is in use). It reflects the content of the
+`info.*` properties  in the `Environment`, as well as the properties in `git.properties`
+if such a file exists in the root of the classpath.
+
+Example curl request:
+include::{generated}/info/curl-request.adoc[]
+
+Example HTTP request: [small]##link:../info[icon:external-link[role="silver"]]##
+include::{generated}/info/http-request.adoc[]
+
+Example HTTP response:
+include::{generated}/info/http-response.adoc[]

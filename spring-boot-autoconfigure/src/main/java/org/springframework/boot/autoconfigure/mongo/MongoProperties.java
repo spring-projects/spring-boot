@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.mongo;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.env.Environment;
 
 /**
  * Configuration properties for Mongo.
@@ -36,11 +38,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Phillip Webb
  * @author Josh Long
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
+ * @author Nasko Vasilev
  */
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 public class MongoProperties {
 
-	private static final int DEFAULT_PORT = 27017;
+	/**
+	 * Default port used when the configured port is {@code null}.
+	 */
+	public static final int DEFAULT_PORT = 27017;
 
 	/**
 	 * Mongo server host.
@@ -82,6 +89,11 @@ public class MongoProperties {
 	 */
 	private char[] password;
 
+	/**
+	 * Fully qualified name of the FieldNamingStrategy to use.
+	 */
+	private Class<?> fieldNamingStrategy;
+
 	public String getHost() {
 		return this.host;
 	}
@@ -120,6 +132,14 @@ public class MongoProperties {
 
 	public void setPassword(char[] password) {
 		this.password = password;
+	}
+
+	public Class<?> getFieldNamingStrategy() {
+		return this.fieldNamingStrategy;
+	}
+
+	public void setFieldNamingStrategy(Class<?> fieldNamingStrategy) {
+		this.fieldNamingStrategy = fieldNamingStrategy;
 	}
 
 	public void clearPassword() {
@@ -162,22 +182,48 @@ public class MongoProperties {
 		return new MongoClientURI(this.uri).getDatabase();
 	}
 
+	/**
+	 * Creates a {@link MongoClient} using the given {@code options}.
+	 *
+	 * @param options the options
+	 * @return the Mongo client
+	 * @throws UnknownHostException if the configured host is unknown
+	 * @deprecated Since 1.3.0 in favour of
+	 * {@link #createMongoClient(MongoClientOptions, Environment)}
+	 */
+	@Deprecated
 	public MongoClient createMongoClient(MongoClientOptions options)
 			throws UnknownHostException {
+		return this.createMongoClient(options, null);
+	}
+
+	/**
+	 * Creates a {@link MongoClient} using the given {@code options} and
+	 * {@code environment}. If the configured port is zero, the value of the
+	 * {@code local.mongo.port} property retrieved from the {@code environment} is used to
+	 * configure the client.
+	 *
+	 * @param options the options
+	 * @param environment the environment
+	 * @return the Mongo client
+	 * @throws UnknownHostException if the configured host is unknown
+	 */
+	public MongoClient createMongoClient(MongoClientOptions options,
+			Environment environment) throws UnknownHostException {
 		try {
 			if (hasCustomAddress() || hasCustomCredentials()) {
 				if (options == null) {
 					options = MongoClientOptions.builder().build();
 				}
-				List<MongoCredential> credentials = null;
+				List<MongoCredential> credentials = new ArrayList<MongoCredential>();
 				if (hasCustomCredentials()) {
 					String database = this.authenticationDatabase == null
 							? getMongoClientDatabase() : this.authenticationDatabase;
-					credentials = Arrays.asList(MongoCredential.createMongoCRCredential(
-							this.username, database, this.password));
+					credentials.add(MongoCredential.createCredential(this.username,
+							database, this.password));
 				}
 				String host = this.host == null ? "localhost" : this.host;
-				int port = this.port == null ? DEFAULT_PORT : this.port;
+				int port = determinePort(environment);
 				return new MongoClient(Arrays.asList(new ServerAddress(host, port)),
 						credentials, options);
 			}
@@ -197,6 +243,24 @@ public class MongoProperties {
 		return this.username != null && this.password != null;
 	}
 
+	private int determinePort(Environment environment) {
+		if (this.port == null) {
+			return DEFAULT_PORT;
+		}
+		if (this.port == 0) {
+			if (environment != null) {
+				String localPort = environment.getProperty("local.mongo.port");
+				if (localPort != null) {
+					return Integer.valueOf(localPort);
+				}
+			}
+			throw new IllegalStateException(
+					"spring.data.mongodb.port=0 and no local mongo port configuration "
+							+ "is available");
+		}
+		return this.port;
+	}
+
 	private Builder builder(MongoClientOptions options) {
 		Builder builder = MongoClientOptions.builder();
 		if (options != null) {
@@ -207,8 +271,17 @@ public class MongoProperties {
 			builder.dbDecoderFactory(options.getDbDecoderFactory());
 			builder.dbEncoderFactory(options.getDbEncoderFactory());
 			builder.description(options.getDescription());
+			builder.heartbeatConnectTimeout(options.getHeartbeatConnectTimeout());
+			builder.heartbeatFrequency(options.getHeartbeatFrequency());
+			builder.heartbeatSocketTimeout(options.getHeartbeatSocketTimeout());
+			builder.localThreshold(options.getLocalThreshold());
+			builder.minConnectionsPerHost(options.getMinConnectionsPerHost());
+			builder.minHeartbeatFrequency(options.getMinHeartbeatFrequency());
+			builder.maxConnectionIdleTime(options.getMaxConnectionIdleTime());
+			builder.maxConnectionLifeTime(options.getMaxConnectionLifeTime());
 			builder.maxWaitTime(options.getMaxWaitTime());
 			builder.readPreference(options.getReadPreference());
+			builder.requiredReplicaSetName(options.getRequiredReplicaSetName());
 			builder.socketFactory(options.getSocketFactory());
 			builder.socketKeepAlive(options.isSocketKeepAlive());
 			builder.socketTimeout(options.getSocketTimeout());

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.2.9.BUILD-SNAPSHOT</version>
+		<version>1.3.8.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-starters</artifactId>
@@ -23,8 +23,11 @@
 		<module>spring-boot-starter</module>
 		<module>spring-boot-starter-amqp</module>
 		<module>spring-boot-starter-aop</module>
+		<module>spring-boot-starter-artemis</module>
 		<module>spring-boot-starter-batch</module>
+		<module>spring-boot-starter-cache</module>
 		<module>spring-boot-starter-cloud-connectors</module>
+		<module>spring-boot-starter-data-cassandra</module>
 		<module>spring-boot-starter-data-elasticsearch</module>
 		<module>spring-boot-starter-data-gemfire</module>
 		<module>spring-boot-starter-data-jpa</module>
@@ -39,6 +42,7 @@
 		<module>spring-boot-starter-jdbc</module>
 		<module>spring-boot-starter-jersey</module>
 		<module>spring-boot-starter-jetty</module>
+		<module>spring-boot-starter-jooq</module>
 		<module>spring-boot-starter-jta-atomikos</module>
 		<module>spring-boot-starter-jta-bitronix</module>
 		<module>spring-boot-starter-logging</module>
@@ -59,6 +63,7 @@
 		<module>spring-boot-starter-thymeleaf</module>
 		<module>spring-boot-starter-tomcat</module>
 		<module>spring-boot-starter-undertow</module>
+		<module>spring-boot-starter-validation</module>
 		<module>spring-boot-starter-velocity</module>
 		<module>spring-boot-starter-web</module>
 		<module>spring-boot-starter-websocket</module>

@@ -34,6 +34,7 @@ import org.junit.runners.Parameterized.Parameters;
 import org.springframework.boot.actuate.metrics.Iterables;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
+import org.springframework.boot.redis.RedisTestServer;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import static org.junit.Assert.assertEquals;
@@ -49,8 +50,10 @@ import static org.junit.Assert.assertTrue;
 public class RedisMultiMetricRepositoryTests {
 
 	@Rule
-	public RedisServer redis = RedisServer.running();
+	public RedisTestServer redis = new RedisTestServer();
+
 	private RedisMultiMetricRepository repository;
+
 	@Parameter(0)
 	public String prefix;
 
@@ -63,24 +66,25 @@ public class RedisMultiMetricRepositoryTests {
 	public void init() {
 		if (this.prefix == null) {
 			this.prefix = "spring.groups";
-			this.repository = new RedisMultiMetricRepository(this.redis.getResource());
+			this.repository = new RedisMultiMetricRepository(
+					this.redis.getConnectionFactory());
 		}
 		else {
-			this.repository = new RedisMultiMetricRepository(this.redis.getResource(),
-					this.prefix);
+			this.repository = new RedisMultiMetricRepository(
+					this.redis.getConnectionFactory(), this.prefix);
 		}
 	}
 
 	@After
 	public void clear() {
-		assertTrue(new StringRedisTemplate(this.redis.getResource()).opsForZSet()
+		assertTrue(new StringRedisTemplate(this.redis.getConnectionFactory()).opsForZSet()
 				.size("keys." + this.prefix) > 0);
 		this.repository.reset("foo");
 		this.repository.reset("bar");
-		assertNull(new StringRedisTemplate(this.redis.getResource()).opsForValue()
-				.get(this.prefix + ".foo"));
-		assertNull(new StringRedisTemplate(this.redis.getResource()).opsForValue()
-				.get(this.prefix + ".bar"));
+		assertNull(new StringRedisTemplate(this.redis.getConnectionFactory())
+				.opsForValue().get(this.prefix + ".foo"));
+		assertNull(new StringRedisTemplate(this.redis.getConnectionFactory())
+				.opsForValue().get(this.prefix + ".bar"));
 	}
 
 	@Test
@@ -142,4 +146,5 @@ public class RedisMultiMetricRepositoryTests {
 		assertTrue("Wrong names: " + names, names.contains("foo.bar"));
 		assertEquals(3d, bar.getValue());
 	}
+
 }

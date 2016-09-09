@@ -81,7 +81,7 @@ public class EmbeddedVelocityToolboxView extends VelocityToolboxView {
 
 		private final String toolboxFile;
 
-		public GetResourceMethodInterceptor(String toolboxFile) {
+		GetResourceMethodInterceptor(String toolboxFile) {
 			if (toolboxFile != null && !toolboxFile.startsWith("/")) {
 				toolboxFile = "/" + toolboxFile;
 			}

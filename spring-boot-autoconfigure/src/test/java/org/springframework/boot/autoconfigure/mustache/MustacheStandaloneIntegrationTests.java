@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringApplicationConfiguration(Application.class)
 @IntegrationTest({ "spring.main.web_environment=false", "env.foo=Heaven", "foo=World" })
 public class MustacheStandaloneIntegrationTests {
 

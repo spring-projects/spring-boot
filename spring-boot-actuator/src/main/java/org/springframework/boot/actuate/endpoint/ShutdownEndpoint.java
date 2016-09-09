@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,9 @@ import org.springframework.context.ConfigurableApplicationContext;
  *
  * @author Dave Syer
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  */
-@ConfigurationProperties(prefix = "endpoints.shutdown", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "endpoints.shutdown")
 public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>>
 		implements ApplicationContextAware {
 
@@ -58,19 +59,20 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>>
 		}
 		finally {
 
-			new Thread(new Runnable() {
+			Thread thread = new Thread(new Runnable() {
 				@Override
 				public void run() {
 					try {
 						Thread.sleep(500L);
 					}
 					catch (InterruptedException ex) {
-						// Swallow exception and continue
+						Thread.currentThread().interrupt();
 					}
 					ShutdownEndpoint.this.context.close();
 				}
-			}).start();
-
+			});
+			thread.setContextClassLoader(getClass().getClassLoader());
+			thread.start();
 		}
 	}
 

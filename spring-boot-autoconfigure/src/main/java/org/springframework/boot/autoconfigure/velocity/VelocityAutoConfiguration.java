@@ -22,6 +22,8 @@ import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.VelocityException;
 
@@ -34,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
+import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.view.velocity.EmbeddedVelocityViewResolver;
@@ -42,15 +45,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.velocity.VelocityEngineFactory;
 import org.springframework.ui.velocity.VelocityEngineFactoryBean;
-import org.springframework.util.Assert;
+import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.view.velocity.VelocityConfig;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
-import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Velocity.
  *
  * @author Andy Wilkinson
+ * @author Brian Clozel
  * @since 1.1.0
  */
 @Configuration
@@ -58,6 +61,8 @@ import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(VelocityProperties.class)
 public class VelocityAutoConfiguration {
+
+	private static final Log logger = LogFactory.getLog(VelocityAutoConfiguration.class);
 
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -70,11 +75,12 @@ public class VelocityAutoConfiguration {
 		if (this.properties.isCheckTemplateLocation()) {
 			TemplateLocation location = new TemplateLocation(
 					this.properties.getResourceLoaderPath());
-			Assert.state(location.exists(this.applicationContext),
-					"Cannot find template location: " + location
-							+ " (please add some templates, check your Velocity "
-							+ "configuration, or set spring.velocity."
-							+ "checkTemplateLocation=false)");
+			if (!location.exists(this.applicationContext)) {
+				logger.warn("Cannot find template location: " + location
+						+ " (please add some templates, check your Velocity "
+						+ "configuration, or set spring.velocity."
+						+ "checkTemplateLocation=false)");
+			}
 		}
 	}
 
@@ -88,7 +94,7 @@ public class VelocityAutoConfiguration {
 			factory.setPreferFileSystemAccess(this.properties.isPreferFileSystemAccess());
 			Properties velocityProperties = new Properties();
 			velocityProperties.setProperty("input.encoding",
-					this.properties.getCharset());
+					this.properties.getCharsetName());
 			velocityProperties.putAll(this.properties.getProperties());
 			factory.setVelocityProperties(velocityProperties);
 		}
@@ -131,10 +137,17 @@ public class VelocityAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "velocityViewResolver")
 		@ConditionalOnProperty(name = "spring.velocity.enabled", matchIfMissing = true)
-		public VelocityViewResolver velocityViewResolver() {
+		public EmbeddedVelocityViewResolver velocityViewResolver() {
 			EmbeddedVelocityViewResolver resolver = new EmbeddedVelocityViewResolver();
 			this.properties.applyToViewResolver(resolver);
 			return resolver;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnEnabledResourceChain
+		public ResourceUrlEncodingFilter resourceUrlEncodingFilter() {
+			return new ResourceUrlEncodingFilter();
 		}
 
 	}

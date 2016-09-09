@@ -62,6 +62,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 			this.context.close();
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 	}
 
@@ -109,6 +110,13 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 		finally {
 			response.close();
 		}
+	}
+
+	// Simple main method for testing in a browser
+	@SuppressWarnings("resource")
+	public static void main(String[] args) {
+		new AnnotationConfigEmbeddedWebApplicationContext(
+				JettyEmbeddedServletContainerFactory.class, Config.class);
 	}
 
 	@Configuration
@@ -201,13 +209,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 		public String sayHello() {
 			return "Hello World";
 		}
-	}
 
-	// Simple main method for testing in a browser
-	@SuppressWarnings("resource")
-	public static void main(String[] args) {
-		new AnnotationConfigEmbeddedWebApplicationContext(
-				JettyEmbeddedServletContainerFactory.class, Config.class);
 	}
 
 }

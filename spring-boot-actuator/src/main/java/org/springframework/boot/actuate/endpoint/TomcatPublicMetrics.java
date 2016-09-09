@@ -37,7 +37,7 @@ import org.springframework.context.ApplicationContextAware;
 /**
  * A {@link PublicMetrics} implementation that provides Tomcat statistics.
  *
- * @author Johannes Stelzer
+ * @author Johannes Edmeier
  * @author Phillip Webb
  * @since 1.2.0
  */

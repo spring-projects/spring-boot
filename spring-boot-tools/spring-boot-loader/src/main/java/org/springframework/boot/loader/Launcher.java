@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,23 +70,21 @@ public abstract class Launcher {
 	 * Create a classloader for the specified archives.
 	 * @param archives the archives
 	 * @return the classloader
-	 * @throws Exception
+	 * @throws Exception if the classloader cannot be created
 	 */
 	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
 		List<URL> urls = new ArrayList<URL>(archives.size());
 		for (Archive archive : archives) {
-			// Add the current archive at end (it will be reversed and end up taking
-			// precedence)
 			urls.add(archive.getUrl());
 		}
 		return createClassLoader(urls.toArray(new URL[urls.size()]));
 	}
 
 	/**
-	 * Create a classloader for the specified URLs
+	 * Create a classloader for the specified URLs.
 	 * @param urls the URLs
 	 * @return the classloader
-	 * @throws Exception
+	 * @throws Exception if the classloader cannot be created
 	 */
 	protected ClassLoader createClassLoader(URL[] urls) throws Exception {
 		return new LaunchedURLClassLoader(urls, getClass().getClassLoader());
@@ -97,15 +95,13 @@ public abstract class Launcher {
 	 * @param args the incoming arguments
 	 * @param mainClass the main class to run
 	 * @param classLoader the classloader
-	 * @throws Exception
+	 * @throws Exception if the launch fails
 	 */
 	protected void launch(String[] args, String mainClass, ClassLoader classLoader)
 			throws Exception {
 		Runnable runner = createMainMethodRunner(mainClass, args, classLoader);
-		Thread runnerThread = new Thread(runner);
-		runnerThread.setContextClassLoader(classLoader);
-		runnerThread.setName(Thread.currentThread().getName());
-		runnerThread.start();
+		Thread.currentThread().setContextClassLoader(classLoader);
+		runner.run();
 	}
 
 	/**
@@ -114,7 +110,7 @@ public abstract class Launcher {
 	 * @param args the incoming arguments
 	 * @param classLoader the classloader
 	 * @return a runnable used to start the application
-	 * @throws Exception
+	 * @throws Exception if the main method runner cannot be created
 	 */
 	protected Runnable createMainMethodRunner(String mainClass, String[] args,
 			ClassLoader classLoader) throws Exception {
@@ -127,14 +123,14 @@ public abstract class Launcher {
 	/**
 	 * Returns the main class that should be launched.
 	 * @return the name of the main class
-	 * @throws Exception
+	 * @throws Exception if the main class cannot be obtained
 	 */
 	protected abstract String getMainClass() throws Exception;
 
 	/**
 	 * Returns the archives that will be used to construct the class path.
 	 * @return the class path archives
-	 * @throws Exception
+	 * @throws Exception if the class path archives cannot be obtained
 	 */
 	protected abstract List<Archive> getClassPathArchives() throws Exception;
 

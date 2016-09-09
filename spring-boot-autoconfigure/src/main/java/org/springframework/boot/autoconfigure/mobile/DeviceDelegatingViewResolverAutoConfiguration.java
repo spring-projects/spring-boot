@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @AutoConfigureAfter({ WebMvcAutoConfiguration.class, ThymeleafAutoConfiguration.class })
 public class DeviceDelegatingViewResolverAutoConfiguration {
 
-	private static Log logger = LogFactory
+	private static final Log logger = LogFactory
 			.getLog(DeviceDelegatingViewResolverAutoConfiguration.class);
 
 	private static abstract class AbstractDelegateConfiguration {
@@ -65,6 +65,7 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 				ViewResolver delegate, int delegateOrder) {
 			LiteDeviceDelegatingViewResolver resolver = new LiteDeviceDelegatingViewResolver(
 					delegate);
+			resolver.setEnableFallback(this.viewResolverProperties.isEnableFallback());
 			resolver.setNormalPrefix(this.viewResolverProperties.getNormalPrefix());
 			resolver.setNormalSuffix(this.viewResolverProperties.getNormalSuffix());
 			resolver.setMobilePrefix(this.viewResolverProperties.getMobilePrefix());

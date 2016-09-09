@@ -12,7 +12,7 @@ apply plugin: 'spring-boot'
 group = 'flatdir'
 version = '0.0.0'
 
-run {
+bootRun {
   main = 'Foo'
 }
 
@@ -21,6 +21,7 @@ jar {
 }
 
 repositories {
+	mavenLocal()
 	flatDir( dirs:'lib' )
 }
 

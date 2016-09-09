@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,7 +52,7 @@ import org.springframework.util.ObjectUtils;
  */
 public class ServletRegistrationBean extends RegistrationBean {
 
-	private static Log logger = LogFactory.getLog(ServletRegistrationBean.class);
+	private static final Log logger = LogFactory.getLog(ServletRegistrationBean.class);
 
 	private static final String[] DEFAULT_MAPPINGS = { "/*" };
 
@@ -100,7 +100,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 
 	/**
 	 * Returns the servlet being registered.
-	 * @return the sevlet
+	 * @return the servlet
 	 */
 	protected Servlet getServlet() {
 		return this.servlet;
@@ -154,8 +154,8 @@ public class ServletRegistrationBean extends RegistrationBean {
 	}
 
 	/**
-	 * Set the the {@link MultipartConfigElement multi-part configuration}.
-	 * @param multipartConfig the muti-part configuration to set or {@code null}
+	 * Set the {@link MultipartConfigElement multi-part configuration}.
+	 * @param multipartConfig the multi-part configuration to set or {@code null}
 	 */
 	public void setMultipartConfig(MultipartConfigElement multipartConfig) {
 		this.multipartConfig = multipartConfig;

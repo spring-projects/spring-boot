@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.Collections;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.test.ApplicationContextTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -30,11 +31,13 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -90,6 +93,20 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
+	public void propertiesWithRepeatSeparator() throws Exception {
+		SpringApplicationBuilder application = new SpringApplicationBuilder()
+				.sources(ExampleConfig.class).contextClass(StaticApplicationContext.class)
+				.properties("one=c:\\logging.file", "two=a:b", "three:c:\\logging.file",
+						"four:a:b");
+		this.context = application.run();
+		ConfigurableEnvironment environment = this.context.getEnvironment();
+		assertThat(environment.getProperty("one"), is(equalTo("c:\\logging.file")));
+		assertThat(environment.getProperty("two"), is(equalTo("a:b")));
+		assertThat(environment.getProperty("three"), is(equalTo("c:\\logging.file")));
+		assertThat(environment.getProperty("four"), is(equalTo("a:b")));
+	}
+
+	@Test
 	public void specificApplicationContextClass() throws Exception {
 		SpringApplicationBuilder application = new SpringApplicationBuilder()
 				.sources(ExampleConfig.class)
@@ -103,11 +120,15 @@ public class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ChildConfig.class).contextClass(SpyApplicationContext.class);
 		application.parent(ExampleConfig.class);
-		this.context = application.run();
+		this.context = application.run("foo.bar=baz");
 		verify(((SpyApplicationContext) this.context).getApplicationContext())
 				.setParent(any(ApplicationContext.class));
 		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook(),
 				equalTo(false));
+		assertThat(this.context.getParent().getBean(ApplicationArguments.class)
+				.getNonOptionArgs(), contains("foo.bar=baz"));
+		assertThat(this.context.getBean(ApplicationArguments.class).getNonOptionArgs(),
+				contains("foo.bar=baz"));
 	}
 
 	@Test
@@ -115,11 +136,15 @@ public class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ChildConfig.class).contextClass(SpyApplicationContext.class);
 		application.parent(ExampleConfig.class);
-		this.context = application.build().run();
+		this.context = application.build("a=alpha").run("b=bravo");
 		verify(((SpyApplicationContext) this.context).getApplicationContext())
 				.setParent(any(ApplicationContext.class));
 		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook(),
 				equalTo(false));
+		assertThat(this.context.getParent().getBean(ApplicationArguments.class)
+				.getNonOptionArgs(), contains("a=alpha"));
+		assertThat(this.context.getBean(ApplicationArguments.class).getNonOptionArgs(),
+				contains("b=bravo"));
 	}
 
 	@Test
@@ -248,7 +273,7 @@ public class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).web(false);
 		this.context = application.run();
-		assertEquals(3, application.application().getInitializers().size());
+		assertEquals(4, application.application().getInitializers().size());
 	}
 
 	@Test
@@ -256,7 +281,7 @@ public class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).child(ChildConfig.class).web(false);
 		this.context = application.run();
-		assertEquals(4, application.application().getInitializers().size());
+		assertEquals(5, application.application().getInitializers().size());
 	}
 
 	@Test
@@ -270,7 +295,7 @@ public class SpringApplicationBuilderTests {
 							}
 						});
 		this.context = application.run();
-		assertEquals(4, application.application().getInitializers().size());
+		assertEquals(5, application.application().getInitializers().size());
 	}
 
 	@Configuration
@@ -319,6 +344,17 @@ public class SpringApplicationBuilderTests {
 
 		public boolean getRegisteredShutdownHook() {
 			return this.registeredShutdownHook;
+		}
+
+		@Override
+		public void close() {
+			super.close();
+			this.applicationContext.close();
+		}
+
+		@Override
+		public ApplicationContext getParent() {
+			return this.applicationContext.getParent();
 		}
 	}
 }

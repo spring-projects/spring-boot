@@ -38,7 +38,7 @@ public class TestRestTemplateTests {
 
 	@Test
 	public void simple() {
-		// The Apache client is on the classpath so we get the fully-leaded factory
+		// The Apache client is on the classpath so we get the fully-fledged factory
 		assertTrue(new TestRestTemplate()
 				.getRequestFactory() instanceof HttpComponentsClientHttpRequestFactory);
 	}

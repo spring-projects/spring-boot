@@ -61,7 +61,7 @@ import org.springframework.web.util.NestedServletException;
 public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer
 		implements Filter, NonEmbeddedServletContainerFactory {
 
-	private static Log logger = LogFactory.getLog(ErrorPageFilter.class);
+	private static final Log logger = LogFactory.getLog(ErrorPageFilter.class);
 
 	// From RequestDispatcher but not referenced to remain compatible with Servlet 2.5
 
@@ -71,6 +71,9 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 
 	private static final String ERROR_MESSAGE = "javax.servlet.error.message";
 
+	/**
+	 * The name of the servlet attribute containing request URI.
+	 */
 	public static final String ERROR_REQUEST_URI = "javax.servlet.error.request_uri";
 
 	private static final String ERROR_STATUS_CODE = "javax.servlet.error.status_code";
@@ -282,7 +285,7 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 
 		private boolean hasErrorToSend = false;
 
-		public ErrorWrapperResponse(HttpServletResponse response) {
+		ErrorWrapperResponse(HttpServletResponse response) {
 			super(response);
 		}
 

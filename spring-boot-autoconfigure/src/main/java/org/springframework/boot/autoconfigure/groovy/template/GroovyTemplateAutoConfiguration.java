@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
 import groovy.text.markup.MarkupTemplateEngine;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -38,15 +40,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.core.Ordered;
-import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 
 /**
- * Autoconfiguration support for Groovy templates in MVC. By default creates a
+ * Auto-configuration support for Groovy templates in MVC. By default creates a
  * {@link MarkupTemplateEngine} configured from {@link GroovyTemplateProperties}, but you
  * can override that by providing your own {@link GroovyMarkupConfig} or even a
  * {@link MarkupTemplateEngine} of a different type.
@@ -61,6 +61,9 @@ import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(GroovyTemplateProperties.class)
 public class GroovyTemplateAutoConfiguration {
+
+	private static final Log logger = LogFactory
+			.getLog(GroovyTemplateAutoConfiguration.class);
 
 	@Configuration
 	@ConditionalOnClass(GroovyMarkupConfigurer.class)
@@ -79,12 +82,13 @@ public class GroovyTemplateAutoConfiguration {
 		public void checkTemplateLocationExists() {
 			if (this.properties.isCheckTemplateLocation() && !isUsingGroovyAllJar()) {
 				TemplateLocation location = new TemplateLocation(
-						this.properties.getPrefix());
-				Assert.state(location.exists(this.applicationContext),
-						"Cannot find template location: " + location
-								+ " (please add some templates, check your Groovy "
-								+ "configuration, or set spring.groovy.template."
-								+ "check-template-location=false)");
+						this.properties.getResourceLoaderPath());
+				if (!location.exists(this.applicationContext)) {
+					logger.warn("Cannot find template location: " + location
+							+ " (please add some templates, check your Groovy "
+							+ "configuration, or set spring.groovy.template."
+							+ "check-template-location=false)");
+				}
 			}
 		}
 
@@ -104,10 +108,11 @@ public class GroovyTemplateAutoConfiguration {
 						&& codeSource.getLocation().toString().contains("-all")) {
 					return true;
 				}
+				return false;
 			}
 			catch (Exception ex) {
+				return false;
 			}
-			return false;
 		}
 
 		@Bean
@@ -115,7 +120,7 @@ public class GroovyTemplateAutoConfiguration {
 		@ConfigurationProperties(prefix = "spring.groovy.template.configuration")
 		public GroovyMarkupConfigurer groovyMarkupConfigurer() {
 			GroovyMarkupConfigurer configurer = new GroovyMarkupConfigurer();
-			configurer.setResourceLoaderPath(this.properties.getPrefix());
+			configurer.setResourceLoaderPath(this.properties.getResourceLoaderPath());
 			configurer.setCacheTemplates(this.properties.isCache());
 			if (this.templateEngine != null) {
 				configurer.setTemplateEngine(this.templateEngine);
@@ -139,19 +144,8 @@ public class GroovyTemplateAutoConfiguration {
 		@ConditionalOnMissingBean(name = "groovyMarkupViewResolver")
 		public GroovyMarkupViewResolver groovyMarkupViewResolver() {
 			GroovyMarkupViewResolver resolver = new GroovyMarkupViewResolver();
-			configureViewResolver(resolver);
+			this.properties.applyToViewResolver(resolver);
 			return resolver;
-		}
-
-		private void configureViewResolver(UrlBasedViewResolver resolver) {
-			resolver.setSuffix(this.properties.getSuffix());
-			resolver.setCache(this.properties.isCache());
-			resolver.setContentType(this.properties.getContentType());
-			resolver.setViewNames(this.properties.getViewNames());
-			resolver.setRequestContextAttribute("spring");
-			// This resolver acts as a fallback resolver (e.g. like a
-			// InternalResourceViewResolver) so it needs to have low precedence
-			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 6);
 		}
 
 	}

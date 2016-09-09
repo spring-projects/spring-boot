@@ -19,6 +19,7 @@ package org.springframework.boot.cli.command.test;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.cli.compiler.GroovyCompiler;
@@ -43,12 +44,11 @@ public class TestRunner {
 
 	/**
 	 * Create a new {@link TestRunner} instance.
-	 * @param configuration
-	 * @param sources
-	 * @param args
+	 * @param configuration the configuration
+	 * @param sources the sources
+	 * @param args the args
 	 */
-	public TestRunner(TestRunnerConfiguration configuration, String[] sources,
-			String[] args) {
+	TestRunner(TestRunnerConfiguration configuration, String[] sources, String[] args) {
 		this.sources = sources.clone();
 		this.compiler = new GroovyCompiler(configuration);
 	}
@@ -56,7 +56,8 @@ public class TestRunner {
 	public void compileAndRunTests() throws Exception {
 		Object[] sources = this.compiler.compile(this.sources);
 		if (sources.length == 0) {
-			throw new RuntimeException("No classes found in '" + this.sources + "'");
+			throw new RuntimeException(
+					"No classes found in '" + Arrays.toString(this.sources) + "'");
 		}
 
 		// Run in new thread to ensure that the context classloader is setup
@@ -90,7 +91,7 @@ public class TestRunner {
 		 * Create a new {@link RunThread} instance.
 		 * @param sources the sources to launch
 		 */
-		public RunThread(Object... sources) {
+		RunThread(Object... sources) {
 			super("testrunner");
 			setDaemon(true);
 			if (sources.length != 0 && sources[0] instanceof Class) {

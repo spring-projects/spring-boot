@@ -47,9 +47,9 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 
 	private Metric<Number> metric1 = new Metric<Number>("a", 1);
 
-	private Metric<Number> metric2 = new Metric<Number>("b", 2);;
+	private Metric<Number> metric2 = new Metric<Number>("b", 2);
 
-	private Metric<Number> metric3 = new Metric<Number>("c", 3);;
+	private Metric<Number> metric3 = new Metric<Number>("c", 3);
 
 	public MetricsEndpointTests() {
 		super(Config.class, MetricsEndpoint.class, "metrics", true, "endpoints.metrics");
@@ -80,7 +80,7 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 
 		private final List<Metric<?>> metrics;
 
-		public TestPublicMetrics(int order, Metric<?>... metrics) {
+		TestPublicMetrics(int order, Metric<?>... metrics) {
 			this.order = order;
 			this.metrics = Arrays.asList(metrics);
 		}

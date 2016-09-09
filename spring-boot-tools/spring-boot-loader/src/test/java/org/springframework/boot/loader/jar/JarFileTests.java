@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -45,6 +46,7 @@ import org.springframework.util.StreamUtils;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
@@ -58,8 +60,12 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  * @author Martin Lau
+ * @author Andy Wilkinson
  */
 public class JarFileTests {
+	private static final String PROTOCOL_HANDLER = "java.protocol.handler.pkgs";
+
+	private static final String HANDLERS_PACKAGE = "org.springframework.boot.loader";
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -216,6 +222,11 @@ public class JarFileTests {
 		assertThat(jarURLConnection.getContentLength(), equalTo(1));
 		assertThat(jarURLConnection.getContent(), instanceOf(InputStream.class));
 		assertThat(jarURLConnection.getContentType(), equalTo("content/unknown"));
+		assertThat(jarURLConnection.getPermission(),
+				is(instanceOf(FilePermission.class)));
+		FilePermission permission = (FilePermission) jarURLConnection.getPermission();
+		assertThat(permission.getActions(), equalTo("read"));
+		assertThat(permission.getName(), equalTo(this.rootJarFile.getPath()));
 	}
 
 	@Test
@@ -269,6 +280,10 @@ public class JarFileTests {
 		assertThat(conn.getJarFile(), sameInstance(nestedJarFile));
 		assertThat(conn.getJarFileURL().toString(),
 				equalTo("jar:" + this.rootJarFile.toURI() + "!/nested.jar"));
+		assertThat(conn.getPermission(), is(instanceOf(FilePermission.class)));
+		FilePermission permission = (FilePermission) conn.getPermission();
+		assertThat(permission.getActions(), equalTo("read"));
+		assertThat(permission.getName(), equalTo(this.rootJarFile.getPath()));
 	}
 
 	@Test
@@ -292,7 +307,7 @@ public class JarFileTests {
 	}
 
 	@Test
-	public void getNestJarEntryUrl() throws Exception {
+	public void getNestedJarEntryUrl() throws Exception {
 		JarFile nestedJarFile = this.jarFile
 				.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
 		URL url = nestedJarFile.getJarEntry("3.dat").getUrl();
@@ -321,8 +336,17 @@ public class JarFileTests {
 
 	@Test
 	public void createNonNestedUrlFromString() throws Exception {
+		nonNestedJarFileFromString("jar:" + this.rootJarFile.toURI() + "!/2.dat");
+	}
+
+	@Test
+	public void createNonNestedUrlFromPathString() throws Exception {
+		nonNestedJarFileFromString(
+				"jar:" + this.rootJarFile.toPath().toUri() + "!/2.dat");
+	}
+
+	private void nonNestedJarFileFromString(String spec) throws Exception {
 		JarFile.registerUrlProtocolHandler();
-		String spec = "jar:" + this.rootJarFile.toURI() + "!/2.dat";
 		URL url = new URL(spec);
 		assertThat(url.toString(), equalTo(spec));
 		InputStream inputStream = url.openStream();
@@ -430,6 +454,44 @@ public class JarFileTests {
 		URL url = new URL(nestedUrl, nestedJarFile.getUrl() + "missing.jar!/3.dat");
 		this.thrown.expect(FileNotFoundException.class);
 		url.openConnection().getInputStream();
+	}
+
+	@Test
+	public void registerUrlProtocolHandlerWithNoExistingRegistration() {
+		String original = System.getProperty(PROTOCOL_HANDLER);
+		try {
+			System.clearProperty(PROTOCOL_HANDLER);
+			JarFile.registerUrlProtocolHandler();
+			String protocolHandler = System.getProperty(PROTOCOL_HANDLER);
+			assertThat(protocolHandler, equalTo(HANDLERS_PACKAGE));
+		}
+		finally {
+			if (original == null) {
+				System.clearProperty(PROTOCOL_HANDLER);
+			}
+			else {
+				System.setProperty(PROTOCOL_HANDLER, original);
+			}
+		}
+	}
+
+	@Test
+	public void registerUrlProtocolHandlerAddsToExistingRegistration() {
+		String original = System.getProperty(PROTOCOL_HANDLER);
+		try {
+			System.setProperty(PROTOCOL_HANDLER, "com.example");
+			JarFile.registerUrlProtocolHandler();
+			String protocolHandler = System.getProperty(PROTOCOL_HANDLER);
+			assertThat(protocolHandler, equalTo("com.example|" + HANDLERS_PACKAGE));
+		}
+		finally {
+			if (original == null) {
+				System.clearProperty(PROTOCOL_HANDLER);
+			}
+			else {
+				System.setProperty(PROTOCOL_HANDLER, original);
+			}
+		}
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,10 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.ApplicationContextTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -41,22 +45,34 @@ public class SpringApplicationHierarchyTests {
 	@Test
 	public void testParent() {
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(Child.class);
+		builder.properties("flyway.enabled=false", "liquibase.enabled=false");
 		builder.parent(Parent.class);
 		this.context = builder.run("--server.port=0");
 	}
 
 	@Test
 	public void testChild() {
-		this.context = new SpringApplicationBuilder(Parent.class).child(Child.class)
-				.run("--server.port=0");
+		SpringApplicationBuilder builder = new SpringApplicationBuilder(Parent.class);
+		builder.properties("flyway.enabled=false", "liquibase.enabled=false");
+		builder.child(Child.class);
+		this.context = builder.run("--server.port=0");
 	}
 
-	@EnableAutoConfiguration
+	@EnableAutoConfiguration(exclude = { ElasticsearchDataAutoConfiguration.class,
+			ElasticsearchRepositoriesAutoConfiguration.class,
+			CassandraAutoConfiguration.class,
+			CassandraDataAutoConfiguration.class }, excludeName = {
+					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Child {
 	}
 
 	@EnableAutoConfiguration(exclude = { JolokiaAutoConfiguration.class,
-			EndpointMBeanExportAutoConfiguration.class })
+			EndpointMBeanExportAutoConfiguration.class,
+			ElasticsearchDataAutoConfiguration.class,
+			ElasticsearchRepositoriesAutoConfiguration.class,
+			CassandraAutoConfiguration.class,
+			CassandraDataAutoConfiguration.class }, excludeName = {
+					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Parent {
 	}
 

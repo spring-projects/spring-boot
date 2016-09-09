@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.web;
 
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.core.Ordered;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 
@@ -31,7 +32,8 @@ public class OrderedHiddenHttpMethodFilter extends HiddenHttpMethodFilter
 	/**
 	 * The default order is high to ensure the filter is applied before Spring Security.
 	 */
-	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
+	public static final int DEFAULT_ORDER = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
+			- 10000;
 
 	private int order = DEFAULT_ORDER;
 

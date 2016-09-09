@@ -36,6 +36,9 @@ public final class RelaxedNames implements Iterable<String> {
 
 	private static final Pattern CAMEL_CASE_PATTERN = Pattern.compile("([^A-Z-])([A-Z])");
 
+	private static final Pattern SEPARATED_TO_CAMEL_CASE_PATTERN = Pattern
+			.compile("[_\\-.]");
+
 	private final String name;
 
 	private final Set<String> values = new LinkedHashSet<String>();
@@ -70,7 +73,10 @@ public final class RelaxedNames implements Iterable<String> {
 		}
 	}
 
-	static enum Variation {
+	/**
+	 * Name variations.
+	 */
+	enum Variation {
 
 		NONE {
 			@Override
@@ -97,7 +103,10 @@ public final class RelaxedNames implements Iterable<String> {
 
 	}
 
-	static enum Manipulation {
+	/**
+	 * Name manipulations.
+	 */
+	enum Manipulation {
 
 		NONE {
 			@Override
@@ -174,7 +183,7 @@ public final class RelaxedNames implements Iterable<String> {
 		private static String separatedToCamelCase(String value,
 				boolean caseInsensitive) {
 			StringBuilder builder = new StringBuilder();
-			for (String field : value.split("[_\\-.]")) {
+			for (String field : SEPARATED_TO_CAMEL_CASE_PATTERN.split(value)) {
 				field = (caseInsensitive ? field.toLowerCase() : field);
 				builder.append(
 						builder.length() == 0 ? field : StringUtils.capitalize(field));
@@ -187,6 +196,15 @@ public final class RelaxedNames implements Iterable<String> {
 			return builder.toString();
 
 		}
+	}
+
+	/**
+	 * Return a {@link RelaxedNames} for the given source camelCase source name.
+	 * @param name the source name in camelCase
+	 * @return the relaxed names
+	 */
+	public static RelaxedNames forCamelCase(String name) {
+		return new RelaxedNames(Manipulation.CAMELCASE_TO_HYPHEN.apply(name));
 	}
 
 }

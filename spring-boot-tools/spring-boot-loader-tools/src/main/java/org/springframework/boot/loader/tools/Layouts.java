@@ -31,10 +31,13 @@ import java.util.Set;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class Layouts {
+public final class Layouts {
+
+	private Layouts() {
+	}
 
 	/**
-	 * Return the a layout for the given source file.
+	 * Return a layout for the given source file.
 	 * @param file the source file
 	 * @return a {@link Layout}
 	 */
@@ -149,7 +152,7 @@ public class Layouts {
 	}
 
 	/**
-	 * Module layout (designed to be used as a "plug-in")
+	 * Module layout (designed to be used as a "plug-in").
 	 */
 	public static class Module implements Layout {
 

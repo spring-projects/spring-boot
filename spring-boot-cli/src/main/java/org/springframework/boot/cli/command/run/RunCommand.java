@@ -17,6 +17,7 @@
 package org.springframework.boot.cli.command.run;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -32,8 +33,6 @@ import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.compiler.GroovyCompilerScope;
 import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
-
-import static java.util.Arrays.asList;
 
 /**
  * {@link Command} to 'run' a groovy script or scripts.
@@ -73,9 +72,9 @@ public class RunCommand extends OptionParsingCommand {
 		@Override
 		protected void doOptions() {
 			this.watchOption = option("watch", "Watch the specified file for changes");
-			this.verboseOption = option(asList("verbose", "v"),
+			this.verboseOption = option(Arrays.asList("verbose", "v"),
 					"Verbose logging of dependency resolution");
-			this.quietOption = option(asList("quiet", "q"), "Quiet logging");
+			this.quietOption = option(Arrays.asList("quiet", "q"), "Quiet logging");
 		}
 
 		public synchronized void stop() {
@@ -118,7 +117,7 @@ public class RunCommand extends OptionParsingCommand {
 				extends OptionSetGroovyCompilerConfiguration
 				implements SpringApplicationRunnerConfiguration {
 
-			public SpringApplicationRunnerConfigurationAdapter(OptionSet options,
+			SpringApplicationRunnerConfigurationAdapter(OptionSet options,
 					CompilerOptionHandler optionHandler,
 					List<RepositoryConfiguration> repositoryConfiguration) {
 				super(options, optionHandler, repositoryConfiguration);

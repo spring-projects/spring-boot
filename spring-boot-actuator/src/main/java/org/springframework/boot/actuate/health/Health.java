@@ -68,7 +68,8 @@ public final class Health {
 	}
 
 	/**
-	 * @return the status of the health (never {@code null})
+	 * Return the status of the health.
+	 * @return the status (never {@code null})
 	 */
 	@JsonUnwrapped
 	public Status getStatus() {
@@ -76,7 +77,8 @@ public final class Health {
 	}
 
 	/**
-	 * @return the details of the health or an empty map.
+	 * Return the details of the health.
+	 * @return the details (or an empty map)
 	 */
 	@JsonAnyGetter
 	public Map<String, Object> getDetails() {
@@ -184,7 +186,7 @@ public final class Health {
 		}
 
 		/**
-		 * Create new Builder instance, setting status to given <code>status</code>.
+		 * Create new Builder instance, setting status to given {@code status}.
 		 * @param status the {@link Status} to use
 		 */
 		public Builder(Status status) {
@@ -194,8 +196,8 @@ public final class Health {
 		}
 
 		/**
-		 * Create new Builder instance, setting status to given <code>status</code> and
-		 * details to given <code>details</code>.
+		 * Create new Builder instance, setting status to given {@code status} and details
+		 * to given {@code details}.
 		 * @param status the {@link Status} to use
 		 * @param details the details {@link Map} to use
 		 */
@@ -217,7 +219,7 @@ public final class Health {
 		}
 
 		/**
-		 * Record detail using <code>key</code> and <code>value</code>.
+		 * Record detail using {@code key} and {@code value}.
 		 * @param key the detail key
 		 * @param data the detail data
 		 * @return this {@link Builder} instance
@@ -271,7 +273,7 @@ public final class Health {
 		}
 
 		/**
-		 * Set status to given <code>statusCode</code>.
+		 * Set status to given {@code statusCode}.
 		 * @param statusCode the status code
 		 * @return this {@link Builder} instance
 		 */
@@ -280,7 +282,7 @@ public final class Health {
 		}
 
 		/**
-		 * Set status to given {@link Status} instance
+		 * Set status to given {@link Status} instance.
 		 * @param status the status
 		 * @return this {@link Builder} instance
 		 */

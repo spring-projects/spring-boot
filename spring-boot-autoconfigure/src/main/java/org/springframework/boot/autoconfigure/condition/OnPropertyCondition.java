@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Condition;
@@ -27,6 +29,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.Assert;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
@@ -35,18 +38,66 @@ import org.springframework.util.StringUtils;
  * @author Maciej Walkowiak
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @see ConditionalOnProperty
+ * @author Andy Wilkinson
  * @since 1.1.0
+ * @see ConditionalOnProperty
  */
 class OnPropertyCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
+		List<AnnotationAttributes> allAnnotationAttributes = annotationAttributesFromMultiValueMap(
+				metadata.getAllAnnotationAttributes(
+						ConditionalOnProperty.class.getName()));
+		List<ConditionOutcome> noMatchOutcomes = findNoMatchOutcomes(
+				allAnnotationAttributes, context.getEnvironment());
+		if (noMatchOutcomes.isEmpty()) {
+			return ConditionOutcome.match();
+		}
+		return ConditionOutcome.noMatch(getCompositeMessage(noMatchOutcomes));
+	}
 
-		AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(
-				metadata.getAnnotationAttributes(ConditionalOnProperty.class.getName()));
+	private List<AnnotationAttributes> annotationAttributesFromMultiValueMap(
+			MultiValueMap<String, Object> multiValueMap) {
+		List<Map<String, Object>> maps = new ArrayList<Map<String, Object>>();
+		for (Entry<String, List<Object>> entry : multiValueMap.entrySet()) {
+			for (int i = 0; i < entry.getValue().size(); i++) {
+				Map<String, Object> map;
+				if (i < maps.size()) {
+					map = maps.get(i);
+				}
+				else {
+					map = new HashMap<String, Object>();
+					maps.add(map);
+				}
+				map.put(entry.getKey(), entry.getValue().get(i));
+			}
+		}
+		List<AnnotationAttributes> annotationAttributes = new ArrayList<AnnotationAttributes>(
+				maps.size());
+		for (Map<String, Object> map : maps) {
+			annotationAttributes.add(AnnotationAttributes.fromMap(map));
+		}
+		return annotationAttributes;
+	}
 
+	private List<ConditionOutcome> findNoMatchOutcomes(
+			List<AnnotationAttributes> allAnnotationAttributes,
+			PropertyResolver resolver) {
+		List<ConditionOutcome> noMatchOutcomes = new ArrayList<ConditionOutcome>(
+				allAnnotationAttributes.size());
+		for (AnnotationAttributes annotationAttributes : allAnnotationAttributes) {
+			ConditionOutcome outcome = determineOutcome(annotationAttributes, resolver);
+			if (!outcome.isMatch()) {
+				noMatchOutcomes.add(outcome);
+			}
+		}
+		return noMatchOutcomes;
+	}
+
+	private ConditionOutcome determineOutcome(AnnotationAttributes annotationAttributes,
+			PropertyResolver resolver) {
 		String prefix = annotationAttributes.getString("prefix").trim();
 		if (StringUtils.hasText(prefix) && !prefix.endsWith(".")) {
 			prefix = prefix + ".";
@@ -56,7 +107,6 @@ class OnPropertyCondition extends SpringBootCondition {
 		boolean relaxedNames = annotationAttributes.getBoolean("relaxedNames");
 		boolean matchIfMissing = annotationAttributes.getBoolean("matchIfMissing");
 
-		PropertyResolver resolver = context.getEnvironment();
 		if (relaxedNames) {
 			resolver = new RelaxedPropertyResolver(resolver, prefix);
 		}
@@ -91,7 +141,6 @@ class OnPropertyCondition extends SpringBootCondition {
 			message.append("expected '").append(expected).append("' for properties ")
 					.append(expandNames(prefix, nonMatchingProperties));
 		}
-
 		return ConditionOutcome.noMatch(message.toString());
 	}
 
@@ -120,6 +169,17 @@ class OnPropertyCondition extends SpringBootCondition {
 			expanded.append(name);
 		}
 		return expanded.toString();
+	}
+
+	private String getCompositeMessage(List<ConditionOutcome> noMatchOutcomes) {
+		StringBuilder message = new StringBuilder();
+		for (ConditionOutcome noMatchOutcome : noMatchOutcomes) {
+			if (message.length() > 0) {
+				message.append(". ");
+			}
+			message.append(noMatchOutcome.getMessage().trim());
+		}
+		return message.toString();
 	}
 
 }

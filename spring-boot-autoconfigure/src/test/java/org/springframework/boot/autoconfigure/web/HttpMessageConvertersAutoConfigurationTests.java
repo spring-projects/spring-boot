@@ -18,13 +18,13 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -45,7 +45,6 @@ import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConve
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -204,29 +203,6 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
-	public void httpMapperPropertiesAreNotAppliedWhenNotConfigured() throws Exception {
-		this.context.register(JacksonObjectMapperConfig.class,
-				HttpMessageConvertersAutoConfiguration.class);
-		this.context.refresh();
-		MappingJackson2HttpMessageConverter converter = this.context
-				.getBean(MappingJackson2HttpMessageConverter.class);
-		assertNull(new DirectFieldAccessor(converter).getPropertyValue("prettyPrint"));
-	}
-
-	@Test
-	public void httpMapperPropertiesAreAppliedWhenConfigured() throws Exception {
-		this.context.register(JacksonObjectMapperConfig.class,
-				HttpMessageConvertersAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"http.mappers.jsonPrettyPrint:true");
-		this.context.refresh();
-		MappingJackson2HttpMessageConverter converter = this.context
-				.getBean(MappingJackson2HttpMessageConverter.class);
-		assertTrue((Boolean) new DirectFieldAccessor(converter)
-				.getPropertyValue("prettyPrint"));
-	}
-
-	@Test
 	public void typeConstrainedConverterDoesNotPreventAutoConfigurationOfJacksonConverter()
 			throws Exception {
 		this.context.register(JacksonObjectMapperBuilderConfig.class,
@@ -248,6 +224,9 @@ public class HttpMessageConvertersAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
 
+		Map<String, MappingJackson2HttpMessageConverter> beansOfType = this.context
+				.getBeansOfType(MappingJackson2HttpMessageConverter.class);
+		System.out.println(beansOfType);
 		BeanDefinition beanDefinition = this.context
 				.getBeanDefinition("mappingJackson2HttpMessageConverter");
 		assertThat(beanDefinition.getFactoryBeanName(), is(equalTo(

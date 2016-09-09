@@ -31,7 +31,7 @@ class ClearCommand extends AbstractCommand {
 
 	private final ConsoleReader consoleReader;
 
-	public ClearCommand(ConsoleReader consoleReader) {
+	ClearCommand(ConsoleReader consoleReader) {
 		super("clear", "Clear the screen");
 		this.consoleReader = consoleReader;
 	}

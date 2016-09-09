@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-dependencies</artifactId>
-		<version>1.2.9.BUILD-SNAPSHOT</version>
+		<version>1.3.8.BUILD-SNAPSHOT</version>
 		<relativePath>../../spring-boot-dependencies</relativePath>
 	</parent>
 	<artifactId>spring-boot-starter-parent</artifactId>
@@ -114,6 +114,7 @@
 						<delimiters>
 							<delimiter>${resource.delimiter}</delimiter>
 						</delimiters>
+						<useDefaultDelimiters>false</useDefaultDelimiters>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -150,7 +151,7 @@
 						<mainClass>${start-class}</mainClass>
 					</configuration>
 				</plugin>
-				<!-- Support shade packaging (if the user does not want to use our plugin -->
+				<!-- Support shade packaging (if the user does not want to use our plugin) -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>

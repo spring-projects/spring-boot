@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public final class AsciiBytes {
 
 	/**
 	 * Create a new {@link AsciiBytes} from the specified String.
-	 * @param string
+	 * @param string the source string
 	 */
 	public AsciiBytes(String string) {
 		this(string.getBytes(UTF_8));
@@ -52,7 +52,7 @@ public final class AsciiBytes {
 	/**
 	 * Create a new {@link AsciiBytes} from the specified bytes. NOTE: underlying bytes
 	 * are not expected to change.
-	 * @param bytes the bytes
+	 * @param bytes the source bytes
 	 */
 	public AsciiBytes(byte[] bytes) {
 		this(bytes, 0, bytes.length);
@@ -61,7 +61,7 @@ public final class AsciiBytes {
 	/**
 	 * Create a new {@link AsciiBytes} from the specified bytes. NOTE: underlying bytes
 	 * are not expected to change.
-	 * @param bytes the bytes
+	 * @param bytes the source bytes
 	 * @param offset the offset
 	 * @param length the length
 	 */

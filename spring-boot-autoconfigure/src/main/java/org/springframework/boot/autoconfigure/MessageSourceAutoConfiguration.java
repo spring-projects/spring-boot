@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,7 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Set;
+import java.nio.charset.Charset;
 
 import org.springframework.boot.autoconfigure.MessageSourceAutoConfiguration.ResourceBundleCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -34,25 +32,22 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.StringUtils;
 
-import static org.springframework.util.StringUtils.commaDelimitedListToStringArray;
-import static org.springframework.util.StringUtils.trimAllWhitespace;
-
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link MessageSource}.
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 @Configuration
 @ConditionalOnMissingBean(value = MessageSource.class, search = SearchStrategy.CURRENT)
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Conditional(ResourceBundleCondition.class)
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "spring.messages")
@@ -70,7 +65,7 @@ public class MessageSourceAutoConfiguration {
 	/**
 	 * Message bundles encoding.
 	 */
-	private String encoding = "utf-8";
+	private Charset encoding = Charset.forName("UTF-8");
 
 	/**
 	 * Loaded resource bundle files cache expiration, in seconds. When set to -1, bundles
@@ -78,14 +73,24 @@ public class MessageSourceAutoConfiguration {
 	 */
 	private int cacheSeconds = -1;
 
+	/**
+	 * Set whether to fall back to the system Locale if no files for a specific Locale
+	 * have been found. if this is turned off, the only fallback will be the default file
+	 * (e.g. "messages.properties" for basename "messages").
+	 */
+	private boolean fallbackToSystemLocale = true;
+
 	@Bean
 	public MessageSource messageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		if (StringUtils.hasText(this.basename)) {
-			messageSource.setBasenames(
-					commaDelimitedListToStringArray(trimAllWhitespace(this.basename)));
+			messageSource.setBasenames(StringUtils.commaDelimitedListToStringArray(
+					StringUtils.trimAllWhitespace(this.basename)));
 		}
-		messageSource.setDefaultEncoding(this.encoding);
+		if (this.encoding != null) {
+			messageSource.setDefaultEncoding(this.encoding.name());
+		}
+		messageSource.setFallbackToSystemLocale(this.fallbackToSystemLocale);
 		messageSource.setCacheSeconds(this.cacheSeconds);
 		return messageSource;
 	}
@@ -98,11 +103,11 @@ public class MessageSourceAutoConfiguration {
 		this.basename = basename;
 	}
 
-	public String getEncoding() {
+	public Charset getEncoding() {
 		return this.encoding;
 	}
 
-	public void setEncoding(String encoding) {
+	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
 	}
 
@@ -112,6 +117,14 @@ public class MessageSourceAutoConfiguration {
 
 	public void setCacheSeconds(int cacheSeconds) {
 		this.cacheSeconds = cacheSeconds;
+	}
+
+	public boolean isFallbackToSystemLocale() {
+		return this.fallbackToSystemLocale;
+	}
+
+	public void setFallbackToSystemLocale(boolean fallbackToSystemLocale) {
+		this.fallbackToSystemLocale = fallbackToSystemLocale;
 	}
 
 	protected static class ResourceBundleCondition extends SpringBootCondition {
@@ -133,8 +146,8 @@ public class MessageSourceAutoConfiguration {
 
 		private ConditionOutcome getMatchOutcomeForBasename(ConditionContext context,
 				String basename) {
-			for (String name : commaDelimitedListToStringArray(
-					trimAllWhitespace(basename))) {
+			for (String name : StringUtils.commaDelimitedListToStringArray(
+					StringUtils.trimAllWhitespace(basename))) {
 				for (Resource resource : getResources(context.getClassLoader(), name)) {
 					if (resource.exists()) {
 						return ConditionOutcome.match("Bundle found for "
@@ -148,75 +161,12 @@ public class MessageSourceAutoConfiguration {
 
 		private Resource[] getResources(ClassLoader classLoader, String name) {
 			try {
-				return new SkipPatternPathMatchingResourcePatternResolver(classLoader)
-						.getResources("classpath*:" + name + "*.properties");
+				return new PathMatchingResourcePatternResolver(classLoader)
+						.getResources("classpath*:" + name + ".properties");
 			}
 			catch (Exception ex) {
 				return NO_RESOURCES;
 			}
-		}
-
-	}
-
-	/**
-	 * {@link PathMatchingResourcePatternResolver} that skips well known JARs that don't
-	 * contain messages.properties.
-	 */
-	private static class SkipPatternPathMatchingResourcePatternResolver
-			extends PathMatchingResourcePatternResolver {
-
-		private static final ClassLoader ROOT_CLASSLOADER;
-
-		static {
-			ClassLoader classLoader = null;
-			try {
-				classLoader = ClassLoader.getSystemClassLoader();
-				while (classLoader.getParent() != null) {
-					classLoader = classLoader.getParent();
-				}
-			}
-			catch (Throwable ex) {
-			}
-			ROOT_CLASSLOADER = classLoader;
-		}
-
-		private static final String[] SKIPPED = { "aspectjweaver-", "hibernate-core-",
-				"hsqldb-", "jackson-annotations-", "jackson-core-", "jackson-databind-",
-				"javassist-", "snakeyaml-", "spring-aop-", "spring-beans-",
-				"spring-boot-", "spring-boot-actuator-", "spring-boot-autoconfigure-",
-				"spring-core-", "spring-context-", "spring-data-commons-",
-				"spring-expression-", "spring-jdbc-", "spring-orm-", "spring-tx-",
-				"spring-web-", "spring-webmvc-", "tomcat-embed-", "joda-time-",
-				"hibernate-entitymanager-", "hibernate-validator-", "logback-classic-",
-				"logback-core-", "thymeleaf-" };
-
-		public SkipPatternPathMatchingResourcePatternResolver(ClassLoader classLoader) {
-			super(classLoader);
-		}
-
-		@Override
-		protected void addAllClassLoaderJarRoots(ClassLoader classLoader,
-				Set<Resource> result) {
-			if (classLoader != ROOT_CLASSLOADER) {
-				super.addAllClassLoaderJarRoots(classLoader, result);
-			}
-		}
-
-		@Override
-		protected Set<Resource> doFindAllClassPathResources(String path)
-				throws IOException {
-			Set<Resource> resources = super.doFindAllClassPathResources(path);
-			for (Iterator<Resource> iterator = resources.iterator(); iterator
-					.hasNext();) {
-				Resource resource = iterator.next();
-				for (String skipped : SKIPPED) {
-					if (resource.getFilename().startsWith(skipped)) {
-						iterator.remove();
-						break;
-					}
-				}
-			}
-			return resources;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.util.Assert;
@@ -38,7 +39,10 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @deprecated in Spring Boot 1.3 in favor of Apache Log4j 2 (following Apache's EOL
+ * declaration for log4j 1.x)
  */
+@Deprecated
 public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 
 	private static final Map<LogLevel, Level> LEVELS;
@@ -50,7 +54,7 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 		levels.put(LogLevel.INFO, Level.INFO);
 		levels.put(LogLevel.WARN, Level.WARN);
 		levels.put(LogLevel.ERROR, Level.ERROR);
-		levels.put(LogLevel.FATAL, Level.ERROR);
+		levels.put(LogLevel.FATAL, Level.FATAL);
 		levels.put(LogLevel.OFF, Level.OFF);
 		LEVELS = Collections.unmodifiableMap(levels);
 	}
@@ -71,7 +75,8 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	protected void loadDefaults(LogFile logFile) {
+	protected void loadDefaults(LoggingInitializationContext initializationContext,
+			LogFile logFile) {
 		if (logFile != null) {
 			loadConfiguration(getPackagedConfigFile("log4j-file.properties"), logFile);
 		}
@@ -81,11 +86,14 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
+	protected void loadConfiguration(LoggingInitializationContext initializationContext,
+			String location, LogFile logFile) {
+		super.loadConfiguration(initializationContext, location, logFile);
+		loadConfiguration(location, logFile);
+	}
+
 	protected void loadConfiguration(String location, LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
-		if (logFile != null) {
-			logFile.applyToSystemProperties();
-		}
 		try {
 			Log4jConfigurer.initLogging(location);
 		}
@@ -96,7 +104,7 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	protected void reinitialize() {
+	protected void reinitialize(LoggingInitializationContext initializationContext) {
 		loadConfiguration(getSelfInitializationConfig(), null);
 	}
 
@@ -105,6 +113,20 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 		Logger logger = (StringUtils.hasLength(loggerName)
 				? LogManager.getLogger(loggerName) : LogManager.getRootLogger());
 		logger.setLevel(LEVELS.get(level));
+	}
+
+	@Override
+	public Runnable getShutdownHandler() {
+		return new ShutdownHandler();
+	}
+
+	private static final class ShutdownHandler implements Runnable {
+
+		@Override
+		public void run() {
+			LogManager.shutdown();
+		}
+
 	}
 
 }

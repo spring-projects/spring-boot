@@ -43,7 +43,7 @@ class TomcatStarter implements ServletContainerInitializer {
 
 	private volatile Exception startUpException;
 
-	public TomcatStarter(ServletContextInitializer[] initializers) {
+	TomcatStarter(ServletContextInitializer[] initializers) {
 		this.initializers = initializers;
 	}
 

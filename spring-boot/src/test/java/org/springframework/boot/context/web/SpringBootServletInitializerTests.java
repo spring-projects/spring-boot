@@ -77,6 +77,13 @@ public class SpringBootServletInitializerTests {
 	}
 
 	@Test
+	public void applicationBuilderCanBeCustomized() throws Exception {
+		CustomSpringBootServletInitializer servletInitializer = new CustomSpringBootServletInitializer();
+		servletInitializer.createRootApplicationContext(this.servletContext);
+		assertThat(servletInitializer.applicationBuilder.built, equalTo(true));
+	}
+
+	@Test
 	@SuppressWarnings("rawtypes")
 	public void mainClassHasSensibleDefault() throws Exception {
 		new WithConfigurationAnnotation()
@@ -111,6 +118,23 @@ public class SpringBootServletInitializerTests {
 
 	}
 
+	private class CustomSpringBootServletInitializer
+			extends MockSpringBootServletInitializer {
+
+		private final CustomSpringApplicationBuilder applicationBuilder = new CustomSpringApplicationBuilder();
+
+		@Override
+		protected SpringApplicationBuilder createSpringApplicationBuilder() {
+			return this.applicationBuilder;
+		}
+
+		@Override
+		protected SpringApplicationBuilder configure(
+				SpringApplicationBuilder application) {
+			return application.sources(Config.class);
+		}
+	}
+
 	@Configuration
 	public class WithConfigurationAnnotation extends MockSpringBootServletInitializer {
 	}
@@ -137,6 +161,18 @@ public class SpringBootServletInitializerTests {
 
 	@Configuration
 	public static class Config {
+
+	}
+
+	private static class CustomSpringApplicationBuilder extends SpringApplicationBuilder {
+
+		private boolean built;
+
+		@Override
+		public SpringApplication build() {
+			this.built = true;
+			return super.build();
+		}
 
 	}
 

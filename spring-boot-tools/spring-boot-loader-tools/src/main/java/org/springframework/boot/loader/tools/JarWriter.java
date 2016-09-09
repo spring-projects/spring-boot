@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -38,6 +41,8 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
+
+import org.springframework.lang.UsesJava7;
 
 /**
  * Writes JAR content, ensuring valid directory entries are always create and duplicate
@@ -59,17 +64,48 @@ public class JarWriter {
 	/**
 	 * Create a new {@link JarWriter} instance.
 	 * @param file the file to write
-	 * @throws IOException
-	 * @throws FileNotFoundException
+	 * @throws IOException if the file cannot be opened
+	 * @throws FileNotFoundException if the file cannot be found
 	 */
 	public JarWriter(File file) throws FileNotFoundException, IOException {
-		this.jarOutput = new JarOutputStream(new FileOutputStream(file));
+		this(file, null);
+	}
+
+	/**
+	 * Create a new {@link JarWriter} instance.
+	 * @param file the file to write
+	 * @param launchScript an optional launch script to prepend to the front of the jar
+	 * @throws IOException if the file cannot be opened
+	 * @throws FileNotFoundException if the file cannot be found
+	 */
+	public JarWriter(File file, LaunchScript launchScript)
+			throws FileNotFoundException, IOException {
+		FileOutputStream fileOutputStream = new FileOutputStream(file);
+		if (launchScript != null) {
+			fileOutputStream.write(launchScript.toByteArray());
+			setExecutableFilePermission(file);
+		}
+		this.jarOutput = new JarOutputStream(fileOutputStream);
+	}
+
+	@UsesJava7
+	private void setExecutableFilePermission(File file) {
+		try {
+			Path path = file.toPath();
+			Set<PosixFilePermission> permissions = new HashSet<PosixFilePermission>(
+					Files.getPosixFilePermissions(path));
+			permissions.add(PosixFilePermission.OWNER_EXECUTE);
+			Files.setPosixFilePermissions(path, permissions);
+		}
+		catch (Throwable ex) {
+			// Ignore and continue creating the jar
+		}
 	}
 
 	/**
 	 * Write the specified manifest.
 	 * @param manifest the manifest to write
-	 * @throws IOException
+	 * @throws IOException of the manifest cannot be written
 	 */
 	public void writeManifest(final Manifest manifest) throws IOException {
 		JarEntry entry = new JarEntry("META-INF/MANIFEST.MF");
@@ -84,7 +120,7 @@ public class JarWriter {
 	/**
 	 * Write all entries from the specified jar file.
 	 * @param jarFile the source jar file
-	 * @throws IOException
+	 * @throws IOException if the entries cannot be written
 	 */
 	public void writeEntries(JarFile jarFile) throws IOException {
 		Enumeration<JarEntry> entries = jarFile.entries();
@@ -129,6 +165,7 @@ public class JarWriter {
 			throws IOException {
 		File file = library.getFile();
 		JarEntry entry = new JarEntry(destination + library.getName());
+		entry.setTime(getNestedLibraryTime(file));
 		if (library.isUnpackRequired()) {
 			entry.setComment("UNPACK:" + FileUtils.sha1Hash(file));
 		}
@@ -136,9 +173,31 @@ public class JarWriter {
 		writeEntry(entry, new InputStreamEntryWriter(new FileInputStream(file), true));
 	}
 
+	private long getNestedLibraryTime(File file) {
+		try {
+			JarFile jarFile = new JarFile(file);
+			try {
+				Enumeration<JarEntry> entries = jarFile.entries();
+				while (entries.hasMoreElements()) {
+					JarEntry entry = entries.nextElement();
+					if (!entry.isDirectory()) {
+						return entry.getTime();
+					}
+				}
+			}
+			finally {
+				jarFile.close();
+			}
+		}
+		catch (Exception ex) {
+			// Ignore and just use the source file timestamp
+		}
+		return file.lastModified();
+	}
+
 	/**
 	 * Write the required spring-boot-loader classes to the JAR.
-	 * @throws IOException
+	 * @throws IOException if the classes cannot be written
 	 */
 	public void writeLoaderClasses() throws IOException {
 		URL loaderJar = getClass().getClassLoader().getResource(NESTED_LOADER_JAR);
@@ -155,7 +214,7 @@ public class JarWriter {
 
 	/**
 	 * Close the writer.
-	 * @throws IOException
+	 * @throws IOException if the file cannot be closed
 	 */
 	public void close() throws IOException {
 		this.jarOutput.close();
@@ -166,7 +225,7 @@ public class JarWriter {
 	 * delegate to this one.
 	 * @param entry the entry to write
 	 * @param entryWriter the entry writer or {@code null} if there is no content
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	private void writeEntry(JarEntry entry, EntryWriter entryWriter) throws IOException {
 		String parent = entry.getName();
@@ -192,12 +251,12 @@ public class JarWriter {
 	/**
 	 * Interface used to write jar entry date.
 	 */
-	private static interface EntryWriter {
+	private interface EntryWriter {
 
 		/**
-		 * Write entry data to the specified output stream
+		 * Write entry data to the specified output stream.
 		 * @param outputStream the destination for the data
-		 * @throws IOException
+		 * @throws IOException in case of I/O errors
 		 */
 		void write(OutputStream outputStream) throws IOException;
 
@@ -212,7 +271,7 @@ public class JarWriter {
 
 		private final boolean close;
 
-		public InputStreamEntryWriter(InputStream inputStream, boolean close) {
+		InputStreamEntryWriter(InputStream inputStream, boolean close) {
 			this.inputStream = inputStream;
 			this.close = close;
 		}
@@ -282,7 +341,7 @@ public class JarWriter {
 	}
 
 	/**
-	 * Data holder for CRC and Size
+	 * Data holder for CRC and Size.
 	 */
 	private static class CrcAndSize {
 
@@ -290,7 +349,7 @@ public class JarWriter {
 
 		private long size;
 
-		public CrcAndSize(File file) throws IOException {
+		CrcAndSize(File file) throws IOException {
 			FileInputStream inputStream = new FileInputStream(file);
 			try {
 				load(inputStream);
@@ -300,7 +359,7 @@ public class JarWriter {
 			}
 		}
 
-		public CrcAndSize(InputStream inputStream) throws IOException {
+		CrcAndSize(InputStream inputStream) throws IOException {
 			load(inputStream);
 		}
 

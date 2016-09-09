@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,52 +16,134 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
+import java.util.Arrays;
+import java.util.List;
+
+import javax.management.MBeanServer;
+
+import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
+import org.springframework.jmx.export.MBeanExporter;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
 
 /**
+ * Tests for {@link IntegrationAutoConfiguration}.
+ *
  * @author Artem Bilan
- * @since 1.1
+ * @author Stephane Nicoll
  */
 public class IntegrationAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private AnnotationConfigApplicationContext context;
 
-	@Test
-	public void integrationIsAvailable() {
-		this.context.register(IntegrationAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
-		this.context.close();
+	@After
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+			if (this.context.getParent() != null) {
+				((ConfigurableApplicationContext) this.context.getParent()).close();
+			}
+		}
 	}
 
 	@Test
-	public void addJmxAuto() {
-		this.context.register(JmxAutoConfiguration.class,
-				IntegrationAutoConfiguration.class);
-		this.context.refresh();
+	public void integrationIsAvailable() {
+		load();
 		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
-		this.context.close();
 	}
 
 	@Test
 	public void parentContext() {
-		this.context.register(IntegrationAutoConfiguration.class);
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(JmxAutoConfiguration.class,
+				IntegrationAutoConfiguration.class);
 		this.context.refresh();
 		AnnotationConfigApplicationContext parent = this.context;
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setParent(parent);
-		this.context.register(IntegrationAutoConfiguration.class);
+		this.context.register(JmxAutoConfiguration.class,
+				IntegrationAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
 		((ConfigurableApplicationContext) this.context.getParent()).close();
 		this.context.close();
+	}
+
+	@Test
+	public void jmxIntegrationEnabledByDefault() {
+		load();
+		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
+		assertDomains(mBeanServer, true, "org.springframework.integration",
+				"org.springframework.integration.monitor");
+	}
+
+	@Test
+	public void disableJmxIntegration() {
+		load("spring.jmx.enabled=false");
+		assertEquals(0, this.context.getBeansOfType(MBeanServer.class).size());
+	}
+
+	@Test
+	public void customizeJmxDomain() {
+		load("SPRING_JMX_DEFAULT_DOMAIN=org.foo");
+		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
+		assertDomains(mBeanServer, true, "org.foo");
+		assertDomains(mBeanServer, false, "org.springframework.integration",
+				"org.springframework.integration.monitor");
+	}
+
+	@Test
+	public void primaryExporterIsAllowed() {
+		load(CustomMBeanExporter.class);
+		assertEquals(2, this.context.getBeansOfType(MBeanExporter.class).size());
+		assertSame(this.context.getBean("myMBeanExporter"), this.context.getBean(MBeanExporter.class));
+	}
+
+	private static void assertDomains(MBeanServer mBeanServer, boolean expected,
+			String... domains) {
+		List<String> actual = Arrays.asList(mBeanServer.getDomains());
+		for (String domain : domains) {
+			assertEquals(expected, actual.contains(domain));
+		}
+	}
+
+	public void load(String... environment) {
+		load(null, environment);
+	}
+
+	private void load(Class<?> config, String... environment) {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		if (config != null) {
+			ctx.register(config);
+		}
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(ctx, environment);
+		ctx.register(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class);
+		ctx.refresh();
+		this.context = ctx;
+	}
+
+	@Configuration
+	static class CustomMBeanExporter {
+
+		@Bean
+		@Primary
+		public MBeanExporter myMBeanExporter() {
+			return mock(MBeanExporter.class);
+		}
+
 	}
 
 }

@@ -39,8 +39,8 @@ public class MustacheView extends AbstractTemplateView {
 
 	/**
 	 * Create a new {@link MustacheView} instance.
-	 * @see #setTemplate(Template)
 	 * @since 1.2.5
+	 * @see #setTemplate(Template)
 	 */
 	public MustacheView() {
 	}

@@ -122,7 +122,7 @@ class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 
 		private boolean processed;
 
-		public EntityScanBeanPostProcessor(String[] packagesToScan) {
+		EntityScanBeanPostProcessor(String[] packagesToScan) {
 			this.packagesToScan = packagesToScan;
 		}
 

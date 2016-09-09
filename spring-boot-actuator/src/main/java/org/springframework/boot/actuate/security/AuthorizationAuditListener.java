@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,29 +20,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.actuate.audit.AuditEvent;
-import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.context.ApplicationListener;
 import org.springframework.security.access.event.AbstractAuthorizationEvent;
 import org.springframework.security.access.event.AuthenticationCredentialsNotFoundEvent;
 import org.springframework.security.access.event.AuthorizationFailureEvent;
 
 /**
- * {@link ApplicationListener} expose Spring Security {@link AbstractAuthorizationEvent
- * authorization events} as {@link AuditEvent}s.
+ * Default implementation of {@link AbstractAuthorizationAuditListener}.
  *
  * @author Dave Syer
  */
-public class AuthorizationAuditListener implements
-		ApplicationListener<AbstractAuthorizationEvent>, ApplicationEventPublisherAware {
-
-	private ApplicationEventPublisher publisher;
-
-	@Override
-	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
-		this.publisher = publisher;
-	}
+public class AuthorizationAuditListener extends AbstractAuthorizationAuditListener {
 
 	@Override
 	public void onApplicationEvent(AbstractAuthorizationEvent event) {
@@ -69,12 +56,6 @@ public class AuthorizationAuditListener implements
 		data.put("message", event.getAccessDeniedException().getMessage());
 		publish(new AuditEvent(event.getAuthentication().getName(),
 				"AUTHORIZATION_FAILURE", data));
-	}
-
-	private void publish(AuditEvent event) {
-		if (this.publisher != null) {
-			this.publisher.publishEvent(new AuditApplicationEvent(event));
-		}
 	}
 
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2013-2104 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,6 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link ConfigurationProperties} for Jersey.
  *
  * @author Dave Syer
+ * @author Eddú Meléndez
  * @since 1.2.0
  */
 @ConfigurationProperties("spring.jersey")
@@ -36,11 +37,17 @@ public class JerseyProperties {
 	private Type type = Type.SERVLET;
 
 	/**
-	 * Init parameters to pass to Jersey.
+	 * Init parameters to pass to Jersey via the servlet or filter.
 	 */
 	private Map<String, String> init = new HashMap<String, String>();
 
 	private Filter filter = new Filter();
+
+	/**
+	 * Path that serves as the base URI for the application. Overrides the value of
+	 * "@ApplicationPath" if specified.
+	 */
+	private String applicationPath;
 
 	public Filter getFilter() {
 		return this.filter;
@@ -64,6 +71,14 @@ public class JerseyProperties {
 
 	public void setInit(Map<String, String> init) {
 		this.init = init;
+	}
+
+	public String getApplicationPath() {
+		return this.applicationPath;
+	}
+
+	public void setApplicationPath(String applicationPath) {
+		this.applicationPath = applicationPath;
 	}
 
 	public enum Type {

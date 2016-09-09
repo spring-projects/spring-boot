@@ -50,11 +50,14 @@ public abstract class SpringBootCondition implements Condition {
 			return outcome.isMatch();
 		}
 		catch (NoClassDefFoundError ex) {
-			throw new IllegalStateException("Could not evaluate condition on "
-					+ classOrMethodName + " due to internal class not found. "
-					+ "This can happen if you are @ComponentScanning a "
-					+ "springframework package (e.g. if you put a @ComponentScan "
-					+ "in the default package by mistake)", ex);
+			throw new IllegalStateException(
+					"Could not evaluate condition on " + classOrMethodName + " due to "
+							+ ex.getMessage() + " not "
+							+ "found. Make sure your own configuration does not rely on "
+							+ "that class. This can also happen if you are "
+							+ "@ComponentScanning a springframework package (e.g. if you "
+							+ "put a @ComponentScan in the default package by mistake)",
+					ex);
 		}
 		catch (RuntimeException ex) {
 			throw new IllegalStateException(

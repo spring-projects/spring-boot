@@ -31,7 +31,7 @@ import org.springframework.core.io.ResourceLoader;
  * Mustache TemplateLoader implementation that uses a prefix, suffix and the Spring
  * Resource abstraction to load a template from a file, classpath, URL etc. A
  * TemplateLoader is needed in the Compiler when you want to render partials (i.e.
- * tiles-like fetaures).
+ * tiles-like features).
  *
  * @author Dave Syer
  * @since 1.2.2
@@ -59,14 +59,16 @@ public class MustacheResourceTemplateLoader
 	}
 
 	/**
-	 * @param charSet the charSet to set
+	 * Set the charset.
+	 * @param charSet the charset
 	 */
 	public void setCharset(String charSet) {
 		this.charSet = charSet;
 	}
 
 	/**
-	 * @param resourceLoader the resourceLoader to set
+	 * Set the resource loader.
+	 * @param resourceLoader the resource loader
 	 */
 	@Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {

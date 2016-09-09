@@ -27,10 +27,11 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.OutputCapture;
 import org.springframework.boot.web.servlet.view.velocity.EmbeddedVelocityViewResolver;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -39,6 +40,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
@@ -49,14 +51,20 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link VelocityAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class VelocityAutoConfigurationTests {
+
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 
@@ -79,10 +87,11 @@ public class VelocityAutoConfigurationTests {
 		assertThat(this.context.getBean(VelocityConfigurer.class), notNullValue());
 	}
 
-	@Test(expected = BeanCreationException.class)
+	@Test
 	public void nonExistentTemplateLocation() {
 		registerAndRefreshContext(
 				"spring.velocity.resourceLoaderPath:" + "classpath:/does-not-exist/");
+		this.output.expect(containsString("Cannot find template location"));
 	}
 
 	@Test
@@ -196,6 +205,20 @@ public class VelocityAutoConfigurationTests {
 		registerAndRefreshContext("spring.velocity.toolbox:/toolbox.xml");
 		VelocityViewResolver resolver = this.context.getBean(VelocityViewResolver.class);
 		assertThat(resolver, instanceOf(EmbeddedVelocityViewResolver.class));
+	}
+
+	@Test
+	public void registerResourceHandlingFilterDisabledByDefault() throws Exception {
+		registerAndRefreshContext();
+		assertEquals(0,
+				this.context.getBeansOfType(ResourceUrlEncodingFilter.class).size());
+	}
+
+	@Test
+	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled()
+			throws Exception {
+		registerAndRefreshContext("spring.resources.chain.enabled:true");
+		assertNotNull(this.context.getBean(ResourceUrlEncodingFilter.class));
 	}
 
 	@Test

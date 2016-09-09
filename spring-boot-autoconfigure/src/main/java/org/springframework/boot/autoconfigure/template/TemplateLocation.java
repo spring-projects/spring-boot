@@ -50,13 +50,11 @@ public class TemplateLocation {
 			return true;
 		}
 		try {
-			if (anyExists(resolver)) {
-				return true;
-			}
+			return anyExists(resolver);
 		}
 		catch (IOException ex) {
+			return false;
 		}
-		return false;
 	}
 
 	private boolean anyExists(ResourcePatternResolver resolver) throws IOException {
