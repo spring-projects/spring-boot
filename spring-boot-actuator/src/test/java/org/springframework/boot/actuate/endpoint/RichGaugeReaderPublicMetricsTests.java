@@ -38,13 +38,13 @@ public class RichGaugeReaderPublicMetricsTests {
 	public void testMetrics() throws Exception {
 		InMemoryRichGaugeRepository repository = new InMemoryRichGaugeRepository();
 
-		repository.set(new Metric<Double>("a", 0.d, new Date()));
-		repository.set(new Metric<Double>("a", 0.5d, new Date()));
+		repository.set(new Metric<>("a", 0.d, new Date()));
+		repository.set(new Metric<>("a", 0.5d, new Date()));
 
 		RichGaugeReaderPublicMetrics metrics = new RichGaugeReaderPublicMetrics(
 				repository);
 
-		Map<String, Metric<?>> results = new HashMap<String, Metric<?>>();
+		Map<String, Metric<?>> results = new HashMap<>();
 		for (Metric<?> metric : metrics.metrics()) {
 			results.put(metric.getName(), metric);
 		}

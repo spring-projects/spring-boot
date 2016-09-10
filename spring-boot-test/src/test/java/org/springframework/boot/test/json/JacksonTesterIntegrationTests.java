@@ -52,7 +52,7 @@ public class JacksonTesterIntegrationTests {
 
 	@Test
 	public void typicalMapTest() throws Exception {
-		Map<String, Integer> map = new LinkedHashMap<String, Integer>();
+		Map<String, Integer> map = new LinkedHashMap<>();
 		map.put("a", 1);
 		map.put("b", 2);
 		assertThat(this.mapJson.write(map)).extractingJsonPathNumberValue("@.a")

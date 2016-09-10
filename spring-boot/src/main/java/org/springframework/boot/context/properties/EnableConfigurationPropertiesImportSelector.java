@@ -94,7 +94,7 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 		}
 
 		private List<Class<?>> collectClasses(List<Object> list) {
-			ArrayList<Class<?>> result = new ArrayList<Class<?>>();
+			ArrayList<Class<?>> result = new ArrayList<>();
 			for (Object object : list) {
 				for (Object value : (Object[]) object) {
 					if (value instanceof Class && value != void.class) {

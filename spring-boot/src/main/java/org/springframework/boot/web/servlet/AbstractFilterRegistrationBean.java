@@ -58,11 +58,11 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 
 	private static final String[] DEFAULT_URL_MAPPINGS = { "/*" };
 
-	private Set<ServletRegistrationBean> servletRegistrationBeans = new LinkedHashSet<ServletRegistrationBean>();
+	private Set<ServletRegistrationBean> servletRegistrationBeans = new LinkedHashSet<>();
 
-	private Set<String> servletNames = new LinkedHashSet<String>();
+	private Set<String> servletNames = new LinkedHashSet<>();
 
-	private Set<String> urlPatterns = new LinkedHashSet<String>();
+	private Set<String> urlPatterns = new LinkedHashSet<>();
 
 	private EnumSet<DispatcherType> dispatcherTypes;
 
@@ -87,7 +87,7 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 			Collection<? extends ServletRegistrationBean> servletRegistrationBeans) {
 		Assert.notNull(servletRegistrationBeans,
 				"ServletRegistrationBeans must not be null");
-		this.servletRegistrationBeans = new LinkedHashSet<ServletRegistrationBean>(
+		this.servletRegistrationBeans = new LinkedHashSet<>(
 				servletRegistrationBeans);
 	}
 
@@ -123,7 +123,7 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 	 */
 	public void setServletNames(Collection<String> servletNames) {
 		Assert.notNull(servletNames, "ServletNames must not be null");
-		this.servletNames = new LinkedHashSet<String>(servletNames);
+		this.servletNames = new LinkedHashSet<>(servletNames);
 	}
 
 	/**
@@ -153,7 +153,7 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 	 */
 	public void setUrlPatterns(Collection<String> urlPatterns) {
 		Assert.notNull(urlPatterns, "UrlPatterns must not be null");
-		this.urlPatterns = new LinkedHashSet<String>(urlPatterns);
+		this.urlPatterns = new LinkedHashSet<>(urlPatterns);
 	}
 
 	/**
@@ -249,7 +249,7 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 			dispatcherTypes = (isAsyncSupported() ? ASYNC_DISPATCHER_TYPES
 					: NON_ASYNC_DISPATCHER_TYPES);
 		}
-		Set<String> servletNames = new LinkedHashSet<String>();
+		Set<String> servletNames = new LinkedHashSet<>();
 		for (ServletRegistrationBean servletRegistrationBean : this.servletRegistrationBeans) {
 			servletNames.add(servletRegistrationBean.getServletName());
 		}

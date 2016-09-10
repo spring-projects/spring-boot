@@ -84,7 +84,7 @@ public class EntityManagerFactoryBuilder {
 			URL persistenceUnitRootLocation) {
 		this.jpaVendorAdapter = jpaVendorAdapter;
 		this.persistenceUnitManager = persistenceUnitManager;
-		this.jpaProperties = new LinkedHashMap<String, Object>(jpaProperties);
+		this.jpaProperties = new LinkedHashMap<>(jpaProperties);
 		this.persistenceUnitRootLocation = persistenceUnitRootLocation;
 	}
 
@@ -111,7 +111,7 @@ public class EntityManagerFactoryBuilder {
 
 		private String persistenceUnit;
 
-		private Map<String, Object> properties = new HashMap<String, Object>();
+		private Map<String, Object> properties = new HashMap<>();
 
 		private boolean jta;
 
@@ -135,7 +135,7 @@ public class EntityManagerFactoryBuilder {
 		 * @return the builder for fluent usage
 		 */
 		public Builder packages(Class<?>... basePackageClasses) {
-			Set<String> packages = new HashSet<String>();
+			Set<String> packages = new HashSet<>();
 			for (Class<?> type : basePackageClasses) {
 				packages.add(ClassUtils.getPackageName(type));
 			}

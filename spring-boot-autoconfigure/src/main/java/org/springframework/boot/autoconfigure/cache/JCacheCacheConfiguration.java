@@ -133,7 +133,7 @@ class JCacheCacheConfiguration {
 		if (this.defaultCacheConfiguration != null) {
 			return this.defaultCacheConfiguration;
 		}
-		return new MutableConfiguration<Object, Object>();
+		return new MutableConfiguration<>();
 	}
 
 	private void customize(CacheManager cacheManager) {

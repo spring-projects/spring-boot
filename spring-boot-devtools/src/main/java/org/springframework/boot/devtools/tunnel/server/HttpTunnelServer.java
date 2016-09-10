@@ -227,7 +227,7 @@ public class HttpTunnelServer {
 		public ServerThread(ByteChannel targetServer) {
 			Assert.notNull(targetServer, "TargetServer must not be null");
 			this.targetServer = targetServer;
-			this.httpConnections = new ArrayDeque<HttpConnection>(2);
+			this.httpConnections = new ArrayDeque<>(2);
 			this.payloadForwarder = new HttpTunnelPayloadForwarder(targetServer);
 		}
 

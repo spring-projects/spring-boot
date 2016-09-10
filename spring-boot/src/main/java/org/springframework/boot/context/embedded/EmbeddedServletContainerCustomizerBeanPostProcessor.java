@@ -72,7 +72,7 @@ public class EmbeddedServletContainerCustomizerBeanPostProcessor
 	private Collection<EmbeddedServletContainerCustomizer> getCustomizers() {
 		if (this.customizers == null) {
 			// Look up does not include the parent context
-			this.customizers = new ArrayList<EmbeddedServletContainerCustomizer>(
+			this.customizers = new ArrayList<>(
 					this.applicationContext
 							.getBeansOfType(EmbeddedServletContainerCustomizer.class,
 									false, false)

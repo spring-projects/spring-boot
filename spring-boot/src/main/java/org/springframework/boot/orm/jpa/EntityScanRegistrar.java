@@ -66,7 +66,7 @@ class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 		String[] basePackages = attributes.getAliasedStringArray("basePackages",
 				EntityScan.class, metadata.getClassName());
 		Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
-		Set<String> packagesToScan = new LinkedHashSet<String>();
+		Set<String> packagesToScan = new LinkedHashSet<>();
 		packagesToScan.addAll(Arrays.asList(basePackages));
 		for (Class<?> basePackageClass : basePackageClasses) {
 			packagesToScan.add(ClassUtils.getPackageName(basePackageClass));
@@ -96,7 +96,7 @@ class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 		BeanDefinition definition = registry.getBeanDefinition(BEAN_NAME);
 		ValueHolder constructorArguments = definition.getConstructorArgumentValues()
 				.getGenericArgumentValue(String[].class);
-		Set<String> mergedPackages = new LinkedHashSet<String>();
+		Set<String> mergedPackages = new LinkedHashSet<>();
 		mergedPackages.addAll(Arrays.asList((String[]) constructorArguments.getValue()));
 		mergedPackages.addAll(packagesToScan);
 		constructorArguments.setValue(toArray(mergedPackages));

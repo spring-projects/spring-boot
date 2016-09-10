@@ -217,8 +217,8 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		private final Set<Annotation> annotations;
 
 		ContextCustomizerKey(Class<?> testClass) {
-			Set<Annotation> annotations = new HashSet<Annotation>();
-			Set<Class<?>> seen = new HashSet<Class<?>>();
+			Set<Annotation> annotations = new HashSet<>();
+			Set<Class<?>> seen = new HashSet<>();
 			collectClassAnnotations(testClass, annotations, seen);
 			this.annotations = Collections.unmodifiableSet(annotations);
 		}

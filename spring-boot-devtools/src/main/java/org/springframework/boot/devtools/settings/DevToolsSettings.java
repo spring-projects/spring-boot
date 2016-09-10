@@ -42,9 +42,9 @@ public class DevToolsSettings {
 
 	private static DevToolsSettings settings;
 
-	private final List<Pattern> restartIncludePatterns = new ArrayList<Pattern>();
+	private final List<Pattern> restartIncludePatterns = new ArrayList<>();
 
-	private final List<Pattern> restartExcludePatterns = new ArrayList<Pattern>();
+	private final List<Pattern> restartExcludePatterns = new ArrayList<>();
 
 	DevToolsSettings() {
 	}
@@ -57,7 +57,7 @@ public class DevToolsSettings {
 	}
 
 	private Map<String, Pattern> getPatterns(Map<?, ?> properties, String prefix) {
-		Map<String, Pattern> patterns = new LinkedHashMap<String, Pattern>();
+		Map<String, Pattern> patterns = new LinkedHashMap<>();
 		for (Map.Entry<?, ?> entry : properties.entrySet()) {
 			String name = String.valueOf(entry.getKey());
 			if (name.startsWith(prefix)) {

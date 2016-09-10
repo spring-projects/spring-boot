@@ -107,7 +107,7 @@ public class AggregateMetricReader implements MetricReader {
 
 	@Override
 	public long count() {
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		for (Metric<?> metric : this.source.findAll()) {
 			String name = getSourceKey(metric.getName());
 			if (name != null) {

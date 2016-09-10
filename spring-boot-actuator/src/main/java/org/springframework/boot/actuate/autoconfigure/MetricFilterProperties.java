@@ -43,9 +43,9 @@ public class MetricFilterProperties {
 	private Set<MetricsFilterSubmission> counterSubmissions;
 
 	public MetricFilterProperties() {
-		this.gaugeSubmissions = new HashSet<MetricsFilterSubmission>(
+		this.gaugeSubmissions = new HashSet<>(
 				EnumSet.of(MetricsFilterSubmission.MERGED));
-		this.counterSubmissions = new HashSet<MetricsFilterSubmission>(
+		this.counterSubmissions = new HashSet<>(
 				EnumSet.of(MetricsFilterSubmission.MERGED));
 	}
 

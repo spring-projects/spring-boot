@@ -156,7 +156,7 @@ public class MainClassFinderTests {
 
 	private static class ClassNameCollector implements ClassNameCallback<Object> {
 
-		private final List<String> classNames = new ArrayList<String>();
+		private final List<String> classNames = new ArrayList<>();
 
 		@Override
 		public Object doWith(String className) {

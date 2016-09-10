@@ -36,7 +36,7 @@ public class DefaultRestartInitializer implements RestartInitializer {
 	private static final Set<String> SKIPPED_STACK_ELEMENTS;
 
 	static {
-		Set<String> skipped = new LinkedHashSet<String>();
+		Set<String> skipped = new LinkedHashSet<>();
 		skipped.add("org.junit.runners.");
 		skipped.add("org.springframework.boot.test.");
 		skipped.add("cucumber.runtime.");

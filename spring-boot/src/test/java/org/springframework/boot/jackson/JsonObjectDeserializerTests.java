@@ -48,7 +48,7 @@ public class JsonObjectDeserializerTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private TestJsonObjectDeserializer<Object> testDeserializer = new TestJsonObjectDeserializer<Object>();
+	private TestJsonObjectDeserializer<Object> testDeserializer = new TestJsonObjectDeserializer<>();
 
 	@Test
 	public void deserializeObjectShouldReadJson() throws Exception {

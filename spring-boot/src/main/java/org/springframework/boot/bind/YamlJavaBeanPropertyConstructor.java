@@ -33,7 +33,7 @@ import org.yaml.snakeyaml.nodes.NodeId;
  */
 public class YamlJavaBeanPropertyConstructor extends Constructor {
 
-	private final Map<Class<?>, Map<String, Property>> properties = new HashMap<Class<?>, Map<String, Property>>();
+	private final Map<Class<?>, Map<String, Property>> properties = new HashMap<>();
 
 	private final PropertyUtils propertyUtils = new PropertyUtils();
 
@@ -66,7 +66,7 @@ public class YamlJavaBeanPropertyConstructor extends Constructor {
 	protected final void addPropertyAlias(String alias, Class<?> type, String name) {
 		Map<String, Property> typeMap = this.properties.get(type);
 		if (typeMap == null) {
-			typeMap = new HashMap<String, Property>();
+			typeMap = new HashMap<>();
 			this.properties.put(type, typeMap);
 		}
 		try {

@@ -41,7 +41,7 @@ class RestClientExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 
 	static {
-		Set<Class<?>> includes = new LinkedHashSet<Class<?>>();
+		Set<Class<?>> includes = new LinkedHashSet<>();
 		includes.add(Module.class);
 		includes.add(JsonComponent.class);
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);

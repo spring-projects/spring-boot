@@ -72,7 +72,7 @@ public class DelegatingApplicationListener
 	private List<ApplicationListener<ApplicationEvent>> getListeners(
 			ConfigurableEnvironment env) {
 		String classNames = env.getProperty(PROPERTY_NAME);
-		List<ApplicationListener<ApplicationEvent>> listeners = new ArrayList<ApplicationListener<ApplicationEvent>>();
+		List<ApplicationListener<ApplicationEvent>> listeners = new ArrayList<>();
 		if (StringUtils.hasLength(classNames)) {
 			for (String className : StringUtils.commaDelimitedListToSet(classNames)) {
 				try {

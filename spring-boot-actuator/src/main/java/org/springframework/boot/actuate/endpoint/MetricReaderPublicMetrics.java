@@ -43,7 +43,7 @@ public class MetricReaderPublicMetrics implements PublicMetrics {
 
 	@Override
 	public Collection<Metric<?>> metrics() {
-		List<Metric<?>> result = new ArrayList<Metric<?>>();
+		List<Metric<?>> result = new ArrayList<>();
 		for (Metric<?> metric : this.metricReader.findAll()) {
 			result.add(metric);
 		}

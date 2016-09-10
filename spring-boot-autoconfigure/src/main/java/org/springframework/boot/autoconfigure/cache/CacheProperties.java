@@ -42,7 +42,7 @@ public class CacheProperties {
 	 * Comma-separated list of cache names to create if supported by the underlying cache
 	 * manager. Usually, this disables the ability to create additional caches on-the-fly.
 	 */
-	private List<String> cacheNames = new ArrayList<String>();
+	private List<String> cacheNames = new ArrayList<>();
 
 	private final Caffeine caffeine = new Caffeine();
 

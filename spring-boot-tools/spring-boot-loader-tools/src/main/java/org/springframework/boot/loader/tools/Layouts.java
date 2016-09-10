@@ -126,7 +126,7 @@ public final class Layouts {
 		private static final Map<LibraryScope, String> SCOPE_DESTINATIONS;
 
 		static {
-			Map<LibraryScope, String> map = new HashMap<LibraryScope, String>();
+			Map<LibraryScope, String> map = new HashMap<>();
 			map.put(LibraryScope.COMPILE, "WEB-INF/lib/");
 			map.put(LibraryScope.CUSTOM, "WEB-INF/lib/");
 			map.put(LibraryScope.RUNTIME, "WEB-INF/lib/");
@@ -161,7 +161,7 @@ public final class Layouts {
 	 */
 	public static class Module implements Layout {
 
-		private static final Set<LibraryScope> LIB_DESTINATION_SCOPES = new HashSet<LibraryScope>(
+		private static final Set<LibraryScope> LIB_DESTINATION_SCOPES = new HashSet<>(
 				Arrays.asList(LibraryScope.COMPILE, LibraryScope.RUNTIME,
 						LibraryScope.CUSTOM));
 

@@ -75,7 +75,7 @@ public class EndpointDocumentation {
 	static final File LOG_FILE = new File("target/logs/spring.log");
 
 	private static final Set<String> SKIPPED = Collections.<String>unmodifiableSet(
-			new HashSet<String>(Arrays.asList("/docs", "/logfile", "/heapdump")));
+			new HashSet<>(Arrays.asList("/docs", "/logfile", "/heapdump")));
 
 	@Autowired
 	private MvcEndpoints mvcEndpoints;
@@ -111,8 +111,8 @@ public class EndpointDocumentation {
 	@Test
 	public void endpoints() throws Exception {
 		final File docs = new File("src/main/asciidoc");
-		final Map<String, Object> model = new LinkedHashMap<String, Object>();
-		final List<EndpointDoc> endpoints = new ArrayList<EndpointDoc>();
+		final Map<String, Object> model = new LinkedHashMap<>();
+		final List<EndpointDoc> endpoints = new ArrayList<>();
 		model.put("endpoints", endpoints);
 		for (MvcEndpoint endpoint : getEndpoints()) {
 			final String endpointPath = (StringUtils.hasText(endpoint.getPath())

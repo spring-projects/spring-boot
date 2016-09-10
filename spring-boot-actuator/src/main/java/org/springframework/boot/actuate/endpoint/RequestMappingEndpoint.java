@@ -77,7 +77,7 @@ public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>
 
 	@Override
 	public Map<String, Object> invoke() {
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		Map<String, Object> result = new LinkedHashMap<>();
 		extractHandlerMappings(this.handlerMappings, result);
 		extractHandlerMappings(this.applicationContext, result);
 		extractMethodMappings(this.methodMappings, result);
@@ -94,7 +94,7 @@ public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>
 				@SuppressWarnings("unchecked")
 				Map<?, HandlerMethod> methods = bean.getValue().getHandlerMethods();
 				for (Entry<?, HandlerMethod> method : methods.entrySet()) {
-					Map<String, String> map = new LinkedHashMap<String, String>();
+					Map<String, String> map = new LinkedHashMap<>();
 					map.put("bean", bean.getKey());
 					map.put("method", method.getValue().toString());
 					result.put(method.getKey().toString(), map);

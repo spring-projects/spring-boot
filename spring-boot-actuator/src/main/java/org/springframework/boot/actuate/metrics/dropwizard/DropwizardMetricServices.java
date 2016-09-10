@@ -53,9 +53,9 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 
 	private final MetricRegistry registry;
 
-	private final ConcurrentMap<String, SimpleGauge> gauges = new ConcurrentHashMap<String, SimpleGauge>();
+	private final ConcurrentMap<String, SimpleGauge> gauges = new ConcurrentHashMap<>();
 
-	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<String, String>();
+	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<>();
 
 	/**
 	 * Create a new {@link DropwizardMetricServices} instance.

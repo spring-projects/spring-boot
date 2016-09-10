@@ -105,7 +105,7 @@ public abstract class AbstractMetricExporter implements Exporter, Closeable, Flu
 
 	private void exportGroups() {
 		for (String group : groups()) {
-			Collection<Metric<?>> values = new ArrayList<Metric<?>>();
+			Collection<Metric<?>> values = new ArrayList<>();
 			for (Metric<?> metric : next(group)) {
 				Date timestamp = metric.getTimestamp();
 				if (canExportTimestamp(timestamp)) {

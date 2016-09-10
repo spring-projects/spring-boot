@@ -45,7 +45,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 
 	private boolean enabled = true;
 
-	private Map<String, String> initParameters = new LinkedHashMap<String, String>();
+	private Map<String, String> initParameters = new LinkedHashMap<>();
 
 	/**
 	 * Set the name of this registration. If not specified the bean name will be used.
@@ -98,7 +98,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 	 */
 	public void setInitParameters(Map<String, String> initParameters) {
 		Assert.notNull(initParameters, "InitParameters must not be null");
-		this.initParameters = new LinkedHashMap<String, String>(initParameters);
+		this.initParameters = new LinkedHashMap<>(initParameters);
 	}
 
 	/**

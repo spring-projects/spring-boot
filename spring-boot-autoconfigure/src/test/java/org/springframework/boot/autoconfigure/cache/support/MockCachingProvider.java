@@ -50,7 +50,7 @@ public class MockCachingProvider implements CachingProvider {
 		CacheManager cacheManager = mock(CacheManager.class);
 		given(cacheManager.getURI()).willReturn(uri);
 		given(cacheManager.getClassLoader()).willReturn(classLoader);
-		final Map<String, Cache> caches = new HashMap<String, Cache>();
+		final Map<String, Cache> caches = new HashMap<>();
 		given(cacheManager.getCacheNames()).willReturn(caches.keySet());
 		given(cacheManager.getCache(anyString())).willAnswer(new Answer<Cache>() {
 			@Override

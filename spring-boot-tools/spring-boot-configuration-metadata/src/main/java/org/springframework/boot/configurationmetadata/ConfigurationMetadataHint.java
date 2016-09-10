@@ -33,9 +33,9 @@ class ConfigurationMetadataHint {
 
 	private String id;
 
-	private final List<ValueHint> valueHints = new ArrayList<ValueHint>();
+	private final List<ValueHint> valueHints = new ArrayList<>();
 
-	private final List<ValueProvider> valueProviders = new ArrayList<ValueProvider>();
+	private final List<ValueProvider> valueProviders = new ArrayList<>();
 
 	public boolean isMapKeyHints() {
 		return (this.id != null && this.id.endsWith(KEY_SUFFIX));

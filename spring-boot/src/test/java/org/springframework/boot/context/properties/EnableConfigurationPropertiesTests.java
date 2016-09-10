@@ -228,7 +228,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testCollectionPropertiesBindingWithOver256Elements() {
 		this.context.register(TestConfiguration.class);
-		List<String> pairs = new ArrayList<String>();
+		List<String> pairs = new ArrayList<>();
 		pairs.add("name:foo");
 		for (int i = 0; i < 1000; i++) {
 			pairs.add("list[" + i + "]:" + i);
@@ -676,7 +676,7 @@ public class EnableConfigurationPropertiesTests {
 
 		private int[] array;
 
-		private final List<Integer> list = new ArrayList<Integer>();
+		private final List<Integer> list = new ArrayList<>();
 
 		// No getter - you should be able to bind to a write-only bean
 

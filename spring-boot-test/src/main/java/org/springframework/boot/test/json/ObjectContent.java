@@ -49,7 +49,7 @@ public final class ObjectContent<T> implements AssertProvider<ObjectContentAsser
 
 	@Override
 	public ObjectContentAssert<T> assertThat() {
-		return new ObjectContentAssert<T>(this.object);
+		return new ObjectContentAssert<>(this.object);
 	}
 
 	/**

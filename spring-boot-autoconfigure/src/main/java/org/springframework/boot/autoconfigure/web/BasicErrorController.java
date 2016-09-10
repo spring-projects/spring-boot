@@ -99,7 +99,7 @@ public class BasicErrorController extends AbstractErrorController {
 		Map<String, Object> body = getErrorAttributes(request,
 				isIncludeStackTrace(request, MediaType.ALL));
 		HttpStatus status = getStatus(request);
-		return new ResponseEntity<Map<String, Object>>(body, status);
+		return new ResponseEntity<>(body, status);
 	}
 
 	/**

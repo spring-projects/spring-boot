@@ -47,7 +47,7 @@ class LinksEnhancer {
 			resource.add(linkTo(LinksEnhancer.class).slash(this.rootPath + self)
 					.withSelfRel());
 		}
-		Set<String> added = new HashSet<String>();
+		Set<String> added = new HashSet<>();
 		for (MvcEndpoint endpoint : this.endpoints.getEndpoints()) {
 			if (!endpoint.getPath().equals(self) && !added.contains(endpoint.getPath())) {
 				addEndpointLink(resource, endpoint);

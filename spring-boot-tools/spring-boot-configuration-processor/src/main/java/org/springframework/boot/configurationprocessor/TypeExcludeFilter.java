@@ -30,7 +30,7 @@ import javax.lang.model.type.TypeMirror;
  */
 class TypeExcludeFilter {
 
-	private final Set<String> excludes = new HashSet<String>();
+	private final Set<String> excludes = new HashSet<>();
 
 	TypeExcludeFilter() {
 		add("com.zaxxer.hikari.IConnectionCustomizer");

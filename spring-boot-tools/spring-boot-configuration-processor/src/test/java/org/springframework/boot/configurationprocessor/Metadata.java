@@ -296,7 +296,7 @@ public final class Metadata {
 		}
 
 		private <T> List<T> add(List<T> items, T item) {
-			List<T> result = new ArrayList<T>(items);
+			List<T> result = new ArrayList<>(items);
 			result.add(item);
 			return result;
 		}

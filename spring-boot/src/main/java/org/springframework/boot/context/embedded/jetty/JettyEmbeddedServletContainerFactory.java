@@ -113,7 +113,7 @@ public class JettyEmbeddedServletContainerFactory
 
 	private static final String CONNECTOR_JETTY_8 = "org.eclipse.jetty.server.nio.SelectChannelConnector";
 
-	private List<Configuration> configurations = new ArrayList<Configuration>();
+	private List<Configuration> configurations = new ArrayList<>();
 
 	private boolean useForwardHeaders;
 
@@ -127,7 +127,7 @@ public class JettyEmbeddedServletContainerFactory
 	 */
 	private int selectors = -1;
 
-	private List<JettyServerCustomizer> jettyServerCustomizers = new ArrayList<JettyServerCustomizer>();
+	private List<JettyServerCustomizer> jettyServerCustomizers = new ArrayList<>();
 
 	private ResourceLoader resourceLoader;
 
@@ -460,7 +460,7 @@ public class JettyEmbeddedServletContainerFactory
 	 */
 	protected Configuration[] getWebAppContextConfigurations(WebAppContext webAppContext,
 			ServletContextInitializer... initializers) {
-		List<Configuration> configurations = new ArrayList<Configuration>();
+		List<Configuration> configurations = new ArrayList<>();
 		configurations.add(
 				getServletContextInitializerConfiguration(webAppContext, initializers));
 		configurations.addAll(getConfigurations());
@@ -580,7 +580,7 @@ public class JettyEmbeddedServletContainerFactory
 	public void setServerCustomizers(
 			Collection<? extends JettyServerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		this.jettyServerCustomizers = new ArrayList<JettyServerCustomizer>(customizers);
+		this.jettyServerCustomizers = new ArrayList<>(customizers);
 	}
 
 	/**
@@ -610,7 +610,7 @@ public class JettyEmbeddedServletContainerFactory
 	 */
 	public void setConfigurations(Collection<? extends Configuration> configurations) {
 		Assert.notNull(configurations, "Configurations must not be null");
-		this.configurations = new ArrayList<Configuration>(configurations);
+		this.configurations = new ArrayList<>(configurations);
 	}
 
 	/**
@@ -746,11 +746,11 @@ public class JettyEmbeddedServletContainerFactory
 				ReflectionUtils.findMethod(handlerClass, "setMinGzipSize", int.class)
 						.invoke(handler, compression.getMinResponseSize());
 				ReflectionUtils.findMethod(handlerClass, "setMimeTypes", Set.class)
-						.invoke(handler, new HashSet<String>(
+						.invoke(handler, new HashSet<>(
 								Arrays.asList(compression.getMimeTypes())));
 				if (compression.getExcludedUserAgents() != null) {
 					ReflectionUtils.findMethod(handlerClass, "setExcluded", Set.class)
-							.invoke(handler, new HashSet<String>(
+							.invoke(handler, new HashSet<>(
 									Arrays.asList(compression.getExcludedUserAgents())));
 				}
 				return handler;
@@ -778,7 +778,7 @@ public class JettyEmbeddedServletContainerFactory
 						.invoke(gzipHandler, new Object[] { compression.getMimeTypes() });
 				if (compression.getExcludedUserAgents() != null) {
 					ReflectionUtils.findMethod(handlerClass, "setExcluded", Set.class)
-							.invoke(gzipHandler, new HashSet<String>(
+							.invoke(gzipHandler, new HashSet<>(
 									Arrays.asList(compression.getExcludedUserAgents())));
 				}
 				return gzipHandler;

@@ -199,7 +199,7 @@ public class DefinitionsParserTests {
 	}
 
 	private List<Definition> getDefinitions() {
-		return new ArrayList<Definition>(this.parser.getDefinitions());
+		return new ArrayList<>(this.parser.getDefinitions());
 	}
 
 	@MockBean(ExampleService.class)

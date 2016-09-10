@@ -45,7 +45,7 @@ class ImportAutoConfigurationImportSelector
 	private static final Set<String> ANNOTATION_NAMES;
 
 	static {
-		Set<String> names = new LinkedHashSet<String>();
+		Set<String> names = new LinkedHashSet<>();
 		names.add(ImportAutoConfiguration.class.getName());
 		names.add("org.springframework.boot.autoconfigure.test.ImportAutoConfiguration");
 		ANNOTATION_NAMES = Collections.unmodifiableSet(names);
@@ -69,9 +69,9 @@ class ImportAutoConfigurationImportSelector
 	}
 
 	private List<String> getCandidateConfigurations(Class<?> source) {
-		Set<String> candidates = new LinkedHashSet<String>();
-		collectCandidateConfigurations(source, candidates, new HashSet<Class<?>>());
-		return new ArrayList<String>(candidates);
+		Set<String> candidates = new LinkedHashSet<>();
+		collectCandidateConfigurations(source, candidates, new HashSet<>());
+		return new ArrayList<>(candidates);
 	}
 
 	private void collectCandidateConfigurations(Class<?> source, Set<String> candidates,

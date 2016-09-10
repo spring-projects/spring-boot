@@ -121,7 +121,7 @@ public class GsonTester<T> extends AbstractJsonMarshalTester<T> {
 		@Override
 		protected AbstractJsonMarshalTester<Object> createTester(
 				Class<?> resourceLoadClass, ResolvableType type, Gson marshaller) {
-			return new GsonTester<Object>(resourceLoadClass, type, marshaller);
+			return new GsonTester<>(resourceLoadClass, type, marshaller);
 		}
 
 	}

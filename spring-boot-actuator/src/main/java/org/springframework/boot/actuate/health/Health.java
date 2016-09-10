@@ -182,7 +182,7 @@ public final class Health {
 		 */
 		public Builder() {
 			this.status = Status.UNKNOWN;
-			this.details = new LinkedHashMap<String, Object>();
+			this.details = new LinkedHashMap<>();
 		}
 
 		/**
@@ -192,7 +192,7 @@ public final class Health {
 		public Builder(Status status) {
 			Assert.notNull(status, "Status must not be null");
 			this.status = status;
-			this.details = new LinkedHashMap<String, Object>();
+			this.details = new LinkedHashMap<>();
 		}
 
 		/**
@@ -205,7 +205,7 @@ public final class Health {
 			Assert.notNull(status, "Status must not be null");
 			Assert.notNull(details, "Details must not be null");
 			this.status = status;
-			this.details = new LinkedHashMap<String, Object>(details);
+			this.details = new LinkedHashMap<>(details);
 		}
 
 		/**

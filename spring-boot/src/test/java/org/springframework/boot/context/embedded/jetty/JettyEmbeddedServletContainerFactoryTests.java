@@ -248,7 +248,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 	@Test
 	public void jspServletInitParameters() {
 		JettyEmbeddedServletContainerFactory factory = getFactory();
-		Map<String, String> initParameters = new HashMap<String, String>();
+		Map<String, String> initParameters = new HashMap<>();
 		initParameters.put("a", "alpha");
 		factory.getJspServlet().setInitParameters(initParameters);
 		this.container = factory.getEmbeddedServletContainer();

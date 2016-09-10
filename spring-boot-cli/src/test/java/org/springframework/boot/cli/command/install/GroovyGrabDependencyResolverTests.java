@@ -121,7 +121,7 @@ public class GroovyGrabDependencyResolverTests {
 	}
 
 	public Set<String> getNames(Collection<File> files) {
-		Set<String> names = new HashSet<String>(files.size());
+		Set<String> names = new HashSet<>(files.size());
 		for (File file : files) {
 			names.add(file.getName());
 		}

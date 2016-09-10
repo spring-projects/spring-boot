@@ -140,7 +140,7 @@ public class ResourceMatcherTests {
 						new File("src/test/resources/resource-matcher/two"),
 						new File("src/test/resources/resource-matcher/three")));
 		System.out.println(matchedResources);
-		List<String> paths = new ArrayList<String>();
+		List<String> paths = new ArrayList<>();
 		for (MatchedResource resource : matchedResources) {
 			paths.add(resource.getName());
 		}

@@ -98,7 +98,7 @@ public class IncludeFilterTests {
 		IncludeFilter filter = new IncludeFilter(Arrays.asList(
 				createInclude("com.foo", "bar"), createInclude("com.foo", "bar2"),
 				createInclude("org.acme", "app")));
-		Set<Artifact> artifacts = new HashSet<Artifact>();
+		Set<Artifact> artifacts = new HashSet<>();
 		artifacts.add(createArtifact("com.foo", "bar"));
 		artifacts.add(createArtifact("com.foo", "bar"));
 		Artifact anotherAcme = createArtifact("org.acme", "another-app");

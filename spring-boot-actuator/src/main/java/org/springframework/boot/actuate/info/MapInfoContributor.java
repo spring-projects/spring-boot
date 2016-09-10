@@ -30,7 +30,7 @@ public class MapInfoContributor implements InfoContributor {
 	private final Map<String, Object> info;
 
 	public MapInfoContributor(Map<String, Object> info) {
-		this.info = new LinkedHashMap<String, Object>(info);
+		this.info = new LinkedHashMap<>(info);
 	}
 
 	@Override

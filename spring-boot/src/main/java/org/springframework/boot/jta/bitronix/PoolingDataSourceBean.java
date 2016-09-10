@@ -50,7 +50,7 @@ import org.springframework.util.StringUtils;
 public class PoolingDataSourceBean extends PoolingDataSource
 		implements BeanNameAware, InitializingBean {
 
-	private static final ThreadLocal<PoolingDataSourceBean> source = new ThreadLocal<PoolingDataSourceBean>();
+	private static final ThreadLocal<PoolingDataSourceBean> source = new ThreadLocal<>();
 
 	private XADataSource dataSource;
 

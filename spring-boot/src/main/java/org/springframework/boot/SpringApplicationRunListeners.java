@@ -40,7 +40,7 @@ class SpringApplicationRunListeners {
 	SpringApplicationRunListeners(Log log,
 			Collection<? extends SpringApplicationRunListener> listeners) {
 		this.log = log;
-		this.listeners = new ArrayList<SpringApplicationRunListener>(listeners);
+		this.listeners = new ArrayList<>(listeners);
 	}
 
 	public void started() {

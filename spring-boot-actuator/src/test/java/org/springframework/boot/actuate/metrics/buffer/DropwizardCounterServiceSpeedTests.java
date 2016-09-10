@@ -101,7 +101,7 @@ public class DropwizardCounterServiceSpeedTests {
 				}
 			}
 		};
-		Collection<Future<?>> futures = new HashSet<Future<?>>();
+		Collection<Future<?>> futures = new HashSet<>();
 		for (int i = 0; i < threadCount; i++) {
 			futures.add(pool.submit(task));
 		}

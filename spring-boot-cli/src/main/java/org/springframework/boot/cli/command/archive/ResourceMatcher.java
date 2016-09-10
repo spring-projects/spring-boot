@@ -60,7 +60,7 @@ class ResourceMatcher {
 	}
 
 	public List<MatchedResource> find(List<File> roots) throws IOException {
-		List<MatchedResource> matchedResources = new ArrayList<MatchedResource>();
+		List<MatchedResource> matchedResources = new ArrayList<>();
 		for (File root : roots) {
 			if (root.isFile()) {
 				matchedResources.add(new MatchedResource(root));
@@ -73,7 +73,7 @@ class ResourceMatcher {
 	}
 
 	private List<MatchedResource> findInFolder(File folder) throws IOException {
-		List<MatchedResource> matchedResources = new ArrayList<MatchedResource>();
+		List<MatchedResource> matchedResources = new ArrayList<>();
 
 		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(
 				new FolderResourceLoader(folder));
@@ -103,8 +103,8 @@ class ResourceMatcher {
 	}
 
 	private List<String> getOptions(List<String> values, String[] defaults) {
-		Set<String> result = new LinkedHashSet<String>();
-		Set<String> minus = new LinkedHashSet<String>();
+		Set<String> result = new LinkedHashSet<>();
+		Set<String> minus = new LinkedHashSet<>();
 		boolean deltasFound = false;
 		for (String value : values) {
 			if (value.startsWith("+")) {
@@ -126,7 +126,7 @@ class ResourceMatcher {
 				result.add(value);
 			}
 		}
-		return new ArrayList<String>(result);
+		return new ArrayList<>(result);
 	}
 
 	/**

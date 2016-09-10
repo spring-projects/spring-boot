@@ -71,7 +71,7 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor
 	}
 
 	private Iterable<String> getBeanNames(ListableBeanFactory beanFactory) {
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		names.addAll(Arrays.asList(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 				beanFactory, this.beanClass, true, false)));
 		for (String factoryBeanName : BeanFactoryUtils.beanNamesForTypeIncludingAncestors(

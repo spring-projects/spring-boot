@@ -29,7 +29,7 @@ import org.springframework.boot.actuate.metrics.Metric;
  */
 public class CompositeMetricReader implements MetricReader {
 
-	private final List<MetricReader> readers = new ArrayList<MetricReader>();
+	private final List<MetricReader> readers = new ArrayList<>();
 
 	public CompositeMetricReader(MetricReader... readers) {
 		Collections.addAll(this.readers, readers);
@@ -48,7 +48,7 @@ public class CompositeMetricReader implements MetricReader {
 
 	@Override
 	public Iterable<Metric<?>> findAll() {
-		List<Metric<?>> values = new ArrayList<Metric<?>>((int) count());
+		List<Metric<?>> values = new ArrayList<>((int) count());
 		for (MetricReader delegate : this.readers) {
 			Iterable<Metric<?>> all = delegate.findAll();
 			for (Metric<?> value : all) {

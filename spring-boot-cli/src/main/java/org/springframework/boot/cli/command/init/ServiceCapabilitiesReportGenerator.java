@@ -93,7 +93,7 @@ class ServiceCapabilitiesReportGenerator {
 	}
 
 	private List<Dependency> getSortedDependencies(InitializrServiceMetadata metadata) {
-		ArrayList<Dependency> dependencies = new ArrayList<Dependency>(
+		ArrayList<Dependency> dependencies = new ArrayList<>(
 				metadata.getDependencies());
 		Collections.sort(dependencies, new Comparator<Dependency>() {
 			@Override
@@ -108,12 +108,12 @@ class ServiceCapabilitiesReportGenerator {
 			StringBuilder report) {
 		report.append("Available project types:" + NEW_LINE);
 		report.append("------------------------" + NEW_LINE);
-		SortedSet<Entry<String, ProjectType>> entries = new TreeSet<Entry<String, ProjectType>>(
+		SortedSet<Entry<String, ProjectType>> entries = new TreeSet<>(
 				new Comparator<Entry<String, ProjectType>>() {
 
 					@Override
 					public int compare(Entry<String, ProjectType> o1,
-							Entry<String, ProjectType> o2) {
+					                   Entry<String, ProjectType> o2) {
 						return o1.getKey().compareTo(o2.getKey());
 					}
 
@@ -150,7 +150,7 @@ class ServiceCapabilitiesReportGenerator {
 			InitializrServiceMetadata metadata) {
 		report.append("Defaults:" + NEW_LINE);
 		report.append("---------" + NEW_LINE);
-		List<String> defaultsKeys = new ArrayList<String>(
+		List<String> defaultsKeys = new ArrayList<>(
 				metadata.getDefaults().keySet());
 		Collections.sort(defaultsKeys);
 		for (String defaultsKey : defaultsKeys) {

@@ -39,7 +39,7 @@ import org.springframework.util.ConcurrentReferenceHashMap;
 public class ConcurrentReferenceCachingMetadataReaderFactory
 		extends SimpleMetadataReaderFactory {
 
-	private final Map<Resource, MetadataReader> cache = new ConcurrentReferenceHashMap<Resource, MetadataReader>();
+	private final Map<Resource, MetadataReader> cache = new ConcurrentReferenceHashMap<>();
 
 	/**
 	 * Create a new {@link ConcurrentReferenceCachingMetadataReaderFactory} instance for

@@ -47,11 +47,11 @@ class TypeElementMembers {
 
 	private final TypeUtils typeUtils;
 
-	private final Map<String, VariableElement> fields = new LinkedHashMap<String, VariableElement>();
+	private final Map<String, VariableElement> fields = new LinkedHashMap<>();
 
-	private final Map<String, ExecutableElement> publicGetters = new LinkedHashMap<String, ExecutableElement>();
+	private final Map<String, ExecutableElement> publicGetters = new LinkedHashMap<>();
 
-	private final Map<String, List<ExecutableElement>> publicSetters = new LinkedHashMap<String, List<ExecutableElement>>();
+	private final Map<String, List<ExecutableElement>> publicSetters = new LinkedHashMap<>();
 
 	TypeElementMembers(ProcessingEnvironment env, TypeElement element) {
 		this.env = env;
@@ -86,7 +86,7 @@ class TypeElementMembers {
 				List<ExecutableElement> matchingSetters = this.publicSetters
 						.get(propertyName);
 				if (matchingSetters == null) {
-					matchingSetters = new ArrayList<ExecutableElement>();
+					matchingSetters = new ArrayList<>();
 					this.publicSetters.put(propertyName, matchingSetters);
 				}
 				TypeMirror paramType = method.getParameters().get(0).asType();

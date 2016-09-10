@@ -28,7 +28,7 @@ public abstract class Iterables {
 		if (iterable instanceof Collection) {
 			return (Collection<T>) iterable;
 		}
-		ArrayList<T> list = new ArrayList<T>();
+		ArrayList<T> list = new ArrayList<>();
 		for (T t : iterable) {
 			list.add(t);
 		}

@@ -37,7 +37,7 @@ public class MetricReaderPublicMetricsTests {
 
 	@Test
 	public void exposesMetrics() {
-		List<Metric<?>> metrics = new ArrayList<Metric<?>>();
+		List<Metric<?>> metrics = new ArrayList<>();
 		metrics.add(mock(Metric.class));
 		metrics.add(mock(Metric.class));
 		MetricReader reader = mock(MetricReader.class);

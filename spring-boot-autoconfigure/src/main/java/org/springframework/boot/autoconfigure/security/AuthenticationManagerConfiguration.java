@@ -169,7 +169,7 @@ public class AuthenticationManagerConfiguration {
 				logger.info(String.format("%n%nUsing default security password: %s%n",
 						user.getPassword()));
 			}
-			Set<String> roles = new LinkedHashSet<String>(user.getRole());
+			Set<String> roles = new LinkedHashSet<>(user.getRole());
 			withUser(user.getName()).password(user.getPassword())
 					.roles(roles.toArray(new String[roles.size()]));
 			setField(auth, "defaultUserDetailsService", getUserDetailsService());

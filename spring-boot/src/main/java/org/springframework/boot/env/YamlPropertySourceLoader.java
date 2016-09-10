@@ -97,7 +97,7 @@ public class YamlPropertySourceLoader implements PropertySourceLoader {
 		}
 
 		public Map<String, Object> process() {
-			final Map<String, Object> result = new LinkedHashMap<String, Object>();
+			final Map<String, Object> result = new LinkedHashMap<>();
 			process(new MatchCallback() {
 				@Override
 				public void process(Properties properties, Map<String, Object> map) {

@@ -78,7 +78,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 	 */
 	public EndpointHandlerMapping(Collection<? extends MvcEndpoint> endpoints,
 			CorsConfiguration corsConfiguration) {
-		this.endpoints = new HashSet<MvcEndpoint>(endpoints);
+		this.endpoints = new HashSet<>(endpoints);
 		this.corsConfiguration = corsConfiguration;
 		// By default the static resource handler mapping is LOWEST_PRECEDENCE - 1
 		// and the RequestMappingHandlerMapping is 0 (we ideally want to be before both)
@@ -123,7 +123,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 		if (defaultPatterns.isEmpty()) {
 			return new String[] { prefix, prefix + ".json" };
 		}
-		List<String> patterns = new ArrayList<String>(defaultPatterns);
+		List<String> patterns = new ArrayList<>(defaultPatterns);
 		for (int i = 0; i < patterns.size(); i++) {
 			patterns.set(i, prefix + patterns.get(i));
 		}
@@ -198,7 +198,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 	 * @return the endpoints
 	 */
 	public Set<? extends MvcEndpoint> getEndpoints() {
-		return new HashSet<MvcEndpoint>(this.endpoints);
+		return new HashSet<>(this.endpoints);
 	}
 
 	@Override

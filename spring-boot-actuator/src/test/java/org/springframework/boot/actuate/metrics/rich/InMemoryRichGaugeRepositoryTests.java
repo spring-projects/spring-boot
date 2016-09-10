@@ -32,8 +32,8 @@ public class InMemoryRichGaugeRepositoryTests {
 
 	@Test
 	public void writeAndRead() {
-		this.repository.set(new Metric<Double>("foo", 1d));
-		this.repository.set(new Metric<Double>("foo", 2d));
+		this.repository.set(new Metric<>("foo", 1d));
+		this.repository.set(new Metric<>("foo", 2d));
 		assertThat(this.repository.findOne("foo").getCount()).isEqualTo(2L);
 		assertThat(this.repository.findOne("foo").getValue()).isEqualTo(2d, offset(0.01));
 	}

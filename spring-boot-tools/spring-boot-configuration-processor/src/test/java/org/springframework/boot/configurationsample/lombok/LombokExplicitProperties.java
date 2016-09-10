@@ -56,7 +56,7 @@ public class LombokExplicitProperties {
 	private Integer number = 0;
 
 	@Getter
-	private final List<String> items = new ArrayList<String>();
+	private final List<String> items = new ArrayList<>();
 
 	// Should be ignored if no annotation is set
 	@SuppressWarnings("unused")

@@ -102,7 +102,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 	 * @return the flattened map
 	 */
 	private Map<String, Object> flatten(Map<String, Object> map) {
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		Map<String, Object> result = new LinkedHashMap<>();
 		flatten(null, result, map);
 		return result;
 	}

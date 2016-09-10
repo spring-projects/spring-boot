@@ -359,7 +359,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		private static final Set<String> SCOPES;
 
 		static {
-			Set<String> scopes = new LinkedHashSet<String>();
+			Set<String> scopes = new LinkedHashSet<>();
 			scopes.add(WebApplicationContext.SCOPE_REQUEST);
 			scopes.add(WebApplicationContext.SCOPE_SESSION);
 			scopes.add(WebApplicationContext.SCOPE_GLOBAL_SESSION);
@@ -368,7 +368,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 
 		private final ConfigurableListableBeanFactory beanFactory;
 
-		private final Map<String, Scope> scopes = new HashMap<String, Scope>();
+		private final Map<String, Scope> scopes = new HashMap<>();
 
 		public ExistingWebApplicationScopes(ConfigurableListableBeanFactory beanFactory) {
 			this.beanFactory = beanFactory;

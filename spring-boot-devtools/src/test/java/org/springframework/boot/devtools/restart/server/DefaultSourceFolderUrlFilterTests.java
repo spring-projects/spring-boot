@@ -38,7 +38,7 @@ public class DefaultSourceFolderUrlFilterTests {
 	private static final List<String> COMMON_POSTFIXES;
 
 	static {
-		List<String> postfixes = new ArrayList<String>();
+		List<String> postfixes = new ArrayList<>();
 		postfixes.add(".jar");
 		postfixes.add("-1.3.0.jar");
 		postfixes.add("-1.3.0-SNAPSHOT.jar");
@@ -105,7 +105,7 @@ public class DefaultSourceFolderUrlFilterTests {
 	}
 
 	private List<URL> getUrls(String name) throws MalformedURLException {
-		List<URL> urls = new ArrayList<URL>();
+		List<URL> urls = new ArrayList<>();
 		urls.add(new URL("file:/some/path/" + name));
 		urls.add(new URL("file:/some/path/" + name + "!/"));
 		for (String postfix : COMMON_POSTFIXES) {

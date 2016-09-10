@@ -27,7 +27,7 @@ import java.util.List;
  */
 class MockitoBeans implements Iterable<Object> {
 
-	private final List<Object> beans = new ArrayList<Object>();
+	private final List<Object> beans = new ArrayList<>();
 
 	void add(Object bean) {
 		this.beans.add(bean);

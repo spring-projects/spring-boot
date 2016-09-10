@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
  */
 class TunnelClientListeners {
 
-	private final List<TunnelClientListener> listeners = new CopyOnWriteArrayList<TunnelClientListener>();
+	private final List<TunnelClientListener> listeners = new CopyOnWriteArrayList<>();
 
 	public void addListener(TunnelClientListener listener) {
 		Assert.notNull(listener, "Listener must not be null");

@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
  */
 public class MockRestarter implements TestRule {
 
-	private Map<String, Object> attributes = new HashMap<String, Object>();
+	private Map<String, Object> attributes = new HashMap<>();
 
 	private Restarter mock = mock(Restarter.class);
 

@@ -59,9 +59,9 @@ public class AtomikosDependsOnBeanFactoryPostProcessorTests {
 			assertThat(expected).as("No dependsOn expected for " + bean).isEmpty();
 			return;
 		}
-		HashSet<String> dependsOn = new HashSet<String>(
+		HashSet<String> dependsOn = new HashSet<>(
 				Arrays.asList(definition.getDependsOn()));
-		assertThat(dependsOn).isEqualTo(new HashSet<String>(Arrays.asList(expected)));
+		assertThat(dependsOn).isEqualTo(new HashSet<>(Arrays.asList(expected)));
 	}
 
 	@Configuration

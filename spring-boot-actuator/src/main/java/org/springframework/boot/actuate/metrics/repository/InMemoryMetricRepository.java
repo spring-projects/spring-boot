@@ -35,9 +35,9 @@ import org.springframework.boot.actuate.metrics.writer.Delta;
  */
 public class InMemoryMetricRepository implements MetricRepository, MultiMetricRepository {
 
-	private final SimpleInMemoryRepository<Metric<?>> metrics = new SimpleInMemoryRepository<Metric<?>>();
+	private final SimpleInMemoryRepository<Metric<?>> metrics = new SimpleInMemoryRepository<>();
 
-	private final Collection<String> groups = new HashSet<String>();
+	private final Collection<String> groups = new HashSet<>();
 
 	public void setValues(ConcurrentNavigableMap<String, Metric<?>> values) {
 		this.metrics.setValues(values);
@@ -53,11 +53,11 @@ public class InMemoryMetricRepository implements MetricRepository, MultiMetricRe
 			public Metric<?> modify(Metric<?> current) {
 				if (current != null) {
 					Metric<? extends Number> metric = current;
-					return new Metric<Long>(metricName,
+					return new Metric<>(metricName,
 							metric.increment(amount).getValue(), timestamp);
 				}
 				else {
-					return new Metric<Long>(metricName, Long.valueOf(amount), timestamp);
+					return new Metric<>(metricName, Long.valueOf(amount), timestamp);
 				}
 			}
 		});

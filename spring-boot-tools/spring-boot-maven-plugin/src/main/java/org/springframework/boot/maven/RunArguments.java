@@ -38,7 +38,7 @@ class RunArguments {
 	}
 
 	RunArguments(String[] args) {
-		this.args = new LinkedList<String>(Arrays.asList(args));
+		this.args = new LinkedList<>(Arrays.asList(args));
 	}
 
 	public LinkedList<String> getArgs() {

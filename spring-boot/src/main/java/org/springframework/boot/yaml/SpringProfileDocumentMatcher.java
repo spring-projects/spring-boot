@@ -53,7 +53,7 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	}
 
 	public void addActiveProfiles(String... profiles) {
-		LinkedHashSet<String> set = new LinkedHashSet<String>(
+		LinkedHashSet<String> set = new LinkedHashSet<>(
 				Arrays.asList(this.activeProfiles));
 		Collections.addAll(set, profiles);
 		this.activeProfiles = set.toArray(new String[set.size()]);
@@ -82,7 +82,7 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	private DocumentMatcher getActiveProfilesDocumentMatcher() {
 		return this.activeProfiles.length == 0 ? new EmptyProfileDocumentMatcher()
 				: new ActiveProfilesDocumentMatcher(
-						new HashSet<String>(Arrays.asList(this.activeProfiles)));
+				new HashSet<>(Arrays.asList(this.activeProfiles)));
 	}
 
 	private String extractProfiles(String profiles, ProfileType type) {

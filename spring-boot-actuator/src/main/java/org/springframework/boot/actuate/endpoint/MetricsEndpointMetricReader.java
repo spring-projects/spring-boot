@@ -46,20 +46,20 @@ public class MetricsEndpointMetricReader implements MetricReader {
 		Metric<Number> metric = null;
 		Object value = this.endpoint.invoke().get(metricName);
 		if (value != null) {
-			metric = new Metric<Number>(metricName, (Number) value);
+			metric = new Metric<>(metricName, (Number) value);
 		}
 		return metric;
 	}
 
 	@Override
 	public Iterable<Metric<?>> findAll() {
-		List<Metric<?>> metrics = new ArrayList<Metric<?>>();
+		List<Metric<?>> metrics = new ArrayList<>();
 		Map<String, Object> values = this.endpoint.invoke();
 		Date timestamp = new Date();
 		for (Entry<String, Object> entry : values.entrySet()) {
 			String name = entry.getKey();
 			Object value = entry.getValue();
-			metrics.add(new Metric<Number>(name, (Number) value, timestamp));
+			metrics.add(new Metric<>(name, (Number) value, timestamp));
 		}
 		return metrics;
 	}

@@ -54,7 +54,7 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 	/**
 	 * Additional velocity properties.
 	 */
-	private Map<String, String> properties = new HashMap<String, String>();
+	private Map<String, String> properties = new HashMap<>();
 
 	/**
 	 * Template path.

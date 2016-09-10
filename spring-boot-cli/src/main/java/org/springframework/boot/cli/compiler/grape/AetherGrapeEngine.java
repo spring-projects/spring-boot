@@ -56,7 +56,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 	private static final Collection<Exclusion> WILDCARD_EXCLUSION;
 
 	static {
-		List<Exclusion> exclusions = new ArrayList<Exclusion>();
+		List<Exclusion> exclusions = new ArrayList<>();
 		exclusions.add(new Exclusion("*", "*", "*", "*"));
 		WILDCARD_EXCLUSION = Collections.unmodifiableList(exclusions);
 	}
@@ -82,8 +82,8 @@ public class AetherGrapeEngine implements GrapeEngine {
 		this.repositorySystem = repositorySystem;
 		this.session = repositorySystemSession;
 		this.resolutionContext = resolutionContext;
-		this.repositories = new ArrayList<RemoteRepository>();
-		List<RemoteRepository> remotes = new ArrayList<RemoteRepository>(
+		this.repositories = new ArrayList<>();
+		List<RemoteRepository> remotes = new ArrayList<>(
 				remoteRepositories);
 		Collections.reverse(remotes); // priority is reversed in addRepository
 		for (RemoteRepository repository : remotes) {
@@ -126,7 +126,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	@SuppressWarnings("unchecked")
 	private List<Exclusion> createExclusions(Map<?, ?> args) {
-		List<Exclusion> exclusions = new ArrayList<Exclusion>();
+		List<Exclusion> exclusions = new ArrayList<>();
 		if (args != null) {
 			List<Map<String, Object>> exclusionMaps = (List<Map<String, Object>>) args
 					.get("excludes");
@@ -147,7 +147,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private List<Dependency> createDependencies(Map<?, ?>[] dependencyMaps,
 			List<Exclusion> exclusions) {
-		List<Dependency> dependencies = new ArrayList<Dependency>(dependencyMaps.length);
+		List<Dependency> dependencies = new ArrayList<>(dependencyMaps.length);
 		for (Map<?, ?> dependencyMap : dependencyMaps) {
 			dependencies.add(createDependency(dependencyMap, exclusions));
 		}
@@ -197,7 +197,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 	}
 
 	private List<Dependency> getDependencies(DependencyResult dependencyResult) {
-		List<Dependency> dependencies = new ArrayList<Dependency>();
+		List<Dependency> dependencies = new ArrayList<>();
 		for (ArtifactResult artifactResult : dependencyResult.getArtifactResults()) {
 			dependencies.add(
 					new Dependency(artifactResult.getArtifact(), JavaScopes.COMPILE));
@@ -206,7 +206,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 	}
 
 	private List<File> getFiles(DependencyResult dependencyResult) {
-		List<File> files = new ArrayList<File>();
+		List<File> files = new ArrayList<>();
 		for (ArtifactResult result : dependencyResult.getArtifactResults()) {
 			files.add(result.getArtifact().getFile());
 		}
@@ -282,7 +282,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 		List<Dependency> dependencies = createDependencies(dependencyMaps, exclusions);
 		try {
 			List<File> files = resolve(dependencies);
-			List<URI> uris = new ArrayList<URI>(files.size());
+			List<URI> uris = new ArrayList<>(files.size());
 			for (File file : files) {
 				uris.add(file.toURI());
 			}
@@ -313,7 +313,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private CollectRequest getCollectRequest(List<Dependency> dependencies) {
 		CollectRequest collectRequest = new CollectRequest((Dependency) null,
-				dependencies, new ArrayList<RemoteRepository>(this.repositories));
+				dependencies, new ArrayList<>(this.repositories));
 		collectRequest
 				.setManagedDependencies(this.resolutionContext.getManagedDependencies());
 		return collectRequest;

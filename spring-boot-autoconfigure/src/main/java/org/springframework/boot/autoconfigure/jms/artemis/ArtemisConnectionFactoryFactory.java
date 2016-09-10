@@ -124,7 +124,7 @@ class ArtemisConnectionFactoryFactory {
 
 	private <T extends ActiveMQConnectionFactory> T createNativeConnectionFactory(
 			Class<T> factoryClass) throws Exception {
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, Object> params = new HashMap<>();
 		params.put(TransportConstants.HOST_PROP_NAME, this.properties.getHost());
 		params.put(TransportConstants.PORT_PROP_NAME, this.properties.getPort());
 		TransportConfiguration transportConfiguration = new TransportConfiguration(

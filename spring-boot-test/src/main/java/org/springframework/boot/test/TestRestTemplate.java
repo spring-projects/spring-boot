@@ -123,7 +123,7 @@ public class TestRestTemplate extends RestTemplate {
 
 		public CustomHttpComponentsClientHttpRequestFactory(
 				HttpClientOption[] httpClientOptions) {
-			Set<HttpClientOption> options = new HashSet<TestRestTemplate.HttpClientOption>(
+			Set<HttpClientOption> options = new HashSet<>(
 					Arrays.asList(httpClientOptions));
 			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES)
 					? CookieSpecs.STANDARD : CookieSpecs.IGNORE_COOKIES);

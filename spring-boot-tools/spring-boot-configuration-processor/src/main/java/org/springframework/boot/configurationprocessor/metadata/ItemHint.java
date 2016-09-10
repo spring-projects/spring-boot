@@ -44,10 +44,10 @@ public class ItemHint implements Comparable<ItemHint> {
 
 	public ItemHint(String name, List<ValueHint> values, List<ValueProvider> providers) {
 		this.name = toCanonicalName(name);
-		this.values = (values != null ? new ArrayList<ValueHint>(values)
-				: new ArrayList<ValueHint>());
-		this.providers = (providers != null ? new ArrayList<ValueProvider>(providers)
-				: new ArrayList<ValueProvider>());
+		this.values = (values != null ? new ArrayList<>(values)
+				: new ArrayList<>());
+		this.providers = (providers != null ? new ArrayList<>(providers)
+				: new ArrayList<>());
 	}
 
 	private String toCanonicalName(String name) {

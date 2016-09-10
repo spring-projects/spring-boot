@@ -114,7 +114,7 @@ class SkipPatternJarScanner extends StandardJarScanner {
 	 */
 	private static class SkipPattern {
 
-		private Set<String> patterns = new LinkedHashSet<String>();
+		private Set<String> patterns = new LinkedHashSet<>();
 
 		protected SkipPattern() {
 			// Same as Tomcat

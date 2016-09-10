@@ -34,7 +34,7 @@ public class HttpTunnelPayloadForwarder {
 
 	private static final int MAXIMUM_QUEUE_SIZE = 100;
 
-	private final Map<Long, HttpTunnelPayload> queue = new HashMap<Long, HttpTunnelPayload>();
+	private final Map<Long, HttpTunnelPayload> queue = new HashMap<>();
 
 	private final Object monitor = new Object();
 

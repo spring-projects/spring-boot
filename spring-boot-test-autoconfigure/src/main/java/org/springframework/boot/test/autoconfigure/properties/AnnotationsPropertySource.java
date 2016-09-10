@@ -59,8 +59,8 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 	}
 
 	private Map<String, Object> getProperties(Class<?> source) {
-		Map<String, Object> properties = new LinkedHashMap<String, Object>();
-		collectProperties(source, source, properties, new HashSet<Class<?>>());
+		Map<String, Object> properties = new LinkedHashMap<>();
+		collectProperties(source, source, properties, new HashSet<>());
 		return Collections.unmodifiableMap(properties);
 	}
 
@@ -84,7 +84,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 	}
 
 	private List<Annotation> getMergedAnnotations(Class<?> root, Class<?> source) {
-		List<Annotation> mergedAnnotations = new ArrayList<Annotation>();
+		List<Annotation> mergedAnnotations = new ArrayList<>();
 		for (Annotation annotation : AnnotationUtils.getAnnotations(source)) {
 			if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
 				mergedAnnotations

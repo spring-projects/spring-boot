@@ -44,7 +44,7 @@ public class EmbeddedMongoProperties {
 	/**
 	 * Comma-separated list of features to enable.
 	 */
-	private Set<Feature> features = new HashSet<Feature>(
+	private Set<Feature> features = new HashSet<>(
 			Collections.singletonList(Feature.SYNC_DELAY));
 
 	public String getVersion() {

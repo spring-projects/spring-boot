@@ -39,11 +39,11 @@ public class SimpleCollectionProperties {
 
 	private List<Float> floats;
 
-	private final Map<String, Integer> namesToIntegers = new HashMap<String, Integer>();
+	private final Map<String, Integer> namesToIntegers = new HashMap<>();
 
-	private final Collection<Byte> bytes = new LinkedHashSet<Byte>();
+	private final Collection<Byte> bytes = new LinkedHashSet<>();
 
-	private final List<Double> doubles = new ArrayList<Double>();
+	private final List<Double> doubles = new ArrayList<>();
 
 	public Map<Integer, String> getIntegersToNames() {
 		return this.integersToNames;

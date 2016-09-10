@@ -67,14 +67,14 @@ public class MessageChannelMetricWriterTests {
 
 	@Test
 	public void messageSentOnAdd() {
-		this.writer.increment(new Delta<Integer>("foo", 1));
+		this.writer.increment(new Delta<>("foo", 1));
 		verify(this.channel).send(any(Message.class));
 		verify(this.observer).increment(any(Delta.class));
 	}
 
 	@Test
 	public void messageSentOnSet() {
-		this.writer.set(new Metric<Double>("foo", 1d));
+		this.writer.set(new Metric<>("foo", 1d));
 		verify(this.channel).send(any(Message.class));
 		verify(this.observer).set(any(Metric.class));
 	}

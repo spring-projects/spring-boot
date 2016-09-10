@@ -45,7 +45,7 @@ public class MetricRegistryMetricReaderTests {
 
 			@Override
 			public Set<String> getValue() {
-				return new HashSet<String>();
+				return new HashSet<>();
 			}
 
 		});

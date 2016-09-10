@@ -39,7 +39,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
  */
 public class MetadataCollector {
 
-	private final List<ItemMetadata> metadataItems = new ArrayList<ItemMetadata>();
+	private final List<ItemMetadata> metadataItems = new ArrayList<>();
 
 	private final ProcessingEnvironment processingEnvironment;
 
@@ -47,7 +47,7 @@ public class MetadataCollector {
 
 	private final TypeUtils typeUtils;
 
-	private final Set<String> processedSourceTypes = new HashSet<String>();
+	private final Set<String> processedSourceTypes = new HashSet<>();
 
 	/**
 	 * Creates a new {@code MetadataProcessor} instance.

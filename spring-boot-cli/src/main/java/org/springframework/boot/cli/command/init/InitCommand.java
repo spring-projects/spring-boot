@@ -59,7 +59,7 @@ public class InitCommand extends OptionParsingCommand {
 
 	@Override
 	public Collection<HelpExample> getExamples() {
-		List<HelpExample> examples = new ArrayList<HelpExample>();
+		List<HelpExample> examples = new ArrayList<>();
 		examples.add(new HelpExample("To list all the capabilities of the service",
 				"spring init --list"));
 		examples.add(new HelpExample("To creates a default project", "spring init"));

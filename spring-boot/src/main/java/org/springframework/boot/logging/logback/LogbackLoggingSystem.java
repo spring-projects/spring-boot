@@ -61,7 +61,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	private static final Map<LogLevel, Level> LEVELS;
 
 	static {
-		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
+		Map<LogLevel, Level> levels = new HashMap<>();
 		levels.put(LogLevel.TRACE, Level.TRACE);
 		levels.put(LogLevel.DEBUG, Level.DEBUG);
 		levels.put(LogLevel.INFO, Level.INFO);

@@ -69,7 +69,7 @@ class ForkProcessCommand extends RunProcessCommand {
 
 	@Override
 	public ExitStatus run(String... args) throws Exception {
-		List<String> fullArgs = new ArrayList<String>();
+		List<String> fullArgs = new ArrayList<>();
 		fullArgs.add("-cp");
 		fullArgs.add(System.getProperty("java.class.path"));
 		fullArgs.add(MAIN_CLASS);

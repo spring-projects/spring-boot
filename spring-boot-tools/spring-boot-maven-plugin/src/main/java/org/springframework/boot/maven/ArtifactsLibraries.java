@@ -44,7 +44,7 @@ public class ArtifactsLibraries implements Libraries {
 	private static final Map<String, LibraryScope> SCOPES;
 
 	static {
-		Map<String, LibraryScope> scopes = new HashMap<String, LibraryScope>();
+		Map<String, LibraryScope> scopes = new HashMap<>();
 		scopes.put(Artifact.SCOPE_COMPILE, LibraryScope.COMPILE);
 		scopes.put(Artifact.SCOPE_RUNTIME, LibraryScope.RUNTIME);
 		scopes.put(Artifact.SCOPE_PROVIDED, LibraryScope.PROVIDED);
@@ -84,8 +84,8 @@ public class ArtifactsLibraries implements Libraries {
 	}
 
 	private Set<String> getDuplicates(Set<Artifact> artifacts) {
-		Set<String> duplicates = new HashSet<String>();
-		Set<String> seen = new HashSet<String>();
+		Set<String> duplicates = new HashSet<>();
+		Set<String> seen = new HashSet<>();
 		for (Artifact artifact : artifacts) {
 			if (artifact.getFile() != null && !seen.add(artifact.getFile().getName())) {
 				duplicates.add(artifact.getFile().getName());

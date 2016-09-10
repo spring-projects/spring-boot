@@ -45,7 +45,7 @@ final class ChangeableUrls implements Iterable<URL> {
 
 	private ChangeableUrls(URL... urls) {
 		DevToolsSettings settings = DevToolsSettings.get();
-		List<URL> reloadableUrls = new ArrayList<URL>(urls.length);
+		List<URL> reloadableUrls = new ArrayList<>(urls.length);
 		for (URL url : urls) {
 			if ((settings.isRestartInclude(url) || isFolderUrl(url.toString()))
 					&& !settings.isRestartExclude(url)) {
@@ -82,7 +82,7 @@ final class ChangeableUrls implements Iterable<URL> {
 	}
 
 	public static ChangeableUrls fromUrlClassLoader(URLClassLoader classLoader) {
-		List<URL> urls = new ArrayList<URL>();
+		List<URL> urls = new ArrayList<>();
 		for (URL url : classLoader.getURLs()) {
 			urls.add(url);
 			urls.addAll(getUrlsFromClassPathOfJarManifestIfPossible(url));
@@ -128,7 +128,7 @@ final class ChangeableUrls implements Iterable<URL> {
 			return Collections.emptyList();
 		}
 		String[] entries = StringUtils.delimitedListToStringArray(classPath, " ");
-		List<URL> urls = new ArrayList<URL>(entries.length);
+		List<URL> urls = new ArrayList<>(entries.length);
 		for (String entry : entries) {
 			try {
 				urls.add(new URL(base, entry));
@@ -142,7 +142,7 @@ final class ChangeableUrls implements Iterable<URL> {
 	}
 
 	public static ChangeableUrls fromUrls(Collection<URL> urls) {
-		return fromUrls(new ArrayList<URL>(urls).toArray(new URL[urls.size()]));
+		return fromUrls(new ArrayList<>(urls).toArray(new URL[urls.size()]));
 	}
 
 	public static ChangeableUrls fromUrls(URL... urls) {

@@ -252,7 +252,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private void doRunWithForkedJvm(String startClassName)
 			throws MojoExecutionException, MojoFailureException {
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		addAgents(args);
 		addJvmArgs(args);
 		addClasspath(args);
@@ -372,7 +372,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	protected URL[] getClassPathUrls() throws MojoExecutionException {
 		try {
-			List<URL> urls = new ArrayList<URL>();
+			List<URL> urls = new ArrayList<>();
 			addUserDefinedFolders(urls);
 			addResources(urls);
 			addProjectClasses(urls);

@@ -76,8 +76,8 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 		public Object postProcessBeforeInitialization(Object bean, String beanName)
 				throws BeansException {
 			Class<?> beanClass = bean.getClass();
-			Set<Class<?>> components = new LinkedHashSet<Class<?>>();
-			Set<Class<?>> propertyMappings = new LinkedHashSet<Class<?>>();
+			Set<Class<?>> components = new LinkedHashSet<>();
+			Set<Class<?>> propertyMappings = new LinkedHashSet<>();
 			while (beanClass != null) {
 				for (Annotation annotation : AnnotationUtils.getAnnotations(beanClass)) {
 					if (isAnnotated(annotation, Component.class)) {

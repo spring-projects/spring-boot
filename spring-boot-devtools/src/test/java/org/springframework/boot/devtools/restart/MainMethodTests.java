@@ -37,7 +37,7 @@ public class MainMethodTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private static ThreadLocal<MainMethod> mainMethod = new ThreadLocal<MainMethod>();
+	private static ThreadLocal<MainMethod> mainMethod = new ThreadLocal<>();
 
 	private Method actualMain;
 

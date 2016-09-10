@@ -59,7 +59,7 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 	private static final Map<String, String> DEFAULTS;
 
 	static {
-		Map<String, String> defaults = new LinkedHashMap<String, String>();
+		Map<String, String> defaults = new LinkedHashMap<>();
 		defaults.put("http.enabled", String.valueOf(false));
 		defaults.put("node.local", String.valueOf(true));
 		defaults.put("path.home", System.getProperty("user.dir"));

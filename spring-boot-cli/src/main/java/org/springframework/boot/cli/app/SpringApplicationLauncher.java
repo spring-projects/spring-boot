@@ -57,7 +57,7 @@ public class SpringApplicationLauncher {
 	 * @throws Exception if the launch fails
 	 */
 	public Object launch(Object[] sources, String[] args) throws Exception {
-		Map<String, Object> defaultProperties = new HashMap<String, Object>();
+		Map<String, Object> defaultProperties = new HashMap<>();
 		defaultProperties.put("spring.groovy.template.check-template-location", "false");
 		Class<?> applicationClass = this.classLoader
 				.loadClass(getSpringApplicationClassName());

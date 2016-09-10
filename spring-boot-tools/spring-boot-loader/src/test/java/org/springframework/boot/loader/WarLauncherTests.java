@@ -79,7 +79,7 @@ public class WarLauncherTests {
 	}
 
 	private Set<URL> getUrls(List<Archive> archives) throws MalformedURLException {
-		Set<URL> urls = new HashSet<URL>(archives.size());
+		Set<URL> urls = new HashSet<>(archives.size());
 		for (Archive archive : archives) {
 			urls.add(archive.getUrl());
 		}

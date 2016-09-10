@@ -77,7 +77,7 @@ public class MustacheWebIntegrationTests {
 	public void contextLoads() {
 		String source = "Hello {{arg}}!";
 		Template tmpl = Mustache.compiler().compile(source);
-		Map<String, String> context = new HashMap<String, String>();
+		Map<String, String> context = new HashMap<>();
 		context.put("arg", "world");
 		assertThat(tmpl.execute(context)).isEqualTo("Hello world!"); // returns "Hello
 																		// world!"

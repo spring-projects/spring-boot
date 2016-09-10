@@ -47,7 +47,7 @@ public class ResolveDependencyCoordinatesTransformation
 	public static final int ORDER = DependencyManagementBomTransformation.ORDER + 300;
 
 	private static final Set<String> GRAB_ANNOTATION_NAMES = Collections
-			.unmodifiableSet(new HashSet<String>(
+			.unmodifiableSet(new HashSet<>(
 					Arrays.asList(Grab.class.getName(), Grab.class.getSimpleName())));
 
 	private final DependencyResolutionContext resolutionContext;

@@ -43,9 +43,9 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
 	private AtomicLong seq = new AtomicLong();
 
-	private Deque<Object> responses = new ArrayDeque<Object>();
+	private Deque<Object> responses = new ArrayDeque<>();
 
-	private List<MockClientHttpRequest> executedRequests = new ArrayList<MockClientHttpRequest>();
+	private List<MockClientHttpRequest> executedRequests = new ArrayList<>();
 
 	@Override
 	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod)

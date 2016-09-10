@@ -38,7 +38,7 @@ public class ClassPathFolders implements Iterable<File> {
 
 	private static final Log logger = LogFactory.getLog(ClassPathFolders.class);
 
-	private final List<File> folders = new ArrayList<File>();
+	private final List<File> folders = new ArrayList<>();
 
 	public ClassPathFolders(URL[] urls) {
 		if (urls != null) {

@@ -928,7 +928,7 @@ public class TestRestTemplate {
 
 	private List<ClientHttpRequestInterceptor> removeBasicAuthInterceptorIfPresent(
 			List<ClientHttpRequestInterceptor> interceptors) {
-		List<ClientHttpRequestInterceptor> updatedInterceptors = new ArrayList<ClientHttpRequestInterceptor>(
+		List<ClientHttpRequestInterceptor> updatedInterceptors = new ArrayList<>(
 				interceptors);
 		Iterator<ClientHttpRequestInterceptor> iterator = updatedInterceptors.iterator();
 		while (iterator.hasNext()) {
@@ -973,7 +973,7 @@ public class TestRestTemplate {
 
 		public CustomHttpComponentsClientHttpRequestFactory(
 				HttpClientOption[] httpClientOptions) {
-			Set<HttpClientOption> options = new HashSet<TestRestTemplate.HttpClientOption>(
+			Set<HttpClientOption> options = new HashSet<>(
 					Arrays.asList(httpClientOptions));
 			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES)
 					? CookieSpecs.STANDARD : CookieSpecs.IGNORE_COOKIES);

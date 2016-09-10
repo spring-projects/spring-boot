@@ -78,7 +78,7 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 				metadata.getAnnotationAttributes(ServletComponentScan.class.getName()));
 		String[] basePackages = attributes.getStringArray("basePackages");
 		Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
-		Set<String> packagesToScan = new LinkedHashSet<String>();
+		Set<String> packagesToScan = new LinkedHashSet<>();
 		packagesToScan.addAll(Arrays.asList(basePackages));
 		for (Class<?> basePackageClass : basePackageClasses) {
 			packagesToScan.add(ClassUtils.getPackageName(basePackageClass));

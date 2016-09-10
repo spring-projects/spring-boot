@@ -61,7 +61,7 @@ public class ClassPathChangeUploader
 	private static final Map<ChangedFile.Type, ClassLoaderFile.Kind> TYPE_MAPPINGS;
 
 	static {
-		Map<ChangedFile.Type, ClassLoaderFile.Kind> map = new HashMap<ChangedFile.Type, ClassLoaderFile.Kind>();
+		Map<ChangedFile.Type, ClassLoaderFile.Kind> map = new HashMap<>();
 		map.put(ChangedFile.Type.ADD, ClassLoaderFile.Kind.ADDED);
 		map.put(ChangedFile.Type.DELETE, ClassLoaderFile.Kind.DELETED);
 		map.put(ChangedFile.Type.MODIFY, ClassLoaderFile.Kind.MODIFIED);

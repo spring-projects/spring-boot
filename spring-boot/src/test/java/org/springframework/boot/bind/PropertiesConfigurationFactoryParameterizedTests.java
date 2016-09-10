@@ -47,7 +47,7 @@ public class PropertiesConfigurationFactoryParameterizedTests {
 
 	private String targetName;
 
-	private PropertiesConfigurationFactory<Foo> factory = new PropertiesConfigurationFactory<Foo>(
+	private PropertiesConfigurationFactory<Foo> factory = new PropertiesConfigurationFactory<>(
 			Foo.class);
 
 	@Parameters

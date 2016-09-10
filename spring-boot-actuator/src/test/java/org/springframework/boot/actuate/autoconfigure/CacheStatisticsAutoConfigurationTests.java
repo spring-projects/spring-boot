@@ -227,7 +227,7 @@ public class CacheStatisticsAutoConfigurationTests {
 			javax.cache.CacheManager cacheManager = Caching
 					.getCachingProvider(HazelcastCachingProvider.class.getName())
 					.getCacheManager();
-			MutableConfiguration<Object, Object> config = new MutableConfiguration<Object, Object>();
+			MutableConfiguration<Object, Object> config = new MutableConfiguration<>();
 			config.setStatisticsEnabled(true);
 			cacheManager.createCache("books", config);
 			cacheManager.createCache("speakers", config);

@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DeferredLog implements Log {
 
-	private List<Line> lines = new ArrayList<Line>();
+	private List<Line> lines = new ArrayList<>();
 
 	@Override
 	public boolean isTraceEnabled() {

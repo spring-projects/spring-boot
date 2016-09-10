@@ -35,7 +35,7 @@ public class JsonJsonParser implements JsonParser {
 
 	@Override
 	public Map<String, Object> parseMap(String json) {
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		Map<String, Object> map = new LinkedHashMap<>();
 		putAll(map, new JSONObject(json));
 		return map;
 	}
@@ -45,12 +45,12 @@ public class JsonJsonParser implements JsonParser {
 			String name = key.toString();
 			Object value = object.get(name);
 			if (value instanceof JSONObject) {
-				Map<String, Object> nested = new LinkedHashMap<String, Object>();
+				Map<String, Object> nested = new LinkedHashMap<>();
 				putAll(nested, (JSONObject) value);
 				value = nested;
 			}
 			if (value instanceof JSONArray) {
-				List<Object> nested = new ArrayList<Object>();
+				List<Object> nested = new ArrayList<>();
 				addAll(nested, (JSONArray) value);
 				value = nested;
 			}
@@ -62,12 +62,12 @@ public class JsonJsonParser implements JsonParser {
 		for (int i = 0; i < array.length(); i++) {
 			Object value = array.get(i);
 			if (value instanceof JSONObject) {
-				Map<String, Object> nested = new LinkedHashMap<String, Object>();
+				Map<String, Object> nested = new LinkedHashMap<>();
 				putAll(nested, (JSONObject) value);
 				value = nested;
 			}
 			if (value instanceof JSONArray) {
-				List<Object> nested = new ArrayList<Object>();
+				List<Object> nested = new ArrayList<>();
 				addAll(nested, (JSONArray) value);
 				value = nested;
 			}
@@ -77,7 +77,7 @@ public class JsonJsonParser implements JsonParser {
 
 	@Override
 	public List<Object> parseList(String json) {
-		List<Object> nested = new ArrayList<Object>();
+		List<Object> nested = new ArrayList<>();
 		addAll(nested, new JSONArray(json));
 		return nested;
 	}

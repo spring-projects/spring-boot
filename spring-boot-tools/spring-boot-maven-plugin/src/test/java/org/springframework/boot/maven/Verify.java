@@ -92,7 +92,7 @@ public final class Verify {
 		public ArchiveVerifier(ZipFile zipFile) {
 			this.zipFile = zipFile;
 			Enumeration<? extends ZipEntry> entries = zipFile.entries();
-			this.content = new HashMap<String, ZipEntry>();
+			this.content = new HashMap<>();
 			while (entries.hasMoreElements()) {
 				ZipEntry zipEntry = entries.nextElement();
 				this.content.put(zipEntry.getName(), zipEntry);

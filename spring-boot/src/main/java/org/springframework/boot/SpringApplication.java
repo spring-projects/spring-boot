@@ -179,7 +179,7 @@ public class SpringApplication {
 	private static final Set<String> SERVLET_ENVIRONMENT_SOURCE_NAMES;
 
 	static {
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		names.add(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME);
 		names.add(StandardServletEnvironment.SERVLET_CONFIG_PROPERTY_SOURCE_NAME);
 		names.add(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME);
@@ -188,7 +188,7 @@ public class SpringApplication {
 
 	private static final Log logger = LogFactory.getLog(SpringApplication.class);
 
-	private final Set<Object> sources = new LinkedHashSet<Object>();
+	private final Set<Object> sources = new LinkedHashSet<>();
 
 	private Class<?> mainApplicationClass;
 
@@ -222,7 +222,7 @@ public class SpringApplication {
 
 	private Map<String, Object> defaultProperties;
 
-	private Set<String> additionalProfiles = new HashSet<String>();
+	private Set<String> additionalProfiles = new HashSet<>();
 
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
@@ -398,7 +398,7 @@ public class SpringApplication {
 			Class<?>[] parameterTypes, Object... args) {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		// Use names and ensure unique to protect against duplicates
-		Set<String> names = new LinkedHashSet<String>(
+		Set<String> names = new LinkedHashSet<>(
 				SpringFactoriesLoader.loadFactoryNames(type, classLoader));
 		List<T> instances = createSpringFactoriesInstances(type, parameterTypes,
 				classLoader, args, names);
@@ -410,7 +410,7 @@ public class SpringApplication {
 	private <T> List<T> createSpringFactoriesInstances(Class<T> type,
 			Class<?>[] parameterTypes, ClassLoader classLoader, Object[] args,
 			Set<String> names) {
-		List<T> instances = new ArrayList<T>(names.size());
+		List<T> instances = new ArrayList<>(names.size());
 		for (String name : names) {
 			try {
 				Class<?> instanceClass = ClassUtils.forName(name, classLoader);
@@ -480,7 +480,7 @@ public class SpringApplication {
 	}
 
 	private void removeAllPropertySources(MutablePropertySources propertySources) {
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		for (PropertySource<?> propertySource : propertySources) {
 			names.add(propertySource.getName());
 		}
@@ -531,7 +531,7 @@ public class SpringApplication {
 	protected void configureProfiles(ConfigurableEnvironment environment, String[] args) {
 		environment.getActiveProfiles(); // ensure they are initialized
 		// But these ones should go first (last wins in a property key clash)
-		Set<String> profiles = new LinkedHashSet<String>(this.additionalProfiles);
+		Set<String> profiles = new LinkedHashSet<>(this.additionalProfiles);
 		profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
 		environment.setActiveProfiles(profiles.toArray(new String[profiles.size()]));
 	}
@@ -772,11 +772,11 @@ public class SpringApplication {
 	}
 
 	private void callRunners(ApplicationContext context, ApplicationArguments args) {
-		List<Object> runners = new ArrayList<Object>();
+		List<Object> runners = new ArrayList<>();
 		runners.addAll(context.getBeansOfType(ApplicationRunner.class).values());
 		runners.addAll(context.getBeansOfType(CommandLineRunner.class).values());
 		AnnotationAwareOrderComparator.sort(runners);
-		for (Object runner : new LinkedHashSet<Object>(runners)) {
+		for (Object runner : new LinkedHashSet<>(runners)) {
 			if (runner instanceof ApplicationRunner) {
 				callRunner((ApplicationRunner) runner, args);
 			}
@@ -1016,7 +1016,7 @@ public class SpringApplication {
 	 * @param defaultProperties some {@link Properties}
 	 */
 	public void setDefaultProperties(Properties defaultProperties) {
-		this.defaultProperties = new HashMap<String, Object>();
+		this.defaultProperties = new HashMap<>();
 		for (Object key : Collections.list(defaultProperties.propertyNames())) {
 			this.defaultProperties.put((String) key, defaultProperties.get(key));
 		}
@@ -1028,7 +1028,7 @@ public class SpringApplication {
 	 * @param profiles the additional profiles to set
 	 */
 	public void setAdditionalProfiles(String... profiles) {
-		this.additionalProfiles = new LinkedHashSet<String>(Arrays.asList(profiles));
+		this.additionalProfiles = new LinkedHashSet<>(Arrays.asList(profiles));
 	}
 
 	/**
@@ -1113,7 +1113,7 @@ public class SpringApplication {
 	 */
 	public void setInitializers(
 			Collection<? extends ApplicationContextInitializer<?>> initializers) {
-		this.initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		this.initializers = new ArrayList<>();
 		this.initializers.addAll(initializers);
 	}
 
@@ -1141,7 +1141,7 @@ public class SpringApplication {
 	 * @param listeners the listeners to set
 	 */
 	public void setListeners(Collection<? extends ApplicationListener<?>> listeners) {
-		this.listeners = new ArrayList<ApplicationListener<?>>();
+		this.listeners = new ArrayList<>();
 		this.listeners.addAll(listeners);
 	}
 
@@ -1249,10 +1249,10 @@ public class SpringApplication {
 	}
 
 	private static <E> Set<E> asUnmodifiableOrderedSet(Collection<E> elements) {
-		List<E> list = new ArrayList<E>();
+		List<E> list = new ArrayList<>();
 		list.addAll(elements);
 		Collections.sort(list, AnnotationAwareOrderComparator.INSTANCE);
-		return new LinkedHashSet<E>(list);
+		return new LinkedHashSet<>(list);
 	}
 
 }

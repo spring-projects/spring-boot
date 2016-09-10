@@ -137,7 +137,7 @@ public class EmbeddedServletContainerServletContextListenerTests {
 
 		@Bean
 		public ServletListenerRegistrationBean<ServletContextListener> registration() {
-			return new ServletListenerRegistrationBean<ServletContextListener>(
+			return new ServletListenerRegistrationBean<>(
 					mock(ServletContextListener.class));
 		}
 

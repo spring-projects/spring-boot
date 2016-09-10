@@ -35,9 +35,9 @@ final class RedisUtils {
 
 	static <K, V> RedisTemplate<K, V> createRedisTemplate(
 			RedisConnectionFactory connectionFactory, Class<V> valueClass) {
-		RedisTemplate<K, V> redisTemplate = new RedisTemplate<K, V>();
+		RedisTemplate<K, V> redisTemplate = new RedisTemplate<>();
 		redisTemplate.setKeySerializer(new StringRedisSerializer());
-		redisTemplate.setValueSerializer(new GenericToStringSerializer<V>(valueClass));
+		redisTemplate.setValueSerializer(new GenericToStringSerializer<>(valueClass));
 
 		// avoids proxy
 		redisTemplate.setExposeConnection(true);

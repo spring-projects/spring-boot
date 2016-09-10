@@ -69,7 +69,7 @@ public class FilterOrderingIntegrationTests {
 		List<RegisteredFilter> registeredFilters = this.context
 				.getBean(MockEmbeddedServletContainerFactory.class).getContainer()
 				.getRegisteredFilters();
-		List<Filter> filters = new ArrayList<Filter>(registeredFilters.size());
+		List<Filter> filters = new ArrayList<>(registeredFilters.size());
 		for (RegisteredFilter registeredFilter : registeredFilters) {
 			filters.add(registeredFilter.getFilter());
 		}

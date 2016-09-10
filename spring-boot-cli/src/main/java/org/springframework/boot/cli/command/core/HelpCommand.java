@@ -58,7 +58,7 @@ public class HelpCommand extends AbstractCommand {
 
 	@Override
 	public Collection<OptionHelp> getOptionsHelp() {
-		List<OptionHelp> help = new ArrayList<OptionHelp>();
+		List<OptionHelp> help = new ArrayList<>();
 		for (final Command command : this.commandRunner) {
 			if (isHelpShown(command)) {
 				help.add(new OptionHelp() {

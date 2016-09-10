@@ -45,12 +45,12 @@ class OnResourceCondition extends SpringBootCondition {
 				.getAllAnnotationAttributes(ConditionalOnResource.class.getName(), true);
 		ResourceLoader loader = context.getResourceLoader() == null
 				? this.defaultResourceLoader : context.getResourceLoader();
-		List<String> locations = new ArrayList<String>();
+		List<String> locations = new ArrayList<>();
 		collectValues(locations, attributes.get("resources"));
 		Assert.isTrue(!locations.isEmpty(),
 				"@ConditionalOnResource annotations must specify at "
 						+ "least one resource location");
-		List<String> missing = new ArrayList<String>();
+		List<String> missing = new ArrayList<>();
 		for (String location : locations) {
 			String resouce = context.getEnvironment().resolvePlaceholders(location);
 			if (!loader.getResource(resouce).exists()) {

@@ -49,7 +49,7 @@ public class TemplateAvailabilityProviders {
 	/**
 	 * Resolved template views, returning already cached instances without a global lock.
 	 */
-	private final Map<String, TemplateAvailabilityProvider> resolved = new ConcurrentHashMap<String, TemplateAvailabilityProvider>(
+	private final Map<String, TemplateAvailabilityProvider> resolved = new ConcurrentHashMap<>(
 			CACHE_LIMIT);
 
 	/**
@@ -96,7 +96,7 @@ public class TemplateAvailabilityProviders {
 	protected TemplateAvailabilityProviders(
 			Collection<? extends TemplateAvailabilityProvider> providers) {
 		Assert.notNull(providers, "Providers must not be null");
-		this.providers = new ArrayList<TemplateAvailabilityProvider>(providers);
+		this.providers = new ArrayList<>(providers);
 	}
 
 	/**

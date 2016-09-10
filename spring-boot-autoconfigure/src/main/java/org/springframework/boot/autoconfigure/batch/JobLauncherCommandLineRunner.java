@@ -169,7 +169,7 @@ public class JobLauncherCommandLineRunner
 	}
 
 	private void removeNonIdentifying(Map<String, JobParameter> parameters) {
-		HashMap<String, JobParameter> copy = new HashMap<String, JobParameter>(
+		HashMap<String, JobParameter> copy = new HashMap<>(
 				parameters);
 		for (Map.Entry<String, JobParameter> parameter : copy.entrySet()) {
 			if (!parameter.getValue().isIdentifying()) {
@@ -180,7 +180,7 @@ public class JobLauncherCommandLineRunner
 
 	private JobParameters merge(JobParameters parameters,
 			Map<String, JobParameter> additionals) {
-		Map<String, JobParameter> merged = new HashMap<String, JobParameter>();
+		Map<String, JobParameter> merged = new HashMap<>();
 		merged.putAll(parameters.getParameters());
 		merged.putAll(additionals);
 		parameters = new JobParameters(merged);

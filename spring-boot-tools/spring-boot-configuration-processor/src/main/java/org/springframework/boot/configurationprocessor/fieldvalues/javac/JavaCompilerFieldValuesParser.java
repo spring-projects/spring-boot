@@ -62,7 +62,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 		private static final Map<String, Class<?>> WRAPPER_TYPES;
 
 		static {
-			Map<String, Class<?>> types = new HashMap<String, Class<?>>();
+			Map<String, Class<?>> types = new HashMap<>();
 			types.put("boolean", Boolean.class);
 			types.put(Boolean.class.getName(), Boolean.class);
 			types.put("byte", Byte.class);
@@ -79,7 +79,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 		private static final Map<Class<?>, Object> DEFAULT_TYPE_VALUES;
 
 		static {
-			Map<Class<?>, Object> values = new HashMap<Class<?>, Object>();
+			Map<Class<?>, Object> values = new HashMap<>();
 			values.put(Boolean.class, false);
 			values.put(Byte.class, (byte) 0);
 			values.put(Short.class, (short) 0);
@@ -91,15 +91,15 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 		private static final Map<String, Object> WELL_KNOWN_STATIC_FINALS;
 
 		static {
-			Map<String, Object> values = new HashMap<String, Object>();
+			Map<String, Object> values = new HashMap<>();
 			values.put("Boolean.TRUE", true);
 			values.put("Boolean.FALSE", false);
 			WELL_KNOWN_STATIC_FINALS = Collections.unmodifiableMap(values);
 		}
 
-		private final Map<String, Object> fieldValues = new HashMap<String, Object>();
+		private final Map<String, Object> fieldValues = new HashMap<>();
 
-		private final Map<String, Object> staticFinals = new HashMap<String, Object>();
+		private final Map<String, Object> staticFinals = new HashMap<>();
 
 		@Override
 		public void visitVariable(VariableTree variable) throws Exception {

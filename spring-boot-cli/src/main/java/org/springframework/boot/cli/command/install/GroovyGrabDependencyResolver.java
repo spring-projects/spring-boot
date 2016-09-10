@@ -50,7 +50,7 @@ class GroovyGrabDependencyResolver implements DependencyResolver {
 	public List<File> resolve(List<String> artifactIdentifiers)
 			throws CompilationFailedException, IOException {
 		GroovyCompiler groovyCompiler = new GroovyCompiler(this.configuration);
-		List<File> artifactFiles = new ArrayList<File>();
+		List<File> artifactFiles = new ArrayList<>();
 		if (!artifactIdentifiers.isEmpty()) {
 			List<URL> initialUrls = getClassPathUrls(groovyCompiler);
 			groovyCompiler.compile(createSources(artifactIdentifiers));
@@ -64,7 +64,7 @@ class GroovyGrabDependencyResolver implements DependencyResolver {
 	}
 
 	private List<URL> getClassPathUrls(GroovyCompiler compiler) {
-		return new ArrayList<URL>(Arrays.asList(compiler.getLoader().getURLs()));
+		return new ArrayList<>(Arrays.asList(compiler.getLoader().getURLs()));
 	}
 
 	private String createSources(List<String> artifactIdentifiers) throws IOException {

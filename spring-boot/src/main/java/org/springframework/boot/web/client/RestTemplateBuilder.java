@@ -64,7 +64,7 @@ public class RestTemplateBuilder {
 	private static final Map<String, String> REQUEST_FACTORY_CANDIDATES;
 
 	static {
-		Map<String, String> candidates = new LinkedHashMap<String, String>();
+		Map<String, String> candidates = new LinkedHashMap<>();
 		candidates.put("org.apache.http.client.HttpClient",
 				"org.springframework.http.client.HttpComponentsClientHttpRequestFactory");
 		candidates.put("okhttp3.OkHttpClient",
@@ -111,7 +111,7 @@ public class RestTemplateBuilder {
 		this.errorHandler = null;
 		this.basicAuthorization = null;
 		this.restTemplateCustomizers = Collections.unmodifiableSet(
-				new LinkedHashSet<RestTemplateCustomizer>(Arrays.asList(customizers)));
+				new LinkedHashSet<>(Arrays.asList(customizers)));
 		this.requestFactoryCustomizers = Collections.<RequestFactoryCustomizer>emptySet();
 		this.interceptors = Collections.<ClientHttpRequestInterceptor>emptySet();
 	}
@@ -236,7 +236,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder defaultMessageConverters() {
 		return new RestTemplateBuilder(this.detectRequestFactory, this.rootUri,
-				Collections.unmodifiableSet(new LinkedHashSet<HttpMessageConverter<?>>(
+				Collections.unmodifiableSet(new LinkedHashSet<>(
 						new RestTemplate().getMessageConverters())),
 				this.requestFactory, this.uriTemplateHandler, this.errorHandler,
 				this.basicAuthorization, this.restTemplateCustomizers,
@@ -274,7 +274,7 @@ public class RestTemplateBuilder {
 				this.messageConverters, this.requestFactory, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthorization, this.restTemplateCustomizers,
 				this.requestFactoryCustomizers, Collections.unmodifiableSet(
-						new LinkedHashSet<ClientHttpRequestInterceptor>(interceptors)));
+				new LinkedHashSet<>(interceptors)));
 	}
 
 	/**
@@ -515,7 +515,7 @@ public class RestTemplateBuilder {
 		configureRequestFactory(restTemplate);
 		if (!CollectionUtils.isEmpty(this.messageConverters)) {
 			restTemplate.setMessageConverters(
-					new ArrayList<HttpMessageConverter<?>>(this.messageConverters));
+					new ArrayList<>(this.messageConverters));
 		}
 		if (this.uriTemplateHandler != null) {
 			restTemplate.setUriTemplateHandler(this.uriTemplateHandler);
@@ -587,14 +587,14 @@ public class RestTemplateBuilder {
 	}
 
 	private <T> Set<T> append(Set<T> set, T addition) {
-		Set<T> result = new LinkedHashSet<T>(
+		Set<T> result = new LinkedHashSet<>(
 				set == null ? Collections.<T>emptySet() : set);
 		result.add(addition);
 		return Collections.unmodifiableSet(result);
 	}
 
 	private <T> Set<T> append(Set<T> set, Collection<? extends T> additions) {
-		Set<T> result = new LinkedHashSet<T>(
+		Set<T> result = new LinkedHashSet<>(
 				set == null ? Collections.<T>emptySet() : set);
 		result.addAll(additions);
 		return Collections.unmodifiableSet(result);

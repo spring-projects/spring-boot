@@ -93,7 +93,7 @@ public class LevelRemappingAppender extends AppenderBase<ILoggingEvent> {
 	 */
 	public void setRemapLevels(String remapLevels) {
 		Assert.hasLength(remapLevels, "RemapLevels must not be empty");
-		this.remapLevels = new HashMap<Level, Level>();
+		this.remapLevels = new HashMap<>();
 		for (String remap : StringUtils.commaDelimitedListToStringArray(remapLevels)) {
 			String[] split = StringUtils.split(remap, "->");
 			Assert.notNull(split, "Remap element '" + remap + "' must contain '->'");

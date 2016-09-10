@@ -34,7 +34,7 @@ import org.springframework.lang.UsesJava8;
 @UsesJava8
 abstract class Buffers<B extends Buffer<?>> {
 
-	private final ConcurrentHashMap<String, B> buffers = new ConcurrentHashMap<String, B>();
+	private final ConcurrentHashMap<String, B> buffers = new ConcurrentHashMap<>();
 
 	public void forEach(final Predicate<String> predicate,
 			final BiConsumer<String, B> consumer) {

@@ -142,7 +142,7 @@ public class ConditionalOnJndiTests {
 
 	private AnnotatedTypeMetadata mockMetaData(String... value) {
 		AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
-		Map<String, Object> attributes = new HashMap<String, Object>();
+		Map<String, Object> attributes = new HashMap<>();
 		attributes.put("value", value);
 		given(metadata.getAnnotationAttributes(ConditionalOnJndi.class.getName()))
 				.willReturn(attributes);

@@ -123,7 +123,7 @@ class SpringApplicationBannerPrinter {
 	 */
 	private static class Banners implements Banner {
 
-		private final List<Banner> banners = new ArrayList<Banner>();
+		private final List<Banner> banners = new ArrayList<>();
 
 		public void addIfNotNull(Banner banner) {
 			if (banner != null) {

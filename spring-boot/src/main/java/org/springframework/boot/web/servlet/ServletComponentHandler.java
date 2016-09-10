@@ -62,7 +62,7 @@ abstract class ServletComponentHandler {
 
 	protected final Map<String, String> extractInitParameters(
 			Map<String, Object> attributes) {
-		Map<String, String> initParameters = new HashMap<String, String>();
+		Map<String, String> initParameters = new HashMap<>();
 		for (AnnotationAttributes initParam : (AnnotationAttributes[]) attributes
 				.get("initParams")) {
 			String name = (String) initParam.get("name");

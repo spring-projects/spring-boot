@@ -58,7 +58,7 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 	}
 
 	private void onAuthenticationFailureEvent(AbstractAuthenticationFailureEvent event) {
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		data.put("type", event.getException().getClass().getName());
 		data.put("message", event.getException().getMessage());
 		if (event.getAuthentication().getDetails() != null) {
@@ -69,7 +69,7 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 	}
 
 	private void onAuthenticationSuccessEvent(AuthenticationSuccessEvent event) {
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		if (event.getAuthentication().getDetails() != null) {
 			data.put("details", event.getAuthentication().getDetails());
 		}
@@ -83,7 +83,7 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 				AbstractAuthenticationEvent input) {
 			if (listener != null) {
 				AuthenticationSwitchUserEvent event = (AuthenticationSwitchUserEvent) input;
-				Map<String, Object> data = new HashMap<String, Object>();
+				Map<String, Object> data = new HashMap<>();
 				if (event.getAuthentication().getDetails() != null) {
 					data.put("details", event.getAuthentication().getDetails());
 				}

@@ -41,7 +41,7 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 	/**
 	 * Well-known FreeMarker keys which will be passed to FreeMarker's Configuration.
 	 */
-	private Map<String, String> settings = new HashMap<String, String>();
+	private Map<String, String> settings = new HashMap<>();
 
 	/**
 	 * Comma-separated list of template paths.

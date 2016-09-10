@@ -33,7 +33,7 @@ final class CacheConfigurations {
 	private static final Map<CacheType, Class<?>> MAPPINGS;
 
 	static {
-		Map<CacheType, Class<?>> mappings = new HashMap<CacheType, Class<?>>();
+		Map<CacheType, Class<?>> mappings = new HashMap<>();
 		mappings.put(CacheType.GENERIC, GenericCacheConfiguration.class);
 		mappings.put(CacheType.EHCACHE, EhCacheCacheConfiguration.class);
 		mappings.put(CacheType.HAZELCAST, HazelcastCacheConfiguration.class);

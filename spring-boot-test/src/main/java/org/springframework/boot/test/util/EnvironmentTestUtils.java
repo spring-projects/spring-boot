@@ -83,7 +83,7 @@ public abstract class EnvironmentTestUtils {
 		if (sources.contains(name)) {
 			return (Map<String, Object>) sources.get(name).getSource();
 		}
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		sources.addFirst(new MapPropertySource(name, map));
 		return map;
 	}

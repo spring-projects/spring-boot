@@ -31,7 +31,7 @@ import org.eclipse.aether.repository.RemoteRepository;
  */
 public class CompositeProxySelector implements ProxySelector {
 
-	private List<ProxySelector> selectors = new ArrayList<ProxySelector>();
+	private List<ProxySelector> selectors = new ArrayList<>();
 
 	public CompositeProxySelector(List<ProxySelector> selectors) {
 		this.selectors = selectors;

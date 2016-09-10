@@ -101,7 +101,7 @@ public class JestAutoConfigurationTests {
 				"spring.data.elasticsearch.properties.http.port:" + port,
 				"spring.elasticsearch.jest.uris:http://localhost:" + port);
 		JestClient client = this.context.getBean(JestClient.class);
-		Map<String, String> source = new HashMap<String, String>();
+		Map<String, String> source = new HashMap<>();
 		source.put("a", "alpha");
 		source.put("b", "bravo");
 		Index index = new Index.Builder(source).index("foo").type("bar").build();

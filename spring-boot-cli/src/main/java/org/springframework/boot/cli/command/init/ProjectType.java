@@ -36,7 +36,7 @@ class ProjectType {
 
 	private final boolean defaultType;
 
-	private final Map<String, String> tags = new HashMap<String, String>();
+	private final Map<String, String> tags = new HashMap<>();
 
 	ProjectType(String id, String name, String action, boolean defaultType,
 			Map<String, String> tags) {

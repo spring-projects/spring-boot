@@ -34,7 +34,7 @@ public class JolokiaProperties {
 	 * Jolokia settings. These are traditionally set using servlet parameters. Refer to
 	 * the documentation of Jolokia for more details.
 	 */
-	private Map<String, String> config = new HashMap<String, String>();
+	private Map<String, String> config = new HashMap<>();
 
 	public Map<String, String> getConfig() {
 		return this.config;

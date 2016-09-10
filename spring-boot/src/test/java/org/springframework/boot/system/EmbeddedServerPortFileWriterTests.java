@@ -129,7 +129,7 @@ public class EmbeddedServerPortFileWriterTests {
 	}
 
 	private Set<String> collectFileNames(File directory) {
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		if (directory.isDirectory()) {
 			for (File file : directory.listFiles()) {
 				names.add(file.getName());

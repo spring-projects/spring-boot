@@ -191,7 +191,7 @@ public class ActiveMQProperties {
 		 * Comma-separated list of specific packages to trust (when not trusting all
 		 * packages).
 		 */
-		private List<String> trusted = new ArrayList<String>();
+		private List<String> trusted = new ArrayList<>();
 
 		public Boolean getTrustAll() {
 			return this.trustAll;

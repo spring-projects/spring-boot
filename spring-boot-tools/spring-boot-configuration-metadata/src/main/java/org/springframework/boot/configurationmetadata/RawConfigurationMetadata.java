@@ -36,9 +36,9 @@ class RawConfigurationMetadata {
 	RawConfigurationMetadata(List<ConfigurationMetadataSource> sources,
 			List<ConfigurationMetadataItem> items,
 			List<ConfigurationMetadataHint> hints) {
-		this.sources = new ArrayList<ConfigurationMetadataSource>(sources);
-		this.items = new ArrayList<ConfigurationMetadataItem>(items);
-		this.hints = new ArrayList<ConfigurationMetadataHint>(hints);
+		this.sources = new ArrayList<>(sources);
+		this.items = new ArrayList<>(items);
+		this.hints = new ArrayList<>(hints);
 		for (ConfigurationMetadataItem item : this.items) {
 			resolveName(item);
 		}

@@ -135,7 +135,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 		if (beanFactory == null) {
 			return Collections.emptyList();
 		}
-		List<String> beanNames = new ArrayList<String>();
+		List<String> beanNames = new ArrayList<>();
 		boolean considerHierarchy = beans.getStrategy() != SearchStrategy.CURRENT;
 		for (String type : beans.getTypes()) {
 			beanNames.addAll(getBeanNamesForType(beanFactory, type,
@@ -169,7 +169,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			String type, ClassLoader classLoader, boolean considerHierarchy)
 					throws LinkageError {
 		try {
-			Set<String> result = new LinkedHashSet<String>();
+			Set<String> result = new LinkedHashSet<>();
 			collectBeanNamesForType(result, beanFactory,
 					ClassUtils.forName(type, classLoader), considerHierarchy);
 			return result;
@@ -208,7 +208,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 							(ConfigurableListableBeanFactory) beanFactory
 									.getParentBeanFactory(),
 							type, classLoader, true);
-					List<String> resultList = new ArrayList<String>();
+					List<String> resultList = new ArrayList<>();
 					resultList.addAll(Arrays.asList(result));
 					for (String beanName : parentResult) {
 						if (!resultList.contains(beanName)
@@ -236,7 +236,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 	private List<String> getPrimaryBeans(ConfigurableListableBeanFactory beanFactory,
 			List<String> beanNames, boolean considerHierarchy) {
-		List<String> primaryBeans = new ArrayList<String>();
+		List<String> primaryBeans = new ArrayList<>();
 		for (String beanName : beanNames) {
 			BeanDefinition beanDefinition = findBeanDefinition(beanFactory, beanName,
 					considerHierarchy);
@@ -265,13 +265,13 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 		private final Class<?> annotationType;
 
-		private final List<String> names = new ArrayList<String>();
+		private final List<String> names = new ArrayList<>();
 
-		private final List<String> types = new ArrayList<String>();
+		private final List<String> types = new ArrayList<>();
 
-		private final List<String> annotations = new ArrayList<String>();
+		private final List<String> annotations = new ArrayList<>();
 
-		private final List<String> ignoredTypes = new ArrayList<String>();
+		private final List<String> ignoredTypes = new ArrayList<>();
 
 		private final SearchStrategy strategy;
 

@@ -50,7 +50,7 @@ public class FixedAuthoritiesExtractor implements AuthoritiesExtractor {
 	}
 
 	private String asAuthorities(Object object) {
-		List<Object> authorities = new ArrayList<Object>();
+		List<Object> authorities = new ArrayList<>();
 		if (object instanceof Collection) {
 			Collection<?> collection = (Collection<?>) object;
 			object = collection.toArray(new Object[0]);

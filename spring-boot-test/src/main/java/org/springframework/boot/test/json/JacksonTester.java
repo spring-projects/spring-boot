@@ -137,7 +137,7 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 		protected AbstractJsonMarshalTester<Object> createTester(
 				Class<?> resourceLoadClass, ResolvableType type,
 				ObjectMapper marshaller) {
-			return new JacksonTester<Object>(resourceLoadClass, type, marshaller);
+			return new JacksonTester<>(resourceLoadClass, type, marshaller);
 		}
 
 	}

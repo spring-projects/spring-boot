@@ -85,7 +85,7 @@ public class DevToolsDataSourceAutoConfiguration {
 	static final class NonEmbeddedInMemoryDatabaseShutdownExecutor
 			implements DisposableBean {
 
-		private static final Set<String> IN_MEMORY_DRIVER_CLASS_NAMES = new HashSet<String>(
+		private static final Set<String> IN_MEMORY_DRIVER_CLASS_NAMES = new HashSet<>(
 				Arrays.asList("org.apache.derby.jdbc.EmbeddedDriver", "org.h2.Driver",
 						"org.h2.jdbcx.JdbcDataSource", "org.hsqldb.jdbcDriver",
 						"org.hsqldb.jdbc.JDBCDriver",

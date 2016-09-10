@@ -105,7 +105,7 @@ class ProjectLibraries implements Libraries {
 		if (configuration == null) {
 			return null;
 		}
-		Set<GradleLibrary> libraries = new LinkedHashSet<GradleLibrary>();
+		Set<GradleLibrary> libraries = new LinkedHashSet<>();
 		for (ResolvedArtifact artifact : configuration.getResolvedConfiguration()
 				.getResolvedArtifacts()) {
 			libraries.add(new ResolvedArtifactLibrary(artifact, scope));
@@ -116,7 +116,7 @@ class ProjectLibraries implements Libraries {
 
 	private Set<GradleLibrary> getLibrariesForFileDependencies(
 			Configuration configuration, LibraryScope scope) {
-		Set<GradleLibrary> libraries = new LinkedHashSet<GradleLibrary>();
+		Set<GradleLibrary> libraries = new LinkedHashSet<>();
 		for (Dependency dependency : configuration.getIncoming().getDependencies()) {
 			if (dependency instanceof FileCollectionDependency) {
 				FileCollectionDependency fileDependency = (FileCollectionDependency) dependency;
@@ -139,11 +139,11 @@ class ProjectLibraries implements Libraries {
 		if (source == null || toRemove == null) {
 			return source;
 		}
-		Set<File> filesToRemove = new HashSet<File>();
+		Set<File> filesToRemove = new HashSet<>();
 		for (GradleLibrary library : toRemove) {
 			filesToRemove.add(library.getFile());
 		}
-		Set<GradleLibrary> result = new LinkedHashSet<GradleLibrary>();
+		Set<GradleLibrary> result = new LinkedHashSet<>();
 		for (GradleLibrary library : source) {
 			if (!filesToRemove.contains(library.getFile())) {
 				result.add(library);
@@ -178,8 +178,8 @@ class ProjectLibraries implements Libraries {
 	}
 
 	private Set<String> getDuplicates(Set<GradleLibrary> libraries) {
-		Set<String> duplicates = new HashSet<String>();
-		Set<String> seen = new HashSet<String>();
+		Set<String> duplicates = new HashSet<>();
+		Set<String> seen = new HashSet<>();
 		for (GradleLibrary library : libraries) {
 			if (library.getFile() != null && !seen.add(library.getFile().getName())) {
 				duplicates.add(library.getFile().getName());

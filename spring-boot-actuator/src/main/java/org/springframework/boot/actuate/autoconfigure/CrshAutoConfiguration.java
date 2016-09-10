@@ -265,7 +265,7 @@ public class CrshAutoConfiguration {
 		}
 
 		protected Map<String, Object> createPluginContextAttributes() {
-			Map<String, Object> attributes = new HashMap<String, Object>();
+			Map<String, Object> attributes = new HashMap<>();
 			String bootVersion = CrshAutoConfiguration.class.getPackage()
 					.getImplementationVersion();
 			if (bootVersion != null) {
@@ -382,7 +382,7 @@ public class CrshAutoConfiguration {
 		@Override
 		@SuppressWarnings("rawtypes")
 		public Iterable<CRaSHPlugin<?>> getPlugins() {
-			List<CRaSHPlugin<?>> plugins = new ArrayList<CRaSHPlugin<?>>();
+			List<CRaSHPlugin<?>> plugins = new ArrayList<>();
 
 			for (CRaSHPlugin<?> p : super.getPlugins()) {
 				if (isEnabled(p)) {
@@ -522,7 +522,7 @@ public class CrshAutoConfiguration {
 
 		public List<ResourceHandle> members() throws IOException {
 			Resource[] resources = this.resourceLoader.getResources(getName());
-			List<ResourceHandle> files = new ArrayList<ResourceHandle>();
+			List<ResourceHandle> files = new ArrayList<>();
 			for (Resource resource : resources) {
 				if (!resource.getURL().getPath().endsWith("/")
 						&& !shouldFilter(resource)) {

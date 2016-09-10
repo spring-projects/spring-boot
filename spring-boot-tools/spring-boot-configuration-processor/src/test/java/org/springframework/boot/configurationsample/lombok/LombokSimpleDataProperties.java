@@ -47,7 +47,7 @@ public class LombokSimpleDataProperties {
 	@Deprecated
 	private Integer number = 0;
 
-	private final List<String> items = new ArrayList<String>();
+	private final List<String> items = new ArrayList<>();
 
 	private final String ignored = "foo";
 

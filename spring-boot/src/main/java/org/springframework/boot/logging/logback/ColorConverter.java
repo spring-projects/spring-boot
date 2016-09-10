@@ -41,7 +41,7 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 	private static final Map<String, AnsiElement> ELEMENTS;
 
 	static {
-		Map<String, AnsiElement> elements = new HashMap<String, AnsiElement>();
+		Map<String, AnsiElement> elements = new HashMap<>();
 		elements.put("faint", AnsiStyle.FAINT);
 		elements.put("red", AnsiColor.RED);
 		elements.put("green", AnsiColor.GREEN);
@@ -55,7 +55,7 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 	private static final Map<Integer, AnsiElement> LEVELS;
 
 	static {
-		Map<Integer, AnsiElement> levels = new HashMap<Integer, AnsiElement>();
+		Map<Integer, AnsiElement> levels = new HashMap<>();
 		levels.put(Level.ERROR_INTEGER, AnsiColor.RED);
 		levels.put(Level.WARN_INTEGER, AnsiColor.YELLOW);
 		LEVELS = Collections.unmodifiableMap(levels);

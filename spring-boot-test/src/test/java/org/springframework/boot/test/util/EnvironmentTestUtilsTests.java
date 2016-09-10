@@ -83,7 +83,7 @@ public class EnvironmentTestUtilsTests {
 
 	@Test
 	public void testConfigHasHigherPrecedence() {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "bar");
 		MapPropertySource source = new MapPropertySource("sample", map);
 		this.environment.getPropertySources().addFirst(source);

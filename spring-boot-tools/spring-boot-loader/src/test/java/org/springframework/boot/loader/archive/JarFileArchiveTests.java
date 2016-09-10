@@ -121,7 +121,7 @@ public class JarFileArchiveTests {
 	}
 
 	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {
-		Map<String, Archive.Entry> entries = new HashMap<String, Archive.Entry>();
+		Map<String, Archive.Entry> entries = new HashMap<>();
 		for (Archive.Entry entry : archive) {
 			entries.put(entry.getName().toString(), entry);
 		}

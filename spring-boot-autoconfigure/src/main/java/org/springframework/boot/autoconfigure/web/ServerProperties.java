@@ -124,7 +124,7 @@ public class ServerProperties
 	/**
 	 * ServletContext parameters.
 	 */
-	private final Map<String, String> contextParameters = new HashMap<String, String>();
+	private final Map<String, String> contextParameters = new HashMap<>();
 
 	/**
 	 * If X-Forwarded-* headers should be applied to the HttpRequest.

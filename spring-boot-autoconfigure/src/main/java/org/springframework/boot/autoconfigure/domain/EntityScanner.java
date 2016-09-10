@@ -64,7 +64,7 @@ public class EntityScanner {
 		if (packages.isEmpty()) {
 			return Collections.<Class<?>>emptySet();
 		}
-		Set<Class<?>> entitySet = new HashSet<Class<?>>();
+		Set<Class<?>> entitySet = new HashSet<>();
 		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(
 				false);
 		scanner.setEnvironment(this.context.getEnvironment());

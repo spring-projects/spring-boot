@@ -57,7 +57,7 @@ public abstract class Launcher {
 	 * @throws Exception if the classloader cannot be created
 	 */
 	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
-		List<URL> urls = new ArrayList<URL>(archives.size());
+		List<URL> urls = new ArrayList<>(archives.size());
 		for (Archive archive : archives) {
 			urls.add(archive.getUrl());
 		}

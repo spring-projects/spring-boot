@@ -31,7 +31,7 @@ public class CompositeDependencyManagement implements DependencyManagement {
 
 	private final List<DependencyManagement> delegates;
 
-	private final List<Dependency> dependencies = new ArrayList<Dependency>();
+	private final List<Dependency> dependencies = new ArrayList<>();
 
 	public CompositeDependencyManagement(DependencyManagement... delegates) {
 		this.delegates = Arrays.asList(delegates);

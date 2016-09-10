@@ -102,7 +102,7 @@ class NoSuchBeanDefinitionFailureAnalyzer
 
 	private List<AutoConfigurationResult> getAutoConfigurationResults(
 			NoSuchBeanDefinitionException cause) {
-		List<AutoConfigurationResult> results = new ArrayList<AutoConfigurationResult>();
+		List<AutoConfigurationResult> results = new ArrayList<>();
 		collectReportedConditionOutcomes(cause, results);
 		collectExcludedAutoConfiguration(cause, results);
 		return results;
@@ -183,7 +183,7 @@ class NoSuchBeanDefinitionFailureAnalyzer
 						.getMetadataReader(source.getClassName());
 				Set<MethodMetadata> candidates = classMetadata.getAnnotationMetadata()
 						.getAnnotatedMethods(Bean.class.getName());
-				List<MethodMetadata> result = new ArrayList<MethodMetadata>();
+				List<MethodMetadata> result = new ArrayList<>();
 				for (MethodMetadata candidate : candidates) {
 					if (isMatch(candidate, source, cause)) {
 						result.add(candidate);

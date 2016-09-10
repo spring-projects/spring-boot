@@ -34,7 +34,7 @@ public class ElasticsearchHealthIndicatorProperties {
 	/**
 	 * Comma-separated index names.
 	 */
-	private List<String> indices = new ArrayList<String>();
+	private List<String> indices = new ArrayList<>();
 
 	/**
 	 * Time, in milliseconds, to wait for a response from the cluster.

@@ -50,7 +50,7 @@ public abstract class AbstractJmxCacheStatisticsProvider<C extends Cache>
 
 	private MBeanServer mBeanServer;
 
-	private final Map<String, ObjectNameWrapper> caches = new ConcurrentHashMap<String, ObjectNameWrapper>();
+	private final Map<String, ObjectNameWrapper> caches = new ConcurrentHashMap<>();
 
 	@Override
 	public CacheStatistics getCacheStatistics(CacheManager cacheManager, C cache) {

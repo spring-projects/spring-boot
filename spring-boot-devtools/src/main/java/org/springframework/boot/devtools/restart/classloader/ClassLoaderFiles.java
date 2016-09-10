@@ -47,7 +47,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	 * Create a new {@link ClassLoaderFiles} instance.
 	 */
 	public ClassLoaderFiles() {
-		this.sourceFolders = new LinkedHashMap<String, SourceFolder>();
+		this.sourceFolders = new LinkedHashMap<>();
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	 */
 	public ClassLoaderFiles(ClassLoaderFiles classLoaderFiles) {
 		Assert.notNull(classLoaderFiles, "ClassLoaderFiles must not be null");
-		this.sourceFolders = new LinkedHashMap<String, SourceFolder>(
+		this.sourceFolders = new LinkedHashMap<>(
 				classLoaderFiles.sourceFolders);
 	}
 
@@ -158,7 +158,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 
 		private final String name;
 
-		private final Map<String, ClassLoaderFile> files = new LinkedHashMap<String, ClassLoaderFile>();
+		private final Map<String, ClassLoaderFile> files = new LinkedHashMap<>();
 
 		SourceFolder(String name) {
 			this.name = name;

@@ -67,11 +67,11 @@ public class BootRunTask extends JavaExec {
 			SourceSet mainSourceSet = SourceSets.findMainSourceSet(getProject());
 			final File outputDir = (mainSourceSet == null ? null
 					: mainSourceSet.getOutput().getResourcesDir());
-			final Set<File> resources = new LinkedHashSet<File>();
+			final Set<File> resources = new LinkedHashSet<>();
 			if (mainSourceSet != null) {
 				resources.addAll(mainSourceSet.getResources().getSrcDirs());
 			}
-			List<File> classPath = new ArrayList<File>(getClasspath().getFiles());
+			List<File> classPath = new ArrayList<>(getClasspath().getFiles());
 			classPath.addAll(0, resources);
 			getLogger().info("Adding classpath: " + resources);
 			setClasspath(new SimpleFileCollection(classPath));

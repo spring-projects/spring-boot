@@ -71,7 +71,7 @@ public class SourceOptions {
 	}
 
 	private SourceOptions(List<?> nonOptionArguments, ClassLoader classLoader) {
-		List<String> sources = new ArrayList<String>();
+		List<String> sources = new ArrayList<>();
 		int sourceArgCount = 0;
 		for (Object option : nonOptionArguments) {
 			if (option instanceof String) {
@@ -79,7 +79,7 @@ public class SourceOptions {
 				if ("--".equals(filename)) {
 					break;
 				}
-				List<String> urls = new ArrayList<String>();
+				List<String> urls = new ArrayList<>();
 				File fileCandidate = new File(filename);
 				if (fileCandidate.isFile()) {
 					urls.add(fileCandidate.getAbsoluteFile().toURI().toString());

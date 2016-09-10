@@ -41,9 +41,9 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 
 	private final PrefixMetricWriter writer;
 
-	private ConcurrentMap<String, Long> counts = new ConcurrentHashMap<String, Long>();
+	private ConcurrentMap<String, Long> counts = new ConcurrentHashMap<>();
 
-	private Set<String> groups = new HashSet<String>();
+	private Set<String> groups = new HashSet<>();
 
 	/**
 	 * Create a new exporter for metrics to a writer based on an empty prefix for the
@@ -112,7 +112,7 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 		else {
 			this.counts.putIfAbsent(value.getName(), delta);
 		}
-		return new Delta<Long>(value.getName(), delta, value.getTimestamp());
+		return new Delta<>(value.getName(), delta, value.getTimestamp());
 	}
 
 }

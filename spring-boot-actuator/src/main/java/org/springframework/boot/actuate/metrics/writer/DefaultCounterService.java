@@ -29,7 +29,7 @@ public class DefaultCounterService implements CounterService {
 
 	private final MetricWriter writer;
 
-	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<String, String>();
+	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<>();
 
 	/**
 	 * Create a {@link DefaultCounterService} instance.
@@ -41,12 +41,12 @@ public class DefaultCounterService implements CounterService {
 
 	@Override
 	public void increment(String metricName) {
-		this.writer.increment(new Delta<Long>(wrap(metricName), 1L));
+		this.writer.increment(new Delta<>(wrap(metricName), 1L));
 	}
 
 	@Override
 	public void decrement(String metricName) {
-		this.writer.increment(new Delta<Long>(wrap(metricName), -1L));
+		this.writer.increment(new Delta<>(wrap(metricName), -1L));
 	}
 
 	@Override

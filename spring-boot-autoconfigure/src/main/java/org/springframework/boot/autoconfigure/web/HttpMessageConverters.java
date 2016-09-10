@@ -59,7 +59,7 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	private static final List<Class<?>> NON_REPLACING_CONVERTERS;
 
 	static {
-		List<Class<?>> nonReplacingConverters = new ArrayList<Class<?>>();
+		List<Class<?>> nonReplacingConverters = new ArrayList<>();
 		addClassIfExists(nonReplacingConverters, "org.springframework.hateoas.mvc."
 				+ "TypeConstrainedMappingJackson2HttpMessageConverter");
 		NON_REPLACING_CONVERTERS = Collections.unmodifiableList(nonReplacingConverters);
@@ -112,8 +112,8 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	private List<HttpMessageConverter<?>> getCombinedConverters(
 			Collection<HttpMessageConverter<?>> converters,
 			List<HttpMessageConverter<?>> defaultConverters) {
-		List<HttpMessageConverter<?>> combined = new ArrayList<HttpMessageConverter<?>>();
-		List<HttpMessageConverter<?>> processing = new ArrayList<HttpMessageConverter<?>>(
+		List<HttpMessageConverter<?>> combined = new ArrayList<>();
+		List<HttpMessageConverter<?>> processing = new ArrayList<>(
 				converters);
 		for (HttpMessageConverter<?> defaultConverter : defaultConverters) {
 			Iterator<HttpMessageConverter<?>> iterator = processing.iterator();
@@ -191,7 +191,7 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	}
 
 	private List<HttpMessageConverter<?>> getDefaultConverters() {
-		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
+		List<HttpMessageConverter<?>> converters = new ArrayList<>();
 		if (ClassUtils.isPresent("org.springframework.web.servlet.config.annotation."
 				+ "WebMvcConfigurationSupport", null)) {
 			converters.addAll(new WebMvcConfigurationSupport() {
@@ -208,7 +208,7 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	}
 
 	private void reorderXmlConvertersToEnd(List<HttpMessageConverter<?>> converters) {
-		List<HttpMessageConverter<?>> xml = new ArrayList<HttpMessageConverter<?>>();
+		List<HttpMessageConverter<?>> xml = new ArrayList<>();
 		for (Iterator<HttpMessageConverter<?>> iterator = converters.iterator(); iterator
 				.hasNext();) {
 			HttpMessageConverter<?> converter = iterator.next();

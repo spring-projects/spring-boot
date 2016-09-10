@@ -41,7 +41,7 @@ public class MetricExportersTests {
 
 	private MetricExportProperties export = new MetricExportProperties();
 
-	private Map<String, GaugeWriter> writers = new LinkedHashMap<String, GaugeWriter>();
+	private Map<String, GaugeWriter> writers = new LinkedHashMap<>();
 
 	private MetricReader reader = mock(MetricReader.class);
 

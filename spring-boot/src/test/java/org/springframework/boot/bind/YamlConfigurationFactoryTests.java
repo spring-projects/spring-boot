@@ -42,10 +42,10 @@ public class YamlConfigurationFactoryTests {
 
 	private Validator validator;
 
-	private final Map<Class<?>, Map<String, String>> aliases = new HashMap<Class<?>, Map<String, String>>();
+	private final Map<Class<?>, Map<String, String>> aliases = new HashMap<>();
 
 	private Foo createFoo(final String yaml) throws Exception {
-		YamlConfigurationFactory<Foo> factory = new YamlConfigurationFactory<Foo>(
+		YamlConfigurationFactory<Foo> factory = new YamlConfigurationFactory<>(
 				Foo.class);
 		factory.setYaml(yaml);
 		factory.setExceptionIfInvalid(true);
@@ -57,7 +57,7 @@ public class YamlConfigurationFactoryTests {
 	}
 
 	private Jee createJee(final String yaml) throws Exception {
-		YamlConfigurationFactory<Jee> factory = new YamlConfigurationFactory<Jee>(
+		YamlConfigurationFactory<Jee> factory = new YamlConfigurationFactory<>(
 				Jee.class);
 		factory.setYaml(yaml);
 		factory.setExceptionIfInvalid(true);

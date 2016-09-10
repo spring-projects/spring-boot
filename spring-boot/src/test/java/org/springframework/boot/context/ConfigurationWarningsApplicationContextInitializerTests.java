@@ -149,7 +149,7 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 		protected Set<String> getComponentScanningPackages(
 				BeanDefinitionRegistry registry) {
 			Set<String> scannedPackages = super.getComponentScanningPackages(registry);
-			Set<String> result = new LinkedHashSet<String>();
+			Set<String> result = new LinkedHashSet<>();
 			for (String scannedPackage : scannedPackages) {
 				if (scannedPackage.endsWith("dflt")) {
 					result.add("");

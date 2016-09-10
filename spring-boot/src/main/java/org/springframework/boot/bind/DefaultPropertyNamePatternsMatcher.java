@@ -42,7 +42,7 @@ class DefaultPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher 
 
 	protected DefaultPropertyNamePatternsMatcher(char[] delimiters, boolean ignoreCase,
 			String... names) {
-		this(delimiters, ignoreCase, new HashSet<String>(Arrays.asList(names)));
+		this(delimiters, ignoreCase, new HashSet<>(Arrays.asList(names)));
 	}
 
 	DefaultPropertyNamePatternsMatcher(char[] delimiters, boolean ignoreCase,

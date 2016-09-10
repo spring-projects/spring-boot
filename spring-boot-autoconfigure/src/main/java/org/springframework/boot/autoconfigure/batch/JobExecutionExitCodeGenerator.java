@@ -31,7 +31,7 @@ import org.springframework.context.ApplicationListener;
 public class JobExecutionExitCodeGenerator
 		implements ApplicationListener<JobExecutionEvent>, ExitCodeGenerator {
 
-	private final List<JobExecution> executions = new ArrayList<JobExecution>();
+	private final List<JobExecution> executions = new ArrayList<>();
 
 	@Override
 	public void onApplicationEvent(JobExecutionEvent event) {

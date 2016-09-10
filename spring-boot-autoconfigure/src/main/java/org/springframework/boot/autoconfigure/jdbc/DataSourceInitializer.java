@@ -139,7 +139,7 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 				this.applicationContext, locations);
 		try {
 			factory.afterPropertiesSet();
-			List<Resource> resources = new ArrayList<Resource>();
+			List<Resource> resources = new ArrayList<>();
 			for (Resource resource : factory.getObject()) {
 				if (resource.exists()) {
 					resources.add(resource);

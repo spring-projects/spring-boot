@@ -86,13 +86,13 @@ public class Restarter {
 
 	private static Restarter instance;
 
-	private final Set<URL> urls = new LinkedHashSet<URL>();
+	private final Set<URL> urls = new LinkedHashSet<>();
 
 	private final ClassLoaderFiles classLoaderFiles = new ClassLoaderFiles();
 
-	private final Map<String, Object> attributes = new HashMap<String, Object>();
+	private final Map<String, Object> attributes = new HashMap<>();
 
-	private final BlockingDeque<LeakSafeThread> leakSafeThreads = new LinkedBlockingDeque<LeakSafeThread>();
+	private final BlockingDeque<LeakSafeThread> leakSafeThreads = new LinkedBlockingDeque<>();
 
 	private final Lock stopLock = new ReentrantLock();
 
@@ -384,7 +384,7 @@ public class Restarter {
 	 */
 	private void forceReferenceCleanup() {
 		try {
-			final List<long[]> memory = new LinkedList<long[]>();
+			final List<long[]> memory = new LinkedList<>();
 			while (true) {
 				memory.add(new long[102400]);
 			}

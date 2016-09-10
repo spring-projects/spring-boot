@@ -139,7 +139,7 @@ public class RedisAutoConfiguration {
 		}
 
 		private List<RedisNode> createSentinels(Sentinel sentinel) {
-			List<RedisNode> nodes = new ArrayList<RedisNode>();
+			List<RedisNode> nodes = new ArrayList<>();
 			for (String node : StringUtils
 					.commaDelimitedListToStringArray(sentinel.getNodes())) {
 				try {
@@ -191,7 +191,7 @@ public class RedisAutoConfiguration {
 		public RedisTemplate<Object, Object> redisTemplate(
 				RedisConnectionFactory redisConnectionFactory)
 						throws UnknownHostException {
-			RedisTemplate<Object, Object> template = new RedisTemplate<Object, Object>();
+			RedisTemplate<Object, Object> template = new RedisTemplate<>();
 			template.setConnectionFactory(redisConnectionFactory);
 			return template;
 		}

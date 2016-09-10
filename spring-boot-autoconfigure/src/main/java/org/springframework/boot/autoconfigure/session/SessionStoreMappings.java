@@ -33,7 +33,7 @@ final class SessionStoreMappings {
 	private static final Map<StoreType, Class<?>> MAPPINGS;
 
 	static {
-		Map<StoreType, Class<?>> mappings = new HashMap<StoreType, Class<?>>();
+		Map<StoreType, Class<?>> mappings = new HashMap<>();
 		mappings.put(StoreType.REDIS, RedisSessionConfiguration.class);
 		mappings.put(StoreType.MONGO, MongoSessionConfiguration.class);
 		mappings.put(StoreType.JDBC, JdbcSessionConfiguration.class);

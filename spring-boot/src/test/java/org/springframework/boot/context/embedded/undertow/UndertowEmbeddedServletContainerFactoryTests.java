@@ -150,7 +150,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 	@Test
 	public void defaultContextPath() throws Exception {
 		UndertowEmbeddedServletContainerFactory factory = getFactory();
-		final AtomicReference<String> contextPath = new AtomicReference<String>();
+		final AtomicReference<String> contextPath = new AtomicReference<>();
 		factory.addDeploymentInfoCustomizers(new UndertowDeploymentInfoCustomizer() {
 
 			@Override
@@ -277,7 +277,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 	protected Collection<Mapping> getExpectedMimeMappings() {
 		// Unlike Tomcat and Jetty, Undertow performs a case-sensitive match on file
 		// extension so it has a mapping for "z" and "Z".
-		Set<Mapping> expectedMappings = new HashSet<Mapping>(
+		Set<Mapping> expectedMappings = new HashSet<>(
 				super.getExpectedMimeMappings());
 		expectedMappings.add(new Mapping("Z", "application/x-compress"));
 		return expectedMappings;

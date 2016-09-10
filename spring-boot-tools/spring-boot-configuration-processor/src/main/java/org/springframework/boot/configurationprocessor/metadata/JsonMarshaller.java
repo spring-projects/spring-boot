@@ -231,14 +231,14 @@ public class JsonMarshaller {
 
 	private ItemHint toItemHint(JSONObject object) {
 		String name = object.getString("name");
-		List<ItemHint.ValueHint> values = new ArrayList<ItemHint.ValueHint>();
+		List<ItemHint.ValueHint> values = new ArrayList<>();
 		if (object.has("values")) {
 			JSONArray valuesArray = object.getJSONArray("values");
 			for (int i = 0; i < valuesArray.length(); i++) {
 				values.add(toValueHint((JSONObject) valuesArray.get(i)));
 			}
 		}
-		List<ItemHint.ValueProvider> providers = new ArrayList<ItemHint.ValueProvider>();
+		List<ItemHint.ValueProvider> providers = new ArrayList<>();
 		if (object.has("providers")) {
 			JSONArray providersObject = object.getJSONArray("providers");
 			for (int i = 0; i < providersObject.length(); i++) {
@@ -256,7 +256,7 @@ public class JsonMarshaller {
 
 	private ItemHint.ValueProvider toValueProvider(JSONObject object) {
 		String name = object.getString("name");
-		Map<String, Object> parameters = new HashMap<String, Object>();
+		Map<String, Object> parameters = new HashMap<>();
 		if (object.has("parameters")) {
 			JSONObject parametersObject = object.getJSONObject("parameters");
 			for (Object k : parametersObject.keySet()) {
@@ -297,7 +297,7 @@ public class JsonMarshaller {
 	@SuppressWarnings("rawtypes")
 	private static class JSONOrderedObject extends JSONObject {
 
-		private Set<String> keys = new LinkedHashSet<String>();
+		private Set<String> keys = new LinkedHashSet<>();
 
 		@Override
 		public JSONObject put(String key, Object value) throws JSONException {

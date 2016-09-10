@@ -44,14 +44,14 @@ public class AuthorizationAuditListener extends AbstractAuthorizationAuditListen
 
 	private void onAuthenticationCredentialsNotFoundEvent(
 			AuthenticationCredentialsNotFoundEvent event) {
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		data.put("type", event.getCredentialsNotFoundException().getClass().getName());
 		data.put("message", event.getCredentialsNotFoundException().getMessage());
 		publish(new AuditEvent("<unknown>", "AUTHENTICATION_FAILURE", data));
 	}
 
 	private void onAuthorizationFailureEvent(AuthorizationFailureEvent event) {
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		data.put("type", event.getAccessDeniedException().getClass().getName());
 		data.put("message", event.getAccessDeniedException().getMessage());
 		if (event.getAuthentication().getDetails() != null) {

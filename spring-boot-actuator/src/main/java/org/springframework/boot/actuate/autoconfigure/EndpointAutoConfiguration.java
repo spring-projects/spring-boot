@@ -138,7 +138,7 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public MetricsEndpoint metricsEndpoint() {
-		List<PublicMetrics> publicMetrics = new ArrayList<PublicMetrics>();
+		List<PublicMetrics> publicMetrics = new ArrayList<>();
 		if (this.publicMetrics != null) {
 			publicMetrics.addAll(this.publicMetrics);
 		}

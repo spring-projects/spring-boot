@@ -155,7 +155,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			List<String> names = new ArrayList<String>();
+			List<String> names = new ArrayList<>();
 			for (Class<?> type : new Class<?>[] { DataSourceAutoConfiguration.class,
 					HibernateJpaAutoConfiguration.class,
 					JpaRepositoriesAutoConfiguration.class,

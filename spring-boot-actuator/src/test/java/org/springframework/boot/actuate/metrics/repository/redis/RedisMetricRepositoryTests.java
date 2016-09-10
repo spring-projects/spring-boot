@@ -71,14 +71,14 @@ public class RedisMetricRepositoryTests {
 
 	@Test
 	public void incrementAndGet() {
-		this.repository.increment(new Delta<Long>("foo", 3L));
+		this.repository.increment(new Delta<>("foo", 3L));
 		assertThat(this.repository.findOne("foo").getValue().longValue()).isEqualTo(3);
 	}
 
 	@Test
 	public void setIncrementAndGet() {
 		this.repository.set(new Metric<Number>("foo", 12.3));
-		this.repository.increment(new Delta<Long>("foo", 3L));
+		this.repository.increment(new Delta<>("foo", 3L));
 		Metric<?> metric = this.repository.findOne("foo");
 		assertThat(metric.getName()).isEqualTo("foo");
 		assertThat(metric.getValue().doubleValue()).isEqualTo(15.3, offset(0.01));
@@ -86,21 +86,21 @@ public class RedisMetricRepositoryTests {
 
 	@Test
 	public void findAll() {
-		this.repository.increment(new Delta<Long>("foo", 3L));
+		this.repository.increment(new Delta<>("foo", 3L));
 		this.repository.set(new Metric<Number>("bar", 12.3));
 		assertThat(Iterables.collection(this.repository.findAll())).hasSize(2);
 	}
 
 	@Test
 	public void findOneWithAll() {
-		this.repository.increment(new Delta<Long>("foo", 3L));
+		this.repository.increment(new Delta<>("foo", 3L));
 		Metric<?> metric = this.repository.findAll().iterator().next();
 		assertThat(metric.getName()).isEqualTo("foo");
 	}
 
 	@Test
 	public void count() {
-		this.repository.increment(new Delta<Long>("foo", 3L));
+		this.repository.increment(new Delta<>("foo", 3L));
 		this.repository.set(new Metric<Number>("bar", 12.3));
 		assertThat(this.repository.count()).isEqualTo(2);
 	}

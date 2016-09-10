@@ -89,7 +89,7 @@ public class ParentContextCloserApplicationListener
 		private WeakReference<ConfigurableApplicationContext> childContext;
 
 		public ContextCloserListener(ConfigurableApplicationContext childContext) {
-			this.childContext = new WeakReference<ConfigurableApplicationContext>(
+			this.childContext = new WeakReference<>(
 					childContext);
 		}
 

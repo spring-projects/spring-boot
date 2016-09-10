@@ -220,7 +220,7 @@ public class HornetQProperties {
 		 * @see TransportConstants#SERVER_ID_PROP_NAME
 		 */
 		public Map<String, Object> generateTransportParameters() {
-			Map<String, Object> parameters = new HashMap<String, Object>();
+			Map<String, Object> parameters = new HashMap<>();
 			parameters.put(TransportConstants.SERVER_ID_PROP_NAME, getServerId());
 			return parameters;
 		}
