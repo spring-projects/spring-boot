@@ -22,7 +22,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
-import org.springframework.boot.autoconfigure.jms.hornetq.HornetQAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
@@ -38,8 +37,7 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnClass(javax.transaction.Transaction.class)
 @ConditionalOnProperty(prefix = "spring.jta", value = "enabled", matchIfMissing = true)
 @AutoConfigureBefore({ XADataSourceAutoConfiguration.class,
-		ActiveMQAutoConfiguration.class, HornetQAutoConfiguration.class,
-		HibernateJpaAutoConfiguration.class })
+		ActiveMQAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 @Import({ JndiJtaConfiguration.class, BitronixJtaConfiguration.class,
 		AtomikosJtaConfiguration.class, NarayanaJtaConfiguration.class })
 @EnableConfigurationProperties(JtaProperties.class)
