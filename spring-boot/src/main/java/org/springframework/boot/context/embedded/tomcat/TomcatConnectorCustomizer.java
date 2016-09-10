@@ -24,6 +24,7 @@ import org.apache.catalina.connector.Connector;
  * @author Dave Syer
  * @see TomcatEmbeddedServletContainerFactory
  */
+@FunctionalInterface
 public interface TomcatConnectorCustomizer {
 
 	/**

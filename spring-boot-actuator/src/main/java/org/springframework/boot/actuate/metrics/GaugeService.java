@@ -27,6 +27,7 @@ package org.springframework.boot.actuate.metrics;
  *
  * @author Dave Syer
  */
+@FunctionalInterface
 public interface GaugeService {
 
 	/**

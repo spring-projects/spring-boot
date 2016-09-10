@@ -30,6 +30,7 @@ import org.springframework.boot.configurationprocessor.fieldvalues.javac.JavaCom
  * @since 1.1.2
  * @see JavaCompilerFieldValuesParser
  */
+@FunctionalInterface
 public interface FieldValuesParser {
 
 	/**

@@ -25,6 +25,7 @@ import java.net.URL;
  * @since 1.3.0
  * @see DefaultRestartInitializer
  */
+@FunctionalInterface
 public interface RestartInitializer {
 
 	/**

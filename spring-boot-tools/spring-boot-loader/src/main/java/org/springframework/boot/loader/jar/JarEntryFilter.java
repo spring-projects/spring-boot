@@ -21,6 +21,7 @@ package org.springframework.boot.loader.jar;
  *
  * @author Phillip Webb
  */
+@FunctionalInterface
 interface JarEntryFilter {
 
 	/**

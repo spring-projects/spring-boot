@@ -29,6 +29,7 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentationConfigurer;
  * @author Andy Wilkinson
  * @since 1.4.0
  */
+@FunctionalInterface
 public interface RestDocsMockMvcConfigurationCustomizer {
 
 	/**

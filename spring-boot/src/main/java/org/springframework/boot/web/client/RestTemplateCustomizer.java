@@ -25,6 +25,7 @@ import org.springframework.web.client.RestTemplate;
  * @since 1.4.0
  * @see RestTemplateBuilder
  */
+@FunctionalInterface
 public interface RestTemplateCustomizer {
 
 	/**

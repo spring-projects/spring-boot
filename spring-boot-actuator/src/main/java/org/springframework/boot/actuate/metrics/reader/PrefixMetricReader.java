@@ -23,6 +23,7 @@ import org.springframework.boot.actuate.metrics.Metric;
  *
  * @author Dave Syer
  */
+@FunctionalInterface
 public interface PrefixMetricReader {
 
 	/**

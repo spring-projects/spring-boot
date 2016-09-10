@@ -28,6 +28,7 @@ import org.springframework.security.core.GrantedAuthority;
  * @author Dave Syer
  * @since 1.3.0
  */
+@FunctionalInterface
 public interface AuthoritiesExtractor {
 
 	/**

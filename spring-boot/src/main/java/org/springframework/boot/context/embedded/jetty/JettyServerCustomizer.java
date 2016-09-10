@@ -24,6 +24,7 @@ import org.eclipse.jetty.server.Server;
  * @author Dave Syer
  * @see JettyEmbeddedServletContainerFactory
  */
+@FunctionalInterface
 public interface JettyServerCustomizer {
 
 	/**
