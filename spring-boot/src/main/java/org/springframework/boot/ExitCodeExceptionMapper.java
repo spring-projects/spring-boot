@@ -23,6 +23,7 @@ package org.springframework.boot;
  * @author Phillip Webb
  * @since 1.3.2
  */
+@FunctionalInterface
 public interface ExitCodeExceptionMapper {
 
 	/**

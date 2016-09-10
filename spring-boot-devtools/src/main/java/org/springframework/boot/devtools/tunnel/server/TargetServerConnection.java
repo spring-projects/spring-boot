@@ -25,6 +25,7 @@ import java.nio.channels.ByteChannel;
  * @author Phillip Webb
  * @since 1.3.0
  */
+@FunctionalInterface
 public interface TargetServerConnection {
 
 	/**

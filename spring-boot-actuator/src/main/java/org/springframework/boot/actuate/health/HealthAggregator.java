@@ -34,6 +34,7 @@ import java.util.Map;
  * @author Christian Dupuis
  * @since 1.1.0
  */
+@FunctionalInterface
 public interface HealthAggregator {
 
 	/**

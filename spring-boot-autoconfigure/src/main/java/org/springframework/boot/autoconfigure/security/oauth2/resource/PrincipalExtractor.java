@@ -25,6 +25,7 @@ import java.util.Map;
  * @author Phillip Webb
  * @since 1.4.0
  */
+@FunctionalInterface
 public interface PrincipalExtractor {
 
 	/**

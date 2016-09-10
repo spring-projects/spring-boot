@@ -27,6 +27,7 @@ import org.springframework.cache.CacheManager;
  * @author Phillip Webb
  * @since 1.3.0
  */
+@FunctionalInterface
 public interface CacheStatisticsProvider<C extends Cache> {
 
 	/**

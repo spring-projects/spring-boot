@@ -23,6 +23,7 @@ package org.springframework.boot.diagnostics;
  * @author Andy Wilkinson
  * @since 1.4.0
  */
+@FunctionalInterface
 public interface FailureAnalyzer {
 
 	/**

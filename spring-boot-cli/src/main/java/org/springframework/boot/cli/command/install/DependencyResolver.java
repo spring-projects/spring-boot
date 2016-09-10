@@ -26,6 +26,7 @@ import java.util.List;
  * @author Andy Wilkinson
  * @since 1.2.0
  */
+@FunctionalInterface
 interface DependencyResolver {
 
 	/**

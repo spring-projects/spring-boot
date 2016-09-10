@@ -25,6 +25,7 @@ package org.springframework.boot;
  * @see SpringApplication#exit(org.springframework.context.ApplicationContext,
  * ExitCodeGenerator...)
  */
+@FunctionalInterface
 public interface ExitCodeGenerator {
 
 	/**

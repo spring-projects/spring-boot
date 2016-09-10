@@ -25,6 +25,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
  * @author Dave Syer
  * @since 1.3.0
  */
+@FunctionalInterface
 public interface JwtAccessTokenConverterConfigurer {
 
 	/**

@@ -27,6 +27,7 @@ import org.springframework.http.server.ServerHttpResponse;
  * @author Phillip Webb
  * @since 1.3.0
  */
+@FunctionalInterface
 public interface Handler {
 
 	/**

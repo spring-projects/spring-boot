@@ -22,6 +22,7 @@ package org.springframework.boot.actuate.info;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
+@FunctionalInterface
 public interface InfoContributor {
 
 	/**

@@ -24,6 +24,7 @@ import org.springframework.stereotype.Controller;
  *
  * @author Phillip Webb
  */
+@FunctionalInterface
 public interface ErrorController {
 
 	/**

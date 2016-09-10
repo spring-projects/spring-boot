@@ -26,6 +26,7 @@ import org.springframework.core.io.ResourceLoader;
  * @author Andy Wilkinson
  * @since 1.1.0
  */
+@FunctionalInterface
 public interface TemplateAvailabilityProvider {
 
 	/**

@@ -27,6 +27,7 @@ import org.springframework.boot.devtools.filewatch.ChangedFile;
  * @since 1.3.0
  * @see PatternClassPathRestartStrategy
  */
+@FunctionalInterface
 public interface ClassPathRestartStrategy {
 
 	/**

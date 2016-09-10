@@ -22,6 +22,7 @@ package org.springframework.boot.web.servlet;
  * @author Phillip Webb
  * @since 1.4.0
  */
+@FunctionalInterface
 public interface ErrorPageRegistrar {
 
 	/**

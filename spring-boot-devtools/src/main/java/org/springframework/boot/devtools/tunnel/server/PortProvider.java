@@ -23,6 +23,7 @@ package org.springframework.boot.devtools.tunnel.server;
  * @author Phillip Webb
  * @since 1.3.0
  */
+@FunctionalInterface
 public interface PortProvider {
 
 	/**

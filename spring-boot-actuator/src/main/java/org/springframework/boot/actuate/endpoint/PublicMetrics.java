@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.metrics.Metric;
  * @author Dave Syer
  * @see SystemPublicMetrics
  */
+@FunctionalInterface
 public interface PublicMetrics {
 
 	/**

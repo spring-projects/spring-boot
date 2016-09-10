@@ -22,6 +22,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
  * @author Dave Syer
  * @since 1.2.0
  */
+@FunctionalInterface
 public interface EndpointHandlerMappingCustomizer {
 
 	/**

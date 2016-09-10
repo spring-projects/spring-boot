@@ -29,6 +29,7 @@ import org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS;
  * @since 1.3.0
  * @see ArtemisAutoConfiguration
  */
+@FunctionalInterface
 public interface ArtemisConfigurationCustomizer {
 
 	/**

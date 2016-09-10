@@ -37,6 +37,7 @@ import org.springframework.core.env.Environment;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
+@FunctionalInterface
 public interface EnvironmentPostProcessor {
 
 	/**

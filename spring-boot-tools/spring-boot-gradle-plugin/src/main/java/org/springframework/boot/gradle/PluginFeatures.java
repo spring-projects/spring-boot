@@ -24,6 +24,7 @@ import org.gradle.api.Project;
  *
  * @author Phillip Webb
  */
+@FunctionalInterface
 public interface PluginFeatures {
 
 	/**

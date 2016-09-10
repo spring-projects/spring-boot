@@ -25,6 +25,7 @@ import org.springframework.http.server.ServerHttpRequest;
  * @author Phillip Webb
  * @since 1.3.0
  */
+@FunctionalInterface
 public interface HandlerMapper {
 
 	/**

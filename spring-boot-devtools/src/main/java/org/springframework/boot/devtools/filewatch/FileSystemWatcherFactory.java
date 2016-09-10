@@ -22,6 +22,7 @@ package org.springframework.boot.devtools.filewatch;
  * @author Phillip Webb
  * @since 1.3.0
  */
+@FunctionalInterface
 public interface FileSystemWatcherFactory {
 
 	/**

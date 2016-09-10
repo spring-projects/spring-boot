@@ -22,6 +22,7 @@ package org.springframework.boot.devtools.restart;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
+@FunctionalInterface
 public interface RestartListener {
 
 	/**

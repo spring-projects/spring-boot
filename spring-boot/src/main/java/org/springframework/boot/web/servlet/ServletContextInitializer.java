@@ -38,6 +38,7 @@ import org.springframework.web.WebApplicationInitializer;
  * @since 1.4.0
  * @see WebApplicationInitializer
  */
+@FunctionalInterface
 public interface ServletContextInitializer {
 
 	/**

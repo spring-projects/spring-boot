@@ -25,6 +25,7 @@ import io.undertow.Undertow.Builder;
  * @since 1.2.0
  * @see UndertowEmbeddedServletContainerFactory
  */
+@FunctionalInterface
 public interface UndertowBuilderCustomizer {
 
 	/**

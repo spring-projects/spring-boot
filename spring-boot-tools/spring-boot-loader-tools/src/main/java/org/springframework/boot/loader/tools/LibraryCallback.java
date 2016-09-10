@@ -24,6 +24,7 @@ import java.io.IOException;
  *
  * @author Phillip Webb
  */
+@FunctionalInterface
 public interface LibraryCallback {
 
 	/**

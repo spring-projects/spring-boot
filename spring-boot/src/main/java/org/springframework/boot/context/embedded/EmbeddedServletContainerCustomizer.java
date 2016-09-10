@@ -32,6 +32,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  * @author Dave Syer
  * @see EmbeddedServletContainerCustomizerBeanPostProcessor
  */
+@FunctionalInterface
 public interface EmbeddedServletContainerCustomizer {
 
 	/**
