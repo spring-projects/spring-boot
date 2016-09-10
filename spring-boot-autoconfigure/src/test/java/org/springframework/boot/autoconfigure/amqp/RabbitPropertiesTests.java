@@ -134,8 +134,8 @@ public class RabbitPropertiesTests {
 	}
 
 	@Test
-	public void usernameDefaultsToNull() {
-		assertThat(this.properties.getUsername()).isNull();
+	public void usernameDefaultsToGuest() {
+		assertThat(this.properties.getUsername()).isEqualTo("guest");
 	}
 
 	@Test
@@ -166,8 +166,8 @@ public class RabbitPropertiesTests {
 	}
 
 	@Test
-	public void passwordDefaultsToNull() {
-		assertThat(this.properties.getPassword()).isNull();
+	public void passwordDefaultsToGuest() {
+		assertThat(this.properties.getPassword()).isEqualTo("guest");
 	}
 
 	@Test
