@@ -154,10 +154,10 @@ public class SessionProperties {
 				if (this.enabled != null) {
 					return this.enabled;
 				}
-				boolean defaultTableName = DEFAULT_TABLE_NAME.equals(
-						Jdbc.this.getTableName());
-				boolean customSchema = !DEFAULT_SCHEMA_LOCATION.equals(
-						Jdbc.this.getSchema());
+				boolean defaultTableName = DEFAULT_TABLE_NAME
+						.equals(Jdbc.this.getTableName());
+				boolean customSchema = !DEFAULT_SCHEMA_LOCATION
+						.equals(Jdbc.this.getSchema());
 				return (defaultTableName || customSchema);
 			}
 

@@ -73,9 +73,8 @@ public class BatchProperties {
 	public class Initializer {
 
 		/**
-		 * Create the required batch tables on startup if necessary. Enabled
-		 * automatically if no custom table prefix is set or if a custom schema is
-		 * configured.
+		 * Create the required batch tables on startup if necessary. Enabled automatically
+		 * if no custom table prefix is set or if a custom schema is configured.
 		 */
 		private Boolean enabled;
 
@@ -84,8 +83,8 @@ public class BatchProperties {
 				return this.enabled;
 			}
 			boolean defaultTablePrefix = BatchProperties.this.getTablePrefix() == null;
-			boolean customSchema = !DEFAULT_SCHEMA_LOCATION.equals(
-					BatchProperties.this.getSchema());
+			boolean customSchema = !DEFAULT_SCHEMA_LOCATION
+					.equals(BatchProperties.this.getSchema());
 			return (defaultTablePrefix || customSchema);
 		}
 
