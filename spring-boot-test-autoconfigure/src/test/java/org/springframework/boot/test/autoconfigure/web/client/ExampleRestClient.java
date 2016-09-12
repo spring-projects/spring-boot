@@ -42,4 +42,8 @@ public class ExampleRestClient {
 		return this.restTemplate.getForEntity("/test", String.class).getBody();
 	}
 
+	public void testPostWithBody(String body) {
+		this.restTemplate.postForObject("/test", body, String.class);
+	}
+
 }
