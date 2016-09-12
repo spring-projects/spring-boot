@@ -22,6 +22,7 @@ import javax.jms.ConnectionMetaData;
 import javax.jms.JMSException;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -76,6 +77,23 @@ public class JmsHealthIndicatorTests {
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails().get("provider")).isNull();
 		verify(connection, times(1)).close();
+	}
+
+	@Test
+	public void jmsBrokerUsesFailover() throws JMSException {
+		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
+		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
+		given(connectionMetaData.getJMSProviderName()).willReturn("JMS test provider");
+		Connection connection = mock(Connection.class);
+		given(connection.getMetaData()).willReturn(connectionMetaData);
+		Mockito.doThrow(new JMSException("Could not start", "123"))
+				.when(connection).start();
+		given(connectionFactory.createConnection())
+				.willReturn(connection);
+		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
+		Health health = indicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails().get("provider")).isNull();
 	}
 
 }
