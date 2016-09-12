@@ -22,10 +22,10 @@ import javax.jms.ConnectionMetaData;
 import javax.jms.JMSException;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -86,8 +86,8 @@ public class JmsHealthIndicatorTests {
 		given(connectionMetaData.getJMSProviderName()).willReturn("JMS test provider");
 		Connection connection = mock(Connection.class);
 		given(connection.getMetaData()).willReturn(connectionMetaData);
-		Mockito.doThrow(new JMSException("Could not start", "123"))
-				.when(connection).start();
+		willThrow(new JMSException("Could not start", "123"))
+				.given(connection).start();
 		given(connectionFactory.createConnection())
 				.willReturn(connection);
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
