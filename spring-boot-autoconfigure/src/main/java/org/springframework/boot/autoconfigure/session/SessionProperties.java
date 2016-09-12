@@ -144,16 +144,21 @@ public class SessionProperties {
 		public class Initializer {
 
 			/**
-			 * Create the required session tables on startup if necessary.
+			 * Create the required session tables on startup if necessary. Enabled
+			 * automatically if the default table name is set or a custom schema is
+			 * configured.
 			 */
-			private boolean enabled = true;
+			private Boolean enabled;
 
 			public boolean isEnabled() {
-				boolean isDefaultTableName = DEFAULT_TABLE_NAME.equals(
+				if (this.enabled != null) {
+					return this.enabled;
+				}
+				boolean defaultTableName = DEFAULT_TABLE_NAME.equals(
 						Jdbc.this.getTableName());
-				boolean isDefaultSchema = DEFAULT_SCHEMA_LOCATION.equals(
+				boolean customSchema = !DEFAULT_SCHEMA_LOCATION.equals(
 						Jdbc.this.getSchema());
-				return this.enabled && (isDefaultTableName || !isDefaultSchema);
+				return (defaultTableName || customSchema);
 			}
 
 			public void setEnabled(boolean enabled) {
