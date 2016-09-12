@@ -32,70 +32,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-
-		<!-- JSR-107 API (uncomment to try the JCache support) -->
-		<!--
-		<dependency>
-			<groupId>javax.cache</groupId>
-			<artifactId>cache-api</artifactId>
-		</dependency>
-		-->
-
-		<!-- Additional cache providers (uncomment to try them) -->
-		<!--
-		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache</artifactId>
-		</dependency>
-		-->
-		<!--
-		<dependency>
-			<groupId>org.ehcache</groupId>
-			<artifactId>ehcache</artifactId>
-		</dependency>
-		-->
-		<!--
-		<dependency>
-			<groupId>com.hazelcast</groupId>
-			<artifactId>hazelcast</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.hazelcast</groupId>
-			<artifactId>hazelcast-spring</artifactId>
-		</dependency>
-		-->
-		<!--
-		<dependency>
-			<groupId>org.infinispan</groupId>
-			<artifactId>infinispan-spring4-embedded</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.infinispan</groupId>
-			<artifactId>infinispan-jcache</artifactId>
-		</dependency>
-		-->
-		<!--
-		<dependency>
-			<groupId>com.couchbase.client</groupId>
-			<artifactId>java-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.couchbase.client</groupId>
-			<artifactId>couchbase-spring-cache</artifactId>
-		</dependency>
-		-->
-		<!--
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>
-		-->
-		<!--
-		<dependency>
-			<groupId>com.github.ben-manes.caffeine</groupId>
-			<artifactId>caffeine</artifactId>
-		</dependency>
-		-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -110,4 +46,127 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<!-- JCache API (JSR-107 support) -->
+		<!-- Include with any of the caching providers below using, e.g. `$mvn -P jcache,hazelcast spring-boot:run` -->
+		<profile>
+			<id>jcache</id>
+			<dependencies>
+				<dependency>
+					<groupId>javax.cache</groupId>
+					<artifactId>cache-api</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+		<!-- mvn -P caffeine spring-boot:run -->
+		<profile>
+			<id>caffeine</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.github.ben-manes.caffeine</groupId>
+					<artifactId>caffeine</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+		<!-- Start Couchbase server, then... -->
+		<!-- mvn -P couchbase spring-boot:run -->
+		<profile>
+			<id>couchbase</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.couchbase.client</groupId>
+					<artifactId>java-client</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.couchbase.client</groupId>
+					<artifactId>couchbase-spring-cache</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+		<!-- mvn -P ehcache spring-boot:run -->
+		<profile>
+			<id>ehcache</id>
+			<dependencies>
+				<dependency>
+					<groupId>net.sf.ehcache</groupId>
+					<artifactId>ehcache</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+		<!-- Start a Ehcache server, then... -->
+		<!-- mvn -P org-ehcache spring-boot:run -->
+		<profile>
+			<id>org-ehcache</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.ehcache</groupId>
+					<artifactId>ehcache</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+		<!-- mvn -P geode spring-boot:run -->
+		<profile>
+			<id>geode</id>
+			<dependencies>
+				<!-- TODO change to the 'spring-boot-starter-data-geode' dependency when PR #5445 is merged -->
+				<dependency>
+					<groupId>org.springframework.data</groupId>
+					<artifactId>spring-data-geode</artifactId>
+				</dependency>
+			</dependencies>
+			<!-- Same as `mvn -P geode spring-boot:run -Drun.profiles=geode` -->
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
+						<configuration>
+							<profiles>
+								<profile>geode</profile>
+							</profiles>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<!-- mvn -P hazelcast spring-boot:run -->
+		<profile>
+			<id>hazelcast</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.hazelcast</groupId>
+					<artifactId>hazelcast</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.hazelcast</groupId>
+					<artifactId>hazelcast-spring</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+		<!-- mvn -P infinispan spring-boot:run -->
+		<profile>
+			<id>infinispan</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.infinispan</groupId>
+					<artifactId>infinispan-spring4-embedded</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>org.infinispan</groupId>
+					<artifactId>infinispan-jcache</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+		<!-- Start a Redis Server ($. <redis-install>/src/redis-server), then... -->
+		<!-- mvn -P redis spring-boot:run -->
+		<profile>
+			<id>redis</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-data-redis</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 </project>

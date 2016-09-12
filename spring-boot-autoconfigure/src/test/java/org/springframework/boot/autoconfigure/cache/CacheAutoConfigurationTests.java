@@ -21,8 +21,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.cache.Caching;
 import javax.cache.configuration.CompleteConfiguration;
@@ -40,6 +42,7 @@ import com.hazelcast.cache.HazelcastCachingProvider;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
 import net.sf.ehcache.Status;
+import org.apache.geode.cache.Region;
 import org.ehcache.jsr107.EhcacheCachingProvider;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.jcache.embedded.JCachingProvider;
@@ -76,11 +79,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.gemfire.support.GemfireCacheManager;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -90,6 +95,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author John Blum
  */
 public class CacheAutoConfigurationTests {
 
@@ -97,6 +103,12 @@ public class CacheAutoConfigurationTests {
 	public final ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
+
+	static <T> Set<T> asSet(T... elements) {
+		Set<T> set = new HashSet<T>(elements.length);
+		Collections.addAll(set, elements);
+		return set;
+	}
 
 	@After
 	public void tearDown() {
@@ -161,13 +173,13 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void simpleCacheWithCustomizers() {
 		testCustomizers(DefaultCacheAndCustomizersConfiguration.class, "simple",
-				"allCacheManagerCustomizer", "simpleCacheManagerCustomizer");
+			"allCacheManagerCustomizer", "simpleCacheManagerCustomizer");
 	}
 
 	@Test
 	public void simpleCacheExplicitWithCacheNames() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=simple",
-				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
+			"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
 		ConcurrentMapCacheManager cacheManager = validateCacheManager(
 				ConcurrentMapCacheManager.class);
 		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
@@ -195,7 +207,7 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void genericCacheWithCustomizers() {
 		testCustomizers(GenericCacheAndCustomizersConfiguration.class, "generic",
-				"allCacheManagerCustomizer", "genericCacheManagerCustomizer");
+			"allCacheManagerCustomizer", "genericCacheManagerCustomizer");
 	}
 
 	@Test
@@ -220,7 +232,7 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void couchbaseCacheWithCustomizers() {
 		testCustomizers(CouchbaseCacheAndCustomizersConfiguration.class, "couchbase",
-				"allCacheManagerCustomizer", "couchbaseCacheManagerCustomizer");
+			"allCacheManagerCustomizer", "couchbaseCacheManagerCustomizer");
 	}
 
 	@Test
@@ -253,6 +265,47 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
+	public void geodeCacheExplicit() {
+		load(GeodeCacheConfiguration.class, "spring.cache.type=geode");
+		GemfireCacheManager cacheManager = validateCacheManager(GemfireCacheManager.class);
+		assertThat(cacheManager.getCacheNames()).isEmpty();
+	}
+
+	@Test
+	public void geodeCacheExplicitWithCaches() {
+		load(GeodeCacheRegionsConfiguration.class, "spring.cache.type=geode");
+		GemfireCacheManager cacheManager = validateCacheManager(GemfireCacheManager.class);
+		assertThat(cacheManager.getCacheNames()).isEqualTo(asSet("one", "two"));
+	}
+
+	@Test
+	public void geodeCacheExplicitWithNamedCaches() {
+		load(GeodeCacheRegionsConfiguration.class, "spring.cache.type=geode", "spring.cache.cache-names=one");
+		GemfireCacheManager cacheManager = validateCacheManager(GemfireCacheManager.class);
+		assertThat(cacheManager.getCacheNames()).isEqualTo(asSet("one"));
+	}
+
+	@Test
+	public void geodeCacheWithCustomizers() {
+		testCustomizers(GeodeCacheCustomizersConfiguration.class, "geode",
+			"allCacheManagerCustomizer", "geodeCacheManagerCustomizer");
+	}
+
+	@Test
+	public void geodeCacheWithGenericCacheManager() {
+		load(GeodeCacheGenericConfiguration.class);
+		ConcurrentMapCacheManager cacheManager = validateCacheManager(ConcurrentMapCacheManager.class);
+		assertThat(cacheManager.getCacheNames()).isEqualTo(asSet("example"));
+	}
+
+	@Test
+	public void geodeCacheWithRedisConfiguration() {
+		load(GeodeCacheRedisConfiguration.class, "spring.cache.type=redis");
+		RedisCacheManager cacheManager = validateCacheManager(RedisCacheManager.class);
+		assertThat(cacheManager.getCacheNames()).isEmpty();
+	}
+
+	@Test
 	public void redisCacheExplicit() {
 		load(RedisCacheConfiguration.class, "spring.cache.type=redis");
 		RedisCacheManager cacheManager = validateCacheManager(RedisCacheManager.class);
@@ -264,7 +317,7 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void redisCacheWithCustomizers() {
 		testCustomizers(RedisCacheAndCustomizersConfiguration.class, "redis",
-				"allCacheManagerCustomizer", "redisCacheManagerCustomizer");
+			"allCacheManagerCustomizer", "redisCacheManagerCustomizer");
 	}
 
 	@Test
@@ -294,7 +347,7 @@ public class CacheAutoConfigurationTests {
 	public void jCacheCacheWithProvider() {
 		String cachingProviderFqn = MockCachingProvider.class.getName();
 		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn);
+			"spring.cache.jcache.provider=" + cachingProviderFqn);
 		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
 		assertThat(cacheManager.getCacheNames()).isEmpty();
 		assertThat(this.context.getBean(javax.cache.CacheManager.class))
@@ -315,16 +368,16 @@ public class CacheAutoConfigurationTests {
 	public void jCacheCacheWithCachesAndCustomConfig() {
 		String cachingProviderFqn = MockCachingProvider.class.getName();
 		load(JCacheCustomConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.cacheNames[0]=one", "spring.cache.cacheNames[1]=two");
+			"spring.cache.jcache.provider=" + cachingProviderFqn,
+			"spring.cache.cacheNames[0]=one", "spring.cache.cacheNames[1]=two");
 		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
 		assertThat(cacheManager.getCacheNames()).containsOnly("one", "two");
 		CompleteConfiguration<?, ?> defaultCacheConfiguration = this.context
 				.getBean(CompleteConfiguration.class);
 		verify(cacheManager.getCacheManager()).createCache("one",
-				defaultCacheConfiguration);
+			defaultCacheConfiguration);
 		verify(cacheManager.getCacheManager()).createCache("two",
-				defaultCacheConfiguration);
+			defaultCacheConfiguration);
 	}
 
 	@Test
@@ -341,7 +394,7 @@ public class CacheAutoConfigurationTests {
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage(wrongCachingProviderFqn);
 		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + wrongCachingProviderFqn);
+			"spring.cache.jcache.provider=" + wrongCachingProviderFqn);
 	}
 
 	@Test
@@ -349,8 +402,8 @@ public class CacheAutoConfigurationTests {
 		String cachingProviderFqn = MockCachingProvider.class.getName();
 		String configLocation = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
 		load(JCacheCustomConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.jcache.config=" + configLocation);
+			"spring.cache.jcache.provider=" + cachingProviderFqn,
+			"spring.cache.jcache.config=" + configLocation);
 		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
 		Resource configResource = new ClassPathResource(configLocation);
 		assertThat(cacheManager.getCacheManager().getURI())
@@ -365,8 +418,8 @@ public class CacheAutoConfigurationTests {
 		this.thrown.expectMessage("does not exist");
 		this.thrown.expectMessage(configLocation);
 		load(JCacheCustomConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.jcache.config=" + configLocation);
+			"spring.cache.jcache.provider=" + cachingProviderFqn,
+			"spring.cache.jcache.config=" + configLocation);
 	}
 
 	@Test
@@ -382,17 +435,17 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void ehcacheCacheWithCustomizers() {
 		testCustomizers(DefaultCacheAndCustomizersConfiguration.class, "ehcache",
-				"allCacheManagerCustomizer", "ehcacheCacheManagerCustomizer");
+			"allCacheManagerCustomizer", "ehcacheCacheManagerCustomizer");
 	}
 
 	@Test
 	public void ehcacheCacheWithConfig() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=ehcache",
-				"spring.cache.ehcache.config=cache/ehcache-override.xml");
+			"spring.cache.ehcache.config=cache/ehcache-override.xml");
 		EhCacheCacheManager cacheManager = validateCacheManager(
 				EhCacheCacheManager.class);
 		assertThat(cacheManager.getCacheNames()).containsOnly("cacheOverrideTest1",
-				"cacheOverrideTest2");
+			"cacheOverrideTest2");
 	}
 
 	@Test
@@ -408,8 +461,8 @@ public class CacheAutoConfigurationTests {
 	public void ehcache3AsJCacheWithCaches() {
 		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
 		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
+			"spring.cache.jcache.provider=" + cachingProviderFqn,
+			"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
 		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
 		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
 	}
@@ -444,7 +497,7 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void hazelcastCacheWithCustomizers() {
 		testCustomizers(DefaultCacheAndCustomizersConfiguration.class, "hazelcast",
-				"allCacheManagerCustomizer", "hazelcastCacheManagerCustomizer");
+			"allCacheManagerCustomizer", "hazelcastCacheManagerCustomizer");
 	}
 
 	@Test
@@ -459,8 +512,8 @@ public class CacheAutoConfigurationTests {
 		assertThat(actual).isSameAs(hazelcastInstance);
 		assertThat(actual.getConfig().getConfigurationUrl())
 				.isEqualTo(new ClassPathResource(
-						"org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml")
-								.getURL());
+					"org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml")
+					.getURL());
 		cacheManager.getCache("foobar");
 		assertThat(cacheManager.getCacheNames()).containsOnly("foobar");
 	}
@@ -549,8 +602,8 @@ public class CacheAutoConfigurationTests {
 		String cachingProviderFqn = HazelcastCachingProvider.class.getName();
 		String configLocation = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
 		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
-				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.jcache.config=" + configLocation);
+			"spring.cache.jcache.provider=" + cachingProviderFqn,
+			"spring.cache.jcache.config=" + configLocation);
 		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
 
 		Resource configResource = new ClassPathResource(configLocation);
@@ -570,7 +623,7 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void infinispanCacheWithCustomizers() {
 		testCustomizers(DefaultCacheAndCustomizersConfiguration.class, "infinispan",
-				"allCacheManagerCustomizer", "infinispanCacheManagerCustomizer");
+			"allCacheManagerCustomizer", "infinispanCacheManagerCustomizer");
 	}
 
 	@Test
@@ -646,7 +699,7 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void caffeineCacheWithCustomizers() {
 		testCustomizers(DefaultCacheAndCustomizersConfiguration.class, "caffeine",
-				"allCacheManagerCustomizer", "caffeineCacheManagerCustomizer");
+			"allCacheManagerCustomizer", "caffeineCacheManagerCustomizer");
 	}
 
 	@Test
@@ -666,8 +719,8 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void caffeineCacheExplicitWithSpecString() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=caffeine",
-				"spring.cache.caffeine.spec=recordStats",
-				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
+			"spring.cache.caffeine.spec=recordStats",
+			"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
 		validateCaffeineCacheWithStats();
 	}
 
@@ -782,6 +835,67 @@ public class CacheAutoConfigurationTests {
 			CacheManagerCustomizersConfiguration.class })
 	static class CouchbaseCacheAndCustomizersConfiguration {
 
+	}
+
+	@Configuration
+	@EnableCaching
+	static class GeodeCacheConfiguration {
+
+		@Bean
+		public org.apache.geode.cache.Cache gemfireCache() {
+			org.apache.geode.cache.Cache mockCache = mock(org.apache.geode.cache.Cache.class);
+			given(mockCache.rootRegions()).willReturn(Collections.<Region<?, ?>>emptySet());
+			return mockCache;
+		}
+	}
+
+	@Configuration
+	@Import({ GeodeCacheConfiguration.class, CacheManagerCustomizersConfiguration.class })
+	static class GeodeCacheCustomizersConfiguration {
+
+	}
+
+	@Configuration
+	@EnableCaching
+	static class GeodeCacheRegionsConfiguration {
+
+		@Bean
+		public org.apache.geode.cache.Cache gemfireCache() {
+			org.apache.geode.cache.Cache mockCache = mock(org.apache.geode.cache.Cache.class);
+			Set<Region<?, ?>> mockRegions = asSet(mockRegion(mockCache, "one"), mockRegion(mockCache, "two"));
+			given(mockCache.rootRegions()).willReturn(mockRegions);
+			return mockCache;
+		}
+
+		@SuppressWarnings("unchecked")
+		private Region<?, ?> mockRegion(org.apache.geode.cache.Cache mockCache, String name) {
+			Region<Object, Object> mockRegion = mock(Region.class);
+			given(mockRegion.getName()).willReturn(name);
+			given(mockCache.getRegion(eq(name))).willReturn(mockRegion);
+			return mockRegion;
+		}
+	}
+
+	@Configuration
+	@EnableCaching
+	@Import(GeodeCacheConfiguration.class)
+	static class GeodeCacheGenericConfiguration {
+
+		@Bean
+		public CacheManager cacheManager() {
+			return new ConcurrentMapCacheManager("example");
+		}
+	}
+
+	@Configuration
+	@EnableCaching
+	@Import(GeodeCacheRegionsConfiguration.class)
+	static class GeodeCacheRedisConfiguration {
+
+		@Bean
+		public RedisTemplate<?, ?> redisTemplate() {
+			return mock(RedisTemplate.class);
+		}
 	}
 
 	@Configuration
@@ -1028,6 +1142,12 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public CacheManagerCustomizer<CaffeineCacheManager> caffeineCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<CaffeineCacheManager>() {
+			};
+		}
+
+		@Bean
+		public CacheManagerCustomizer<GemfireCacheManager> geodeCacheManagerCustomizer() {
+			return new CacheManagerTestCustomizer<GemfireCacheManager>() {
 			};
 		}
 
