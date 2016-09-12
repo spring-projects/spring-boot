@@ -172,7 +172,7 @@ public class ResourceProperties implements ResourceLoaderAware {
 
 		/**
 		 * Enable resolution of already gzipped resources. Checks for a resource name
-		 * variant with the {@code *.gz} extension.
+		 * variant with the "*.gz" extension.
 		 */
 		private boolean gzipped = false;
 
