@@ -52,8 +52,8 @@ class OnResourceCondition extends SpringBootCondition {
 						+ "least one resource location");
 		List<String> missing = new ArrayList<String>();
 		for (String location : locations) {
-			String resouce = context.getEnvironment().resolvePlaceholders(location);
-			if (!loader.getResource(resouce).exists()) {
+			String resource = context.getEnvironment().resolvePlaceholders(location);
+			if (!loader.getResource(resource).exists()) {
 				missing.add(location);
 			}
 		}

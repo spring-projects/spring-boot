@@ -70,7 +70,7 @@ public class BuildInfoMojo extends AbstractMojo {
 		}
 		catch (NullAdditionalPropertyValueException ex) {
 			throw new MojoFailureException(
-					"Failed to generated build-info.properties. " + ex.getMessage(), ex);
+					"Failed to generate build-info.properties. " + ex.getMessage(), ex);
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);

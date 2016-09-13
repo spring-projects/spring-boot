@@ -174,7 +174,7 @@ public class DispatcherServletAutoConfiguration {
 						.match(message.didNotFind("dispatcher servlet beans").atAll());
 			}
 			return ConditionOutcome.match(message
-					.found("dipatcher servlet bean", "dispatcher servlet beans")
+					.found("dispatcher servlet bean", "dispatcher servlet beans")
 					.items(Style.QUOTE, dispatchServletBeans)
 					.append("and none is named " + DEFAULT_DISPATCHER_SERVLET_BEAN_NAME));
 		}

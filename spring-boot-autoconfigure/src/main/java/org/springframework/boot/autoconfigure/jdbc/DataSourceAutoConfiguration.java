@@ -224,7 +224,7 @@ public class DataSourceAutoConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("EmbeddedDataAvailble");
+					.forCondition("EmbeddedDataAvailable");
 			if (hasBean(context, DataSource.class)
 					|| hasBean(context, XADataSource.class)) {
 				return ConditionOutcome
