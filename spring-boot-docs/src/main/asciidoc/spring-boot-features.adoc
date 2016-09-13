@@ -352,7 +352,7 @@ Spring Boot uses a very particular `PropertySource` order that is designed to al
 sensible overriding of values. Properties are considered in the following order:
 
 . {spring-javadoc}/test/context/TestPropertySource.{dc-ext}[`@TestPropertySource`]
-  annotations on your tests.
+  annotations on your tests. (also you can specify properties at the `@SpringBootTest`)
 . Command line arguments.
 . Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment
   variable or system property)
