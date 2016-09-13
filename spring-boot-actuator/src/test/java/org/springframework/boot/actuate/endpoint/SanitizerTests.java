@@ -38,6 +38,12 @@ public class SanitizerTests {
 		assertThat(sanitizer.sanitize("somekey", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("token", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("sometoken", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("cloud.services.mysql.connection.uri",
+				"jdbc:mysql://mysql.example.com/ad_52e8338d0dd5336?user=bd06cab2b844bb&password=8626a3a4"))
+						.isEqualTo("******");
+		assertThat(sanitizer.sanitize("cloud.services.mysql.connection.jdbcurl",
+				"jdbc:mysql://mysql.example.com/ad_52e8338d0dd5336?user=bd06cab2b844bb&password=8626a3a4"))
+						.isEqualTo("******");
 		assertThat(sanitizer.sanitize("find", "secret")).isEqualTo("secret");
 	}
 
