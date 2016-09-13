@@ -314,7 +314,7 @@ public final class ConditionMessage {
 
 		private final Builder condition;
 
-		private final String reson;
+		private final String reason;
 
 		private final String singular;
 
@@ -323,7 +323,7 @@ public final class ConditionMessage {
 		private ItemsBuilder(Builder condition, String reason, String singular,
 				String plural) {
 			this.condition = condition;
-			this.reson = reason;
+			this.reason = reason;
 			this.singular = singular;
 			this.plural = plural;
 		}
@@ -383,7 +383,7 @@ public final class ConditionMessage {
 		 */
 		public ConditionMessage items(Style style, Collection<?> items) {
 			Assert.notNull(style, "Style must not be null");
-			StringBuilder message = new StringBuilder(this.reson);
+			StringBuilder message = new StringBuilder(this.reason);
 			items = style.applyTo(items);
 			if ((this.condition == null || items.size() <= 1)
 					&& StringUtils.hasLength(this.singular)) {

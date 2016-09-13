@@ -168,7 +168,7 @@ public class ErrorMvcAutoConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("ErrorTemplate Misssing");
+					.forCondition("ErrorTemplate Missing");
 			TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(
 					context.getClassLoader());
 			TemplateAvailabilityProvider provider = providers.getProvider("error",
