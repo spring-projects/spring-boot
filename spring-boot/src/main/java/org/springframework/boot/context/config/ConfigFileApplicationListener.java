@@ -553,12 +553,21 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		private void addProfiles(Set<Profile> profiles) {
 			for (Profile profile : profiles) {
 				this.profiles.add(profile);
-				if (!this.environment.acceptsProfiles(profile.getName())) {
+				if (!environmentHasActiveProfile(profile.getName())) {
 					// If it's already accepted we assume the order was set
 					// intentionally
 					prependProfile(this.environment, profile);
 				}
 			}
+		}
+
+		private boolean environmentHasActiveProfile(String profile) {
+			for (String activeProfile : this.environment.getActiveProfiles()) {
+				if (activeProfile.equals(profile)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		private void prependProfile(ConfigurableEnvironment environment,

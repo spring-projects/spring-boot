@@ -824,7 +824,9 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableEnvironment environment = this.context.getEnvironment();
 		assertThat(environment.containsProperty("customprofile")).isTrue();
 		assertThat(environment.containsProperty("customprofile-specific")).isTrue();
-		assertThat(environment.containsProperty("customprofile-customdefault")).isFalse();
+		assertThat(environment.containsProperty("customprofile-customdefault")).isTrue();
+		assertThat(this.context.getEnvironment().acceptsProfiles("customdefault"))
+				.isTrue();
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(
