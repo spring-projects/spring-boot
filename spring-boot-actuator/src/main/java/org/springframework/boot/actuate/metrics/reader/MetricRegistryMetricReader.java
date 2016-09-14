@@ -19,9 +19,11 @@ package org.springframework.boot.actuate.metrics.reader;
 import java.beans.PropertyDescriptor;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -116,8 +118,8 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 		return new Iterable<Metric<?>>() {
 			@Override
 			public Iterator<Metric<?>> iterator() {
-				Set<Metric<?>> metrics = new HashSet<Metric<?>>();
-				for (String name : MetricRegistryMetricReader.this.names.keySet()) {
+				Set<Metric<?>> metrics = new LinkedHashSet<Metric<?>>();
+				for (String name : new TreeSet<String>(MetricRegistryMetricReader.this.names.keySet())) {
 					Metric<?> metric = findOne(name);
 					if (metric != null) {
 						metrics.add(metric);
