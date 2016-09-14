@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test.context;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -73,7 +72,6 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	@Override
 	public TestContext buildTestContext() {
 		TestContext context = super.buildTestContext();
-		verifyConfiguration(context.getTestClass());
 		WebEnvironment webEnvironment = getWebEnvironment(context.getTestClass());
 		if (webEnvironment == WebEnvironment.MOCK && hasWebEnvironmentClasses()) {
 			context.setAttribute(ACTIVATE_SERVLET_LISTENER, true);
@@ -246,19 +244,6 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 
 	protected SpringBootTest getAnnotation(Class<?> testClass) {
 		return AnnotatedElementUtils.getMergedAnnotation(testClass, SpringBootTest.class);
-	}
-
-	protected void verifyConfiguration(Class<?> testClass) {
-		if (getAnnotation(testClass) != null
-				&& getAnnotation(WebAppConfiguration.class, testClass) != null) {
-			throw new IllegalStateException("@WebAppConfiguration is unnecessary when "
-					+ "using @SpringBootTest and should be removed");
-		}
-	}
-
-	private <T extends Annotation> T getAnnotation(Class<T> annotationType,
-			Class<?> testClass) {
-		return AnnotatedElementUtils.getMergedAnnotation(testClass, annotationType);
 	}
 
 	/**

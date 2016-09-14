@@ -16,51 +16,67 @@
 
 package org.springframework.boot.test.context.bootstrap;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.test.context.BootstrapContext;
-import org.springframework.test.context.CacheAwareContextLoaderDelegate;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+import org.springframework.test.context.BootstrapWith;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringBootTestContextBootstrapper}.
+ * Tests for {@link SpringBootTestContextBootstrapper} (in its own package so we can test
+ * detection).
  *
- * @author Andy Wilkinson
+ * @author Phillip Webb
  */
+@RunWith(SpringRunner.class)
+@BootstrapWith(SpringBootTestContextBootstrapper.class)
 public class SpringBootTestContextBootstrapperTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	@Autowired
+	private ApplicationContext context;
 
-	@SuppressWarnings("rawtypes")
+	@Autowired
+	private SpringBootTestContextBootstrapperExampleConfig config;
+
 	@Test
-	public void failFastWhenSpringBootTestAndWebAppConfigurationAreUsedTogether() {
-		SpringBootTestContextBootstrapper bootstrapper = new SpringBootTestContextBootstrapper();
-		BootstrapContext bootstrapContext = mock(BootstrapContext.class);
-		bootstrapper.setBootstrapContext(bootstrapContext);
-		given((Class) bootstrapContext.getTestClass())
-				.willReturn(SpringBootTestAndWebAppConfiguration.class);
-		CacheAwareContextLoaderDelegate contextLoaderDeleagte = mock(
-				CacheAwareContextLoaderDelegate.class);
-		given(bootstrapContext.getCacheAwareContextLoaderDelegate())
-				.willReturn(contextLoaderDeleagte);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("@WebAppConfiguration is unnecessary when using "
-				+ "@SpringBootTest and should be removed");
-		bootstrapper.buildTestContext();
+	public void findConfigAutomatically() throws Exception {
+		assertThat(this.config).isNotNull();
 	}
 
-	@SpringBootTest
-	@WebAppConfiguration
-	private static class SpringBootTestAndWebAppConfiguration {
+	@Test
+	public void contextWasCreatedViaSpringApplication() throws Exception {
+		assertThat(this.context.getId()).startsWith("application:");
+	}
+
+	@Test
+	public void testConfigurationWasApplied() throws Exception {
+		assertThat(this.context.getBean(ExampleBean.class)).isNotNull();
+	}
+
+	@TestConfiguration
+	static class TestConfig {
+
+		@Bean
+		public ExampleBean exampleBean() {
+			return new ExampleBean();
+		}
 
 	}
 
+	static class ExampleBean {
+
+	}
+
+	@Component
+	static class ExampleTestComponent {
+
+	}
 }

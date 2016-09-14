@@ -19,7 +19,7 @@ package org.springframework.boot.test.context.bootstrap;
 import org.springframework.boot.SpringBootConfiguration;
 
 /**
- * Example configuration used in {@link SpringBootTestContextBootstrapperIntegrationTests}.
+ * Example configuration used in {@link SpringBootTestContextBootstrapperTests}.
  *
  * @author Phillip Webb
  */
