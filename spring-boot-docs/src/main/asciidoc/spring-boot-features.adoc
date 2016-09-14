@@ -353,6 +353,8 @@ sensible overriding of values. Properties are considered in the following order:
 
 . {spring-javadoc}/test/context/TestPropertySource.{dc-ext}[`@TestPropertySource`]
   annotations on your tests.
+. {spring-javadoc}/test/context/SpringBoot.{dc-ext}[`@SpringBoot`] `properties`
+  annotation attribute on your tests.
 . Command line arguments.
 . Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment
   variable or system property)
