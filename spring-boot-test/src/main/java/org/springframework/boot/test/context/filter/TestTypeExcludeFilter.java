@@ -31,7 +31,9 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
  */
 class TestTypeExcludeFilter extends TypeExcludeFilter {
 
-	private static final String TEST_ANNOTATION = "org.junit.Test";
+	private static final String[] CLASS_ANNOTATIONS = { "org.junit.runner.RunWith" };
+
+	private static final String[] METHOD_ANNOTATIONS = { "org.junit.Test" };
 
 	@Override
 	public boolean match(MetadataReader metadataReader,
@@ -63,8 +65,18 @@ class TestTypeExcludeFilter extends TypeExcludeFilter {
 	}
 
 	private boolean isTestClass(MetadataReader metadataReader) {
-		return !metadataReader.getAnnotationMetadata()
-				.getAnnotatedMethods(TEST_ANNOTATION).isEmpty();
+		for (String annotation : CLASS_ANNOTATIONS) {
+			if (metadataReader.getAnnotationMetadata().hasAnnotation(annotation)) {
+				return true;
+			}
+
+		}
+		for (String annotation : METHOD_ANNOTATIONS) {
+			if (metadataReader.getAnnotationMetadata().hasAnnotatedMethods(annotation)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

@@ -4918,8 +4918,8 @@ annotations that can be used on classes in `src/test/java` to indicate that they
 not be picked up by scanning.
 
 NOTE: `@TestComponent` and `@TestConfiguration` are only needed on top level classes. If
-you define `@Configuration` or `@Component` as inner-classes within a test, they will be
-automatically filtered.
+you define `@Configuration` or `@Component` as inner-classes within a test (any class
+that has `@Test` methods or `@RunWith`), they will be automatically filtered.
 
 NOTE: If you directly use `@ComponentScan` (i.e. not via `@SpringBootApplication`) you
 will need to register the `TypeExcludeFilter` with it. See
