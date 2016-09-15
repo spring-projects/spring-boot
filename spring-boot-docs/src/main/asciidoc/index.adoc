@@ -42,6 +42,8 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :gradle-userguide: http://www.gradle.org/docs/current/userguide
 :propdeps-plugin: https://github.com/spring-projects/gradle-plugins/tree/master/propdeps-plugin
 :ant-manual: http://ant.apache.org/manual
+:gradle-user-guide: https://docs.gradle.org/2.14.1/userguide
+:gradle-dsl: https://docs.gradle.org/2.14.1/dsl
 // ======================================================================================
 
 include::documentation-overview.adoc[]
