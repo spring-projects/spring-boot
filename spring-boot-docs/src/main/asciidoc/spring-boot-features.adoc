@@ -3762,7 +3762,8 @@ If you haven't defined a bean of type `CacheManager` or a `CacheResolver` named
 providers (in this order):
 
 * <<boot-features-caching-provider-generic,Generic>>
-* <<boot-features-caching-provider-jcache,JCache (JSR-107)>>
+* <<boot-features-caching-provider-jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast,
+  Infinspan, etc)
 * <<boot-features-caching-provider-ehcache2,EhCache 2.x>>
 * <<boot-features-caching-provider-hazelcast,Hazelcast>>
 * <<boot-features-caching-provider-infinispan,Infinispan>>
@@ -3810,12 +3811,16 @@ Generic caching is used if the context defines _at least_ one
 
 
 [[boot-features-caching-provider-jcache]]
-==== JCache
+==== JCache (JSR-107)
 JCache is bootstrapped via the presence of a `javax.cache.spi.CachingProvider` on the
-classpath (i.e. a JSR-107 compliant caching library). It might happen that more than one
-provider is present, in which case the provider must be explicitly specified. Even if the
-JSR-107 standard does not enforce a standardized way to define the location of the
-configuration file, Spring Boot does its best to accommodate with implementation details.
+classpath (i.e. a JSR-107 compliant caching library). There are various compliant
+libraries out there and Spring Boot provides dependency management for Ehcache 3,
+Hazelcast and Infinispan). Any other compliant library can be added as well.
+
+It might happen that more than one provider is present, in which case the provider must
+be explicitly specified. Even if the JSR-107 standard does not enforce a standardized
+way to define the location of the configuration file, Spring Boot does its best to
+accommodate with implementation details.
 
 [source,properties,indent=0]
 ----
