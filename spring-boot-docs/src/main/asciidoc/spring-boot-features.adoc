@@ -351,6 +351,8 @@ via `@ConfigurationProperties`.
 Spring Boot uses a very particular `PropertySource` order that is designed to allow
 sensible overriding of values. Properties are considered in the following order:
 
+. <<using-boot-devtools-globalsettings,Devtools global settings properties>>
+  on your home directory (`~/.spring-boot-devtools.properties`).
 . {spring-javadoc}/test/context/TestPropertySource.{dc-ext}[`@TestPropertySource`]
   annotations on your tests.
 . {dc-spring-boot-test}/context/SpringBootTest.{dc-ext}[`@SpringBootTest#properties`]
