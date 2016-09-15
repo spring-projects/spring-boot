@@ -46,6 +46,8 @@ public class SpringBootTestContextBootstrapperTests {
 	@Autowired
 	private SpringBootTestContextBootstrapperExampleConfig config;
 
+	public boolean defaultTestExecutionListenersPostProcessorCalled;
+
 	@Test
 	public void findConfigAutomatically() throws Exception {
 		assertThat(this.config).isNotNull();
@@ -59,6 +61,12 @@ public class SpringBootTestContextBootstrapperTests {
 	@Test
 	public void testConfigurationWasApplied() throws Exception {
 		assertThat(this.context.getBean(ExampleBean.class)).isNotNull();
+	}
+
+	@Test
+	public void defaultTestExecutionListenersPostProcessorShouldBeCalled()
+			throws Exception {
+		assertThat(this.defaultTestExecutionListenersPostProcessorCalled).isTrue();
 	}
 
 	@TestConfiguration
@@ -79,4 +87,5 @@ public class SpringBootTestContextBootstrapperTests {
 	static class ExampleTestComponent {
 
 	}
+
 }

@@ -16,34 +16,32 @@
 
 package org.springframework.boot.test.autoconfigure;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportMessage;
+import org.springframework.boot.test.context.DefaultTestExecutionListenersPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
-import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 /**
- * {@link TestExecutionListener} to print the {@link ConditionEvaluationReport} when the
- * context cannot be prepared.
+ * Alternative {@link DependencyInjectionTestExecutionListener} prints the
+ * {@link ConditionEvaluationReport} when the context cannot be prepared.
  *
  * @author Phillip Webb
+ * @since 1.4.1
  */
-class AutoConfigureReportTestExecutionListener extends AbstractTestExecutionListener {
-
-	private DependencyInjectionTestExecutionListener delegate = new DependencyInjectionTestExecutionListener();
-
-	@Override
-	public int getOrder() {
-		return this.delegate.getOrder() - 1;
-	}
+public class SpringBootDependencyInjectionTestExecutionListener
+		extends DependencyInjectionTestExecutionListener {
 
 	@Override
 	public void prepareTestInstance(TestContext testContext) throws Exception {
 		try {
-			this.delegate.prepareTestInstance(testContext);
+			super.prepareTestInstance(testContext);
 		}
 		catch (Exception ex) {
 			ApplicationContext context = testContext.getApplicationContext();
@@ -54,6 +52,24 @@ class AutoConfigureReportTestExecutionListener extends AbstractTestExecutionList
 			}
 			throw ex;
 		}
+	}
+
+	static class PostProcessor implements DefaultTestExecutionListenersPostProcessor {
+
+		@Override
+		public Set<Class<? extends TestExecutionListener>> postProcessDefaultTestExecutionListeners(
+				Set<Class<? extends TestExecutionListener>> listeners) {
+			Set<Class<? extends TestExecutionListener>> updated = new LinkedHashSet<Class<? extends TestExecutionListener>>(
+					listeners.size());
+			for (Class<? extends TestExecutionListener> listener : listeners) {
+				updated.add(
+						listener.equals(DependencyInjectionTestExecutionListener.class)
+								? SpringBootDependencyInjectionTestExecutionListener.class
+								: listener);
+			}
+			return updated;
+		}
+
 	}
 
 }

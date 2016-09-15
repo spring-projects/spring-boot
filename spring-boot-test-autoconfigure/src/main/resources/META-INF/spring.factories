@@ -66,6 +66,10 @@ org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration
 
+# DefaultTestExecutionListenersPostProcessors
+org.springframework.boot.test.context.DefaultTestExecutionListenersPostProcessor=\
+org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener$PostProcessor
+
 # Spring Test ContextCustomizerFactories
 org.springframework.test.context.ContextCustomizerFactory=\
 org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory,\
@@ -74,6 +78,5 @@ org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCus
 
 # Test Execution Listeners
 org.springframework.test.context.TestExecutionListener=\
-org.springframework.boot.test.autoconfigure.AutoConfigureReportTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener
