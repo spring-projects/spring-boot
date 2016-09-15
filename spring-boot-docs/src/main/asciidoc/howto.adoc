@@ -785,22 +785,13 @@ format out of the box, and you may see the following error:
 If at all possible, you should consider updating your code to only store values
 compliant with later Cookie specifications. If, however, you're unable to change the
 way that cookies are written, you can instead configure Tomcat to use a
-`LegacyCookieProcessor`. To switch to the `LegacyCookieProcessor` use a
-`TomcatContextCustomizer` bean:
+`LegacyCookieProcessor`. To switch to the `LegacyCookieProcessor` use an
+`EmbeddedServletContainerCustomizer` bean that adds a `TomcatContextCustomizer`:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0]
 ----
-	@Bean
-	public TomcatContextCustomizer customizer() {
-		return new TomcatContextCustomizer() {
-
-			void customize(Context context) {
-				context.setCookieProcessor(new LegacyCookieProcessor());
-			}
-
-		};
-	}
-}
+include::{code-examples}/context/embedded/TomcatLegacyCookieProcessorExample.java[tag=customizer]
+----
 
 
 
