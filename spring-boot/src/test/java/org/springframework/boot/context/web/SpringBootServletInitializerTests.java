@@ -30,11 +30,14 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -100,6 +103,14 @@ public class SpringBootServletInitializerTests {
 				.createRootApplicationContext(this.servletContext);
 		assertThat(this.application.getSources(),
 				equalToSet(WithErrorPageFilterNotRegistered.class));
+	}
+
+	@Test
+	public void servletContextApplicationListenerIsAdded() {
+		new WithConfiguredSource().createRootApplicationContext(this.servletContext);
+		assertThat(this.application.getListeners(),
+				hasItem((Matcher<? super ApplicationListener<?>>) instanceOf(
+						ServletContextApplicationListener.class)));
 	}
 
 	private Matcher<? super Set<Object>> equalToSet(Object... items) {
