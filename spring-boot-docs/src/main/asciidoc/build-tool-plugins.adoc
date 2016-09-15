@@ -450,7 +450,7 @@ BootRepackage task and instructed it to work with only `clientJar` task and
 ----
 
 The configuration that we are referring to in `BootRepackage` is a normal
-http://www.gradle.org/docs/current/dsl/org.gradle.api.artifacts.Configuration.html[Gradle
+{gradle-dsl}/org.gradle.api.artifacts.Configuration.html[Gradle
 configuration]. In the above example we created a new configuration named
 `mycustomconfiguration` instructing it to derive from a `runtime` and exclude the `log4j`
 group. If the `clientBoot` task is executed, the repackaged boot jar will have all
@@ -594,8 +594,7 @@ using Gradle and how you're trying to publish the artifacts.
 ==== Configuring Gradle to produce a pom that inherits dependency management
 The following is an example of configuring Gradle to generate a pom that inherits
 from `spring-boot-starter-parent`. Please refer to the
-http://www.gradle.org/docs/current/userguide/userguide.html[Gradle User Guide] for
-further information.
+{gradle-user-guide}/userguide.html[Gradle User Guide] for further information.
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
