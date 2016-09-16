@@ -162,25 +162,65 @@ abstract class AbstractNestedCondition extends SpringBootCondition
 			for (Map.Entry<AnnotationMetadata, List<Condition>> entry : this.memberConditions
 					.entrySet()) {
 				AnnotationMetadata metadata = entry.getKey();
-				for (Condition condition : entry.getValue()) {
-					outcomes.add(getConditionOutcome(metadata, condition));
-				}
+				List<Condition> conditions = entry.getValue();
+				outcomes.add(new MemberOutcomes(this.context, metadata, conditions)
+						.getUltimateOutcome());
 			}
 			return Collections.unmodifiableList(outcomes);
 		}
 
+	}
+
+	private static class MemberOutcomes {
+
+		private final ConditionContext context;
+
+		private final AnnotationMetadata metadata;
+
+		private final List<ConditionOutcome> outcomes;
+
+		MemberOutcomes(ConditionContext context, AnnotationMetadata metadata,
+				List<Condition> conditions) {
+			this.context = context;
+			this.metadata = metadata;
+			this.outcomes = new ArrayList<ConditionOutcome>(conditions.size());
+			for (Condition condition : conditions) {
+				this.outcomes.add(getConditionOutcome(metadata, condition));
+			}
+		}
+
 		private ConditionOutcome getConditionOutcome(AnnotationMetadata metadata,
 				Condition condition) {
-			String messagePrefix = "member condition on " + metadata.getClassName();
 			if (condition instanceof SpringBootCondition) {
-				ConditionOutcome outcome = ((SpringBootCondition) condition)
-						.getMatchOutcome(this.context, metadata);
-				String message = outcome.getMessage();
-				return new ConditionOutcome(outcome.isMatch(), messagePrefix
-						+ (StringUtils.hasLength(message) ? " : " + message : ""));
+				return ((SpringBootCondition) condition).getMatchOutcome(this.context,
+						metadata);
 			}
-			boolean matches = condition.matches(this.context, metadata);
-			return new ConditionOutcome(matches, messagePrefix);
+			return new ConditionOutcome(condition.matches(this.context, metadata), null);
+		}
+
+		public ConditionOutcome getUltimateOutcome() {
+			if (this.outcomes.size() == 1) {
+				ConditionOutcome outcome = this.outcomes.get(0);
+				StringBuilder message = new StringBuilder(
+						"member condition on " + this.metadata.getClassName());
+				if (StringUtils.hasLength(outcome.getMessage())) {
+					message.append(" " + outcome.getMessage());
+				}
+				return new ConditionOutcome(outcome.isMatch(), message.toString());
+			}
+			StringBuilder message = new StringBuilder(
+					"member conditions on " + this.metadata.getClassName());
+			boolean match = true;
+			boolean hasMessage = false;
+			for (ConditionOutcome outcome : this.outcomes) {
+				match &= outcome.isMatch();
+				if (StringUtils.hasLength(outcome.getMessage())) {
+					message.append(hasMessage ? ", " : " : ");
+					message.append(outcome.getMessage());
+					hasMessage = true;
+				}
+			}
+			return new ConditionOutcome(match, message.toString());
 		}
 
 	}
