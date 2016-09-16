@@ -143,7 +143,6 @@ do_start() {
   mkdir "$PID_FOLDER" &> /dev/null
   if [[ -n "$run_user" ]]; then
     checkPermissions || return $?
-    chown "$run_user" "$PID_FOLDER"
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
     if [ $USE_START_STOP_DAEMON = true ] && type start-stop-daemon > /dev/null 2>&1; then
