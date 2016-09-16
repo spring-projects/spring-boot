@@ -477,6 +477,13 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	public void httpPutFormContentFilterCanBeDisabled() throws Exception {
+		load((Class<?>) null, "spring.mvc.formcontent.putfilter.enabled=false");
+		assertThat(this.context.getBeansOfType(HttpPutFormContentFilter.class).size(),
+				is(equalTo(0)));
+	}
+
+	@Test
 	public void customConfigurableWebBindingInitializer() {
 		load(CustomConfigurableWebBindingInitializer.class);
 		assertThat(
