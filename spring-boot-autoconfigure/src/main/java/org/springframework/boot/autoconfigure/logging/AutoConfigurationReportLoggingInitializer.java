@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.logging;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.SpringBootVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.logging.LogLevel;
@@ -99,13 +100,20 @@ public class AutoConfigurationReportLoggingInitializer
 			if (isCrashReport && this.logger.isInfoEnabled()
 					&& !this.logger.isDebugEnabled()) {
 				this.logger.info(String.format("%n%nError starting ApplicationContext. "
-						+ "To display the auto-configuration report enable "
-						+ "debug logging (start with --debug)%n%n"));
+						+ "To display the auto-configuration report re-run your application with debug enabled,%n"
+						+ "see also %s%n%n", createStartupFailureDocUrl()));
 			}
 			if (this.logger.isDebugEnabled()) {
 				this.logger.debug(new ConditionEvaluationReportMessage(this.report));
 			}
 		}
+	}
+
+	private String createStartupFailureDocUrl() {
+		String bootVersion = SpringBootVersion.getVersion();
+		String version = bootVersion != null ? bootVersion : "current";
+		return String.format(
+				"http://docs.spring.io/spring-boot/docs/%s/reference/html/boot-features-spring-application.html#boot-features-startup-failure", version);
 	}
 
 	private class AutoConfigurationReportListener implements GenericApplicationListener {
