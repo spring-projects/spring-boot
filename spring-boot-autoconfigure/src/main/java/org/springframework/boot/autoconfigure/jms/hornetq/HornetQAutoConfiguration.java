@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.springframework.context.annotation.Import;
  * @author Phillip Webb
  * @since 1.1.0
  * @see HornetQProperties
+ * @deprecated as of 1.4 in favor of the Artemis support
  */
 @Configuration
 @AutoConfigureBefore(JmsAutoConfiguration.class)
@@ -51,6 +52,7 @@ import org.springframework.context.annotation.Import;
 @Import({ HornetQEmbeddedServerConfiguration.class,
 		HornetQXAConnectionFactoryConfiguration.class,
 		HornetQConnectionFactoryConfiguration.class })
+@Deprecated
 public class HornetQAutoConfiguration {
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
+import org.springframework.boot.actuate.audit.listener.AbstractAuditListener;
 import org.springframework.boot.actuate.audit.listener.AuditListener;
+import org.springframework.boot.actuate.security.AbstractAuthenticationAuditListener;
+import org.springframework.boot.actuate.security.AbstractAuthorizationAuditListener;
 import org.springframework.boot.actuate.security.AuthenticationAuditListener;
 import org.springframework.boot.actuate.security.AuthorizationAuditListener;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -33,36 +36,46 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link AuditEvent}s.
  *
  * @author Dave Syer
+ * @author Vedran Pavic
  */
 @Configuration
 public class AuditAutoConfiguration {
 
-	@Autowired(required = false)
-	private final AuditEventRepository auditEventRepository = new InMemoryAuditEventRepository();
+	private final AuditEventRepository auditEventRepository;
+
+	public AuditAutoConfiguration(
+			ObjectProvider<AuditEventRepository> auditEventRepositoryProvider) {
+		this.auditEventRepository = auditEventRepositoryProvider.getIfAvailable();
+	}
 
 	@Bean
+	@ConditionalOnMissingBean(AbstractAuditListener.class)
 	public AuditListener auditListener() throws Exception {
 		return new AuditListener(this.auditEventRepository);
 	}
 
 	@Bean
 	@ConditionalOnClass(name = "org.springframework.security.authentication.event.AbstractAuthenticationEvent")
+	@ConditionalOnMissingBean(AbstractAuthenticationAuditListener.class)
 	public AuthenticationAuditListener authenticationAuditListener() throws Exception {
 		return new AuthenticationAuditListener();
 	}
 
 	@Bean
 	@ConditionalOnClass(name = "org.springframework.security.access.event.AbstractAuthorizationEvent")
+	@ConditionalOnMissingBean(AbstractAuthorizationAuditListener.class)
 	public AuthorizationAuditListener authorizationAuditListener() throws Exception {
 		return new AuthorizationAuditListener();
 	}
 
 	@ConditionalOnMissingBean(AuditEventRepository.class)
 	protected static class AuditEventRepositoryConfiguration {
+
 		@Bean
 		public InMemoryAuditEventRepository auditEventRepository() throws Exception {
 			return new InMemoryAuditEventRepository();
 		}
+
 	}
 
 }

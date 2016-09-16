@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.mail;
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -41,8 +40,11 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @ConditionalOnSingleCandidate(JavaMailSenderImpl.class)
 public class MailSenderValidatorAutoConfiguration {
 
-	@Autowired
-	private JavaMailSenderImpl mailSender;
+	private final JavaMailSenderImpl mailSender;
+
+	public MailSenderValidatorAutoConfiguration(JavaMailSenderImpl mailSender) {
+		this.mailSender = mailSender;
+	}
 
 	@PostConstruct
 	public void validateConnection() {
@@ -50,7 +52,7 @@ public class MailSenderValidatorAutoConfiguration {
 			this.mailSender.testConnection();
 		}
 		catch (MessagingException ex) {
-			throw new IllegalStateException("Mail server is not unavailable", ex);
+			throw new IllegalStateException("Mail server is not available", ex);
 		}
 	}
 

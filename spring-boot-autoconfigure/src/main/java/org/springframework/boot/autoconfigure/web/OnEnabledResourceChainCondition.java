@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.bind.PropertySourcesPropertyValues;
@@ -24,14 +25,18 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link Condition} that checks whether or not the Spring resource handling chain is
  * enabled.
  *
  * @author Stephane Nicoll
+ * @see ConditionalOnEnabledResourceChain
  */
 class OnEnabledResourceChainCondition extends SpringBootCondition {
+
+	private static final String WEBJAR_ASSERT_LOCATOR = "org.webjars.WebJarAssetLocator";
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
@@ -42,8 +47,21 @@ class OnEnabledResourceChainCondition extends SpringBootCondition {
 		RelaxedDataBinder binder = new RelaxedDataBinder(properties, "spring.resources");
 		binder.bind(new PropertySourcesPropertyValues(environment.getPropertySources()));
 		Boolean match = properties.getChain().getEnabled();
-		return new ConditionOutcome(match,
-				"Resource chain is " + (match ? "enabled" : "disabled"));
+		ConditionMessage.Builder message = ConditionMessage
+				.forCondition(ConditionalOnEnabledResourceChain.class);
+		if (match == null) {
+			if (ClassUtils.isPresent(WEBJAR_ASSERT_LOCATOR,
+					getClass().getClassLoader())) {
+				return ConditionOutcome
+						.match(message.found("class").items(WEBJAR_ASSERT_LOCATOR));
+			}
+			return ConditionOutcome
+					.noMatch(message.didNotFind("class").items(WEBJAR_ASSERT_LOCATOR));
+		}
+		if (match) {
+			return ConditionOutcome.match(message.because("enabled"));
+		}
+		return ConditionOutcome.noMatch(message.because("disabled"));
 	}
 
 }

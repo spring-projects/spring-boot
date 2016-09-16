@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public abstract class AbstractLoggingSystemTests {
 	private String originalTempFolder;
 
 	@Before
-	public void configureTempdir() throws IOException {
+	public void configureTempDir() throws IOException {
 		this.originalTempFolder = System.getProperty(JAVA_IO_TMPDIR);
 		System.setProperty(JAVA_IO_TMPDIR, this.temp.newFolder().getAbsolutePath());
 	}
@@ -62,7 +62,16 @@ public abstract class AbstractLoggingSystemTests {
 	}
 
 	protected final LogFile getLogFile(String file, String path) {
-		return new LogFile(file, path);
+		return getLogFile(file, path, true);
+	}
+
+	protected final LogFile getLogFile(String file, String path,
+			boolean applyToSystemProperties) {
+		LogFile logFile = new LogFile(file, path);
+		if (applyToSystemProperties) {
+			logFile.applyToSystemProperties();
+		}
+		return logFile;
 	}
 
 	protected final String tmpDir() {

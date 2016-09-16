@@ -48,7 +48,7 @@ import org.springframework.jmx.export.naming.ObjectNamingStrategy;
 @ManagedResource(description = "MetricWriter for pushing metrics to JMX MBeans.")
 public class JmxMetricWriter implements MetricWriter {
 
-	private static Log logger = LogFactory.getLog(JmxMetricWriter.class);
+	private static final Log logger = LogFactory.getLog(JmxMetricWriter.class);
 
 	private final ConcurrentMap<String, MetricValue> values = new ConcurrentHashMap<String, MetricValue>();
 
@@ -109,9 +109,13 @@ public class JmxMetricWriter implements MetricWriter {
 	}
 
 	private MetricValue getValue(String name) {
-		if (!this.values.containsKey(name)) {
-			this.values.putIfAbsent(name, new MetricValue());
-			MetricValue value = this.values.get(name);
+		MetricValue value = this.values.get(name);
+		if (value == null) {
+			value = new MetricValue();
+			MetricValue oldValue = this.values.putIfAbsent(name, value);
+			if (oldValue != null) {
+				value = oldValue;
+			}
 			try {
 				this.exporter.registerManagedResource(value, getName(name, value));
 			}
@@ -119,7 +123,7 @@ public class JmxMetricWriter implements MetricWriter {
 				// Could not register mbean, maybe just a race condition
 			}
 		}
-		return this.values.get(name);
+		return value;
 	}
 
 	private ObjectName getName(String name, MetricValue value)

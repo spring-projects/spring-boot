@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure.data.cassandra;
+
+import java.util.Set;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
@@ -34,15 +36,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.data.cassandra.mapping.BasicCassandraMappingContext;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CassandraRepositoriesAutoConfiguration}.
  *
  * @author Eddú Meléndez
+ * @author Mark Paluch
+ * @author Stephane Nicoll
  */
 public class CassandraRepositoriesAutoConfigurationTests {
 
@@ -61,20 +67,31 @@ public class CassandraRepositoriesAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() {
 		addConfigurations(TestConfiguration.class);
-		assertNotNull(this.context.getBean(CityRepository.class));
-		assertNotNull(this.context.getBean(Cluster.class));
+		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
+		assertThat(this.context.getBean(Cluster.class)).isNotNull();
+		assertThat(getInitialEntitySet()).hasSize(1);
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() {
 		addConfigurations(TestExcludeConfiguration.class, EmptyConfiguration.class);
-		assertNotNull(this.context.getBean(Cluster.class));
+		assertThat(this.context.getBean(Cluster.class)).isNotNull();
+		assertThat(getInitialEntitySet()).hasSize(1).containsOnly(City.class);
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		addConfigurations(TestExcludeConfiguration.class, CustomizedConfiguration.class);
-		assertNotNull(this.context.getBean(CityCassandraRepository.class));
+		assertThat(this.context.getBean(CityCassandraRepository.class)).isNotNull();
+		assertThat(getInitialEntitySet()).hasSize(1).containsOnly(City.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Set<Class<?>> getInitialEntitySet() {
+		BasicCassandraMappingContext mappingContext = this.context
+				.getBean(BasicCassandraMappingContext.class);
+		return (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
+				"initialEntitySet");
 	}
 
 	private void addConfigurations(Class<?>... configurations) {

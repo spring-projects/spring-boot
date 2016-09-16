@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,8 +127,8 @@ public final class ConditionEvaluationReport {
 		String prefix = source + "$";
 		for (Entry<String, ConditionAndOutcomes> entry : this.outcomes.entrySet()) {
 			if (entry.getKey().startsWith(prefix)) {
-				ConditionOutcome outcome = new ConditionOutcome(false,
-						"Ancestor '" + source + "' did not match");
+				ConditionOutcome outcome = ConditionOutcome.noMatch(ConditionMessage
+						.forCondition("Ancestor " + source).because("did not match"));
 				entry.getValue().add(ANCESTOR_CONDITION, outcome);
 			}
 		}

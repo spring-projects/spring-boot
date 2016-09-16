@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Base for configuration meta-data tests.
@@ -40,25 +39,25 @@ public abstract class AbstractConfigurationMetadataTests {
 
 	protected void assertSource(ConfigurationMetadataSource actual, String groupId,
 			String type, String sourceType) {
-		assertNotNull(actual);
-		assertEquals(groupId, actual.getGroupId());
-		assertEquals(type, actual.getType());
-		assertEquals(sourceType, actual.getSourceType());
+		assertThat(actual).isNotNull();
+		assertThat(actual.getGroupId()).isEqualTo(groupId);
+		assertThat(actual.getType()).isEqualTo(type);
+		assertThat(actual.getSourceType()).isEqualTo(sourceType);
 	}
 
 	protected void assertProperty(ConfigurationMetadataProperty actual, String id,
 			String name, Class<?> type, Object defaultValue) {
-		assertNotNull(actual);
-		assertEquals(id, actual.getId());
-		assertEquals(name, actual.getName());
+		assertThat(actual).isNotNull();
+		assertThat(actual.getId()).isEqualTo(id);
+		assertThat(actual.getName()).isEqualTo(name);
 		String typeName = type != null ? type.getName() : null;
-		assertEquals(typeName, actual.getType());
-		assertEquals(defaultValue, actual.getDefaultValue());
+		assertThat(actual.getType()).isEqualTo(typeName);
+		assertThat(actual.getDefaultValue()).isEqualTo(defaultValue);
 	}
 
 	protected void assertItem(ConfigurationMetadataItem actual, String sourceType) {
-		assertNotNull(actual);
-		assertEquals(sourceType, actual.getSourceType());
+		assertThat(actual).isNotNull();
+		assertThat(actual.getSourceType()).isEqualTo(sourceType);
 	}
 
 	protected InputStream getInputStreamFor(String name) throws IOException {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,27 @@
 
 package org.springframework.boot.autoconfigure.mobile;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
+import org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
+import org.springframework.boot.autoconfigure.mustache.web.MustacheViewResolver;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver;
-import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Mobile's
@@ -45,94 +45,96 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * {@link InternalResourceViewResolver} is used as a fallback.
  *
  * @author Roy Clarkson
+ * @author Stephane Nicoll
  * @since 1.1.0
  */
 @Configuration
 @ConditionalOnWebApplication
 @ConditionalOnClass(LiteDeviceDelegatingViewResolver.class)
-@AutoConfigureAfter({ WebMvcAutoConfiguration.class, ThymeleafAutoConfiguration.class })
+@ConditionalOnProperty(prefix = "spring.mobile.devicedelegatingviewresolver", name = "enabled", havingValue = "true")
+@EnableConfigurationProperties(DeviceDelegatingViewResolverProperties.class)
+@AutoConfigureAfter({ WebMvcAutoConfiguration.class, FreeMarkerAutoConfiguration.class,
+		GroovyTemplateAutoConfiguration.class, MustacheAutoConfiguration.class,
+		ThymeleafAutoConfiguration.class })
 public class DeviceDelegatingViewResolverAutoConfiguration {
 
-	private static Log logger = LogFactory
-			.getLog(DeviceDelegatingViewResolverAutoConfiguration.class);
+	@Configuration
+	protected static class LiteDeviceDelegatingViewResolverFactoryConfiguration {
 
-	private static abstract class AbstractDelegateConfiguration {
-
-		@Autowired
-		private DeviceDelegatingViewResolverProperties viewResolverProperties;
-
-		protected LiteDeviceDelegatingViewResolver getConfiguredViewResolver(
-				ViewResolver delegate, int delegateOrder) {
-			LiteDeviceDelegatingViewResolver resolver = new LiteDeviceDelegatingViewResolver(
-					delegate);
-			resolver.setEnableFallback(this.viewResolverProperties.isEnableFallback());
-			resolver.setNormalPrefix(this.viewResolverProperties.getNormalPrefix());
-			resolver.setNormalSuffix(this.viewResolverProperties.getNormalSuffix());
-			resolver.setMobilePrefix(this.viewResolverProperties.getMobilePrefix());
-			resolver.setMobileSuffix(this.viewResolverProperties.getMobileSuffix());
-			resolver.setTabletPrefix(this.viewResolverProperties.getTabletPrefix());
-			resolver.setTabletSuffix(this.viewResolverProperties.getTabletSuffix());
-			resolver.setOrder(getAdjustedOrder(delegateOrder));
-			return resolver;
-		}
-
-		private int getAdjustedOrder(int order) {
-			if (order == Ordered.HIGHEST_PRECEDENCE) {
-				return Ordered.HIGHEST_PRECEDENCE;
-			}
-			// The view resolver must be ordered higher than the delegate view
-			// resolver, otherwise the view names will not be adjusted
-			return order - 1;
+		@Bean
+		public DeviceDelegatingViewResolverFactory deviceDelegatingViewResolverFactory(
+				DeviceDelegatingViewResolverProperties properties) {
+			return new DeviceDelegatingViewResolverFactory(properties);
 		}
 
 	}
 
 	@Configuration
-	@EnableConfigurationProperties(DeviceDelegatingViewResolverProperties.class)
-	@ConditionalOnMissingBean(name = "deviceDelegatingViewResolver")
-	@ConditionalOnProperty(prefix = "spring.mobile.devicedelegatingviewresolver", name = "enabled", havingValue = "true", matchIfMissing = false)
-	protected static class DeviceDelegatingViewResolverConfiguration {
+	@ConditionalOnClass(FreeMarkerViewResolver.class)
+	protected static class DeviceDelegatingFreeMarkerViewResolverConfiguration {
 
-		@Configuration
-		@ConditionalOnBean(name = "thymeleafViewResolver")
-		protected static class ThymeleafViewResolverViewResolverDelegateConfiguration
-				extends AbstractDelegateConfiguration {
-
-			@Autowired
-			private ThymeleafViewResolver viewResolver;
-
-			@Bean
-			public LiteDeviceDelegatingViewResolver deviceDelegatingViewResolver() {
-				if (logger.isDebugEnabled()) {
-					logger.debug("LiteDeviceDelegatingViewResolver delegates to "
-							+ "ThymeleafViewResolver");
-				}
-				return getConfiguredViewResolver(this.viewResolver,
-						this.viewResolver.getOrder());
-			}
-
+		@Bean
+		@ConditionalOnBean(FreeMarkerViewResolver.class)
+		public LiteDeviceDelegatingViewResolver deviceDelegatingFreeMarkerViewResolver(
+				DeviceDelegatingViewResolverFactory factory,
+				FreeMarkerViewResolver viewResolver) {
+			return factory.createViewResolver(viewResolver);
 		}
 
-		@Configuration
-		@EnableConfigurationProperties(DeviceDelegatingViewResolverProperties.class)
-		@ConditionalOnMissingBean(name = "thymeleafViewResolver")
+	}
+
+	@Configuration
+	@ConditionalOnClass(GroovyMarkupViewResolver.class)
+	protected static class DeviceDelegatingGroovyMarkupViewResolverConfiguration {
+
+		@Bean
+		@ConditionalOnBean(GroovyMarkupViewResolver.class)
+		public LiteDeviceDelegatingViewResolver deviceDelegatingGroovyMarkupViewResolver(
+				DeviceDelegatingViewResolverFactory factory,
+				GroovyMarkupViewResolver viewResolver) {
+			return factory.createViewResolver(viewResolver);
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(InternalResourceViewResolver.class)
+	protected static class DeviceDelegatingJspViewResolverConfiguration {
+
+		@Bean
 		@ConditionalOnBean(InternalResourceViewResolver.class)
-		protected static class InternalResourceViewResolverDelegateConfiguration
-				extends AbstractDelegateConfiguration {
+		public LiteDeviceDelegatingViewResolver deviceDelegatingJspViewResolver(
+				DeviceDelegatingViewResolverFactory factory,
+				InternalResourceViewResolver viewResolver) {
+			return factory.createViewResolver(viewResolver);
+		}
 
-			@Autowired
-			private InternalResourceViewResolver viewResolver;
+	}
 
-			@Bean
-			public LiteDeviceDelegatingViewResolver deviceDelegatingViewResolver() {
-				if (logger.isDebugEnabled()) {
-					logger.debug("LiteDeviceDelegatingViewResolver delegates to "
-							+ "InternalResourceViewResolver");
-				}
-				return getConfiguredViewResolver(this.viewResolver,
-						this.viewResolver.getOrder());
-			}
+	@Configuration
+	@ConditionalOnClass(MustacheViewResolver.class)
+	protected static class DeviceDelegatingMustacheViewResolverConfiguration {
 
+		@Bean
+		@ConditionalOnBean(MustacheViewResolver.class)
+		public LiteDeviceDelegatingViewResolver deviceDelegatingMustacheViewResolver(
+				DeviceDelegatingViewResolverFactory factory,
+				MustacheViewResolver viewResolver) {
+			return factory.createViewResolver(viewResolver);
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(ThymeleafViewResolver.class)
+	protected static class DeviceDelegatingThymeleafViewResolverConfiguration {
+
+		@Bean
+		@ConditionalOnBean(ThymeleafViewResolver.class)
+		public LiteDeviceDelegatingViewResolver deviceDelegatingThymeleafViewResolver(
+				DeviceDelegatingViewResolverFactory factory,
+				ThymeleafViewResolver viewResolver) {
+			return factory.createViewResolver(viewResolver);
 		}
 
 	}

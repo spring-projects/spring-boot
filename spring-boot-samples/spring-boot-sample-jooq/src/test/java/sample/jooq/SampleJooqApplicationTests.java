@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,9 @@ package sample.jooq;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.boot.test.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link SampleJooqApplication}.
@@ -37,11 +36,11 @@ public class SampleJooqApplicationTests {
 	@Test
 	public void outputResults() throws Exception {
 		SampleJooqApplication.main(NO_ARGS);
-		assertThat(this.out.toString(), containsString("jOOQ Fetch 1 Greg Turnquest"));
-		assertThat(this.out.toString(), containsString("jOOQ Fetch 2 Craig Walls"));
-		assertThat(this.out.toString(),
-				containsString("jOOQ SQL " + "[Learning Spring Boot : Greg Turnquest, "
-						+ "Spring Boot in Action : Craig Walls]"));
+		assertThat(this.out.toString()).contains("jOOQ Fetch 1 Greg Turnquest");
+		assertThat(this.out.toString()).contains("jOOQ Fetch 2 Craig Walls");
+		assertThat(this.out.toString())
+				.contains("jOOQ SQL " + "[Learning Spring Boot : Greg Turnquest, "
+						+ "Spring Boot in Action : Craig Walls]");
 	}
 
 }

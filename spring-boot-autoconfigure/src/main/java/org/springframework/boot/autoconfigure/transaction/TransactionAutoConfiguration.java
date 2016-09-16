@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.transaction;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -43,8 +42,11 @@ import org.springframework.transaction.support.TransactionTemplate;
 		DataSourceTransactionManagerAutoConfiguration.class })
 public class TransactionAutoConfiguration {
 
-	@Autowired
-	private PlatformTransactionManager transactionManager;
+	private final PlatformTransactionManager transactionManager;
+
+	public TransactionAutoConfiguration(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean

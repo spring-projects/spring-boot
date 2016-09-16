@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import groovy.lang.Closure;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
+import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -32,6 +33,7 @@ import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -60,7 +62,7 @@ class BeanDefinitionLoader {
 
 	private final XmlBeanDefinitionReader xmlReader;
 
-	private GroovyBeanDefinitionReader groovyReader;
+	private BeanDefinitionReader groovyReader;
 
 	private final ClassPathBeanDefinitionScanner scanner;
 
@@ -162,7 +164,7 @@ class BeanDefinitionLoader {
 
 	private int load(GroovyBeanDefinitionSource source) {
 		int before = this.xmlReader.getRegistry().getBeanDefinitionCount();
-		this.groovyReader.beans(source.getBeans());
+		((GroovyBeanDefinitionReader) this.groovyReader).beans(source.getBeans());
 		int after = this.xmlReader.getRegistry().getBeanDefinitionCount();
 		return after - before;
 	}
@@ -183,10 +185,8 @@ class BeanDefinitionLoader {
 	}
 
 	private int load(CharSequence source) {
-
 		String resolvedSource = this.xmlReader.getEnvironment()
 				.resolvePlaceholders(source.toString());
-
 		// Attempt as a Class
 		try {
 			return load(ClassUtils.forName(resolvedSource, null));
@@ -197,13 +197,12 @@ class BeanDefinitionLoader {
 		catch (ClassNotFoundException ex) {
 			// swallow exception and continue
 		}
-
 		// Attempt as resources
 		Resource[] resources = findResources(resolvedSource);
 		int loadCount = 0;
 		boolean atLeastOneResourceExists = false;
 		for (Resource resource : resources) {
-			if (resource != null && resource.exists()) {
+			if (isLoadCandidate(resource)) {
 				atLeastOneResourceExists = true;
 				loadCount += load(resource);
 			}
@@ -211,13 +210,11 @@ class BeanDefinitionLoader {
 		if (atLeastOneResourceExists) {
 			return loadCount;
 		}
-
 		// Attempt as package
 		Package packageResource = findPackage(resolvedSource);
 		if (packageResource != null) {
 			return load(packageResource);
 		}
-
 		throw new IllegalArgumentException("Invalid source '" + resolvedSource + "'");
 	}
 
@@ -237,6 +234,28 @@ class BeanDefinitionLoader {
 		catch (IOException ex) {
 			throw new IllegalStateException("Error reading source '" + source + "'");
 		}
+	}
+
+	private boolean isLoadCandidate(Resource resource) {
+		if (resource == null || !resource.exists()) {
+			return false;
+		}
+		if (resource instanceof ClassPathResource) {
+			// A simple package without a '.' may accidentally get loaded as an XML
+			// document if we're not careful. The result of getInputStream() will be
+			// a file list of the package content. We double check here that it's not
+			// actually a package.
+			String path = ((ClassPathResource) resource).getPath();
+			if (path.indexOf(".") == -1) {
+				try {
+					return Package.getPackage(path) == null;
+				}
+				catch (Exception ex) {
+					// Ignore
+				}
+			}
+		}
+		return true;
 	}
 
 	private Package findPackage(CharSequence source) {

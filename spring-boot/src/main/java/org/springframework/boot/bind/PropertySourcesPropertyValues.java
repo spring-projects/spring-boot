@@ -43,7 +43,8 @@ import org.springframework.validation.DataBinder;
  */
 public class PropertySourcesPropertyValues implements PropertyValues {
 
-	private static final Pattern COLLECTION_PROPERTY = Pattern.compile("\\[(\\d+)\\]");
+	private static final Pattern COLLECTION_PROPERTY = Pattern
+			.compile("\\[(\\d+)\\](\\.\\S+)?");
 
 	private final PropertySources propertySources;
 
@@ -161,7 +162,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 				value = resolver.getProperty(propertyName, Object.class);
 			}
 			catch (RuntimeException ex) {
-				// Probably could not convert to Object, weird, but ignoreable
+				// Probably could not convert to Object, weird, but ignorable
 			}
 			if (value == null) {
 				value = source.getProperty(propertyName.toUpperCase());

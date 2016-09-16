@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.core.Ordered;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.Assert;
@@ -44,11 +42,11 @@ import org.springframework.util.Assert;
  */
 class AutoConfigurationSorter {
 
-	private final CachingMetadataReaderFactory metadataReaderFactory;
+	private final MetadataReaderFactory metadataReaderFactory;
 
-	AutoConfigurationSorter(ResourceLoader resourceLoader) {
-		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
-		this.metadataReaderFactory = new CachingMetadataReaderFactory(resourceLoader);
+	AutoConfigurationSorter(MetadataReaderFactory metadataReaderFactory) {
+		Assert.notNull(metadataReaderFactory, "MetadataReaderFactory must not be null");
+		this.metadataReaderFactory = metadataReaderFactory;
 	}
 
 	public List<String> getInPriorityOrder(Collection<String> classNames)
@@ -74,27 +72,27 @@ class AutoConfigurationSorter {
 
 	private List<String> sortByAnnotation(AutoConfigurationClasses classes,
 			List<String> classNames) {
-		List<String> tosort = new ArrayList<String>(classNames);
+		List<String> toSort = new ArrayList<String>(classNames);
 		Set<String> sorted = new LinkedHashSet<String>();
 		Set<String> processing = new LinkedHashSet<String>();
-		while (!tosort.isEmpty()) {
-			doSortByAfterAnnotation(classes, tosort, sorted, processing, null);
+		while (!toSort.isEmpty()) {
+			doSortByAfterAnnotation(classes, toSort, sorted, processing, null);
 		}
 		return new ArrayList<String>(sorted);
 	}
 
 	private void doSortByAfterAnnotation(AutoConfigurationClasses classes,
-			List<String> tosort, Set<String> sorted, Set<String> processing,
+			List<String> toSort, Set<String> sorted, Set<String> processing,
 			String current) {
 		if (current == null) {
-			current = tosort.remove(0);
+			current = toSort.remove(0);
 		}
 		processing.add(current);
 		for (String after : classes.getClassesRequestedAfter(current)) {
 			Assert.state(!processing.contains(after),
 					"AutoConfigure cycle detected between " + current + " and " + after);
-			if (!sorted.contains(after) && tosort.contains(after)) {
-				doSortByAfterAnnotation(classes, tosort, sorted, processing, after);
+			if (!sorted.contains(after) && toSort.contains(after)) {
+				doSortByAfterAnnotation(classes, toSort, sorted, processing, after);
 			}
 		}
 		processing.remove(current);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,17 +71,17 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 	 * ignored.
 	 * <p>
 	 * Leaves the stream open when done.
-	 * @param inputstream the source input stream
+	 * @param inputStream the source input stream
 	 * @param charset the charset of the input
 	 * @return this builder
 	 * @throws IOException in case of I/O errors
 	 */
 	public ConfigurationMetadataRepositoryJsonBuilder withJsonResource(
-			InputStream inputstream, Charset charset) throws IOException {
-		if (inputstream == null) {
+			InputStream inputStream, Charset charset) throws IOException {
+		if (inputStream == null) {
 			throw new IllegalArgumentException("InputStream must not be null.");
 		}
-		this.repositories.add(add(inputstream, charset));
+		this.repositories.add(add(inputStream, charset));
 		return this;
 	}
 
@@ -127,11 +127,34 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 		for (ConfigurationMetadataHint hint : metadata.getHints()) {
 			ConfigurationMetadataProperty property = allProperties.get(hint.getId());
 			if (property != null) {
-				property.getValueHints().addAll(hint.getValueHints());
-				property.getValueProviders().addAll(hint.getValueProviders());
+				addValueHints(property, hint);
+			}
+			else {
+				String id = hint.resolveId();
+				property = allProperties.get(id);
+				if (property != null) {
+					if (hint.isMapKeyHints()) {
+						addMapHints(property, hint);
+					}
+					else {
+						addValueHints(property, hint);
+					}
+				}
 			}
 		}
 		return repository;
+	}
+
+	private void addValueHints(ConfigurationMetadataProperty property,
+			ConfigurationMetadataHint hint) {
+		property.getHints().getValueHints().addAll(hint.getValueHints());
+		property.getHints().getValueProviders().addAll(hint.getValueProviders());
+	}
+
+	private void addMapHints(ConfigurationMetadataProperty property,
+			ConfigurationMetadataHint hint) {
+		property.getHints().getKeyHints().addAll(hint.getValueHints());
+		property.getHints().getKeyProviders().addAll(hint.getValueProviders());
 	}
 
 	private ConfigurationMetadataSource getSource(RawConfigurationMetadata metadata,

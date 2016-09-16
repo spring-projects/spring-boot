@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.maven;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -32,6 +33,7 @@ import org.apache.maven.plugins.shade.resource.ResourceTransformer;
  * to be merged without losing any information.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class PropertiesMergingResourceTransformer implements ResourceTransformer {
 
@@ -62,9 +64,9 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 		Properties properties = new Properties();
 		properties.load(is);
 		is.close();
-		for (Object key : properties.keySet()) {
-			String name = (String) key;
-			String value = properties.getProperty(name);
+		for (Entry<Object, Object> entry : properties.entrySet()) {
+			String name = (String) entry.getKey();
+			String value = (String) entry.getValue();
 			String existing = this.data.getProperty(name);
 			this.data.setProperty(name,
 					existing == null ? value : existing + "," + value);
@@ -73,7 +75,7 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 
 	@Override
 	public boolean hasTransformedResource() {
-		return this.data.size() > 0;
+		return !this.data.isEmpty();
 	}
 
 	@Override

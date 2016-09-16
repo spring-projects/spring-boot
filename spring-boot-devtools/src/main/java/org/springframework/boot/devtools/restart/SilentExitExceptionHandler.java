@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,13 @@
 package org.springframework.boot.devtools.restart;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Arrays;
 
 /**
  * {@link UncaughtExceptionHandler} decorator that allows a thread to exit silently.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 
@@ -34,11 +36,46 @@ class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 	@Override
 	public void uncaughtException(Thread thread, Throwable exception) {
 		if (exception instanceof SilentExitException) {
+			if (isJvmExiting(thread)) {
+				preventNonZeroExitCode();
+			}
 			return;
 		}
 		if (this.delegate != null) {
 			this.delegate.uncaughtException(thread, exception);
 		}
+	}
+
+	private boolean isJvmExiting(Thread exceptionThread) {
+		for (Thread thread : getAllThreads()) {
+			if (thread != exceptionThread && thread.isAlive() && !thread.isDaemon()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	protected Thread[] getAllThreads() {
+		ThreadGroup rootThreadGroup = getRootThreadGroup();
+		Thread[] threads = new Thread[32];
+		int count = rootThreadGroup.enumerate(threads);
+		while (count == threads.length) {
+			threads = new Thread[threads.length * 2];
+			count = rootThreadGroup.enumerate(threads);
+		}
+		return Arrays.copyOf(threads, count);
+	}
+
+	private ThreadGroup getRootThreadGroup() {
+		ThreadGroup candidate = Thread.currentThread().getThreadGroup();
+		while (candidate.getParent() != null) {
+			candidate = candidate.getParent();
+		}
+		return candidate;
+	}
+
+	protected void preventNonZeroExitCode() {
+		System.exit(0);
 	}
 
 	public static void setup(Thread thread) {

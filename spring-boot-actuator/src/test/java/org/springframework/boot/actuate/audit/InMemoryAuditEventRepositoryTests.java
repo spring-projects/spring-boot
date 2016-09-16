@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,18 +22,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link InMemoryAuditEventRepository}.
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Vedran Pavic
  */
 public class InMemoryAuditEventRepositoryTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void lessThanCapacity() throws Exception {
@@ -41,10 +46,9 @@ public class InMemoryAuditEventRepositoryTests {
 		repository.add(new AuditEvent("dave", "a"));
 		repository.add(new AuditEvent("dave", "b"));
 		List<AuditEvent> events = repository.find("dave", null);
-		assertThat(events.size(), equalTo(2));
-		assertThat(events.get(0).getType(), equalTo("a"));
-		assertThat(events.get(1).getType(), equalTo("b"));
-
+		assertThat(events.size()).isEqualTo(2);
+		assertThat(events.get(0).getType()).isEqualTo("a");
+		assertThat(events.get(1).getType()).isEqualTo("b");
 	}
 
 	@Test
@@ -54,9 +58,17 @@ public class InMemoryAuditEventRepositoryTests {
 		repository.add(new AuditEvent("dave", "b"));
 		repository.add(new AuditEvent("dave", "c"));
 		List<AuditEvent> events = repository.find("dave", null);
-		assertThat(events.size(), equalTo(2));
-		assertThat(events.get(0).getType(), equalTo("b"));
-		assertThat(events.get(1).getType(), equalTo("c"));
+		assertThat(events.size()).isEqualTo(2);
+		assertThat(events.get(0).getType()).isEqualTo("b");
+		assertThat(events.get(1).getType()).isEqualTo("c");
+	}
+
+	@Test
+	public void addNullAuditEvent() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("AuditEvent must not be null");
+		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
+		repository.add(null);
 	}
 
 	@Test
@@ -67,9 +79,22 @@ public class InMemoryAuditEventRepositoryTests {
 		repository.add(new AuditEvent("dave", "c"));
 		repository.add(new AuditEvent("phil", "d"));
 		List<AuditEvent> events = repository.find("dave", null);
-		assertThat(events.size(), equalTo(2));
-		assertThat(events.get(0).getType(), equalTo("a"));
-		assertThat(events.get(1).getType(), equalTo("c"));
+		assertThat(events.size()).isEqualTo(2);
+		assertThat(events.get(0).getType()).isEqualTo("a");
+		assertThat(events.get(1).getType()).isEqualTo("c");
+	}
+
+	@Test
+	public void findByPrincipalAndType() throws Exception {
+		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
+		repository.add(new AuditEvent("dave", "a"));
+		repository.add(new AuditEvent("phil", "b"));
+		repository.add(new AuditEvent("dave", "c"));
+		repository.add(new AuditEvent("phil", "d"));
+		List<AuditEvent> events = repository.find("dave", null, "a");
+		assertThat(events.size()).isEqualTo(1);
+		assertThat(events.get(0).getPrincipal()).isEqualTo("dave");
+		assertThat(events.get(0).getType()).isEqualTo("a");
 	}
 
 	@Test
@@ -88,13 +113,13 @@ public class InMemoryAuditEventRepositoryTests {
 		calendar.add(Calendar.DAY_OF_YEAR, 1);
 		repository.add(new AuditEvent(calendar.getTime(), "phil", "d", data));
 		calendar.add(Calendar.DAY_OF_YEAR, 1);
-		List<AuditEvent> events = repository.find(null, after);
-		assertThat(events.size(), equalTo(2));
-		assertThat(events.get(0).getType(), equalTo("c"));
-		assertThat(events.get(1).getType(), equalTo("d"));
+		List<AuditEvent> events = repository.find(after);
+		assertThat(events.size()).isEqualTo(2);
+		assertThat(events.get(0).getType()).isEqualTo("c");
+		assertThat(events.get(1).getType()).isEqualTo("d");
 		events = repository.find("dave", after);
-		assertThat(events.size(), equalTo(1));
-		assertThat(events.get(0).getType(), equalTo("c"));
+		assertThat(events.size()).isEqualTo(1);
+		assertThat(events.get(0).getType()).isEqualTo("c");
 	}
 
 }

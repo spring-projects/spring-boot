@@ -198,7 +198,7 @@
     <setupTask
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.jdt.ui/content_assist_favorite_static_members"
-        value="org.hamcrest.Matchers.*;org.junit.Assert.*;org.mockito.BDDMockito.*;org.mockito.Matchers.*;org.mockito.Mockito.*;org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;org.springframework.test.web.servlet.result.MockMvcResultMatchers.*"/>
+        value="org.assertj.core.api.Assertions.*;org.hamcrest.Matchers.*;org.junit.Assert.*;org.mockito.BDDMockito.*;org.mockito.Matchers.*;org.mockito.Mockito.*;org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;org.springframework.test.web.servlet.result.MockMvcResultMatchers.*"/>
     <setupTask
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.jdt.ui/smart_backspace"
@@ -223,6 +223,10 @@
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.jdt.ui/smartPaste"
         value="true"/>
+    <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.jdt.ui/org.eclipse.jdt.ui.text.custom_templates"
+          value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?>&lt;templates>&lt;template autoinsert=&quot;false&quot; context=&quot;java&quot; deleted=&quot;false&quot; description=&quot;Surround code with formatter off and formatter on tags&quot; enabled=&quot;true&quot; name=&quot;noformat&quot;>// @formatter:off&#xA;$${cursor} $${line_selection}&#xA;// @formatter:on&lt;/template>&lt;/templates>"/>
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.core.annotation.AliasFor;
+
 /**
  * Annotation for externalized configuration. Add this to a class definition or a
  * {@code @Bean} method in a {@code @Configuration} class if you want to bind and validate
@@ -32,6 +34,7 @@ import java.lang.annotation.Target;
  *
  * @author Dave Syer
  * @see ConfigurationPropertiesBindingPostProcessor
+ * @see EnableConfigurationProperties
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
@@ -43,6 +46,7 @@ public @interface ConfigurationProperties {
 	 * for {@link #prefix()}.
 	 * @return the name prefix of the properties to bind
 	 */
+	@AliasFor("prefix")
 	String value() default "";
 
 	/**
@@ -50,6 +54,7 @@ public @interface ConfigurationProperties {
 	 * for {@link #value()}.
 	 * @return the name prefix of the properties to bind
 	 */
+	@AliasFor("value")
 	String prefix() default "";
 
 	/**
@@ -85,10 +90,14 @@ public @interface ConfigurationProperties {
 	/**
 	 * Optionally provide explicit resource locations to bind to. By default the
 	 * configuration at these specified locations will be merged with the default
-	 * configuration.
+	 * configuration. These resources take precedence over any other property sources
+	 * defined in the environment.
 	 * @return the path (or paths) of resources to bind to
 	 * @see #merge()
+	 * @deprecated as of 1.4 in favor of configuring the environment directly with
+	 * additional locations
 	 */
+	@Deprecated
 	String[] locations() default {};
 
 	/**
@@ -96,7 +105,10 @@ public @interface ConfigurationProperties {
 	 * merged with the default configuration.
 	 * @return the flag value (default true)
 	 * @see #locations()
+	 * @deprecated as of 1.4 along with {@link #locations()} in favor of configuring the
+	 * environment directly with additional locations
 	 */
+	@Deprecated
 	boolean merge() default true;
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.util.Assert;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
-@ConfigurationProperties(prefix = "endpoints.health", ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = "endpoints.health")
 public class HealthEndpoint extends AbstractEndpoint<Health> {
 
 	private final HealthIndicator healthIndicator;
@@ -43,7 +43,7 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 	private long timeToLive = 1000;
 
 	/**
-	 * Create a new {@link HealthIndicator} instance.
+	 * Create a new {@link HealthEndpoint} instance.
 	 * @param healthAggregator the health aggregator
 	 * @param healthIndicators the health indicators
 	 */

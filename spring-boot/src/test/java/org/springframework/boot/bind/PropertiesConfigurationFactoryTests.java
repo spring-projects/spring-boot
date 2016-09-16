@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link PropertiesConfigurationFactory}.
@@ -57,14 +57,14 @@ public class PropertiesConfigurationFactoryTests {
 	@Test
 	public void testValidPropertiesLoadsWithDash() throws Exception {
 		Foo foo = createFoo("na-me: blah\nbar: blah");
-		assertEquals("blah", foo.bar);
-		assertEquals("blah", foo.name);
+		assertThat(foo.bar).isEqualTo("blah");
+		assertThat(foo.name).isEqualTo("blah");
 	}
 
 	@Test
 	public void testUnknownPropertyOkByDefault() throws Exception {
 		Foo foo = createFoo("hi: hello\nname: foo\nbar: blah");
-		assertEquals("blah", foo.bar);
+		assertThat(foo.bar).isEqualTo("blah");
 	}
 
 	@Test(expected = NotWritablePropertyException.class)
@@ -102,7 +102,7 @@ public class PropertiesConfigurationFactoryTests {
 		this.factory.setIgnoreUnknownFields(false);
 		this.factory.afterPropertiesSet();
 		Foo foo = this.factory.getObject();
-		assertEquals("bar", foo.name);
+		assertThat(foo.name).isEqualTo("bar");
 	}
 
 	@Test
@@ -126,12 +126,54 @@ public class PropertiesConfigurationFactoryTests {
 		MutablePropertySources propertySources = new MutablePropertySources();
 		propertySources.addLast(new SystemEnvironmentPropertySource("systemEnvironment",
 				Collections.<String, Object>singletonMap("FOO_BAR_NAME", "blah")));
+		propertySources.addLast(new RandomValuePropertySource());
+		setupFactory();
+		this.factory.setPropertySources(propertySources);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertThat(foo.name).isEqualTo("blah");
+	}
+
+	@Test
+	public void testBindWithDelimitedPrefixUsingMatchingDelimiter() throws Exception {
+		this.targetName = "env_foo";
+		this.ignoreUnknownFields = false;
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addLast(new SystemEnvironmentPropertySource("systemEnvironment",
+				Collections.<String, Object>singletonMap("ENV_FOO_NAME", "blah")));
 		propertySources.addLast(new RandomValuePropertySource("random"));
 		setupFactory();
 		this.factory.setPropertySources(propertySources);
 		this.factory.afterPropertiesSet();
 		Foo foo = this.factory.getObject();
-		assertEquals("blah", foo.name);
+		assertThat(foo.name).isEqualTo("blah");
+	}
+
+	@Test
+	public void testBindWithDelimitedPrefixUsingDifferentDelimiter() throws Exception {
+		this.targetName = "env.foo";
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addLast(new SystemEnvironmentPropertySource("systemEnvironment",
+				Collections.<String, Object>singletonMap("ENV_FOO_NAME", "blah")));
+		propertySources.addLast(new RandomValuePropertySource("random"));
+		this.ignoreUnknownFields = false;
+		setupFactory();
+		this.factory.setPropertySources(propertySources);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertThat(foo.name).isEqualTo("blah");
+	}
+
+	@Test
+	public void propertyWithAllUpperCaseSuffixCanBeBound() throws Exception {
+		Foo foo = createFoo("foo-bar-u-r-i:baz");
+		assertThat(foo.fooBarURI).isEqualTo("baz");
+	}
+
+	@Test
+	public void propertyWithAllUpperCaseInTheMiddleCanBeBound() throws Exception {
+		Foo foo = createFoo("foo-d-l-q-bar:baz");
+		assertThat(foo.fooDLQBar).isEqualTo(("baz"));
 	}
 
 	private Foo createFoo(final String values) throws Exception {
@@ -139,6 +181,7 @@ public class PropertiesConfigurationFactoryTests {
 		return bindFoo(values);
 	}
 
+	@Deprecated
 	private Foo bindFoo(final String values) throws Exception {
 		this.factory.setProperties(PropertiesLoaderUtils
 				.loadProperties(new ByteArrayResource(values.getBytes())));
@@ -164,6 +207,10 @@ public class PropertiesConfigurationFactoryTests {
 		private String spring_foo_baz;
 
 		private String fooBar;
+
+		private String fooBarURI;
+
+		private String fooDLQBar;
 
 		public String getSpringFooBaz() {
 			return this.spring_foo_baz;
@@ -195,6 +242,22 @@ public class PropertiesConfigurationFactoryTests {
 
 		public void setFooBar(String fooBar) {
 			this.fooBar = fooBar;
+		}
+
+		public String getFooBarURI() {
+			return this.fooBarURI;
+		}
+
+		public void setFooBarURI(String fooBarURI) {
+			this.fooBarURI = fooBarURI;
+		}
+
+		public String getFooDLQBar() {
+			return this.fooDLQBar;
+		}
+
+		public void setFooDLQBar(String fooDLQBar) {
+			this.fooDLQBar = fooDLQBar;
 		}
 
 	}

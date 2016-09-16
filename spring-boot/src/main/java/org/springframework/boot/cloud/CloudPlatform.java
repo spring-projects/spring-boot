@@ -20,7 +20,7 @@ import org.springframework.core.env.Environment;
 
 /**
  * Simple detection for well known cloud platforms. For more advanced cloud provider
- * integration consider the Spring Clould project.
+ * integration consider the Spring Cloud project.
  *
  * @author Phillip Webb
  * @since 1.3.0

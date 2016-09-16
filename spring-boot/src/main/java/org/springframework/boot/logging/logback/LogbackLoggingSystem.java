@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,20 +94,29 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public void beforeInitialize() {
+		LoggerContext loggerContext = getLoggerContext();
+		if (isAlreadyInitialized(loggerContext)) {
+			return;
+		}
 		super.beforeInitialize();
-		getLogger(null).getLoggerContext().getTurboFilterList().add(FILTER);
+		loggerContext.getTurboFilterList().add(FILTER);
 		configureJBossLoggingToUseSlf4j();
 	}
 
 	@Override
 	public void initialize(LoggingInitializationContext initializationContext,
 			String configLocation, LogFile logFile) {
-		getLogger(null).getLoggerContext().getTurboFilterList().remove(FILTER);
+		LoggerContext loggerContext = getLoggerContext();
+		if (isAlreadyInitialized(loggerContext)) {
+			return;
+		}
+		loggerContext.getTurboFilterList().remove(FILTER);
 		super.initialize(initializationContext, configLocation, logFile);
+		markAsInitialized(loggerContext);
 		if (StringUtils.hasText(System.getProperty(CONFIGURATION_FILE_PROPERTY))) {
 			getLogger(LogbackLoggingSystem.class.getName()).warn(
 					"Ignoring '" + CONFIGURATION_FILE_PROPERTY + "' system property. "
-							+ "Please use 'logging.path' instead.");
+							+ "Please use 'logging.config' instead.");
 		}
 	}
 
@@ -122,15 +131,13 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 						"${logging.pattern.level:${LOG_LEVEL_PATTERN:%5p}}"));
 		new DefaultLogbackConfiguration(initializationContext, logFile)
 				.apply(configurator);
+		context.setPackagingDataEnabled(true);
 	}
 
 	@Override
 	protected void loadConfiguration(LoggingInitializationContext initializationContext,
 			String location, LogFile logFile) {
-		Assert.notNull(location, "Location must not be null");
-		if (logFile != null) {
-			logFile.applyToSystemProperties();
-		}
+		super.loadConfiguration(initializationContext, location, logFile);
 		LoggerContext loggerContext = getLoggerContext();
 		stopAndReset(loggerContext);
 		try {
@@ -145,13 +152,13 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		StringBuilder errors = new StringBuilder();
 		for (Status status : statuses) {
 			if (status.getLevel() == Status.ERROR) {
-				errors.append(errors.length() > 0 ? "\n" : "");
+				errors.append(errors.length() > 0 ? String.format("%n") : "");
 				errors.append(status.toString());
 			}
 		}
 		if (errors.length() > 0) {
 			throw new IllegalStateException(
-					"Logback configuration error " + "detected: \n" + errors);
+					String.format("Logback configuration error detected: %n%s", errors));
 		}
 	}
 
@@ -186,6 +193,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public void cleanUp() {
+		markAsUninitialized(getLoggerContext());
 		super.cleanUp();
 		getLoggerContext().getStatusManager().clear();
 	}
@@ -225,7 +233,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 						"LoggerFactory is not a Logback LoggerContext but Logback is on "
 								+ "the classpath. Either remove Logback or the competing "
 								+ "implementation (%s loaded from %s). If you are using "
-								+ "Weblogic you will need to add 'org.slf4j' to "
+								+ "WebLogic you will need to add 'org.slf4j' to "
 								+ "prefer-application-packages in WEB-INF/weblogic.xml",
 						factory.getClass(), getLocation(factory)));
 		return (LoggerContext) factory;
@@ -243,6 +251,18 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			// Unable to determine location
 		}
 		return "unknown location";
+	}
+
+	private boolean isAlreadyInitialized(LoggerContext loggerContext) {
+		return loggerContext.getObject(LoggingSystem.class.getName()) != null;
+	}
+
+	private void markAsInitialized(LoggerContext loggerContext) {
+		loggerContext.putObject(LoggingSystem.class.getName(), new Object());
+	}
+
+	private void markAsUninitialized(LoggerContext loggerContext) {
+		loggerContext.removeObject(LoggingSystem.class.getName());
 	}
 
 	private final class ShutdownHandler implements Runnable {

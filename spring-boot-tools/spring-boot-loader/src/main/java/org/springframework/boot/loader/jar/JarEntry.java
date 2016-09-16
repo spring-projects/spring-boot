@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,25 +29,34 @@ import java.util.jar.Manifest;
  *
  * @author Phillip Webb
  */
-public class JarEntry extends java.util.jar.JarEntry {
-
-	private final JarEntryData source;
+class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 
 	private Certificate[] certificates;
 
 	private CodeSigner[] codeSigners;
 
-	public JarEntry(JarEntryData source) {
-		super(source.getName().toString());
-		this.source = source;
+	private final JarFile jarFile;
+
+	private long localHeaderOffset;
+
+	JarEntry(JarFile jarFile, CentralDirectoryFileHeader header) {
+		super(header.getName().toString());
+		this.jarFile = jarFile;
+		this.localHeaderOffset = header.getLocalHeaderOffset();
+		setCompressedSize(header.getCompressedSize());
+		setMethod(header.getMethod());
+		setCrc(header.getCrc());
+		setSize(header.getSize());
+		setExtra(header.getExtra());
+		setComment(header.getComment().toString());
+		setSize(header.getSize());
+		setTime(header.getTime());
 	}
 
-	/**
-	 * Return the source {@link JarEntryData} that was used to create this entry.
-	 * @return the source of the entry
-	 */
-	public JarEntryData getSource() {
-		return this.source;
+	@Override
+	public boolean hasName(String name, String suffix) {
+		return getName().length() == name.length() + suffix.length()
+				&& getName().startsWith(name) && getName().endsWith(suffix);
 	}
 
 	/**
@@ -55,35 +64,40 @@ public class JarEntry extends java.util.jar.JarEntry {
 	 * @return the URL for the entry
 	 * @throws MalformedURLException if the URL is not valid
 	 */
-	public URL getUrl() throws MalformedURLException {
-		return new URL(this.source.getSource().getUrl(), getName());
+	URL getUrl() throws MalformedURLException {
+		return new URL(this.jarFile.getUrl(), getName());
 	}
 
 	@Override
 	public Attributes getAttributes() throws IOException {
-		Manifest manifest = this.source.getSource().getManifest();
+		Manifest manifest = this.jarFile.getManifest();
 		return (manifest == null ? null : manifest.getAttributes(getName()));
 	}
 
 	@Override
 	public Certificate[] getCertificates() {
-		if (this.source.getSource().isSigned() && this.certificates == null) {
-			this.source.getSource().setupEntryCertificates();
+		if (this.jarFile.isSigned() && this.certificates == null) {
+			this.jarFile.setupEntryCertificates(this);
 		}
 		return this.certificates;
 	}
 
 	@Override
 	public CodeSigner[] getCodeSigners() {
-		if (this.source.getSource().isSigned() && this.codeSigners == null) {
-			this.source.getSource().setupEntryCertificates();
+		if (this.jarFile.isSigned() && this.codeSigners == null) {
+			this.jarFile.setupEntryCertificates(this);
 		}
 		return this.codeSigners;
 	}
 
-	void setupCertificates(java.util.jar.JarEntry entry) {
+	void setCertificates(java.util.jar.JarEntry entry) {
 		this.certificates = entry.getCertificates();
 		this.codeSigners = entry.getCodeSigners();
+	}
+
+	@Override
+	public long getLocalHeaderOffset() {
+		return this.localHeaderOffset;
 	}
 
 }

@@ -47,7 +47,7 @@ public class RedisTestServer implements TestRule {
 			return new RedisStatement(base, this.connectionFactory);
 		}
 		catch (Exception ex) {
-			logger.error("No Redis server availble", ex);
+			logger.error("No Redis server available", ex);
 			return new SkipStatement();
 		}
 	}

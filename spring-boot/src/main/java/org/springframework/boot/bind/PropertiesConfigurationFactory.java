@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.bind;
 
 import java.beans.PropertyDescriptor;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -34,6 +35,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -48,7 +50,7 @@ import org.springframework.validation.Validator;
  * them to an object of a specified type and then optionally running a {@link Validator}
  * over it.
  *
- * @param <T> The target type
+ * @param <T> the target type
  * @author Dave Syer
  */
 public class PropertiesConfigurationFactory<T>
@@ -160,7 +162,10 @@ public class PropertiesConfigurationFactory<T>
 	/**
 	 * Set the properties.
 	 * @param properties the properties
+	 * @deprecated as of 1.4 in favor of {@link #setPropertySources(PropertySources)
+	 * setPropertySources} that contains a {@link PropertiesPropertySource}.
 	 */
+	@Deprecated
 	public void setProperties(Properties properties) {
 		this.properties = properties;
 	}
@@ -230,7 +235,7 @@ public class PropertiesConfigurationFactory<T>
 		try {
 			if (this.logger.isTraceEnabled()) {
 				if (this.properties != null) {
-					this.logger.trace("Properties:\n" + this.properties);
+					this.logger.trace(String.format("Properties:%n%s", this.properties));
 				}
 				else {
 					this.logger.trace("Property Sources: " + this.propertySources);
@@ -258,23 +263,28 @@ public class PropertiesConfigurationFactory<T>
 		if (this.conversionService != null) {
 			dataBinder.setConversionService(this.conversionService);
 		}
+		dataBinder.setAutoGrowCollectionLimit(Integer.MAX_VALUE);
 		dataBinder.setIgnoreNestedProperties(this.ignoreNestedProperties);
 		dataBinder.setIgnoreInvalidFields(this.ignoreInvalidFields);
 		dataBinder.setIgnoreUnknownFields(this.ignoreUnknownFields);
 		customizeBinder(dataBinder);
-		Set<String> names = getNames();
-		PropertyValues propertyValues = getPropertyValues(names);
+		Iterable<String> relaxedTargetNames = getRelaxedTargetNames();
+		Set<String> names = getNames(relaxedTargetNames);
+		PropertyValues propertyValues = getPropertyValues(names, relaxedTargetNames);
 		dataBinder.bind(propertyValues);
 		if (this.validator != null) {
 			validate(dataBinder);
 		}
 	}
 
-	private Set<String> getNames() {
+	private Iterable<String> getRelaxedTargetNames() {
+		return (this.target != null && StringUtils.hasLength(this.targetName)
+				? new RelaxedNames(this.targetName) : null);
+	}
+
+	private Set<String> getNames(Iterable<String> prefixes) {
 		Set<String> names = new LinkedHashSet<String>();
 		if (this.target != null) {
-			Iterable<String> prefixes = (StringUtils.hasLength(this.targetName)
-					? new RelaxedNames(this.targetName) : null);
 			PropertyDescriptor[] descriptors = BeanUtils
 					.getPropertyDescriptors(this.target.getClass());
 			for (PropertyDescriptor descriptor : descriptors) {
@@ -300,31 +310,38 @@ public class PropertiesConfigurationFactory<T>
 		return names;
 	}
 
-	private PropertyValues getPropertyValues(Set<String> names) {
+	private PropertyValues getPropertyValues(Set<String> names,
+			Iterable<String> relaxedTargetNames) {
 		if (this.properties != null) {
 			return new MutablePropertyValues(this.properties);
 		}
-		return getPropertySourcesPropertyValues(names);
+		return getPropertySourcesPropertyValues(names, relaxedTargetNames);
 	}
 
-	private PropertyValues getPropertySourcesPropertyValues(Set<String> names) {
-		PropertyNamePatternsMatcher includes = getPropertyNamePatternsMatcher(names);
+	private PropertyValues getPropertySourcesPropertyValues(Set<String> names,
+			Iterable<String> relaxedTargetNames) {
+		PropertyNamePatternsMatcher includes = getPropertyNamePatternsMatcher(names,
+				relaxedTargetNames);
 		return new PropertySourcesPropertyValues(this.propertySources, names, includes);
 	}
 
-	private PropertyNamePatternsMatcher getPropertyNamePatternsMatcher(
-			Set<String> names) {
+	private PropertyNamePatternsMatcher getPropertyNamePatternsMatcher(Set<String> names,
+			Iterable<String> relaxedTargetNames) {
 		if (this.ignoreUnknownFields && !isMapTarget()) {
 			// Since unknown fields are ignored we can filter them out early to save
 			// unnecessary calls to the PropertySource.
 			return new DefaultPropertyNamePatternsMatcher(EXACT_DELIMITERS, true, names);
 		}
-		if (this.targetName != null) {
+		if (relaxedTargetNames != null) {
 			// We can filter properties to those starting with the target name, but
 			// we can't do a complete filter since we need to trigger the
 			// unknown fields check
+			Set<String> relaxedNames = new HashSet<String>();
+			for (String relaxedTargetName : relaxedTargetNames) {
+				relaxedNames.add(relaxedTargetName);
+			}
 			return new DefaultPropertyNamePatternsMatcher(TARGET_NAME_DELIMITERS, true,
-					this.targetName);
+					relaxedNames);
 		}
 		// Not ideal, we basically can't filter anything
 		return PropertyNamePatternsMatcher.ALL;
@@ -353,7 +370,7 @@ public class PropertiesConfigurationFactory<T>
 	}
 
 	/**
-	 * Customize the databinder.
+	 * Customize the data binder.
 	 * @param dataBinder the data binder that will be used to bind and validate
 	 */
 	protected void customizeBinder(DataBinder dataBinder) {

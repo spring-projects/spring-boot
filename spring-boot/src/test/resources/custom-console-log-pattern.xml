@@ -1,0 +1,4 @@
+<configuration>
+	<property name="CONSOLE_LOG_PATTERN" value="foo" />
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
+</configuration>

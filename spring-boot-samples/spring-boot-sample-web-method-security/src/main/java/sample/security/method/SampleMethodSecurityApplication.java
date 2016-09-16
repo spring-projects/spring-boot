@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,9 @@ package sample.security.method;
 import java.util.Date;
 import java.util.Map;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -35,19 +33,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-@EnableAutoConfiguration
-@ComponentScan
+@SpringBootApplication
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 
 	@Controller
 	protected static class HomeController {
 
-		@RequestMapping("/")
+		@GetMapping("/")
 		@Secured("ROLE_ADMIN")
 		public String home(Map<String, Object> model) {
 			model.put("message", "Hello World");
@@ -62,11 +59,6 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/login").setViewName("login");
 		registry.addViewController("/access").setViewName("access");
-	}
-
-	@Bean
-	public ApplicationSecurity applicationSecurity() {
-		return new ApplicationSecurity();
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -87,6 +79,7 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 
 	}
 
+	@Configuration
 	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 

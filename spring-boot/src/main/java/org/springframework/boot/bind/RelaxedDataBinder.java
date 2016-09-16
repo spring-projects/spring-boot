@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -276,7 +276,6 @@ public class RelaxedDataBinder extends DataBinder {
 		if (path.name(++index) == null) {
 			return path.toString();
 		}
-
 		String name = path.prefix(index);
 		TypeDescriptor descriptor = wrapper.getPropertyTypeDescriptor(name);
 		if (descriptor == null || descriptor.isMap()) {
@@ -343,7 +342,7 @@ public class RelaxedDataBinder extends DataBinder {
 			return;
 		}
 		Object extend = new LinkedHashMap<String, Object>();
-		if (!elementDescriptor.isMap() && path.isArrayIndex(index + 1)) {
+		if (!elementDescriptor.isMap() && path.isArrayIndex(index)) {
 			extend = new ArrayList<Object>();
 		}
 		wrapper.setPropertyValue(path.prefix(index + 1), extend);
@@ -629,6 +628,7 @@ public class RelaxedDataBinder extends DataBinder {
 			public String toString() {
 				return "[" + this.name + "]";
 			}
+
 		}
 
 		private static class PropertyNode extends PathNode {
@@ -645,6 +645,7 @@ public class RelaxedDataBinder extends DataBinder {
 			public String toString() {
 				return "." + this.name;
 			}
+
 		}
 
 	}

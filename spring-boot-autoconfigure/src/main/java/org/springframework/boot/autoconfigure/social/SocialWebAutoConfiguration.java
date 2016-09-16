@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfigurati
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -74,14 +75,20 @@ public class SocialWebAutoConfiguration {
 	protected static class SocialAutoConfigurationAdapter
 			extends SocialConfigurerAdapter {
 
-		@Autowired(required = false)
-		private List<ConnectInterceptor<?>> connectInterceptors;
+		private final List<ConnectInterceptor<?>> connectInterceptors;
 
-		@Autowired(required = false)
-		private List<DisconnectInterceptor<?>> disconnectInterceptors;
+		private final List<DisconnectInterceptor<?>> disconnectInterceptors;
 
-		@Autowired(required = false)
-		private List<ProviderSignInInterceptor<?>> signInInterceptors;
+		private final List<ProviderSignInInterceptor<?>> signInInterceptors;
+
+		public SocialAutoConfigurationAdapter(
+				ObjectProvider<List<ConnectInterceptor<?>>> connectInterceptorsProvider,
+				ObjectProvider<List<DisconnectInterceptor<?>>> disconnectInterceptorsProvider,
+				ObjectProvider<List<ProviderSignInInterceptor<?>>> signInInterceptorsProvider) {
+			this.connectInterceptors = connectInterceptorsProvider.getIfAvailable();
+			this.disconnectInterceptors = disconnectInterceptorsProvider.getIfAvailable();
+			this.signInInterceptors = signInInterceptorsProvider.getIfAvailable();
+		}
 
 		@Bean
 		@ConditionalOnMissingBean(ConnectController.class)
@@ -104,7 +111,7 @@ public class SocialWebAutoConfiguration {
 		@ConditionalOnProperty(prefix = "spring.social", name = "auto-connection-views")
 		public BeanNameViewResolver beanNameViewResolver() {
 			BeanNameViewResolver viewResolver = new BeanNameViewResolver();
-			viewResolver.setOrder(Integer.MIN_VALUE);
+			viewResolver.setOrder(Ordered.HIGHEST_PRECEDENCE);
 			return viewResolver;
 		}
 

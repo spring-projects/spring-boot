@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,16 +37,20 @@ public abstract class LoggingSystem {
 	 */
 	public static final String SYSTEM_PROPERTY = LoggingSystem.class.getName();
 
+	/**
+	 * The value of the {@link #SYSTEM_PROPERTY} that can be used to indicate that no
+	 * {@link LoggingSystem} should be used.
+	 */
+	public static final String NONE = "none";
+
 	private static final Map<String, String> SYSTEMS;
 
 	static {
 		Map<String, String> systems = new LinkedHashMap<String, String>();
 		systems.put("ch.qos.logback.core.Appender",
 				"org.springframework.boot.logging.logback.LogbackLoggingSystem");
-		systems.put("org.apache.logging.log4j.LogManager",
+		systems.put("org.apache.logging.log4j.core.impl.Log4jContextFactory",
 				"org.springframework.boot.logging.log4j2.Log4J2LoggingSystem");
-		systems.put("org.apache.log4j.PropertyConfigurator",
-				"org.springframework.boot.logging.log4j.Log4JLoggingSystem");
 		systems.put("java.util.logging.LogManager",
 				"org.springframework.boot.logging.java.JavaLoggingSystem");
 		SYSTEMS = Collections.unmodifiableMap(systems);
@@ -69,20 +73,6 @@ public abstract class LoggingSystem {
 	 */
 	public void initialize(LoggingInitializationContext initializationContext,
 			String configLocation, LogFile logFile) {
-		initialize(configLocation, logFile);
-	}
-
-	/**
-	 * Fully initialize the logging system.
-	 * @param configLocation a log configuration location or {@code null} if default
-	 * initialization is required
-	 * @param logFile the log output file that should be written or {@code null} for
-	 * console only output
-	 * @deprecated since 1.3 in favor of
-	 * {@link #initialize(LoggingInitializationContext, String, LogFile)}
-	 */
-	@Deprecated
-	public void initialize(String configLocation, LogFile logFile) {
 	}
 
 	/**
@@ -110,14 +100,16 @@ public abstract class LoggingSystem {
 	public abstract void setLogLevel(String loggerName, LogLevel level);
 
 	/**
-	 * Detect and return the logging system in use. Supports Logback, Log4J, Log4J2 and
-	 * Java Logging.
+	 * Detect and return the logging system in use. Supports Logback and Java Logging.
 	 * @param classLoader the classloader
 	 * @return The logging system
 	 */
 	public static LoggingSystem get(ClassLoader classLoader) {
 		String loggingSystem = System.getProperty(SYSTEM_PROPERTY);
 		if (StringUtils.hasLength(loggingSystem)) {
+			if (NONE.equals(loggingSystem)) {
+				return new NoOpLoggingSystem();
+			}
 			return get(classLoader, loggingSystem);
 		}
 		for (Map.Entry<String, String> entry : SYSTEMS.entrySet()) {
@@ -137,6 +129,23 @@ public abstract class LoggingSystem {
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	/**
+	 * {@link LoggingSystem} that does nothing.
+	 */
+	static class NoOpLoggingSystem extends LoggingSystem {
+
+		@Override
+		public void beforeInitialize() {
+
+		}
+
+		@Override
+		public void setLogLevel(String loggerName, LogLevel level) {
+
+		}
+
 	}
 
 }

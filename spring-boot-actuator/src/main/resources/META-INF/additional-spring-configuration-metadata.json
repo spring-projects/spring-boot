@@ -1,27 +1,56 @@
 {"properties": [
   {
-    "name": "endpoints.enabled",
-    "type": "java.lang.Boolean",
-    "description": "Enable endpoints.",
-    "defaultValue": true
+    "name": "endpoints.autoconfig.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path."
+  },
+  {
+    "name": "endpoints.beans.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path."
   },
   {
     "name": "endpoints.configprops.keys-to-sanitize",
     "type": "java.lang.String[]",
     "sourceType": "org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint",
-    "description": "Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions."
+    "description": "Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions.",
+    "defaultValue": [
+      "password",
+      "secret",
+      "key",
+      "token",
+      ".*credentials.*",
+      "vcap_services"
+    ]
+  },
+  {
+    "name": "endpoints.configprops.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path."
+  },
+  {
+    "name": "endpoints.dump.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path."
   },
   {
     "name": "endpoints.env.keys-to-sanitize",
     "type": "java.lang.String[]",
     "sourceType": "org.springframework.boot.actuate.endpoint.EnvironmentEndpoint",
-    "description": "Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions."
+    "description": "Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions.",
+    "defaultValue": [
+      "password",
+      "secret",
+      "key",
+      "token",
+      ".*credentials.*",
+      "vcap_services"
+    ]
   },
   {
-    "name": "endpoints.docs.enabled",
-    "type": "java.lang.Boolean",
-    "description": "Enable actuator docs endpoint.",
-    "defaultValue": true
+    "name": "endpoints.info.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path."
   },
   {
     "name": "endpoints.jmx.enabled",
@@ -30,10 +59,20 @@
     "defaultValue": true
   },
   {
-    "name": "endpoints.jolokia.enabled",
+    "name": "endpoints.mappings.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path."
+  },
+  {
+    "name": "endpoints.metrics.filter.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Jolokia endpoint.",
+    "description": "Enable the metrics servlet filter.",
     "defaultValue": true
+  },
+  {
+    "name": "endpoints.trace.path",
+    "type": "java.lang.String",
+    "description": "Endpoint URL path."
   },
   {
     "name": "info",
@@ -101,9 +140,45 @@
     "defaultValue": true
   },
   {
+    "name": "management.info.build.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable build info.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.info.defaults.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable default info contributors.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.info.env.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable environment info.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.info.git.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable git info.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.security.role",
+    "type": "java.lang.String",
+    "description": "Roles required to access the management endpoint.",
+    "defaultValue": "ADMIN",
+    "deprecation": {
+      "replacement": "management.security.roles"
+    }
+  },
+  {
     "name": "spring.git.properties",
     "type": "java.lang.String",
-    "description": "Resource reference to a generated git info properties file."
+    "description": "Resource reference to a generated git info properties file.",
+    "deprecation": {
+      "replacement": "spring.info.git.location"
+    }
   },
   {
     "name": "spring.pid.file",
@@ -189,7 +264,7 @@
     ]
   },
   {
-    "name": "shell.auth",
+    "name": "management.shell.auth.type",
     "values": [
       {
         "value": "simple",

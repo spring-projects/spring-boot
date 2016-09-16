@@ -1,0 +1,53 @@
+buildscript {
+	repositories {
+		mavenLocal()
+	}
+	dependencies {
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:${project.bootVersion}"
+	}
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+apply plugin: 'spring-boot'
+apply plugin: 'java'
+
+dependencies {
+	compile 'org.springframework.boot:spring-boot-starter-freemarker'
+	compile 'org.springframework.boot:spring-boot-starter-web'
+	compile 'org.springframework.boot:spring-boot-devtools'
+	compile files("foo.jar")
+}
+
+springBoot {
+	mainClass = 'foo.bar.Baz'
+}
+
+if (project.properties['taskExecutable']) {
+	bootRepackage.executable = Boolean.valueOf(project.taskExecutable)
+}
+
+if (project.properties['extensionExecutable']) {
+	springBoot.executable = Boolean.valueOf(project.extensionExecutable)
+}
+
+if (project.properties['taskProperties']) {
+	bootRepackage.executable = true
+	bootRepackage.embeddedLaunchScriptProperties = ['initInfoProvides': '__task__']
+}
+
+if (project.properties['extensionProperties']) {
+	bootRepackage.executable = true
+	springBoot.embeddedLaunchScriptProperties = ['initInfoProvides': '__extension__']
+}
+
+if (project.properties['taskScript']) {
+	bootRepackage.embeddedLaunchScript = file('task.script')
+}
+
+if (project.properties['extensionScript']) {
+	springBoot.embeddedLaunchScript = file('extension.script')
+}

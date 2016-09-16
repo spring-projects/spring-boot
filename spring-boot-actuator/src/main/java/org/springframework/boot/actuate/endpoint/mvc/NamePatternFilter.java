@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  * must provide implementations of {@link #getValue(Object, String)} and
  * {@link #getNames(Object, NameCallback)}.
  *
- * @param <T> The source data type
+ * @param <T> the source data type
  * @author Phillip Webb
  * @author Sergei Egorov
  * @author Andy Wilkinson
@@ -71,6 +71,8 @@ abstract class NamePatternFilter<T> {
 
 	protected abstract Object getValue(T source, String name);
 
+	protected abstract Object getOptionalValue(T source, String name);
+
 	/**
 	 * Callback used to add a name.
 	 */
@@ -96,7 +98,10 @@ abstract class NamePatternFilter<T> {
 		@Override
 		public void addName(String name) {
 			if (this.pattern.matcher(name).matches()) {
-				this.results.put(name, getValue(NamePatternFilter.this.source, name));
+				Object value = getOptionalValue(NamePatternFilter.this.source, name);
+				if (value != null) {
+					this.results.put(name, value);
+				}
 			}
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,13 @@
  */
 
 package org.springframework.boot.context;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +40,6 @@ import org.springframework.core.PriorityOrdered;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -46,7 +52,7 @@ import org.springframework.util.StringUtils;
 public class ConfigurationWarningsApplicationContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
-	private static Log logger = LogFactory
+	private static final Log logger = LogFactory
 			.getLog(ConfigurationWarningsApplicationContextInitializer.class);
 
 	@Override
@@ -60,7 +66,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 	 * @return the checks to apply
 	 */
 	protected Check[] getChecks() {
-		return new Check[] { new ComponentScanDefaultPackageCheck() };
+		return new Check[] { new ComponentScanPackageCheck() };
 	}
 
 	/**
@@ -99,7 +105,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 
 		private void warn(String message) {
 			if (logger.isWarnEnabled()) {
-				logger.warn("\n\n** WARNING ** : " + message + "\n\n");
+				logger.warn(String.format("%n%n** WARNING ** : %s%n%n", message));
 			}
 		}
 
@@ -120,62 +126,101 @@ public class ConfigurationWarningsApplicationContextInitializer
 	}
 
 	/**
-	 * {@link Check} for {@code @ComponentScan} on the default package.
+	 * {@link Check} for {@code @ComponentScan} on problematic package.
 	 */
-	protected static class ComponentScanDefaultPackageCheck implements Check {
+	protected static class ComponentScanPackageCheck implements Check {
+
+		private static final Set<String> PROBLEM_PACKAGES;
+
+		static {
+			Set<String> packages = new HashSet<String>();
+			packages.add("org.springframework");
+			packages.add("org");
+			PROBLEM_PACKAGES = Collections.unmodifiableSet(packages);
+		}
 
 		@Override
 		public String getWarning(BeanDefinitionRegistry registry) {
-			if (isComponentScanningDefaultPackage(registry)) {
-				return "Your ApplicationContext is unlikely to start due to a "
-						+ "@ComponentScan of the default package.";
+			Set<String> scannedPackages = getComponentScanningPackages(registry);
+			List<String> problematicPackages = getProblematicPackages(scannedPackages);
+			if (problematicPackages.isEmpty()) {
+				return null;
 			}
-			return null;
+			return "Your ApplicationContext is unlikely to "
+					+ "start due to a @ComponentScan of "
+					+ StringUtils.collectionToDelimitedString(problematicPackages, ", ")
+					+ ".";
 		}
 
-		private boolean isComponentScanningDefaultPackage(
+		protected Set<String> getComponentScanningPackages(
 				BeanDefinitionRegistry registry) {
+			Set<String> packages = new LinkedHashSet<String>();
 			String[] names = registry.getBeanDefinitionNames();
 			for (String name : names) {
 				BeanDefinition definition = registry.getBeanDefinition(name);
 				if (definition instanceof AnnotatedBeanDefinition) {
 					AnnotatedBeanDefinition annotatedDefinition = (AnnotatedBeanDefinition) definition;
-					if (isScanningDefaultPackage(annotatedDefinition.getMetadata())) {
-						return true;
-					}
+					addComponentScanningPackages(packages,
+							annotatedDefinition.getMetadata());
 				}
 			}
-			return false;
+			return packages;
 		}
 
-		private boolean isScanningDefaultPackage(AnnotationMetadata metadata) {
+		private void addComponentScanningPackages(Set<String> packages,
+				AnnotationMetadata metadata) {
 			AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
 					.getAnnotationAttributes(ComponentScan.class.getName(), true));
-			if (attributes != null && hasNoScanPackageSpecified(attributes)) {
-				if (isInDefaultPackage(metadata.getClassName())) {
-					return true;
+			if (attributes != null) {
+				addPackages(packages, attributes.getStringArray("value"));
+				addPackages(packages, attributes.getStringArray("basePackages"));
+				addClasses(packages, attributes.getStringArray("basePackageClasses"));
+				if (packages.isEmpty()) {
+					packages.add(ClassUtils.getPackageName(metadata.getClassName()));
 				}
 			}
-			return false;
 		}
 
-		private boolean hasNoScanPackageSpecified(AnnotationAttributes attributes) {
-			return isAllEmpty(attributes, "value", "basePackages", "basePackageClasses");
-		}
-
-		private boolean isAllEmpty(AnnotationAttributes attributes, String... names) {
-			for (String name : names) {
-				if (!ObjectUtils.isEmpty(attributes.getStringArray(name))) {
-					return false;
+		private void addPackages(Set<String> packages, String[] values) {
+			if (values != null) {
+				for (String value : values) {
+					packages.add(value);
 				}
 			}
-			return true;
 		}
 
-		protected boolean isInDefaultPackage(String className) {
-			String packageName = ClassUtils.getPackageName(className);
-			return StringUtils.isEmpty(packageName);
+		private void addClasses(Set<String> packages, String[] values) {
+			if (values != null) {
+				for (String value : values) {
+					packages.add(ClassUtils.getPackageName(value));
+				}
+			}
 		}
+
+		private List<String> getProblematicPackages(Set<String> scannedPackages) {
+			List<String> problematicPackages = new ArrayList<String>();
+			for (String scannedPackage : scannedPackages) {
+				if (isProblematicPackage(scannedPackage)) {
+					problematicPackages.add(getDisplayName(scannedPackage));
+				}
+			}
+			return problematicPackages;
+		}
+
+		private boolean isProblematicPackage(String scannedPackage) {
+			if (scannedPackage == null || scannedPackage.length() == 0) {
+				return true;
+			}
+			return PROBLEM_PACKAGES.contains(scannedPackage);
+		}
+
+		private String getDisplayName(String scannedPackage) {
+			if (scannedPackage == null || scannedPackage.length() == 0) {
+				return "the default package";
+			}
+			return "'" + scannedPackage + "'";
+		}
+
 	}
 
 }

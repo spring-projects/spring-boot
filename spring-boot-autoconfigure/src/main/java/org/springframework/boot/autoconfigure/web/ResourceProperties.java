@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +33,7 @@ import org.springframework.core.io.ResourceLoader;
  * @author Phillip Webb
  * @author Brian Clozel
  * @author Dave Syer
+ * @author Venil Noronha
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.resources", ignoreUnknownFields = false)
@@ -92,14 +92,14 @@ public class ResourceProperties implements ResourceLoaderAware {
 	public Resource getWelcomePage() {
 		for (String location : getStaticWelcomePageLocations()) {
 			Resource resource = this.resourceLoader.getResource(location);
-			if (resource.exists()) {
-				try {
+			try {
+				if (resource.exists()) {
 					resource.getURL();
 					return resource;
 				}
-				catch (IOException ex) {
-					// Ignore
-				}
+			}
+			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return null;
@@ -119,9 +119,9 @@ public class ResourceProperties implements ResourceLoaderAware {
 
 	List<Resource> getFaviconLocations() {
 		List<Resource> locations = new ArrayList<Resource>(
-				CLASSPATH_RESOURCE_LOCATIONS.length + 1);
+				this.staticLocations.length + 1);
 		if (this.resourceLoader != null) {
-			for (String location : CLASSPATH_RESOURCE_LOCATIONS) {
+			for (String location : this.staticLocations) {
 				locations.add(this.resourceLoader.getResource(location));
 			}
 		}
@@ -170,13 +170,25 @@ public class ResourceProperties implements ResourceLoaderAware {
 		 */
 		private boolean htmlApplicationCache = false;
 
+		/**
+		 * Enable resolution of already gzipped resources. Checks for a resource name
+		 * variant with the "*.gz" extension.
+		 */
+		private boolean gzipped = false;
+
 		@NestedConfigurationProperty
 		private final Strategy strategy = new Strategy();
 
+		/**
+		 * Return whether the resource chain is enabled. Return {@code null} if no
+		 * specific settings are present.
+		 * @return whether the resource chain is enabled or {@code null} if no specified
+		 * settings are present.
+		 */
 		public Boolean getEnabled() {
-			return Boolean.TRUE.equals(this.enabled)
-					|| getStrategy().getFixed().isEnabled()
+			Boolean strategyEnabled = getStrategy().getFixed().isEnabled()
 					|| getStrategy().getContent().isEnabled();
+			return (strategyEnabled ? Boolean.TRUE : this.enabled);
 		}
 
 		public void setEnabled(boolean enabled) {
@@ -201,6 +213,14 @@ public class ResourceProperties implements ResourceLoaderAware {
 
 		public void setHtmlApplicationCache(boolean htmlApplicationCache) {
 			this.htmlApplicationCache = htmlApplicationCache;
+		}
+
+		public boolean isGzipped() {
+			return this.gzipped;
+		}
+
+		public void setGzipped(boolean gzipped) {
+			this.gzipped = gzipped;
 		}
 
 	}
@@ -272,7 +292,7 @@ public class ResourceProperties implements ResourceLoaderAware {
 		/**
 		 * Comma-separated list of patterns to apply to the Version Strategy.
 		 */
-		private String[] paths;
+		private String[] paths = new String[] { "/**" };
 
 		/**
 		 * Version string to use for the Version Strategy.

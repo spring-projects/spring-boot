@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -83,7 +84,8 @@ public class DataSourceBuilder {
 
 	private void bind(DataSource result) {
 		MutablePropertyValues properties = new MutablePropertyValues(this.properties);
-		new RelaxedDataBinder(result).withAlias("url", "jdbcUrl").bind(properties);
+		new RelaxedDataBinder(result).withAlias("url", "jdbcUrl")
+				.withAlias("username", "user").bind(properties);
 	}
 
 	public DataSourceBuilder type(Class<? extends DataSource> type) {

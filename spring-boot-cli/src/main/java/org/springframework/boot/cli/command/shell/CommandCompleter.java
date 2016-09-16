@@ -59,10 +59,10 @@ public class CommandCompleter extends StringsCompleter {
 			for (OptionHelp optionHelp : command.getOptionsHelp()) {
 				options.addAll(optionHelp.getOptions());
 			}
-			AggregateCompleter arguementCompleters = new AggregateCompleter(
+			AggregateCompleter argumentCompleters = new AggregateCompleter(
 					new StringsCompleter(options), new FileNameCompleter());
 			ArgumentCompleter argumentCompleter = new ArgumentCompleter(argumentDelimiter,
-					arguementCompleters);
+					argumentCompleters);
 			argumentCompleter.setStrict(false);
 			this.commandCompleters.put(command.getName(), argumentCompleter);
 		}
@@ -127,7 +127,7 @@ public class CommandCompleter extends StringsCompleter {
 		private final String usage;
 
 		OptionHelpLine(OptionHelp optionHelp) {
-			StringBuffer options = new StringBuffer();
+			StringBuilder options = new StringBuilder();
 			for (String option : optionHelp.getOptions()) {
 				options.append(options.length() == 0 ? "" : ", ");
 				options.append(option);

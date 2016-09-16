@@ -76,7 +76,7 @@ class InitializrService {
 
 	protected CloseableHttpClient getHttp() {
 		if (this.http == null) {
-			this.http = HttpClientBuilder.create().build();
+			this.http = HttpClientBuilder.create().useSystemProperties().build();
 		}
 		return this.http;
 	}
@@ -250,8 +250,7 @@ class InitializrService {
 			String value = header.getValue();
 			int start = value.indexOf(FILENAME_HEADER_PREFIX);
 			if (start != -1) {
-				value = value.substring(start + FILENAME_HEADER_PREFIX.length(),
-						value.length());
+				value = value.substring(start + FILENAME_HEADER_PREFIX.length());
 				int end = value.indexOf("\"");
 				if (end != -1) {
 					return value.substring(0, end);

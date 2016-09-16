@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -25,9 +26,8 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
+@ConfigurationProperties(prefix = "endpoints.env")
 public class EnvironmentMvcEndpoint extends EndpointMvcAdapter
 		implements EnvironmentAware {
 
@@ -47,7 +48,7 @@ public class EnvironmentMvcEndpoint extends EndpointMvcAdapter
 		super(delegate);
 	}
 
-	@RequestMapping(value = "/{name:.*}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/{name:.*}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	@HypermediaDisabled
 	public Object value(@PathVariable String name) {
@@ -90,6 +91,15 @@ public class EnvironmentMvcEndpoint extends EndpointMvcAdapter
 					}
 				}
 			}
+		}
+
+		@Override
+		protected Object getOptionalValue(Environment source, String name) {
+			Object result = source.getProperty(name);
+			if (result != null) {
+				result = ((EnvironmentEndpoint) getDelegate()).sanitize(name, result);
+			}
+			return result;
 		}
 
 		@Override

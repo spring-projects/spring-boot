@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +16,37 @@
 
 package org.springframework.boot.context.embedded.undertow;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.net.ssl.SSLHandshakeException;
+
 import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.servlet.api.ServletContainer;
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
-import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.ExampleServlet;
 import org.springframework.boot.context.embedded.MimeMappings.Mapping;
-import org.springframework.boot.context.embedded.ServletRegistrationBean;
+import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -67,8 +73,8 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		this.container = factory.getEmbeddedServletContainer(
 				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
 		this.container.start();
-		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
-		assertThat(getResponse(getLocalUrl("/not-found")), equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
+		assertThat(getResponse(getLocalUrl("/not-found"))).isEqualTo("Hello World");
 	}
 
 	@Test
@@ -153,7 +159,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 			}
 		});
 		this.container = factory.getEmbeddedServletContainer();
-		assertEquals("/", contextPath.get());
+		assertThat(contextPath.get()).isEqualTo("/");
 	}
 
 	@Test
@@ -163,9 +169,102 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		assertForwardHeaderIsUsed(factory);
 	}
 
+	@Test
+	public void eachFactoryUsesADiscreteServletContainer() {
+		assertThat(getServletContainerFromNewFactory())
+				.isNotEqualTo(getServletContainerFromNewFactory());
+	}
+
+	@Test
+	public void accessLogCanBeEnabled()
+			throws IOException, URISyntaxException, InterruptedException {
+		testAccessLog(null, null, "access_log.log");
+	}
+
+	@Test
+	public void accessLogCanBeCustomized()
+			throws IOException, URISyntaxException, InterruptedException {
+		testAccessLog("my_access.", "logz", "my_access.logz");
+	}
+
+	private void testAccessLog(String prefix, String suffix, String expectedFile)
+			throws IOException, URISyntaxException, InterruptedException {
+		UndertowEmbeddedServletContainerFactory factory = getFactory();
+		factory.setAccessLogEnabled(true);
+		factory.setAccessLogPrefix(prefix);
+		factory.setAccessLogSuffix(suffix);
+		File accessLogDirectory = this.temporaryFolder.getRoot();
+		factory.setAccessLogDirectory(accessLogDirectory);
+		assertThat(accessLogDirectory.listFiles()).isEmpty();
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
+		this.container.start();
+		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
+		File accessLog = new File(accessLogDirectory, expectedFile);
+		awaitFile(accessLog);
+		assertThat(accessLogDirectory.listFiles()).contains(accessLog);
+	}
+
+	@Override
+	protected void addConnector(final int port,
+			AbstractEmbeddedServletContainerFactory factory) {
+		((UndertowEmbeddedServletContainerFactory) factory)
+				.addBuilderCustomizers(new UndertowBuilderCustomizer() {
+
+					@Override
+					public void customize(Builder builder) {
+						builder.addHttpListener(port, "0.0.0.0");
+					}
+				});
+	}
+
+	@Test(expected = SSLHandshakeException.class)
+	public void sslRestrictedProtocolsEmptyCipherFailure() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
+				new String[] { "TLS_EMPTY_RENEGOTIATION_INFO_SCSV" });
+	}
+
+	@Test(expected = SSLHandshakeException.class)
+	public void sslRestrictedProtocolsECDHETLS1Failure() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1" },
+				new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" });
+	}
+
+	@Test
+	public void sslRestrictedProtocolsECDHESuccess() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
+				new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" });
+	}
+
+	@Test
+	public void sslRestrictedProtocolsRSATLS12Success() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
+				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
+	}
+
+	@Test(expected = SSLHandshakeException.class)
+	public void sslRestrictedProtocolsRSATLS11Failure() throws Exception {
+		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.1" },
+				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
+	}
+
 	@Override
 	protected Object getJspServlet() {
 		return null; // Undertow does not support JSPs
+	}
+
+	private void awaitFile(File file) throws InterruptedException {
+		long end = System.currentTimeMillis() + 10000;
+		while (!file.exists() && System.currentTimeMillis() < end) {
+			Thread.sleep(100);
+		}
+	}
+
+	private ServletContainer getServletContainerFromNewFactory() {
+		UndertowEmbeddedServletContainer undertow1 = (UndertowEmbeddedServletContainer) getFactory()
+				.getEmbeddedServletContainer();
+		return ((DeploymentManager) ReflectionTestUtils.getField(undertow1, "manager"))
+				.getDeployment().getServletContainer();
 	}
 
 	@Override
@@ -182,6 +281,14 @@ public class UndertowEmbeddedServletContainerFactoryTests
 				super.getExpectedMimeMappings());
 		expectedMappings.add(new Mapping("Z", "application/x-compress"));
 		return expectedMappings;
+	}
+
+	@Override
+	protected Charset getCharset(Locale locale) {
+		DeploymentInfo info = ((DeploymentManager) ReflectionTestUtils
+				.getField(this.container, "manager")).getDeployment().getDeploymentInfo();
+		String charsetName = info.getLocaleCharsetMapping().get(locale.toString());
+		return (charsetName != null) ? Charset.forName(charsetName) : null;
 	}
 
 }

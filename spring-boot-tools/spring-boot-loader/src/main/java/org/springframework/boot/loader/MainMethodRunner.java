@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,13 @@ package org.springframework.boot.loader;
 import java.lang.reflect.Method;
 
 /**
- * Utility class that used by {@link Launcher}s to call a main method. This class allows
- * methods to be executed within a thread configured with a specific context class loader.
+ * Utility class that is used by {@link Launcher}s to call a main method. The class
+ * containing the main method is loaded using the thread context class loader.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-public class MainMethodRunner implements Runnable {
+public class MainMethodRunner {
 
 	private final String mainClassName;
 
@@ -40,22 +41,11 @@ public class MainMethodRunner implements Runnable {
 		this.args = (args == null ? null : args.clone());
 	}
 
-	@Override
-	public void run() {
-		try {
-			Class<?> mainClass = Thread.currentThread().getContextClassLoader()
-					.loadClass(this.mainClassName);
-			Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
-			if (mainMethod == null) {
-				throw new IllegalStateException(
-						this.mainClassName + " does not have a main method");
-			}
-			mainMethod.invoke(null, new Object[] { this.args });
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-			System.exit(1);
-		}
+	public void run() throws Exception {
+		Class<?> mainClass = Thread.currentThread().getContextClassLoader()
+				.loadClass(this.mainClassName);
+		Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
+		mainMethod.invoke(null, new Object[] { this.args });
 	}
 
 }

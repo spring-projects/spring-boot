@@ -89,7 +89,7 @@ public class JsonMarshaller {
 		}
 		ItemDeprecation deprecation = item.getDeprecation();
 		if (deprecation != null) {
-			jsonObject.put("deprecated", true); // backward compat
+			jsonObject.put("deprecated", true); // backward compatibility
 			JSONObject deprecationJsonObject = new JSONObject();
 			if (deprecation.getReason() != null) {
 				deprecationJsonObject.put("reason", deprecation.getReason());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,8 @@ public class FixedAuthoritiesExtractor implements AuthoritiesExtractor {
 
 	private static final String AUTHORITIES = "authorities";
 
+	private static final String[] AUTHORITY_KEYS = { "authority", "role", "value" };
+
 	@Override
 	public List<GrantedAuthority> extractAuthorities(Map<String, Object> map) {
 		String authorities = "ROLE_USER";
@@ -47,13 +50,39 @@ public class FixedAuthoritiesExtractor implements AuthoritiesExtractor {
 	}
 
 	private String asAuthorities(Object object) {
+		List<Object> authorities = new ArrayList<Object>();
 		if (object instanceof Collection) {
-			return StringUtils.collectionToCommaDelimitedString((Collection<?>) object);
+			Collection<?> collection = (Collection<?>) object;
+			object = collection.toArray(new Object[0]);
 		}
 		if (ObjectUtils.isArray(object)) {
-			return StringUtils.arrayToCommaDelimitedString((Object[]) object);
+			Object[] array = (Object[]) object;
+			for (Object value : array) {
+				if (value instanceof String) {
+					authorities.add(value);
+				}
+				else if (value instanceof Map) {
+					authorities.add(asAuthority((Map<?, ?>) value));
+				}
+				else {
+					authorities.add(value);
+				}
+			}
+			return StringUtils.collectionToCommaDelimitedString(authorities);
 		}
 		return object.toString();
+	}
+
+	private Object asAuthority(Map<?, ?> map) {
+		if (map.size() == 1) {
+			return map.values().iterator().next();
+		}
+		for (String key : AUTHORITY_KEYS) {
+			if (map.containsKey(key)) {
+				return map.get(key);
+			}
+		}
+		return map;
 	}
 
 }

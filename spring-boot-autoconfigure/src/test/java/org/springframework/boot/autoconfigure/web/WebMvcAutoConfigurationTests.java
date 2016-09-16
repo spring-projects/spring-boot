@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,49 +28,63 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hamcrest.Matcher;
+import org.assertj.core.api.Condition;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WelcomePageHandlerMapping;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
-import org.springframework.boot.context.web.OrderedHttpPutFormContentFilter;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.servlet.HandlerAdapter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.handler.HandlerExceptionResolverComposite;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
+import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
+import org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
 import org.springframework.web.servlet.resource.CachingResourceResolver;
 import org.springframework.web.servlet.resource.CachingResourceTransformer;
 import org.springframework.web.servlet.resource.ContentVersionStrategy;
 import org.springframework.web.servlet.resource.CssLinkResourceTransformer;
 import org.springframework.web.servlet.resource.FixedVersionStrategy;
+import org.springframework.web.servlet.resource.GzipResourceResolver;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.resource.ResourceResolver;
@@ -79,17 +93,10 @@ import org.springframework.web.servlet.resource.VersionResourceResolver;
 import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link WebMvcAutoConfiguration}.
@@ -99,6 +106,7 @@ import static org.junit.Assert.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Brian Clozel
+ * @author Eddú Meléndez
  */
 public class WebMvcAutoConfigurationTests {
 
@@ -119,70 +127,77 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void handlerAdaptersCreated() throws Exception {
 		load();
-		assertEquals(3, this.context.getBeanNamesForType(HandlerAdapter.class).length);
-		assertFalse(this.context.getBean(RequestMappingHandlerAdapter.class)
-				.getMessageConverters().isEmpty());
-		assertEquals(this.context.getBean(HttpMessageConverters.class).getConverters(),
-				this.context.getBean(RequestMappingHandlerAdapter.class)
-						.getMessageConverters());
+		assertThat(this.context.getBeanNamesForType(HandlerAdapter.class).length)
+				.isEqualTo(3);
+		assertThat(this.context.getBean(RequestMappingHandlerAdapter.class)
+				.getMessageConverters()).isNotEmpty()
+						.isEqualTo(this.context.getBean(HttpMessageConverters.class)
+								.getConverters());
 	}
 
 	@Test
 	public void handlerMappingsCreated() throws Exception {
 		load();
-		assertEquals(6, this.context.getBeanNamesForType(HandlerMapping.class).length);
+		assertThat(this.context.getBeanNamesForType(HandlerMapping.class).length)
+				.isEqualTo(7);
 	}
 
 	@Test
 	public void resourceHandlerMapping() throws Exception {
 		load();
 		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
-		assertThat(mappingLocations.get("/**").size(), equalTo(5));
-		assertThat(mappingLocations.get("/webjars/**").size(), equalTo(1));
-		assertThat(mappingLocations.get("/webjars/**").get(0), equalTo(
-				(Resource) new ClassPathResource("/META-INF/resources/webjars/")));
-		assertThat(getResourceResolvers("/webjars/**").size(), equalTo(1));
-		assertThat(getResourceTransformers("/webjars/**").size(), equalTo(0));
-		assertThat(getResourceResolvers("/**").size(), equalTo(1));
-		assertThat(getResourceTransformers("/**").size(), equalTo(0));
+		assertThat(mappingLocations.get("/**")).hasSize(5);
+		assertThat(mappingLocations.get("/webjars/**")).hasSize(1);
+		assertThat(mappingLocations.get("/webjars/**").get(0))
+				.isEqualTo(new ClassPathResource("/META-INF/resources/webjars/"));
+		assertThat(getResourceResolvers("/webjars/**")).hasSize(1);
+		assertThat(getResourceTransformers("/webjars/**")).hasSize(0);
+		assertThat(getResourceResolvers("/**")).hasSize(1);
+		assertThat(getResourceTransformers("/**")).hasSize(0);
+	}
+
+	@Test
+	public void customResourceHandlerMapping() throws Exception {
+		load("spring.mvc.static-path-pattern:/static/**");
+		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
+		assertThat(mappingLocations.get("/static/**")).hasSize(5);
+		assertThat(getResourceResolvers("/static/**")).hasSize(1);
 	}
 
 	@Test
 	public void resourceHandlerMappingOverrideWebjars() throws Exception {
 		load(WebJars.class);
 		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
-		assertThat(mappingLocations.get("/webjars/**").size(), equalTo(1));
-		assertThat(mappingLocations.get("/webjars/**").get(0),
-				equalTo((Resource) new ClassPathResource("/foo/")));
+		assertThat(mappingLocations.get("/webjars/**")).hasSize(1);
+		assertThat(mappingLocations.get("/webjars/**").get(0))
+				.isEqualTo(new ClassPathResource("/foo/"));
 	}
 
 	@Test
 	public void resourceHandlerMappingOverrideAll() throws Exception {
 		load(AllResources.class);
 		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
-		assertThat(mappingLocations.get("/**").size(), equalTo(1));
-		assertThat(mappingLocations.get("/**").get(0),
-				equalTo((Resource) new ClassPathResource("/foo/")));
+		assertThat(mappingLocations.get("/**")).hasSize(1);
+		assertThat(mappingLocations.get("/**").get(0))
+				.isEqualTo(new ClassPathResource("/foo/"));
 	}
 
 	@Test
 	public void resourceHandlerMappingDisabled() throws Exception {
 		load("spring.resources.add-mappings:false");
 		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
-		assertThat(mappingLocations.size(), equalTo(0));
+		assertThat(mappingLocations.size()).isEqualTo(0);
 	}
 
 	@Test
 	public void resourceHandlerChainEnabled() throws Exception {
 		load("spring.resources.chain.enabled:true");
-		assertThat(getResourceResolvers("/webjars/**").size(), equalTo(2));
-		assertThat(getResourceTransformers("/webjars/**").size(), equalTo(1));
-		assertThat(getResourceResolvers("/**").size(), equalTo(2));
-		assertThat(getResourceTransformers("/**").size(), equalTo(1));
-		assertThat(getResourceResolvers("/**"), containsInstances(
-				CachingResourceResolver.class, PathResourceResolver.class));
-		assertThat(getResourceTransformers("/**"),
-				contains(instanceOf(CachingResourceTransformer.class)));
+		assertThat(getResourceResolvers("/webjars/**")).hasSize(2);
+		assertThat(getResourceTransformers("/webjars/**")).hasSize(1);
+		assertThat(getResourceResolvers("/**")).extractingResultOf("getClass")
+				.containsOnly(CachingResourceResolver.class, PathResourceResolver.class);
+		assertThat(getResourceTransformers("/**")).extractingResultOf("getClass")
+				.containsOnly(CachingResourceTransformer.class);
 	}
 
 	@Test
@@ -190,38 +205,36 @@ public class WebMvcAutoConfigurationTests {
 		load("spring.resources.chain.strategy.fixed.enabled:true",
 				"spring.resources.chain.strategy.fixed.version:test",
 				"spring.resources.chain.strategy.fixed.paths:/**/*.js");
-		assertThat(getResourceResolvers("/webjars/**").size(), equalTo(3));
-		assertThat(getResourceTransformers("/webjars/**").size(), equalTo(2));
-		assertThat(getResourceResolvers("/**").size(), equalTo(3));
-		assertThat(getResourceTransformers("/**").size(), equalTo(2));
-		assertThat(getResourceResolvers("/**"),
-				containsInstances(CachingResourceResolver.class,
-						VersionResourceResolver.class, PathResourceResolver.class));
-		assertThat(getResourceTransformers("/**"), containsInstances(
-				CachingResourceTransformer.class, CssLinkResourceTransformer.class));
+		assertThat(getResourceResolvers("/webjars/**")).hasSize(3);
+		assertThat(getResourceTransformers("/webjars/**")).hasSize(2);
+		assertThat(getResourceResolvers("/**")).extractingResultOf("getClass")
+				.containsOnly(CachingResourceResolver.class,
+						VersionResourceResolver.class, PathResourceResolver.class);
+		assertThat(getResourceTransformers("/**")).extractingResultOf("getClass")
+				.containsOnly(CachingResourceTransformer.class,
+						CssLinkResourceTransformer.class);
 		VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers(
 				"/**").get(1);
-		assertThat(resolver.getStrategyMap().get("/**/*.js"),
-				instanceOf(FixedVersionStrategy.class));
+		assertThat(resolver.getStrategyMap().get("/**/*.js"))
+				.isInstanceOf(FixedVersionStrategy.class);
 	}
 
 	@Test
 	public void resourceHandlerContentStrategyEnabled() throws Exception {
 		load("spring.resources.chain.strategy.content.enabled:true",
 				"spring.resources.chain.strategy.content.paths:/**,/*.png");
-		assertThat(getResourceResolvers("/webjars/**").size(), equalTo(3));
-		assertThat(getResourceTransformers("/webjars/**").size(), equalTo(2));
-		assertThat(getResourceResolvers("/**").size(), equalTo(3));
-		assertThat(getResourceTransformers("/**").size(), equalTo(2));
-		assertThat(getResourceResolvers("/**"),
-				containsInstances(CachingResourceResolver.class,
-						VersionResourceResolver.class, PathResourceResolver.class));
-		assertThat(getResourceTransformers("/**"), containsInstances(
-				CachingResourceTransformer.class, CssLinkResourceTransformer.class));
+		assertThat(getResourceResolvers("/webjars/**")).hasSize(3);
+		assertThat(getResourceTransformers("/webjars/**")).hasSize(2);
+		assertThat(getResourceResolvers("/**")).extractingResultOf("getClass")
+				.containsOnly(CachingResourceResolver.class,
+						VersionResourceResolver.class, PathResourceResolver.class);
+		assertThat(getResourceTransformers("/**")).extractingResultOf("getClass")
+				.containsOnly(CachingResourceTransformer.class,
+						CssLinkResourceTransformer.class);
 		VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers(
 				"/**").get(1);
-		assertThat(resolver.getStrategyMap().get("/*.png"),
-				instanceOf(ContentVersionStrategy.class));
+		assertThat(resolver.getStrategyMap().get("/*.png"))
+				.isInstanceOf(ContentVersionStrategy.class);
 	}
 
 	@Test
@@ -232,21 +245,22 @@ public class WebMvcAutoConfigurationTests {
 				"spring.resources.chain.strategy.fixed.enabled:true",
 				"spring.resources.chain.strategy.fixed.version:test",
 				"spring.resources.chain.strategy.fixed.paths:/**/*.js",
-				"spring.resources.chain.html-application-cache:true");
-		assertThat(getResourceResolvers("/webjars/**").size(), equalTo(2));
-		assertThat(getResourceTransformers("/webjars/**").size(), equalTo(2));
-		assertThat(getResourceResolvers("/**").size(), equalTo(2));
-		assertThat(getResourceTransformers("/**").size(), equalTo(2));
-		assertThat(getResourceResolvers("/**"), containsInstances(
-				VersionResourceResolver.class, PathResourceResolver.class));
-		assertThat(getResourceTransformers("/**"), containsInstances(
-				CssLinkResourceTransformer.class, AppCacheManifestTransformer.class));
+				"spring.resources.chain.html-application-cache:true",
+				"spring.resources.chain.gzipped:true");
+		assertThat(getResourceResolvers("/webjars/**")).hasSize(3);
+		assertThat(getResourceTransformers("/webjars/**")).hasSize(2);
+		assertThat(getResourceResolvers("/**")).extractingResultOf("getClass")
+				.containsOnly(VersionResourceResolver.class, GzipResourceResolver.class,
+						PathResourceResolver.class);
+		assertThat(getResourceTransformers("/**")).extractingResultOf("getClass")
+				.containsOnly(CssLinkResourceTransformer.class,
+						AppCacheManifestTransformer.class);
 		VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers(
 				"/**").get(0);
-		assertThat(resolver.getStrategyMap().get("/*.png"),
-				instanceOf(ContentVersionStrategy.class));
-		assertThat(resolver.getStrategyMap().get("/**/*.js"),
-				instanceOf(FixedVersionStrategy.class));
+		assertThat(resolver.getStrategyMap().get("/*.png"))
+				.isInstanceOf(ContentVersionStrategy.class);
+		assertThat(resolver.getStrategyMap().get("/**/*.js"))
+				.isInstanceOf(FixedVersionStrategy.class);
 	}
 
 	@Test
@@ -258,16 +272,43 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void overrideLocale() throws Exception {
-		load(AllResources.class, "spring.mvc.locale:en_UK");
-
+		load(AllResources.class, "spring.mvc.locale:en_UK",
+				"spring.mvc.locale-resolver=fixed");
 		// mock request and set user preferred locale
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addPreferredLocale(StringUtils.parseLocaleString("nl_NL"));
+		request.addHeader(HttpHeaders.ACCEPT_LANGUAGE, "nl_NL");
 		LocaleResolver localeResolver = this.context.getBean(LocaleResolver.class);
+		assertThat(localeResolver).isInstanceOf(FixedLocaleResolver.class);
 		Locale locale = localeResolver.resolveLocale(request);
-		assertThat(localeResolver, instanceOf(FixedLocaleResolver.class));
 		// test locale resolver uses fixed locale and not user preferred locale
-		assertThat(locale.toString(), equalTo("en_UK"));
+		assertThat(locale.toString()).isEqualTo("en_UK");
+	}
+
+	@Test
+	public void useAcceptHeaderLocale() {
+		load(AllResources.class, "spring.mvc.locale:en_UK");
+		// mock request and set user preferred locale
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.addPreferredLocale(StringUtils.parseLocaleString("nl_NL"));
+		request.addHeader(HttpHeaders.ACCEPT_LANGUAGE, "nl_NL");
+		LocaleResolver localeResolver = this.context.getBean(LocaleResolver.class);
+		assertThat(localeResolver).isInstanceOf(AcceptHeaderLocaleResolver.class);
+		Locale locale = localeResolver.resolveLocale(request);
+		// test locale resolver uses user preferred locale
+		assertThat(locale.toString()).isEqualTo("nl_NL");
+	}
+
+	@Test
+	public void useDefaultLocaleIfAcceptHeaderNoSet() {
+		load(AllResources.class, "spring.mvc.locale:en_UK");
+		// mock request and set user preferred locale
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		LocaleResolver localeResolver = this.context.getBean(LocaleResolver.class);
+		assertThat(localeResolver).isInstanceOf(AcceptHeaderLocaleResolver.class);
+		Locale locale = localeResolver.resolveLocale(request);
+		// test locale resolver uses default locale if no header is set
+		assertThat(locale.toString()).isEqualTo("en_UK");
 	}
 
 	@Test
@@ -277,7 +318,7 @@ public class WebMvcAutoConfigurationTests {
 				.getBean(FormattingConversionService.class);
 		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
 		// formatting cs should use simple toString()
-		assertThat(cs.convert(date, String.class), equalTo(date.toString()));
+		assertThat(cs.convert(date, String.class)).isEqualTo(date.toString());
 	}
 
 	@Test
@@ -286,22 +327,22 @@ public class WebMvcAutoConfigurationTests {
 		FormattingConversionService cs = this.context
 				.getBean(FormattingConversionService.class);
 		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
-		assertThat(cs.convert(date, String.class), equalTo("25*06*1988"));
+		assertThat(cs.convert(date, String.class)).isEqualTo("25*06*1988");
 	}
 
 	@Test
 	public void noMessageCodesResolver() throws Exception {
 		load(AllResources.class);
-		assertNull(this.context.getBean(WebMvcAutoConfigurationAdapter.class)
-				.getMessageCodesResolver());
+		assertThat(this.context.getBean(WebMvcAutoConfigurationAdapter.class)
+				.getMessageCodesResolver()).isNull();
 	}
 
 	@Test
 	public void overrideMessageCodesFormat() throws Exception {
 		load(AllResources.class,
 				"spring.mvc.messageCodesResolverFormat:POSTFIX_ERROR_CODE");
-		assertNotNull(this.context.getBean(WebMvcAutoConfigurationAdapter.class)
-				.getMessageCodesResolver());
+		assertThat(this.context.getBean(WebMvcAutoConfigurationAdapter.class)
+				.getMessageCodesResolver()).isNotNull();
 	}
 
 	protected Map<String, List<Resource>> getFaviconMappingLocations()
@@ -358,8 +399,8 @@ public class WebMvcAutoConfigurationTests {
 		load();
 		RequestMappingHandlerAdapter adapter = this.context
 				.getBean(RequestMappingHandlerAdapter.class);
-		assertEquals(true,
-				ReflectionTestUtils.getField(adapter, "ignoreDefaultModelOnRedirect"));
+		assertThat(adapter).extracting("ignoreDefaultModelOnRedirect")
+				.containsExactly(true);
 	}
 
 	@Test
@@ -373,15 +414,15 @@ public class WebMvcAutoConfigurationTests {
 		this.context.refresh();
 		RequestMappingHandlerAdapter adapter = this.context
 				.getBean(RequestMappingHandlerAdapter.class);
-		assertEquals(false,
-				ReflectionTestUtils.getField(adapter, "ignoreDefaultModelOnRedirect"));
+		assertThat(adapter).extracting("ignoreDefaultModelOnRedirect")
+				.containsExactly(false);
 	}
 
 	@Test
 	public void customViewResolver() throws Exception {
 		load(CustomViewResolver.class);
-		assertThat(this.context.getBean("viewResolver"),
-				instanceOf(MyViewResolver.class));
+		assertThat(this.context.getBean("viewResolver"))
+				.isInstanceOf(MyViewResolver.class);
 	}
 
 	@Test
@@ -389,28 +430,35 @@ public class WebMvcAutoConfigurationTests {
 		load(CustomContentNegotiatingViewResolver.class);
 		Map<String, ContentNegotiatingViewResolver> beans = this.context
 				.getBeansOfType(ContentNegotiatingViewResolver.class);
-		assertThat(beans.size(), equalTo(1));
-		assertThat(beans.keySet().iterator().next(), equalTo("myViewResolver"));
+		assertThat(beans.size()).isEqualTo(1);
+		assertThat(beans.keySet().iterator().next()).isEqualTo("myViewResolver");
 	}
 
 	@Test
 	public void faviconMapping() throws IllegalAccessException {
 		load();
 		assertThat(this.context.getBeansOfType(ResourceHttpRequestHandler.class)
-				.get("faviconRequestHandler"), is(notNullValue()));
+				.get("faviconRequestHandler")).isNotNull();
 		assertThat(this.context.getBeansOfType(SimpleUrlHandlerMapping.class)
-				.get("faviconHandlerMapping"), is(notNullValue()));
+				.get("faviconHandlerMapping")).isNotNull();
 		Map<String, List<Resource>> mappingLocations = getFaviconMappingLocations();
-		assertThat(mappingLocations.get("/**/favicon.ico").size(), equalTo(5));
+		assertThat(mappingLocations.get("/**/favicon.ico")).hasSize(6);
+	}
+
+	@Test
+	public void faviconMappingUsesStaticLocations() throws IllegalAccessException {
+		load("spring.resources.static-locations=classpath:/static");
+		Map<String, List<Resource>> mappingLocations = getFaviconMappingLocations();
+		assertThat(mappingLocations.get("/**/favicon.ico")).hasSize(2);
 	}
 
 	@Test
 	public void faviconMappingDisabled() throws IllegalAccessException {
 		load("spring.mvc.favicon.enabled:false");
 		assertThat(this.context.getBeansOfType(ResourceHttpRequestHandler.class)
-				.get("faviconRequestHandler"), is(nullValue()));
+				.get("faviconRequestHandler")).isNull();
 		assertThat(this.context.getBeansOfType(SimpleUrlHandlerMapping.class)
-				.get("faviconHandlerMapping"), is(nullValue()));
+				.get("faviconHandlerMapping")).isNull();
 	}
 
 	@Test
@@ -418,7 +466,7 @@ public class WebMvcAutoConfigurationTests {
 		load();
 		RequestMappingHandlerAdapter adapter = this.context
 				.getBean(RequestMappingHandlerAdapter.class);
-		assertNull(ReflectionTestUtils.getField(adapter, "asyncRequestTimeout"));
+		assertThat(ReflectionTestUtils.getField(adapter, "asyncRequestTimeout")).isNull();
 	}
 
 	@Test
@@ -427,34 +475,142 @@ public class WebMvcAutoConfigurationTests {
 		RequestMappingHandlerAdapter adapter = this.context
 				.getBean(RequestMappingHandlerAdapter.class);
 		Object actual = ReflectionTestUtils.getField(adapter, "asyncRequestTimeout");
-		assertEquals(123456L, actual);
+		assertThat(actual).isEqualTo(123456L);
+	}
+
+	@Test
+	public void customMediaTypes() throws Exception {
+		load("spring.mvc.mediaTypes.yaml:text/yaml");
+		RequestMappingHandlerAdapter adapter = this.context
+				.getBean(RequestMappingHandlerAdapter.class);
+		ContentNegotiationManager actual = (ContentNegotiationManager) ReflectionTestUtils
+				.getField(adapter, "contentNegotiationManager");
+		assertThat(actual.getAllFileExtensions().contains("yaml")).isTrue();
 	}
 
 	@Test
 	public void httpPutFormContentFilterIsAutoConfigured() {
 		load();
-		assertThat(
-				this.context.getBeansOfType(OrderedHttpPutFormContentFilter.class).size(),
-				is(equalTo(1)));
+		assertThat(this.context.getBeansOfType(OrderedHttpPutFormContentFilter.class))
+				.hasSize(1);
 	}
 
 	@Test
 	public void httpPutFormContentFilterCanBeOverridden() {
 		load(CustomHttpPutFormContentFilter.class);
-		assertThat(
-				this.context.getBeansOfType(OrderedHttpPutFormContentFilter.class).size(),
-				is(equalTo(0)));
-		assertThat(this.context.getBeansOfType(HttpPutFormContentFilter.class).size(),
-				is(equalTo(1)));
+		assertThat(this.context.getBeansOfType(OrderedHttpPutFormContentFilter.class))
+				.hasSize(0);
+		assertThat(this.context.getBeansOfType(HttpPutFormContentFilter.class))
+				.hasSize(1);
 	}
 
 	@Test
 	public void customConfigurableWebBindingInitializer() {
 		load(CustomConfigurableWebBindingInitializer.class);
-		assertThat(
-				this.context.getBean(RequestMappingHandlerAdapter.class)
-						.getWebBindingInitializer(),
-				is(instanceOf(CustomWebBindingInitializer.class)));
+		assertThat(this.context.getBean(RequestMappingHandlerAdapter.class)
+				.getWebBindingInitializer())
+						.isInstanceOf(CustomWebBindingInitializer.class);
+	}
+
+	@Test
+	public void customRequestMappingHandlerMapping() {
+		load(CustomRequestMappingHandlerMapping.class);
+		assertThat(this.context.getBean(RequestMappingHandlerMapping.class))
+				.isInstanceOf(MyRequestMappingHandlerMapping.class);
+	}
+
+	@Test
+	public void customRequestMappingHandlerAdapter() {
+		load(CustomRequestMappingHandlerAdapter.class);
+		assertThat(this.context.getBean(RequestMappingHandlerAdapter.class))
+				.isInstanceOf(MyRequestMappingHandlerAdapter.class);
+	}
+
+	@Test
+	public void multipleWebMvcRegistrations() {
+		load(MultipleWebMvcRegistrations.class);
+		assertThat(this.context.getBean(RequestMappingHandlerMapping.class))
+				.isNotInstanceOf(MyRequestMappingHandlerMapping.class);
+		assertThat(this.context.getBean(RequestMappingHandlerAdapter.class))
+				.isNotInstanceOf(MyRequestMappingHandlerAdapter.class);
+	}
+
+	@Test
+	public void defaultLogResolvedException() {
+		load();
+		testLogResolvedExceptionCustomization(false);
+	}
+
+	@Test
+	public void customLogResolvedException() {
+		load("spring.mvc.log-resolved-exception:true");
+		testLogResolvedExceptionCustomization(true);
+	}
+
+	@Test
+	public void welcomePageMappingProducesNotFoundResponseWhenThereIsNoWelcomePage()
+			throws Exception {
+		load("spring.resources.static-locations:classpath:/no-welcome-page/");
+		assertThat(this.context.getBeansOfType(WelcomePageHandlerMapping.class))
+				.hasSize(1);
+		MockMvcBuilders.webAppContextSetup(this.context).build()
+				.perform(get("/").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void welcomePageMappingHandlesRequestsThatAcceptTextHtml() throws Exception {
+		load("spring.resources.static-locations:classpath:/welcome-page/");
+		assertThat(this.context.getBeansOfType(WelcomePageHandlerMapping.class))
+				.hasSize(1);
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
+				.andExpect(forwardedUrl("index.html"));
+		mockMvc.perform(get("/").accept("*/*")).andExpect(status().isOk())
+				.andExpect(forwardedUrl("index.html"));
+	}
+
+	@Test
+	public void welcomePageMappingOnlyHandlesRequestsThatAcceptTextHtml()
+			throws Exception {
+		load("spring.resources.static-locations:classpath:/welcome-page/");
+		assertThat(this.context.getBeansOfType(WelcomePageHandlerMapping.class))
+				.hasSize(1);
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void welcomePageMappingWorksWithNoTrailingSlashOnResourceLocation()
+			throws Exception {
+		load("spring.resources.static-locations:classpath:/welcome-page");
+		assertThat(this.context.getBeansOfType(WelcomePageHandlerMapping.class))
+				.hasSize(1);
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
+				.andExpect(forwardedUrl("index.html"));
+	}
+
+	private void testLogResolvedExceptionCustomization(final boolean expected) {
+		HandlerExceptionResolver exceptionResolver = this.context
+				.getBean(HandlerExceptionResolver.class);
+		assertThat(exceptionResolver)
+				.isInstanceOf(HandlerExceptionResolverComposite.class);
+		List<HandlerExceptionResolver> delegates = ((HandlerExceptionResolverComposite) exceptionResolver)
+				.getExceptionResolvers();
+		for (HandlerExceptionResolver delegate : delegates) {
+			if (delegate instanceof AbstractHandlerMethodAdapter) {
+				assertThat(
+						new DirectFieldAccessor(delegate).getPropertyValue("warnLogger"))
+								.is(new Condition<Object>() {
+									@Override
+									public boolean matches(Object value) {
+										return (expected ? value != null : value == null);
+									}
+								});
+			}
+		}
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -469,15 +625,6 @@ public class WebMvcAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class));
 		this.context.register(configClasses.toArray(new Class<?>[configClasses.size()]));
 		this.context.refresh();
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private <E> Matcher<E> containsInstances(Class<?>... types) {
-		Matcher[] instances = new Matcher[types.length];
-		for (int i = 0; i < instances.length; i++) {
-			instances[i] = instanceOf(types[i]);
-		}
-		return contains(instances);
 	}
 
 	private void load(String... environment) {
@@ -589,6 +736,55 @@ public class WebMvcAutoConfigurationTests {
 		public HttpPutFormContentFilter customHttpPutFormContentFilter() {
 			return new HttpPutFormContentFilter();
 		}
+
+	}
+
+	@Configuration
+	static class CustomRequestMappingHandlerMapping {
+
+		@Bean
+		public WebMvcRegistrationsAdapter webMvcRegistrationsHandlerMapping() {
+			return new WebMvcRegistrationsAdapter() {
+
+				@Override
+				public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
+					return new MyRequestMappingHandlerMapping();
+				}
+
+			};
+		}
+	}
+
+	private static class MyRequestMappingHandlerMapping
+			extends RequestMappingHandlerMapping {
+
+	}
+
+	@Configuration
+	static class CustomRequestMappingHandlerAdapter {
+
+		@Bean
+		public WebMvcRegistrationsAdapter webMvcRegistrationsHandlerAdapter() {
+			return new WebMvcRegistrationsAdapter() {
+
+				@Override
+				public RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
+					return new MyRequestMappingHandlerAdapter();
+				}
+
+			};
+		}
+	}
+
+	private static class MyRequestMappingHandlerAdapter
+			extends RequestMappingHandlerAdapter {
+
+	}
+
+	@Configuration
+	@Import({ CustomRequestMappingHandlerMapping.class,
+			CustomRequestMappingHandlerAdapter.class })
+	static class MultipleWebMvcRegistrations {
 
 	}
 

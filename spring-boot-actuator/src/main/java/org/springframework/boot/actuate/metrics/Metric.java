@@ -92,7 +92,7 @@ public class Metric<T extends Number> {
 	 */
 	public Metric<Long> increment(int amount) {
 		return new Metric<Long>(this.getName(),
-				new Long(this.getValue().longValue() + amount));
+				Long.valueOf(this.getValue().longValue() + amount));
 	}
 
 	/**

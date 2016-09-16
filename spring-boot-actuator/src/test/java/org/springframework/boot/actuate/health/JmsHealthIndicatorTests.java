@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,9 @@ import javax.jms.JMSException;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -46,8 +47,8 @@ public class JmsHealthIndicatorTests {
 		given(connectionFactory.createConnection()).willReturn(connection);
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
-		assertEquals(Status.UP, health.getStatus());
-		assertEquals("JMS test provider", health.getDetails().get("provider"));
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails().get("provider")).isEqualTo("JMS test provider");
 		verify(connection, times(1)).close();
 	}
 
@@ -58,8 +59,8 @@ public class JmsHealthIndicatorTests {
 				.willThrow(new JMSException("test", "123"));
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
-		assertEquals(Status.DOWN, health.getStatus());
-		assertEquals(null, health.getDetails().get("provider"));
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails().get("provider")).isNull();
 	}
 
 	@Test
@@ -73,9 +74,24 @@ public class JmsHealthIndicatorTests {
 		given(connectionFactory.createConnection()).willReturn(connection);
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
-		assertEquals(Status.DOWN, health.getStatus());
-		assertEquals(null, health.getDetails().get("provider"));
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails().get("provider")).isNull();
 		verify(connection, times(1)).close();
+	}
+
+	@Test
+	public void jmsBrokerUsesFailover() throws JMSException {
+		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
+		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
+		given(connectionMetaData.getJMSProviderName()).willReturn("JMS test provider");
+		Connection connection = mock(Connection.class);
+		given(connection.getMetaData()).willReturn(connectionMetaData);
+		willThrow(new JMSException("Could not start", "123")).given(connection).start();
+		given(connectionFactory.createConnection()).willReturn(connection);
+		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
+		Health health = indicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails().get("provider")).isNull();
 	}
 
 }

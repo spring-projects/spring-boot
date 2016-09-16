@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.util.Assert;
 
@@ -32,6 +33,7 @@ import org.springframework.util.Assert;
  * additional relaxed conversion.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 1.1.0
  */
 class RelaxedConversionService implements ConversionService {
@@ -47,6 +49,7 @@ class RelaxedConversionService implements ConversionService {
 	RelaxedConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
 		this.additionalConverters = new GenericConversionService();
+		DefaultConversionService.addCollectionConverters(this.additionalConverters);
 		this.additionalConverters
 				.addConverterFactory(new StringToEnumIgnoringCaseConverterFactory());
 		this.additionalConverters.addConverter(new StringToCharArrayConverter());
@@ -137,7 +140,9 @@ class RelaxedConversionService implements ConversionService {
 				throw new IllegalArgumentException("No enum constant "
 						+ this.enumType.getCanonicalName() + "." + source);
 			}
+
 		}
 
 	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ import org.junit.Test;
 
 import org.springframework.boot.ansi.AnsiOutput;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ColorConverter}.
@@ -61,76 +60,76 @@ public class ColorConverterTests {
 	public void faint() throws Exception {
 		this.converter.setOptionList(Collections.singletonList("faint"));
 		String out = this.converter.transform(this.event, this.in);
-		assertThat(out, equalTo("\033[2min\033[0;39m"));
+		assertThat(out).isEqualTo("\033[2min\033[0;39m");
 	}
 
 	@Test
 	public void red() throws Exception {
 		this.converter.setOptionList(Collections.singletonList("red"));
 		String out = this.converter.transform(this.event, this.in);
-		assertThat(out, equalTo("\033[31min\033[0;39m"));
+		assertThat(out).isEqualTo("\033[31min\033[0;39m");
 	}
 
 	@Test
 	public void green() throws Exception {
 		this.converter.setOptionList(Collections.singletonList("green"));
 		String out = this.converter.transform(this.event, this.in);
-		assertThat(out, equalTo("\033[32min\033[0;39m"));
+		assertThat(out).isEqualTo("\033[32min\033[0;39m");
 	}
 
 	@Test
 	public void yellow() throws Exception {
 		this.converter.setOptionList(Collections.singletonList("yellow"));
 		String out = this.converter.transform(this.event, this.in);
-		assertThat(out, equalTo("\033[33min\033[0;39m"));
+		assertThat(out).isEqualTo("\033[33min\033[0;39m");
 	}
 
 	@Test
 	public void blue() throws Exception {
 		this.converter.setOptionList(Collections.singletonList("blue"));
 		String out = this.converter.transform(this.event, this.in);
-		assertThat(out, equalTo("\033[34min\033[0;39m"));
+		assertThat(out).isEqualTo("\033[34min\033[0;39m");
 	}
 
 	@Test
 	public void magenta() throws Exception {
 		this.converter.setOptionList(Collections.singletonList("magenta"));
 		String out = this.converter.transform(this.event, this.in);
-		assertThat(out, equalTo("\033[35min\033[0;39m"));
+		assertThat(out).isEqualTo("\033[35min\033[0;39m");
 	}
 
 	@Test
 	public void cyan() throws Exception {
 		this.converter.setOptionList(Collections.singletonList("cyan"));
 		String out = this.converter.transform(this.event, this.in);
-		assertThat(out, equalTo("\033[36min\033[0;39m"));
+		assertThat(out).isEqualTo("\033[36min\033[0;39m");
 	}
 
 	@Test
 	public void highlightError() throws Exception {
 		this.event.setLevel(Level.ERROR);
 		String out = this.converter.transform(this.event, this.in);
-		assertThat(out, equalTo("\033[31min\033[0;39m"));
+		assertThat(out).isEqualTo("\033[31min\033[0;39m");
 	}
 
 	@Test
 	public void highlightWarn() throws Exception {
 		this.event.setLevel(Level.WARN);
 		String out = this.converter.transform(this.event, this.in);
-		assertThat(out, equalTo("\033[33min\033[0;39m"));
+		assertThat(out).isEqualTo("\033[33min\033[0;39m");
 	}
 
 	@Test
 	public void highlightDebug() throws Exception {
 		this.event.setLevel(Level.DEBUG);
 		String out = this.converter.transform(this.event, this.in);
-		assertThat(out, equalTo("\033[32min\033[0;39m"));
+		assertThat(out).isEqualTo("\033[32min\033[0;39m");
 	}
 
 	@Test
 	public void highlightTrace() throws Exception {
 		this.event.setLevel(Level.TRACE);
 		String out = this.converter.transform(this.event, this.in);
-		assertThat(out, equalTo("\033[32min\033[0;39m"));
+		assertThat(out).isEqualTo("\033[32min\033[0;39m");
 	}
 }

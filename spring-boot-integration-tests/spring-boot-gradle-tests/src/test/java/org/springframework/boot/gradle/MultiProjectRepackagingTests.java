@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import java.util.jar.JarFile;
 import org.gradle.tooling.ProjectConnection;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for Gradle repackaging with a multi-project build.
@@ -43,8 +42,9 @@ public class MultiProjectRepackagingTests {
 		File buildLibs = new File(
 				"target/multi-project-transitive-file-dependency/main/build/libs");
 		JarFile jarFile = new JarFile(new File(buildLibs, "main.jar"));
-		assertThat(jarFile.getEntry("lib/commons-logging-1.1.3.jar"), notNullValue());
-		assertThat(jarFile.getEntry("lib/foo.jar"), notNullValue());
+		assertThat(jarFile.getEntry("BOOT-INF/lib/commons-logging-1.1.3.jar"))
+				.isNotNull();
+		assertThat(jarFile.getEntry("BOOT-INF/lib/foo.jar")).isNotNull();
 		jarFile.close();
 	}
 
@@ -58,7 +58,7 @@ public class MultiProjectRepackagingTests {
 				"target/multi-project-common-file-dependency/build/libs");
 		JarFile jarFile = new JarFile(
 				new File(buildLibs, "multi-project-common-file-dependency.jar"));
-		assertThat(jarFile.getEntry("lib/foo.jar"), notNullValue());
+		assertThat(jarFile.getEntry("BOOT-INF/lib/foo.jar")).isNotNull();
 		jarFile.close();
 	}
 
@@ -71,7 +71,7 @@ public class MultiProjectRepackagingTests {
 		File buildLibs = new File(
 				"target/multi-project-runtime-project-dependency/projectA/build/libs");
 		JarFile jarFile = new JarFile(new File(buildLibs, "projectA.jar"));
-		assertThat(jarFile.getEntry("lib/projectB.jar"), notNullValue());
+		assertThat(jarFile.getEntry("BOOT-INF/lib/projectB.jar")).isNotNull();
 		jarFile.close();
 	}
 

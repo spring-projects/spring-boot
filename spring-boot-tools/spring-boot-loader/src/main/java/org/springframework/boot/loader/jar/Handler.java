@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,10 +85,10 @@ public class Handler extends URLStreamHandler {
 	@Override
 	protected URLConnection openConnection(URL url) throws IOException {
 		if (this.jarFile != null) {
-			return new JarURLConnection(url, this.jarFile);
+			return JarURLConnection.get(url, this.jarFile);
 		}
 		try {
-			return new JarURLConnection(url, getRootJarFileFromUrl(url));
+			return JarURLConnection.get(url, getRootJarFileFromUrl(url));
 		}
 		catch (Exception ex) {
 			return openFallbackConnection(url, ex);
@@ -158,12 +158,12 @@ public class Handler extends URLStreamHandler {
 			String path = name.substring(FILE_PROTOCOL.length());
 			File file = new File(URLDecoder.decode(path, "UTF-8"));
 			Map<File, JarFile> cache = rootFileCache.get();
-			JarFile jarFile = (cache == null ? null : cache.get(file));
-			if (jarFile == null) {
-				jarFile = new JarFile(file);
-				addToRootFileCache(file, jarFile);
+			JarFile result = (cache == null ? null : cache.get(file));
+			if (result == null) {
+				result = new JarFile(file);
+				addToRootFileCache(file, result);
 			}
-			return jarFile;
+			return result;
 		}
 		catch (Exception ex) {
 			throw new IOException("Unable to open root Jar file '" + name + "'", ex);

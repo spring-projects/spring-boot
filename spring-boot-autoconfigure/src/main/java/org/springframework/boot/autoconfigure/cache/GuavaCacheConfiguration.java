@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheBuilderSpec;
 import com.google.common.cache.CacheLoader;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.CacheManager;
@@ -45,17 +45,27 @@ import org.springframework.util.StringUtils;
 @Conditional(CacheCondition.class)
 class GuavaCacheConfiguration {
 
-	@Autowired
-	private CacheProperties cacheProperties;
+	private final CacheProperties cacheProperties;
 
-	@Autowired(required = false)
-	private CacheBuilder<Object, Object> cacheBuilder;
+	private final CacheManagerCustomizers customizers;
 
-	@Autowired(required = false)
-	private CacheBuilderSpec cacheBuilderSpec;
+	private final CacheBuilder<Object, Object> cacheBuilder;
 
-	@Autowired(required = false)
-	private CacheLoader<Object, Object> cacheLoader;
+	private final CacheBuilderSpec cacheBuilderSpec;
+
+	private final CacheLoader<Object, Object> cacheLoader;
+
+	GuavaCacheConfiguration(CacheProperties cacheProperties,
+			CacheManagerCustomizers customizers,
+			ObjectProvider<CacheBuilder<Object, Object>> cacheBuilderProvider,
+			ObjectProvider<CacheBuilderSpec> cacheBuilderSpecProvider,
+			ObjectProvider<CacheLoader<Object, Object>> cacheLoaderProvider) {
+		this.cacheProperties = cacheProperties;
+		this.customizers = customizers;
+		this.cacheBuilder = cacheBuilderProvider.getIfAvailable();
+		this.cacheBuilderSpec = cacheBuilderSpecProvider.getIfAvailable();
+		this.cacheLoader = cacheLoaderProvider.getIfAvailable();
+	}
 
 	@Bean
 	public GuavaCacheManager cacheManager() {
@@ -64,7 +74,7 @@ class GuavaCacheConfiguration {
 		if (!CollectionUtils.isEmpty(cacheNames)) {
 			cacheManager.setCacheNames(cacheNames);
 		}
-		return cacheManager;
+		return this.customizers.customize(cacheManager);
 	}
 
 	private GuavaCacheManager createCacheManager() {

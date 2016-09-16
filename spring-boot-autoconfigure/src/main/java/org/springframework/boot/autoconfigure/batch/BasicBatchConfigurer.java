@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,9 +43,9 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 @Component
-class BasicBatchConfigurer implements BatchConfigurer {
+public class BasicBatchConfigurer implements BatchConfigurer {
 
-	private static Log logger = LogFactory.getLog(BasicBatchConfigurer.class);
+	private static final Log logger = LogFactory.getLog(BasicBatchConfigurer.class);
 
 	private final BatchProperties properties;
 
@@ -66,7 +66,7 @@ class BasicBatchConfigurer implements BatchConfigurer {
 	 * @param properties the batch properties
 	 * @param dataSource the underlying data source
 	 */
-	BasicBatchConfigurer(BatchProperties properties, DataSource dataSource) {
+	protected BasicBatchConfigurer(BatchProperties properties, DataSource dataSource) {
 		this(properties, dataSource, null);
 	}
 
@@ -76,7 +76,7 @@ class BasicBatchConfigurer implements BatchConfigurer {
 	 * @param dataSource the underlying data source
 	 * @param entityManagerFactory the entity manager factory (or {@code null})
 	 */
-	BasicBatchConfigurer(BatchProperties properties, DataSource dataSource,
+	protected BasicBatchConfigurer(BatchProperties properties, DataSource dataSource,
 			EntityManagerFactory entityManagerFactory) {
 		this.properties = properties;
 		this.entityManagerFactory = entityManagerFactory;
@@ -116,7 +116,7 @@ class BasicBatchConfigurer implements BatchConfigurer {
 		}
 	}
 
-	private JobExplorer createJobExplorer() throws Exception {
+	protected JobExplorer createJobExplorer() throws Exception {
 		JobExplorerFactoryBean jobExplorerFactoryBean = new JobExplorerFactoryBean();
 		jobExplorerFactoryBean.setDataSource(this.dataSource);
 		String tablePrefix = this.properties.getTablePrefix();
@@ -127,7 +127,7 @@ class BasicBatchConfigurer implements BatchConfigurer {
 		return jobExplorerFactoryBean.getObject();
 	}
 
-	private JobLauncher createJobLauncher() throws Exception {
+	protected JobLauncher createJobLauncher() throws Exception {
 		SimpleJobLauncher jobLauncher = new SimpleJobLauncher();
 		jobLauncher.setJobRepository(getJobRepository());
 		jobLauncher.afterPropertiesSet();

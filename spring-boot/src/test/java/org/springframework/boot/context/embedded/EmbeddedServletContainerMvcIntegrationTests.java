@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,10 @@ import java.nio.charset.Charset;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -42,8 +42,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link EmbeddedWebApplicationContext} and
@@ -105,7 +104,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 		try {
 			String actual = StreamUtils.copyToString(response.getBody(),
 					Charset.forName("UTF-8"));
-			assertThat(actual, equalTo("Hello World"));
+			assertThat(actual).isEqualTo("Hello World");
 		}
 		finally {
 			response.close();
@@ -155,7 +154,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 			return new DispatcherServlet();
 			// Alternatively you can use ServletContextInitializer beans including
 			// ServletRegistration and FilterRegistration. Read the
-			// EmbeddedWebApplicationContext javadoc for details
+			// EmbeddedWebApplicationContext Javadoc for details.
 		}
 
 		@Bean
@@ -169,8 +168,11 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 	@PropertySource("classpath:/org/springframework/boot/context/embedded/conf.properties")
 	public static class AdvancedConfig {
 
-		@Autowired
-		private Environment env;
+		private final Environment env;
+
+		public AdvancedConfig(Environment env) {
+			this.env = env;
+		}
 
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {

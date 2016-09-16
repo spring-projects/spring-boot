@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,13 +31,16 @@ import org.springframework.boot.autoconfigure.jms.hornetq.HornetQProperties.Embe
 /**
  * Factory class to create a HornetQ {@link Configuration} from {@link HornetQProperties}.
  *
- * @author Stephane Nicol
+ * @author Stephane Nicoll
  * @author Phillip Webb
  * @since 1.1.0
+ * @deprecated as of 1.4 in favor of the Artemis support
  */
+@Deprecated
 class HornetQEmbeddedConfigurationFactory {
 
-	private Log logger = LogFactory.getLog(HornetQEmbeddedConfigurationFactory.class);
+	private static final Log logger = LogFactory
+			.getLog(HornetQEmbeddedConfigurationFactory.class);
 
 	private final Embedded properties;
 
@@ -69,7 +72,7 @@ class HornetQEmbeddedConfigurationFactory {
 
 		// HORNETQ-1143
 		if (this.properties.isDefaultClusterPassword()) {
-			this.logger.debug("Using default HornetQ cluster password: "
+			logger.debug("Using default HornetQ cluster password: "
 					+ this.properties.getClusterPassword());
 		}
 

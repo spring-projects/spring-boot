@@ -60,17 +60,22 @@
 
 			<echo>Embedding spring-boot-loader v${spring-boot.version}...</echo>
 			<jar destfile="@{destfile}" compress="false">
-				<fileset dir="@{classes}" />
+				<mappedresources>
+					<fileset dir="@{classes}"/>
+					<globmapper from="*" to="BOOT-INF/classes/*" />
+				</mappedresources>
 				<resources />
 				<mappedresources>
 					<lib />
-					<globmapper from="*" to="lib/*" />
+					<globmapper from="*" to="BOOT-INF/lib/*" />
 				</mappedresources>
 				<zipfileset src="${destdir}/dependency/spring-boot-loader.jar" />
 				<manifest>
 					<attribute name="Main-Class"
 						value="org.springframework.boot.loader.JarLauncher" />
 					<attribute name="Start-Class" value="${start-class}" />
+					<attribute name="Spring-Boot-Classes" value="BOOT-INF/classes/" />
+					<attribute name="Spring-Boot-Lib" value="BOOT-INF/lib/" />
 				</manifest>
 			</jar>
 		</sequential>

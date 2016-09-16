@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,10 @@ import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfigurat
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.boot.test.EnvironmentTestUtils;
-import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -63,6 +65,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
+import org.springframework.security.oauth2.client.OAuth2RestOperations;
+import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -87,14 +91,11 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Verify Spring Security OAuth2 auto-configuration secures end points properly, accepts
@@ -130,12 +131,14 @@ public class OAuth2AutoConfigurationTests {
 				.getBean(ClientDetailsService.class);
 		ClientDetails clientDetails = clientDetailsService
 				.loadClientByClientId(config.getClientId());
-		assertThat(AopUtils.isJdkDynamicProxy(clientDetailsService), equalTo(true));
-		assertThat(AopUtils.getTargetClass(clientDetailsService).getName(),
-				is(equalTo(InMemoryClientDetailsService.class.getName())));
-		assertThat(handler instanceof ApprovalStoreUserApprovalHandler, equalTo(true));
-		assertThat(clientDetails, equalTo(config));
+		assertThat(AopUtils.isJdkDynamicProxy(clientDetailsService)).isTrue();
+		assertThat(AopUtils.getTargetClass(clientDetailsService).getName())
+				.isEqualTo(InMemoryClientDetailsService.class.getName());
+		assertThat(handler).isInstanceOf(ApprovalStoreUserApprovalHandler.class);
+		assertThat(clientDetails).isEqualTo(config);
 		verifyAuthentication(config);
+		assertThat(this.context.getBeanNamesForType(OAuth2RestOperations.class))
+				.isEmpty();
 	}
 
 	@Test
@@ -143,13 +146,21 @@ public class OAuth2AutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"security.oauth2.client.clientId:myclientid",
-				"security.oauth2.client.clientSecret:mysecret");
+				"security.oauth2.client.clientSecret:mysecret",
+				"security.oauth2.client.autoApproveScopes:read,write",
+				"security.oauth2.client.accessTokenValiditySeconds:40",
+				"security.oauth2.client.refreshTokenValiditySeconds:80");
 		this.context.register(AuthorizationAndResourceServerConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
 		ClientDetails config = this.context.getBean(ClientDetails.class);
-		assertThat(config.getClientId(), equalTo("myclientid"));
-		assertThat(config.getClientSecret(), equalTo("mysecret"));
+		assertThat(config.getClientId()).isEqualTo("myclientid");
+		assertThat(config.getClientSecret()).isEqualTo("mysecret");
+		assertThat(config.isAutoApprove("read")).isTrue();
+		assertThat(config.isAutoApprove("write")).isTrue();
+		assertThat(config.isAutoApprove("foo")).isFalse();
+		assertThat(config.getAccessTokenValiditySeconds()).isEqualTo(40);
+		assertThat(config.getRefreshTokenValiditySeconds()).isEqualTo(80);
 		verifyAuthentication(config);
 	}
 
@@ -159,8 +170,8 @@ public class OAuth2AutoConfigurationTests {
 		this.context.register(AuthorizationServerConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
-		assertThat(countBeans(RESOURCE_SERVER_CONFIG), equalTo(0));
-		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG), equalTo(1));
+		assertThat(countBeans(RESOURCE_SERVER_CONFIG)).isEqualTo(0);
+		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG)).isEqualTo(1);
 	}
 
 	@Test
@@ -169,10 +180,22 @@ public class OAuth2AutoConfigurationTests {
 		this.context.register(ClientConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
-		assertThat(countBeans(RESOURCE_SERVER_CONFIG), equalTo(0));
-		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG), equalTo(0));
+		assertThat(countBeans(RESOURCE_SERVER_CONFIG)).isEqualTo(0);
+		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG)).isEqualTo(0);
 		// Scoped target and proxy:
-		assertThat(countBeans(OAuth2ClientContext.class), equalTo(2));
+		assertThat(countBeans(OAuth2ClientContext.class)).isEqualTo(2);
+	}
+
+	@Test
+	public void testClientIsNotAuthCode() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(MinimalSecureNonWebApplication.class);
+		EnvironmentTestUtils.addEnvironment(context,
+				"security.oauth2.client.clientId=client");
+		context.refresh();
+		assertThat(countBeans(context, ClientCredentialsResourceDetails.class))
+				.isEqualTo(1);
+		context.close();
 	}
 
 	@Test
@@ -183,10 +206,10 @@ public class OAuth2AutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"security.oauth2.resource.jwt.keyValue:DEADBEEF");
 		this.context.refresh();
-		assertThat(countBeans(RESOURCE_SERVER_CONFIG), equalTo(1));
-		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG), equalTo(0));
-		assertThat(countBeans(UserApprovalHandler.class), equalTo(0));
-		assertThat(countBeans(DefaultTokenServices.class), equalTo(1));
+		assertThat(countBeans(RESOURCE_SERVER_CONFIG)).isEqualTo(1);
+		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG)).isEqualTo(0);
+		assertThat(countBeans(UserApprovalHandler.class)).isEqualTo(0);
+		assertThat(countBeans(DefaultTokenServices.class)).isEqualTo(1);
 	}
 
 	@Test
@@ -196,9 +219,9 @@ public class OAuth2AutoConfigurationTests {
 				CustomResourceServer.class, MinimalSecureWebApplication.class);
 		this.context.refresh();
 		ClientDetails config = this.context.getBean(ClientDetails.class);
-		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG), equalTo(1));
-		assertThat(countBeans(CustomResourceServer.class), equalTo(1));
-		assertThat(countBeans(RESOURCE_SERVER_CONFIG), equalTo(1));
+		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG)).isEqualTo(1);
+		assertThat(countBeans(CustomResourceServer.class)).isEqualTo(1);
+		assertThat(countBeans(RESOURCE_SERVER_CONFIG)).isEqualTo(1);
 		verifyAuthentication(config);
 	}
 
@@ -217,8 +240,8 @@ public class OAuth2AutoConfigurationTests {
 		config.setAuthorizedGrantTypes(Arrays.asList("password"));
 		config.setAuthorities(AuthorityUtils.commaSeparatedStringToAuthorityList("USER"));
 		config.setScope(Arrays.asList("read"));
-		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG), equalTo(0));
-		assertThat(countBeans(RESOURCE_SERVER_CONFIG), equalTo(1));
+		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG)).isEqualTo(0);
+		assertThat(countBeans(RESOURCE_SERVER_CONFIG)).isEqualTo(1);
 		verifyAuthentication(config);
 	}
 
@@ -234,9 +257,9 @@ public class OAuth2AutoConfigurationTests {
 				.getBean(DelegatingMethodSecurityMetadataSource.class);
 		List<MethodSecurityMetadataSource> sources = source
 				.getMethodSecurityMetadataSources();
-		assertThat(sources.size(), equalTo(1));
-		assertThat(sources.get(0).getClass().getName(),
-				equalTo(PrePostAnnotationSecurityMetadataSource.class.getName()));
+		assertThat(sources.size()).isEqualTo(1);
+		assertThat(sources.get(0).getClass().getName())
+				.isEqualTo(PrePostAnnotationSecurityMetadataSource.class.getName());
 		verifyAuthentication(config);
 	}
 
@@ -252,9 +275,9 @@ public class OAuth2AutoConfigurationTests {
 				.getBean(DelegatingMethodSecurityMetadataSource.class);
 		List<MethodSecurityMetadataSource> sources = source
 				.getMethodSecurityMetadataSources();
-		assertThat(sources.size(), equalTo(1));
-		assertThat(sources.get(0).getClass().getName(),
-				equalTo(SecuredAnnotationSecurityMetadataSource.class.getName()));
+		assertThat(sources.size()).isEqualTo(1);
+		assertThat(sources.get(0).getClass().getName())
+				.isEqualTo(SecuredAnnotationSecurityMetadataSource.class.getName());
 		verifyAuthentication(config, HttpStatus.OK);
 	}
 
@@ -270,9 +293,9 @@ public class OAuth2AutoConfigurationTests {
 				.getBean(DelegatingMethodSecurityMetadataSource.class);
 		List<MethodSecurityMetadataSource> sources = source
 				.getMethodSecurityMetadataSources();
-		assertThat(sources.size(), equalTo(1));
-		assertThat(sources.get(0).getClass().getName(),
-				equalTo(Jsr250MethodSecurityMetadataSource.class.getName()));
+		assertThat(sources.size()).isEqualTo(1);
+		assertThat(sources.get(0).getClass().getName())
+				.isEqualTo(Jsr250MethodSecurityMetadataSource.class.getName());
 		verifyAuthentication(config, HttpStatus.OK);
 	}
 
@@ -286,9 +309,9 @@ public class OAuth2AutoConfigurationTests {
 				.getBean(DelegatingMethodSecurityMetadataSource.class);
 		List<MethodSecurityMetadataSource> sources = source
 				.getMethodSecurityMetadataSources();
-		assertThat(sources.size(), equalTo(1));
-		assertThat(sources.get(0).getClass().getName(),
-				equalTo(PrePostAnnotationSecurityMetadataSource.class.getName()));
+		assertThat(sources.size()).isEqualTo(1);
+		assertThat(sources.get(0).getClass().getName())
+				.isEqualTo(PrePostAnnotationSecurityMetadataSource.class.getName());
 	}
 
 	/**
@@ -303,7 +326,7 @@ public class OAuth2AutoConfigurationTests {
 	private void verifyAuthentication(ClientDetails config, HttpStatus finalStatus) {
 		String baseUrl = "http://localhost:"
 				+ this.context.getEmbeddedServletContainer().getPort();
-		RestTemplate rest = new TestRestTemplate();
+		TestRestTemplate rest = new TestRestTemplate();
 		// First, verify the web endpoint can't be reached
 		assertEndpointUnauthorized(baseUrl, rest);
 		// Since we can't reach it, need to collect an authorization token
@@ -315,19 +338,19 @@ public class OAuth2AutoConfigurationTests {
 		String authorizationToken = tokenResponse.findValue("access_token").asText();
 		String tokenType = tokenResponse.findValue("token_type").asText();
 		String scope = tokenResponse.findValues("scope").get(0).toString();
-		assertThat(tokenType, equalTo("bearer"));
-		assertThat(scope, equalTo("\"read\""));
+		assertThat(tokenType).isEqualTo("bearer");
+		assertThat(scope).isEqualTo("\"read\"");
 		// Now we should be able to see that endpoint.
 		headers.set("Authorization", "BEARER " + authorizationToken);
 		ResponseEntity<String> securedResponse = rest
 				.exchange(new RequestEntity<Void>(headers, HttpMethod.GET,
 						URI.create(baseUrl + "/securedFind")), String.class);
-		assertThat(securedResponse.getStatusCode(), equalTo(HttpStatus.OK));
-		assertThat(securedResponse.getBody(), equalTo(
-				"You reached an endpoint " + "secured by Spring Security OAuth2"));
+		assertThat(securedResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(securedResponse.getBody()).isEqualTo(
+				"You reached an endpoint " + "secured by Spring Security OAuth2");
 		ResponseEntity<String> entity = rest.exchange(new RequestEntity<Void>(headers,
 				HttpMethod.POST, URI.create(baseUrl + "/securedSave")), String.class);
-		assertThat(entity.getStatusCode(), equalTo(finalStatus));
+		assertThat(entity.getStatusCode()).isEqualTo(finalStatus);
 	}
 
 	private HttpHeaders getHeaders(ClientDetails config) {
@@ -347,15 +370,19 @@ public class OAuth2AutoConfigurationTests {
 		return body;
 	}
 
-	private void assertEndpointUnauthorized(String baseUrl, RestTemplate rest) {
+	private void assertEndpointUnauthorized(String baseUrl, TestRestTemplate rest) {
 		URI uri = URI.create(baseUrl + "/secured");
 		ResponseEntity<String> entity = rest
 				.exchange(new RequestEntity<Void>(HttpMethod.GET, uri), String.class);
-		assertThat(entity.getStatusCode(), equalTo(HttpStatus.UNAUTHORIZED));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	private int countBeans(Class<?> type) {
-		return this.context.getBeanNamesForType(type).length;
+		return countBeans(this.context, type);
+	}
+
+	private int countBeans(ApplicationContext context, Class<?> type) {
+		return context.getBeanNamesForType(type).length;
 	}
 
 	@Configuration
@@ -364,6 +391,12 @@ public class OAuth2AutoConfigurationTests {
 			DispatcherServletAutoConfiguration.class, OAuth2AutoConfiguration.class,
 			WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
 	protected static class MinimalSecureWebApplication {
+
+	}
+
+	@Configuration
+	@Import({ SecurityAutoConfiguration.class, OAuth2AutoConfiguration.class })
+	protected static class MinimalSecureNonWebApplication {
 
 	}
 
@@ -435,13 +468,13 @@ public class OAuth2AutoConfigurationTests {
 	@RestController
 	protected static class TestWebApp {
 
-		@RequestMapping(value = "/securedFind", method = RequestMethod.GET)
+		@GetMapping("/securedFind")
 		@PreAuthorize("#oauth2.hasScope('read')")
 		public String secureFind() {
 			return "You reached an endpoint secured by Spring Security OAuth2";
 		}
 
-		@RequestMapping(value = "/securedSave", method = RequestMethod.POST)
+		@PostMapping("/securedSave")
 		@PreAuthorize("#oauth2.hasScope('write')")
 		public String secureSave() {
 			return "You reached an endpoint secured by Spring Security OAuth2";
@@ -463,8 +496,11 @@ public class OAuth2AutoConfigurationTests {
 	@EnableResourceServer
 	protected static class CustomResourceServer extends ResourceServerConfigurerAdapter {
 
-		@Autowired
-		private ResourceServerProperties config;
+		private final ResourceServerProperties config;
+
+		protected CustomResourceServer(ResourceServerProperties config) {
+			this.config = config;
+		}
 
 		@Override
 		public void configure(ResourceServerSecurityConfigurer resources)
@@ -487,8 +523,11 @@ public class OAuth2AutoConfigurationTests {
 	protected static class CustomAuthorizationServer
 			extends AuthorizationServerConfigurerAdapter {
 
-		@Autowired
-		private AuthenticationManager authenticationManager;
+		private final AuthenticationManager authenticationManager;
+
+		protected CustomAuthorizationServer(AuthenticationManager authenticationManager) {
+			this.authenticationManager = authenticationManager;
+		}
 
 		@Bean
 		public TokenStore tokenStore() {

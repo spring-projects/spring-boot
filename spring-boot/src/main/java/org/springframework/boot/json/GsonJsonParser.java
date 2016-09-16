@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,30 +21,52 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Thin wrapper to adapt {@link Gson} to a {@link JsonParser}.
  *
  * @author Dave Syer
+ * @author Jean de Klerk
  * @since 1.2.0
  * @see JsonParserFactory
  */
 public class GsonJsonParser implements JsonParser {
 
+	private static final TypeToken<?> MAP_TYPE = new MapTypeToken();
+
+	private static final TypeToken<?> LIST_TYPE = new ListTypeToken();
+
 	private Gson gson = new GsonBuilder().create();
 
 	@Override
 	public Map<String, Object> parseMap(String json) {
-		@SuppressWarnings("unchecked")
-		Map<String, Object> value = this.gson.fromJson(json, Map.class);
-		return value;
+		if (json != null) {
+			json = json.trim();
+			if (json.startsWith("{")) {
+				return this.gson.fromJson(json, MAP_TYPE.getType());
+			}
+		}
+		throw new IllegalArgumentException("Cannot parse JSON");
 	}
 
 	@Override
 	public List<Object> parseList(String json) {
-		@SuppressWarnings("unchecked")
-		List<Object> value = this.gson.fromJson(json, List.class);
-		return value;
+		if (json != null) {
+			json = json.trim();
+			if (json.startsWith("[")) {
+				return this.gson.fromJson(json, LIST_TYPE.getType());
+			}
+		}
+		throw new IllegalArgumentException("Cannot parse JSON");
+	}
+
+	private static final class MapTypeToken extends TypeToken<Map<String, Object>> {
+
+	}
+
+	private static final class ListTypeToken extends TypeToken<List<Object>> {
+
 	}
 
 }

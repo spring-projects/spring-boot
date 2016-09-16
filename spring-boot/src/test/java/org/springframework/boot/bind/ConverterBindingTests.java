@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.bind;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -25,36 +28,44 @@ import org.springframework.boot.bind.ConverterBindingTests.TestConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationProperties} binding with custom converters.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(TestConfig.class)
-@IntegrationTest("foo=bar")
+@RunWith(SpringRunner.class)
+@DirtiesContext
+@ContextConfiguration(classes = TestConfig.class, loader = SpringApplicationBindContextLoader.class)
+@TestPropertySource(properties = { "foo=one", "bar=two" })
 public class ConverterBindingTests {
 
 	@Value("${foo:}")
 	private String foo;
+
+	@Value("${bar:}")
+	private String bar;
 
 	@Autowired
 	private Wrapper properties;
 
 	@Test
 	public void overridingOfPropertiesOrderOfAtPropertySources() {
-		assertThat(this.properties.getFoo().getName(), is(this.foo));
+		assertThat(this.properties.getFoo().name).isEqualTo(this.foo);
+		assertThat(this.properties.getBar().name).isEqualTo(this.bar);
 	}
 
 	@Configuration
@@ -68,9 +79,24 @@ public class ConverterBindingTests {
 
 				@Override
 				public Foo convert(String source) {
-					Foo foo = new Foo();
-					foo.setName(source);
-					return foo;
+					return new Foo(source);
+				}
+			};
+		}
+
+		@Bean
+		public GenericConverter genericConverter() {
+			return new GenericConverter() {
+				@Override
+				public Set<ConvertiblePair> getConvertibleTypes() {
+					return Collections
+							.singleton(new ConvertiblePair(String.class, Bar.class));
+				}
+
+				@Override
+				public Object convert(Object source, TypeDescriptor sourceType,
+						TypeDescriptor targetType) {
+					return new Bar((String) source);
 				}
 			};
 		}
@@ -84,13 +110,19 @@ public class ConverterBindingTests {
 
 	public static class Foo {
 
-		private String name;
+		private final String name;
 
-		public String getName() {
-			return this.name;
+		public Foo(String name) {
+			this.name = name;
 		}
 
-		public void setName(String name) {
+	}
+
+	public static class Bar {
+
+		private final String name;
+
+		public Bar(String name) {
 			this.name = name;
 		}
 
@@ -101,12 +133,22 @@ public class ConverterBindingTests {
 
 		private Foo foo;
 
+		private Bar bar;
+
 		public Foo getFoo() {
 			return this.foo;
 		}
 
 		public void setFoo(Foo foo) {
 			this.foo = foo;
+		}
+
+		public Bar getBar() {
+			return this.bar;
+		}
+
+		public void setBar(Bar bar) {
+			this.bar = bar;
 		}
 
 	}

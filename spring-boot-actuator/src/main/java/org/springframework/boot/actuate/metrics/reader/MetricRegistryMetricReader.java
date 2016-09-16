@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright 2013-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ import org.springframework.util.StringUtils;
  */
 public class MetricRegistryMetricReader implements MetricReader, MetricRegistryListener {
 
-	private static Log logger = LogFactory.getLog(MetricRegistryMetricReader.class);
+	private static final Log logger = LogFactory.getLog(MetricRegistryMetricReader.class);
 
 	private static final Map<Class<?>, Set<String>> numberKeys = new ConcurrentHashMap<Class<?>, Set<String>>();
 
@@ -87,9 +87,15 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 			return new Metric<Number>(metricName, counter.getCount());
 		}
 		if (metric instanceof Gauge) {
-			@SuppressWarnings("unchecked")
-			Gauge<Number> value = (Gauge<Number>) metric;
-			return new Metric<Number>(metricName, value.getValue());
+			Object value = ((Gauge<?>) metric).getValue();
+			if (value instanceof Number) {
+				return new Metric<Number>(metricName, (Number) value);
+			}
+			if (logger.isDebugEnabled()) {
+				logger.debug("Ignoring gauge '" + name + "' (" + metric
+						+ ") as its value is not a Number");
+			}
+			return null;
 		}
 		if (metric instanceof Sampling) {
 			if (metricName.contains(".snapshot.")) {
@@ -129,13 +135,6 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 
 	@Override
 	public void onGaugeAdded(String name, Gauge<?> gauge) {
-		if (!(gauge.getValue() instanceof Number)) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Ignoring gauge '" + name + "' (" + gauge
-						+ ") as its value is not a Number");
-			}
-			return;
-		}
 		this.names.put(name, name);
 		synchronized (this.monitor) {
 			this.reverse.add(name, name);

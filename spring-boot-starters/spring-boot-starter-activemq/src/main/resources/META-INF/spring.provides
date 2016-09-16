@@ -1,0 +1,1 @@
+provides: activemq-broker,spring-jms

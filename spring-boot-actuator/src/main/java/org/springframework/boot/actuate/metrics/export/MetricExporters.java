@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,16 @@
 
 package org.springframework.boot.actuate.metrics.export;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
-import org.springframework.boot.actuate.metrics.writer.MetricWriter;
+import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.IntervalTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
@@ -32,15 +36,17 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
  * @author Dave Syer
  * @since 1.3.0
  */
-public class MetricExporters implements SchedulingConfigurer {
+public class MetricExporters implements SchedulingConfigurer, Closeable {
 
 	private MetricReader reader;
 
-	private Map<String, MetricWriter> writers = new HashMap<String, MetricWriter>();
+	private Map<String, GaugeWriter> writers = new HashMap<String, GaugeWriter>();
 
 	private final MetricExportProperties properties;
 
 	private final Map<String, Exporter> exporters = new HashMap<String, Exporter>();
+
+	private final Set<String> closeables = new HashSet<String>();
 
 	public MetricExporters(MetricExportProperties properties) {
 		this.properties = properties;
@@ -50,7 +56,7 @@ public class MetricExporters implements SchedulingConfigurer {
 		this.reader = reader;
 	}
 
-	public void setWriters(Map<String, MetricWriter> writers) {
+	public void setWriters(Map<String, GaugeWriter> writers) {
 		this.writers.putAll(writers);
 	}
 
@@ -71,13 +77,14 @@ public class MetricExporters implements SchedulingConfigurer {
 				taskRegistrar.addFixedDelayTask(task);
 			}
 		}
-		for (Entry<String, MetricWriter> entry : this.writers.entrySet()) {
+		for (Entry<String, GaugeWriter> entry : this.writers.entrySet()) {
 			String name = entry.getKey();
-			MetricWriter writer = entry.getValue();
+			GaugeWriter writer = entry.getValue();
 			TriggerProperties trigger = this.properties.findTrigger(name);
 			if (trigger != null) {
 				MetricCopyExporter exporter = getExporter(writer, trigger);
 				this.exporters.put(name, exporter);
+				this.closeables.add(name);
 				ExportRunner runner = new ExportRunner(exporter);
 				IntervalTask task = new IntervalTask(runner, trigger.getDelayMillis(),
 						trigger.getDelayMillis());
@@ -86,7 +93,7 @@ public class MetricExporters implements SchedulingConfigurer {
 		}
 	}
 
-	private MetricCopyExporter getExporter(MetricWriter writer,
+	private MetricCopyExporter getExporter(GaugeWriter writer,
 			TriggerProperties trigger) {
 		MetricCopyExporter exporter = new MetricCopyExporter(this.reader, writer);
 		exporter.setIncludes(trigger.getIncludes());
@@ -97,6 +104,16 @@ public class MetricExporters implements SchedulingConfigurer {
 
 	public Map<String, Exporter> getExporters() {
 		return this.exporters;
+	}
+
+	@Override
+	public void close() throws IOException {
+		for (String name : this.closeables) {
+			Exporter exporter = this.exporters.get(name);
+			if (exporter instanceof Closeable) {
+				((Closeable) exporter).close();
+			}
+		}
 	}
 
 	private static class ExportRunner implements Runnable {

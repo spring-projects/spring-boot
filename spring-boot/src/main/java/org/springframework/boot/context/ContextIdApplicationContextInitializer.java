@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,18 +50,34 @@ public class ContextIdApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
 	/**
-	 * Placeholder pattern to resolve for application name.
+	 * Placeholder pattern to resolve for application name. The following order is used to
+	 * find the name:
+	 * <ul>
+	 * <li>{@code spring.application.name}</li>
+	 * <li>{@code vcap.application.name}</li>
+	 * <li>{@code spring.config.name}</li>
+	 * </ul>
+	 * This order allows the user defined name to take precedence over the platform
+	 * defined name. If no property is defined {@code 'application'} will be used.
 	 */
-	private static final String NAME_PATTERN = "${vcap.application.name:${spring.application.name:${spring.config.name:application}}}";
+	private static final String NAME_PATTERN = "${spring.application.name:${vcap.application.name:${spring.config.name:application}}}";
 
 	/**
-	 * Placeholder pattern to resolve for application index.
+	 * Placeholder pattern to resolve for application index. The following order is used
+	 * to find the name:
+	 * <ul>
+	 * <li>{@code vcap.application.instance_index}</li>
+	 * <li>{@code spring.application.index}</li>
+	 * <li>{@code server.port}</li>
+	 * <li>{@code PORT}</li>
+	 * </ul>
+	 * This order favors a platform defined index over any user defined value.
 	 */
 	private static final String INDEX_PATTERN = "${vcap.application.instance_index:${spring.application.index:${server.port:${PORT:null}}}}";
 
 	private final String name;
 
-	private int order = Integer.MAX_VALUE - 10;
+	private int order = Ordered.LOWEST_PRECEDENCE - 10;
 
 	public ContextIdApplicationContextInitializer() {
 		this(NAME_PATTERN);

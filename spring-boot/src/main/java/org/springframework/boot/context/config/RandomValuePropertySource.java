@@ -17,6 +17,7 @@
 package org.springframework.boot.context.config;
 
 import java.util.Random;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,12 +52,21 @@ import org.springframework.util.StringUtils;
  */
 public class RandomValuePropertySource extends PropertySource<Random> {
 
+	/**
+	 * Name of the random {@link PropertySource}.
+	 */
+	public static final String RANDOM_PROPERTY_SOURCE_NAME = "random";
+
 	private static final String PREFIX = "random.";
 
-	private static Log logger = LogFactory.getLog(RandomValuePropertySource.class);
+	private static final Log logger = LogFactory.getLog(RandomValuePropertySource.class);
 
 	public RandomValuePropertySource(String name) {
 		super(name, new Random());
+	}
+
+	public RandomValuePropertySource() {
+		this(RANDOM_PROPERTY_SOURCE_NAME);
 	}
 
 	@Override
@@ -85,6 +95,9 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		if (range != null) {
 			return getNextLongInRange(range);
 		}
+		if (type.equals("uuid")) {
+			return UUID.randomUUID().toString();
+		}
 		return getRandomBytes();
 	}
 
@@ -110,11 +123,11 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 	private long getNextLongInRange(String range) {
 		String[] tokens = StringUtils.commaDelimitedListToStringArray(range);
 		if (tokens.length == 1) {
-			return Math.abs(getSource().nextLong()) % Long.parseLong(tokens[0]);
+			return Math.abs(getSource().nextLong() % Long.parseLong(tokens[0]));
 		}
 		long lowerBound = Long.parseLong(tokens[0]);
 		long upperBound = Long.parseLong(tokens[1]) - lowerBound;
-		return lowerBound + Math.abs(getSource().nextLong()) % upperBound;
+		return lowerBound + Math.abs(getSource().nextLong() % upperBound);
 	}
 
 	private Object getRandomBytes() {
@@ -126,7 +139,7 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 	public static void addToEnvironment(ConfigurableEnvironment environment) {
 		environment.getPropertySources().addAfter(
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-				new RandomValuePropertySource("random"));
+				new RandomValuePropertySource(RANDOM_PROPERTY_SOURCE_NAME));
 		logger.trace("RandomValuePropertySource add to Environment");
 	}
 

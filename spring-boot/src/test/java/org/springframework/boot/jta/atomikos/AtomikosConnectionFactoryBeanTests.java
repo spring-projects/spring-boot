@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ import javax.jms.JMSException;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -39,7 +38,7 @@ public class AtomikosConnectionFactoryBeanTests {
 				new MockAtomikosConnectionFactoryBean());
 		bean.setBeanName("bean");
 		bean.afterPropertiesSet();
-		assertThat(bean.getUniqueResourceName(), equalTo("bean"));
+		assertThat(bean.getUniqueResourceName()).isEqualTo("bean");
 		verify(bean).init();
 		verify(bean, never()).close();
 		bean.destroy();

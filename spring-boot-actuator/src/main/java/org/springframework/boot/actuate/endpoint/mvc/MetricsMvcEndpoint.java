@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Andy Wilkinson
  * @author Sergei Egorov
  */
+@ConfigurationProperties(prefix = "endpoints.metrics")
 public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 
 	private final MetricsEndpoint delegate;
@@ -43,7 +44,7 @@ public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 		this.delegate = delegate;
 	}
 
-	@RequestMapping(value = "/{name:.*}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/{name:.*}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	@HypermediaDisabled
 	public Object value(@PathVariable String name) {
@@ -67,13 +68,23 @@ public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 		@Override
 		protected void getNames(Map<String, ?> source, NameCallback callback) {
 			for (String name : source.keySet()) {
-				callback.addName(name);
+				try {
+					callback.addName(name);
+				}
+				catch (NoSuchMetricException ex) {
+					// Metric with null value. Continue.
+				}
 			}
 		}
 
 		@Override
+		protected Object getOptionalValue(Map<String, ?> source, String name) {
+			return source.get(name);
+		}
+
+		@Override
 		protected Object getValue(Map<String, ?> source, String name) {
-			Object value = source.get(name);
+			Object value = getOptionalValue(source, name);
 			if (value == null) {
 				throw new NoSuchMetricException("No such metric: " + name);
 			}

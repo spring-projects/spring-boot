@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright 2013-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 import org.jolokia.http.AgentServlet;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -47,29 +44,12 @@ import org.springframework.web.util.UrlPathHelper;
  */
 @ConfigurationProperties(prefix = "endpoints.jolokia", ignoreUnknownFields = false)
 @HypermediaDisabled
-public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
-		ApplicationContextAware, ServletContextAware {
-
-	/**
-	 * Endpoint URL path.
-	 */
-	@NotNull
-	@Pattern(regexp = "/[^?#]*", message = "Path must start with /")
-	private String path = "/jolokia";;
-
-	/**
-	 * Enable security on the endpoint.
-	 */
-	private boolean sensitive = true;
-
-	/**
-	 * Enable the endpoint.
-	 */
-	private boolean enabled = true;
-
+public class JolokiaMvcEndpoint extends AbstractMvcEndpoint
+		implements InitializingBean, ApplicationContextAware, ServletContextAware {
 	private final ServletWrappingController controller = new ServletWrappingController();
 
 	public JolokiaMvcEndpoint() {
+		super("/jolokia", true);
 		this.controller.setServletClass(AgentServlet.class);
 		this.controller.setServletName("jolokia");
 	}
@@ -92,38 +72,6 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 	public final void setApplicationContext(ApplicationContext context)
 			throws BeansException {
 		this.controller.setApplicationContext(context);
-	}
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	@Override
-	public String getPath() {
-		return this.path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
-
-	@Override
-	public boolean isSensitive() {
-		return this.sensitive;
-	}
-
-	public void setSensitive(boolean sensitive) {
-		this.sensitive = sensitive;
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public Class<? extends Endpoint> getEndpointType() {
-		return null;
 	}
 
 	@RequestMapping("/**")

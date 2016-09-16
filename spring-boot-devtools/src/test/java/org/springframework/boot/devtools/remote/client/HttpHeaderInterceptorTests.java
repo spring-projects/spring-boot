@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -32,8 +31,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -42,7 +40,6 @@ import static org.mockito.BDDMockito.given;
  * @author Rob Winch
  * @since 1.3.0
  */
-@RunWith(MockitoJUnitRunner.class)
 public class HttpHeaderInterceptorTests {
 
 	@Rule
@@ -67,7 +64,8 @@ public class HttpHeaderInterceptorTests {
 	private MockHttpServletRequest httpRequest;
 
 	@Before
-	public void setup() throws IOException {
+	public void setup() throws Exception {
+		MockitoAnnotations.initMocks(this);
 		this.body = new byte[] {};
 		this.httpRequest = new MockHttpServletRequest();
 		this.request = new ServletServerHttpRequest(this.httpRequest);
@@ -109,8 +107,8 @@ public class HttpHeaderInterceptorTests {
 	public void intercept() throws IOException {
 		ClientHttpResponse result = this.interceptor.intercept(this.request, this.body,
 				this.execution);
-		assertThat(this.request.getHeaders().getFirst(this.name), equalTo(this.value));
-		assertThat(result, equalTo(this.response));
+		assertThat(this.request.getHeaders().getFirst(this.name)).isEqualTo(this.value);
+		assertThat(result).isEqualTo(this.response);
 	}
 
 }

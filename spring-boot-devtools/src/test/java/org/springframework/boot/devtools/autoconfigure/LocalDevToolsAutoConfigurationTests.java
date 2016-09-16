@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,15 +44,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -63,6 +60,8 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link LocalDevToolsAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @author Vladimir Tsanev
  */
 public class LocalDevToolsAutoConfigurationTests {
 
@@ -88,19 +87,19 @@ public class LocalDevToolsAutoConfigurationTests {
 		this.context = initializeAndRun(Config.class);
 		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
 		resolver.initialize();
-		assertThat(resolver.isCacheable(), equalTo(false));
+		assertThat(resolver.isCacheable()).isFalse();
 	}
 
 	@Test
-	public void defaultPropertyCanBeOverridenFromCommandLine() throws Exception {
+	public void defaultPropertyCanBeOverriddenFromCommandLine() throws Exception {
 		this.context = initializeAndRun(Config.class, "--spring.thymeleaf.cache=true");
 		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
 		resolver.initialize();
-		assertThat(resolver.isCacheable(), equalTo(true));
+		assertThat(resolver.isCacheable()).isTrue();
 	}
 
 	@Test
-	public void defaultPropertyCanBeOverridenFromUserHomeProperties() throws Exception {
+	public void defaultPropertyCanBeOverriddenFromUserHomeProperties() throws Exception {
 		String userHome = System.getProperty("user.home");
 		System.setProperty("user.home",
 				new File("src/test/resources/user-home").getAbsolutePath());
@@ -108,7 +107,7 @@ public class LocalDevToolsAutoConfigurationTests {
 			this.context = initializeAndRun(Config.class);
 			TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
 			resolver.initialize();
-			assertThat(resolver.isCacheable(), equalTo(true));
+			assertThat(resolver.isCacheable()).isTrue();
 		}
 		finally {
 			System.setProperty("user.home", userHome);
@@ -119,14 +118,14 @@ public class LocalDevToolsAutoConfigurationTests {
 	public void resourceCachePeriodIsZero() throws Exception {
 		this.context = initializeAndRun(WebResourcesConfig.class);
 		ResourceProperties properties = this.context.getBean(ResourceProperties.class);
-		assertThat(properties.getCachePeriod(), equalTo(0));
+		assertThat(properties.getCachePeriod()).isEqualTo(0);
 	}
 
 	@Test
 	public void liveReloadServer() throws Exception {
 		this.context = initializeAndRun(Config.class);
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
-		assertThat(server.isStarted(), equalTo(true));
+		assertThat(server.isStarted()).isTrue();
 	}
 
 	@Test
@@ -139,7 +138,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void liveReloadTriggerdOnClassPathChangeWithoutRestart() throws Exception {
+	public void liveReloadTriggeredOnClassPathChangeWithoutRestart() throws Exception {
 		this.context = initializeAndRun(ConfigWithMockLiveReload.class);
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
@@ -150,7 +149,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void liveReloadNotTriggerdOnClassPathChangeWithRestart() throws Exception {
+	public void liveReloadNotTriggeredOnClassPathChangeWithRestart() throws Exception {
 		this.context = initializeAndRun(ConfigWithMockLiveReload.class);
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
@@ -192,7 +191,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		this.context = initializeAndRun(Config.class);
 		ClassPathFileSystemWatcher watcher = this.context
 				.getBean(ClassPathFileSystemWatcher.class);
-		assertThat(watcher, notNullValue());
+		assertThat(watcher).isNotNull();
 	}
 
 	@Test
@@ -214,7 +213,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		Object watcher = ReflectionTestUtils.getField(classPathWatcher,
 				"fileSystemWatcher");
 		Object filter = ReflectionTestUtils.getField(watcher, "triggerFilter");
-		assertThat(filter, instanceOf(TriggerFileFilter.class));
+		assertThat(filter).isInstanceOf(TriggerFileFilter.class);
 	}
 
 	@Test
@@ -230,9 +229,9 @@ public class LocalDevToolsAutoConfigurationTests {
 		@SuppressWarnings("unchecked")
 		Map<File, Object> folders = (Map<File, Object>) ReflectionTestUtils
 				.getField(watcher, "folders");
-		assertThat(folders.size(), is(equalTo(2)));
-		assertThat(folders, hasKey(new File("src/main/java").getAbsoluteFile()));
-		assertThat(folders, hasKey(new File("src/test/java").getAbsoluteFile()));
+		assertThat(folders).hasSize(2)
+				.containsKey(new File("src/main/java").getAbsoluteFile())
+				.containsKey(new File("src/test/java").getAbsoluteFile());
 	}
 
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config,
@@ -279,6 +278,18 @@ public class LocalDevToolsAutoConfigurationTests {
 	@Configuration
 	@Import({ LocalDevToolsAutoConfiguration.class, ResourceProperties.class })
 	public static class WebResourcesConfig {
+
+	}
+
+	@Configuration
+	public static class SessionRedisTemplateConfig {
+
+		@Bean
+		public RedisTemplate<Object, Object> sessionRedisTemplate() {
+			RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<Object, Object>();
+			redisTemplate.setConnectionFactory(mock(RedisConnectionFactory.class));
+			return redisTemplate;
+		}
 
 	}
 

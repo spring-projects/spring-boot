@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,19 +93,25 @@ public final class CommandLineInvoker {
 
 		private final StringBuffer out = new StringBuffer();
 
+		private final StringBuffer combined = new StringBuffer();
+
 		private final Process process;
 
 		private final List<Thread> streamReaders = new ArrayList<Thread>();
 
 		public Invocation(Process process) {
 			this.process = process;
-			this.streamReaders.add(new Thread(
-					new StreamReadingRunnable(this.process.getErrorStream(), this.err)));
-			this.streamReaders.add(new Thread(
-					new StreamReadingRunnable(this.process.getInputStream(), this.out)));
+			this.streamReaders.add(new Thread(new StreamReadingRunnable(
+					this.process.getErrorStream(), this.err, this.combined)));
+			this.streamReaders.add(new Thread(new StreamReadingRunnable(
+					this.process.getInputStream(), this.out, this.combined)));
 			for (Thread streamReader : this.streamReaders) {
 				streamReader.start();
 			}
+		}
+
+		public String getOutput() {
+			return postProcessLines(getLines(this.combined));
 		}
 
 		public String getErrorOutput() {
@@ -138,7 +144,9 @@ public final class CommandLineInvoker {
 			List<String> lines = new ArrayList<String>();
 			try {
 				while ((line = reader.readLine()) != null) {
-					lines.add(line);
+					if (!line.startsWith("Picked up ")) {
+						lines.add(line);
+					}
 				}
 			}
 			catch (IOException ex) {
@@ -161,13 +169,13 @@ public final class CommandLineInvoker {
 
 			private final InputStream stream;
 
-			private final StringBuffer output;
+			private final StringBuffer[] outputs;
 
 			private final byte[] buffer = new byte[4096];
 
-			private StreamReadingRunnable(InputStream stream, StringBuffer buffer) {
+			private StreamReadingRunnable(InputStream stream, StringBuffer... outputs) {
 				this.stream = stream;
-				this.output = buffer;
+				this.outputs = outputs;
 			}
 
 			@Override
@@ -175,7 +183,9 @@ public final class CommandLineInvoker {
 				int read;
 				try {
 					while ((read = this.stream.read(this.buffer)) > 0) {
-						this.output.append(new String(this.buffer, 0, read));
+						for (StringBuffer output : this.outputs) {
+							output.append(new String(this.buffer, 0, read));
+						}
 					}
 				}
 				catch (IOException ex) {

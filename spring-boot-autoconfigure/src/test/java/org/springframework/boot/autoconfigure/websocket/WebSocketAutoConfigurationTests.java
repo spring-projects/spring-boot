@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,7 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link WebSocketAutoConfiguration}
@@ -73,7 +71,7 @@ public class WebSocketAutoConfigurationTests {
 		this.context.refresh();
 		Object serverContainer = this.context.getServletContext()
 				.getAttribute("javax.websocket.server.ServerContainer");
-		assertThat(serverContainer, is(instanceOf(ServerContainer.class)));
+		assertThat(serverContainer).isInstanceOf(ServerContainer.class);
 
 	}
 

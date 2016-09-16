@@ -101,7 +101,7 @@ public abstract class AbstractViewResolverProperties {
 	}
 
 	public MimeType getContentType() {
-		if (this.contentType.getCharSet() == null) {
+		if (this.contentType.getCharset() == null) {
 			Map<String, String> parameters = new LinkedHashMap<String, String>();
 			parameters.put("charset", this.charset.name());
 			parameters.putAll(this.contentType.getParameters());

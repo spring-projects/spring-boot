@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link FileSessionPersistence}.
@@ -43,7 +40,7 @@ public class FileSessionPersistenceTests {
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
 
-	private File folder;
+	private File dir;
 
 	private FileSessionPersistence persistence;
 
@@ -53,19 +50,19 @@ public class FileSessionPersistenceTests {
 
 	@Before
 	public void setup() throws IOException {
-		this.folder = this.temp.newFolder();
-		this.persistence = new FileSessionPersistence(this.folder);
+		this.dir = this.temp.newFolder();
+		this.persistence = new FileSessionPersistence(this.dir);
 	}
 
 	@Test
 	public void loadsNullForMissingFile() throws Exception {
 		Map<String, PersistentSession> attributes = this.persistence
 				.loadSessionAttributes("test", this.classLoader);
-		assertThat(attributes, nullValue());
+		assertThat(attributes).isNull();
 	}
 
 	@Test
-	public void presistAndLoad() throws Exception {
+	public void persistAndLoad() throws Exception {
 		Map<String, PersistentSession> sessionData = new LinkedHashMap<String, PersistentSession>();
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
 		data.put("spring", "boot");
@@ -74,10 +71,9 @@ public class FileSessionPersistenceTests {
 		this.persistence.persistSessions("test", sessionData);
 		Map<String, PersistentSession> restored = this.persistence
 				.loadSessionAttributes("test", this.classLoader);
-		assertThat(restored, notNullValue());
-		assertThat(restored.get("abc").getExpiration(), equalTo(this.expiration));
-		assertThat(restored.get("abc").getSessionData().get("spring"),
-				equalTo((Object) "boot"));
+		assertThat(restored).isNotNull();
+		assertThat(restored.get("abc").getExpiration()).isEqualTo(this.expiration);
+		assertThat(restored.get("abc").getSessionData().get("spring")).isEqualTo("boot");
 	}
 
 	@Test
@@ -91,18 +87,18 @@ public class FileSessionPersistenceTests {
 		this.persistence.persistSessions("test", sessionData);
 		Map<String, PersistentSession> restored = this.persistence
 				.loadSessionAttributes("test", this.classLoader);
-		assertThat(restored, notNullValue());
-		assertThat(restored.containsKey("abc"), equalTo(false));
+		assertThat(restored).isNotNull();
+		assertThat(restored.containsKey("abc")).isFalse();
 	}
 
 	@Test
 	public void deleteFileOnClear() throws Exception {
-		File sessionFile = new File(this.folder, "test.session");
+		File sessionFile = new File(this.dir, "test.session");
 		Map<String, PersistentSession> sessionData = new LinkedHashMap<String, PersistentSession>();
 		this.persistence.persistSessions("test", sessionData);
-		assertThat(sessionFile.exists(), equalTo(true));
+		assertThat(sessionFile.exists()).isTrue();
 		this.persistence.clear("test");
-		assertThat(sessionFile.exists(), equalTo(false));
+		assertThat(sessionFile.exists()).isFalse();
 	}
 
 }

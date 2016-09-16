@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging;
 
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -149,7 +150,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	/**
 	 * Reinitialize the logging system if required. Called when
 	 * {@link #getSelfInitializationConfig()} is used and the log file hasn't changed. May
-	 * be used to reload configuration (for example to pickup additional System
+	 * be used to reload configuration (for example to pick up additional System
 	 * properties).
 	 * @param initializationContext the logging initialization context
 	 */
@@ -166,6 +167,10 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 		defaultPath = defaultPath + "/" + fileName;
 		defaultPath = "classpath:" + defaultPath;
 		return defaultPath;
+	}
+
+	protected final void applySystemProperties(Environment environment, LogFile logFile) {
+		new LoggingSystemProperties(environment).apply(logFile);
 	}
 
 }

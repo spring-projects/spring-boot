@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link NamePatternFilter}.
@@ -37,54 +33,54 @@ public class NamePatternFilterTests {
 	@Test
 	public void nonRegex() throws Exception {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
-		assertThat(filter.getResults("not.a.regex"),
-				hasEntry("not.a.regex", (Object) "not.a.regex"));
-		assertThat(filter.isGetNamesCalled(), equalTo(false));
+		assertThat(filter.getResults("not.a.regex")).containsEntry("not.a.regex",
+				"not.a.regex");
+		assertThat(filter.isGetNamesCalled()).isFalse();
 	}
 
 	@Test
 	public void regexRepetitionZeroOrMore() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("fo.*");
-		assertThat(results.get("foo"), equalTo((Object) "foo"));
-		assertThat(results.get("fool"), equalTo((Object) "fool"));
-		assertThat(filter.isGetNamesCalled(), equalTo(true));
+		assertThat(results.get("foo")).isEqualTo("foo");
+		assertThat(results.get("fool")).isEqualTo("fool");
+		assertThat(filter.isGetNamesCalled()).isTrue();
 	}
 
 	@Test
 	public void regexRepetitionOneOrMore() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("fo.+");
-		assertThat(results.get("foo"), equalTo((Object) "foo"));
-		assertThat(results.get("fool"), equalTo((Object) "fool"));
-		assertThat(filter.isGetNamesCalled(), equalTo(true));
+		assertThat(results.get("foo")).isEqualTo("foo");
+		assertThat(results.get("fool")).isEqualTo("fool");
+		assertThat(filter.isGetNamesCalled()).isTrue();
 	}
 
 	@Test
 	public void regexEndAnchor() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("foo$");
-		assertThat(results.get("foo"), equalTo((Object) "foo"));
-		assertThat(results.get("fool"), is(nullValue()));
-		assertThat(filter.isGetNamesCalled(), equalTo(true));
+		assertThat(results.get("foo")).isEqualTo("foo");
+		assertThat(results.get("fool")).isNull();
+		assertThat(filter.isGetNamesCalled()).isTrue();
 	}
 
 	@Test
 	public void regexStartAnchor() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("^foo");
-		assertThat(results.get("foo"), equalTo((Object) "foo"));
-		assertThat(results.get("fool"), is(nullValue()));
-		assertThat(filter.isGetNamesCalled(), equalTo(true));
+		assertThat(results.get("foo")).isEqualTo("foo");
+		assertThat(results.get("fool")).isNull();
+		assertThat(filter.isGetNamesCalled()).isTrue();
 	}
 
 	@Test
 	public void regexCharacterClass() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("fo[a-z]l");
-		assertThat(results.get("foo"), is(nullValue()));
-		assertThat(results.get("fool"), equalTo((Object) "fool"));
-		assertThat(filter.isGetNamesCalled(), equalTo(true));
+		assertThat(results.get("foo")).isNull();
+		assertThat(results.get("fool")).isEqualTo("fool");
+		assertThat(filter.isGetNamesCalled()).isTrue();
 	}
 
 	private static class MockNamePatternFilter extends NamePatternFilter<Object> {
@@ -94,6 +90,11 @@ public class NamePatternFilterTests {
 		}
 
 		private boolean getNamesCalled;
+
+		@Override
+		protected Object getOptionalValue(Object source, String name) {
+			return name;
+		}
 
 		@Override
 		protected Object getValue(Object source, String name) {

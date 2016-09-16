@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,41 +19,26 @@ package org.springframework.boot.context.web;
 import javax.servlet.ServletContext;
 
 import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.core.Ordered;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 /**
  * {@link ApplicationContextInitializer} for setting the servlet context.
  *
  * @author Dave Syer
+ * @author Phillip Webb
+ * @deprecated as of 1.4 in favor of
+ * {@link org.springframework.boot.web.support.ServletContextApplicationContextInitializer}
  */
-public class ServletContextApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableWebApplicationContext>, Ordered {
+@Deprecated
+public class ServletContextApplicationContextInitializer extends
+		org.springframework.boot.web.support.ServletContextApplicationContextInitializer {
 
-	private int order = Integer.MIN_VALUE;
+	public ServletContextApplicationContextInitializer(ServletContext servletContext,
+			boolean addApplicationContextAttribute) {
+		super(servletContext, addApplicationContextAttribute);
+	}
 
-	private final ServletContext servletContext;
-
-	/**
-	 * Create a new {@link ServletContextApplicationContextInitializer} instance.
-	 * @param servletContext the servlet that should be ultimately set.
-	 */
 	public ServletContextApplicationContextInitializer(ServletContext servletContext) {
-		this.servletContext = servletContext;
-	}
-
-	public void setOrder(int order) {
-		this.order = order;
-	}
-
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
-
-	@Override
-	public void initialize(ConfigurableWebApplicationContext applicationContext) {
-		applicationContext.setServletContext(this.servletContext);
+		super(servletContext);
 	}
 
 }

@@ -202,7 +202,7 @@ If you are using a milestone or snapshot release you will also need to add appro
 
 
 [[build-tool-plugins-gradle-dependency-management]]
-=== Dependency management
+=== Gradle dependency management
 The `spring-boot` plugin automatically applies the
 {dependency-management-plugin}/[Dependency Management Plugin] and configures in to import
 the `spring-boot-starter-parent` bom. This provides a similar dependency management
@@ -267,8 +267,8 @@ To build and run a project artifact, you can type the following:
 ----
 
 To build a war file that is both executable and deployable into an external container,
-you need to mark the embedded container dependencies as belonging to a configuration
-named "`providedRuntime`", e.g:
+you need to mark the embedded container dependencies as belonging to the war plugin's
+`providedRuntime` configuration, e.g.:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -283,10 +283,6 @@ named "`providedRuntime`", e.g:
 	repositories {
 		jcenter()
 		maven { url "http://repo.spring.io/libs-snapshot" }
-	}
-
-	configurations {
-		providedRuntime
 	}
 
 	dependencies {
@@ -366,12 +362,14 @@ The following configuration options are available:
 want the other Boot features but not this one)
 
 |`mainClass`
-|The main class that should be run. If not specified the `mainClassName` project property
- will be used or, if the no `mainClassName` id defined the archive will be searched for a
- suitable class. "Suitable" means a unique class with a well-formed `main()` method (if
- more than one is found the build will fail). You should also be able to specify the main
- class name via the "run" task (`main` property) and/or the "startScripts"
- (`mainClassName` property) as an alternative to using the "springBoot" configuration.
+|The main class that should be run. If not specified, and you have applied the application
+ plugin, the `mainClassName` project property will be used. If the application plugin has
+ not been applied or no `mainClassName` has been specified, the archive will be searched
+ for a suitable class. "Suitable" means a unique class with a well-formed `main()` method
+ (if more than one is found the build will fail). If you have applied the application
+ plugin, the main class can also be specified via its "run" task (`main` property) and/or
+ its "startScripts" task (`mainClassName` property) as an alternative to using the
+ "springBoot" configuration.
 
 |`classifier`
 |A file name segment (before the extension) to add to the archive, so that the original is
@@ -390,7 +388,7 @@ want the other Boot features but not this one)
 
 |`executable`
 |Boolean flag to indicate if jar files are fully executable on Unix like operating
- systems. Defaults to `true`.
+ systems. Defaults to `false`.
 
 |`embeddedLaunchScript`
 |The embedded launch script to prepend to the front of the jar if it is fully executable.
@@ -452,7 +450,7 @@ BootRepackage task and instructed it to work with only `clientJar` task and
 ----
 
 The configuration that we are referring to in `BootRepackage` is a normal
-http://www.gradle.org/docs/current/dsl/org.gradle.api.artifacts.Configuration.html[Gradle
+{gradle-dsl}/org.gradle.api.artifacts.Configuration.html[Gradle
 configuration]. In the above example we created a new configuration named
 `mycustomconfiguration` instructing it to derive from a `runtime` and exclude the `log4j`
 group. If the `clientBoot` task is executed, the repackaged boot jar will have all
@@ -483,12 +481,51 @@ The following configuration options are available:
 
 |`layout`
 |The type of archive, corresponding to how the dependencies are laid out inside
- (defaults to a guess based on the archive type).
+ (defaults to a guess based on the archive type). See
+ <<build-tool-plugins-gradle-configuration-layouts,available layouts for more details>>.
 
 |`requiresUnpack`
 |A list of dependencies (in the form "`groupId:artifactId`" that must be unpacked from
  fat jars in order to run. Items are still packaged into the fat jar, but they will be
  automatically unpacked when it runs.
+|===
+
+
+
+[[build-tool-plugins-gradle-configuration-layouts]]
+==== Available layouts
+
+The `layout` attribute configures the format of the archive and whether the bootstrap
+loader should be included or not. The following layouts are available:
+
+[cols="2,4,1"]
+|===
+|Name |Description |Executable
+
+|`JAR`
+|Regular executable
+ <<appendix-executable-jar-format.adoc#executable-jar-jar-file-structure,JAR layout>>.
+|Yes
+
+|`WAR`
+|Executable
+ <<appendix-executable-jar-format.adoc#executable-jar-war-file-structure,WAR layout>>.
+ `provided` dependencies are placed in `WEB-INF/lib-provided` to avoid any clash when
+ the `war` is deployed in a servlet container.
+|Yes
+
+|`ZIP` (alias to `DIR`)
+|Similar to `JAR` layout, using
+ <<appendix-executable-jar-format.adoc#executable-jar-property-launcher-features,`PropertiesLauncher`>>.
+| Yes
+
+|`MODULE`
+|Bundle dependencies (excluding those with `provided` scope) and project resources.
+|No
+
+|`NONE`
+|Bundle all dependencies and project resources.
+|No
 |===
 
 
@@ -557,8 +594,7 @@ using Gradle and how you're trying to publish the artifacts.
 ==== Configuring Gradle to produce a pom that inherits dependency management
 The following is an example of configuring Gradle to generate a pom that inherits
 from `spring-boot-starter-parent`. Please refer to the
-http://www.gradle.org/docs/current/userguide/userguide.html[Gradle User Guide] for
-further information.
+{gradle-user-guide}/userguide.html[Gradle User Guide] for further information.
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -660,7 +696,7 @@ attributes are supported by the task:
 |Yes
 
 |`classes`
-|The root directory of Java classfiles
+|The root directory of Java class files
 |Yes
 
 |`start-class`
@@ -687,7 +723,7 @@ classpath of the application.
 
 
 
-===== Examples
+==== Examples
 .Specify +start-class+
 [source,xml,indent=0]
 ----
@@ -724,7 +760,7 @@ attributes are supported
 |Attribute |Description |Required
 
 |`classesroot`
-|The root directory of Java classfiles
+|The root directory of Java class files
 |Yes _(unless `mainclass` is specified)_
 
 |`mainclass`
@@ -738,7 +774,7 @@ attributes are supported
 
 
 
-===== Examples
+==== Examples
 .Find and log
 [source,xml,indent=0]
 ----

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RelaxedNames}.
@@ -34,94 +33,118 @@ public class RelaxedNamesTests {
 	@Test
 	public void iterator() throws Exception {
 		Iterator<String> iterator = new RelaxedNames("my-RELAXED-property").iterator();
-		assertThat(iterator.next(), equalTo("my-RELAXED-property"));
-		assertThat(iterator.next(), equalTo("my_RELAXED_property"));
-		assertThat(iterator.next(), equalTo("myRELAXEDProperty"));
-		assertThat(iterator.next(), equalTo("myRelaxedProperty"));
-		assertThat(iterator.next(), equalTo("my-relaxed-property"));
-		assertThat(iterator.next(), equalTo("my_relaxed_property"));
-		assertThat(iterator.next(), equalTo("myrelaxedproperty"));
-		assertThat(iterator.next(), equalTo("MY-RELAXED-PROPERTY"));
-		assertThat(iterator.next(), equalTo("MY_RELAXED_PROPERTY"));
-		assertThat(iterator.next(), equalTo("MYRELAXEDPROPERTY"));
-		assertThat(iterator.hasNext(), equalTo(false));
+		assertThat(iterator.next()).isEqualTo("my-RELAXED-property");
+		assertThat(iterator.next()).isEqualTo("my_RELAXED_property");
+		assertThat(iterator.next()).isEqualTo("myRELAXEDProperty");
+		assertThat(iterator.next()).isEqualTo("myRelaxedProperty");
+		assertThat(iterator.next()).isEqualTo("my-relaxed-property");
+		assertThat(iterator.next()).isEqualTo("my_relaxed_property");
+		assertThat(iterator.next()).isEqualTo("myrelaxedproperty");
+		assertThat(iterator.next()).isEqualTo("MY-RELAXED-PROPERTY");
+		assertThat(iterator.next()).isEqualTo("MY_RELAXED_PROPERTY");
+		assertThat(iterator.next()).isEqualTo("MYRELAXEDPROPERTY");
+		assertThat(iterator.hasNext()).isFalse();
 	}
 
 	@Test
 	public void fromUnderscores() throws Exception {
 		Iterator<String> iterator = new RelaxedNames("nes_ted").iterator();
-		assertThat(iterator.next(), equalTo("nes_ted"));
-		assertThat(iterator.next(), equalTo("nes.ted"));
-		assertThat(iterator.next(), equalTo("nesTed"));
-		assertThat(iterator.next(), equalTo("nested"));
-		assertThat(iterator.next(), equalTo("NES_TED"));
-		assertThat(iterator.next(), equalTo("NES.TED"));
-		assertThat(iterator.next(), equalTo("NESTED"));
-		assertThat(iterator.hasNext(), equalTo(false));
+		assertThat(iterator.next()).isEqualTo("nes_ted");
+		assertThat(iterator.next()).isEqualTo("nes.ted");
+		assertThat(iterator.next()).isEqualTo("nesTed");
+		assertThat(iterator.next()).isEqualTo("nested");
+		assertThat(iterator.next()).isEqualTo("NES_TED");
+		assertThat(iterator.next()).isEqualTo("NES.TED");
+		assertThat(iterator.next()).isEqualTo("NESTED");
+		assertThat(iterator.hasNext()).isFalse();
 	}
 
 	@Test
 	public void fromPlain() throws Exception {
 		Iterator<String> iterator = new RelaxedNames("plain").iterator();
-		assertThat(iterator.next(), equalTo("plain"));
-		assertThat(iterator.next(), equalTo("PLAIN"));
-		assertThat(iterator.hasNext(), equalTo(false));
+		assertThat(iterator.next()).isEqualTo("plain");
+		assertThat(iterator.next()).isEqualTo("PLAIN");
+		assertThat(iterator.hasNext()).isFalse();
 	}
 
 	@Test
 	public void fromCamelCase() throws Exception {
 		Iterator<String> iterator = new RelaxedNames("caMel").iterator();
-		assertThat(iterator.next(), equalTo("caMel"));
-		assertThat(iterator.next(), equalTo("ca_mel"));
-		assertThat(iterator.next(), equalTo("ca-mel"));
-		assertThat(iterator.next(), equalTo("camel"));
-		assertThat(iterator.next(), equalTo("CAMEL"));
-		assertThat(iterator.next(), equalTo("CA_MEL"));
-		assertThat(iterator.next(), equalTo("CA-MEL"));
-		assertThat(iterator.hasNext(), equalTo(false));
+		assertThat(iterator.next()).isEqualTo("caMel");
+		assertThat(iterator.next()).isEqualTo("ca_mel");
+		assertThat(iterator.next()).isEqualTo("ca-mel");
+		assertThat(iterator.next()).isEqualTo("camel");
+		assertThat(iterator.next()).isEqualTo("CAMEL");
+		assertThat(iterator.next()).isEqualTo("CA_MEL");
+		assertThat(iterator.next()).isEqualTo("CA-MEL");
+		assertThat(iterator.hasNext()).isFalse();
 	}
 
 	@Test
 	public void fromCompoundCamelCase() throws Exception {
 		Iterator<String> iterator = new RelaxedNames("caMelCase").iterator();
-		assertThat(iterator.next(), equalTo("caMelCase"));
-		assertThat(iterator.next(), equalTo("ca_mel_case"));
-		assertThat(iterator.next(), equalTo("ca-mel-case"));
-		assertThat(iterator.next(), equalTo("camelcase"));
-		assertThat(iterator.next(), equalTo("CAMELCASE"));
-		assertThat(iterator.next(), equalTo("CA_MEL_CASE"));
-		assertThat(iterator.next(), equalTo("CA-MEL-CASE"));
-		assertThat(iterator.hasNext(), equalTo(false));
+		assertThat(iterator.next()).isEqualTo("caMelCase");
+		assertThat(iterator.next()).isEqualTo("ca_mel_case");
+		assertThat(iterator.next()).isEqualTo("ca-mel-case");
+		assertThat(iterator.next()).isEqualTo("camelcase");
+		assertThat(iterator.next()).isEqualTo("CAMELCASE");
+		assertThat(iterator.next()).isEqualTo("CA_MEL_CASE");
+		assertThat(iterator.next()).isEqualTo("CA-MEL-CASE");
+		assertThat(iterator.hasNext()).isFalse();
 	}
 
 	@Test
 	public void fromPeriods() throws Exception {
 		Iterator<String> iterator = new RelaxedNames("spring.value").iterator();
-		assertThat(iterator.next(), equalTo("spring.value"));
-		assertThat(iterator.next(), equalTo("spring_value"));
-		assertThat(iterator.next(), equalTo("springValue"));
-		assertThat(iterator.next(), equalTo("springvalue"));
-		assertThat(iterator.next(), equalTo("SPRING.VALUE"));
-		assertThat(iterator.next(), equalTo("SPRING_VALUE"));
-		assertThat(iterator.next(), equalTo("SPRINGVALUE"));
-		assertThat(iterator.hasNext(), equalTo(false));
+		assertThat(iterator.next()).isEqualTo("spring.value");
+		assertThat(iterator.next()).isEqualTo("spring_value");
+		assertThat(iterator.next()).isEqualTo("springValue");
+		assertThat(iterator.next()).isEqualTo("springvalue");
+		assertThat(iterator.next()).isEqualTo("SPRING.VALUE");
+		assertThat(iterator.next()).isEqualTo("SPRING_VALUE");
+		assertThat(iterator.next()).isEqualTo("SPRINGVALUE");
+		assertThat(iterator.hasNext()).isFalse();
 	}
 
 	@Test
 	public void fromPrefixEndingInPeriod() throws Exception {
 		Iterator<String> iterator = new RelaxedNames("spring.").iterator();
-		assertThat(iterator.next(), equalTo("spring."));
-		assertThat(iterator.next(), equalTo("spring_"));
-		assertThat(iterator.next(), equalTo("SPRING."));
-		assertThat(iterator.next(), equalTo("SPRING_"));
-		assertThat(iterator.hasNext(), equalTo(false));
+		assertThat(iterator.next()).isEqualTo("spring.");
+		assertThat(iterator.next()).isEqualTo("spring_");
+		assertThat(iterator.next()).isEqualTo("SPRING.");
+		assertThat(iterator.next()).isEqualTo("SPRING_");
+		assertThat(iterator.hasNext()).isFalse();
 	}
 
 	@Test
 	public void fromEmpty() throws Exception {
 		Iterator<String> iterator = new RelaxedNames("").iterator();
-		assertThat(iterator.next(), equalTo(""));
-		assertThat(iterator.hasNext(), equalTo(false));
+		assertThat(iterator.next()).isEqualTo("");
+		assertThat(iterator.hasNext()).isFalse();
+	}
+
+	@Test
+	public void forCamelCase() throws Exception {
+		Iterator<String> iterator = RelaxedNames.forCamelCase("camelCase").iterator();
+		assertThat(iterator.next()).isEqualTo("camel-case");
+		assertThat(iterator.next()).isEqualTo("camel_case");
+		assertThat(iterator.next()).isEqualTo("camelCase");
+		assertThat(iterator.next()).isEqualTo("camelcase");
+		assertThat(iterator.next()).isEqualTo("CAMEL-CASE");
+		assertThat(iterator.next()).isEqualTo("CAMEL_CASE");
+		assertThat(iterator.next()).isEqualTo("CAMELCASE");
+	}
+
+	@Test
+	public void forCamelCaseWithCaps() throws Exception {
+		Iterator<String> iterator = RelaxedNames.forCamelCase("camelCASE").iterator();
+		assertThat(iterator.next()).isEqualTo("camel-c-a-s-e");
+		assertThat(iterator.next()).isEqualTo("camel_c_a_s_e");
+		assertThat(iterator.next()).isEqualTo("camelCASE");
+		assertThat(iterator.next()).isEqualTo("camelcase");
+		assertThat(iterator.next()).isEqualTo("CAMEL-C-A-S-E");
+		assertThat(iterator.next()).isEqualTo("CAMEL_C_A_S_E");
+		assertThat(iterator.next()).isEqualTo("CAMELCASE");
 	}
 
 }

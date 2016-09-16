@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.ResolvableType;
@@ -63,7 +64,7 @@ import org.springframework.util.StringUtils;
  */
 abstract class BeanTypeRegistry {
 
-	static Log logger = LogFactory.getLog(BeanTypeRegistry.class);
+	private static final Log logger = LogFactory.getLog(BeanTypeRegistry.class);
 
 	static final String FACTORY_BEAN_OBJECT_TYPE = "factoryBeanObjectType";
 
@@ -137,8 +138,38 @@ abstract class BeanTypeRegistry {
 				.getBeanDefinition(definition.getFactoryBeanName());
 		Class<?> factoryClass = ClassUtils.forName(factoryDefinition.getBeanClassName(),
 				beanFactory.getBeanClassLoader());
-		return ReflectionUtils.findMethod(factoryClass,
-				definition.getFactoryMethodName());
+		return getFactoryMethod(definition, factoryClass);
+	}
+
+	private Method getFactoryMethod(BeanDefinition definition, Class<?> factoryClass) {
+		Method uniqueMethod = null;
+		for (Method candidate : getCandidateFactoryMethods(definition, factoryClass)) {
+			if (candidate.getName().equals(definition.getFactoryMethodName())) {
+				if (uniqueMethod == null) {
+					uniqueMethod = candidate;
+				}
+				else if (!hasMatchingParameterTypes(candidate, uniqueMethod)) {
+					return null;
+				}
+			}
+		}
+		return uniqueMethod;
+	}
+
+	private Method[] getCandidateFactoryMethods(BeanDefinition definition,
+			Class<?> factoryClass) {
+		return shouldConsiderNonPublicMethods(definition)
+				? ReflectionUtils.getAllDeclaredMethods(factoryClass)
+				: factoryClass.getMethods();
+	}
+
+	private boolean shouldConsiderNonPublicMethods(BeanDefinition definition) {
+		return (definition instanceof AbstractBeanDefinition)
+				&& ((AbstractBeanDefinition) definition).isNonPublicAccessAllowed();
+	}
+
+	private boolean hasMatchingParameterTypes(Method candidate, Method current) {
+		return Arrays.equals(candidate.getParameterTypes(), current.getParameterTypes());
 	}
 
 	private Class<?> getDirectFactoryBeanGeneric(

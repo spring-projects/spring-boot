@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,12 +35,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DefaultErrorAttributes}.
@@ -60,7 +55,7 @@ public class DefaultErrorAttributesTests {
 	public void includeTimeStamp() throws Exception {
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);
-		assertThat(attributes.get("timestamp"), instanceOf(Date.class));
+		assertThat(attributes.get("timestamp")).isInstanceOf(Date.class);
 	}
 
 	@Test
@@ -68,17 +63,17 @@ public class DefaultErrorAttributesTests {
 		this.request.setAttribute("javax.servlet.error.status_code", 404);
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);
-		assertThat(attributes.get("error"),
-				equalTo((Object) HttpStatus.NOT_FOUND.getReasonPhrase()));
-		assertThat(attributes.get("status"), equalTo((Object) 404));
+		assertThat(attributes.get("error"))
+				.isEqualTo(HttpStatus.NOT_FOUND.getReasonPhrase());
+		assertThat(attributes.get("status")).isEqualTo(404);
 	}
 
 	@Test
 	public void missingStatusCode() throws Exception {
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);
-		assertThat(attributes.get("error"), equalTo((Object) "None"));
-		assertThat(attributes.get("status"), equalTo((Object) 999));
+		assertThat(attributes.get("error")).isEqualTo("None");
+		assertThat(attributes.get("status")).isEqualTo(999);
 	}
 
 	@Test
@@ -90,12 +85,11 @@ public class DefaultErrorAttributesTests {
 				new RuntimeException("Ignored"));
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);
-		assertThat(this.errorAttributes.getError(this.requestAttributes),
-				sameInstance((Object) ex));
-		assertThat(modelAndView, nullValue());
-		assertThat(attributes.get("exception"),
-				equalTo((Object) RuntimeException.class.getName()));
-		assertThat(attributes.get("message"), equalTo((Object) "Test"));
+		assertThat(this.errorAttributes.getError(this.requestAttributes)).isSameAs(ex);
+		assertThat(modelAndView).isNull();
+		assertThat(attributes.get("exception"))
+				.isEqualTo(RuntimeException.class.getName());
+		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
 	@Test
@@ -104,11 +98,10 @@ public class DefaultErrorAttributesTests {
 		this.request.setAttribute("javax.servlet.error.exception", ex);
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);
-		assertThat(this.errorAttributes.getError(this.requestAttributes),
-				sameInstance((Object) ex));
-		assertThat(attributes.get("exception"),
-				equalTo((Object) RuntimeException.class.getName()));
-		assertThat(attributes.get("message"), equalTo((Object) "Test"));
+		assertThat(this.errorAttributes.getError(this.requestAttributes)).isSameAs(ex);
+		assertThat(attributes.get("exception"))
+				.isEqualTo(RuntimeException.class.getName());
+		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
 	@Test
@@ -116,8 +109,8 @@ public class DefaultErrorAttributesTests {
 		this.request.setAttribute("javax.servlet.error.message", "Test");
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);
-		assertThat(attributes.get("exception"), nullValue());
-		assertThat(attributes.get("message"), equalTo((Object) "Test"));
+		assertThat(attributes.get("exception")).isNull();
+		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
 	@Test
@@ -127,9 +120,9 @@ public class DefaultErrorAttributesTests {
 		this.request.setAttribute("javax.servlet.error.message", "Test");
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);
-		assertThat(attributes.get("exception"),
-				equalTo((Object) RuntimeException.class.getName()));
-		assertThat(attributes.get("message"), equalTo((Object) "Test"));
+		assertThat(attributes.get("exception"))
+				.isEqualTo(RuntimeException.class.getName());
+		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
 	@Test
@@ -139,11 +132,11 @@ public class DefaultErrorAttributesTests {
 		this.request.setAttribute("javax.servlet.error.exception", wrapped);
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);
-		assertThat(this.errorAttributes.getError(this.requestAttributes),
-				sameInstance((Object) wrapped));
-		assertThat(attributes.get("exception"),
-				equalTo((Object) RuntimeException.class.getName()));
-		assertThat(attributes.get("message"), equalTo((Object) "Test"));
+		assertThat(this.errorAttributes.getError(this.requestAttributes))
+				.isSameAs(wrapped);
+		assertThat(attributes.get("exception"))
+				.isEqualTo(RuntimeException.class.getName());
+		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
 	@Test
@@ -152,11 +145,10 @@ public class DefaultErrorAttributesTests {
 		this.request.setAttribute("javax.servlet.error.exception", error);
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);
-		assertThat(this.errorAttributes.getError(this.requestAttributes),
-				sameInstance((Object) error));
-		assertThat(attributes.get("exception"),
-				equalTo((Object) OutOfMemoryError.class.getName()));
-		assertThat(attributes.get("message"), equalTo((Object) "Test error"));
+		assertThat(this.errorAttributes.getError(this.requestAttributes)).isSameAs(error);
+		assertThat(attributes.get("exception"))
+				.isEqualTo(OutOfMemoryError.class.getName());
+		assertThat(attributes.get("message")).isEqualTo("Test error");
 	}
 
 	@Test
@@ -182,10 +174,9 @@ public class DefaultErrorAttributesTests {
 		this.request.setAttribute("javax.servlet.error.exception", ex);
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);
-		assertThat(attributes.get("message"), equalTo((Object) ("Validation failed for "
-				+ "object='objectName'. Error count: 1")));
-		assertThat(attributes.get("errors"),
-				equalTo((Object) bindingResult.getAllErrors()));
+		assertThat(attributes.get("message"))
+				.isEqualTo("Validation failed for object='objectName'. Error count: 1");
+		assertThat(attributes.get("errors")).isEqualTo(bindingResult.getAllErrors());
 	}
 
 	@Test
@@ -194,7 +185,7 @@ public class DefaultErrorAttributesTests {
 		this.request.setAttribute("javax.servlet.error.exception", ex);
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, true);
-		assertThat(attributes.get("trace").toString(), startsWith("java.lang"));
+		assertThat(attributes.get("trace").toString()).startsWith("java.lang");
 	}
 
 	@Test
@@ -203,7 +194,7 @@ public class DefaultErrorAttributesTests {
 		this.request.setAttribute("javax.servlet.error.exception", ex);
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);
-		assertThat(attributes.get("trace"), nullValue());
+		assertThat(attributes.get("trace")).isNull();
 	}
 
 	@Test
@@ -211,7 +202,7 @@ public class DefaultErrorAttributesTests {
 		this.request.setAttribute("javax.servlet.error.request_uri", "path");
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);
-		assertThat(attributes.get("path"), equalTo((Object) "path"));
-
+		assertThat(attributes.get("path")).isEqualTo("path");
 	}
+
 }

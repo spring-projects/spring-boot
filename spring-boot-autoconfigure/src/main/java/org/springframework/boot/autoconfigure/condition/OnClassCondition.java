@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
@@ -28,7 +29,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link Condition} that checks for the presence or absence of specific classes.
@@ -43,9 +43,7 @@ class OnClassCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-
-		StringBuffer matchMessage = new StringBuffer();
-
+		ConditionMessage matchMessage = ConditionMessage.empty();
 		MultiValueMap<String, Object> onClasses = getAttributes(metadata,
 				ConditionalOnClass.class);
 		if (onClasses != null) {
@@ -53,31 +51,31 @@ class OnClassCondition extends SpringBootCondition {
 					context);
 			if (!missing.isEmpty()) {
 				return ConditionOutcome
-						.noMatch("required @ConditionalOnClass classes not found: "
-								+ StringUtils.collectionToCommaDelimitedString(missing));
+						.noMatch(ConditionMessage.forCondition(ConditionalOnClass.class)
+								.didNotFind("required class", "required classes")
+								.items(Style.QUOTE, missing));
 			}
-			matchMessage.append("@ConditionalOnClass classes found: "
-					+ StringUtils.collectionToCommaDelimitedString(
-							getMatchingClasses(onClasses, MatchType.PRESENT, context)));
+			matchMessage = matchMessage.andCondition(ConditionalOnClass.class)
+					.found("required class", "required classes").items(Style.QUOTE,
+							getMatchingClasses(onClasses, MatchType.PRESENT, context));
 		}
-
 		MultiValueMap<String, Object> onMissingClasses = getAttributes(metadata,
 				ConditionalOnMissingClass.class);
 		if (onMissingClasses != null) {
 			List<String> present = getMatchingClasses(onMissingClasses, MatchType.PRESENT,
 					context);
 			if (!present.isEmpty()) {
-				return ConditionOutcome
-						.noMatch("required @ConditionalOnMissing classes found: "
-								+ StringUtils.collectionToCommaDelimitedString(present));
+				return ConditionOutcome.noMatch(
+						ConditionMessage.forCondition(ConditionalOnMissingClass.class)
+								.found("unwanted class", "unwanted classes")
+								.items(Style.QUOTE, present));
 			}
-			matchMessage.append(matchMessage.length() == 0 ? "" : " ");
-			matchMessage.append("@ConditionalOnMissing classes not found: "
-					+ StringUtils.collectionToCommaDelimitedString(getMatchingClasses(
-							onMissingClasses, MatchType.MISSING, context)));
+			matchMessage = matchMessage.andCondition(ConditionalOnMissingClass.class)
+					.didNotFind("unwanted class", "unwanted classes")
+					.items(Style.QUOTE, getMatchingClasses(onMissingClasses,
+							MatchType.MISSING, context));
 		}
-
-		return ConditionOutcome.match(matchMessage.toString());
+		return ConditionOutcome.match(matchMessage);
 	}
 
 	private MultiValueMap<String, Object> getAttributes(AnnotatedTypeMetadata metadata,
@@ -110,17 +108,21 @@ class OnClassCondition extends SpringBootCondition {
 	private enum MatchType {
 
 		PRESENT {
+
 			@Override
 			public boolean matches(String className, ConditionContext context) {
 				return ClassUtils.isPresent(className, context.getClassLoader());
 			}
+
 		},
 
 		MISSING {
+
 			@Override
 			public boolean matches(String className, ConditionContext context) {
 				return !ClassUtils.isPresent(className, context.getClassLoader());
 			}
+
 		};
 
 		public abstract boolean matches(String className, ConditionContext context);

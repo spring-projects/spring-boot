@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.Assert;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
@@ -41,6 +42,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Christian Dupuis
+ * @author Stephane Nicoll
  */
 class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 
@@ -74,8 +76,8 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			List<Class<?>> types = collectClasses(attributes.get("value"));
 			for (Class<?> type : types) {
 				String prefix = extractPrefix(type);
-				String name = (StringUtils.hasText(prefix)
-						? prefix + ".CONFIGURATION_PROPERTIES" : type.getName());
+				String name = (StringUtils.hasText(prefix) ? prefix + "-" + type.getName()
+						: type.getName());
 				if (!registry.containsBeanDefinition(name)) {
 					registerBeanDefinition(registry, type, name);
 				}
@@ -86,8 +88,7 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			ConfigurationProperties annotation = AnnotationUtils.findAnnotation(type,
 					ConfigurationProperties.class);
 			if (annotation != null) {
-				return (StringUtils.hasLength(annotation.value()) ? annotation.value()
-						: annotation.prefix());
+				return annotation.prefix();
 			}
 			return "";
 		}
@@ -113,18 +114,9 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 
 			ConfigurationProperties properties = AnnotationUtils.findAnnotation(type,
 					ConfigurationProperties.class);
-			if (properties == null) {
-				registerPropertiesHolder(registry, name);
-			}
-		}
-
-		private void registerPropertiesHolder(BeanDefinitionRegistry registry,
-				String name) {
-			BeanDefinitionBuilder builder = BeanDefinitionBuilder
-					.genericBeanDefinition(ConfigurationPropertiesHolder.class);
-			builder.addConstructorArgReference(name);
-			registry.registerBeanDefinition(name + ".HOLDER",
-					builder.getBeanDefinition());
+			Assert.notNull(properties,
+					"No " + ConfigurationProperties.class.getSimpleName()
+							+ " annotation found on  '" + type.getName() + "'.");
 		}
 
 	}

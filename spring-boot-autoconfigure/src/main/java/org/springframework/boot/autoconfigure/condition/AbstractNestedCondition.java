@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
 
 /**
  * Abstract base class for nested conditions.
@@ -171,16 +170,18 @@ abstract class AbstractNestedCondition extends SpringBootCondition
 
 		private ConditionOutcome getConditionOutcome(AnnotationMetadata metadata,
 				Condition condition) {
-			String messagePrefix = "member condition on " + metadata.getClassName();
+			String className = ClassUtils.getShortName(metadata.getClassName());
 			if (condition instanceof SpringBootCondition) {
 				ConditionOutcome outcome = ((SpringBootCondition) condition)
 						.getMatchOutcome(this.context, metadata);
-				String message = outcome.getMessage();
-				return new ConditionOutcome(outcome.isMatch(), messagePrefix
-						+ (StringUtils.hasLength(message) ? " : " + message : ""));
+				ConditionMessage message = outcome.getConditionMessage()
+						.append("on member " + className);
+				return new ConditionOutcome(outcome.isMatch(), message);
 			}
 			boolean matches = condition.matches(this.context, metadata);
-			return new ConditionOutcome(matches, messagePrefix);
+			return new ConditionOutcome(matches,
+					ConditionMessage.forCondition("NestedCondition")
+							.because("nested on member " + className));
 		}
 
 	}

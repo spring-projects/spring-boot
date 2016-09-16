@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,24 +21,22 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(SampleHypermediaJpaApplication.class)
-@WebAppConfiguration
+@RunWith(SpringRunner.class)
+@SpringBootTest
 @DirtiesContext
 public class SampleHypermediaJpaApplicationIntegrationTests {
 
@@ -61,7 +59,8 @@ public class SampleHypermediaJpaApplicationIntegrationTests {
 	@Test
 	public void health() throws Exception {
 		this.mockMvc.perform(get("/admin/health").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists());
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$._links").doesNotExist());
 	}
 
 	@Test
@@ -82,8 +81,8 @@ public class SampleHypermediaJpaApplicationIntegrationTests {
 	public void browser() throws Exception {
 		MvcResult response = this.mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isFound()).andReturn();
-		assertEquals("/browser/index.html#",
-				response.getResponse().getHeaders("location").get(0));
+		assertThat(response.getResponse().getHeaders("location").get(0))
+				.isEqualTo("http://localhost/browser/index.html#/");
 	}
 
 }

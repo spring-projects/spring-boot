@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,14 +36,14 @@ import org.springframework.util.StringUtils;
 public class LogFile {
 
 	/**
-	 * The name of the Spring property that contains the name of the logging configuration
-	 * file.
+	 * The name of the Spring property that contains the name of the log file. Names can
+	 * be an exact location or relative to the current directory.
 	 */
 	public static final String FILE_PROPERTY = "logging.file";
 
 	/**
-	 * The name of the Spring property that contains the path where the logging
-	 * configuration can be found.
+	 * The name of the Spring property that contains the directory where log files are
+	 * written.
 	 */
 	public static final String PATH_PROPERTY = "logging.path";
 

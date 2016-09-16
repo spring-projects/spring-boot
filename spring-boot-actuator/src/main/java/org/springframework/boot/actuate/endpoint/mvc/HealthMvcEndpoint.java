@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
@@ -25,6 +27,7 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.bind.RelaxedNames;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -34,6 +37,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -44,8 +48,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Eddú Meléndez
  * @since 1.1.0
  */
+@ConfigurationProperties(prefix = "endpoints.health")
 public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint>
 		implements EnvironmentAware {
 
@@ -182,11 +188,15 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		}
 		if (isSpringSecurityAuthentication(principal)) {
 			Authentication authentication = (Authentication) principal;
-			String role = this.roleResolver.getProperty("role", "ROLE_ADMIN");
+			List<String> roles = Arrays.asList(StringUtils
+					.trimArrayElements(StringUtils.commaDelimitedListToStringArray(
+							this.roleResolver.getProperty("roles", "ROLE_ADMIN"))));
 			for (GrantedAuthority authority : authentication.getAuthorities()) {
 				String name = authority.getAuthority();
-				if (role.equals(name) || ("ROLE_" + role).equals(name)) {
-					return true;
+				for (String role : roles) {
+					if (role.equals(name) || ("ROLE_" + role).equals(name)) {
+						return true;
+					}
 				}
 			}
 		}

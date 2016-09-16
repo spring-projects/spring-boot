@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,19 @@ package org.springframework.boot.context.embedded;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -36,6 +42,8 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Ivan Sopov
+ * @author Eddú Meléndez
+ * @author Brian Clozel
  * @see AbstractEmbeddedServletContainerFactory
  */
 public abstract class AbstractConfigurableEmbeddedServletContainer
@@ -70,9 +78,15 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 
 	private Ssl ssl;
 
+	private SslStoreProvider sslStoreProvider;
+
 	private JspServlet jspServlet = new JspServlet();
 
 	private Compression compression;
+
+	private String serverHeader;
+
+	private Map<Locale, Charset> localeCharsetMappings = new HashMap<Locale, Charset>();
 
 	/**
 	 * Create a new {@link AbstractConfigurableEmbeddedServletContainer} instance.
@@ -229,7 +243,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	}
 
 	@Override
-	public void setErrorPages(Set<ErrorPage> errorPages) {
+	public void setErrorPages(Set<? extends ErrorPage> errorPages) {
 		Assert.notNull(errorPages, "ErrorPages must not be null");
 		this.errorPages = new LinkedHashSet<ErrorPage>(errorPages);
 	}
@@ -267,12 +281,6 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 		this.registerDefaultServlet = registerDefaultServlet;
 	}
 
-	@Override
-	public void setRegisterJspServlet(boolean registerJspServlet) {
-		Assert.notNull(this.jspServlet);
-		this.jspServlet.setRegistered(registerJspServlet);
-	}
-
 	/**
 	 * Flag to indicate that the default servlet should be registered.
 	 * @return true if the default servlet is to be registered
@@ -291,9 +299,12 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	}
 
 	@Override
-	public void setJspServletClassName(String jspServletClassName) {
-		Assert.notNull(this.jspServlet);
-		this.jspServlet.setClassName(jspServletClassName);
+	public void setSslStoreProvider(SslStoreProvider sslStoreProvider) {
+		this.sslStoreProvider = sslStoreProvider;
+	}
+
+	public SslStoreProvider getSslStoreProvider() {
+		return this.sslStoreProvider;
 	}
 
 	@Override
@@ -314,6 +325,29 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 		this.compression = compression;
 	}
 
+	public String getServerHeader() {
+		return this.serverHeader;
+	}
+
+	@Override
+	public void setServerHeader(String serverHeader) {
+		this.serverHeader = serverHeader;
+	}
+
+	/**
+	 * Return the Locale to Charset mappings.
+	 * @return the charset mappings
+	 */
+	public Map<Locale, Charset> getLocaleCharsetMappings() {
+		return this.localeCharsetMappings;
+	}
+
+	@Override
+	public void setLocaleCharsetMappings(Map<Locale, Charset> localeCharsetMappings) {
+		Assert.notNull(localeCharsetMappings, "localeCharsetMappings must not be null");
+		this.localeCharsetMappings = localeCharsetMappings;
+	}
+
 	/**
 	 * Utility method that can be used by subclasses wishing to combine the specified
 	 * {@link ServletContextInitializer} parameters with those defined in this instance.
@@ -331,7 +365,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	}
 
 	/**
-	 * Returns whether or not he JSP servlet should be registered with the embedded
+	 * Returns whether or not the JSP servlet should be registered with the embedded
 	 * container.
 	 * @return {@code true} if the container should be registered, otherwise {@code false}
 	 */

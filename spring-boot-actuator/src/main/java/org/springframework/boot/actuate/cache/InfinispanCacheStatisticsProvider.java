@@ -55,13 +55,13 @@ public class InfinispanCacheStatisticsProvider
 			statistics.setSize((long) size);
 			if (size > 0) {
 				// Let's initialize the stats if we have some data
-				initalizeStats(objectName, statistics);
+				initializeStats(objectName, statistics);
 			}
 		}
 		return statistics;
 	}
 
-	private void initalizeStats(ObjectName objectName,
+	private void initializeStats(ObjectName objectName,
 			DefaultCacheStatistics statistics) {
 		Double hitRatio = getAttribute(objectName, "hitRatio", Double.class);
 		if ((hitRatio != null)) {

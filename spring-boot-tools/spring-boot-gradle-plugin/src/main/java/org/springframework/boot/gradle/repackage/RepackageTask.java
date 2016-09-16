@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.gradle.repackage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -57,6 +58,14 @@ public class RepackageTask extends DefaultTask {
 
 	private File outputFile;
 
+	private Boolean excludeDevtools;
+
+	private Boolean executable;
+
+	private File embeddedLaunchScript;
+
+	private Map<String, String> embeddedLaunchScriptProperties;
+
 	public void setCustomConfiguration(String customConfiguration) {
 		this.customConfiguration = customConfiguration;
 	}
@@ -89,6 +98,39 @@ public class RepackageTask extends DefaultTask {
 		this.outputFile = file;
 	}
 
+	public Boolean getExcludeDevtools() {
+		return this.excludeDevtools;
+	}
+
+	public void setExcludeDevtools(Boolean excludeDevtools) {
+		this.excludeDevtools = excludeDevtools;
+	}
+
+	public Boolean getExecutable() {
+		return this.executable;
+	}
+
+	public void setExecutable(Boolean executable) {
+		this.executable = executable;
+	}
+
+	public File getEmbeddedLaunchScript() {
+		return this.embeddedLaunchScript;
+	}
+
+	public void setEmbeddedLaunchScript(File embeddedLaunchScript) {
+		this.embeddedLaunchScript = embeddedLaunchScript;
+	}
+
+	public Map<String, String> getEmbeddedLaunchScriptProperties() {
+		return this.embeddedLaunchScriptProperties;
+	}
+
+	public void setEmbeddedLaunchScriptProperties(
+			Map<String, String> embeddedLaunchScriptProperties) {
+		this.embeddedLaunchScriptProperties = embeddedLaunchScriptProperties;
+	}
+
 	@TaskAction
 	public void repackage() {
 		Project project = getProject();
@@ -102,7 +144,9 @@ public class RepackageTask extends DefaultTask {
 		Project project = getProject();
 		SpringBootPluginExtension extension = project.getExtensions()
 				.getByType(SpringBootPluginExtension.class);
-		ProjectLibraries libraries = new ProjectLibraries(project, extension);
+		ProjectLibraries libraries = new ProjectLibraries(project, extension,
+				(this.excludeDevtools != null && this.excludeDevtools)
+						|| extension.isExcludeDevtools());
 		if (extension.getProvidedConfiguration() != null) {
 			libraries.setProvidedConfigurationName(extension.getProvidedConfiguration());
 		}
@@ -196,39 +240,64 @@ public class RepackageTask extends DefaultTask {
 		}
 
 		private void setMainClass(Repackager repackager) {
-			String mainClass;
-			if (getProject().hasProperty("mainClassName")) {
-				mainClass = (String) getProject().property("mainClassName");
-			}
-			else {
-				ExtraPropertiesExtension extraProperties = (ExtraPropertiesExtension) getProject()
-						.getExtensions().getByName("ext");
-				mainClass = (String) extraProperties.get("mainClassName");
-			}
+			String mainClassName = getMainClassNameProperty();
 			if (RepackageTask.this.mainClass != null) {
-				mainClass = RepackageTask.this.mainClass;
+				mainClassName = RepackageTask.this.mainClass;
 			}
 			else if (this.extension.getMainClass() != null) {
-				mainClass = this.extension.getMainClass();
+				mainClassName = this.extension.getMainClass();
 			}
 			else {
 				Task runTask = getProject().getTasks().findByName("run");
 				if (runTask != null && runTask.hasProperty("main")) {
-					mainClass = (String) getProject().getTasks().getByName("run")
+					mainClassName = (String) getProject().getTasks().getByName("run")
 							.property("main");
 				}
 			}
-			getLogger().info("Setting mainClass: " + mainClass);
-			repackager.setMainClass(mainClass);
+			if (mainClassName != null) {
+				getLogger().info("Setting mainClass: " + mainClassName);
+				repackager.setMainClass(mainClassName);
+			}
+			else {
+				getLogger().info("No mainClass configured");
+			}
+		}
+
+		private String getMainClassNameProperty() {
+			if (getProject().hasProperty("mainClassName")) {
+				return (String) getProject().property("mainClassName");
+			}
+			ExtraPropertiesExtension extraProperties = (ExtraPropertiesExtension) getProject()
+					.getExtensions().getByName("ext");
+			if (extraProperties.has("mainClassName")) {
+				return (String) extraProperties.get("mainClassName");
+			}
+			return null;
 		}
 
 		private LaunchScript getLaunchScript() throws IOException {
-			if (this.extension.isExecutable()
-					|| this.extension.getEmbeddedLaunchScript() != null) {
-				return new DefaultLaunchScript(this.extension.getEmbeddedLaunchScript(),
-						this.extension.getEmbeddedLaunchScriptProperties());
+			if (isExecutable() || getEmbeddedLaunchScript() != null) {
+				return new DefaultLaunchScript(getEmbeddedLaunchScript(),
+						getEmbeddedLaunchScriptProperties());
 			}
 			return null;
+		}
+
+		private boolean isExecutable() {
+			return RepackageTask.this.executable != null ? RepackageTask.this.executable
+					: this.extension.isExecutable();
+		}
+
+		private File getEmbeddedLaunchScript() {
+			return RepackageTask.this.embeddedLaunchScript != null
+					? RepackageTask.this.embeddedLaunchScript
+					: this.extension.getEmbeddedLaunchScript();
+		}
+
+		private Map<String, String> getEmbeddedLaunchScriptProperties() {
+			return RepackageTask.this.embeddedLaunchScriptProperties != null
+					? RepackageTask.this.embeddedLaunchScriptProperties
+					: this.extension.getEmbeddedLaunchScriptProperties();
 		}
 
 	}

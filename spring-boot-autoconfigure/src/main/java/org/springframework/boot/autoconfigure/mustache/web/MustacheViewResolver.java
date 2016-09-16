@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.view.UrlBasedViewResolver;
+import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 
 /**
  * Spring MVC {@link ViewResolver} for Mustache.
@@ -39,7 +39,7 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
  * @author Phillip Webb
  * @since 1.2.2
  */
-public class MustacheViewResolver extends UrlBasedViewResolver {
+public class MustacheViewResolver extends AbstractTemplateViewResolver {
 
 	private Compiler compiler = Mustache.compiler();
 
@@ -108,7 +108,13 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 	}
 
 	private Template createTemplate(Resource resource) throws IOException {
-		return this.compiler.compile(getReader(resource));
+		Reader reader = getReader(resource);
+		try {
+			return this.compiler.compile(reader);
+		}
+		finally {
+			reader.close();
+		}
 	}
 
 	private Reader getReader(Resource resource) throws IOException {

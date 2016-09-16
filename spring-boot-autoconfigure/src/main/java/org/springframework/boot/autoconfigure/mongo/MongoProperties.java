@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 package org.springframework.boot.autoconfigure.mongo;
 
 import java.net.UnknownHostException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.mongodb.MongoClient;
@@ -38,6 +39,8 @@ import org.springframework.core.env.Environment;
  * @author Josh Long
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
+ * @author Nasko Vasilev
  */
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 public class MongoProperties {
@@ -181,21 +184,6 @@ public class MongoProperties {
 	}
 
 	/**
-	 * Creates a {@link MongoClient} using the given {@code options}.
-	 *
-	 * @param options the options
-	 * @return the Mongo client
-	 * @throws UnknownHostException if the configured host is unknown
-	 * @deprecated Since 1.3.0 in favour of
-	 * {@link #createMongoClient(MongoClientOptions, Environment)}
-	 */
-	@Deprecated
-	public MongoClient createMongoClient(MongoClientOptions options)
-			throws UnknownHostException {
-		return this.createMongoClient(options, null);
-	}
-
-	/**
 	 * Creates a {@link MongoClient} using the given {@code options} and
 	 * {@code environment}. If the configured port is zero, the value of the
 	 * {@code local.mongo.port} property retrieved from the {@code environment} is used to
@@ -213,16 +201,17 @@ public class MongoProperties {
 				if (options == null) {
 					options = MongoClientOptions.builder().build();
 				}
-				List<MongoCredential> credentials = null;
+				List<MongoCredential> credentials = new ArrayList<MongoCredential>();
 				if (hasCustomCredentials()) {
 					String database = this.authenticationDatabase == null
 							? getMongoClientDatabase() : this.authenticationDatabase;
-					credentials = Arrays.asList(MongoCredential.createMongoCRCredential(
-							this.username, database, this.password));
+					credentials.add(MongoCredential.createCredential(this.username,
+							database, this.password));
 				}
 				String host = this.host == null ? "localhost" : this.host;
 				int port = determinePort(environment);
-				return new MongoClient(Arrays.asList(new ServerAddress(host, port)),
+				return new MongoClient(
+						Collections.singletonList(new ServerAddress(host, port)),
 						credentials, options);
 			}
 			// The options and credentials are in the URI
@@ -260,25 +249,10 @@ public class MongoProperties {
 	}
 
 	private Builder builder(MongoClientOptions options) {
-		Builder builder = MongoClientOptions.builder();
 		if (options != null) {
-			builder.alwaysUseMBeans(options.isAlwaysUseMBeans());
-			builder.connectionsPerHost(options.getConnectionsPerHost());
-			builder.connectTimeout(options.getConnectTimeout());
-			builder.cursorFinalizerEnabled(options.isCursorFinalizerEnabled());
-			builder.dbDecoderFactory(options.getDbDecoderFactory());
-			builder.dbEncoderFactory(options.getDbEncoderFactory());
-			builder.description(options.getDescription());
-			builder.maxWaitTime(options.getMaxWaitTime());
-			builder.readPreference(options.getReadPreference());
-			builder.socketFactory(options.getSocketFactory());
-			builder.socketKeepAlive(options.isSocketKeepAlive());
-			builder.socketTimeout(options.getSocketTimeout());
-			builder.threadsAllowedToBlockForConnectionMultiplier(
-					options.getThreadsAllowedToBlockForConnectionMultiplier());
-			builder.writeConcern(options.getWriteConcern());
+			return MongoClientOptions.builder(options);
 		}
-		return builder;
+		return MongoClientOptions.builder();
 	}
 
 }

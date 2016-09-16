@@ -35,8 +35,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * {@link AuthenticationManager} based on configuration bound to a
  * {@link SecurityProperties} bean. There is one user (named "user") whose password is
  * random and printed on the console at INFO level during startup. In a webapp this
- * configuration also secures all web endpoints (except some well-known static resource)
- * locations with HTTP basic security. To replace all the default behaviour in a webapp
+ * configuration also secures all web endpoints (except some well-known static resource
+ * locations) with HTTP basic security. To replace all the default behaviours in a webapp
  * provide a {@code @Configuration} with {@code @EnableWebSecurity}. To just add your own
  * layer of application security in front of the defaults, add a {@code @Configuration} of
  * type {@link WebSecurityConfigurerAdapter}.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,20 +22,15 @@ import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Hazelcast. Creates a
@@ -57,8 +52,11 @@ public class HazelcastAutoConfiguration {
 	@Conditional(ConfigAvailableCondition.class)
 	static class HazelcastConfigFileConfiguration {
 
-		@Autowired
-		private HazelcastProperties hazelcastProperties;
+		private final HazelcastProperties hazelcastProperties;
+
+		HazelcastConfigFileConfiguration(HazelcastProperties hazelcastProperties) {
+			this.hazelcastProperties = hazelcastProperties;
+		}
 
 		@Bean
 		public HazelcastInstance hazelcastInstance() throws IOException {
@@ -78,18 +76,6 @@ public class HazelcastAutoConfiguration {
 		@Bean
 		public HazelcastInstance hazelcastInstance(Config config) {
 			return new HazelcastInstanceFactory(config).getHazelcastInstance();
-		}
-
-	}
-
-	@Configuration
-	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
-	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	protected static class HazelcastInstanceJpaDependencyConfiguration
-			extends EntityManagerFactoryDependsOnPostProcessor {
-
-		public HazelcastInstanceJpaDependencyConfiguration() {
-			super("hazelcastInstance");
 		}
 
 	}

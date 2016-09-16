@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,10 @@ import java.net.ConnectException;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.boot.test.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SampleLiquibaseApplicationTests {
 
@@ -42,23 +42,22 @@ public class SampleLiquibaseApplicationTests {
 			}
 		}
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output,
-				output.contains("Successfully acquired change log lock")
-						&& output.contains("Creating database history "
-								+ "table with name: PUBLIC.DATABASECHANGELOG")
-				&& output.contains("Table person created")
-				&& output.contains("ChangeSet classpath:/db/"
+		assertThat(output).contains("Successfully acquired change log lock")
+				.contains("Creating database history "
+						+ "table with name: PUBLIC.DATABASECHANGELOG")
+				.contains("Table person created")
+				.contains("ChangeSet classpath:/db/"
 						+ "changelog/db.changelog-master.yaml::1::"
 						+ "marceloverdijk ran successfully")
-				&& output.contains("New row inserted into person")
-				&& output.contains("ChangeSet classpath:/db/changelog/"
+				.contains("New row inserted into person")
+				.contains("ChangeSet classpath:/db/changelog/"
 						+ "db.changelog-master.yaml::2::"
 						+ "marceloverdijk ran successfully")
-				&& output.contains("Successfully released change log lock"));
+				.contains("Successfully released change log lock");
 	}
 
+	@SuppressWarnings("serial")
 	private boolean serverNotRunning(IllegalStateException ex) {
-		@SuppressWarnings("serial")
 		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
 		};
 		if (nested.contains(ConnectException.class)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ package org.springframework.boot.cli.command.shell;
 import jline.console.completer.ArgumentCompleter.ArgumentList;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link EscapeAwareWhiteSpaceArgumentDelimiter}.
@@ -34,68 +33,63 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 	@Test
 	public void simple() throws Exception {
 		String s = "one two";
-		assertThat(this.delimiter.delimit(s, 0).getArguments(),
-				equalTo(new String[] { "one", "two" }));
-		assertThat(this.delimiter.parseArguments(s),
-				equalTo(new String[] { "one", "two" }));
-		assertThat(this.delimiter.isDelimiter(s, 2), equalTo(false));
-		assertThat(this.delimiter.isDelimiter(s, 3), equalTo(true));
-		assertThat(this.delimiter.isDelimiter(s, 4), equalTo(false));
+		assertThat(this.delimiter.delimit(s, 0).getArguments()).containsExactly("one",
+				"two");
+		assertThat(this.delimiter.parseArguments(s)).containsExactly("one", "two");
+		assertThat(this.delimiter.isDelimiter(s, 2)).isFalse();
+		assertThat(this.delimiter.isDelimiter(s, 3)).isTrue();
+		assertThat(this.delimiter.isDelimiter(s, 4)).isFalse();
 	}
 
 	@Test
 	public void escaped() throws Exception {
 		String s = "o\\ ne two";
-		assertThat(this.delimiter.delimit(s, 0).getArguments(),
-				equalTo(new String[] { "o\\ ne", "two" }));
-		assertThat(this.delimiter.parseArguments(s),
-				equalTo(new String[] { "o ne", "two" }));
-		assertThat(this.delimiter.isDelimiter(s, 2), equalTo(false));
-		assertThat(this.delimiter.isDelimiter(s, 3), equalTo(false));
-		assertThat(this.delimiter.isDelimiter(s, 4), equalTo(false));
-		assertThat(this.delimiter.isDelimiter(s, 5), equalTo(true));
+		assertThat(this.delimiter.delimit(s, 0).getArguments()).containsExactly("o\\ ne",
+				"two");
+		assertThat(this.delimiter.parseArguments(s)).containsExactly("o ne", "two");
+		assertThat(this.delimiter.isDelimiter(s, 2)).isFalse();
+		assertThat(this.delimiter.isDelimiter(s, 3)).isFalse();
+		assertThat(this.delimiter.isDelimiter(s, 4)).isFalse();
+		assertThat(this.delimiter.isDelimiter(s, 5)).isTrue();
 	}
 
 	@Test
 	public void quoted() throws Exception {
 		String s = "'o ne' 't w o'";
-		assertThat(this.delimiter.delimit(s, 0).getArguments(),
-				equalTo(new String[] { "'o ne'", "'t w o'" }));
-		assertThat(this.delimiter.parseArguments(s),
-				equalTo(new String[] { "o ne", "t w o" }));
+		assertThat(this.delimiter.delimit(s, 0).getArguments()).containsExactly("'o ne'",
+				"'t w o'");
+		assertThat(this.delimiter.parseArguments(s)).containsExactly("o ne", "t w o");
 	}
 
 	@Test
 	public void doubleQuoted() throws Exception {
 		String s = "\"o ne\" \"t w o\"";
-		assertThat(this.delimiter.delimit(s, 0).getArguments(),
-				equalTo(new String[] { "\"o ne\"", "\"t w o\"" }));
-		assertThat(this.delimiter.parseArguments(s),
-				equalTo(new String[] { "o ne", "t w o" }));
+		assertThat(this.delimiter.delimit(s, 0).getArguments())
+				.containsExactly("\"o ne\"", "\"t w o\"");
+		assertThat(this.delimiter.parseArguments(s)).containsExactly("o ne", "t w o");
 	}
 
 	@Test
 	public void nestedQuotes() throws Exception {
 		String s = "\"o 'n''e\" 't \"w o'";
-		assertThat(this.delimiter.delimit(s, 0).getArguments(),
-				equalTo(new String[] { "\"o 'n''e\"", "'t \"w o'" }));
-		assertThat(this.delimiter.parseArguments(s),
-				equalTo(new String[] { "o 'n''e", "t \"w o" }));
+		assertThat(this.delimiter.delimit(s, 0).getArguments())
+				.containsExactly("\"o 'n''e\"", "'t \"w o'");
+		assertThat(this.delimiter.parseArguments(s)).containsExactly("o 'n''e",
+				"t \"w o");
 	}
 
 	@Test
 	public void escapedQuotes() throws Exception {
 		String s = "\\'a b";
 		ArgumentList argumentList = this.delimiter.delimit(s, 0);
-		assertThat(argumentList.getArguments(), equalTo(new String[] { "\\'a", "b" }));
-		assertThat(this.delimiter.parseArguments(s), equalTo(new String[] { "'a", "b" }));
+		assertThat(argumentList.getArguments()).isEqualTo(new String[] { "\\'a", "b" });
+		assertThat(this.delimiter.parseArguments(s)).containsExactly("'a", "b");
 	}
 
 	@Test
 	public void escapes() throws Exception {
 		String s = "\\ \\\\.\\\\\\t";
-		assertThat(this.delimiter.parseArguments(s),
-				equalTo(new String[] { " \\.\\\t" }));
-
+		assertThat(this.delimiter.parseArguments(s)).containsExactly(" \\.\\\t");
 	}
+
 }

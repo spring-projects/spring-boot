@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -37,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.actuate.trace.TraceProperties.Include;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -45,10 +47,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
  *
  * @author Dave Syer
  * @author Wallace Wadge
+ * @author Andy Wilkinson
+ * @author Venil Noronha
  */
 public class WebRequestTraceFilter extends OncePerRequestFilter implements Ordered {
 
-	private final Log logger = LogFactory.getLog(WebRequestTraceFilter.class);
+	private static final Log logger = LogFactory.getLog(WebRequestTraceFilter.class);
 
 	private boolean dumpRequests = false;
 
@@ -61,17 +65,6 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	private ErrorAttributes errorAttributes;
 
 	private final TraceProperties properties;
-
-	/**
-	 * Create a new {@link WebRequestTraceFilter} instance.
-	 * @param traceRepository the trace repository.
-	 * @deprecated since 1.3.0 in favor of
-	 * {@link #WebRequestTraceFilter(TraceRepository, TraceProperties)}
-	 */
-	@Deprecated
-	public WebRequestTraceFilter(TraceRepository traceRepository) {
-		this(traceRepository, new TraceProperties());
-	}
 
 	/**
 	 * Create a new {@link WebRequestTraceFilter} instance.
@@ -107,11 +100,14 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 					throws ServletException, IOException {
 		Map<String, Object> trace = getTrace(request);
 		logTrace(request, trace);
+		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
 		try {
 			filterChain.doFilter(request, response);
+			status = response.getStatus();
 		}
 		finally {
-			enhanceTrace(trace, response);
+			enhanceTrace(trace, status == response.getStatus() ? response
+					: new CustomStatusResponseWrapper(response, status));
 			this.repository.add(trace);
 		}
 	}
@@ -135,7 +131,9 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		add(trace, Include.CONTEXT_PATH, "contextPath", request.getContextPath());
 		add(trace, Include.USER_PRINCIPAL, "userPrincipal",
 				(userPrincipal == null ? null : userPrincipal.getName()));
-		add(trace, Include.PARAMETERS, "parameters", request.getParameterMap());
+		if (isIncluded(Include.PARAMETERS)) {
+			trace.put("parameters", request.getParameterMap());
+		}
 		add(trace, Include.QUERY_STRING, "query", request.getQueryString());
 		add(trace, Include.AUTH_TYPE, "authType", request.getAuthType());
 		add(trace, Include.REMOTE_ADDRESS, "remoteAddress", request.getRemoteAddr());
@@ -165,7 +163,19 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 			}
 			headers.put(name, value);
 		}
+		if (!isIncluded(Include.COOKIES)) {
+			headers.remove("Cookie");
+		}
+		postProcessRequestHeaders(headers);
 		return headers;
+	}
+
+	/**
+	 * Post process request headers before they are added to the trace.
+	 * @param headers a mutable map containing the request headers to trace
+	 * @since 1.4.0
+	 */
+	protected void postProcessRequestHeaders(Map<String, Object> headers) {
 	}
 
 	@SuppressWarnings("unchecked")
@@ -182,16 +192,19 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 			String value = response.getHeader(header);
 			headers.put(header, value);
 		}
+		if (!isIncluded(Include.COOKIES)) {
+			headers.remove("Set-Cookie");
+		}
 		headers.put("status", "" + response.getStatus());
 		return headers;
 	}
 
 	private void logTrace(HttpServletRequest request, Map<String, Object> trace) {
-		if (this.logger.isTraceEnabled()) {
-			this.logger.trace("Processing request " + request.getMethod() + " "
+		if (logger.isTraceEnabled()) {
+			logger.trace("Processing request " + request.getMethod() + " "
 					+ request.getRequestURI());
 			if (this.dumpRequests) {
-				this.logger.trace("Headers: " + trace.get("headers"));
+				logger.trace("Headers: " + trace.get("headers"));
 			}
 		}
 	}
@@ -209,6 +222,23 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 
 	public void setErrorAttributes(ErrorAttributes errorAttributes) {
 		this.errorAttributes = errorAttributes;
+	}
+
+	private static final class CustomStatusResponseWrapper
+			extends HttpServletResponseWrapper {
+
+		private final int status;
+
+		private CustomStatusResponseWrapper(HttpServletResponse response, int status) {
+			super(response);
+			this.status = status;
+		}
+
+		@Override
+		public int getStatus() {
+			return this.status;
+		}
+
 	}
 
 }

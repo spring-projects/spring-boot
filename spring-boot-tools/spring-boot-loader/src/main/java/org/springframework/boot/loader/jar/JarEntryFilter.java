@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,20 @@
 
 package org.springframework.boot.loader.jar;
 
-import org.springframework.boot.loader.util.AsciiBytes;
-
 /**
  * Interface that can be used to filter and optionally rename jar entries.
  *
  * @author Phillip Webb
  */
-public interface JarEntryFilter {
+interface JarEntryFilter {
 
 	/**
 	 * Apply the jar entry filter.
 	 * @param name the current entry name. This may be different that the original entry
 	 * name if a previous filter has been applied
-	 * @param entryData the entry data to filter
 	 * @return the new name of the entry or {@code null} if the entry should not be
 	 * included.
 	 */
-	AsciiBytes apply(AsciiBytes name, JarEntryData entryData);
+	AsciiBytes apply(AsciiBytes name);
 
 }

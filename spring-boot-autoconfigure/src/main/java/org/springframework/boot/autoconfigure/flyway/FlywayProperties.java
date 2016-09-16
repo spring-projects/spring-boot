@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +40,7 @@ public class FlywayProperties {
 	/**
 	 * Locations of migrations scripts.
 	 */
-	private List<String> locations = Arrays.asList("db/migration");
+	private List<String> locations = new ArrayList<String>(Arrays.asList("db/migration"));
 
 	/**
 	 * Check that migration scripts location exists.

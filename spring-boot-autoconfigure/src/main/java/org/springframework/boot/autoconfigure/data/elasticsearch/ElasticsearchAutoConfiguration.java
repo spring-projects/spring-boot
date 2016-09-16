@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,11 @@ import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.lease.Releasable;
-import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -63,15 +62,20 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 		Map<String, String> defaults = new LinkedHashMap<String, String>();
 		defaults.put("http.enabled", String.valueOf(false));
 		defaults.put("node.local", String.valueOf(true));
+		defaults.put("path.home", System.getProperty("user.dir"));
 		DEFAULTS = Collections.unmodifiableMap(defaults);
 	}
 
-	private static Log logger = LogFactory.getLog(ElasticsearchAutoConfiguration.class);
+	private static final Log logger = LogFactory
+			.getLog(ElasticsearchAutoConfiguration.class);
 
-	@Autowired
-	private ElasticsearchProperties properties;
+	private final ElasticsearchProperties properties;
 
 	private Releasable releasable;
+
+	public ElasticsearchAutoConfiguration(ElasticsearchProperties properties) {
+		this.properties = properties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -92,7 +96,7 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 	}
 
 	private Client createNodeClient() throws Exception {
-		ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
+		Settings.Builder settings = Settings.settingsBuilder();
 		for (Map.Entry<String, String> entry : DEFAULTS.entrySet()) {
 			if (!this.properties.getProperties().containsKey(entry.getKey())) {
 				settings.put(entry.getKey(), entry.getValue());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,8 @@ class ProjectLibraries implements Libraries {
 
 	private final SpringBootPluginExtension extension;
 
+	private final boolean excludeDevtools;
+
 	private String providedConfigurationName = "providedRuntime";
 
 	private String customConfigurationName = null;
@@ -56,10 +58,13 @@ class ProjectLibraries implements Libraries {
 	 * Create a new {@link ProjectLibraries} instance of the specified {@link Project}.
 	 * @param project the gradle project
 	 * @param extension the extension
+	 * @param excludeDevTools whether Spring Boot Devtools should be excluded
 	 */
-	ProjectLibraries(Project project, SpringBootPluginExtension extension) {
+	ProjectLibraries(Project project, SpringBootPluginExtension extension,
+			boolean excludeDevTools) {
 		this.project = project;
 		this.extension = extension;
+		this.excludeDevtools = excludeDevTools;
 	}
 
 	/**
@@ -82,16 +87,12 @@ class ProjectLibraries implements Libraries {
 			libraries(custom, callback);
 		}
 		else {
-			Set<GradleLibrary> compile = getLibraries("compile", LibraryScope.COMPILE);
 			Set<GradleLibrary> runtime = getLibraries("runtime", LibraryScope.RUNTIME);
-			runtime = minus(runtime, compile);
 			Set<GradleLibrary> provided = getLibraries(this.providedConfigurationName,
 					LibraryScope.PROVIDED);
 			if (provided != null) {
-				compile = minus(compile, provided);
 				runtime = minus(runtime, provided);
 			}
-			libraries(compile, callback);
 			libraries(runtime, callback);
 			libraries(provided, callback);
 		}
@@ -165,7 +166,7 @@ class ProjectLibraries implements Libraries {
 	}
 
 	private boolean isExcluded(GradleLibrary library) {
-		if (this.extension.isExcludeDevtools() && isDevToolsJar(library)) {
+		if (this.excludeDevtools && isDevToolsJar(library)) {
 			return true;
 		}
 		return false;

@@ -8,7 +8,7 @@ $ docker-compose up
 ----
 
 Run the app and ping the home page (http://localhost:8080) a few times. Go and look at
-the result in the TDB UI, e.g.
+the result in the TSD UI, e.g.
 
 [source,indent=0]
 ----

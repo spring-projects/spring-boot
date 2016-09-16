@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -33,7 +32,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionEvaluationRepor
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.testutil.Matched;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -45,13 +45,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ConditionEvaluationReport}.
@@ -89,9 +85,8 @@ public class ConditionEvaluationReportTests {
 
 	@Test
 	public void get() throws Exception {
-		assertThat(this.report, not(nullValue()));
-		assertThat(this.report,
-				sameInstance(ConditionEvaluationReport.get(this.beanFactory)));
+		assertThat(this.report).isNotEqualTo(nullValue());
+		assertThat(this.report).isSameAs(ConditionEvaluationReport.get(this.beanFactory));
 	}
 
 	@Test
@@ -99,18 +94,15 @@ public class ConditionEvaluationReportTests {
 		this.beanFactory.setParentBeanFactory(new DefaultListableBeanFactory());
 		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory
 				.getParentBeanFactory());
-		assertThat(this.report,
-				sameInstance(ConditionEvaluationReport.get(this.beanFactory)));
-		assertThat(this.report, not(nullValue()));
-		assertThat(this.report.getParent(), not(nullValue()));
+		assertThat(this.report).isSameAs(ConditionEvaluationReport.get(this.beanFactory));
+		assertThat(this.report).isNotEqualTo(nullValue());
+		assertThat(this.report.getParent()).isNotEqualTo(nullValue());
 		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory
 				.getParentBeanFactory());
-		assertThat(this.report,
-				sameInstance(ConditionEvaluationReport.get(this.beanFactory)));
-		assertThat(this.report.getParent(),
-				sameInstance(ConditionEvaluationReport
-						.get((ConfigurableListableBeanFactory) this.beanFactory
-								.getParentBeanFactory())));
+		assertThat(this.report).isSameAs(ConditionEvaluationReport.get(this.beanFactory));
+		assertThat(this.report.getParent()).isSameAs(ConditionEvaluationReport
+				.get((ConfigurableListableBeanFactory) this.beanFactory
+						.getParentBeanFactory()));
 	}
 
 	@Test
@@ -120,10 +112,10 @@ public class ConditionEvaluationReportTests {
 		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory
 				.getParentBeanFactory());
 		this.report = ConditionEvaluationReport.get(this.beanFactory);
-		assertThat(this.report, not(nullValue()));
-		assertThat(this.report, not(sameInstance(this.report.getParent())));
-		assertThat(this.report.getParent(), not(nullValue()));
-		assertThat(this.report.getParent().getParent(), nullValue());
+		assertThat(this.report).isNotNull();
+		assertThat(this.report).isNotSameAs(this.report.getParent());
+		assertThat(this.report.getParent()).isNotNull();
+		assertThat(this.report.getParent().getParent()).isNull();
 	}
 
 	@Test
@@ -136,37 +128,37 @@ public class ConditionEvaluationReportTests {
 		this.report.recordConditionEvaluation("b", this.condition3, this.outcome3);
 		Map<String, ConditionAndOutcomes> map = this.report
 				.getConditionAndOutcomesBySource();
-		assertThat(map.size(), equalTo(2));
+		assertThat(map.size()).isEqualTo(2);
 		Iterator<ConditionAndOutcome> iterator = map.get("a").iterator();
 
 		ConditionAndOutcome conditionAndOutcome = iterator.next();
-		assertThat(conditionAndOutcome.getCondition(), equalTo(this.condition1));
-		assertThat(conditionAndOutcome.getOutcome(), equalTo(this.outcome1));
+		assertThat(conditionAndOutcome.getCondition()).isEqualTo(this.condition1);
+		assertThat(conditionAndOutcome.getOutcome()).isEqualTo(this.outcome1);
 
 		conditionAndOutcome = iterator.next();
-		assertThat(conditionAndOutcome.getCondition(), equalTo(this.condition2));
-		assertThat(conditionAndOutcome.getOutcome(), equalTo(this.outcome2));
-		assertThat(iterator.hasNext(), equalTo(false));
+		assertThat(conditionAndOutcome.getCondition()).isEqualTo(this.condition2);
+		assertThat(conditionAndOutcome.getOutcome()).isEqualTo(this.outcome2);
+		assertThat(iterator.hasNext()).isFalse();
 
 		iterator = map.get("b").iterator();
 		conditionAndOutcome = iterator.next();
-		assertThat(conditionAndOutcome.getCondition(), equalTo(this.condition3));
-		assertThat(conditionAndOutcome.getOutcome(), equalTo(this.outcome3));
-		assertThat(iterator.hasNext(), equalTo(false));
+		assertThat(conditionAndOutcome.getCondition()).isEqualTo(this.condition3);
+		assertThat(conditionAndOutcome.getOutcome()).isEqualTo(this.outcome3);
+		assertThat(iterator.hasNext()).isFalse();
 	}
 
 	@Test
 	public void fullMatch() throws Exception {
 		prepareMatches(true, true, true);
-		assertThat(this.report.getConditionAndOutcomesBySource().get("a").isFullMatch(),
-				equalTo(true));
+		assertThat(this.report.getConditionAndOutcomesBySource().get("a").isFullMatch())
+				.isTrue();
 	}
 
 	@Test
 	public void notFullMatch() throws Exception {
 		prepareMatches(true, false, true);
-		assertThat(this.report.getConditionAndOutcomesBySource().get("a").isFullMatch(),
-				equalTo(false));
+		assertThat(this.report.getConditionAndOutcomesBySource().get("a").isFullMatch())
+				.isFalse();
 	}
 
 	private void prepareMatches(boolean m1, boolean m2, boolean m3) {
@@ -183,7 +175,7 @@ public class ConditionEvaluationReportTests {
 	public void springBootConditionPopulatesReport() throws Exception {
 		ConditionEvaluationReport report = ConditionEvaluationReport.get(
 				new AnnotationConfigApplicationContext(Config.class).getBeanFactory());
-		assertThat(report.getConditionAndOutcomesBySource().size(), not(equalTo(0)));
+		assertThat(report.getConditionAndOutcomesBySource().size()).isNotEqualTo(0);
 	}
 
 	@Test
@@ -195,16 +187,16 @@ public class ConditionEvaluationReportTests {
 		ConditionAndOutcome outcome3 = new ConditionAndOutcome(this.condition3,
 				new ConditionOutcome(true, "Message 2"));
 
-		assertThat(outcome1, equalTo(outcome1));
-		assertThat(outcome1, not(equalTo(outcome2)));
-		assertThat(outcome2, equalTo(outcome3));
+		assertThat(outcome1).isEqualTo(outcome1);
+		assertThat(outcome1).isNotEqualTo(outcome2);
+		assertThat(outcome2).isEqualTo(outcome3);
 
 		ConditionAndOutcomes outcomes = new ConditionAndOutcomes();
 		outcomes.add(this.condition1, new ConditionOutcome(true, "Message 1"));
 		outcomes.add(this.condition2, new ConditionOutcome(true, "Message 2"));
 		outcomes.add(this.condition3, new ConditionOutcome(true, "Message 2"));
 
-		assertThat(getNumberOfOutcomes(outcomes), equalTo(2));
+		assertThat(getNumberOfOutcomes(outcomes)).isEqualTo(2);
 	}
 
 	@Test
@@ -217,17 +209,18 @@ public class ConditionEvaluationReportTests {
 
 		ConditionAndOutcomes outcomes = report.getConditionAndOutcomesBySource()
 				.get(autoconfigKey);
-		assertThat(outcomes, not(nullValue()));
-		assertThat(getNumberOfOutcomes(outcomes), equalTo(2));
+		assertThat(outcomes).isNotEqualTo(nullValue());
+		assertThat(getNumberOfOutcomes(outcomes)).isEqualTo(2);
 
 		List<String> messages = new ArrayList<String>();
 		for (ConditionAndOutcome outcome : outcomes) {
 			messages.add(outcome.getOutcome().getMessage());
 		}
-
-		Matcher<String> onClassMessage = containsString("@ConditionalOnClass "
-				+ "classes found: javax.servlet.Servlet,org.springframework.web.multipart.support.StandardServletMultipartResolver");
-		assertThat(messages, hasItem(onClassMessage));
+		assertThat(messages).areAtLeastOne(
+				Matched.by(containsString("@ConditionalOnClass found required classes "
+						+ "'javax.servlet.Servlet', 'org.springframework.web.multipart."
+						+ "support.StandardServletMultipartResolver', "
+						+ "'javax.servlet.MultipartConfigElement'")));
 		context.close();
 	}
 
@@ -241,12 +234,11 @@ public class ConditionEvaluationReportTests {
 				.get(context.getBeanFactory());
 		Map<String, ConditionAndOutcomes> sourceOutcomes = report
 				.getConditionAndOutcomesBySource();
-		assertThat(context.containsBean("negativeOuterPositiveInnerBean"),
-				equalTo(false));
+		assertThat(context.containsBean("negativeOuterPositiveInnerBean")).isFalse();
 		String negativeConfig = NegativeOuterConfig.class.getName();
-		assertThat(sourceOutcomes.get(negativeConfig).isFullMatch(), equalTo(false));
+		assertThat(sourceOutcomes.get(negativeConfig).isFullMatch()).isFalse();
 		String positiveConfig = NegativeOuterConfig.PositiveInnerConfig.class.getName();
-		assertThat(sourceOutcomes.get(positiveConfig).isFullMatch(), equalTo(false));
+		assertThat(sourceOutcomes.get(positiveConfig).isFullMatch()).isFalse();
 	}
 
 	private int getNumberOfOutcomes(ConditionAndOutcomes outcomes) {

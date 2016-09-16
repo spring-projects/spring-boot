@@ -33,29 +33,35 @@ import org.slf4j.LoggerFactory;
  */
 public class SnakeTimer {
 
-	private static final Logger log = LoggerFactory.getLogger(SnakeTimer.class);
-
-	private static Timer gameTimer = null;
-
 	private static final long TICK_DELAY = 100;
+
+	private static final Object MONITOR = new Object();
+
+	private static final Logger log = LoggerFactory.getLogger(SnakeTimer.class);
 
 	private static final ConcurrentHashMap<Integer, Snake> snakes = new ConcurrentHashMap<Integer, Snake>();
 
-	public static synchronized void addSnake(Snake snake) {
-		if (snakes.size() == 0) {
-			startTimer();
+	private static Timer gameTimer = null;
+
+	public static void addSnake(Snake snake) {
+		synchronized (MONITOR) {
+			if (snakes.isEmpty()) {
+				startTimer();
+			}
+			snakes.put(Integer.valueOf(snake.getId()), snake);
 		}
-		snakes.put(Integer.valueOf(snake.getId()), snake);
 	}
 
 	public static Collection<Snake> getSnakes() {
 		return Collections.unmodifiableCollection(snakes.values());
 	}
 
-	public static synchronized void removeSnake(Snake snake) {
-		snakes.remove(Integer.valueOf(snake.getId()));
-		if (snakes.size() == 0) {
-			stopTimer();
+	public static void removeSnake(Snake snake) {
+		synchronized (MONITOR) {
+			snakes.remove(Integer.valueOf(snake.getId()));
+			if (snakes.isEmpty()) {
+				stopTimer();
+			}
 		}
 	}
 

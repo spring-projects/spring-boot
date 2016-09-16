@@ -46,7 +46,7 @@ public class SampleSolrApplication implements CommandLineRunner {
 		System.out.println();
 
 		// fetch a single product
-		System.out.println("Products founds with findByNameStartingWith('So'):");
+		System.out.println("Products found with findByNameStartingWith('So'):");
 		System.out.println("--------------------------------");
 		for (Product product : this.repository.findByNameStartingWith("So")) {
 			System.out.println(product);

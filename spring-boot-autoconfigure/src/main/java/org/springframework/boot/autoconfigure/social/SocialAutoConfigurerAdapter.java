@@ -26,9 +26,9 @@ import org.springframework.social.connect.ConnectionFactory;
  *
  * @author Craig Walls
  * @author Phillip Webb
- * @since 1.1.0
+ * @since 1.4.0
  */
-abstract class SocialAutoConfigurerAdapter extends SocialConfigurerAdapter {
+public abstract class SocialAutoConfigurerAdapter extends SocialConfigurerAdapter {
 
 	@Override
 	public void addConnectionFactories(ConnectionFactoryConfigurer configurer,

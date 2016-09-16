@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Set;
 
 import com.mongodb.Mongo;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,8 +31,10 @@ import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.city.City;
+import org.springframework.boot.autoconfigure.data.mongo.country.Country;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,13 +45,11 @@ import org.springframework.data.mapping.model.PropertyNameFieldNamingStrategy;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+import org.springframework.data.mongodb.core.mapping.MongoPersistentEntity;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -77,7 +77,8 @@ public class MongoDataAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
 				MongoDataAutoConfiguration.class);
-		assertEquals(1, this.context.getBeanNamesForType(MongoTemplate.class).length);
+		assertThat(this.context.getBeanNamesForType(MongoTemplate.class).length)
+				.isEqualTo(1);
 	}
 
 	@Test
@@ -88,7 +89,8 @@ public class MongoDataAutoConfigurationTests {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(GridFsTemplate.class).length);
+		assertThat(this.context.getBeanNamesForType(GridFsTemplate.class).length)
+				.isEqualTo(1);
 	}
 
 	@Test
@@ -99,8 +101,8 @@ public class MongoDataAutoConfigurationTests {
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		this.context.refresh();
 		MongoTemplate template = this.context.getBean(MongoTemplate.class);
-		assertTrue(template.getConverter().getConversionService().canConvert(Mongo.class,
-				Boolean.class));
+		assertThat(template.getConverter().getConversionService().canConvert(Mongo.class,
+				Boolean.class)).isTrue();
 	}
 
 	@Test
@@ -141,6 +143,32 @@ public class MongoDataAutoConfigurationTests {
 		}
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	public void entityScanShouldSetInitialEntitySet() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EntityScanConfig.class,
+				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class);
+		this.context.refresh();
+		MongoMappingContext mappingContext = this.context
+				.getBean(MongoMappingContext.class);
+		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils
+				.getField(mappingContext, "initialEntitySet");
+		assertThat(initialEntitySet).containsOnly(City.class, Country.class);
+	}
+
+	@Test
+	public void registersDefaultSimpleTypesWithMappingContext() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class);
+		this.context.refresh();
+		MongoMappingContext context = this.context.getBean(MongoMappingContext.class);
+		MongoPersistentEntity<?> entity = context.getPersistentEntity(Sample.class);
+		assertThat(entity.getPersistentProperty("date").isEntity()).isFalse();
+	}
+
 	public void testFieldNamingStrategy(String strategy,
 			Class<? extends FieldNamingStrategy> expectedType) {
 		this.context = new AnnotationConfigApplicationContext();
@@ -155,7 +183,7 @@ public class MongoDataAutoConfigurationTests {
 				.getBean(MongoMappingContext.class);
 		FieldNamingStrategy fieldNamingStrategy = (FieldNamingStrategy) ReflectionTestUtils
 				.getField(mappingContext, "fieldNamingStrategy");
-		assertEquals(expectedType, fieldNamingStrategy.getClass());
+		assertThat(fieldNamingStrategy.getClass()).isEqualTo(expectedType);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -163,8 +191,7 @@ public class MongoDataAutoConfigurationTests {
 			Class<?>... types) {
 		Set<Class> initialEntitySet = (Set<Class>) ReflectionTestUtils
 				.getField(mappingContext, "initialEntitySet");
-		assertThat(initialEntitySet, hasSize(types.length));
-		assertThat(initialEntitySet, Matchers.<Class>hasItems(types));
+		assertThat(initialEntitySet).containsOnly(types);
 	}
 
 	@Configuration
@@ -176,6 +203,12 @@ public class MongoDataAutoConfigurationTests {
 		}
 	}
 
+	@Configuration
+	@EntityScan("org.springframework.boot.autoconfigure.data.mongo")
+	static class EntityScanConfig {
+
+	}
+
 	private static class MyConverter implements Converter<Mongo, Boolean> {
 
 		@Override
@@ -185,4 +218,9 @@ public class MongoDataAutoConfigurationTests {
 
 	}
 
+	static class Sample {
+
+		LocalDateTime date;
+
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotationConfigurationException;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 
 /**
  * Tests for {@link ServletComponentScanRegistrar}
@@ -51,8 +54,20 @@ public class ServletComponentScanRegistrarTests {
 		this.context = new AnnotationConfigApplicationContext(ValuePackages.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan(),
-				containsInAnyOrder("com.example.foo", "com.example.bar"));
+		assertThat(postProcessor.getPackagesToScan()).contains("com.example.foo",
+				"com.example.bar");
+	}
+
+	@Test
+	public void packagesConfiguredWithValueAsm() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.registerBeanDefinition("valuePackages",
+				new RootBeanDefinition(ValuePackages.class.getName()));
+		this.context.refresh();
+		ServletComponentRegisteringPostProcessor postProcessor = this.context
+				.getBean(ServletComponentRegisteringPostProcessor.class);
+		assertThat(postProcessor.getPackagesToScan()).contains("com.example.foo",
+				"com.example.bar");
 	}
 
 	@Test
@@ -60,8 +75,8 @@ public class ServletComponentScanRegistrarTests {
 		this.context = new AnnotationConfigApplicationContext(BasePackages.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan(),
-				containsInAnyOrder("com.example.foo", "com.example.bar"));
+		assertThat(postProcessor.getPackagesToScan()).contains("com.example.foo",
+				"com.example.bar");
 	}
 
 	@Test
@@ -69,20 +84,17 @@ public class ServletComponentScanRegistrarTests {
 		this.context = new AnnotationConfigApplicationContext(BasePackageClasses.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan(),
-				containsInAnyOrder(getClass().getPackage().getName()));
+		assertThat(postProcessor.getPackagesToScan())
+				.contains(getClass().getPackage().getName());
 	}
 
 	@Test
 	public void packagesConfiguredWithBothValueAndBasePackages() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("@ServletComponentScan basePackages and value"
-				+ " attributes are mutually exclusive");
+		this.thrown.expect(AnnotationConfigurationException.class);
+		this.thrown.expectMessage(allOf(containsString("'value'"),
+				containsString("'basePackages'"), containsString("com.example.foo"),
+				containsString("com.example.bar")));
 		this.context = new AnnotationConfigApplicationContext(ValueAndBasePackages.class);
-		ServletComponentRegisteringPostProcessor postProcessor = this.context
-				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan(),
-				containsInAnyOrder(getClass().getPackage().getName()));
 	}
 
 	@Test
@@ -91,8 +103,8 @@ public class ServletComponentScanRegistrarTests {
 				AdditionalPackages.class);
 		ServletComponentRegisteringPostProcessor postProcessor = this.context
 				.getBean(ServletComponentRegisteringPostProcessor.class);
-		assertThat(postProcessor.getPackagesToScan(), containsInAnyOrder(
-				"com.example.foo", "com.example.bar", "com.example.baz"));
+		assertThat(postProcessor.getPackagesToScan()).contains("com.example.foo",
+				"com.example.bar", "com.example.baz");
 	}
 
 	@Configuration

@@ -7,9 +7,9 @@ in order to complete your installation.
 
 Prerequisites
 -------------
-Spring Boot CLI requires Java JDK v1.6 or above in order to run. Groovy v2.1 is packaged
-as part of this distribution, and therefore does not need to be installed (any existing
-Groovy installation is ignored).
+Spring Boot CLI requires Java JDK v1.6 or above in order to run. Groovy v${groovy.version}
+is packaged as part of this distribution, and therefore does not need to be installed (any
+existing Groovy installation is ignored).
 
 The CLI will use whatever JDK it finds on your path, to check that you have an appropriate
 version you should run:

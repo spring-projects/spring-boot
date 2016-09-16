@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,24 +22,24 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.MessageSourceAutoConfigurationIntegrationTests.Config;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MessageSourceAutoConfiguration}.
  *
  * @author Dave Syer
  */
-@SpringApplicationConfiguration({ Config.class, MessageSourceAutoConfiguration.class,
+@RunWith(SpringRunner.class)
+@SpringBootTest("spring.messages.basename:test/messages")
+@ImportAutoConfiguration({ MessageSourceAutoConfiguration.class,
 		PropertyPlaceholderAutoConfiguration.class })
-@RunWith(SpringJUnit4ClassRunner.class)
-@IntegrationTest("spring.messages.basename:test/messages")
+@DirtiesContext
 public class MessageSourceAutoConfigurationIntegrationTests {
 
 	@Autowired
@@ -47,8 +47,8 @@ public class MessageSourceAutoConfigurationIntegrationTests {
 
 	@Test
 	public void testMessageSourceFromPropertySourceAnnotation() throws Exception {
-		assertEquals("bar",
-				this.context.getMessage("foo", null, "Foo message", Locale.UK));
+		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
+				.isEqualTo("bar");
 	}
 
 	@Configuration

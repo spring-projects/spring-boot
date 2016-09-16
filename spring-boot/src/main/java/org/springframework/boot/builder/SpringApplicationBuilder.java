@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,7 +127,7 @@ public class SpringApplicationBuilder {
 			// If already created we just return the existing context
 			return this.context;
 		}
-		configureAsChildIfNecessary();
+		configureAsChildIfNecessary(args);
 		if (this.running.compareAndSet(false, true)) {
 			synchronized (this.running) {
 				// If not already running copy the sources over and then run.
@@ -137,14 +137,14 @@ public class SpringApplicationBuilder {
 		return this.context;
 	}
 
-	private void configureAsChildIfNecessary() {
+	private void configureAsChildIfNecessary(String... args) {
 		if (this.parent != null && !this.configuredAsChild) {
 			this.configuredAsChild = true;
 			if (!this.registerShutdownHookApplied) {
 				this.application.setRegisterShutdownHook(false);
 			}
-			initializers(
-					new ParentContextApplicationContextInitializer(this.parent.run()));
+			initializers(new ParentContextApplicationContextInitializer(
+					this.parent.run(args)));
 		}
 	}
 
@@ -153,7 +153,17 @@ public class SpringApplicationBuilder {
 	 * @return the fully configured {@link SpringApplication}.
 	 */
 	public SpringApplication build() {
-		configureAsChildIfNecessary();
+		return build(new String[0]);
+	}
+
+	/**
+	 * Returns a fully configured {@link SpringApplication} that is ready to run. Any
+	 * parent that has been configured will be run with the given {@code args}.
+	 * @param args the parent's args
+	 * @return the fully configured {@link SpringApplication}.
+	 */
+	public SpringApplication build(String... args) {
+		configureAsChildIfNecessary(args);
 		this.application.setSources(this.sources);
 		return this.application;
 	}
@@ -313,18 +323,6 @@ public class SpringApplicationBuilder {
 		return this;
 	}
 
-	/**
-	 * Flag to indicate the startup banner should be printed.
-	 * @param showBanner the flag to set. Default true.
-	 * @return the current builder
-	 * @deprecated Since 1.3.0 in favor of {@link #bannerMode}
-	 */
-	@Deprecated
-	public SpringApplicationBuilder showBanner(boolean showBanner) {
-		this.application.setShowBanner(showBanner);
-		return this;
-	}
-
 	public SpringApplicationBuilder bannerMode(Banner.Mode bannerMode) {
 		this.application.setBannerMode(bannerMode);
 		return this;
@@ -384,18 +382,26 @@ public class SpringApplicationBuilder {
 		return properties(getMapFromKeyValuePairs(defaultProperties));
 	}
 
-	private Map<String, Object> getMapFromKeyValuePairs(String[] args) {
+	private Map<String, Object> getMapFromKeyValuePairs(String[] properties) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		for (String pair : args) {
-			int index = pair.indexOf(":");
-			if (index <= 0) {
-				index = pair.indexOf("=");
-			}
-			String key = pair.substring(0, index > 0 ? index : pair.length());
-			String value = index > 0 ? pair.substring(index + 1) : "";
+		for (String property : properties) {
+			int index = lowestIndexOf(property, ":", "=");
+			String key = property.substring(0, index > 0 ? index : property.length());
+			String value = index > 0 ? property.substring(index + 1) : "";
 			map.put(key, value);
 		}
 		return map;
+	}
+
+	private int lowestIndexOf(String property, String... candidates) {
+		int index = -1;
+		for (String candidate : candidates) {
+			int candidateIndex = property.indexOf(candidate);
+			if (candidateIndex > 0) {
+				index = (index == -1 ? candidateIndex : Math.min(index, candidateIndex));
+			}
+		}
+		return index;
 	}
 
 	/**

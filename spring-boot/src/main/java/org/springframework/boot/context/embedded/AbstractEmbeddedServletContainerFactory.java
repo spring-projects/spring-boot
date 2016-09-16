@@ -59,7 +59,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	}
 
 	/**
-	 * Returns the absolute document root when it points to a valid folder, logging a
+	 * Returns the absolute document root when it points to a valid directory, logging a
 	 * warning and returning {@code null} otherwise.
 	 * @return the valid document root
 	 */
@@ -162,6 +162,27 @@ public abstract class AbstractEmbeddedServletContainerFactory
 		Assert.state(!mkdirs || dir.exists(), "Session dir " + dir + " does not exist");
 		Assert.state(!dir.isFile(), "Session dir " + dir + " points to a file");
 		return dir;
+	}
+
+	/**
+	 * Returns the absolute temp dir for given servlet container.
+	 * @param prefix servlet container name
+	 * @return The temp dir for given servlet container.
+	 */
+	protected File createTempDir(String prefix) {
+		try {
+			File tempDir = File.createTempFile(prefix + ".", "." + getPort());
+			tempDir.delete();
+			tempDir.mkdir();
+			tempDir.deleteOnExit();
+			return tempDir;
+		}
+		catch (IOException ex) {
+			throw new EmbeddedServletContainerException(
+					"Unable to create tempDir. java.io.tmpdir is set to "
+							+ System.getProperty("java.io.tmpdir"),
+					ex);
+		}
 	}
 
 }

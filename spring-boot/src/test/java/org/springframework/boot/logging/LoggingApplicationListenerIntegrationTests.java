@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,19 @@
 
 package org.springframework.boot.logging;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link LoggingApplicationListener}.
@@ -32,6 +37,8 @@ import static org.junit.Assert.assertNotNull;
  */
 public class LoggingApplicationListenerIntegrationTests {
 
+	@Rule
+	public InternalOutputCapture outputCapture = new InternalOutputCapture();
 
 	@Test
 	public void loggingSystemRegisteredInTheContext() {
@@ -39,24 +46,41 @@ public class LoggingApplicationListenerIntegrationTests {
 				SampleService.class).web(false).run();
 		try {
 			SampleService service = context.getBean(SampleService.class);
-			assertNotNull(service.loggingSystem);
+			assertThat(service.loggingSystem).isNotNull();
 		}
 		finally {
 			context.close();
 		}
 	}
 
+	@Test
+	public void loggingPerformedDuringChildApplicationStartIsNotLost() {
+		new SpringApplicationBuilder(Config.class).web(false).child(Config.class)
+				.web(false).listeners(new ApplicationListener<ApplicationStartedEvent>() {
+
+					private final Logger logger = LoggerFactory.getLogger(getClass());
+
+					@Override
+					public void onApplicationEvent(ApplicationStartedEvent event) {
+						this.logger.info("Child application started");
+					}
+				}).run();
+		assertThat(this.outputCapture.toString()).contains("Child application started");
+	}
 
 	@Component
 	static class SampleService {
 
 		private final LoggingSystem loggingSystem;
 
-		@Autowired
 		SampleService(LoggingSystem loggingSystem) {
 			this.loggingSystem = loggingSystem;
 		}
+
+	}
+
+	static class Config {
+
 	}
 
 }
-

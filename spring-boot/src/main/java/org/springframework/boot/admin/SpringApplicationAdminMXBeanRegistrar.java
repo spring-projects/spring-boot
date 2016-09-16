@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import org.springframework.util.Assert;
  * {@link MBeanServer}.
  *
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  * @since 1.3.0
  */
 public class SpringApplicationAdminMXBeanRegistrar
@@ -80,7 +81,9 @@ public class SpringApplicationAdminMXBeanRegistrar
 
 	@Override
 	public void onApplicationEvent(ApplicationReadyEvent event) {
-		this.ready = true;
+		if (this.applicationContext.equals(event.getApplicationContext())) {
+			this.ready = true;
+		}
 	}
 
 	@Override
@@ -122,6 +125,7 @@ public class SpringApplicationAdminMXBeanRegistrar
 			logger.info("Application shutdown requested.");
 			SpringApplicationAdminMXBeanRegistrar.this.applicationContext.close();
 		}
+
 	}
 
 }

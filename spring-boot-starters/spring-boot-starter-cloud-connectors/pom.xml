@@ -4,11 +4,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starters</artifactId>
-		<version>1.3.0.BUILD-SNAPSHOT</version>
+		<version>1.4.1.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-cloud-connectors</artifactId>
 	<name>Spring Boot Spring Cloud Connectors Starter</name>
-	<description>Spring Boot Starter for Spring Cloud Connectors</description>
+	<description>Starter for using Spring Cloud Connectors which simplifies connecting
+		to services in cloud platforms like Cloud Foundry and Heroku</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

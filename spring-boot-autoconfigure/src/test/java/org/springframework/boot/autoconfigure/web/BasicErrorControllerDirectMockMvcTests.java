@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,25 +36,25 @@ import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.test.ApplicationContextTestUtils;
+import org.springframework.boot.test.util.ApplicationContextTestUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link BasicErrorController} using {@link MockMvc} but not
- * {@link SpringJUnit4ClassRunner}.
+ * {@link SpringRunner}.
  *
  * @author Dave Syer
  * @author Sebastien Deleuze
@@ -85,9 +85,9 @@ public class BasicErrorControllerDirectMockMvcTests {
 						.run("--server.port=0"));
 		MvcResult response = this.mockMvc
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
+				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("status=999"));
+		assertThat(content).contains("status=999");
 	}
 
 	@Test
@@ -96,9 +96,9 @@ public class BasicErrorControllerDirectMockMvcTests {
 				WebMvcIncludedConfiguration.class).run("--server.port=0"));
 		MvcResult response = this.mockMvc
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
+				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("status=999"));
+		assertThat(content).contains("status=999");
 	}
 
 	@Test
@@ -116,9 +116,9 @@ public class BasicErrorControllerDirectMockMvcTests {
 				WithAopConfiguration.class).run("--server.port=0"));
 		MvcResult response = this.mockMvc
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
+				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("status=999"));
+		assertThat(content).contains("status=999");
 	}
 
 	@Target(ElementType.TYPE)

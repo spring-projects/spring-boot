@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import liquibase.integration.spring.SpringLiquibase;
-import liquibase.servicelocator.ServiceLocator;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -35,11 +34,9 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.liquibase.CommonsLoggingLiquibaseLogger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
@@ -52,6 +49,8 @@ import org.springframework.util.Assert;
  * @author Marcel Overdijk
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Eddú Meléndez
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 @Configuration
@@ -68,14 +67,22 @@ public class LiquibaseAutoConfiguration {
 	@Import(LiquibaseJpaDependencyConfiguration.class)
 	public static class LiquibaseConfiguration {
 
-		@Autowired
-		private LiquibaseProperties properties = new LiquibaseProperties();
+		private final LiquibaseProperties properties;
 
-		@Autowired
-		private ResourceLoader resourceLoader = new DefaultResourceLoader();
+		private final ResourceLoader resourceLoader;
 
-		@Autowired
-		private DataSource dataSource;
+		private final DataSource dataSource;
+
+		private final DataSource liquibaseDataSource;
+
+		public LiquibaseConfiguration(LiquibaseProperties properties,
+				ResourceLoader resourceLoader, DataSource dataSource,
+				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSourceProvider) {
+			this.properties = properties;
+			this.resourceLoader = resourceLoader;
+			this.dataSource = dataSource;
+			this.liquibaseDataSource = liquibaseDataSourceProvider.getIfAvailable();
+		}
 
 		@PostConstruct
 		public void checkChangelogExists() {
@@ -87,9 +94,6 @@ public class LiquibaseAutoConfiguration {
 								+ " (please add changelog or check your Liquibase "
 								+ "configuration)");
 			}
-			ServiceLocator serviceLocator = ServiceLocator.getInstance();
-			serviceLocator.addPackageToScan(
-					CommonsLoggingLiquibaseLogger.class.getPackage().getName());
 		}
 
 		@Bean
@@ -103,11 +107,15 @@ public class LiquibaseAutoConfiguration {
 			liquibase.setShouldRun(this.properties.isEnabled());
 			liquibase.setLabels(this.properties.getLabels());
 			liquibase.setChangeLogParameters(this.properties.getParameters());
+			liquibase.setRollbackFile(this.properties.getRollbackFile());
 			return liquibase;
 		}
 
 		private DataSource getDataSource() {
-			if (this.properties.getUrl() == null) {
+			if (this.liquibaseDataSource != null) {
+				return this.liquibaseDataSource;
+			}
+			else if (this.properties.getUrl() == null) {
 				return this.dataSource;
 			}
 			return DataSourceBuilder.create().url(this.properties.getUrl())

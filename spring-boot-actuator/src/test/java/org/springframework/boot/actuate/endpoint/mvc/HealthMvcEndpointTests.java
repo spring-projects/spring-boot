@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,7 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -47,6 +42,7 @@ import static org.mockito.Mockito.mock;
  * @author Christian Dupuis
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 public class HealthMvcEndpointTests {
 
@@ -54,19 +50,30 @@ public class HealthMvcEndpointTests {
 			Collections.<String, Object>singletonMap("endpoints.health.sensitive",
 					"false"));
 
+	private static final PropertySource<?> SECURITY_ROLES = new MapPropertySource("test",
+			Collections.<String, Object>singletonMap("management.security.roles",
+					"HERO, USER"));
+
 	private HealthEndpoint endpoint = null;
 
 	private HealthMvcEndpoint mvc = null;
 
 	private MockEnvironment environment;
 
-	private UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
-			"user", "password",
-			AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
+	private UsernamePasswordAuthenticationToken user = createAuthenticationToken(
+			"ROLE_USER");
 
-	private UsernamePasswordAuthenticationToken admin = new UsernamePasswordAuthenticationToken(
-			"user", "password",
-			AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_ADMIN"));
+	private UsernamePasswordAuthenticationToken admin = createAuthenticationToken(
+			"ROLE_ADMIN");
+
+	private UsernamePasswordAuthenticationToken hero = createAuthenticationToken(
+			"ROLE_HERO");
+
+	private UsernamePasswordAuthenticationToken createAuthenticationToken(
+			String authority) {
+		return new UsernamePasswordAuthenticationToken("user", "password",
+				AuthorityUtils.commaSeparatedStringToAuthorityList(authority));
+	}
 
 	@Before
 	public void init() {
@@ -81,8 +88,8 @@ public class HealthMvcEndpointTests {
 	public void up() {
 		given(this.endpoint.invoke()).willReturn(new Health.Builder().up().build());
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -90,10 +97,10 @@ public class HealthMvcEndpointTests {
 	public void down() {
 		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof ResponseEntity);
+		assertThat(result instanceof ResponseEntity).isTrue();
 		ResponseEntity<Health> response = (ResponseEntity<Health>) result;
-		assertTrue(response.getBody().getStatus() == Status.DOWN);
-		assertEquals(HttpStatus.SERVICE_UNAVAILABLE, response.getStatusCode());
+		assertThat(response.getBody().getStatus() == Status.DOWN).isTrue();
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
 	}
 
 	@Test
@@ -104,10 +111,10 @@ public class HealthMvcEndpointTests {
 		this.mvc.setStatusMapping(
 				Collections.singletonMap("OK", HttpStatus.INTERNAL_SERVER_ERROR));
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof ResponseEntity);
+		assertThat(result instanceof ResponseEntity).isTrue();
 		ResponseEntity<Health> response = (ResponseEntity<Health>) result;
-		assertTrue(response.getBody().getStatus().equals(new Status("OK")));
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+		assertThat(response.getBody().getStatus().equals(new Status("OK"))).isTrue();
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@Test
@@ -118,10 +125,10 @@ public class HealthMvcEndpointTests {
 		this.mvc.setStatusMapping(Collections.singletonMap("out-of-service",
 				HttpStatus.INTERNAL_SERVER_ERROR));
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof ResponseEntity);
+		assertThat(result instanceof ResponseEntity).isTrue();
 		ResponseEntity<Health> response = (ResponseEntity<Health>) result;
-		assertTrue(response.getBody().getStatus().equals(Status.OUT_OF_SERVICE));
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+		assertThat(response.getBody().getStatus().equals(Status.OUT_OF_SERVICE)).isTrue();
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@Test
@@ -130,9 +137,9 @@ public class HealthMvcEndpointTests {
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		given(this.endpoint.isSensitive()).willReturn(false);
 		Object result = this.mvc.invoke(this.admin);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
-		assertEquals("bar", ((Health) result).getDetails().get("foo"));
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isEqualTo("bar");
 	}
 
 	@Test
@@ -140,9 +147,31 @@ public class HealthMvcEndpointTests {
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(this.user);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
-		assertNull(((Health) result).getDetails().get("foo"));
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isNull();
+	}
+
+	@Test
+	public void secureCustomRole() {
+		this.environment.getPropertySources().addLast(SECURITY_ROLES);
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(this.hero);
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isEqualTo("bar");
+	}
+
+	@Test
+	public void secureCustomRoleNoAccess() {
+		this.environment.getPropertySources().addLast(SECURITY_ROLES);
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(this.admin);
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isNull();
 	}
 
 	@Test
@@ -152,55 +181,55 @@ public class HealthMvcEndpointTests {
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(this.admin);
-		assertTrue(result instanceof Health);
+		assertThat(result instanceof Health).isTrue();
 		Health health = (Health) result;
-		assertTrue(health.getStatus() == Status.UP);
-		assertThat(health.getDetails().size(), is(equalTo(1)));
-		assertThat(health.getDetails().get("foo"), is(equalTo((Object) "bar")));
+		assertThat(health.getStatus() == Status.UP).isTrue();
+		assertThat(health.getDetails()).hasSize(1);
+		assertThat(health.getDetails().get("foo")).isEqualTo("bar");
 		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());
 		result = this.mvc.invoke(null); // insecure now
-		assertTrue(result instanceof Health);
+		assertThat(result instanceof Health).isTrue();
 		health = (Health) result;
 		// so the result is cached
-		assertTrue(health.getStatus() == Status.UP);
+		assertThat(health.getStatus() == Status.UP).isTrue();
 		// but the details are hidden
-		assertThat(health.getDetails().size(), is(equalTo(0)));
+		assertThat(health.getDetails()).isEmpty();
 	}
 
 	@Test
-	public void unsecureAnonymousAccessUnrestricted() {
+	public void insecureAnonymousAccessUnrestricted() {
 		this.mvc = new HealthMvcEndpoint(this.endpoint, false);
 		this.mvc.setEnvironment(this.environment);
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
-		assertEquals("bar", ((Health) result).getDetails().get("foo"));
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isEqualTo("bar");
 	}
 
 	@Test
-	public void unsensitiveAnonymousAccessRestricted() {
+	public void insensitiveAnonymousAccessRestricted() {
 		this.environment.getPropertySources().addLast(NON_SENSITIVE);
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
-		assertNull(((Health) result).getDetails().get("foo"));
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isNull();
 	}
 
 	@Test
-	public void unsecureUnsensitiveAnonymousAccessUnrestricted() {
+	public void insecureInsensitiveAnonymousAccessUnrestricted() {
 		this.mvc = new HealthMvcEndpoint(this.endpoint, false);
 		this.mvc.setEnvironment(this.environment);
 		this.environment.getPropertySources().addLast(NON_SENSITIVE);
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
-		assertEquals("bar", ((Health) result).getDetails().get("foo"));
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isEqualTo("bar");
 	}
 
 	@Test
@@ -209,13 +238,13 @@ public class HealthMvcEndpointTests {
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
 		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());
 		result = this.mvc.invoke(null);
 		@SuppressWarnings("unchecked")
 		Health health = ((ResponseEntity<Health>) result).getBody();
-		assertTrue(health.getStatus() == Status.DOWN);
+		assertThat(health.getStatus() == Status.DOWN).isTrue();
 	}
 
 	@Test
@@ -225,14 +254,14 @@ public class HealthMvcEndpointTests {
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
 		Thread.sleep(100);
 		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());
 		result = this.mvc.invoke(null);
 		@SuppressWarnings("unchecked")
 		Health health = ((ResponseEntity<Health>) result).getBody();
-		assertTrue(health.getStatus() == Status.DOWN);
+		assertThat(health.getStatus() == Status.DOWN).isTrue();
 	}
 
 }

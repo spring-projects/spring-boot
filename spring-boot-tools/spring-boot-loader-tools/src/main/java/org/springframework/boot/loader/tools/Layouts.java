@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public final class Layouts {
 	}
 
 	/**
-	 * Return the a layout for the given source file.
+	 * Return a layout for the given source file.
 	 * @param file the source file
 	 * @return a {@link Layout}
 	 */
@@ -60,7 +60,7 @@ public final class Layouts {
 	/**
 	 * Executable JAR layout.
 	 */
-	public static class Jar implements Layout {
+	public static class Jar implements RepackagingLayout {
 
 		@Override
 		public String getLauncherClassName() {
@@ -69,12 +69,17 @@ public final class Layouts {
 
 		@Override
 		public String getLibraryDestination(String libraryName, LibraryScope scope) {
-			return "lib/";
+			return "BOOT-INF/lib/";
 		}
 
 		@Override
 		public String getClassesLocation() {
 			return "";
+		}
+
+		@Override
+		public String getRepackagedClassesLocation() {
+			return "BOOT-INF/classes/";
 		}
 
 		@Override

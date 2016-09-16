@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,6 +87,7 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 	}
 
 	@Override
+	@Deprecated
 	public <T> Class<T> getPropertyAsClass(String key, Class<T> targetType) {
 		RelaxedNames prefixes = new RelaxedNames(this.prefix);
 		RelaxedNames keys = new RelaxedNames(key);

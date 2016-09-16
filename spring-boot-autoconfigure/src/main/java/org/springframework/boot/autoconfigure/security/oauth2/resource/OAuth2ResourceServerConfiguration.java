@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -64,8 +64,11 @@ import org.springframework.util.StringUtils;
 @Import(ResourceServerTokenServicesConfiguration.class)
 public class OAuth2ResourceServerConfiguration {
 
-	@Autowired
-	private ResourceServerProperties resource;
+	private final ResourceServerProperties resource;
+
+	public OAuth2ResourceServerConfiguration(ResourceServerProperties resource) {
+		this.resource = resource;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(ResourceServerConfigurer.class)
@@ -78,7 +81,6 @@ public class OAuth2ResourceServerConfiguration {
 
 		private ResourceServerProperties resource;
 
-		@Autowired
 		public ResourceSecurityConfigurer(ResourceServerProperties resource) {
 			this.resource = resource;
 		}
@@ -111,30 +113,38 @@ public class OAuth2ResourceServerConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("OAuth ResourceServer Condition");
 			Environment environment = context.getEnvironment();
 			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
 					"security.oauth2.resource.");
-			String client = environment
-					.resolvePlaceholders("${security.oauth2.client.clientId:}");
-			if (StringUtils.hasText(client)) {
-				return ConditionOutcome.match("found client id");
+			if (hasOAuthClientId(environment)) {
+				return ConditionOutcome.match(message.foundExactly("client-id property"));
 			}
 			if (!resolver.getSubProperties("jwt").isEmpty()) {
-				return ConditionOutcome.match("found JWT resource configuration");
+				return ConditionOutcome
+						.match(message.foundExactly("JWT resource configuration"));
 			}
 			if (StringUtils.hasText(resolver.getProperty("user-info-uri"))) {
 				return ConditionOutcome
-						.match("found UserInfo " + "URI resource configuration");
+						.match(message.foundExactly("user-info-url property"));
 			}
 			if (ClassUtils.isPresent(AUTHORIZATION_ANNOTATION, null)) {
 				if (AuthorizationServerEndpointsConfigurationBeanCondition
 						.matches(context)) {
-					return ConditionOutcome.match(
-							"found authorization " + "server endpoints configuration");
+					return ConditionOutcome
+							.match(message.found("class").items(AUTHORIZATION_ANNOTATION));
 				}
 			}
-			return ConditionOutcome.noMatch("found neither client id nor "
-					+ "JWT resource nor authorization server");
+			return ConditionOutcome.noMatch(
+					message.didNotFind("client id, JWT resource or authorization server")
+							.atAll());
+		}
+
+		private boolean hasOAuthClientId(Environment environment) {
+			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
+					"security.oauth2.client.");
+			return StringUtils.hasLength(resolver.getProperty("client-id", ""));
 		}
 
 	}

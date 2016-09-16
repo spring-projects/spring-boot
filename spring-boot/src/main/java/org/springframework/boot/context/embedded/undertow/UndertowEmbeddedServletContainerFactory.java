@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.context.embedded.undertow;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
@@ -27,6 +28,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.net.ssl.KeyManager;
@@ -62,6 +65,7 @@ import io.undertow.servlet.handlers.DefaultServlet;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
 import org.xnio.OptionMap;
 import org.xnio.Options;
+import org.xnio.Sequence;
 import org.xnio.SslClientAuthMode;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
@@ -69,11 +73,11 @@ import org.xnio.XnioWorker;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.MimeMappings.Mapping;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.Ssl.ClientAuth;
+import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
@@ -89,6 +93,7 @@ import org.springframework.util.ResourceUtils;
  * @author Ivan Sopov
  * @author Andy Wilkinson
  * @author Marcos Barbero
+ * @author Eddú Meléndez
  * @since 1.2.0
  * @see UndertowEmbeddedServletContainer
  */
@@ -117,6 +122,10 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private String accessLogPattern;
 
+	private String accessLogPrefix;
+
+	private String accessLogSuffix;
+
 	private boolean accessLogEnabled = false;
 
 	private boolean useForwardHeaders;
@@ -142,7 +151,7 @@ public class UndertowEmbeddedServletContainerFactory
 	/**
 	 * Create a new {@link UndertowEmbeddedServletContainerFactory} with the specified
 	 * context path and port.
-	 * @param contextPath root the context path
+	 * @param contextPath the root context path
 	 * @param port the port to listen on
 	 */
 	public UndertowEmbeddedServletContainerFactory(String contextPath, int port) {
@@ -219,8 +228,7 @@ public class UndertowEmbeddedServletContainerFactory
 		DeploymentManager manager = createDeploymentManager(initializers);
 		int port = getPort();
 		Builder builder = createBuilder(port);
-		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				port, this.useForwardHeaders, port >= 0, getCompression());
+		return getUndertowEmbeddedServletContainer(builder, manager, port);
 	}
 
 	private Builder createBuilder(int port) {
@@ -259,6 +267,14 @@ public class UndertowEmbeddedServletContainerFactory
 			builder.addHttpsListener(port, getListenAddress(), sslContext);
 			builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE,
 					getSslClientAuthMode(ssl));
+			if (ssl.getEnabledProtocols() != null) {
+				builder.setSocketOption(Options.SSL_ENABLED_PROTOCOLS,
+						Sequence.of(ssl.getEnabledProtocols()));
+			}
+			if (ssl.getCiphers() != null) {
+				builder.setSocketOption(Options.SSL_ENABLED_CIPHER_SUITES,
+						Sequence.of(ssl.getCiphers()));
+			}
 		}
 		catch (NoSuchAlgorithmException ex) {
 			throw new IllegalStateException(ex);
@@ -287,21 +303,15 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private KeyManager[] getKeyManagers() {
 		try {
-			Ssl ssl = getSsl();
-			String keyStoreType = ssl.getKeyStoreType();
-			if (keyStoreType == null) {
-				keyStoreType = "JKS";
-			}
-			KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-			URL url = ResourceUtils.getURL(ssl.getKeyStore());
-			keyStore.load(url.openStream(), ssl.getKeyStorePassword().toCharArray());
-
-			// Get key manager to provide client credentials.
+			KeyStore keyStore = getKeyStore();
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
 					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-			char[] keyPassword = ssl.getKeyPassword() != null
-					? ssl.getKeyPassword().toCharArray()
-					: ssl.getKeyStorePassword().toCharArray();
+			Ssl ssl = getSsl();
+			char[] keyPassword = (ssl.getKeyPassword() != null
+					? ssl.getKeyPassword().toCharArray() : null);
+			if (keyPassword == null && ssl.getKeyStorePassword() != null) {
+				keyPassword = ssl.getKeyStorePassword().toCharArray();
+			}
 			keyManagerFactory.init(keyStore, keyPassword);
 			return keyManagerFactory.getKeyManagers();
 		}
@@ -310,29 +320,47 @@ public class UndertowEmbeddedServletContainerFactory
 		}
 	}
 
+	private KeyStore getKeyStore() throws Exception {
+		if (getSslStoreProvider() != null) {
+			return getSslStoreProvider().getKeyStore();
+		}
+		Ssl ssl = getSsl();
+		return loadKeyStore(ssl.getKeyStoreType(), ssl.getKeyStore(),
+				ssl.getKeyStorePassword());
+	}
+
 	private TrustManager[] getTrustManagers() {
 		try {
-			Ssl ssl = getSsl();
-			String trustStoreType = ssl.getTrustStoreType();
-			if (trustStoreType == null) {
-				trustStoreType = "JKS";
-			}
-			String trustStore = ssl.getTrustStore();
-			if (trustStore == null) {
-				return null;
-			}
-			KeyStore trustedKeyStore = KeyStore.getInstance(trustStoreType);
-			URL url = ResourceUtils.getURL(trustStore);
-			trustedKeyStore.load(url.openStream(),
-					ssl.getTrustStorePassword().toCharArray());
+			KeyStore store = getTrustStore();
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory
 					.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-			trustManagerFactory.init(trustedKeyStore);
+			trustManagerFactory.init(store);
 			return trustManagerFactory.getTrustManagers();
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	private KeyStore getTrustStore() throws Exception {
+		if (getSslStoreProvider() != null) {
+			return getSslStoreProvider().getTrustStore();
+		}
+		Ssl ssl = getSsl();
+		return loadKeyStore(ssl.getTrustStoreType(), ssl.getTrustStore(),
+				ssl.getTrustStorePassword());
+	}
+
+	private KeyStore loadKeyStore(String type, String resource, String password)
+			throws Exception {
+		type = (type == null ? "JKS" : type);
+		if (resource == null) {
+			return null;
+		}
+		KeyStore store = KeyStore.getInstance(type);
+		URL url = ResourceUtils.getURL(resource);
+		store.load(url.openStream(), password == null ? null : password.toCharArray());
+		return store;
 	}
 
 	private DeploymentManager createDeploymentManager(
@@ -358,10 +386,11 @@ public class UndertowEmbeddedServletContainerFactory
 			configureAccessLog(deployment);
 		}
 		if (isPersistSession()) {
-			File folder = getValidSessionStoreDir();
-			deployment.setSessionPersistenceManager(new FileSessionPersistence(folder));
+			File dir = getValidSessionStoreDir();
+			deployment.setSessionPersistenceManager(new FileSessionPersistence(dir));
 		}
-		DeploymentManager manager = Servlets.defaultContainer().addDeployment(deployment);
+		addLocaleMappings(deployment);
+		DeploymentManager manager = Servlets.newContainer().addDeployment(deployment);
 		manager.deploy();
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
 		int sessionTimeout = (getSessionTimeout() > 0 ? getSessionTimeout() : -1);
@@ -383,8 +412,11 @@ public class UndertowEmbeddedServletContainerFactory
 	private AccessLogHandler createAccessLogHandler(HttpHandler handler) {
 		try {
 			createAccessLogDirectoryIfNecessary();
+			String prefix = (this.accessLogPrefix != null ? this.accessLogPrefix
+					: "access_log.");
 			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
-					createWorker(), this.accessLogDirectory, "access_log");
+					createWorker(), this.accessLogDirectory, prefix,
+					this.accessLogSuffix);
 			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
 					: "common";
 			return new AccessLogHandler(handler, accessLogReceiver, formatString,
@@ -405,8 +437,16 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private XnioWorker createWorker() throws IOException {
 		Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
-		OptionMap.Builder builder = OptionMap.builder();
-		return xnio.createWorker(builder.getMap());
+		return xnio.createWorker(
+				OptionMap.builder().set(Options.THREAD_DAEMON, true).getMap());
+	}
+
+	private void addLocaleMappings(DeploymentInfo deployment) {
+		for (Map.Entry<Locale, Charset> entry : getLocaleCharsetMappings().entrySet()) {
+			Locale locale = entry.getKey();
+			Charset charset = entry.getValue();
+			deployment.addLocaleCharsetMapping(locale.toString(), charset.toString());
+		}
 	}
 
 	private void registerServletContainerInitializerToDriveServletContextInitializers(
@@ -427,14 +467,31 @@ public class UndertowEmbeddedServletContainerFactory
 	}
 
 	private ResourceManager getDocumentRootResourceManager() {
-		File root = getValidDocumentRoot();
-		if (root != null && root.isDirectory()) {
+		File root = getCanonicalDocumentRoot();
+		if (root.isDirectory()) {
 			return new FileResourceManager(root, 0);
 		}
-		if (root != null && root.isFile()) {
-			return new JarResourcemanager(root);
+		if (root.isFile()) {
+			return new JarResourceManager(root);
 		}
 		return ResourceManager.EMPTY_RESOURCE_MANAGER;
+	}
+
+	/**
+	 * Return the document root in canonical form. Undertow uses File#getCanonicalFile()
+	 * to determine whether a resource has been requested using the proper case but on
+	 * Windows {@code java.io.tmpdir} may be set as a tilde-compressed pathname.
+	 * @return the canonical document root
+	 */
+	private File getCanonicalDocumentRoot() {
+		try {
+			File root = getValidDocumentRoot();
+			root = (root != null ? root : createTempDir("undertow-docbase"));
+			return root.getCanonicalFile();
+		}
+		catch (IOException e) {
+			throw new IllegalStateException("Cannot get canonical document root", e);
+		}
 	}
 
 	private void configureErrorPages(DeploymentInfo servletBuilder) {
@@ -475,7 +532,7 @@ public class UndertowEmbeddedServletContainerFactory
 	protected UndertowEmbeddedServletContainer getUndertowEmbeddedServletContainer(
 			Builder builder, DeploymentManager manager, int port) {
 		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				port, port >= 0, getCompression());
+				isUseForwardHeaders(), port >= 0, getCompression(), getServerHeader());
 	}
 
 	@Override
@@ -511,12 +568,28 @@ public class UndertowEmbeddedServletContainerFactory
 		this.accessLogPattern = accessLogPattern;
 	}
 
+	public String getAccessLogPrefix() {
+		return this.accessLogPrefix;
+	}
+
+	public void setAccessLogPrefix(String accessLogPrefix) {
+		this.accessLogPrefix = accessLogPrefix;
+	}
+
+	public void setAccessLogSuffix(String accessLogSuffix) {
+		this.accessLogSuffix = accessLogSuffix;
+	}
+
 	public void setAccessLogEnabled(boolean accessLogEnabled) {
 		this.accessLogEnabled = accessLogEnabled;
 	}
 
 	public boolean isAccessLogEnabled() {
 		return this.accessLogEnabled;
+	}
+
+	protected final boolean isUseForwardHeaders() {
+		return this.useForwardHeaders;
 	}
 
 	/**
@@ -531,15 +604,15 @@ public class UndertowEmbeddedServletContainerFactory
 	/**
 	 * Undertow {@link ResourceManager} for JAR resources.
 	 */
-	private static class JarResourcemanager implements ResourceManager {
+	private static class JarResourceManager implements ResourceManager {
 
 		private final String jarPath;
 
-		JarResourcemanager(File jarFile) {
+		JarResourceManager(File jarFile) {
 			this(jarFile.getAbsolutePath());
 		}
 
-		JarResourcemanager(String jarPath) {
+		JarResourceManager(String jarPath) {
 			this.jarPath = jarPath;
 		}
 

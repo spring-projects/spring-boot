@@ -20,8 +20,11 @@ import java.io.IOException;
 
 import javax.servlet.GenericServlet;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+
+import org.springframework.util.StreamUtils;
 
 /**
  * Simple example Servlet used for testing.
@@ -33,12 +36,15 @@ public class ExampleServlet extends GenericServlet {
 
 	private final boolean echoRequestInfo;
 
+	private final boolean writeWithoutContentLength;
+
 	public ExampleServlet() {
-		this(false);
+		this(false, false);
 	}
 
-	public ExampleServlet(boolean echoRequestInfo) {
+	public ExampleServlet(boolean echoRequestInfo, boolean writeWithoutContentLength) {
 		this.echoRequestInfo = echoRequestInfo;
+		this.writeWithoutContentLength = writeWithoutContentLength;
 	}
 
 	@Override
@@ -49,7 +55,15 @@ public class ExampleServlet extends GenericServlet {
 			content += " scheme=" + request.getScheme();
 			content += " remoteaddr=" + request.getRemoteAddr();
 		}
-		response.getWriter().write(content);
+		if (this.writeWithoutContentLength) {
+			response.setContentType("text/plain");
+			ServletOutputStream outputStream = response.getOutputStream();
+			StreamUtils.copy(content.getBytes(), outputStream);
+			outputStream.flush();
+		}
+		else {
+			response.getWriter().write(content);
+		}
 	}
 
 }

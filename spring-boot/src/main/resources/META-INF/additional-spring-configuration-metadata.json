@@ -13,8 +13,35 @@
   {
     "name": "banner.location",
     "type": "org.springframework.core.io.Resource",
-    "description": "Banner file location.",
+    "description": "Banner text resource location.",
     "defaultValue": "classpath:banner.txt"
+  },
+  {
+    "name": "banner.image.location",
+    "type": "org.springframework.core.io.Resource",
+    "description": "Banner image file location (jpg/png can also be used).",
+    "defaultValue": "banner.gif"
+  },
+  {
+    "name": "banner.image.width",
+    "type": "java.lang.Integer",
+    "description": "Banner image width (in chars)."
+  },
+  {
+    "name": "banner.image.height",
+    "type": "java.lang.Integer",
+    "description": "Banner image height (in chars)."
+  },
+  {
+    "name": "banner.image.margin",
+    "type": "java.lang.Integer",
+    "description": "Left hand image margin (in chars)."
+  },
+  {
+    "name": "banner.image.invert",
+    "type": "java.lang.Boolean",
+    "description": "Invert images for dark console themes.",
+    "defaultValue": false
   },
   {
     "name": "debug",
@@ -33,13 +60,13 @@
     "name": "logging.exception-conversion-word",
     "type": "java.lang.String",
     "description": "Conversion word used when logging exceptions.",
-    "defaultValue": "%rEx",
+    "defaultValue": "%wEx",
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
     "name": "logging.file",
     "type": "java.lang.String",
-    "description": "Log file name.",
+    "description": "Name of the log file. Names can be an exact location or relative to the current directory.",
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
@@ -52,13 +79,15 @@
     "name": "logging.pattern.console",
     "type": "java.lang.String",
     "description": "Appender pattern for output to the console. Only supported with the default logback setup.",
-    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener",
+    "defaultValue": "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
   },
   {
     "name": "logging.pattern.file",
     "type": "java.lang.String",
     "description": "Appender pattern for output to the file. Only supported with the default logback setup.",
-    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener",
+    "defaultValue": "%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
   },
   {
     "name": "logging.pattern.level",
@@ -69,7 +98,7 @@
   {
     "name": "logging.path",
     "type": "java.lang.String",
-    "description": "Location of the log file.",
+    "description": "Directory where log files are written.",
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
@@ -97,16 +126,23 @@
     "description": "Application index."
   },
   {
+    "name": "spring.beaninfo.ignore",
+    "type": "java.lang.Boolean",
+    "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+    "description": "Skip search of BeanInfo classes.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.config.name",
     "type": "java.lang.String",
-    "sourceType": "org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor",
+    "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
     "description": "Config file name.",
     "defaultValue": "application"
   },
   {
     "name": "spring.config.location",
     "type": "java.lang.String",
-    "sourceType": "org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor",
+    "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
     "description": "Config file locations."
   },
   {
@@ -114,7 +150,7 @@
     "type": "org.springframework.boot.Banner$Mode",
     "sourceType": "org.springframework.boot.SpringApplication",
     "description": "Mode used to display the banner when the application runs.",
-    "defaultValue": "console",
+    "defaultValue": "console"
   },
   {
     "name": "spring.main.show-banner",
@@ -139,20 +175,27 @@
   {
     "name": "spring.output.ansi.enabled",
     "type": "org.springframework.boot.ansi.AnsiOutput$Enabled",
-    "description": "Configure the ANSI output (can be \"detect\", \"always\", \"never\").",
+    "description": "Configure the ANSI output.",
     "defaultValue": "detect"
   },
   {
     "name": "spring.profiles.active",
     "type": "java.lang.String",
-    "sourceType": "org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor",
+    "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
     "description": "Comma-separated list of active profiles. Can be overridden by a command line switch."
   },
   {
     "name": "spring.profiles.include",
     "type": "java.lang.String",
-    "sourceType": "org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor",
+    "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
     "description": "Unconditionally activate the specified comma separated profiles."
+  },
+  {
+    "name": "trace",
+    "type": "java.lang.Boolean",
+    "description": "Enable trace logs.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener",
+    "defaultValue": false
   }
 ],"hints": [
   {

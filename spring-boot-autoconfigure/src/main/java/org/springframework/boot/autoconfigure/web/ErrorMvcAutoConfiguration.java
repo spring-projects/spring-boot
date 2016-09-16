@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,9 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -39,22 +42,24 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.servlet.ErrorPageRegistrar;
+import org.springframework.boot.web.servlet.ErrorPageRegistry;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.core.Ordered;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
@@ -69,17 +74,29 @@ import org.springframework.web.util.HtmlUtils;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
-@ConditionalOnWebApplication
-// Ensure this loads before the main WebMvcAutoConfiguration so that the error View is
-// available
-@AutoConfigureBefore(WebMvcAutoConfiguration.class)
-@EnableConfigurationProperties(ErrorProperties.class)
 @Configuration
+@ConditionalOnWebApplication
+@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+// Load before the main WebMvcAutoConfiguration so that the error View is available
+@AutoConfigureBefore(WebMvcAutoConfiguration.class)
+@EnableConfigurationProperties(ResourceProperties.class)
 public class ErrorMvcAutoConfiguration {
 
-	@Autowired
-	private ServerProperties properties;
+	private final ApplicationContext applicationContext;
+
+	private final ServerProperties serverProperties;
+
+	private final ResourceProperties resourceProperties;
+
+	@Autowired(required = false)
+	private List<ErrorViewResolver> errorViewResolvers;
+
+	public ErrorMvcAutoConfiguration(ApplicationContext applicationContext,
+			ServerProperties serverProperties, ResourceProperties resourceProperties) {
+		this.applicationContext = applicationContext;
+		this.serverProperties = serverProperties;
+		this.resourceProperties = resourceProperties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
@@ -90,12 +107,21 @@ public class ErrorMvcAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorController.class, search = SearchStrategy.CURRENT)
 	public BasicErrorController basicErrorController(ErrorAttributes errorAttributes) {
-		return new BasicErrorController(errorAttributes, this.properties.getError());
+		return new BasicErrorController(errorAttributes, this.serverProperties.getError(),
+				this.errorViewResolvers);
 	}
 
 	@Bean
 	public ErrorPageCustomizer errorPageCustomizer() {
-		return new ErrorPageCustomizer(this.properties);
+		return new ErrorPageCustomizer(this.serverProperties);
+	}
+
+	@Bean
+	@ConditionalOnBean(DispatcherServlet.class)
+	@ConditionalOnMissingBean
+	public DefaultErrorViewResolver conventionErrorViewResolver() {
+		return new DefaultErrorViewResolver(this.applicationContext,
+				this.resourceProperties);
 	}
 
 	@Bean
@@ -141,20 +167,19 @@ public class ErrorMvcAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			List<TemplateAvailabilityProvider> availabilityProviders = SpringFactoriesLoader
-					.loadFactories(TemplateAvailabilityProvider.class,
-							context.getClassLoader());
-
-			for (TemplateAvailabilityProvider availabilityProvider : availabilityProviders) {
-				if (availabilityProvider.isTemplateAvailable("error",
-						context.getEnvironment(), context.getClassLoader(),
-						context.getResourceLoader())) {
-					return ConditionOutcome.noMatch("Template from "
-							+ availabilityProvider + " found for error view");
-				}
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("ErrorTemplate Missing");
+			TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(
+					context.getClassLoader());
+			TemplateAvailabilityProvider provider = providers.getProvider("error",
+					context.getEnvironment(), context.getClassLoader(),
+					context.getResourceLoader());
+			if (provider != null) {
+				return ConditionOutcome
+						.noMatch(message.foundExactly("template from " + provider));
 			}
-
-			return ConditionOutcome.match("No error template view detected");
+			return ConditionOutcome
+					.match(message.didNotFind("error template view").atAll());
 		}
 
 	}
@@ -164,19 +189,15 @@ public class ErrorMvcAutoConfiguration {
 	 */
 	private static class SpelView implements View {
 
+		private final NonRecursivePropertyPlaceholderHelper helper;
+
 		private final String template;
 
-		private final StandardEvaluationContext context = new StandardEvaluationContext();
-
-		private PropertyPlaceholderHelper helper;
-
-		private PlaceholderResolver resolver;
+		private volatile Map<String, Expression> expressions;
 
 		SpelView(String template) {
+			this.helper = new NonRecursivePropertyPlaceholderHelper("${", "}");
 			this.template = template;
-			this.context.addPropertyAccessor(new MapAccessor());
-			this.helper = new PropertyPlaceholderHelper("${", "}");
-			this.resolver = new SpelPlaceholderResolver(this.context);
 		}
 
 		@Override
@@ -192,9 +213,41 @@ public class ErrorMvcAutoConfiguration {
 			}
 			Map<String, Object> map = new HashMap<String, Object>(model);
 			map.put("path", request.getContextPath());
-			this.context.setRootObject(map);
-			String result = this.helper.replacePlaceholders(this.template, this.resolver);
+			PlaceholderResolver resolver = new ExpressionResolver(getExpressions(), map);
+			String result = this.helper.replacePlaceholders(this.template, resolver);
 			response.getWriter().append(result);
+		}
+
+		private Map<String, Expression> getExpressions() {
+			if (this.expressions == null) {
+				synchronized (this) {
+					ExpressionCollector expressionCollector = new ExpressionCollector();
+					this.helper.replacePlaceholders(this.template, expressionCollector);
+					this.expressions = expressionCollector.getExpressions();
+				}
+			}
+			return this.expressions;
+		}
+
+	}
+
+	/**
+	 * {@link PlaceholderResolver} to collect placeholder expressions.
+	 */
+	private static class ExpressionCollector implements PlaceholderResolver {
+
+		private final SpelExpressionParser parser = new SpelExpressionParser();
+
+		private final Map<String, Expression> expressions = new HashMap<String, Expression>();
+
+		@Override
+		public String resolvePlaceholder(String name) {
+			this.expressions.put(name, this.parser.parseExpression(name));
+			return null;
+		}
+
+		public Map<String, Expression> getExpressions() {
+			return Collections.unmodifiableMap(this.expressions);
 		}
 
 	}
@@ -202,26 +255,32 @@ public class ErrorMvcAutoConfiguration {
 	/**
 	 * SpEL based {@link PlaceholderResolver}.
 	 */
-	private static class SpelPlaceholderResolver implements PlaceholderResolver {
+	private static class ExpressionResolver implements PlaceholderResolver {
 
-		private final SpelExpressionParser parser = new SpelExpressionParser();
+		private final Map<String, Expression> expressions;
 
-		private final StandardEvaluationContext context;
+		private final EvaluationContext context;
 
-		SpelPlaceholderResolver(StandardEvaluationContext context) {
-			this.context = context;
+		ExpressionResolver(Map<String, Expression> expressions, Map<String, ?> map) {
+			this.expressions = expressions;
+			this.context = getContext(map);
+		}
+
+		private EvaluationContext getContext(Map<String, ?> map) {
+			StandardEvaluationContext context = new StandardEvaluationContext();
+			context.addPropertyAccessor(new MapAccessor());
+			context.setRootObject(map);
+			return context;
 		}
 
 		@Override
-		public String resolvePlaceholder(String name) {
-			Expression expression = this.parser.parseExpression(name);
-			try {
-				Object value = expression.getValue(this.context);
-				return HtmlUtils.htmlEscape(value == null ? null : value.toString());
-			}
-			catch (Exception ex) {
-				return null;
-			}
+		public String resolvePlaceholder(String placeholderName) {
+			Expression expression = this.expressions.get(placeholderName);
+			return escape(expression == null ? null : expression.getValue(this.context));
+		}
+
+		private String escape(Object value) {
+			return HtmlUtils.htmlEscape(value == null ? null : value.toString());
 		}
 
 	}
@@ -230,8 +289,7 @@ public class ErrorMvcAutoConfiguration {
 	 * {@link EmbeddedServletContainerCustomizer} that configures the container's error
 	 * pages.
 	 */
-	private static class ErrorPageCustomizer
-			implements EmbeddedServletContainerCustomizer, Ordered {
+	private static class ErrorPageCustomizer implements ErrorPageRegistrar, Ordered {
 
 		private final ServerProperties properties;
 
@@ -240,9 +298,10 @@ public class ErrorMvcAutoConfiguration {
 		}
 
 		@Override
-		public void customize(ConfigurableEmbeddedServletContainer container) {
-			container.addErrorPages(new ErrorPage(this.properties.getServletPrefix()
-					+ this.properties.getError().getPath()));
+		public void registerErrorPages(ErrorPageRegistry errorPageRegistry) {
+			ErrorPage errorPage = new ErrorPage(this.properties.getServletPrefix()
+					+ this.properties.getError().getPath());
+			errorPageRegistry.addErrorPages(errorPage);
 		}
 
 		@Override

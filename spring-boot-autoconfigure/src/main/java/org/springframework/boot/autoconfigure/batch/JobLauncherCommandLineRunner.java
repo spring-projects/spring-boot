@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,8 @@ import org.springframework.util.StringUtils;
 public class JobLauncherCommandLineRunner
 		implements CommandLineRunner, ApplicationEventPublisherAware {
 
-	private static Log logger = LogFactory.getLog(JobLauncherCommandLineRunner.class);
+	private static final Log logger = LogFactory
+			.getLog(JobLauncherCommandLineRunner.class);
 
 	private JobParametersConverter converter = new DefaultJobParametersConverter();
 
@@ -198,7 +199,7 @@ public class JobLauncherCommandLineRunner
 					}
 					execute(job, jobParameters);
 				}
-				catch (NoSuchJobException nsje) {
+				catch (NoSuchJobException ex) {
 					logger.debug("No job found in registry for job name: " + jobName);
 					continue;
 				}

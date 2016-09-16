@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -55,7 +54,7 @@ abstract class ServletComponentHandler {
 		String[] urlPatterns = (String[]) attributes.get("urlPatterns");
 		if (urlPatterns.length > 0) {
 			Assert.state(value.length == 0,
-					"The urlPatterns and value attributes " + "are mututally exclusive");
+					"The urlPatterns and value attributes are mutually exclusive.");
 			return urlPatterns;
 		}
 		return value;
@@ -83,6 +82,6 @@ abstract class ServletComponentHandler {
 	}
 
 	protected abstract void doHandle(Map<String, Object> attributes,
-			BeanDefinition beanDefinition, BeanDefinitionRegistry registry);
+			ScannedGenericBeanDefinition beanDefinition, BeanDefinitionRegistry registry);
 
 }

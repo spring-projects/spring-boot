@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -26,6 +25,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
@@ -33,6 +33,7 @@ import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -67,8 +68,10 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -94,6 +97,9 @@ public class ManagementWebSecurityAutoConfiguration {
 
 	private static final String[] NO_PATHS = new String[0];
 
+	private static final RequestMatcher MATCH_NONE = new NegatedRequestMatcher(
+			AnyRequestMatcher.INSTANCE);
+
 	@Bean
 	@ConditionalOnMissingBean({ IgnoredPathsWebSecurityConfigurerAdapter.class })
 	public IgnoredPathsWebSecurityConfigurerAdapter ignoredPathsWebSecurityConfigurerAdapter() {
@@ -104,17 +110,22 @@ public class ManagementWebSecurityAutoConfiguration {
 	protected static class ManagementSecurityPropertiesConfiguration
 			implements SecurityPrerequisite {
 
-		@Autowired(required = false)
-		private SecurityProperties security;
+		private final SecurityProperties security;
 
-		@Autowired(required = false)
-		private ManagementServerProperties management;
+		private final ManagementServerProperties management;
+
+		public ManagementSecurityPropertiesConfiguration(
+				ObjectProvider<SecurityProperties> securityProvider,
+				ObjectProvider<ManagementServerProperties> managementProvider) {
+			this.security = securityProvider.getIfAvailable();
+			this.management = managementProvider.getIfAvailable();
+		}
 
 		@PostConstruct
 		public void init() {
 			if (this.management != null && this.security != null) {
 				this.security.getUser().getRole()
-						.add(this.management.getSecurity().getRole());
+						.addAll(this.management.getSecurity().getRoles());
 			}
 		}
 
@@ -128,14 +139,14 @@ public class ManagementWebSecurityAutoConfiguration {
 		@Autowired(required = false)
 		private ErrorController errorController;
 
-		@Autowired(required = false)
-		private EndpointHandlerMapping endpointHandlerMapping;
+		@Autowired
+		private SecurityProperties security;
 
 		@Autowired
 		private ManagementServerProperties management;
 
-		@Autowired
-		private SecurityProperties security;
+		@Autowired(required = false)
+		private ManagementContextResolver contextResolver;
 
 		@Autowired(required = false)
 		private ServerProperties server;
@@ -146,25 +157,42 @@ public class ManagementWebSecurityAutoConfiguration {
 
 		@Override
 		public void init(WebSecurity builder) throws Exception {
-			IgnoredRequestConfigurer ignoring = builder.ignoring();
-			// The ignores are not cumulative, so to prevent overwriting the defaults we
-			// add them back.
-			List<String> ignored = SpringBootWebSecurityConfiguration
-					.getIgnored(this.security);
-			if (!this.management.getSecurity().isEnabled()) {
-				ignored.addAll(Arrays
-						.asList(EndpointPaths.ALL.getPaths(this.endpointHandlerMapping)));
+			if (this.server == null) {
+				return;
 			}
+			IgnoredRequestConfigurer ignoring = builder.ignoring();
+			// The ignores are not cumulative, so to prevent overwriting the defaults
+			// we add them back.
+			Set<String> ignored = new LinkedHashSet<String>(
+					SpringBootWebSecurityConfiguration.getIgnored(this.security));
 			if (ignored.contains("none")) {
 				ignored.remove("none");
 			}
 			if (this.errorController != null) {
 				ignored.add(normalizePath(this.errorController.getErrorPath()));
 			}
-			if (this.server != null) {
-				String[] paths = this.server.getPathsArray(ignored);
-				ignoring.antMatchers(paths);
+			RequestMatcher requestMatcher = getRequestMatcher();
+			String[] paths = this.server.getPathsArray(ignored);
+			if (!ObjectUtils.isEmpty(paths)) {
+				List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
+				for (String pattern : paths) {
+					matchers.add(new AntPathRequestMatcher(pattern, null));
+				}
+				if (requestMatcher != null) {
+					matchers.add(requestMatcher);
+				}
+				requestMatcher = new OrRequestMatcher(matchers);
 			}
+			if (requestMatcher != null) {
+				ignoring.requestMatchers(requestMatcher);
+			}
+		}
+
+		private RequestMatcher getRequestMatcher() {
+			if (this.management.getSecurity().isEnabled()) {
+				return null;
+			}
+			return LazyEndpointPathRequestMatcher.getRequestMatcher(this.contextResolver);
 		}
 
 		private String normalizePath(String errorPath) {
@@ -196,10 +224,13 @@ public class ManagementWebSecurityAutoConfiguration {
 					.getProperty("management.security.enabled", "true");
 			String basicEnabled = context.getEnvironment()
 					.getProperty("security.basic.enabled", "true");
-			return new ConditionOutcome(
-					"true".equalsIgnoreCase(managementEnabled)
-							&& !"true".equalsIgnoreCase(basicEnabled),
-					"Management security enabled and basic disabled");
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("WebSecurityEnabled");
+			if ("true".equalsIgnoreCase(managementEnabled)
+					&& !"true".equalsIgnoreCase(basicEnabled)) {
+				return ConditionOutcome.match(message.because("security enabled"));
+			}
+			return ConditionOutcome.noMatch(message.because("security disabled"));
 		}
 
 	}
@@ -211,41 +242,18 @@ public class ManagementWebSecurityAutoConfiguration {
 	protected static class ManagementWebSecurityConfigurerAdapter
 			extends WebSecurityConfigurerAdapter {
 
-		@Autowired
-		private SecurityProperties security;
+		private final SecurityProperties security;
 
-		@Autowired
-		private ManagementServerProperties management;
+		private final ManagementServerProperties management;
 
-		@Autowired(required = false)
-		private ManagementContextResolver contextResolver;
+		private final ManagementContextResolver contextResolver;
 
-		@Autowired(required = false)
-		private ServerProperties server;
-
-		@Autowired(required = false)
-		private EndpointHandlerMapping endpointHandlerMapping;
-
-		public void setEndpointHandlerMapping(
-				EndpointHandlerMapping endpointHandlerMapping) {
-			this.endpointHandlerMapping = endpointHandlerMapping;
-		}
-
-		protected final EndpointHandlerMapping getRequiredEndpointHandlerMapping() {
-			if (this.endpointHandlerMapping == null) {
-				ApplicationContext context = (this.contextResolver == null ? null
-						: this.contextResolver.getApplicationContext());
-				if (context != null && context
-						.getBeanNamesForType(EndpointHandlerMapping.class).length > 0) {
-					this.endpointHandlerMapping = context
-							.getBean(EndpointHandlerMapping.class);
-				}
-				if (this.endpointHandlerMapping == null) {
-					this.endpointHandlerMapping = new EndpointHandlerMapping(
-							Collections.<MvcEndpoint>emptySet());
-				}
-			}
-			return this.endpointHandlerMapping;
+		public ManagementWebSecurityConfigurerAdapter(SecurityProperties security,
+				ManagementServerProperties management,
+				ObjectProvider<ManagementContextResolver> contextResolverProvider) {
+			this.security = security;
+			this.management = management;
+			this.contextResolver = contextResolverProvider.getIfAvailable();
 		}
 
 		@Override
@@ -274,17 +282,11 @@ public class ManagementWebSecurityAutoConfiguration {
 		}
 
 		private RequestMatcher getRequestMatcher() {
-			if (!this.management.getSecurity().isEnabled()) {
-				return null;
+			if (this.management.getSecurity().isEnabled()) {
+				return LazyEndpointPathRequestMatcher
+						.getRequestMatcher(this.contextResolver);
 			}
-			String path = this.management.getContextPath();
-			if (StringUtils.hasText(path)) {
-				AntPathRequestMatcher matcher = new AntPathRequestMatcher(
-						this.server.getPath(path) + "/**");
-				return matcher;
-			}
-			// Match everything, including the sensitive and non-sensitive paths
-			return new EndpointPathRequestMatcher(EndpointPaths.ALL);
+			return null;
 		}
 
 		private AuthenticationEntryPoint entryPoint() {
@@ -296,43 +298,11 @@ public class ManagementWebSecurityAutoConfiguration {
 		private void configurePermittedRequests(
 				ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry requests) {
 			// Permit access to the non-sensitive endpoints
-			requests.requestMatchers(
-					new EndpointPathRequestMatcher(EndpointPaths.NON_SENSITIVE))
-					.permitAll();
-			// Restrict the rest to the configured role
-			requests.anyRequest().hasRole(this.management.getSecurity().getRole());
-		}
-
-		private final class EndpointPathRequestMatcher implements RequestMatcher {
-
-			private final EndpointPaths endpointPaths;
-
-			private RequestMatcher delegate;
-
-			EndpointPathRequestMatcher(EndpointPaths endpointPaths) {
-				this.endpointPaths = endpointPaths;
-			}
-
-			@Override
-			public boolean matches(HttpServletRequest request) {
-				if (this.delegate == null) {
-					this.delegate = createDelegate();
-				}
-				return this.delegate.matches(request);
-			}
-
-			private RequestMatcher createDelegate() {
-				ServerProperties server = ManagementWebSecurityConfigurerAdapter.this.server;
-				List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
-				EndpointHandlerMapping endpointHandlerMapping = ManagementWebSecurityConfigurerAdapter.this
-						.getRequiredEndpointHandlerMapping();
-				for (String path : this.endpointPaths.getPaths(endpointHandlerMapping)) {
-					matchers.add(new AntPathRequestMatcher(server.getPath(path)));
-				}
-				return (matchers.isEmpty() ? AnyRequestMatcher.INSTANCE
-						: new OrRequestMatcher(matchers));
-			}
-
+			requests.requestMatchers(new LazyEndpointPathRequestMatcher(
+					this.contextResolver, EndpointPaths.NON_SENSITIVE)).permitAll();
+			// Restrict the rest to the configured roles
+			List<String> roles = this.management.getSecurity().getRoles();
+			requests.anyRequest().hasAnyRole(roles.toArray(new String[roles.size()]));
 		}
 
 	}
@@ -342,10 +312,12 @@ public class ManagementWebSecurityAutoConfiguration {
 		ALL,
 
 		NON_SENSITIVE {
+
 			@Override
 			protected boolean isIncluded(MvcEndpoint endpoint) {
 				return !endpoint.isSensitive();
 			}
+
 		};
 
 		public String[] getPaths(EndpointHandlerMapping endpointHandlerMapping) {
@@ -374,6 +346,74 @@ public class ManagementWebSecurityAutoConfiguration {
 
 		protected boolean isIncluded(MvcEndpoint endpoint) {
 			return true;
+		}
+
+	}
+
+	private static class LazyEndpointPathRequestMatcher implements RequestMatcher {
+
+		private final EndpointPaths endpointPaths;
+
+		private final ManagementContextResolver contextResolver;
+
+		private RequestMatcher delegate;
+
+		public static RequestMatcher getRequestMatcher(
+				ManagementContextResolver contextResolver) {
+			if (contextResolver == null) {
+				return null;
+			}
+			ManagementServerProperties management = contextResolver
+					.getApplicationContext().getBean(ManagementServerProperties.class);
+			ServerProperties server = contextResolver.getApplicationContext()
+					.getBean(ServerProperties.class);
+			String path = management.getContextPath();
+			if (StringUtils.hasText(path)) {
+				AntPathRequestMatcher matcher = new AntPathRequestMatcher(
+						server.getPath(path) + "/**");
+				return matcher;
+			}
+			// Match everything, including the sensitive and non-sensitive paths
+			return new LazyEndpointPathRequestMatcher(contextResolver, EndpointPaths.ALL);
+		}
+
+		LazyEndpointPathRequestMatcher(ManagementContextResolver contextResolver,
+				EndpointPaths endpointPaths) {
+			this.contextResolver = contextResolver;
+			this.endpointPaths = endpointPaths;
+		}
+
+		@Override
+		public boolean matches(HttpServletRequest request) {
+			if (this.delegate == null) {
+				this.delegate = createDelegate();
+			}
+			return this.delegate.matches(request);
+		}
+
+		private RequestMatcher createDelegate() {
+			ServerProperties server = this.contextResolver.getApplicationContext()
+					.getBean(ServerProperties.class);
+			List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
+			EndpointHandlerMapping endpointHandlerMapping = getRequiredEndpointHandlerMapping();
+			for (String path : this.endpointPaths.getPaths(endpointHandlerMapping)) {
+				matchers.add(new AntPathRequestMatcher(server.getPath(path)));
+			}
+			return (matchers.isEmpty() ? MATCH_NONE : new OrRequestMatcher(matchers));
+		}
+
+		private EndpointHandlerMapping getRequiredEndpointHandlerMapping() {
+			EndpointHandlerMapping endpointHandlerMapping = null;
+			ApplicationContext context = this.contextResolver.getApplicationContext();
+			if (context.getBeanNamesForType(EndpointHandlerMapping.class).length > 0) {
+				endpointHandlerMapping = context.getBean(EndpointHandlerMapping.class);
+			}
+			if (endpointHandlerMapping == null) {
+				// Maybe there are actually no endpoints (e.g. management.port=-1)
+				endpointHandlerMapping = new EndpointHandlerMapping(
+						Collections.<MvcEndpoint>emptySet());
+			}
+			return endpointHandlerMapping;
 		}
 
 	}

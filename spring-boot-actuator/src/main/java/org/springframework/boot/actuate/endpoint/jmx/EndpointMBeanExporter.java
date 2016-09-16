@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.endpoint.jmx;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
@@ -66,7 +67,7 @@ public class EndpointMBeanExporter extends MBeanExporter
 	 */
 	public static final String DEFAULT_DOMAIN = "org.springframework.boot";
 
-	private static Log logger = LogFactory.getLog(EndpointMBeanExporter.class);
+	private static final Log logger = LogFactory.getLog(EndpointMBeanExporter.class);
 
 	private final AnnotationJmxAttributeSource attributeSource = new AnnotationJmxAttributeSource();
 
@@ -241,8 +242,8 @@ public class EndpointMBeanExporter extends MBeanExporter
 		}
 		StringBuilder builder = new StringBuilder();
 
-		for (Object key : this.objectNameStaticProperties.keySet()) {
-			builder.append("," + key + "=" + this.objectNameStaticProperties.get(key));
+		for (Entry<Object, Object> name : this.objectNameStaticProperties.entrySet()) {
+			builder.append("," + name.getKey() + "=" + name.getValue());
 		}
 		return builder.toString();
 	}

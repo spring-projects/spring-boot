@@ -76,7 +76,7 @@ public class OrderedHealthAggregator extends AbstractHealthAggregator {
 			}
 		}
 		// If no status is given return UNKNOWN
-		if (filteredCandidates.size() == 0) {
+		if (filteredCandidates.isEmpty()) {
 			return Status.UNKNOWN;
 		}
 		// Sort given Status instances by configured order

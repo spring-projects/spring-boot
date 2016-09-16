@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,12 @@
 package org.springframework.boot.loader;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.ExplodedArchive;
@@ -40,30 +38,16 @@ import org.springframework.boot.loader.jar.JarFile;
  */
 public abstract class Launcher {
 
-	protected Logger logger = Logger.getLogger(Launcher.class.getName());
-
-	/**
-	 * The main runner class. This must be loaded by the created ClassLoader so cannot be
-	 * directly referenced.
-	 */
-	private static final String RUNNER_CLASS = Launcher.class.getPackage().getName()
-			+ ".MainMethodRunner";
-
 	/**
 	 * Launch the application. This method is the initial entry point that should be
 	 * called by a subclass {@code public static void main(String[] args)} method.
 	 * @param args the incoming arguments
+	 * @throws Exception if the application fails to launch
 	 */
-	protected void launch(String[] args) {
-		try {
-			JarFile.registerUrlProtocolHandler();
-			ClassLoader classLoader = createClassLoader(getClassPathArchives());
-			launch(args, getMainClass(), classLoader);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-			System.exit(1);
-		}
+	protected void launch(String[] args) throws Exception {
+		JarFile.registerUrlProtocolHandler();
+		ClassLoader classLoader = createClassLoader(getClassPathArchives());
+		launch(args, getMainClass(), classLoader);
 	}
 
 	/**
@@ -99,11 +83,8 @@ public abstract class Launcher {
 	 */
 	protected void launch(String[] args, String mainClass, ClassLoader classLoader)
 			throws Exception {
-		Runnable runner = createMainMethodRunner(mainClass, args, classLoader);
-		Thread runnerThread = new Thread(runner);
-		runnerThread.setContextClassLoader(classLoader);
-		runnerThread.setName(Thread.currentThread().getName());
-		runnerThread.start();
+		Thread.currentThread().setContextClassLoader(classLoader);
+		createMainMethodRunner(mainClass, args, classLoader).run();
 	}
 
 	/**
@@ -111,15 +92,11 @@ public abstract class Launcher {
 	 * @param mainClass the main class
 	 * @param args the incoming arguments
 	 * @param classLoader the classloader
-	 * @return a runnable used to start the application
-	 * @throws Exception if the main method runner cannot be created
+	 * @return the main method runner
 	 */
-	protected Runnable createMainMethodRunner(String mainClass, String[] args,
-			ClassLoader classLoader) throws Exception {
-		Class<?> runnerClass = classLoader.loadClass(RUNNER_CLASS);
-		Constructor<?> constructor = runnerClass.getConstructor(String.class,
-				String[].class);
-		return (Runnable) constructor.newInstance(mainClass, args);
+	protected MainMethodRunner createMainMethodRunner(String mainClass, String[] args,
+			ClassLoader classLoader) {
+		return new MainMethodRunner(mainClass, args);
 	}
 
 	/**

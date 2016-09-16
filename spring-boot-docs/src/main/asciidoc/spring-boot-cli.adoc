@@ -219,25 +219,25 @@ By default, the CLI uses the dependency management declared in `spring-boot-depe
 when resolving `@Grab` dependencies. Additional dependency management, that will override
 the default dependency management, can be configured using the `@DependencyManagementBom`
 annotation. The annotation's value should specify the coordinates
-(`groupId:artifactId:version`) of one or more Maven boms.
+(`groupId:artifactId:version`) of one or more Maven BOMs.
 
 For example, the following declaration:
 
 [source,groovy,indent=0]
 ----
-	`@DependencyManagementBom("com.example.custom-bom:1.0.0")`
+	@DependencyManagementBom("com.example.custom-bom:1.0.0")
 ----
 
-Will pick up  `custom-bom-1.0.0.pom` in a Maven repository under
+Will pick up `custom-bom-1.0.0.pom` in a Maven repository under
 `com/example/custom-versions/1.0.0/`.
 
-When multiple boms are specified they are applied in the order that they're declared.
+When multiple BOMs are specified they are applied in the order that they're declared.
 For example:
 
 [source,java,indent=0]
 ----
-	`@DependencyManagementBom(["com.example.custom-bom:1.0.0",
-			"com.example.another-bom:1.0.0"])`
+	@DependencyManagementBom(["com.example.custom-bom:1.0.0",
+			"com.example.another-bom:1.0.0"])
 ----
 
 indicates that dependency management in `another-bom` will override the dependency
@@ -248,7 +248,7 @@ ensure consistent ordering of the dependency management, you can only use
 `@DependencyManagementBom` at most once in your application. A useful source of
 dependency management (that is a superset of Spring Boot's dependency management) is the
 http://platform.spring.io/[Spring IO Platform], e.g.
-`@DepenedencyManagementBom('io.spring.platform:platform-bom:1.1.2.RELEASE')`.
+`@DependencyManagementBom('io.spring.platform:platform-bom:1.1.2.RELEASE')`.
 
 
 
@@ -415,7 +415,7 @@ From inside the embedded shell you can run other commands directly:
 ----
 
 The embedded shell supports ANSI color output as well as `tab` completion. If you need
-to run a native command you can use the `$` prefix. Hitting `ctrl-c` will exit the
+to run a native command you can use the `!` prefix. Hitting `ctrl-c` will exit the
 embedded shell.
 
 
@@ -514,7 +514,7 @@ further information.
 == What to read next
 There are some {github-code}/spring-boot-cli/samples[sample groovy
 scripts] available from the GitHub repository that you can use to try out the
-Spring Boot CLI. There is also extensive javadoc throughout the
+Spring Boot CLI. There is also extensive Javadoc throughout the
 {sc-spring-boot-cli}[source code].
 
 If you find that you reach the limit of the CLI tool, you will probably want to look

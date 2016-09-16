@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DropwizardMetricServices}.
@@ -42,7 +41,7 @@ public class DropwizardMetricServicesTests {
 		this.writer.increment("foo");
 		this.writer.increment("foo");
 		this.writer.increment("foo");
-		assertEquals(3, this.registry.counter("counter.foo").getCount());
+		assertThat(this.registry.counter("counter.foo").getCount()).isEqualTo(3);
 	}
 
 	@Test
@@ -50,7 +49,7 @@ public class DropwizardMetricServicesTests {
 		this.writer.increment("meter.foo");
 		this.writer.increment("meter.foo");
 		this.writer.increment("meter.foo");
-		assertEquals(3, this.registry.meter("meter.foo").getCount());
+		assertThat(this.registry.meter("meter.foo").getCount()).isEqualTo(3);
 	}
 
 	@Test
@@ -58,7 +57,7 @@ public class DropwizardMetricServicesTests {
 		this.writer.increment("counter.foo");
 		this.writer.increment("counter.foo");
 		this.writer.increment("counter.foo");
-		assertEquals(3, this.registry.counter("counter.foo").getCount());
+		assertThat(this.registry.counter("counter.foo").getCount()).isEqualTo(3);
 	}
 
 	@Test
@@ -66,23 +65,23 @@ public class DropwizardMetricServicesTests {
 		this.writer.submit("foo", 2.1);
 		@SuppressWarnings("unchecked")
 		Gauge<Double> gauge = (Gauge<Double>) this.registry.getMetrics().get("gauge.foo");
-		assertEquals(new Double(2.1), gauge.getValue());
+		assertThat(gauge.getValue()).isEqualTo(new Double(2.1));
 		this.writer.submit("foo", 2.3);
-		assertEquals(new Double(2.3), gauge.getValue());
+		assertThat(gauge.getValue()).isEqualTo(new Double(2.3));
 	}
 
 	@Test
-	public void setPredfinedTimer() {
+	public void setPredefinedTimer() {
 		this.writer.submit("timer.foo", 200);
 		this.writer.submit("timer.foo", 300);
-		assertEquals(2, this.registry.timer("timer.foo").getCount());
+		assertThat(this.registry.timer("timer.foo").getCount()).isEqualTo(2);
 	}
 
 	@Test
-	public void setPredfinedHistogram() {
+	public void setPredefinedHistogram() {
 		this.writer.submit("histogram.foo", 2.1);
 		this.writer.submit("histogram.foo", 2.3);
-		assertEquals(2, this.registry.histogram("histogram.foo").getCount());
+		assertThat(this.registry.histogram("histogram.foo").getCount()).isEqualTo(2);
 	}
 
 	/**
@@ -94,7 +93,7 @@ public class DropwizardMetricServicesTests {
 	 * @throws Exception if an error occurs
 	 */
 	@Test
-	public void testParallism() throws Exception {
+	public void testParallelism() throws Exception {
 		List<WriterThread> threads = new ArrayList<WriterThread>();
 		ThreadGroup group = new ThreadGroup("threads");
 		for (int i = 0; i < 10; i++) {
@@ -108,7 +107,8 @@ public class DropwizardMetricServicesTests {
 		}
 
 		for (WriterThread thread : threads) {
-			assertFalse("expected thread caused unexpected exception", thread.isFailed());
+			assertThat(thread.isFailed())
+					.as("expected thread caused unexpected exception").isFalse();
 		}
 	}
 
@@ -139,9 +139,9 @@ public class DropwizardMetricServicesTests {
 					this.writer.submit("histogram.test.service", this.index);
 					this.writer.submit("gauge.test.service", this.index);
 				}
-				catch (IllegalArgumentException iae) {
+				catch (IllegalArgumentException ex) {
 					this.failed = true;
-					throw iae;
+					throw ex;
 				}
 			}
 		}

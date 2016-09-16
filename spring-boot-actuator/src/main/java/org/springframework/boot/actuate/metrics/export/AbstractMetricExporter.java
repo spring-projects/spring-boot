@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.metrics.export;
 
+import java.io.Closeable;
+import java.io.Flushable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,7 +39,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @since 1.3.0
  */
-public abstract class AbstractMetricExporter implements Exporter {
+public abstract class AbstractMetricExporter implements Exporter, Closeable, Flushable {
 
 	private static final Log logger = LogFactory.getLog(AbstractMetricExporter.class);
 
@@ -143,6 +146,13 @@ public abstract class AbstractMetricExporter implements Exporter {
 		}
 	}
 
+	@Override
+	public void close() throws IOException {
+		export();
+		flushQuietly();
+	}
+
+	@Override
 	public void flush() {
 	}
 

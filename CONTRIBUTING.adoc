@@ -5,6 +5,13 @@ something, or simply want to hack on the code this document should help you get 
 
 
 
+== Code of Conduct
+This project adheres to the Contributor Covenant link:CODE_OF_CONDUCT.adoc[code of
+conduct]. By participating, you are expected to uphold this code. Please report
+unacceptable behavior to spring-code-of-conduct@pivotal.io.
+
+
+
 == Using GitHub issues
 We use GitHub issues to track bugs and enhancements. If you have a general usage question
 please ask on http://stackoverflow.com[Stack Overflow]. The Spring Boot team and the
@@ -19,13 +26,12 @@ problem.
 
 
 == Sign the Contributor License Agreement
-Before we accept a non-trivial patch or pull request we will need you to sign the
-https://support.springsource.com/spring_committer_signup[contributor's agreement].
+Before we accept a non-trivial patch or pull request we will need you to
+https://cla.pivotal.io/sign/spring[sign the Contributor License Agreement].
 Signing the contributor's agreement does not grant anyone commit rights to the main
 repository, but it does mean that we can accept your contributions, and you will get an
 author credit if we do.  Active contributors might be asked to join the core team, and
-given the ability to merge pull requests. Use '`Phillip Webb`' or '`Dave Syer`' in the
-project lead field when you complete the form.
+given the ability to merge pull requests.
 
 
 
@@ -58,9 +64,9 @@ added after the original pull request but before a merge.
 
 == Working with the code
 If you don't have an IDE preference we would recommend that you use
-http://www.springsource.com/developer/sts[Spring Tools Suite] or
+https://spring.io/tools/sts[Spring Tools Suite] or
 http://eclipse.org[Eclipse] when working with the code. We use the
-http://eclipse.org/m2e/[m2eclipe] eclipse plugin for maven support. Other IDEs and tools
+http://eclipse.org/m2e/[M2Eclipse] eclipse plugin for maven support. Other IDEs and tools
 should also work without issue.
 
 
@@ -76,7 +82,7 @@ The project can be built from the root directory using the standard maven comman
 
 [indent=0]
 ----
-	$ mvn clean install
+	$ ./mvnw clean install
 ----
 
 NOTE: You may need to increase the amount of memory available to Maven by setting
@@ -87,7 +93,7 @@ to submit a pull request:
 
 [indent=0]
 ----
-	$ mvn clean install -DskipTests
+	$ ./mvnw clean install -DskipTests
 ----
 
 
@@ -98,7 +104,7 @@ reactor unless they have previously been built. Unfortunately this restriction c
 some compilations for Spring Boot as we include a maven plugin and use it within the
 samples. The standard build works around this restriction by launching the samples via
 the `maven-invoker-plugin` so that they are not part of the reactor. This works fine
-most of the time, however, sometimes it useful to run a build that includes all modules
+most of the time, however, sometimes it's useful to run a build that includes all modules
 (for example when using `maven-versions-plugin`. We use the full build on our CI servers
 and during the release process.
 
@@ -113,7 +119,7 @@ build. To prepare the build, from the root directory use:
 
 [indent=0]
 ----
-	$ mvn -P snapshot,prepare install -DskipTests
+	$ ./mvnw -P snapshot,prepare install -DskipTests
 ----
 
 NOTE: You may notice that preparing the build also changes the
@@ -126,7 +132,7 @@ Once the build has been prepared, you can run a full build using the following c
 
 [indent=0]
 ----
-	$ mvn -s ./settings.xml -f spring-boot-full-build -P full clean install
+	$ ./mvnw -s ./settings.xml -f spring-boot-full-build -P full clean install
 ----
 
 NOTE: As for the standard build, you may need to increase the amount of memory available
@@ -148,6 +154,7 @@ provision a new environment. To use the installer:
 
 * Download and run the latest Eclipse Installer from
   http://www.eclipse.org/downloads/[eclipse.org/downloads/].
+* Switch to "Advanced Mode" using the drop down menu on the right.
 * Select "`Eclipse IDE for Java Developers`" under "`Eclipse.org`" as the product to
   install and click "`next`".
 * For the "`Project`" click on "`+`" to add a new setup file. Select "`Github Projects`"
@@ -168,7 +175,7 @@ easier to navigate.
 
 ==== Manual installation with m2eclipse
 If you prefer to install Eclipse yourself we recommend that you use the
-http://eclipse.org/m2e/[m2eclipe] eclipse plugin. If you don't already have m2eclipse
+http://eclipse.org/m2e/[M2Eclipse] eclipse plugin. If you don't already have m2eclipse
 installed it is available from the "Eclipse marketplace".
 
 Spring Boot includes project specific source formatting settings, in order to have these
@@ -199,7 +206,7 @@ following command:
 
 [indent=0]
 ----
-	$ mvn eclipse:eclipse
+	$ ./mvnw eclipse:eclipse
 ----
 
 The generated eclipse projects can be imported by selecting `import existing projects`

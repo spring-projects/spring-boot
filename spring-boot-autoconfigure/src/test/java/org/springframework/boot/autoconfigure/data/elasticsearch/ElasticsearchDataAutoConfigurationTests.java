@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,19 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
+import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ElasticsearchDataAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Artur Konczak
  */
 public class ElasticsearchDataAutoConfigurationTests {
 
@@ -52,8 +55,37 @@ public class ElasticsearchDataAutoConfigurationTests {
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchDataAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1,
-				this.context.getBeanNamesForType(ElasticsearchTemplate.class).length);
+		assertThat(this.context.getBeanNamesForType(ElasticsearchTemplate.class))
+				.hasSize(1);
+	}
+
+	@Test
+	public void mappingContextExists() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.elasticsearch.properties.path.data:target/data",
+				"spring.data.elasticsearch.properties.path.logs:target/logs");
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				ElasticsearchAutoConfiguration.class,
+				ElasticsearchDataAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(
+				this.context.getBeanNamesForType(SimpleElasticsearchMappingContext.class))
+						.hasSize(1);
+	}
+
+	@Test
+	public void converterExists() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.elasticsearch.properties.path.data:target/data",
+				"spring.data.elasticsearch.properties.path.logs:target/logs");
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				ElasticsearchAutoConfiguration.class,
+				ElasticsearchDataAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBeanNamesForType(ElasticsearchConverter.class))
+				.hasSize(1);
 	}
 
 }

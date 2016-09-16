@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.cli.command.core.HelpCommand;
 import org.springframework.boot.cli.command.core.HintCommand;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.verify;
@@ -126,64 +123,61 @@ public class CommandRunnerTests {
 		verify(this.regularCommand).run("--", "--debug", "bar");
 		// When handled by the command itself it shouldn't cause the system property to be
 		// set
-		assertNull(System.getProperty("debug"));
+		assertThat(System.getProperty("debug")).isNull();
 	}
 
 	@Test
 	public void handlesSuccess() throws Exception {
 		int status = this.commandRunner.runAndHandleErrors("command");
-		assertThat(status, equalTo(0));
-		assertThat(this.calls, equalTo((Set<Call>) EnumSet.noneOf(Call.class)));
+		assertThat(status).isEqualTo(0);
+		assertThat(this.calls).isEmpty();
 	}
 
 	@Test
 	public void handlesNoSuchCommand() throws Exception {
 		int status = this.commandRunner.runAndHandleErrors("missing");
-		assertThat(status, equalTo(1));
-		assertThat(this.calls, equalTo((Set<Call>) EnumSet.of(Call.ERROR_MESSAGE)));
+		assertThat(status).isEqualTo(1);
+		assertThat(this.calls).containsOnly(Call.ERROR_MESSAGE);
 	}
 
 	@Test
 	public void handlesRegularExceptionWithMessage() throws Exception {
 		willThrow(new RuntimeException("With Message")).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command");
-		assertThat(status, equalTo(1));
-		assertThat(this.calls, equalTo((Set<Call>) EnumSet.of(Call.ERROR_MESSAGE)));
+		assertThat(status).isEqualTo(1);
+		assertThat(this.calls).containsOnly(Call.ERROR_MESSAGE);
 	}
 
 	@Test
 	public void handlesRegularExceptionWithoutMessage() throws Exception {
 		willThrow(new NullPointerException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command");
-		assertThat(status, equalTo(1));
-		assertThat(this.calls, equalTo(
-				(Set<Call>) EnumSet.of(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE)));
+		assertThat(status).isEqualTo(1);
+		assertThat(this.calls).containsOnly(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE);
 	}
 
 	@Test
 	public void handlesExceptionWithDashD() throws Exception {
 		willThrow(new RuntimeException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command", "-d");
-		assertEquals("true", System.getProperty("debug"));
-		assertThat(status, equalTo(1));
-		assertThat(this.calls, equalTo(
-				(Set<Call>) EnumSet.of(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE)));
+		assertThat(System.getProperty("debug")).isEqualTo("true");
+		assertThat(status).isEqualTo(1);
+		assertThat(this.calls).containsOnly(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE);
 	}
 
 	@Test
 	public void handlesExceptionWithDashDashDebug() throws Exception {
 		willThrow(new RuntimeException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command", "--debug");
-		assertEquals("true", System.getProperty("debug"));
-		assertThat(status, equalTo(1));
-		assertThat(this.calls, equalTo(
-				(Set<Call>) EnumSet.of(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE)));
+		assertThat(System.getProperty("debug")).isEqualTo("true");
+		assertThat(status).isEqualTo(1);
+		assertThat(this.calls).containsOnly(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE);
 	}
 
 	@Test
 	public void exceptionMessages() throws Exception {
-		assertThat(new NoSuchCommandException("name").getMessage(),
-				equalTo("'name' is not a valid command. See 'help'."));
+		assertThat(new NoSuchCommandException("name").getMessage())
+				.isEqualTo("'name' is not a valid command. See 'help'.");
 	}
 
 	@Test

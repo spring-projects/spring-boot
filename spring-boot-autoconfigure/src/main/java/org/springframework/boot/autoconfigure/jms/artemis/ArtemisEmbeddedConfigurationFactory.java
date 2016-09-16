@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,13 @@ import org.apache.commons.logging.LogFactory;
  * Configuration used to create the embedded Artemis server.
  *
  * @author Eddú Meléndez
- * @author Stephane Nicol
+ * @author Stephane Nicoll
  * @author Phillip Webb
  */
 class ArtemisEmbeddedConfigurationFactory {
 
-	private Log logger = LogFactory.getLog(ArtemisEmbeddedConfigurationFactory.class);
+	private static final Log logger = LogFactory
+			.getLog(ArtemisEmbeddedConfigurationFactory.class);
 
 	private final ArtemisProperties.Embedded properties;
 
@@ -60,7 +61,7 @@ class ArtemisEmbeddedConfigurationFactory {
 				this.properties.generateTransportParameters());
 		configuration.getAcceptorConfigurations().add(transportConfiguration);
 		if (this.properties.isDefaultClusterPassword()) {
-			this.logger.debug("Using default Artemis cluster password: "
+			logger.debug("Using default Artemis cluster password: "
 					+ this.properties.getClusterPassword());
 		}
 		configuration.setClusterPassword(this.properties.getClusterPassword());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringApplication} {@link SpringApplication#setSources(java.util.Set)
@@ -48,7 +48,7 @@ public class OverrideSourcesTests {
 	public void beanInjectedToMainConfiguration() {
 		this.context = SpringApplication.run(new Object[] { MainConfiguration.class },
 				new String[] { "--spring.main.web_environment=false" });
-		assertEquals("foo", this.context.getBean(Service.class).bean.name);
+		assertThat(this.context.getBean(Service.class).bean.name).isEqualTo("foo");
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class OverrideSourcesTests {
 				new Object[] { MainConfiguration.class, TestConfiguration.class },
 				new String[] { "--spring.main.web_environment=false",
 						"--spring.main.sources=org.springframework.boot.OverrideSourcesTests.MainConfiguration" });
-		assertEquals("bar", this.context.getBean(Service.class).bean.name);
+		assertThat(this.context.getBean(Service.class).bean.name).isEqualTo("bar");
 	}
 
 	@Configuration

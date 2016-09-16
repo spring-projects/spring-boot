@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import org.springframework.util.Assert;
  * @author Eddú Meléndez
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "endpoints.liquibase", ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = "endpoints.liquibase")
 public class LiquibaseEndpoint extends AbstractEndpoint<List<Map<String, ?>>> {
 
 	private final SpringLiquibase liquibase;
@@ -54,8 +54,13 @@ public class LiquibaseEndpoint extends AbstractEndpoint<List<Map<String, ?>>> {
 			DatabaseFactory factory = DatabaseFactory.getInstance();
 			DataSource dataSource = this.liquibase.getDataSource();
 			JdbcConnection connection = new JdbcConnection(dataSource.getConnection());
-			Database database = factory.findCorrectDatabaseImplementation(connection);
-			return service.queryDatabaseChangeLogTable(database);
+			try {
+				Database database = factory.findCorrectDatabaseImplementation(connection);
+				return service.queryDatabaseChangeLogTable(database);
+			}
+			finally {
+				connection.close();
+			}
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Unable to get Liquibase changelog", ex);

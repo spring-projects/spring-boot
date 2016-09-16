@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ import org.gradle.tooling.ProjectConnection;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for war packaging with Gradle to ensure that only the Servlet container and its
@@ -47,8 +46,7 @@ public class WarPackagingTests {
 
 	private static final Set<String> TOMCAT_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<String>(
 			Arrays.asList("spring-boot-starter-tomcat-", "tomcat-embed-core-",
-					"tomcat-embed-el-", "tomcat-embed-logging-juli-",
-					"tomcat-embed-websocket-"));
+					"tomcat-embed-el-", "tomcat-embed-websocket-"));
 
 	private static final Set<String> JETTY_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<String>(
 			Arrays.asList("spring-boot-starter-jetty-", "jetty-continuation",
@@ -56,11 +54,10 @@ public class WarPackagingTests {
 					"jetty-server-", "jetty-security-", "jetty-servlet-",
 					"jetty-servlets", "jetty-webapp-", "websocket-api",
 					"javax.annotation-api", "jetty-plus", "javax-websocket-server-impl-",
-					"asm-", "javax.websocket-api-", "asm-tree-", "asm-commons-",
-					"websocket-common-", "jetty-annotations-",
+					"apache-el", "asm-", "javax.websocket-api-", "asm-tree-",
+					"asm-commons-", "websocket-common-", "jetty-annotations-",
 					"javax-websocket-client-impl-", "websocket-client-",
-					"websocket-server-", "jetty-jndi-", "jetty-xml-",
-					"websocket-servlet-"));
+					"websocket-server-", "jetty-xml-", "websocket-servlet-"));
 
 	private static final String BOOT_VERSION = Versions.getBootVersion();
 
@@ -72,13 +69,13 @@ public class WarPackagingTests {
 	}
 
 	@Test
-	public void onlyTomcatIsPackackedInWebInfLibProvided() throws IOException {
+	public void onlyTomcatIsPackagedInWebInfLibProvided() throws IOException {
 		checkWebInfEntriesForServletContainer("tomcat",
 				TOMCAT_EXPECTED_IN_WEB_INF_LIB_PROVIDED);
 	}
 
 	@Test
-	public void onlyJettyIsPackackedInWebInfLibProvided() throws IOException {
+	public void onlyJettyIsPackagedInWebInfLibProvided() throws IOException {
 		checkWebInfEntriesForServletContainer("jetty",
 				JETTY_EXPECTED_IN_WEB_INF_LIB_PROVIDED);
 	}
@@ -107,35 +104,26 @@ public class WarPackagingTests {
 	private void checkWebInfLibProvidedEntries(JarFile war, Set<String> expectedEntries)
 			throws IOException {
 		Set<String> entries = getWebInfLibProvidedEntries(war);
-
-		assertEquals("Expected " + expectedEntries.size() + " but found " + entries.size()
-				+ ": " + entries, expectedEntries.size(), entries.size());
-
+		assertThat(entries).hasSameSizeAs(expectedEntries);
 		List<String> unexpectedLibProvidedEntries = new ArrayList<String>();
 		for (String entry : entries) {
 			if (!isExpectedInWebInfLibProvided(entry, expectedEntries)) {
 				unexpectedLibProvidedEntries.add(entry);
 			}
 		}
-		assertTrue(
-				"Found unexpected entries in WEB-INF/lib-provided: "
-						+ unexpectedLibProvidedEntries,
-				unexpectedLibProvidedEntries.isEmpty());
+		assertThat(unexpectedLibProvidedEntries.isEmpty());
 	}
 
 	private void checkWebInfLibEntries(JarFile war, Set<String> entriesOnlyInLibProvided)
 			throws IOException {
 		Set<String> entries = getWebInfLibEntries(war);
-
 		List<String> unexpectedLibEntries = new ArrayList<String>();
 		for (String entry : entries) {
 			if (!isExpectedInWebInfLib(entry, entriesOnlyInLibProvided)) {
 				unexpectedLibEntries.add(entry);
 			}
 		}
-
-		assertTrue("Found unexpected entries in WEB-INF/lib: " + unexpectedLibEntries,
-				unexpectedLibEntries.isEmpty());
+		assertThat(unexpectedLibEntries.isEmpty());
 	}
 
 	private Set<String> getWebInfLibProvidedEntries(JarFile war) throws IOException {
@@ -189,4 +177,5 @@ public class WarPackagingTests {
 		}
 		return true;
 	}
+
 }

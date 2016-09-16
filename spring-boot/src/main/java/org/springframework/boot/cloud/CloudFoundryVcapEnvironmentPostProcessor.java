@@ -27,7 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor;
+import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
@@ -99,8 +99,8 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 
 	private static final String VCAP_SERVICES = "VCAP_SERVICES";
 
-	// Before ConfigFileEnvironmentPostProcessor so values there can use these ones
-	private int order = ConfigFileEnvironmentPostProcessor.DEFAULT_ORDER - 1;
+	// Before ConfigFileApplicationListener so values there can use these ones
+	private int order = ConfigFileApplicationListener.DEFAULT_ORDER - 1;
 
 	private final JsonParser parser = JsonParserFactory.getJsonParser();
 

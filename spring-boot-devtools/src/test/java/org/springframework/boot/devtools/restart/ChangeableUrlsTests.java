@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,28 @@
 package org.springframework.boot.devtools.restart;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.jar.Attributes;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.zip.ZipOutputStream;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import org.springframework.util.StringUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ChangeableUrls}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class ChangeableUrlsTests {
 
@@ -40,19 +48,19 @@ public class ChangeableUrlsTests {
 	@Test
 	public void folderUrl() throws Exception {
 		URL url = makeUrl("myproject");
-		assertThat(ChangeableUrls.fromUrls(url).size(), equalTo(1));
+		assertThat(ChangeableUrls.fromUrls(url).size()).isEqualTo(1);
 	}
 
 	@Test
 	public void fileUrl() throws Exception {
 		URL url = this.temporaryFolder.newFile().toURI().toURL();
-		assertThat(ChangeableUrls.fromUrls(url).size(), equalTo(0));
+		assertThat(ChangeableUrls.fromUrls(url).size()).isEqualTo(0);
 	}
 
 	@Test
 	public void httpUrl() throws Exception {
 		URL url = new URL("http://spring.io");
-		assertThat(ChangeableUrls.fromUrls(url).size(), equalTo(0));
+		assertThat(ChangeableUrls.fromUrls(url).size()).isEqualTo(0);
 	}
 
 	@Test
@@ -61,7 +69,21 @@ public class ChangeableUrlsTests {
 				makeUrl("spring-boot-autoconfigure"), makeUrl("spring-boot-actuator"),
 				makeUrl("spring-boot-starter"),
 				makeUrl("spring-boot-starter-some-thing"));
-		assertThat(urls.size(), equalTo(0));
+		assertThat(urls.size()).isEqualTo(0);
+	}
+
+	@Test
+	public void urlsFromJarClassPathAreConsidered() throws Exception {
+		URL projectCore = makeUrl("project-core");
+		URL projectWeb = makeUrl("project-web");
+		File relative = this.temporaryFolder.newFolder();
+		ChangeableUrls urls = ChangeableUrls
+				.fromUrlClassLoader(new URLClassLoader(new URL[] {
+						makeJarFileWithUrlsInManifestClassPath(projectCore, projectWeb,
+								relative.getName() + "/"),
+						makeJarFileWithNoManifest() }));
+		assertThat(urls.toList()).containsExactly(projectCore, projectWeb,
+				relative.toURI().toURL());
 	}
 
 	private URL makeUrl(String name) throws IOException {
@@ -71,6 +93,23 @@ public class ChangeableUrlsTests {
 		file = new File(file, "classes");
 		file.mkdirs();
 		return file.toURI().toURL();
+	}
+
+	private URL makeJarFileWithUrlsInManifestClassPath(Object... urls) throws Exception {
+		File classpathJar = this.temporaryFolder.newFile("classpath.jar");
+		Manifest manifest = new Manifest();
+		manifest.getMainAttributes().putValue(Attributes.Name.MANIFEST_VERSION.toString(),
+				"1.0");
+		manifest.getMainAttributes().putValue(Attributes.Name.CLASS_PATH.toString(),
+				StringUtils.arrayToDelimitedString(urls, " "));
+		new JarOutputStream(new FileOutputStream(classpathJar), manifest).close();
+		return classpathJar.toURI().toURL();
+	}
+
+	private URL makeJarFileWithNoManifest() throws Exception {
+		File classpathJar = this.temporaryFolder.newFile("no-manifest.jar");
+		new ZipOutputStream(new FileOutputStream(classpathJar)).close();
+		return classpathJar.toURI().toURL();
 	}
 
 }

@@ -10,8 +10,8 @@ covers the features in more detail.
 
 == Enabling the Actuator
 The simplest way to enable the features is to add a dependency to the
-`spring-boot-starter-actuator` "`Starter POM`". To add the actuator to a Maven based
-project, add the following "`starter`" dependency:
+`spring-boot-starter-actuator` '`Starter`'. To add the actuator to a Maven based
+project, add the following '`Starter`' dependency:
 
 [source,xml,indent=0]
 ----
@@ -46,6 +46,6 @@ For Gradle, use the declaration:
   to an `AuditService`. Once Spring Security is in play it automatically publishes
   authentication events by default. This can be very useful for reporting, and also to
   implement a lock-out policy based on authentication failures.
-* **Process Monitoring** In Spring Boot Actuator you can find `ApplicationPidListener`
+* **Process Monitoring** In Spring Boot Actuator you can find `ApplicationPidFileWriter`
   which creates a file containing the application PID (by default in the application
   directory with a file name of `application.pid`).

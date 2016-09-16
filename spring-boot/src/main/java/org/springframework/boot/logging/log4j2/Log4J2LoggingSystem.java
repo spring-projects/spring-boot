@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link LoggingSystem} for <a href="http://logging.apache.org/log4j/2.x/">Log4j 2</a>.
@@ -56,6 +57,8 @@ import org.springframework.util.ResourceUtils;
  * @since 1.2.0
  */
 public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
+
+	private static final String FILE_PROTOCOL = "file";
 
 	private static final Map<LogLevel, Level> LEVELS;
 
@@ -126,15 +129,24 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public void beforeInitialize() {
+		LoggerContext loggerContext = getLoggerContext();
+		if (isAlreadyInitialized(loggerContext)) {
+			return;
+		}
 		super.beforeInitialize();
-		getRootLoggerConfig().addFilter(FILTER);
+		loggerContext.getConfiguration().addFilter(FILTER);
 	}
 
 	@Override
 	public void initialize(LoggingInitializationContext initializationContext,
 			String configLocation, LogFile logFile) {
-		getRootLoggerConfig().removeFilter(FILTER);
+		LoggerContext loggerContext = getLoggerContext();
+		if (isAlreadyInitialized(loggerContext)) {
+			return;
+		}
+		loggerContext.getConfiguration().removeFilter(FILTER);
 		super.initialize(initializationContext, configLocation, logFile);
+		markAsInitialized(loggerContext);
 	}
 
 	@Override
@@ -151,14 +163,12 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	@Override
 	protected void loadConfiguration(LoggingInitializationContext initializationContext,
 			String location, LogFile logFile) {
+		super.loadConfiguration(initializationContext, location, logFile);
 		loadConfiguration(location, logFile);
 	}
 
 	protected void loadConfiguration(String location, LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
-		if (logFile != null) {
-			logFile.applyToSystemProperties();
-		}
 		try {
 			LoggerContext ctx = getLoggerContext();
 			URL url = ResourceUtils.getURL(location);
@@ -173,7 +183,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	private ConfigurationSource getConfigurationSource(URL url) throws IOException {
 		InputStream stream = url.openStream();
-		if (ResourceUtils.isFileURL(url)) {
+		if (FILE_PROTOCOL.equals(url.getProtocol())) {
 			return new ConfigurationSource(stream, ResourceUtils.getFile(url));
 		}
 		return new ConfigurationSource(stream, url);
@@ -203,16 +213,32 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		return new ShutdownHandler();
 	}
 
-	private LoggerConfig getRootLoggerConfig() {
-		return getLoggerContext().getConfiguration().getLoggerConfig("");
+	@Override
+	public void cleanUp() {
+		super.cleanUp();
+		LoggerContext loggerContext = getLoggerContext();
+		markAsUninitialized(loggerContext);
 	}
 
-	private LoggerConfig getLoggerConfig(String loggerName) {
-		return getLoggerContext().getConfiguration().getLoggers().get(loggerName);
+	private LoggerConfig getLoggerConfig(String name) {
+		name = (StringUtils.hasText(name) ? name : LogManager.ROOT_LOGGER_NAME);
+		return getLoggerContext().getConfiguration().getLoggers().get(name);
 	}
 
 	private LoggerContext getLoggerContext() {
 		return (LoggerContext) LogManager.getContext(false);
+	}
+
+	private boolean isAlreadyInitialized(LoggerContext loggerContext) {
+		return LoggingSystem.class.getName().equals(loggerContext.getExternalContext());
+	}
+
+	private void markAsInitialized(LoggerContext loggerContext) {
+		loggerContext.setExternalContext(LoggingSystem.class.getName());
+	}
+
+	private void markAsUninitialized(LoggerContext loggerContext) {
+		loggerContext.setExternalContext(null);
 	}
 
 	private final class ShutdownHandler implements Runnable {
@@ -223,4 +249,5 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		}
 
 	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,19 @@
 package org.springframework.boot.autoconfigure.jms.activemq;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 
@@ -39,6 +37,8 @@ import static org.mockito.Mockito.mockingDetails;
  * Tests for {@link ActiveMQAutoConfiguration}
  *
  * @author Andy Wilkinson
+ * @author Aurélien Leboulanger
+ * @author Stephane Nicoll
  */
 public class ActiveMQAutoConfigurationTests {
 
@@ -49,24 +49,47 @@ public class ActiveMQAutoConfigurationTests {
 		load(EmptyConfiguration.class);
 		ConnectionFactory connectionFactory = this.context
 				.getBean(ConnectionFactory.class);
-		assertThat(connectionFactory, instanceOf(ActiveMQConnectionFactory.class));
+		assertThat(connectionFactory).isInstanceOf(ActiveMQConnectionFactory.class);
 		String brokerUrl = ((ActiveMQConnectionFactory) connectionFactory).getBrokerURL();
-		assertEquals("vm://localhost?broker.persistent=false", brokerUrl);
+		assertThat(brokerUrl).isEqualTo("vm://localhost?broker.persistent=false");
 	}
 
 	@Test
 	public void configurationBacksOffWhenCustomConnectionFactoryExists() {
 		load(CustomConnectionFactoryConfiguration.class);
-		assertTrue(
-				mockingDetails(this.context.getBean(ConnectionFactory.class)).isMock());
+		assertThat(mockingDetails(this.context.getBean(ConnectionFactory.class)).isMock())
+				.isTrue();
 	}
 
 	@Test
-	public void pooledConnectionFactoryConfiguration() {
-		load(EmptyConfiguration.class, "spring.activemq.pooled:true");
+	public void customPooledConnectionFactoryConfiguration() {
+		load(EmptyConfiguration.class, "spring.activemq.pool.enabled:true",
+				"spring.activemq.pool.maxConnections:256",
+				"spring.activemq.pool.idleTimeout:512",
+				"spring.activemq.pool.expiryTimeout:4096",
+				"spring.activemq.pool.configuration.maximumActiveSessionPerConnection:1024",
+				"spring.activemq.pool.configuration.timeBetweenExpirationCheckMillis:2048");
 		ConnectionFactory connectionFactory = this.context
 				.getBean(ConnectionFactory.class);
-		assertThat(connectionFactory, instanceOf(PooledConnectionFactory.class));
+		assertThat(connectionFactory).isInstanceOf(PooledConnectionFactory.class);
+		PooledConnectionFactory pooledConnectionFactory = (PooledConnectionFactory) connectionFactory;
+		assertThat(pooledConnectionFactory.getMaxConnections()).isEqualTo(256);
+		assertThat(pooledConnectionFactory.getIdleTimeout()).isEqualTo(512);
+		assertThat(pooledConnectionFactory.getMaximumActiveSessionPerConnection())
+				.isEqualTo(1024);
+		assertThat(pooledConnectionFactory.getTimeBetweenExpirationCheckMillis())
+				.isEqualTo(2048);
+		assertThat(pooledConnectionFactory.getExpiryTimeout()).isEqualTo(4096);
+	}
+
+	@Test
+	public void pooledConnectionFactoryConfiguration() throws JMSException {
+		load(EmptyConfiguration.class, "spring.activemq.pool.enabled:true");
+		ConnectionFactory connectionFactory = this.context
+				.getBean(ConnectionFactory.class);
+		assertThat(connectionFactory).isInstanceOf(PooledConnectionFactory.class);
+		this.context.close();
+		assertThat(connectionFactory.createConnection()).isNull();
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -96,5 +119,7 @@ public class ActiveMQAutoConfigurationTests {
 		public ConnectionFactory connectionFactory() {
 			return mock(ConnectionFactory.class);
 		}
+
 	}
+
 }

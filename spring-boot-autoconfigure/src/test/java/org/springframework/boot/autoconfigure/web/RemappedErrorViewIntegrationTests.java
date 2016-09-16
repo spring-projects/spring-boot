@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,56 +19,53 @@ package org.springframework.boot.autoconfigure.web;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.RemappedErrorViewIntegrationTests.TestConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.context.embedded.ErrorPage;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.servlet.ErrorPageRegistrar;
+import org.springframework.boot.web.servlet.ErrorPageRegistry;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Controller;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.client.RestTemplate;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Integration tests for remapped error pages.
+ *
  * @author Dave Syer
  */
-@SpringApplicationConfiguration(TestConfiguration.class)
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@IntegrationTest({ "server.servletPath:/spring/*", "server.port:0" })
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "server.servletPath:/spring/*")
 @DirtiesContext
 public class RemappedErrorViewIntegrationTests {
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private int port;
 
-	private RestTemplate template = new TestRestTemplate();
+	private TestRestTemplate template = new TestRestTemplate();
 
 	@Test
 	public void directAccessToErrorPage() throws Exception {
 		String content = this.template.getForObject(
 				"http://localhost:" + this.port + "/spring/error", String.class);
-		assertTrue("Wrong content: " + content, content.contains("error"));
-		assertTrue("Wrong content: " + content, content.contains("999"));
+		assertThat(content).contains("error");
+		assertThat(content).contains("999");
 	}
 
 	@Test
 	public void forwardToErrorPage() throws Exception {
 		String content = this.template
 				.getForObject("http://localhost:" + this.port + "/spring/", String.class);
-		assertTrue("Wrong content: " + content, content.contains("error"));
-		assertTrue("Wrong content: " + content, content.contains("500"));
+		assertThat(content).contains("error");
+		assertThat(content).contains("500");
 	}
 
 	@Configuration
@@ -78,7 +75,7 @@ public class RemappedErrorViewIntegrationTests {
 			EmbeddedServletContainerAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, ErrorMvcAutoConfiguration.class })
 	@Controller
-	public static class TestConfiguration implements EmbeddedServletContainerCustomizer {
+	public static class TestConfiguration implements ErrorPageRegistrar {
 
 		@RequestMapping("/")
 		public String home() {
@@ -86,8 +83,8 @@ public class RemappedErrorViewIntegrationTests {
 		}
 
 		@Override
-		public void customize(ConfigurableEmbeddedServletContainer container) {
-			container.addErrorPages(new ErrorPage("/spring/error"));
+		public void registerErrorPages(ErrorPageRegistry errorPageRegistry) {
+			errorPageRegistry.addErrorPages(new ErrorPage("/spring/error"));
 		}
 
 		// For manual testing

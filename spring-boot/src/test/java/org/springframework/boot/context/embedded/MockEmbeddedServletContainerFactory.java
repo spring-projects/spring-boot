@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,8 @@ import javax.servlet.ServletRegistration;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
@@ -89,8 +91,6 @@ public class MockEmbeddedServletContainerFactory
 		private final List<RegisteredFilter> registeredFilters = new ArrayList<RegisteredFilter>();
 
 		private final int port;
-
-		private boolean stopped = false;
 
 		public MockEmbeddedServletContainer(ServletContextInitializer[] initializers,
 				int port) {
@@ -176,11 +176,6 @@ public class MockEmbeddedServletContainerFactory
 		public void stop() {
 			this.servletContext = null;
 			this.registeredServlets.clear();
-			this.stopped = true;
-		}
-
-		public boolean isStopped() {
-			return this.stopped;
 		}
 
 		public Servlet[] getServlets() {

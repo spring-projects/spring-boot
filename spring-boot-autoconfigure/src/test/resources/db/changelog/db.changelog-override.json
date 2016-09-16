@@ -1,0 +1,39 @@
+{
+    "databaseChangeLog": [
+        {
+            "changeSet": {
+                "author": "awilkinson",
+                "id": "1",
+                "changes": [
+                    {
+                        "createTable": {
+                            "tableName": "customer",
+                            "columns": [
+                                {
+                                    "column": {
+                                       "name": "id",
+                                        "type": "int",
+                                        "autoIncrement": true,
+                                        "constraints": {
+                                            "nullable": false,
+                                            "primaryKey": true
+                                        }
+                                    }
+                                },
+                                {
+                                    "column": {
+                                       "name": "name",
+                                        "type": "varchar(50)",
+                                        "constraints": {
+                                            "nullable": false
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

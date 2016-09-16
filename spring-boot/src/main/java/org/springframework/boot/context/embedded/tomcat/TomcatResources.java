@@ -116,7 +116,7 @@ abstract class TomcatResources {
 
 		@Override
 		protected void addJar(String jar) {
-			URL url = getJarUlr(jar);
+			URL url = getJarUrl(jar);
 			if (url != null) {
 				try {
 					this.addResourceJarUrlMethod.invoke(getContext(), url);
@@ -127,7 +127,7 @@ abstract class TomcatResources {
 			}
 		}
 
-		private URL getJarUlr(String jar) {
+		private URL getJarUrl(String jar) {
 			try {
 				return new URL(jar);
 			}

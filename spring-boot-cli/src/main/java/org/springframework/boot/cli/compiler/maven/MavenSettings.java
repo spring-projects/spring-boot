@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,11 @@
 
 package org.springframework.boot.cli.compiler.maven;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +32,7 @@ import org.apache.maven.model.ActivationOS;
 import org.apache.maven.model.ActivationProperty;
 import org.apache.maven.model.building.ModelProblemCollector;
 import org.apache.maven.model.building.ModelProblemCollectorRequest;
+import org.apache.maven.model.path.DefaultPathTranslator;
 import org.apache.maven.model.profile.DefaultProfileSelector;
 import org.apache.maven.model.profile.ProfileActivationContext;
 import org.apache.maven.model.profile.activation.FileProfileActivator;
@@ -147,15 +151,47 @@ public class MavenSettings {
 		PrintWriter printer = new PrintWriter(message);
 		printer.println("Failed to determine active profiles:");
 		for (ModelProblemCollectorRequest problem : problemCollector.getProblems()) {
-			printer.println(
-					"    " + problem.getMessage() + " at " + problem.getLocation());
+			printer.println("    " + problem.getMessage() + (problem.getLocation() != null
+					? " at " + problem.getLocation() : ""));
+			if (problem.getException() != null) {
+				printer.println(indentStackTrace(problem.getException(), "        "));
+			}
 		}
 		return message.toString();
 	}
 
+	private String indentStackTrace(Exception ex, String indent) {
+		return indentLines(printStackTrace(ex), indent);
+	}
+
+	private String printStackTrace(Exception ex) {
+		StringWriter stackTrace = new StringWriter();
+		PrintWriter printer = new PrintWriter(stackTrace);
+		ex.printStackTrace(printer);
+		return stackTrace.toString();
+	}
+
+	private String indentLines(String input, String indent) {
+		StringWriter indented = new StringWriter();
+		PrintWriter writer = new PrintWriter(indented);
+		String line;
+		BufferedReader reader = new BufferedReader(new StringReader(input));
+		try {
+			while ((line = reader.readLine()) != null) {
+				writer.println(indent + line);
+			}
+		}
+		catch (IOException ex) {
+			return input;
+		}
+		return indented.toString();
+	}
+
 	private DefaultProfileSelector createProfileSelector() {
 		DefaultProfileSelector selector = new DefaultProfileSelector();
-		selector.addProfileActivator(new FileProfileActivator());
+
+		selector.addProfileActivator(new FileProfileActivator()
+				.setPathTranslator(new DefaultPathTranslator()));
 		selector.addProfileActivator(new JdkVersionProfileActivator());
 		selector.addProfileActivator(new PropertyProfileActivator());
 		selector.addProfileActivator(new OperatingSystemProfileActivator());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,10 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Iterator;
-import java.util.Set;
 
 import org.springframework.boot.autoconfigure.MessageSourceAutoConfiguration.ResourceBundleCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
@@ -83,6 +81,12 @@ public class MessageSourceAutoConfiguration {
 	 */
 	private boolean fallbackToSystemLocale = true;
 
+	/**
+	 * Set whether to always apply the MessageFormat rules, parsing even messages without
+	 * arguments.
+	 */
+	private boolean alwaysUseMessageFormat = false;
+
 	@Bean
 	public MessageSource messageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
@@ -95,6 +99,7 @@ public class MessageSourceAutoConfiguration {
 		}
 		messageSource.setFallbackToSystemLocale(this.fallbackToSystemLocale);
 		messageSource.setCacheSeconds(this.cacheSeconds);
+		messageSource.setAlwaysUseMessageFormat(this.alwaysUseMessageFormat);
 		return messageSource;
 	}
 
@@ -130,6 +135,14 @@ public class MessageSourceAutoConfiguration {
 		this.fallbackToSystemLocale = fallbackToSystemLocale;
 	}
 
+	public boolean isAlwaysUseMessageFormat() {
+		return this.alwaysUseMessageFormat;
+	}
+
+	public void setAlwaysUseMessageFormat(boolean alwaysUseMessageFormat) {
+		this.alwaysUseMessageFormat = alwaysUseMessageFormat;
+	}
+
 	protected static class ResourceBundleCondition extends SpringBootCondition {
 
 		private static ConcurrentReferenceHashMap<String, ConditionOutcome> cache = new ConcurrentReferenceHashMap<String, ConditionOutcome>();
@@ -149,91 +162,29 @@ public class MessageSourceAutoConfiguration {
 
 		private ConditionOutcome getMatchOutcomeForBasename(ConditionContext context,
 				String basename) {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("ResourceBundle");
 			for (String name : StringUtils.commaDelimitedListToStringArray(
 					StringUtils.trimAllWhitespace(basename))) {
 				for (Resource resource : getResources(context.getClassLoader(), name)) {
 					if (resource.exists()) {
-						return ConditionOutcome.match("Bundle found for "
-								+ "spring.messages.basename: " + name);
+						return ConditionOutcome
+								.match(message.found("bundle").items(resource));
 					}
 				}
 			}
 			return ConditionOutcome.noMatch(
-					"No bundle found for " + "spring.messages.basename: " + basename);
+					message.didNotFind("bundle with basename " + basename).atAll());
 		}
 
 		private Resource[] getResources(ClassLoader classLoader, String name) {
 			try {
-				return new SkipPatternPathMatchingResourcePatternResolver(classLoader)
-						.getResources("classpath*:" + name + "*.properties");
+				return new PathMatchingResourcePatternResolver(classLoader)
+						.getResources("classpath*:" + name + ".properties");
 			}
 			catch (Exception ex) {
 				return NO_RESOURCES;
 			}
-		}
-
-	}
-
-	/**
-	 * {@link PathMatchingResourcePatternResolver} that skips well known JARs that don't
-	 * contain messages.properties.
-	 */
-	private static class SkipPatternPathMatchingResourcePatternResolver
-			extends PathMatchingResourcePatternResolver {
-
-		private static final ClassLoader ROOT_CLASSLOADER;
-
-		static {
-			ClassLoader classLoader = null;
-			try {
-				classLoader = ClassLoader.getSystemClassLoader();
-				while (classLoader.getParent() != null) {
-					classLoader = classLoader.getParent();
-				}
-			}
-			catch (Throwable ex) {
-				// Ignore
-			}
-			ROOT_CLASSLOADER = classLoader;
-		}
-
-		private static final String[] SKIPPED = { "aspectjweaver-", "hibernate-core-",
-				"hsqldb-", "jackson-annotations-", "jackson-core-", "jackson-databind-",
-				"javassist-", "snakeyaml-", "spring-aop-", "spring-beans-",
-				"spring-boot-", "spring-boot-actuator-", "spring-boot-autoconfigure-",
-				"spring-core-", "spring-context-", "spring-data-commons-",
-				"spring-expression-", "spring-jdbc-", "spring-orm-", "spring-tx-",
-				"spring-web-", "spring-webmvc-", "tomcat-embed-", "joda-time-",
-				"hibernate-entitymanager-", "hibernate-validator-", "logback-classic-",
-				"logback-core-", "thymeleaf-" };
-
-		SkipPatternPathMatchingResourcePatternResolver(ClassLoader classLoader) {
-			super(classLoader);
-		}
-
-		@Override
-		protected void addAllClassLoaderJarRoots(ClassLoader classLoader,
-				Set<Resource> result) {
-			if (classLoader != ROOT_CLASSLOADER) {
-				super.addAllClassLoaderJarRoots(classLoader, result);
-			}
-		}
-
-		@Override
-		protected Set<Resource> doFindAllClassPathResources(String path)
-				throws IOException {
-			Set<Resource> resources = super.doFindAllClassPathResources(path);
-			for (Iterator<Resource> iterator = resources.iterator(); iterator
-					.hasNext();) {
-				Resource resource = iterator.next();
-				for (String skipped : SKIPPED) {
-					if (resource.getFilename().startsWith(skipped)) {
-						iterator.remove();
-						break;
-					}
-				}
-			}
-			return resources;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.condition;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,9 +34,10 @@ import org.springframework.context.annotation.Conditional;
  * @author Andy Wilkinson
  * @since 1.2.4
  */
-@Conditional(OnEnabledEndpointCondition.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ ElementType.METHOD, ElementType.TYPE })
+@Conditional(OnEnabledEndpointCondition.class)
+@Documented
 public @interface ConditionalOnEnabledEndpoint {
 
 	/**

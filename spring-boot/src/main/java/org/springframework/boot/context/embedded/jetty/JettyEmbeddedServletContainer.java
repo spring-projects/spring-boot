@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,21 @@
 
 package org.springframework.boot.context.embedded.jetty;
 
+import java.net.BindException;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.embedded.PortInUseException;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -40,12 +43,15 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author David Liu
+ * @author Eddú Meléndez
  * @see JettyEmbeddedServletContainerFactory
  */
 public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
 	private static final Log logger = LogFactory
 			.getLog(JettyEmbeddedServletContainer.class);
+
+	private final Object monitor = new Object();
 
 	private final Server server;
 
@@ -73,22 +79,24 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 		initialize();
 	}
 
-	private synchronized void initialize() {
-		try {
-			// Cache and clear the connectors to prevent requests being handled before
-			// the application context is ready
-			this.connectors = this.server.getConnectors();
-			this.server.setConnectors(null);
+	private void initialize() {
+		synchronized (this.monitor) {
+			try {
+				// Cache and clear the connectors to prevent requests being handled before
+				// the application context is ready
+				this.connectors = this.server.getConnectors();
+				this.server.setConnectors(null);
 
-			// Start the server so that the ServletContext is available
-			this.server.start();
-			this.server.setStopAtShutdown(false);
-		}
-		catch (Exception ex) {
-			// Ensure process isn't left running
-			stopSilently();
-			throw new EmbeddedServletContainerException(
-					"Unable to start embedded Jetty servlet container", ex);
+				// Start the server so that the ServletContext is available
+				this.server.start();
+				this.server.setStopAtShutdown(false);
+			}
+			catch (Exception ex) {
+				// Ensure process isn't left running
+				stopSilently();
+				throw new EmbeddedServletContainerException(
+						"Unable to start embedded Jetty servlet container", ex);
+			}
 		}
 	}
 
@@ -114,10 +122,22 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			}
 			Connector[] connectors = this.server.getConnectors();
 			for (Connector connector : connectors) {
-				connector.start();
+				try {
+					connector.start();
+				}
+				catch (BindException ex) {
+					if (connector instanceof NetworkConnector) {
+						throw new PortInUseException(
+								((NetworkConnector) connector).getPort());
+					}
+					throw ex;
+				}
 			}
 			JettyEmbeddedServletContainer.logger
 					.info("Jetty started on port(s) " + getActualPortsDescription());
+		}
+		catch (EmbeddedServletContainerException ex) {
+			throw ex;
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
@@ -175,16 +195,18 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	}
 
 	@Override
-	public synchronized void stop() {
-		try {
-			this.server.stop();
-		}
-		catch (InterruptedException ex) {
-			Thread.currentThread().interrupt();
-		}
-		catch (Exception ex) {
-			throw new EmbeddedServletContainerException(
-					"Unable to stop embedded Jetty servlet container", ex);
+	public void stop() {
+		synchronized (this.monitor) {
+			try {
+				this.server.stop();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			catch (Exception ex) {
+				throw new EmbeddedServletContainerException(
+						"Unable to stop embedded Jetty servlet container", ex);
+			}
 		}
 	}
 

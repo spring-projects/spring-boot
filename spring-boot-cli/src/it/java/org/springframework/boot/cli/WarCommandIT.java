@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,11 +53,11 @@ public class WarCommandIT {
 				.start();
 		invocation = new Invocation(process);
 		invocation.await();
-		assertThat(invocation.getErrorOutput(), containsString("onStart error"));
-		assertThat(invocation.getStandardOutput(), containsString("Tomcat started"));
-		assertThat(invocation.getStandardOutput(),
+		assertThat(invocation.getOutput(), containsString("onStart error"));
+		assertThat(invocation.getOutput(), containsString("Tomcat started"));
+		assertThat(invocation.getOutput(),
 				containsString("/WEB-INF/lib-provided/tomcat-embed-core"));
-		assertThat(invocation.getStandardOutput(),
+		assertThat(invocation.getOutput(),
 				containsString("/WEB-INF/lib-provided/tomcat-embed-core"));
 		process.destroy();
 	}

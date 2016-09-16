@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import org.springframework.util.Base64Utils;
  */
 class Connection {
 
-	private static Log logger = LogFactory.getLog(Connection.class);
+	private static final Log logger = LogFactory.getLog(Connection.class);
 
 	private static final Pattern WEBSOCKET_KEY_PATTERN = Pattern
 			.compile("^Sec-WebSocket-Key:(.*)$", Pattern.MULTILINE);
@@ -113,7 +113,7 @@ class Connection {
 				throw new ConnectionClosedException();
 			}
 			else if (frame.getType() == Frame.Type.TEXT) {
-				logger.debug("Recieved LiveReload text frame " + frame);
+				logger.debug("Received LiveReload text frame " + frame);
 			}
 			else {
 				throw new IOException("Unexpected Frame Type " + frame.getType());
@@ -139,7 +139,7 @@ class Connection {
 		}
 	}
 
-	private synchronized void writeWebSocketFrame(Frame frame) throws IOException {
+	private void writeWebSocketFrame(Frame frame) throws IOException {
 		frame.write(this.outputStream);
 	}
 

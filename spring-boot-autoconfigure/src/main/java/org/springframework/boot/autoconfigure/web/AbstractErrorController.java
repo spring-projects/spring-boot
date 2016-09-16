@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,20 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Abstract base class for error {@link Controller} implementations.
@@ -38,9 +43,27 @@ public abstract class AbstractErrorController implements ErrorController {
 
 	private final ErrorAttributes errorAttributes;
 
+	private final List<ErrorViewResolver> errorViewResolvers;
+
 	public AbstractErrorController(ErrorAttributes errorAttributes) {
+		this(errorAttributes, null);
+	}
+
+	public AbstractErrorController(ErrorAttributes errorAttributes,
+			List<ErrorViewResolver> errorViewResolvers) {
 		Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
 		this.errorAttributes = errorAttributes;
+		this.errorViewResolvers = sortErrorViewResolvers(errorViewResolvers);
+	}
+
+	private List<ErrorViewResolver> sortErrorViewResolvers(
+			List<ErrorViewResolver> resolvers) {
+		List<ErrorViewResolver> sorted = new ArrayList<ErrorViewResolver>();
+		if (resolvers != null) {
+			sorted.addAll(resolvers);
+			AnnotationAwareOrderComparator.sortIfNecessary(sorted);
+		}
+		return sorted;
 	}
 
 	protected Map<String, Object> getErrorAttributes(HttpServletRequest request,
@@ -70,6 +93,28 @@ public abstract class AbstractErrorController implements ErrorController {
 		catch (Exception ex) {
 			return HttpStatus.INTERNAL_SERVER_ERROR;
 		}
+	}
+
+	/**
+	 * Resolve any specific error views. By default this method delegates to
+	 * {@link ErrorViewResolver ErrorViewResolvers}.
+	 * @param request the request
+	 * @param response the response
+	 * @param status the HTTP status
+	 * @param model the suggested model
+	 * @return a specific {@link ModelAndView} or {@code null} if the default should be
+	 * used
+	 * @since 1.4.0
+	 */
+	protected ModelAndView resolveErrorView(HttpServletRequest request,
+			HttpServletResponse response, HttpStatus status, Map<String, Object> model) {
+		for (ErrorViewResolver resolver : this.errorViewResolvers) {
+			ModelAndView modelAndView = resolver.resolveErrorView(request, status, model);
+			if (modelAndView != null) {
+				return modelAndView;
+			}
+		}
+		return null;
 	}
 
 }

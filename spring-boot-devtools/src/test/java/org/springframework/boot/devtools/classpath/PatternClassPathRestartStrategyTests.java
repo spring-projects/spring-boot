@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@ import org.junit.Test;
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link PatternClassPathRestartStrategy}.
@@ -90,7 +89,8 @@ public class PatternClassPathRestartStrategyTests {
 
 	private void assertRestartRequired(ClassPathRestartStrategy strategy,
 			String relativeName, boolean expected) {
-		assertThat(strategy.isRestartRequired(mockFile(relativeName)), equalTo(expected));
+		assertThat(strategy.isRestartRequired(mockFile(relativeName)))
+				.isEqualTo(expected);
 	}
 
 	private ChangedFile mockFile(String relativeName) {

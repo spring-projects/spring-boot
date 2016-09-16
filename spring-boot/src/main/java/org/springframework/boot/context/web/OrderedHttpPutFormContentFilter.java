@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.web;
 
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.core.Ordered;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 
@@ -25,29 +24,16 @@ import org.springframework.web.filter.HttpPutFormContentFilter;
  *
  * @author Joao Pedro Evangelista
  * @since 1.3.0
+ * @deprecated as of 1.4 in favor of
+ * {@link org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter}
  */
-public class OrderedHttpPutFormContentFilter extends HttpPutFormContentFilter
-		implements Ordered {
+@Deprecated
+public class OrderedHttpPutFormContentFilter
+		extends org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter {
 
 	/**
 	 * Higher order to ensure the filter is applied before Spring Security.
 	 */
-	public static final int DEFAULT_ORDER = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
-			- 9900;
-
-	private int order = DEFAULT_ORDER;
-
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
-
-	/**
-	 * Set the order for this filter.
-	 * @param order the order to set
-	 */
-	public void setOrder(int order) {
-		this.order = order;
-	}
+	public static final int DEFAULT_ORDER = org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter.DEFAULT_ORDER;
 
 }

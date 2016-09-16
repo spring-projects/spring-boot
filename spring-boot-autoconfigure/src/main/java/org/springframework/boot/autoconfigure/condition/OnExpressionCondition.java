@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import org.springframework.context.expression.StandardBeanExpressionResolver;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.core.type.ClassMetadata;
 
 /**
  * A Condition that evaluates a SpEL expression.
@@ -38,33 +37,36 @@ class OnExpressionCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-
 		String expression = (String) metadata
 				.getAnnotationAttributes(ConditionalOnExpression.class.getName())
 				.get("value");
+		expression = wrapIfNecessary(expression);
 		String rawExpression = expression;
-		if (!expression.startsWith("#{")) {
-			// For convenience allow user to provide bare expression with no #{} wrapper
-			expression = "#{" + expression + "}";
-		}
-
-		// Explicitly allow environment placeholders inside the expression
 		expression = context.getEnvironment().resolvePlaceholders(expression);
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		BeanExpressionResolver resolver = beanFactory.getBeanExpressionResolver();
+		BeanExpressionResolver resolver = (beanFactory != null)
+				? beanFactory.getBeanExpressionResolver() : null;
 		BeanExpressionContext expressionContext = (beanFactory != null)
 				? new BeanExpressionContext(beanFactory, null) : null;
 		if (resolver == null) {
 			resolver = new StandardBeanExpressionResolver();
 		}
 		boolean result = (Boolean) resolver.evaluate(expression, expressionContext);
+		return new ConditionOutcome(result, ConditionMessage
+				.forCondition(ConditionalOnExpression.class, "(" + rawExpression + ")")
+				.resultedIn(result));
+	}
 
-		StringBuilder message = new StringBuilder("SpEL expression");
-		if (metadata instanceof ClassMetadata) {
-			message.append(" on " + ((ClassMetadata) metadata).getClassName());
+	/**
+	 * Allow user to provide bare expression with no '#{}' wrapper.
+	 * @param expression source expression
+	 * @return wrapped expression
+	 */
+	private String wrapIfNecessary(String expression) {
+		if (!expression.startsWith("#{")) {
+			return "#{" + expression + "}";
 		}
-		message.append(": " + rawExpression);
-		return new ConditionOutcome(result, message.toString());
+		return expression;
 	}
 
 }
