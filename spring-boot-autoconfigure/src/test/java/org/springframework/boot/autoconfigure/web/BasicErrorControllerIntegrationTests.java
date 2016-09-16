@@ -203,7 +203,7 @@ public class BasicErrorControllerIntegrationTests {
 	}
 
 	private void load(String... arguments) {
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		args.add("--server.port=0");
 		if (arguments != null) {
 			args.addAll(Arrays.asList(arguments));

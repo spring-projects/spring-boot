@@ -69,7 +69,7 @@ public class FilteredClassPathRunner extends BlockJUnit4ClassRunner {
 	}
 
 	private URL[] extractUrls(URLClassLoader classLoader) throws Exception {
-		List<URL> extractedUrls = new ArrayList<URL>();
+		List<URL> extractedUrls = new ArrayList<>();
 		for (URL url : classLoader.getURLs()) {
 			if (isSurefireBooterJar(url)) {
 				extractedUrls.addAll(extractUrlsFromManifestClassPath(url));
@@ -86,7 +86,7 @@ public class FilteredClassPathRunner extends BlockJUnit4ClassRunner {
 	}
 
 	private List<URL> extractUrlsFromManifestClassPath(URL booterJar) throws Exception {
-		List<URL> urls = new ArrayList<URL>();
+		List<URL> urls = new ArrayList<>();
 		for (String entry : getClassPath(booterJar)) {
 			urls.add(new URL(entry));
 		}
@@ -106,7 +106,7 @@ public class FilteredClassPathRunner extends BlockJUnit4ClassRunner {
 
 	private URL[] filterUrls(URL[] urls, Class<?> testClass) throws Exception {
 		ClassPathEntryFilter filter = new ClassPathEntryFilter(testClass);
-		List<URL> filteredUrls = new ArrayList<URL>();
+		List<URL> filteredUrls = new ArrayList<>();
 		for (URL url : urls) {
 			if (!filter.isExcluded(url)) {
 				filteredUrls.add(url);
@@ -180,7 +180,7 @@ public class FilteredClassPathRunner extends BlockJUnit4ClassRunner {
 
 		private List<FrameworkMethod> wrapFrameworkMethods(
 				List<FrameworkMethod> methods) {
-			List<FrameworkMethod> wrapped = new ArrayList<FrameworkMethod>(
+			List<FrameworkMethod> wrapped = new ArrayList<>(
 					methods.size());
 			for (FrameworkMethod frameworkMethod : methods) {
 				wrapped.add(new FilteredFrameworkMethod(this.classLoader,

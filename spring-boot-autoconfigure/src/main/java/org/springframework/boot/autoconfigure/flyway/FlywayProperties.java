@@ -40,7 +40,7 @@ public class FlywayProperties {
 	/**
 	 * Locations of migrations scripts.
 	 */
-	private List<String> locations = new ArrayList<String>(Arrays.asList("db/migration"));
+	private List<String> locations = new ArrayList<>(Arrays.asList("db/migration"));
 
 	/**
 	 * Check that migration scripts location exists.

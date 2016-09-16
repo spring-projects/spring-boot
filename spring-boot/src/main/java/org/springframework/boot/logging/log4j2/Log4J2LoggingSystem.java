@@ -63,7 +63,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	private static final Map<LogLevel, Level> LEVELS;
 
 	static {
-		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
+		Map<LogLevel, Level> levels = new HashMap<>();
 		levels.put(LogLevel.TRACE, Level.TRACE);
 		levels.put(LogLevel.DEBUG, Level.DEBUG);
 		levels.put(LogLevel.INFO, Level.INFO);
@@ -111,7 +111,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	private String[] getCurrentlySupportedConfigLocations() {
-		List<String> supportedConfigLocations = new ArrayList<String>();
+		List<String> supportedConfigLocations = new ArrayList<>();
 		if (isClassAvailable("com.fasterxml.jackson.dataformat.yaml.YAMLParser")) {
 			Collections.addAll(supportedConfigLocations, "log4j2.yaml", "log4j2.yml");
 		}

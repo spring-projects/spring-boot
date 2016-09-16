@@ -41,7 +41,7 @@ public class JdbcSessionDatabaseInitializer {
 	private static Map<String, String> ALIASES;
 
 	static {
-		Map<String, String> aliases = new HashMap<String, String>();
+		Map<String, String> aliases = new HashMap<>();
 		aliases.put("apache derby", "derby");
 		aliases.put("hsql database engine", "hsqldb");
 		aliases.put("microsoft sql server", "sqlserver");

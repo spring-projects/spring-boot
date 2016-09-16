@@ -63,7 +63,7 @@ public class BuildInfo extends DefaultTask {
 	private String projectName = getProject().getName();
 
 	@Input
-	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+	private Map<String, Object> additionalProperties = new HashMap<>();
 
 	@TaskAction
 	public void generateBuildProperties() {
@@ -127,7 +127,7 @@ public class BuildInfo extends DefaultTask {
 	}
 
 	private Map<String, String> coerceToStringValues(Map<String, Object> input) {
-		Map<String, String> output = new HashMap<String, String>();
+		Map<String, String> output = new HashMap<>();
 		for (Entry<String, Object> entry : input.entrySet()) {
 			output.put(entry.getKey(), entry.getValue().toString());
 		}

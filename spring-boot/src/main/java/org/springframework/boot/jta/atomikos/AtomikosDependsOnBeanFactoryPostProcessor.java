@@ -60,7 +60,7 @@ public class AtomikosDependsOnBeanFactoryPostProcessor
 	private void addTransactionManagerDependencies(
 			ConfigurableListableBeanFactory beanFactory, String transactionManager) {
 		BeanDefinition bean = beanFactory.getBeanDefinition(transactionManager);
-		Set<String> dependsOn = new LinkedHashSet<String>(asList(bean.getDependsOn()));
+		Set<String> dependsOn = new LinkedHashSet<>(asList(bean.getDependsOn()));
 		int initialSize = dependsOn.size();
 		addDependencies(beanFactory, "javax.jms.ConnectionFactory", dependsOn);
 		addDependencies(beanFactory, "javax.sql.DataSource", dependsOn);
@@ -75,7 +75,7 @@ public class AtomikosDependsOnBeanFactoryPostProcessor
 				"com.atomikos.jms.extra.MessageDrivenContainer");
 		for (String messageDrivenContainer : messageDrivenContainers) {
 			BeanDefinition bean = beanFactory.getBeanDefinition(messageDrivenContainer);
-			Set<String> dependsOn = new LinkedHashSet<String>(
+			Set<String> dependsOn = new LinkedHashSet<>(
 					asList(bean.getDependsOn()));
 			dependsOn.addAll(asList(transactionManagers));
 			bean.setDependsOn(dependsOn.toArray(new String[dependsOn.size()]));

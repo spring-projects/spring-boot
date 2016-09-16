@@ -76,7 +76,7 @@ public class SimpleMainTests {
 	}
 
 	private String[] getArgs(String... args) {
-		List<String> list = new ArrayList<String>(Arrays.asList(
+		List<String> list = new ArrayList<>(Arrays.asList(
 				"--spring.main.webEnvironment=false", "--spring.main.showBanner=OFF",
 				"--spring.main.registerShutdownHook=false"));
 		if (args.length > 0) {

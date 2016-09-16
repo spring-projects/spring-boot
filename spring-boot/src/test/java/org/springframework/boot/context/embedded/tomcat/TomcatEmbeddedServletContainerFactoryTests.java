@@ -361,7 +361,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 
 	@Test
 	public void jspServletInitParameters() {
-		Map<String, String> initParameters = new HashMap<String, String>();
+		Map<String, String> initParameters = new HashMap<>();
 		initParameters.put("a", "alpha");
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		factory.getJspServlet().setInitParameters(initParameters);

@@ -78,7 +78,7 @@ public class MetricExportAutoConfiguration {
 	@ConditionalOnMissingBean(name = "metricWritersMetricExporter")
 	public SchedulingConfigurer metricWritersMetricExporter(
 			MetricExportProperties properties) {
-		Map<String, GaugeWriter> writers = new HashMap<String, GaugeWriter>();
+		Map<String, GaugeWriter> writers = new HashMap<>();
 		MetricReader reader = this.endpointReader;
 		if (reader == null && !CollectionUtils.isEmpty(this.readers)) {
 			reader = new CompositeMetricReader(

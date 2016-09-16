@@ -79,7 +79,7 @@ public abstract class AetherGrapeEngineFactory {
 
 	private static List<RemoteRepository> createRepositories(
 			List<RepositoryConfiguration> repositoryConfigurations) {
-		List<RemoteRepository> repositories = new ArrayList<RemoteRepository>(
+		List<RemoteRepository> repositories = new ArrayList<>(
 				repositoryConfigurations.size());
 		for (RepositoryConfiguration repositoryConfiguration : repositoryConfigurations) {
 			RemoteRepository.Builder builder = new RemoteRepository.Builder(

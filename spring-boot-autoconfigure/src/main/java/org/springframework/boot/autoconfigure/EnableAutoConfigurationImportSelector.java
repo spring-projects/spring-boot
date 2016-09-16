@@ -166,7 +166,7 @@ public class EnableAutoConfigurationImportSelector
 	 */
 	protected Set<String> getExclusions(AnnotationMetadata metadata,
 			AnnotationAttributes attributes) {
-		Set<String> excluded = new LinkedHashSet<String>();
+		Set<String> excluded = new LinkedHashSet<>();
 		excluded.addAll(asList(attributes, "exclude"));
 		excluded.addAll(Arrays.asList(attributes.getStringArray("excludeName")));
 		excluded.addAll(getExcludeAutoConfigurationsProperty());
@@ -214,7 +214,7 @@ public class EnableAutoConfigurationImportSelector
 	}
 
 	protected final <T> List<T> removeDuplicates(List<T> list) {
-		return new ArrayList<T>(new LinkedHashSet<T>(list));
+		return new ArrayList<>(new LinkedHashSet<>(list));
 	}
 
 	protected final List<String> asList(AnnotationAttributes attributes, String name) {
@@ -269,7 +269,7 @@ public class EnableAutoConfigurationImportSelector
 	 */
 	static class Excludes {
 
-		private List<String> exclude = new ArrayList<String>();
+		private List<String> exclude = new ArrayList<>();
 
 		public List<String> getExclude() {
 			return this.exclude;

@@ -46,7 +46,7 @@ public abstract class LoggingSystem {
 	private static final Map<String, String> SYSTEMS;
 
 	static {
-		Map<String, String> systems = new LinkedHashMap<String, String>();
+		Map<String, String> systems = new LinkedHashMap<>();
 		systems.put("ch.qos.logback.core.Appender",
 				"org.springframework.boot.logging.logback.LogbackLoggingSystem");
 		systems.put("org.apache.logging.log4j.core.impl.Log4jContextFactory",

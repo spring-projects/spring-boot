@@ -44,7 +44,7 @@ public class DefaultMetricNamingStrategy implements ObjectNamingStrategy {
 			throws MalformedObjectNameException {
 		ObjectName objectName = this.namingStrategy.getObjectName(managedBean, beanKey);
 		String domain = objectName.getDomain();
-		Hashtable<String, String> table = new Hashtable<String, String>(
+		Hashtable<String, String> table = new Hashtable<>(
 				objectName.getKeyPropertyList());
 		String name = objectName.getKeyProperty("name");
 		if (name != null) {

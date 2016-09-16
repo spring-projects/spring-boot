@@ -63,7 +63,7 @@ public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private static List<InfoContributor> createContributors(Map<String, Object> info,
 			InfoContributor[] infoContributors) {
-		List<InfoContributor> result = new ArrayList<InfoContributor>(
+		List<InfoContributor> result = new ArrayList<>(
 				Arrays.asList(infoContributors));
 		result.add(0, new MapInfoContributor(info));
 		return result;

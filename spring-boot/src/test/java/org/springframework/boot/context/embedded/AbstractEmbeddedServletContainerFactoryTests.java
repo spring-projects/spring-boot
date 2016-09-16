@@ -786,7 +786,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void rootServletContextResource() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		final AtomicReference<URL> rootResource = new AtomicReference<URL>();
+		final AtomicReference<URL> rootResource = new AtomicReference<>();
 		this.container = factory
 				.getEmbeddedServletContainer(new ServletContextInitializer() {
 					@Override
@@ -875,7 +875,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void localeCharsetMappingsAreConfigured() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		Map<Locale, Charset> mappings = new HashMap<Locale, Charset>();
+		Map<Locale, Charset> mappings = new HashMap<>();
 		mappings.put(Locale.GERMAN, Charset.forName("UTF-8"));
 		factory.setLocaleCharsetMappings(mappings);
 		this.container = factory.getEmbeddedServletContainer();

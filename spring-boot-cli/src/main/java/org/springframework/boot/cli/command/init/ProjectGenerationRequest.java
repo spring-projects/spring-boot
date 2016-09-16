@@ -73,7 +73,7 @@ class ProjectGenerationRequest {
 
 	private String bootVersion;
 
-	private List<String> dependencies = new ArrayList<String>();
+	private List<String> dependencies = new ArrayList<>();
 
 	/**
 	 * The URL of the service to use.
@@ -374,7 +374,7 @@ class ProjectGenerationRequest {
 			return result;
 		}
 		else if (isDetectType()) {
-			Map<String, ProjectType> types = new HashMap<String, ProjectType>(
+			Map<String, ProjectType> types = new HashMap<>(
 					metadata.getProjectTypes());
 			if (this.build != null) {
 				filter(types, "build", this.build);

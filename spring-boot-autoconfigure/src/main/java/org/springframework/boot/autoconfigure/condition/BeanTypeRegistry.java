@@ -226,7 +226,7 @@ abstract class BeanTypeRegistry {
 
 		@Override
 		public Set<String> getNamesForType(Class<?> type) {
-			Set<String> result = new LinkedHashSet<String>();
+			Set<String> result = new LinkedHashSet<>();
 			result.addAll(Arrays
 					.asList(this.beanFactory.getBeanNamesForType(type, true, false)));
 			if (this.beanFactory instanceof ConfigurableListableBeanFactory) {
@@ -264,7 +264,7 @@ abstract class BeanTypeRegistry {
 
 		private final DefaultListableBeanFactory beanFactory;
 
-		private final Map<String, Class<?>> beanTypes = new HashMap<String, Class<?>>();
+		private final Map<String, Class<?>> beanTypes = new HashMap<>();
 
 		private int lastBeanDefinitionCount = 0;
 
@@ -292,7 +292,7 @@ abstract class BeanTypeRegistry {
 				}
 				this.lastBeanDefinitionCount = this.beanFactory.getBeanDefinitionCount();
 			}
-			Set<String> matches = new LinkedHashSet<String>();
+			Set<String> matches = new LinkedHashSet<>();
 			for (Map.Entry<String, Class<?>> entry : this.beanTypes.entrySet()) {
 				if (entry.getValue() != null && type.isAssignableFrom(entry.getValue())) {
 					matches.add(entry.getKey());

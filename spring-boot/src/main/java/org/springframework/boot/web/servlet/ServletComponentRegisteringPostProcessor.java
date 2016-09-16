@@ -46,7 +46,7 @@ class ServletComponentRegisteringPostProcessor
 	private static final List<ServletComponentHandler> HANDLERS;
 
 	static {
-		List<ServletComponentHandler> handlers = new ArrayList<ServletComponentHandler>();
+		List<ServletComponentHandler> handlers = new ArrayList<>();
 		handlers.add(new WebServletHandler());
 		handlers.add(new WebFilterHandler());
 		handlers.add(new WebListenerHandler());

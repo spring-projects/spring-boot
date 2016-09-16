@@ -345,7 +345,7 @@ public class HttpTunnelServerTests {
 
 		private int timeout;
 
-		private BlockingDeque<ByteBuffer> outgoing = new LinkedBlockingDeque<ByteBuffer>();
+		private BlockingDeque<ByteBuffer> outgoing = new LinkedBlockingDeque<>();
 
 		private ByteArrayOutputStream written = new ByteArrayOutputStream();
 

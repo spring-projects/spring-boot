@@ -169,7 +169,7 @@ public class BasicJsonTester {
 	}
 
 	private JsonContent<Object> getJsonContent(String json) {
-		return new JsonContent<Object>(this.loader.getResourceLoadClass(), null, json);
+		return new JsonContent<>(this.loader.getResourceLoadClass(), null, json);
 	}
 
 }

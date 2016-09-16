@@ -40,8 +40,8 @@ public class MultiMetricRichGaugeReaderTests {
 
 	@Test
 	public void countOne() {
-		this.data.set(new Metric<Integer>("foo", 1));
-		this.data.set(new Metric<Integer>("foo", 1));
+		this.data.set(new Metric<>("foo", 1));
+		this.data.set(new Metric<>("foo", 1));
 		this.exporter.export();
 		// Check the exporter worked
 		assertThat(this.repository.count()).isEqualTo(6);
@@ -53,8 +53,8 @@ public class MultiMetricRichGaugeReaderTests {
 
 	@Test
 	public void countTwo() {
-		this.data.set(new Metric<Integer>("foo", 1));
-		this.data.set(new Metric<Integer>("bar", 1));
+		this.data.set(new Metric<>("foo", 1));
+		this.data.set(new Metric<>("bar", 1));
 		this.exporter.export();
 		assertThat(this.reader.count()).isEqualTo(2);
 		RichGauge one = this.reader.findOne("foo");

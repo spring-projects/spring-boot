@@ -43,7 +43,7 @@ public class CommandRunner implements Iterable<Command> {
 
 	private final String name;
 
-	private final List<Command> commands = new ArrayList<Command>();
+	private final List<Command> commands = new ArrayList<>();
 
 	private Class<?>[] optionCommandClasses = {};
 
@@ -185,7 +185,7 @@ public class CommandRunner implements Iterable<Command> {
 	}
 
 	private String[] removeDebugFlags(String[] args) {
-		List<String> rtn = new ArrayList<String>(args.length);
+		List<String> rtn = new ArrayList<>(args.length);
 		boolean appArgsDetected = false;
 		for (String arg : args) {
 			// Allow apps to have a -d argument

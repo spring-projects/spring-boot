@@ -73,7 +73,7 @@ public class SysVinitLaunchScriptIT {
 
 	@Parameters(name = "{0} {1}")
 	public static List<Object[]> parameters() {
-		List<Object[]> parameters = new ArrayList<Object[]>();
+		List<Object[]> parameters = new ArrayList<>();
 		for (File os : new File("src/test/resources/conf").listFiles()) {
 			for (File version : os.listFiles()) {
 				parameters.add(new Object[] { os.getName(), version.getName() });

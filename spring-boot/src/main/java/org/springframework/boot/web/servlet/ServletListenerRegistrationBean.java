@@ -66,7 +66,7 @@ public class ServletListenerRegistrationBean<T extends EventListener>
 	private static final Set<Class<?>> SUPPORTED_TYPES;
 
 	static {
-		Set<Class<?>> types = new HashSet<Class<?>>();
+		Set<Class<?>> types = new HashSet<>();
 		types.add(ServletContextAttributeListener.class);
 		types.add(ServletRequestListener.class);
 		types.add(ServletRequestAttributeListener.class);

@@ -127,7 +127,7 @@ public class RedisMetricRepository implements MetricRepository {
 		Set<String> keys = this.zSetOperations.range(0, -1);
 		Iterator<String> keysIt = keys.iterator();
 
-		List<Metric<?>> result = new ArrayList<Metric<?>>(keys.size());
+		List<Metric<?>> result = new ArrayList<>(keys.size());
 		List<String> values = this.redisOperations.opsForValue().multiGet(keys);
 		for (String v : values) {
 			String key = keysIt.next();
@@ -152,7 +152,7 @@ public class RedisMetricRepository implements MetricRepository {
 		trackMembership(key);
 		double value = this.zSetOperations.incrementScore(key,
 				delta.getValue().doubleValue());
-		String raw = serialize(new Metric<Double>(name, value, delta.getTimestamp()));
+		String raw = serialize(new Metric<>(name, value, delta.getTimestamp()));
 		this.redisOperations.opsForValue().set(key, raw);
 	}
 
@@ -179,7 +179,7 @@ public class RedisMetricRepository implements MetricRepository {
 			return null;
 		}
 		Date timestamp = new Date(Long.valueOf(v));
-		return new Metric<Double>(nameFor(redisKey), value, timestamp);
+		return new Metric<>(nameFor(redisKey), value, timestamp);
 	}
 
 	private String serialize(Metric<?> entity) {

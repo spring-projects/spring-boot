@@ -94,9 +94,9 @@ public class ConditionEvaluationReportMessage {
 
 	private Map<String, ConditionAndOutcomes> orderByName(
 			Map<String, ConditionAndOutcomes> outcomes) {
-		Map<String, ConditionAndOutcomes> result = new LinkedHashMap<String, ConditionAndOutcomes>();
-		List<String> names = new ArrayList<String>();
-		Map<String, String> classNames = new HashMap<String, String>();
+		Map<String, ConditionAndOutcomes> result = new LinkedHashMap<>();
+		List<String> names = new ArrayList<>();
+		Map<String, String> classNames = new HashMap<>();
 		for (String name : outcomes.keySet()) {
 			String shortName = ClassUtils.getShortName(name);
 			names.add(shortName);

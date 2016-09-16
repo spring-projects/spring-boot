@@ -47,7 +47,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	private static final Map<LogLevel, Level> LEVELS;
 
 	static {
-		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
+		Map<LogLevel, Level> levels = new HashMap<>();
 		levels.put(LogLevel.TRACE, Level.FINEST);
 		levels.put(LogLevel.DEBUG, Level.FINE);
 		levels.put(LogLevel.INFO, Level.INFO);

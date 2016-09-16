@@ -46,7 +46,7 @@ import org.springframework.util.StringUtils;
 public class PoolingConnectionFactoryBean extends PoolingConnectionFactory
 		implements BeanNameAware, InitializingBean, DisposableBean {
 
-	private static final ThreadLocal<PoolingConnectionFactoryBean> source = new ThreadLocal<PoolingConnectionFactoryBean>();
+	private static final ThreadLocal<PoolingConnectionFactoryBean> source = new ThreadLocal<>();
 
 	private String beanName;
 

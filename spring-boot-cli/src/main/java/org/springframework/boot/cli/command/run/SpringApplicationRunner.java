@@ -225,7 +225,7 @@ public class SpringApplicationRunner {
 		}
 
 		private List<File> getSourceFiles() {
-			List<File> sources = new ArrayList<File>();
+			List<File> sources = new ArrayList<>();
 			for (String source : SpringApplicationRunner.this.sources) {
 				List<String> paths = ResourceUtils.getUrls(source,
 						SpringApplicationRunner.this.compiler.getLoader());

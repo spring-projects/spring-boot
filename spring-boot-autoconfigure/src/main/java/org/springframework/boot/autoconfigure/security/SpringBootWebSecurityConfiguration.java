@@ -119,7 +119,7 @@ public class SpringBootWebSecurityConfiguration {
 	}
 
 	public static List<String> getIgnored(SecurityProperties security) {
-		List<String> ignored = new ArrayList<String>(security.getIgnored());
+		List<String> ignored = new ArrayList<>(security.getIgnored());
 		if (ignored.isEmpty()) {
 			ignored.addAll(DEFAULT_IGNORED);
 		}
@@ -227,7 +227,7 @@ public class SpringBootWebSecurityConfiguration {
 		}
 
 		private String[] getSecureApplicationPaths() {
-			List<String> list = new ArrayList<String>();
+			List<String> list = new ArrayList<>();
 			for (String path : this.security.getBasic().getPath()) {
 				path = (path == null ? "" : path.trim());
 				if (path.equals("/**")) {

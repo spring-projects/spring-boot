@@ -59,7 +59,7 @@ public class DelegatingApplicationContextInitializer implements
 
 	private List<Class<?>> getInitializerClasses(ConfigurableEnvironment env) {
 		String classNames = env.getProperty(PROPERTY_NAME);
-		List<Class<?>> classes = new ArrayList<Class<?>>();
+		List<Class<?>> classes = new ArrayList<>();
 		if (StringUtils.hasLength(classNames)) {
 			for (String className : StringUtils.tokenizeToStringArray(classNames, ",")) {
 				classes.add(getInitializerClass(className));
@@ -84,7 +84,7 @@ public class DelegatingApplicationContextInitializer implements
 	private void applyInitializerClasses(ConfigurableApplicationContext context,
 			List<Class<?>> initializerClasses) {
 		Class<?> contextClass = context.getClass();
-		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
 		for (Class<?> initializerClass : initializerClasses) {
 			initializers.add(instantiateInitializer(contextClass, initializerClass));
 		}

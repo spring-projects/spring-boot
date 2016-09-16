@@ -50,7 +50,7 @@ public class AetherGrapeEngineTests {
 
 	private AetherGrapeEngine createGrapeEngine(
 			RepositoryConfiguration... additionalRepositories) {
-		List<RepositoryConfiguration> repositoryConfigurations = new ArrayList<RepositoryConfiguration>();
+		List<RepositoryConfiguration> repositoryConfigurations = new ArrayList<>();
 		repositoryConfigurations.add(new RepositoryConfiguration("central",
 				URI.create("http://repo1.maven.org/maven2"), false));
 		repositoryConfigurations.addAll(Arrays.asList(additionalRepositories));
@@ -60,7 +60,7 @@ public class AetherGrapeEngineTests {
 
 	@Test
 	public void dependencyResolution() {
-		Map<String, Object> args = new HashMap<String, Object>();
+		Map<String, Object> args = new HashMap<>();
 		createGrapeEngine(this.springMilestones).grab(args,
 				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE"));
 		assertThat(this.groovyClassLoader.getURLs()).hasSize(5);
@@ -121,7 +121,7 @@ public class AetherGrapeEngineTests {
 
 	@Test
 	public void dependencyResolutionWithExclusions() {
-		Map<String, Object> args = new HashMap<String, Object>();
+		Map<String, Object> args = new HashMap<>();
 		args.put("excludes",
 				Arrays.asList(createExclusion("org.springframework", "spring-core")));
 
@@ -134,7 +134,7 @@ public class AetherGrapeEngineTests {
 
 	@Test
 	public void nonTransitiveDependencyResolution() {
-		Map<String, Object> args = new HashMap<String, Object>();
+		Map<String, Object> args = new HashMap<>();
 
 		createGrapeEngine().grab(args, createDependency("org.springframework",
 				"spring-jdbc", "3.2.4.RELEASE", false));
@@ -144,7 +144,7 @@ public class AetherGrapeEngineTests {
 
 	@Test
 	public void dependencyResolutionWithCustomClassLoader() {
-		Map<String, Object> args = new HashMap<String, Object>();
+		Map<String, Object> args = new HashMap<>();
 		GroovyClassLoader customClassLoader = new GroovyClassLoader();
 		args.put("classLoader", customClassLoader);
 
@@ -157,7 +157,7 @@ public class AetherGrapeEngineTests {
 
 	@Test
 	public void resolutionWithCustomResolver() {
-		Map<String, Object> args = new HashMap<String, Object>();
+		Map<String, Object> args = new HashMap<>();
 		AetherGrapeEngine grapeEngine = this.createGrapeEngine();
 		grapeEngine
 				.addResolver(createResolver("restlet.org", "http://maven.restlet.org"));
@@ -176,7 +176,7 @@ public class AetherGrapeEngineTests {
 
 	@Test
 	public void pomDependencyResolutionViaType() {
-		Map<String, Object> args = new HashMap<String, Object>();
+		Map<String, Object> args = new HashMap<>();
 		Map<String, Object> dependency = createDependency("org.springframework",
 				"spring-framework-bom", "4.0.5.RELEASE");
 		dependency.put("type", "pom");
@@ -188,7 +188,7 @@ public class AetherGrapeEngineTests {
 
 	@Test
 	public void pomDependencyResolutionViaExt() {
-		Map<String, Object> args = new HashMap<String, Object>();
+		Map<String, Object> args = new HashMap<>();
 		Map<String, Object> dependency = createDependency("org.springframework",
 				"spring-framework-bom", "4.0.5.RELEASE");
 		dependency.put("ext", "pom");
@@ -200,7 +200,7 @@ public class AetherGrapeEngineTests {
 
 	@Test
 	public void resolutionWithClassifier() {
-		Map<String, Object> args = new HashMap<String, Object>();
+		Map<String, Object> args = new HashMap<>();
 
 		Map<String, Object> dependency = createDependency("org.springframework",
 				"spring-jdbc", "3.2.4.RELEASE", false);
@@ -214,7 +214,7 @@ public class AetherGrapeEngineTests {
 
 	private Map<String, Object> createDependency(String group, String module,
 			String version) {
-		Map<String, Object> dependency = new HashMap<String, Object>();
+		Map<String, Object> dependency = new HashMap<>();
 		dependency.put("group", group);
 		dependency.put("module", module);
 		dependency.put("version", version);
@@ -229,14 +229,14 @@ public class AetherGrapeEngineTests {
 	}
 
 	private Map<String, Object> createResolver(String name, String url) {
-		Map<String, Object> resolver = new HashMap<String, Object>();
+		Map<String, Object> resolver = new HashMap<>();
 		resolver.put("name", name);
 		resolver.put("root", url);
 		return resolver;
 	}
 
 	private Map<String, Object> createExclusion(String group, String module) {
-		Map<String, Object> exclusion = new HashMap<String, Object>();
+		Map<String, Object> exclusion = new HashMap<>();
 		exclusion.put("group", group);
 		exclusion.put("module", module);
 		return exclusion;

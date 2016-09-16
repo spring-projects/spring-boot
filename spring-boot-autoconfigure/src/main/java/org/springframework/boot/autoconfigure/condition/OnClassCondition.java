@@ -85,7 +85,7 @@ class OnClassCondition extends SpringBootCondition {
 
 	private List<String> getMatchingClasses(MultiValueMap<String, Object> attributes,
 			MatchType matchType, ConditionContext context) {
-		List<String> matches = new LinkedList<String>();
+		List<String> matches = new LinkedList<>();
 		addAll(matches, attributes.get("value"));
 		addAll(matches, attributes.get("name"));
 		Iterator<String> iterator = matches.iterator();

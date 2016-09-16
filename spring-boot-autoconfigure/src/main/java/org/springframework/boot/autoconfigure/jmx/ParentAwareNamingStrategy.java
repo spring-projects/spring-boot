@@ -60,7 +60,7 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy
 	public ObjectName getObjectName(Object managedBean, String beanKey)
 			throws MalformedObjectNameException {
 		ObjectName name = super.getObjectName(managedBean, beanKey);
-		Hashtable<String, String> properties = new Hashtable<String, String>();
+		Hashtable<String, String> properties = new Hashtable<>();
 		properties.putAll(name.getKeyPropertyList());
 		if (this.ensureUniqueRuntimeObjectNames) {
 			properties.put("identity", ObjectUtils.getIdentityHexString(managedBean));

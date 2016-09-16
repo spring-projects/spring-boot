@@ -37,7 +37,7 @@ public interface MvcEndpoint {
 	/**
 	 * A {@link ResponseEntity} returned for disabled endpoints.
 	 */
-	ResponseEntity<Map<String, String>> DISABLED_RESPONSE = new ResponseEntity<Map<String, String>>(
+	ResponseEntity<Map<String, String>> DISABLED_RESPONSE = new ResponseEntity<>(
 			Collections.singletonMap("message", "This endpoint is disabled"),
 			HttpStatus.NOT_FOUND);
 

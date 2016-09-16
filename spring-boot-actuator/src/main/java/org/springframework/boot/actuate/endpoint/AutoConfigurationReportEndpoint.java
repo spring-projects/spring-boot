@@ -75,8 +75,8 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 		private Report parent;
 
 		public Report(ConditionEvaluationReport report) {
-			this.positiveMatches = new LinkedMultiValueMap<String, MessageAndCondition>();
-			this.negativeMatches = new LinkedMultiValueMap<String, MessageAndCondition>();
+			this.positiveMatches = new LinkedMultiValueMap<>();
+			this.negativeMatches = new LinkedMultiValueMap<>();
 			this.exclusions = report.getExclusions();
 			for (Map.Entry<String, ConditionAndOutcomes> entry : report
 					.getConditionAndOutcomesBySource().entrySet()) {

@@ -511,7 +511,7 @@ public class ConfigFileApplicationListenerTests {
 		Collection<org.springframework.core.env.PropertySource<?>> sources = propertySource
 				.getSource();
 		assertThat(sources).hasSize(2);
-		List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<>();
 		for (org.springframework.core.env.PropertySource<?> source : sources) {
 			if (source instanceof EnumerableCompositePropertySource) {
 				for (org.springframework.core.env.PropertySource<?> nested : ((EnumerableCompositePropertySource) source)
@@ -912,7 +912,7 @@ public class ConfigFileApplicationListenerTests {
 
 		@Override
 		List<EnvironmentPostProcessor> loadPostProcessors() {
-			return new ArrayList<EnvironmentPostProcessor>(
+			return new ArrayList<>(
 					Arrays.asList(new LowestPrecedenceEnvironmentPostProcessor()));
 		}
 

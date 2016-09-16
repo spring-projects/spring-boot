@@ -35,7 +35,7 @@ public class SystemPublicMetricsTests {
 	@Test
 	public void testSystemMetrics() throws Exception {
 		SystemPublicMetrics publicMetrics = new SystemPublicMetrics();
-		Map<String, Metric<?>> results = new HashMap<String, Metric<?>>();
+		Map<String, Metric<?>> results = new HashMap<>();
 		for (Metric<?> metric : publicMetrics.metrics()) {
 			results.put(metric.getName(), metric);
 		}

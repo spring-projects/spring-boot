@@ -47,9 +47,9 @@ class SpringApplicationBindContextLoader extends AbstractContextLoader {
 		application.setMainApplicationClass(config.getTestClass());
 		application.setWebEnvironment(false);
 		application.setSources(
-				new LinkedHashSet<Object>(Arrays.asList(config.getClasses())));
+				new LinkedHashSet<>(Arrays.asList(config.getClasses())));
 		ConfigurableEnvironment environment = new StandardEnvironment();
-		Map<String, Object> properties = new LinkedHashMap<String, Object>();
+		Map<String, Object> properties = new LinkedHashMap<>();
 		properties.put("spring.jmx.enabled", "false");
 		properties.putAll(TestPropertySourceUtils
 				.convertInlinedPropertiesToMap(config.getPropertySourceProperties()));

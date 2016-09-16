@@ -50,7 +50,7 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 	@Autowired
 	private Collection<DataSourcePoolMetadataProvider> providers;
 
-	private final Map<String, DataSourcePoolMetadata> metadataByPrefix = new HashMap<String, DataSourcePoolMetadata>();
+	private final Map<String, DataSourcePoolMetadata> metadataByPrefix = new HashMap<>();
 
 	@PostConstruct
 	public void initialize() {
@@ -72,7 +72,7 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 
 	@Override
 	public Collection<Metric<?>> metrics() {
-		Set<Metric<?>> metrics = new LinkedHashSet<Metric<?>>();
+		Set<Metric<?>> metrics = new LinkedHashSet<>();
 		for (Map.Entry<String, DataSourcePoolMetadata> entry : this.metadataByPrefix
 				.entrySet()) {
 			String prefix = entry.getKey();
@@ -87,7 +87,7 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 	private <T extends Number> void addMetric(Set<Metric<?>> metrics, String name,
 			T value) {
 		if (value != null) {
-			metrics.add(new Metric<T>(name, value));
+			metrics.add(new Metric<>(name, value));
 		}
 	}
 

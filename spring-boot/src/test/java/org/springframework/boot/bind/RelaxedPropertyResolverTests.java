@@ -52,7 +52,7 @@ public class RelaxedPropertyResolverTests {
 	@Before
 	public void setup() {
 		this.environment = new StandardEnvironment();
-		this.source = new LinkedHashMap<String, Object>();
+		this.source = new LinkedHashMap<>();
 		this.source.put("myString", "value");
 		this.source.put("myobject", "object");
 		this.source.put("myInteger", 123);

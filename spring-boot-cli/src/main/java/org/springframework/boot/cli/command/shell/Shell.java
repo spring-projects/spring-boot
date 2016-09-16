@@ -51,7 +51,7 @@ public class Shell {
 	private static final Set<Class<?>> NON_FORKED_COMMANDS;
 
 	static {
-		Set<Class<?>> nonForked = new HashSet<Class<?>>();
+		Set<Class<?>> nonForked = new HashSet<>();
 		nonForked.add(VersionCommand.class);
 		NON_FORKED_COMMANDS = Collections.unmodifiableSet(nonForked);
 	}
@@ -86,7 +86,7 @@ public class Shell {
 	}
 
 	private Iterable<Command> getCommands() {
-		List<Command> commands = new ArrayList<Command>();
+		List<Command> commands = new ArrayList<>();
 		ServiceLoader<CommandFactory> factories = ServiceLoader.load(CommandFactory.class,
 				getClass().getClassLoader());
 		for (CommandFactory factory : factories) {
@@ -193,7 +193,7 @@ public class Shell {
 
 		private volatile Command lastCommand;
 
-		private final Map<String, String> aliases = new HashMap<String, String>();
+		private final Map<String, String> aliases = new HashMap<>();
 
 		ShellCommandRunner() {
 			super(null);

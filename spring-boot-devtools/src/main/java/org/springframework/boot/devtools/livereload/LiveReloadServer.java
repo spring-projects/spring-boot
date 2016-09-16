@@ -56,7 +56,7 @@ public class LiveReloadServer {
 	private final ExecutorService executor = Executors
 			.newCachedThreadPool(new WorkerThreadFactory());
 
-	private final List<Connection> connections = new ArrayList<Connection>();
+	private final List<Connection> connections = new ArrayList<>();
 
 	private final Object monitor = new Object();
 

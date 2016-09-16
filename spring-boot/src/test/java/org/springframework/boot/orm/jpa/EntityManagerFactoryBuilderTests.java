@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 @Deprecated
 public class EntityManagerFactoryBuilderTests {
 
-	private Map<String, Object> properties = new LinkedHashMap<String, Object>();
+	private Map<String, Object> properties = new LinkedHashMap<>();
 
 	private DataSource dataSource1 = mock(DataSource.class);
 

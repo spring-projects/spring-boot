@@ -99,7 +99,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 
 	@Override
 	protected Map<String, Object> getVendorProperties() {
-		Map<String, Object> vendorProperties = new LinkedHashMap<String, Object>();
+		Map<String, Object> vendorProperties = new LinkedHashMap<>();
 		vendorProperties.putAll(getProperties().getHibernateProperties(getDataSource()));
 		return vendorProperties;
 	}

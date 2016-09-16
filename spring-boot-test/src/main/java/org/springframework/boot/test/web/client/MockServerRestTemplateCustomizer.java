@@ -53,9 +53,9 @@ import org.springframework.web.client.RestTemplate;
  */
 public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer {
 
-	private Map<RestTemplate, RequestExpectationManager> expectationManagers = new ConcurrentHashMap<RestTemplate, RequestExpectationManager>();
+	private Map<RestTemplate, RequestExpectationManager> expectationManagers = new ConcurrentHashMap<>();
 
-	private Map<RestTemplate, MockRestServiceServer> servers = new ConcurrentHashMap<RestTemplate, MockRestServiceServer>();
+	private Map<RestTemplate, MockRestServiceServer> servers = new ConcurrentHashMap<>();
 
 	private final Class<? extends RequestExpectationManager> expectationManager;
 

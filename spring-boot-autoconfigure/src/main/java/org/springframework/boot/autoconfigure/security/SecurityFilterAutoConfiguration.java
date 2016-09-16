@@ -79,7 +79,7 @@ public class SecurityFilterAutoConfiguration {
 		if (securityProperties.getFilterDispatcherTypes() == null) {
 			return null;
 		}
-		Set<DispatcherType> dispatcherTypes = new HashSet<DispatcherType>();
+		Set<DispatcherType> dispatcherTypes = new HashSet<>();
 		for (String dispatcherType : securityProperties.getFilterDispatcherTypes()) {
 			dispatcherTypes.add(DispatcherType.valueOf(dispatcherType));
 		}

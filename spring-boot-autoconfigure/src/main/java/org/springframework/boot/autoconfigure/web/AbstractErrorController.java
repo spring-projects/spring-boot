@@ -58,7 +58,7 @@ public abstract class AbstractErrorController implements ErrorController {
 
 	private List<ErrorViewResolver> sortErrorViewResolvers(
 			List<ErrorViewResolver> resolvers) {
-		List<ErrorViewResolver> sorted = new ArrayList<ErrorViewResolver>();
+		List<ErrorViewResolver> sorted = new ArrayList<>();
 		if (resolvers != null) {
 			sorted.addAll(resolvers);
 			AnnotationAwareOrderComparator.sortIfNecessary(sorted);

@@ -66,7 +66,7 @@ public class TestableInitialContextFactory implements InitialContextFactory {
 
 	private final static class TestableContext extends InitialContext {
 
-		private final Map<String, Object> bindings = new HashMap<String, Object>();
+		private final Map<String, Object> bindings = new HashMap<>();
 
 		private TestableContext() throws NamingException {
 			super(true);
@@ -84,7 +84,7 @@ public class TestableInitialContextFactory implements InitialContextFactory {
 
 		@Override
 		public Hashtable<?, ?> getEnvironment() throws NamingException {
-			return new Hashtable<Object, Object>(); // Used to detect if JNDI is
+			return new Hashtable<>(); // Used to detect if JNDI is
 													// available
 		}
 

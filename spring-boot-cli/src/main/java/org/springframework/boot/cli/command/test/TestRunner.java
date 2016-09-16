@@ -112,7 +112,7 @@ public class TestRunner {
 		}
 
 		private Class<?>[] getTestClasses(Object[] sources) {
-			List<Class<?>> testClasses = new ArrayList<Class<?>>();
+			List<Class<?>> testClasses = new ArrayList<>();
 			for (Object source : sources) {
 				if ((source instanceof Class) && isTestable((Class<?>) source)) {
 					testClasses.add((Class<?>) source);

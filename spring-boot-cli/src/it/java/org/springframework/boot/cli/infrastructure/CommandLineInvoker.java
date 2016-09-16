@@ -54,7 +54,7 @@ public final class CommandLineInvoker {
 	}
 
 	private Process runCliProcess(String... args) throws IOException {
-		List<String> command = new ArrayList<String>();
+		List<String> command = new ArrayList<>();
 		command.add(findLaunchScript().getAbsolutePath());
 		command.addAll(Arrays.asList(args));
 		ProcessBuilder processBuilder = new ProcessBuilder(command)
@@ -97,7 +97,7 @@ public final class CommandLineInvoker {
 
 		private final Process process;
 
-		private final List<Thread> streamReaders = new ArrayList<Thread>();
+		private final List<Thread> streamReaders = new ArrayList<>();
 
 		public Invocation(Process process) {
 			this.process = process;
@@ -141,7 +141,7 @@ public final class CommandLineInvoker {
 			BufferedReader reader = new BufferedReader(
 					new StringReader(buffer.toString()));
 			String line;
-			List<String> lines = new ArrayList<String>();
+			List<String> lines = new ArrayList<>();
 			try {
 				while ((line = reader.readLine()) != null) {
 					if (!line.startsWith("Picked up ")) {

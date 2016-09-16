@@ -71,13 +71,13 @@ public class SpringApplicationBuilder {
 
 	private final AtomicBoolean running = new AtomicBoolean(false);
 
-	private final Set<Object> sources = new LinkedHashSet<Object>();
+	private final Set<Object> sources = new LinkedHashSet<>();
 
-	private final Map<String, Object> defaultProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> defaultProperties = new LinkedHashMap<>();
 
 	private ConfigurableEnvironment environment;
 
-	private Set<String> additionalProfiles = new LinkedHashSet<String>();
+	private Set<String> additionalProfiles = new LinkedHashSet<>();
 
 	private boolean registerShutdownHookApplied;
 
@@ -277,7 +277,7 @@ public class SpringApplicationBuilder {
 	 * @return the current builder
 	 */
 	public SpringApplicationBuilder sources(Object... sources) {
-		this.sources.addAll(new LinkedHashSet<Object>(Arrays.asList(sources)));
+		this.sources.addAll(new LinkedHashSet<>(Arrays.asList(sources)));
 		return this;
 	}
 
@@ -383,7 +383,7 @@ public class SpringApplicationBuilder {
 	}
 
 	private Map<String, Object> getMapFromKeyValuePairs(String[] properties) {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		for (String property : properties) {
 			int index = lowestIndexOf(property, ":", "=");
 			String key = property.substring(0, index > 0 ? index : property.length());
@@ -415,7 +415,7 @@ public class SpringApplicationBuilder {
 	}
 
 	private Map<String, Object> getMapFromProperties(Properties properties) {
-		HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<>();
 		for (Object key : Collections.list(properties.propertyNames())) {
 			map.put((String) key, properties.get(key));
 		}
@@ -453,7 +453,7 @@ public class SpringApplicationBuilder {
 
 	private SpringApplicationBuilder additionalProfiles(
 			Collection<String> additionalProfiles) {
-		this.additionalProfiles = new LinkedHashSet<String>(additionalProfiles);
+		this.additionalProfiles = new LinkedHashSet<>(additionalProfiles);
 		this.application.setAdditionalProfiles(this.additionalProfiles
 				.toArray(new String[this.additionalProfiles.size()]));
 		return this;

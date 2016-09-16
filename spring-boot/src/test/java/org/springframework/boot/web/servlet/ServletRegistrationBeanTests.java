@@ -102,13 +102,13 @@ public class ServletRegistrationBeanTests {
 		bean.setAsyncSupported(false);
 		bean.setInitParameters(Collections.singletonMap("a", "b"));
 		bean.addInitParameter("c", "d");
-		bean.setUrlMappings(new LinkedHashSet<String>(Arrays.asList("/a", "/b")));
+		bean.setUrlMappings(new LinkedHashSet<>(Arrays.asList("/a", "/b")));
 		bean.addUrlMappings("/c");
 		bean.setLoadOnStartup(10);
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addServlet("test", this.servlet);
 		verify(this.registration).setAsyncSupported(false);
-		Map<String, String> expectedInitParameters = new HashMap<String, String>();
+		Map<String, String> expectedInitParameters = new HashMap<>();
 		expectedInitParameters.put("a", "b");
 		expectedInitParameters.put("c", "d");
 		verify(this.registration).setInitParameters(expectedInitParameters);
@@ -184,7 +184,7 @@ public class ServletRegistrationBeanTests {
 	public void setMappingReplacesValue() throws Exception {
 		ServletRegistrationBean bean = new ServletRegistrationBean(this.servlet, "/a",
 				"/b");
-		bean.setUrlMappings(new LinkedHashSet<String>(Arrays.asList("/c", "/d")));
+		bean.setUrlMappings(new LinkedHashSet<>(Arrays.asList("/c", "/d")));
 		bean.onStartup(this.servletContext);
 		verify(this.registration).addMapping("/c", "/d");
 	}

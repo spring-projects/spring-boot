@@ -283,7 +283,7 @@ public class PropertiesConfigurationFactory<T>
 	}
 
 	private Set<String> getNames(Iterable<String> prefixes) {
-		Set<String> names = new LinkedHashSet<String>();
+		Set<String> names = new LinkedHashSet<>();
 		if (this.target != null) {
 			PropertyDescriptor[] descriptors = BeanUtils
 					.getPropertyDescriptors(this.target.getClass());
@@ -336,7 +336,7 @@ public class PropertiesConfigurationFactory<T>
 			// We can filter properties to those starting with the target name, but
 			// we can't do a complete filter since we need to trigger the
 			// unknown fields check
-			Set<String> relaxedNames = new HashSet<String>();
+			Set<String> relaxedNames = new HashSet<>();
 			for (String relaxedTargetName : relaxedTargetNames) {
 				relaxedNames.add(relaxedTargetName);
 			}

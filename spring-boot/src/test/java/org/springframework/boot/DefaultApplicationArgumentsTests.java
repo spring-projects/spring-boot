@@ -55,7 +55,7 @@ public class DefaultApplicationArgumentsTests {
 	@Test
 	public void optionNames() throws Exception {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
-		Set<String> expected = new HashSet<String>(Arrays.asList("foo", "debug"));
+		Set<String> expected = new HashSet<>(Arrays.asList("foo", "debug"));
 		assertThat(arguments.getOptionNames()).isEqualTo(expected);
 	}
 

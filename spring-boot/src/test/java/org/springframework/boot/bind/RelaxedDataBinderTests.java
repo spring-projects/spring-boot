@@ -520,7 +520,7 @@ public class RelaxedDataBinderTests {
 
 	@Test
 	public void testBindMap() throws Exception {
-		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		Map<String, Object> target = new LinkedHashMap<>();
 		BindingResult result = bind(target, "spam: bar\n" + "vanilla.value: 123",
 				"vanilla");
 		assertThat(result.getErrorCount()).isEqualTo(0);
@@ -529,7 +529,7 @@ public class RelaxedDataBinderTests {
 
 	@Test
 	public void testBindMapWithClashInProperties() throws Exception {
-		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		Map<String, Object> target = new LinkedHashMap<>();
 		BindingResult result = bind(target,
 				"vanilla.spam: bar\n" + "vanilla.spam.value: 123", "vanilla");
 		assertThat(result.getErrorCount()).isEqualTo(0);
@@ -540,7 +540,7 @@ public class RelaxedDataBinderTests {
 
 	@Test
 	public void testBindMapWithDeepClashInProperties() throws Exception {
-		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		Map<String, Object> target = new LinkedHashMap<>();
 		BindingResult result = bind(target,
 				"vanilla.spam.foo: bar\n" + "vanilla.spam.foo.value: 123", "vanilla");
 		assertThat(result.getErrorCount()).isEqualTo(0);
@@ -551,7 +551,7 @@ public class RelaxedDataBinderTests {
 
 	@Test
 	public void testBindMapWithDifferentDeepClashInProperties() throws Exception {
-		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		Map<String, Object> target = new LinkedHashMap<>();
 		BindingResult result = bind(target,
 				"vanilla.spam.bar: bar\n" + "vanilla.spam.bar.value: 123", "vanilla");
 		assertThat(result.getErrorCount()).isEqualTo(0);
@@ -562,7 +562,7 @@ public class RelaxedDataBinderTests {
 
 	@Test
 	public void testBindShallowMap() throws Exception {
-		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		Map<String, Object> target = new LinkedHashMap<>();
 		BindingResult result = bind(target, "vanilla.spam: bar\n" + "vanilla.value: 123",
 				"vanilla");
 		assertThat(result.getErrorCount()).isEqualTo(0);
@@ -571,7 +571,7 @@ public class RelaxedDataBinderTests {
 
 	@Test
 	public void testBindMapNestedMap() throws Exception {
-		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		Map<String, Object> target = new LinkedHashMap<>();
 		BindingResult result = bind(target, "spam: bar\n" + "vanilla.foo.value: 123",
 				"vanilla");
 		assertThat(result.getErrorCount()).isEqualTo(0);
@@ -583,7 +583,7 @@ public class RelaxedDataBinderTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testBindOverlappingNestedMaps() throws Exception {
-		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		Map<String, Object> target = new LinkedHashMap<>();
 		BindingResult result = bind(target, "a.b.c.d: abc\na.b.c1.d1: efg");
 		assertThat(result.getErrorCount()).isEqualTo(0);
 
@@ -940,7 +940,7 @@ public class RelaxedDataBinderTests {
 
 	public static class TargetWithReadOnlyNestedList {
 
-		private final List<String> nested = new ArrayList<String>();
+		private final List<String> nested = new ArrayList<>();
 
 		public List<String> getNested() {
 			return this.nested;
@@ -960,7 +960,7 @@ public class RelaxedDataBinderTests {
 
 	public static class TargetWithReadOnlyNestedCollection {
 
-		private final Collection<String> nested = new ArrayList<String>();
+		private final Collection<String> nested = new ArrayList<>();
 
 		public Collection<String> getNested() {
 			return this.nested;
@@ -970,7 +970,7 @@ public class RelaxedDataBinderTests {
 
 	public static class TargetWithNestedSet {
 
-		private Set<String> nested = new LinkedHashSet<String>();
+		private Set<String> nested = new LinkedHashSet<>();
 
 		public Set<String> getNested() {
 			return this.nested;

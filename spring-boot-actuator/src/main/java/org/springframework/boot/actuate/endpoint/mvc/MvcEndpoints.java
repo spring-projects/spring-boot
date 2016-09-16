@@ -43,7 +43,7 @@ public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 
 	private ApplicationContext applicationContext;
 
-	private final Set<MvcEndpoint> endpoints = new HashSet<MvcEndpoint>();
+	private final Set<MvcEndpoint> endpoints = new HashSet<>();
 
 	private Set<Class<?>> customTypes;
 
@@ -78,7 +78,7 @@ public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 	}
 
 	private Set<Class<?>> findEndpointClasses(Collection<MvcEndpoint> existing) {
-		Set<Class<?>> types = new HashSet<Class<?>>();
+		Set<Class<?>> types = new HashSet<>();
 		for (MvcEndpoint endpoint : existing) {
 			Class<?> type = endpoint.getEndpointType();
 			if (type != null) {

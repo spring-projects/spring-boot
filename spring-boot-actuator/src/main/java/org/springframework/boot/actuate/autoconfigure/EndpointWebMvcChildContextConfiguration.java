@@ -238,7 +238,7 @@ public class EndpointWebMvcChildContextConfiguration {
 		}
 
 		private List<HandlerMapping> extractMappings() {
-			List<HandlerMapping> list = new ArrayList<HandlerMapping>();
+			List<HandlerMapping> list = new ArrayList<>();
 			list.addAll(this.beanFactory.getBeansOfType(HandlerMapping.class).values());
 			list.remove(this);
 			AnnotationAwareOrderComparator.sort(list);
@@ -255,7 +255,7 @@ public class EndpointWebMvcChildContextConfiguration {
 		private List<HandlerAdapter> adapters;
 
 		private List<HandlerAdapter> extractAdapters() {
-			List<HandlerAdapter> list = new ArrayList<HandlerAdapter>();
+			List<HandlerAdapter> list = new ArrayList<>();
 			list.addAll(this.beanFactory.getBeansOfType(HandlerAdapter.class).values());
 			list.remove(this);
 			AnnotationAwareOrderComparator.sort(list);
@@ -312,7 +312,7 @@ public class EndpointWebMvcChildContextConfiguration {
 		private List<HandlerExceptionResolver> resolvers;
 
 		private List<HandlerExceptionResolver> extractResolvers() {
-			List<HandlerExceptionResolver> list = new ArrayList<HandlerExceptionResolver>();
+			List<HandlerExceptionResolver> list = new ArrayList<>();
 			list.addAll(this.beanFactory.getBeansOfType(HandlerExceptionResolver.class)
 					.values());
 			list.remove(this);

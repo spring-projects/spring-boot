@@ -41,9 +41,9 @@ import org.springframework.boot.cli.compiler.dependencies.SpringBootDependencies
  */
 public class DependencyResolutionContext {
 
-	private final Map<String, Dependency> managedDependencyByGroupAndArtifact = new HashMap<String, Dependency>();
+	private final Map<String, Dependency> managedDependencyByGroupAndArtifact = new HashMap<>();
 
-	private final List<Dependency> managedDependencies = new ArrayList<Dependency>();
+	private final List<Dependency> managedDependencies = new ArrayList<>();
 
 	private DependencyManagement dependencyManagement = null;
 
@@ -95,7 +95,7 @@ public class DependencyResolutionContext {
 	public void addDependencyManagement(DependencyManagement dependencyManagement) {
 		for (org.springframework.boot.cli.compiler.dependencies.Dependency dependency : dependencyManagement
 				.getDependencies()) {
-			List<Exclusion> aetherExclusions = new ArrayList<Exclusion>();
+			List<Exclusion> aetherExclusions = new ArrayList<>();
 			for (org.springframework.boot.cli.compiler.dependencies.Dependency.Exclusion exclusion : dependency
 					.getExclusions()) {
 				aetherExclusions.add(new Exclusion(exclusion.getGroupId(),

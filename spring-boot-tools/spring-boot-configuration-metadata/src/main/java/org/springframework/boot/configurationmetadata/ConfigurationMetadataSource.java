@@ -42,7 +42,7 @@ public class ConfigurationMetadataSource implements Serializable {
 
 	private String sourceMethod;
 
-	private final Map<String, ConfigurationMetadataProperty> properties = new HashMap<String, ConfigurationMetadataProperty>();
+	private final Map<String, ConfigurationMetadataProperty> properties = new HashMap<>();
 
 	/**
 	 * The identifier of the group to which this source is associated.

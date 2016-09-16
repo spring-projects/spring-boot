@@ -118,7 +118,7 @@ public class ResourceProperties implements ResourceLoaderAware {
 	}
 
 	List<Resource> getFaviconLocations() {
-		List<Resource> locations = new ArrayList<Resource>(
+		List<Resource> locations = new ArrayList<>(
 				this.staticLocations.length + 1);
 		if (this.resourceLoader != null) {
 			for (String location : this.staticLocations) {

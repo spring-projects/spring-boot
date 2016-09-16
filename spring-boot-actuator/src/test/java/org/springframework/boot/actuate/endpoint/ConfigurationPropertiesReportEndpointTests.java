@@ -217,7 +217,7 @@ public class ConfigurationPropertiesReportEndpointTests
 
 		private Boolean mixedBoolean = true;
 
-		private Map<String, Object> secrets = new HashMap<String, Object>();
+		private Map<String, Object> secrets = new HashMap<>();
 
 		private Hidden hidden = new Hidden();
 

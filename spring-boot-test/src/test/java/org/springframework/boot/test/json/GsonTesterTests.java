@@ -62,7 +62,7 @@ public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 	@Override
 	protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass,
 			ResolvableType type) {
-		return new GsonTester<Object>(resourceLoadClass, type,
+		return new GsonTester<>(resourceLoadClass, type,
 				new GsonBuilder().create());
 	}
 
@@ -70,7 +70,7 @@ public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 
 		public GsonTester<ExampleObject> base;
 
-		public GsonTester<ExampleObject> baseSet = new GsonTester<ExampleObject>(
+		public GsonTester<ExampleObject> baseSet = new GsonTester<>(
 				InitFieldsBaseClass.class, ResolvableType.forClass(ExampleObject.class),
 				new GsonBuilder().create());
 
@@ -80,7 +80,7 @@ public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 
 		public GsonTester<List<ExampleObject>> test;
 
-		public GsonTester<ExampleObject> testSet = new GsonTester<ExampleObject>(
+		public GsonTester<ExampleObject> testSet = new GsonTester<>(
 				InitFieldsBaseClass.class, ResolvableType.forClass(ExampleObject.class),
 				new GsonBuilder().create());
 

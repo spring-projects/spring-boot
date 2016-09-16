@@ -110,7 +110,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@Test
 	public void isSensitiveOverrideWithGlobal() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("endpoint.sensitive", this.sensitive);
 		properties.put(this.property + ".sensitive", String.valueOf(!this.sensitive));
 		PropertySource<?> propertySource = new MapPropertySource("test", properties);
@@ -163,7 +163,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@Test
 	public void isOptIn() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		Map<String, Object> source = new HashMap<String, Object>();
+		Map<String, Object> source = new HashMap<>();
 		source.put("endpoints.enabled", false);
 		source.put(this.property + ".enabled", true);
 		PropertySource<?> propertySource = new MapPropertySource("test", source);

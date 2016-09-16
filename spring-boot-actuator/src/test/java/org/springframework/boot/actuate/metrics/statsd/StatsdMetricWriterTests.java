@@ -54,21 +54,21 @@ public class StatsdMetricWriterTests {
 
 	@Test
 	public void increment() {
-		this.writer.increment(new Delta<Long>("counter.foo", 3L));
+		this.writer.increment(new Delta<>("counter.foo", 3L));
 		this.server.waitForMessage();
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.counter.foo:3|c");
 	}
 
 	@Test
 	public void setLongMetric() throws Exception {
-		this.writer.set(new Metric<Long>("gauge.foo", 3L));
+		this.writer.set(new Metric<>("gauge.foo", 3L));
 		this.server.waitForMessage();
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.gauge.foo:3|g");
 	}
 
 	@Test
 	public void setDoubleMetric() throws Exception {
-		this.writer.set(new Metric<Double>("gauge.foo", 3.7));
+		this.writer.set(new Metric<>("gauge.foo", 3.7));
 		this.server.waitForMessage();
 		// Doubles are truncated
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.gauge.foo:3.7|g");
@@ -76,7 +76,7 @@ public class StatsdMetricWriterTests {
 
 	@Test
 	public void setTimerMetric() throws Exception {
-		this.writer.set(new Metric<Long>("timer.foo", 37L));
+		this.writer.set(new Metric<>("timer.foo", 37L));
 		this.server.waitForMessage();
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.timer.foo:37|ms");
 	}
@@ -84,7 +84,7 @@ public class StatsdMetricWriterTests {
 	@Test
 	public void nullPrefix() throws Exception {
 		this.writer = new StatsdMetricWriter("localhost", this.port);
-		this.writer.set(new Metric<Long>("gauge.foo", 3L));
+		this.writer.set(new Metric<>("gauge.foo", 3L));
 		this.server.waitForMessage();
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("gauge.foo:3|g");
 	}
@@ -92,14 +92,14 @@ public class StatsdMetricWriterTests {
 	@Test
 	public void periodPrefix() throws Exception {
 		this.writer = new StatsdMetricWriter("my.", "localhost", this.port);
-		this.writer.set(new Metric<Long>("gauge.foo", 3L));
+		this.writer.set(new Metric<>("gauge.foo", 3L));
 		this.server.waitForMessage();
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("my.gauge.foo:3|g");
 	}
 
 	private static final class DummyStatsDServer implements Runnable {
 
-		private final List<String> messagesReceived = new ArrayList<String>();
+		private final List<String> messagesReceived = new ArrayList<>();
 
 		private final DatagramSocket server;
 
@@ -142,7 +142,7 @@ public class StatsdMetricWriterTests {
 		}
 
 		public List<String> messagesReceived() {
-			return new ArrayList<String>(this.messagesReceived);
+			return new ArrayList<>(this.messagesReceived);
 		}
 
 	}

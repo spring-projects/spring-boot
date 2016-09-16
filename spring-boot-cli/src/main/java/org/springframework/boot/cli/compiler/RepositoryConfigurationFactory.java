@@ -59,7 +59,7 @@ public final class RepositoryConfigurationFactory {
 	 */
 	public static List<RepositoryConfiguration> createDefaultRepositoryConfiguration() {
 		MavenSettings mavenSettings = new MavenSettingsReader().readSettings();
-		List<RepositoryConfiguration> repositoryConfiguration = new ArrayList<RepositoryConfiguration>();
+		List<RepositoryConfiguration> repositoryConfiguration = new ArrayList<>();
 		repositoryConfiguration.add(MAVEN_CENTRAL);
 		if (!Boolean.getBoolean("disableSpringSnapshotRepos")) {
 			repositoryConfiguration.add(SPRING_MILESTONE);

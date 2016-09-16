@@ -166,7 +166,7 @@ public class RabbitProperties {
 		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
 			return this.host + ":" + this.port;
 		}
-		List<String> addressStrings = new ArrayList<String>();
+		List<String> addressStrings = new ArrayList<>();
 		for (Address parsedAddress : this.parsedAddresses) {
 			addressStrings.add(parsedAddress.host + ":" + parsedAddress.port);
 		}
@@ -179,7 +179,7 @@ public class RabbitProperties {
 	}
 
 	private List<Address> parseAddresses(String addresses) {
-		List<Address> parsedAddresses = new ArrayList<Address>();
+		List<Address> parsedAddresses = new ArrayList<>();
 		for (String address : StringUtils.commaDelimitedListToStringArray(addresses)) {
 			parsedAddresses.add(new Address(address));
 		}

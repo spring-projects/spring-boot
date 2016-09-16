@@ -156,7 +156,7 @@ public class HalBrowserMvcEndpoint extends HalJsonMvcEndpoint
 				throws IOException {
 			byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
 			String content = new String(bytes, DEFAULT_CHARSET);
-			List<String> pathSegments = new ArrayList<String>(ServletUriComponentsBuilder
+			List<String> pathSegments = new ArrayList<>(ServletUriComponentsBuilder
 					.fromRequest(request).build().getPathSegments());
 			pathSegments.remove(pathSegments.size() - 1);
 			String initial = "/"

@@ -51,7 +51,7 @@ public class DataSourceBuilder {
 
 	private ClassLoader classLoader;
 
-	private Map<String, String> properties = new HashMap<String, String>();
+	private Map<String, String> properties = new HashMap<>();
 
 	public static DataSourceBuilder create() {
 		return new DataSourceBuilder(null);

@@ -163,7 +163,7 @@ public class ManagementWebSecurityAutoConfiguration {
 			IgnoredRequestConfigurer ignoring = builder.ignoring();
 			// The ignores are not cumulative, so to prevent overwriting the defaults
 			// we add them back.
-			Set<String> ignored = new LinkedHashSet<String>(
+			Set<String> ignored = new LinkedHashSet<>(
 					SpringBootWebSecurityConfiguration.getIgnored(this.security));
 			if (ignored.contains("none")) {
 				ignored.remove("none");
@@ -174,7 +174,7 @@ public class ManagementWebSecurityAutoConfiguration {
 			RequestMatcher requestMatcher = getRequestMatcher();
 			String[] paths = this.server.getPathsArray(ignored);
 			if (!ObjectUtils.isEmpty(paths)) {
-				List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
+				List<RequestMatcher> matchers = new ArrayList<>();
 				for (String pattern : paths) {
 					matchers.add(new AntPathRequestMatcher(pattern, null));
 				}
@@ -325,7 +325,7 @@ public class ManagementWebSecurityAutoConfiguration {
 				return NO_PATHS;
 			}
 			Set<? extends MvcEndpoint> endpoints = endpointHandlerMapping.getEndpoints();
-			Set<String> paths = new LinkedHashSet<String>(endpoints.size());
+			Set<String> paths = new LinkedHashSet<>(endpoints.size());
 			for (MvcEndpoint endpoint : endpoints) {
 				if (isIncluded(endpoint)) {
 					String path = endpointHandlerMapping.getPath(endpoint.getPath());
@@ -394,7 +394,7 @@ public class ManagementWebSecurityAutoConfiguration {
 		private RequestMatcher createDelegate() {
 			ServerProperties server = this.contextResolver.getApplicationContext()
 					.getBean(ServerProperties.class);
-			List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
+			List<RequestMatcher> matchers = new ArrayList<>();
 			EndpointHandlerMapping endpointHandlerMapping = getRequiredEndpointHandlerMapping();
 			for (String path : this.endpointPaths.getPaths(endpointHandlerMapping)) {
 				matchers.add(new AntPathRequestMatcher(server.getPath(path)));

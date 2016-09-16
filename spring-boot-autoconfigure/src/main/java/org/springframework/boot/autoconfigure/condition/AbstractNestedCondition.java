@@ -78,8 +78,8 @@ abstract class AbstractNestedCondition extends SpringBootCondition
 
 		public MemberMatchOutcomes(MemberConditions memberConditions) {
 			this.all = Collections.unmodifiableList(memberConditions.getMatchOutcomes());
-			List<ConditionOutcome> matches = new ArrayList<ConditionOutcome>();
-			List<ConditionOutcome> nonMatches = new ArrayList<ConditionOutcome>();
+			List<ConditionOutcome> matches = new ArrayList<>();
+			List<ConditionOutcome> nonMatches = new ArrayList<>();
 			for (ConditionOutcome outcome : this.all) {
 				(outcome.isMatch() ? matches : nonMatches).add(outcome);
 			}
@@ -119,7 +119,7 @@ abstract class AbstractNestedCondition extends SpringBootCondition
 
 		private Map<AnnotationMetadata, List<Condition>> getMemberConditions(
 				String[] members) {
-			MultiValueMap<AnnotationMetadata, Condition> memberConditions = new LinkedMultiValueMap<AnnotationMetadata, Condition>();
+			MultiValueMap<AnnotationMetadata, Condition> memberConditions = new LinkedMultiValueMap<>();
 			for (String member : members) {
 				AnnotationMetadata metadata = getMetadata(member);
 				for (String[] conditionClasses : getConditionClasses(metadata)) {
@@ -157,7 +157,7 @@ abstract class AbstractNestedCondition extends SpringBootCondition
 		}
 
 		public List<ConditionOutcome> getMatchOutcomes() {
-			List<ConditionOutcome> outcomes = new ArrayList<ConditionOutcome>();
+			List<ConditionOutcome> outcomes = new ArrayList<>();
 			for (Map.Entry<AnnotationMetadata, List<Condition>> entry : this.memberConditions
 					.entrySet()) {
 				AnnotationMetadata metadata = entry.getKey();

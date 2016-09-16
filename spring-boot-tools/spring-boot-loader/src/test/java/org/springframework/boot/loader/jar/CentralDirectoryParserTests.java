@@ -95,7 +95,7 @@ public class CentralDirectoryParserTests {
 
 	private static class Collector implements CentralDirectoryVisitor {
 
-		private List<CentralDirectoryFileHeader> headers = new ArrayList<CentralDirectoryFileHeader>();
+		private List<CentralDirectoryFileHeader> headers = new ArrayList<>();
 
 		@Override
 		public void visitStart(CentralDirectoryEndRecord endRecord,

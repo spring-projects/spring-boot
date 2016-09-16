@@ -118,7 +118,7 @@ public class InstallerTests {
 	}
 
 	private Set<String> getNamesOfFilesInLibExt() {
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		for (File file : new File("target/lib/ext").listFiles()) {
 			names.add(file.getName());
 		}

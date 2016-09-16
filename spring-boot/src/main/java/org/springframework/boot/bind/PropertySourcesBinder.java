@@ -88,7 +88,7 @@ public class PropertySourcesBinder {
 	 * @return the keys matching the prefix
 	 */
 	public Map<String, Object> extractAll(String prefix) {
-		Map<String, Object> content = new LinkedHashMap<String, Object>();
+		Map<String, Object> content = new LinkedHashMap<>();
 		bindTo(prefix, content);
 		return content;
 	}
@@ -101,7 +101,7 @@ public class PropertySourcesBinder {
 	 * @param target the object to bind to
 	 */
 	public void bindTo(String prefix, Object target) {
-		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
+		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<>(
 				target);
 		if (StringUtils.hasText(prefix)) {
 			factory.setTargetName(prefix);

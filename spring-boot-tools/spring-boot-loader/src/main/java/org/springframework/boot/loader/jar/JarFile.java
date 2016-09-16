@@ -172,7 +172,7 @@ public class JarFile extends java.util.jar.JarFile {
 					inputStream.close();
 				}
 			}
-			this.manifest = new SoftReference<Manifest>(manifest);
+			this.manifest = new SoftReference<>(manifest);
 		}
 		return manifest;
 	}

@@ -35,7 +35,7 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 	private static Set<String> LOG_CONFIGURATION_MESSAGES;
 
 	static {
-		Set<String> messages = new HashSet<String>();
+		Set<String> messages = new HashSet<>();
 		messages.add("Logback configuration error detected");
 		LOG_CONFIGURATION_MESSAGES = Collections.unmodifiableSet(messages);
 	}
@@ -44,7 +44,7 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 
 	private final UncaughtExceptionHandler parent;
 
-	private final List<Throwable> loggedExceptions = new ArrayList<Throwable>();
+	private final List<Throwable> loggedExceptions = new ArrayList<>();
 
 	private int exitCode = 0;
 

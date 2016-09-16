@@ -68,7 +68,7 @@ public class DefaultErrorViewResolverTests {
 
 	private ResourceProperties resourceProperties;
 
-	private Map<String, Object> model = new HashMap<String, Object>();
+	private Map<String, Object> model = new HashMap<>();
 
 	private HttpServletRequest request = new MockHttpServletRequest();
 

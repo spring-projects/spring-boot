@@ -252,7 +252,7 @@ public class EndpointAutoConfigurationTests {
 			return new PublicMetrics() {
 				@Override
 				public Collection<Metric<?>> metrics() {
-					Metric<Integer> metric = new Metric<Integer>("foo", 1);
+					Metric<Integer> metric = new Metric<>("foo", 1);
 					return Collections.<Metric<?>>singleton(metric);
 				}
 			};
@@ -284,7 +284,7 @@ public class EndpointAutoConfigurationTests {
 
 		private static class GitFullInfoContributor implements InfoContributor {
 
-			private Map<String, Object> content = new LinkedHashMap<String, Object>();
+			private Map<String, Object> content = new LinkedHashMap<>();
 
 			GitFullInfoContributor(Resource location) throws BindException, IOException {
 				if (location.exists()) {

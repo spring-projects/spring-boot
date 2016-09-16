@@ -34,7 +34,7 @@ class MockitoContextCustomizer implements ContextCustomizer {
 	private final Set<Definition> definitions;
 
 	MockitoContextCustomizer(Set<? extends Definition> definitions) {
-		this.definitions = new LinkedHashSet<Definition>(definitions);
+		this.definitions = new LinkedHashSet<>(definitions);
 	}
 
 	@Override

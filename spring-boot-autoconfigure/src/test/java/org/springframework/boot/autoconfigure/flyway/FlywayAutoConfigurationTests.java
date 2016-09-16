@@ -287,7 +287,7 @@ public class FlywayAutoConfigurationTests {
 
 		@Bean
 		public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
-			Map<String, Object> properties = new HashMap<String, Object>();
+			Map<String, Object> properties = new HashMap<>();
 			properties.put("configured", "manually");
 			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
 			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(),

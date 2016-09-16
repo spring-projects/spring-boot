@@ -43,9 +43,9 @@ public class MockitoContextCustomizerTests {
 		MockDefinition d2 = new MockDefinition(ExampleServiceCaller.class);
 		MockitoContextCustomizer c1 = new MockitoContextCustomizer(NO_DEFINITIONS);
 		MockitoContextCustomizer c2 = new MockitoContextCustomizer(
-				new LinkedHashSet<MockDefinition>(Arrays.asList(d1, d2)));
+				new LinkedHashSet<>(Arrays.asList(d1, d2)));
 		MockitoContextCustomizer c3 = new MockitoContextCustomizer(
-				new LinkedHashSet<MockDefinition>(Arrays.asList(d2, d1)));
+				new LinkedHashSet<>(Arrays.asList(d2, d1)));
 		assertThat(c2.hashCode()).isEqualTo(c3.hashCode());
 		assertThat(c1).isEqualTo(c1).isNotEqualTo(c2);
 		assertThat(c2).isEqualTo(c2).isEqualTo(c3).isNotEqualTo(c1);

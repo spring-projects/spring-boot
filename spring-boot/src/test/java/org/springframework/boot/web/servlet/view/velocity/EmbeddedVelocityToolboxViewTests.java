@@ -66,7 +66,7 @@ public class EmbeddedVelocityToolboxViewTests {
 		EmbeddedVelocityToolboxView view = context
 				.getBean(EmbeddedVelocityToolboxView.class);
 		view.setToolboxConfigLocation(toolboxConfigLocation);
-		Map<String, Object> model = new LinkedHashMap<String, Object>();
+		Map<String, Object> model = new LinkedHashMap<>();
 		HttpServletRequest request = new MockHttpServletRequest();
 		HttpServletResponse response = new MockHttpServletResponse();
 		ToolContext toolContext = (ToolContext) view.createVelocityContext(model, request,

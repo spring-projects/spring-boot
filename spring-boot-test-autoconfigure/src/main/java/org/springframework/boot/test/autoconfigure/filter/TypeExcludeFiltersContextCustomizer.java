@@ -71,7 +71,7 @@ class TypeExcludeFiltersContextCustomizer implements ContextCustomizer {
 	}
 
 	private TypeExcludeFilter createDelegatingTypeExcludeFilter() {
-		final Set<TypeExcludeFilter> filters = new LinkedHashSet<TypeExcludeFilter>(
+		final Set<TypeExcludeFilter> filters = new LinkedHashSet<>(
 				this.filterClasses.size());
 		for (Class<? extends TypeExcludeFilter> filterClass : this.filterClasses) {
 			filters.add(createTypeExcludeFilter(filterClass));

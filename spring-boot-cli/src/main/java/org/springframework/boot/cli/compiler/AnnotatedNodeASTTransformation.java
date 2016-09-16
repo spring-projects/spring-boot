@@ -56,7 +56,7 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 	@Override
 	public void visit(ASTNode[] nodes, SourceUnit source) {
 		this.sourceUnit = source;
-		List<AnnotationNode> annotationNodes = new ArrayList<AnnotationNode>();
+		List<AnnotationNode> annotationNodes = new ArrayList<>();
 		ClassVisitor classVisitor = new ClassVisitor(source, annotationNodes);
 		for (ASTNode node : nodes) {
 			if (node instanceof ModuleNode) {

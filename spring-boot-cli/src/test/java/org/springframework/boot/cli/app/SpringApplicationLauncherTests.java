@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class SpringApplicationLauncherTests {
 
-	private Map<String, String> env = new HashMap<String, String>();
+	private Map<String, String> env = new HashMap<>();
 
 	@After
 	public void cleanUp() {
@@ -100,7 +100,7 @@ public class SpringApplicationLauncherTests {
 
 	private static class TestClassLoader extends ClassLoader {
 
-		private Set<String> classes = new HashSet<String>();
+		private Set<String> classes = new HashSet<>();
 
 		TestClassLoader(ClassLoader parent) {
 			super(parent);

@@ -27,7 +27,7 @@ public class ShellPrompts {
 
 	private static final String DEFAULT_PROMPT = "$ ";
 
-	private final Stack<String> prompts = new Stack<String>();
+	private final Stack<String> prompts = new Stack<>();
 
 	/**
 	 * Push a new prompt to be used by the shell.

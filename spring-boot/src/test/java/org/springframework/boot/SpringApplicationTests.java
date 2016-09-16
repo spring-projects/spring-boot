@@ -272,7 +272,7 @@ public class SpringApplicationTests {
 	public void specificApplicationContextInitializer() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
-		final AtomicReference<ApplicationContext> reference = new AtomicReference<ApplicationContext>();
+		final AtomicReference<ApplicationContext> reference = new AtomicReference<>();
 		application.setInitializers(Arrays.asList(
 				new ApplicationContextInitializer<ConfigurableApplicationContext>() {
 					@Override
@@ -290,7 +290,7 @@ public class SpringApplicationTests {
 	public void applicationRunningEventListener() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
-		final AtomicReference<SpringApplication> reference = new AtomicReference<SpringApplication>();
+		final AtomicReference<SpringApplication> reference = new AtomicReference<>();
 		class ApplicationReadyEventListener
 				implements ApplicationListener<ApplicationReadyEvent> {
 			@Override
@@ -307,7 +307,7 @@ public class SpringApplicationTests {
 	public void contextRefreshedEventListener() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
-		final AtomicReference<ApplicationContext> reference = new AtomicReference<ApplicationContext>();
+		final AtomicReference<ApplicationContext> reference = new AtomicReference<>();
 		class InitializerListener implements ApplicationListener<ContextRefreshedEvent> {
 			@Override
 			public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -325,7 +325,7 @@ public class SpringApplicationTests {
 	public void eventsOrder() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
-		final List<ApplicationEvent> events = new ArrayList<ApplicationEvent>();
+		final List<ApplicationEvent> events = new ArrayList<>();
 		class ApplicationRunningEventListener
 				implements ApplicationListener<ApplicationEvent> {
 			@Override
@@ -694,7 +694,7 @@ public class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class,
 				ListenerConfig.class);
 		application.setApplicationContextClass(SpyApplicationContext.class);
-		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<ApplicationEvent>();
+		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<>();
 		application.addListeners(new ApplicationListener<ApplicationEvent>() {
 
 			@Override
@@ -714,7 +714,7 @@ public class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class,
 				ListenerConfig.class, Multicaster.class);
 		application.setApplicationContextClass(SpyApplicationContext.class);
-		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<ApplicationEvent>();
+		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<>();
 		application.addListeners(new ApplicationListener<ApplicationEvent>() {
 
 			@Override
@@ -1166,7 +1166,7 @@ public class SpringApplicationTests {
 
 	private static class MockResourceLoader implements ResourceLoader {
 
-		private final Map<String, Resource> resources = new HashMap<String, Resource>();
+		private final Map<String, Resource> resources = new HashMap<>();
 
 		public void addResource(String source, String path) {
 			this.resources.put(source, new ClassPathResource(path, getClass()));

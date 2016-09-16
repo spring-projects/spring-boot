@@ -73,7 +73,7 @@ public class RestartServerTests {
 		files.addFile("my/module-a", "ClassA.class", fileA);
 		files.addFile("my/module-c", "ClassB.class", fileB);
 		server.updateAndRestart(files);
-		Set<URL> expectedUrls = new LinkedHashSet<URL>(Arrays.asList(url1, url3));
+		Set<URL> expectedUrls = new LinkedHashSet<>(Arrays.asList(url1, url3));
 		assertThat(server.restartUrls).isEqualTo(expectedUrls);
 		assertThat(server.restartFiles).isEqualTo(files);
 	}

@@ -83,7 +83,7 @@ public class DependencyFilterMojoTests {
 
 		public Set<Artifact> filterDependencies(Artifact... artifacts)
 				throws MojoExecutionException {
-			Set<Artifact> input = new HashSet<Artifact>(Arrays.asList(artifacts));
+			Set<Artifact> input = new HashSet<>(Arrays.asList(artifacts));
 			return filterDependencies(input, getFilters());
 		}
 

@@ -98,7 +98,7 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 				resources.nextElement();
 			}
 			if (file.getKind() != Kind.DELETED) {
-				return new CompoundEnumeration<URL>(createFileUrl(name, file), resources);
+				return new CompoundEnumeration<>(createFileUrl(name, file), resources);
 			}
 		}
 		return resources;

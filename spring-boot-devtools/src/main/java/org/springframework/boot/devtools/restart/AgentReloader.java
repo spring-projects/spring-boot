@@ -33,7 +33,7 @@ public abstract class AgentReloader {
 	private static final Set<String> AGENT_CLASSES;
 
 	static {
-		Set<String> agentClasses = new LinkedHashSet<String>();
+		Set<String> agentClasses = new LinkedHashSet<>();
 		agentClasses.add("org.zeroturnaround.javarebel.Integration");
 		agentClasses.add("org.zeroturnaround.javarebel.ReloaderFactory");
 		AGENT_CLASSES = Collections.unmodifiableSet(agentClasses);

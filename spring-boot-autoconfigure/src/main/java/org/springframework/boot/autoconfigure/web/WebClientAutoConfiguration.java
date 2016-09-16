@@ -69,7 +69,7 @@ public class WebClientAutoConfiguration {
 			List<RestTemplateCustomizer> customizers = this.restTemplateCustomizers
 					.getIfAvailable();
 			if (!CollectionUtils.isEmpty(customizers)) {
-				customizers = new ArrayList<RestTemplateCustomizer>(customizers);
+				customizers = new ArrayList<>(customizers);
 				AnnotationAwareOrderComparator.sort(customizers);
 				builder = builder.customizers(customizers);
 			}

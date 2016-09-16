@@ -66,7 +66,7 @@ final class MetricsFilter extends OncePerRequestFilter {
 	private static final Set<PatternReplacer> STATUS_REPLACERS;
 
 	static {
-		Set<PatternReplacer> replacements = new LinkedHashSet<PatternReplacer>();
+		Set<PatternReplacer> replacements = new LinkedHashSet<>();
 		replacements.add(new PatternReplacer("[{}]", 0, "-"));
 		replacements.add(new PatternReplacer("**", Pattern.LITERAL, "-star-star-"));
 		replacements.add(new PatternReplacer("*", Pattern.LITERAL, "-star-"));
@@ -78,7 +78,7 @@ final class MetricsFilter extends OncePerRequestFilter {
 	private static final Set<PatternReplacer> KEY_REPLACERS;
 
 	static {
-		Set<PatternReplacer> replacements = new LinkedHashSet<PatternReplacer>();
+		Set<PatternReplacer> replacements = new LinkedHashSet<>();
 		replacements.add(new PatternReplacer("/", Pattern.LITERAL, "."));
 		replacements.add(new PatternReplacer("..", Pattern.LITERAL, "."));
 		KEY_REPLACERS = Collections.unmodifiableSet(replacements);

@@ -238,7 +238,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 			factoryBean.setJpaVendorAdapter(adapter);
 			factoryBean.setDataSource(dataSource);
 			factoryBean.setPersistenceUnitName("manually-configured");
-			Map<String, Object> properties = new HashMap<String, Object>();
+			Map<String, Object> properties = new HashMap<>();
 			properties.put("configured", "manually");
 			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
 			factoryBean.setJpaPropertyMap(properties);
@@ -258,7 +258,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 			factoryBean.setJpaVendorAdapter(adapter);
 			factoryBean.setDataSource(dataSource);
 			factoryBean.setPersistenceUnitName("manually-configured");
-			Map<String, Object> properties = new HashMap<String, Object>();
+			Map<String, Object> properties = new HashMap<>();
 			properties.put("configured", "manually");
 			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
 			factoryBean.setJpaPropertyMap(properties);

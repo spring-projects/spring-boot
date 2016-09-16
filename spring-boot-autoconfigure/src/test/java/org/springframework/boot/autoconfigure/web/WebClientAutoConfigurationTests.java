@@ -79,7 +79,7 @@ public class WebClientAutoConfigurationTests {
 		load(CustomHttpMessageConverter.class,
 				HttpMessageConvertersAutoConfiguration.class, RestTemplateConfig.class);
 		RestTemplate restTemplate = this.context.getBean(RestTemplate.class);
-		List<Class<?>> converterClasses = new ArrayList<Class<?>>();
+		List<Class<?>> converterClasses = new ArrayList<>();
 		for (HttpMessageConverter<?> converter : restTemplate.getMessageConverters()) {
 			converterClasses.add(converter.getClass());
 		}

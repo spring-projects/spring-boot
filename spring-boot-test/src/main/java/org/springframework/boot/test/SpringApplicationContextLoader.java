@@ -125,7 +125,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	}
 
 	private Set<Object> getSources(MergedContextConfiguration mergedConfig) {
-		Set<Object> sources = new LinkedHashSet<Object>();
+		Set<Object> sources = new LinkedHashSet<>();
 		sources.addAll(Arrays.asList(mergedConfig.getClasses()));
 		sources.addAll(Arrays.asList(mergedConfig.getLocations()));
 		Assert.state(!sources.isEmpty(), "No configuration classes "
@@ -143,7 +143,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 
 	protected Map<String, Object> getEnvironmentProperties(
 			MergedContextConfiguration config) {
-		Map<String, Object> properties = new LinkedHashMap<String, Object>();
+		Map<String, Object> properties = new LinkedHashMap<>();
 		// JMX bean names will clash if the same bean is used in multiple contexts
 		disableJmx(properties);
 		properties.putAll(TestPropertySourceUtils
@@ -172,7 +172,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 
 	private List<ApplicationContextInitializer<?>> getInitializers(
 			MergedContextConfiguration mergedConfig, SpringApplication application) {
-		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
 		initializers.add(new PropertySourceLocationsInitializer(
 				mergedConfig.getPropertySourceLocations()));
 		initializers.addAll(application.getInitializers());

@@ -95,7 +95,7 @@ public final class GenericBomAstTransformationTests {
 	private List<String> getValue() {
 		Expression expression = findAnnotation().getMember("value");
 		if (expression instanceof ListExpression) {
-			List<String> list = new ArrayList<String>();
+			List<String> list = new ArrayList<>();
 			for (Expression ex : ((ListExpression) expression).getExpressions()) {
 				list.add((String) ((ConstantExpression) ex).getValue());
 			}

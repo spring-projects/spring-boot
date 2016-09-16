@@ -35,7 +35,7 @@ public class ValueProvider implements Serializable {
 
 	private String name;
 
-	private final Map<String, Object> parameters = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> parameters = new LinkedHashMap<>();
 
 	/**
 	 * Return the name of the provider.

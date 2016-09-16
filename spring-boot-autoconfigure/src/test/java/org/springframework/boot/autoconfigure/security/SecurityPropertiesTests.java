@@ -80,7 +80,7 @@ public class SecurityPropertiesTests {
 
 	@Test
 	public void testBindingIgnoredMultiValuedList() {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("security.ignored[0]", "/css/**");
 		map.put("security.ignored[1]", "/foo/**");
 		this.binder.bind(new MutablePropertyValues(map));

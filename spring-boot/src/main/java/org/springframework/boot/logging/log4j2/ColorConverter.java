@@ -52,7 +52,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 	private static final Map<String, AnsiElement> ELEMENTS;
 
 	static {
-		Map<String, AnsiElement> elements = new HashMap<String, AnsiElement>();
+		Map<String, AnsiElement> elements = new HashMap<>();
 		elements.put("faint", AnsiStyle.FAINT);
 		elements.put("red", AnsiColor.RED);
 		elements.put("green", AnsiColor.GREEN);
@@ -66,7 +66,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 	private static final Map<Integer, AnsiElement> LEVELS;
 
 	static {
-		Map<Integer, AnsiElement> levels = new HashMap<Integer, AnsiElement>();
+		Map<Integer, AnsiElement> levels = new HashMap<>();
 		levels.put(Level.FATAL.intLevel(), AnsiColor.RED);
 		levels.put(Level.ERROR.intLevel(), AnsiColor.RED);
 		levels.put(Level.WARN.intLevel(), AnsiColor.YELLOW);

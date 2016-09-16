@@ -47,8 +47,8 @@ class ManagementContextConfigurationsImportSelector
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
 		// Find all possible auto configuration classes, filtering duplicates
-		List<String> factories = new ArrayList<String>(
-				new LinkedHashSet<String>(SpringFactoriesLoader.loadFactoryNames(
+		List<String> factories = new ArrayList<>(
+				new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(
 						ManagementContextConfiguration.class, this.classLoader)));
 		AnnotationAwareOrderComparator.sort(factories);
 		return factories.toArray(new String[0]);

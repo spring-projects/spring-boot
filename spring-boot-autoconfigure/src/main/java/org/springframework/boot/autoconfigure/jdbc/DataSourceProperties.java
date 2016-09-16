@@ -459,7 +459,7 @@ public class DataSourceProperties
 		/**
 		 * Properties to pass to the XA data source.
 		 */
-		private Map<String, String> properties = new LinkedHashMap<String, String>();
+		private Map<String, String> properties = new LinkedHashMap<>();
 
 		public String getDataSourceClassName() {
 			return this.dataSourceClassName;

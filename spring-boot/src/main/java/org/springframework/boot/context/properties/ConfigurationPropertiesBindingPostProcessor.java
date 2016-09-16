@@ -319,7 +319,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 	private void postProcessBeforeInitialization(Object bean, String beanName,
 			ConfigurationProperties annotation) {
 		Object target = bean;
-		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
+		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<>(
 				target);
 		if (annotation != null && annotation.locations().length != 0) {
 			factory.setPropertySources(

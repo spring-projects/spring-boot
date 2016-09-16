@@ -57,14 +57,14 @@ public class UserInfoTokenServicesTests {
 
 	private OAuth2RestOperations template = mock(OAuth2RestOperations.class);
 
-	private Map<String, Object> map = new LinkedHashMap<String, Object>();
+	private Map<String, Object> map = new LinkedHashMap<>();
 
 	@SuppressWarnings("rawtypes")
 	@Before
 	public void init() {
 		this.resource.setClientId("foo");
 		given(this.template.getForEntity(any(String.class), eq(Map.class)))
-				.willReturn(new ResponseEntity<Map>(this.map, HttpStatus.OK));
+				.willReturn(new ResponseEntity<>(this.map, HttpStatus.OK));
 		given(this.template.getAccessToken())
 				.willReturn(new DefaultOAuth2AccessToken("FOO"));
 		given(this.template.getResource()).willReturn(this.resource);

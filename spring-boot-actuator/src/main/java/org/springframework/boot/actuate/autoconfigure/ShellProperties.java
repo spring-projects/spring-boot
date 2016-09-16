@@ -163,7 +163,7 @@ public class ShellProperties {
 		}
 
 		// special handling for disabling Ssh and Telnet support
-		List<String> dp = new ArrayList<String>(Arrays.asList(this.disabledPlugins));
+		List<String> dp = new ArrayList<>(Arrays.asList(this.disabledPlugins));
 		if (!this.ssh.isEnabled()) {
 			dp.add("org.crsh.ssh.SSHPlugin");
 		}

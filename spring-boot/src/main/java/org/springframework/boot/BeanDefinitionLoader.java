@@ -305,7 +305,7 @@ class BeanDefinitionLoader {
 	private static class ClassExcludeFilter
 			extends AbstractTypeHierarchyTraversingFilter {
 
-		private final Set<String> classNames = new HashSet<String>();
+		private final Set<String> classNames = new HashSet<>();
 
 		ClassExcludeFilter(Object... sources) {
 			super(false, false);

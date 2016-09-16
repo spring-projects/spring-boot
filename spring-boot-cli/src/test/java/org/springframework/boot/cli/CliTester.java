@@ -57,7 +57,7 @@ public class CliTester implements TestRule {
 
 	private long timeout = TimeUnit.MINUTES.toMillis(6);
 
-	private final List<AbstractCommand> commands = new ArrayList<AbstractCommand>();
+	private final List<AbstractCommand> commands = new ArrayList<>();
 
 	private final String prefix;
 

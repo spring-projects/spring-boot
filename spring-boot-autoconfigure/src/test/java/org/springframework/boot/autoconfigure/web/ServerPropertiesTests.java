@@ -133,7 +133,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testTomcatBinding() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.accesslog.pattern", "%h %t '%r' %s %b");
 		map.put("server.tomcat.accesslog.prefix", "foo");
 		map.put("server.tomcat.accesslog.rename-on-rotate", "true");
@@ -157,14 +157,14 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void redirectContextRootIsNotConfiguredByDefault() throws Exception {
-		bindProperties(new HashMap<String, String>());
+		bindProperties(new HashMap<>());
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
 		assertThat(tomcat.getRedirectContextRoot()).isNull();
 	}
 
 	@Test
 	public void redirectContextRootCanBeConfigured() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.redirect-context-root", "false");
 		bindProperties(map);
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
@@ -220,7 +220,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void customizeSessionProperties() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.session.timeout", "123");
 		map.put("server.session.tracking-modes", "cookie,url");
 		map.put("server.session.cookie.name", "testname");
@@ -277,7 +277,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizeUriEncoding() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.uriEncoding", "US-ASCII");
 		bindProperties(map);
 		assertThat(this.properties.getTomcat().getUriEncoding())
@@ -286,7 +286,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizeHeaderSize() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.maxHttpHeaderSize", "9999");
 		bindProperties(map);
 		assertThat(this.properties.getMaxHttpHeaderSize()).isEqualTo(9999);
@@ -294,7 +294,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizePostSize() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.maxHttpPostSize", "9999");
 		bindProperties(map);
 		assertThat(this.properties.getMaxHttpPostSize()).isEqualTo(9999);
@@ -302,7 +302,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizeJettyAcceptors() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.jetty.acceptors", "10");
 		bindProperties(map);
 		assertThat(this.properties.getJetty().getAcceptors()).isEqualTo(10);
@@ -310,7 +310,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizeJettySelectors() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.jetty.selectors", "10");
 		bindProperties(map);
 		assertThat(this.properties.getJetty().getSelectors()).isEqualTo(10);
@@ -318,7 +318,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizeTomcatMinSpareThreads() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.min-spare-threads", "10");
 		bindProperties(map);
 		assertThat(this.properties.getTomcat().getMinSpareThreads()).isEqualTo(10);
@@ -326,7 +326,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void customizeTomcatDisplayName() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.display-name", "MyBootApp");
 		bindProperties(map);
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
@@ -336,7 +336,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void disableTomcatRemoteIpValve() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.remote_ip_header", "");
 		map.put("server.tomcat.protocol_header", "");
 		bindProperties(map);
@@ -347,7 +347,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void defaultTomcatRemoteIpValve() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		// Since 1.1.7 you need to specify at least the protocol
 		map.put("server.tomcat.protocol_header", "X-Forwarded-Proto");
 		map.put("server.tomcat.remote_ip_header", "X-Forwarded-For");
@@ -367,7 +367,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void customTomcatBackgroundProcessorDelay() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.background-processor-delay", "5");
 		bindProperties(map);
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
@@ -413,7 +413,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void customTomcatRemoteIpValve() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.remote_ip_header", "x-my-remote-ip-header");
 		map.put("server.tomcat.protocol_header", "x-my-protocol-header");
 		map.put("server.tomcat.internal_proxies", "192.168.0.1");
@@ -489,7 +489,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void sessionStoreDir() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.session.store-dir", "myfolder");
 		bindProperties(map);
 		JettyEmbeddedServletContainerFactory container = spy(

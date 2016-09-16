@@ -50,7 +50,7 @@ class DefaultApplicationArguments implements ApplicationArguments {
 	@Override
 	public Set<String> getOptionNames() {
 		String[] names = this.source.getPropertyNames();
-		return Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(names)));
+		return Collections.unmodifiableSet(new HashSet<>(Arrays.asList(names)));
 	}
 
 	@Override

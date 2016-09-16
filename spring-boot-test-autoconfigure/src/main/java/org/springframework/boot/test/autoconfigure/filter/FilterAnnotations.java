@@ -55,7 +55,7 @@ public class FilterAnnotations implements Iterable<TypeFilter> {
 	}
 
 	private List<TypeFilter> createTypeFilters(Filter[] filters) {
-		List<TypeFilter> typeFilters = new ArrayList<TypeFilter>();
+		List<TypeFilter> typeFilters = new ArrayList<>();
 		for (Filter filter : filters) {
 			for (Class<?> filterClass : filter.classes()) {
 				typeFilters.add(createTypeFilter(filter.type(), filterClass));

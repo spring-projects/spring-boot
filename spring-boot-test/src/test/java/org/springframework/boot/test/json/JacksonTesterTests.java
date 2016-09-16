@@ -61,14 +61,14 @@ public class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
 	@Override
 	protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass,
 			ResolvableType type) {
-		return new JacksonTester<Object>(resourceLoadClass, type, new ObjectMapper());
+		return new JacksonTester<>(resourceLoadClass, type, new ObjectMapper());
 	}
 
 	static abstract class InitFieldsBaseClass {
 
 		public JacksonTester<ExampleObject> base;
 
-		public JacksonTester<ExampleObject> baseSet = new JacksonTester<ExampleObject>(
+		public JacksonTester<ExampleObject> baseSet = new JacksonTester<>(
 				InitFieldsBaseClass.class, ResolvableType.forClass(ExampleObject.class),
 				new ObjectMapper());
 
@@ -78,7 +78,7 @@ public class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
 
 		public JacksonTester<List<ExampleObject>> test;
 
-		public JacksonTester<ExampleObject> testSet = new JacksonTester<ExampleObject>(
+		public JacksonTester<ExampleObject> testSet = new JacksonTester<>(
 				InitFieldsBaseClass.class, ResolvableType.forClass(ExampleObject.class),
 				new ObjectMapper());
 

@@ -35,7 +35,7 @@ public class FixedAuthoritiesExtractorTests {
 
 	private FixedAuthoritiesExtractor extractor = new FixedAuthoritiesExtractor();
 
-	private Map<String, Object> map = new LinkedHashMap<String, Object>();
+	private Map<String, Object> map = new LinkedHashMap<>();
 
 	@Test
 	public void authorities() {
@@ -75,7 +75,7 @@ public class FixedAuthoritiesExtractorTests {
 
 	@Test
 	public void authoritiesAsListOfMapsWithStandardKey() {
-		Map<String, String> map = new LinkedHashMap<String, String>();
+		Map<String, String> map = new LinkedHashMap<>();
 		map.put("role", "ROLE_ADMIN");
 		map.put("extra", "value");
 		this.map.put("authorities", Arrays.asList(map));
@@ -93,7 +93,7 @@ public class FixedAuthoritiesExtractorTests {
 
 	@Test
 	public void authoritiesAsListOfMapsWithMultipleNonStandardKeys() {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("any", "ROLE_ADMIN");
 		map.put("foo", "bar");
 		this.map.put("authorities", Arrays.asList(map));

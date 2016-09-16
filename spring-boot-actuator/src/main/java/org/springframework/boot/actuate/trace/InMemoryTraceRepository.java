@@ -35,7 +35,7 @@ public class InMemoryTraceRepository implements TraceRepository {
 
 	private boolean reverse = true;
 
-	private final List<Trace> traces = new LinkedList<Trace>();
+	private final List<Trace> traces = new LinkedList<>();
 
 	/**
 	 * Flag to say that the repository lists traces in reverse order.
@@ -60,7 +60,7 @@ public class InMemoryTraceRepository implements TraceRepository {
 	@Override
 	public List<Trace> findAll() {
 		synchronized (this.traces) {
-			return Collections.unmodifiableList(new ArrayList<Trace>(this.traces));
+			return Collections.unmodifiableList(new ArrayList<>(this.traces));
 		}
 	}
 

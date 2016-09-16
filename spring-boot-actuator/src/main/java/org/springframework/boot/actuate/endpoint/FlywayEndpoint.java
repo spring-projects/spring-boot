@@ -50,7 +50,7 @@ public class FlywayEndpoint extends AbstractEndpoint<List<FlywayMigration>> {
 
 	@Override
 	public List<FlywayMigration> invoke() {
-		List<FlywayMigration> migrations = new ArrayList<FlywayMigration>();
+		List<FlywayMigration> migrations = new ArrayList<>();
 		for (MigrationInfo info : this.flyway.info().all()) {
 			migrations.add(new FlywayMigration(info));
 		}

@@ -36,7 +36,7 @@ public class HealthMvcEndpointProperties {
 	 * Mapping of health statuses to HttpStatus codes. By default, registered health
 	 * statuses map to sensible defaults (i.e. UP maps to 200).
 	 */
-	private Map<String, HttpStatus> mapping = new HashMap<String, HttpStatus>();
+	private Map<String, HttpStatus> mapping = new HashMap<>();
 
 	public Map<String, HttpStatus> getMapping() {
 		return this.mapping;

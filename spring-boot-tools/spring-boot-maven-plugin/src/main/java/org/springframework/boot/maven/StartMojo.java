@@ -129,7 +129,7 @@ public class StartMojo extends AbstractRunMojo {
 	protected RunArguments resolveJvmArguments() {
 		RunArguments jvmArguments = super.resolveJvmArguments();
 		if (isFork()) {
-			List<String> remoteJmxArguments = new ArrayList<String>();
+			List<String> remoteJmxArguments = new ArrayList<>();
 			remoteJmxArguments.add("-Dcom.sun.management.jmxremote");
 			remoteJmxArguments.add("-Dcom.sun.management.jmxremote.port=" + this.jmxPort);
 			remoteJmxArguments.add("-Dcom.sun.management.jmxremote.authenticate=false");

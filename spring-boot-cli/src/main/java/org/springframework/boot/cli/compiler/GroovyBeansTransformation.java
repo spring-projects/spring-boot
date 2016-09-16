@@ -53,7 +53,7 @@ public class GroovyBeansTransformation implements ASTTransformation {
 		for (ASTNode node : nodes) {
 			if (node instanceof ModuleNode) {
 				ModuleNode module = (ModuleNode) node;
-				for (ClassNode classNode : new ArrayList<ClassNode>(
+				for (ClassNode classNode : new ArrayList<>(
 						module.getClasses())) {
 					if (classNode.isScript()) {
 						classNode.visitContents(new ClassVisitor(source, classNode));

@@ -43,7 +43,7 @@ public class DataSourcePoolMetadataProviders implements DataSourcePoolMetadataPr
 			Collection<? extends DataSourcePoolMetadataProvider> providers) {
 		this.providers = (providers == null
 				? Collections.<DataSourcePoolMetadataProvider>emptyList()
-				: new ArrayList<DataSourcePoolMetadataProvider>(providers));
+				: new ArrayList<>(providers));
 	}
 
 	@Override

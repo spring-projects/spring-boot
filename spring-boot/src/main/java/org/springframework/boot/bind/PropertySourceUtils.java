@@ -60,7 +60,7 @@ public abstract class PropertySourceUtils {
 	public static Map<String, Object> getSubProperties(PropertySources propertySources,
 			String rootPrefix, String keyPrefix) {
 		RelaxedNames keyPrefixes = new RelaxedNames(keyPrefix);
-		Map<String, Object> subProperties = new LinkedHashMap<String, Object>();
+		Map<String, Object> subProperties = new LinkedHashMap<>();
 		for (PropertySource<?> source : propertySources) {
 			if (source instanceof EnumerablePropertySource) {
 				for (String name : ((EnumerablePropertySource<?>) source)

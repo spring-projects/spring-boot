@@ -30,7 +30,7 @@ import org.springframework.lang.UsesJava8;
 @UsesJava8
 public class BufferGaugeService implements GaugeService {
 
-	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<String, String>();
+	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<>();
 
 	private final GaugeBuffers buffers;
 

@@ -118,7 +118,7 @@ public abstract class MainClassFinder {
 					"Invalid root folder '" + rootFolder + "'");
 		}
 		String prefix = rootFolder.getAbsolutePath() + "/";
-		Deque<File> stack = new ArrayDeque<File>();
+		Deque<File> stack = new ArrayDeque<>();
 		stack.push(rootFolder);
 		while (!stack.isEmpty()) {
 			File file = stack.pop();
@@ -237,7 +237,7 @@ public abstract class MainClassFinder {
 			String classesLocation) {
 		classesLocation = (classesLocation != null ? classesLocation : "");
 		Enumeration<JarEntry> sourceEntries = source.entries();
-		List<JarEntry> classEntries = new ArrayList<JarEntry>();
+		List<JarEntry> classEntries = new ArrayList<>();
 		while (sourceEntries.hasMoreElements()) {
 			JarEntry entry = sourceEntries.nextElement();
 			if (entry.getName().startsWith(classesLocation)
@@ -334,7 +334,7 @@ public abstract class MainClassFinder {
 	 */
 	private static class MainClassesCallback implements ClassNameCallback<Object> {
 
-		private final Set<String> classNames = new LinkedHashSet<String>();
+		private final Set<String> classNames = new LinkedHashSet<>();
 
 		@Override
 		public Object doWith(String className) {

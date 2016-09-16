@@ -503,7 +503,7 @@ public class ErrorPageFilterTests {
 	private void setUpAsyncDispatch() throws Exception {
 		this.request.setAsyncSupported(true);
 		this.request.setAsyncStarted(true);
-		DeferredResult<String> result = new DeferredResult<String>();
+		DeferredResult<String> result = new DeferredResult<>();
 		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(this.request);
 		asyncManager.setAsyncWebRequest(
 				new StandardServletAsyncWebRequest(this.request, this.response));

@@ -144,7 +144,7 @@ public class EndpointMBeanExporterTests {
 
 	@Test
 	public void testRegistrationWithDifferentDomainAndIdentity() throws Exception {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("domain", "test-domain");
 		properties.put("ensureUniqueRuntimeObjectNames", true);
 		this.context = new GenericApplicationContext();
@@ -163,7 +163,7 @@ public class EndpointMBeanExporterTests {
 	@Test
 	public void testRegistrationWithDifferentDomainAndIdentityAndStaticNames()
 			throws Exception {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("domain", "test-domain");
 		properties.put("ensureUniqueRuntimeObjectNames", true);
 		Properties staticNames = new Properties();
@@ -292,7 +292,7 @@ public class EndpointMBeanExporterTests {
 
 		@Override
 		public Map<String, Object> invoke() {
-			Map<String, Object> result = new LinkedHashMap<String, Object>();
+			Map<String, Object> result = new LinkedHashMap<>();
 			result.put("date", new Date());
 			return result;
 		}

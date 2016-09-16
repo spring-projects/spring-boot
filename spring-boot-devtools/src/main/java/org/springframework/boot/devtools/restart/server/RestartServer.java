@@ -80,7 +80,7 @@ public class RestartServer {
 	 * @param files updated class loader files
 	 */
 	public void updateAndRestart(ClassLoaderFiles files) {
-		Set<URL> urls = new LinkedHashSet<URL>();
+		Set<URL> urls = new LinkedHashSet<>();
 		Set<URL> classLoaderUrls = getClassLoaderUrls();
 		for (SourceFolder folder : files.getSourceFolders()) {
 			for (Entry<String, ClassLoaderFile> entry : folder.getFilesEntrySet()) {
@@ -123,7 +123,7 @@ public class RestartServer {
 	}
 
 	private Set<URL> getMatchingUrls(Set<URL> urls, String sourceFolder) {
-		Set<URL> matchingUrls = new LinkedHashSet<URL>();
+		Set<URL> matchingUrls = new LinkedHashSet<>();
 		for (URL url : urls) {
 			if (this.sourceFolderUrlFilter.isMatch(sourceFolder, url)) {
 				if (logger.isDebugEnabled()) {
@@ -137,7 +137,7 @@ public class RestartServer {
 	}
 
 	private Set<URL> getClassLoaderUrls() {
-		Set<URL> urls = new LinkedHashSet<URL>();
+		Set<URL> urls = new LinkedHashSet<>();
 		ClassLoader classLoader = this.classLoader;
 		while (classLoader != null) {
 			if (classLoader instanceof URLClassLoader) {

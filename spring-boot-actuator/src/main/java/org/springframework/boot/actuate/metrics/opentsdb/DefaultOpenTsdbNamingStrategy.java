@@ -52,9 +52,9 @@ public class DefaultOpenTsdbNamingStrategy implements OpenTsdbNamingStrategy {
 	 * Tags to apply to every metric. Open TSDB requires at least one tag, so a "prefix"
 	 * tag is added for you by default.
 	 */
-	private Map<String, String> tags = new LinkedHashMap<String, String>();
+	private Map<String, String> tags = new LinkedHashMap<>();
 
-	private Map<String, OpenTsdbName> cache = new HashMap<String, OpenTsdbName>();
+	private Map<String, OpenTsdbName> cache = new HashMap<>();
 
 	public DefaultOpenTsdbNamingStrategy() {
 		this.tags.put(DOMAIN_KEY, "org.springframework.metrics");

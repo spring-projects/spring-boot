@@ -65,7 +65,7 @@ class CacheManagerCustomizers implements ApplicationContextAware {
 			return Collections.emptyList();
 		}
 		Class<?> cacheManagerClass = cacheManager.getClass();
-		List<CacheManagerCustomizer<CacheManager>> customizers = new ArrayList<CacheManagerCustomizer<CacheManager>>();
+		List<CacheManagerCustomizer<CacheManager>> customizers = new ArrayList<>();
 		for (CacheManagerCustomizer customizer : getBeans(CacheManagerCustomizer.class)) {
 			if (canCustomize(customizer, cacheManagerClass)) {
 				customizers.add(customizer);

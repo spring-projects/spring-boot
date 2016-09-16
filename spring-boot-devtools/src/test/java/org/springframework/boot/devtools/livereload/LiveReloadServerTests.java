@@ -200,7 +200,7 @@ public class LiveReloadServerTests {
 
 	private static class Socket extends WebSocketAdapter {
 
-		private List<String> messages = new ArrayList<String>();
+		private List<String> messages = new ArrayList<>();
 
 		private Integer closeStatus;
 
@@ -229,7 +229,7 @@ public class LiveReloadServerTests {
 	 */
 	private static class MonitoredLiveReloadServer extends LiveReloadServer {
 
-		private final List<ConnectionClosedException> closedExceptions = new ArrayList<ConnectionClosedException>();
+		private final List<ConnectionClosedException> closedExceptions = new ArrayList<>();
 
 		private final Object monitor = new Object();
 
@@ -245,7 +245,7 @@ public class LiveReloadServerTests {
 
 		public List<ConnectionClosedException> getClosedExceptions() {
 			synchronized (this.monitor) {
-				return new ArrayList<ConnectionClosedException>(this.closedExceptions);
+				return new ArrayList<>(this.closedExceptions);
 			}
 		}
 

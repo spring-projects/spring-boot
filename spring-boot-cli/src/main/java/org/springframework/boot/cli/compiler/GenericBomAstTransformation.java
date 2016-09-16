@@ -81,7 +81,7 @@ public abstract class GenericBomAstTransformation
 		AnnotatedNode annotated = getAnnotatedNode(node);
 		if (annotated != null) {
 			AnnotationNode bom = getAnnotation(annotated);
-			List<Expression> expressions = new ArrayList<Expression>(
+			List<Expression> expressions = new ArrayList<>(
 					getConstantExpressions(bom.getMember("value")));
 			expressions.add(new ConstantExpression(module));
 			bom.setMember("value", new ListExpression(expressions));
@@ -122,7 +122,7 @@ public abstract class GenericBomAstTransformation
 
 	private List<ConstantExpression> getConstantExpressions(
 			ListExpression valueExpression) {
-		List<ConstantExpression> expressions = new ArrayList<ConstantExpression>();
+		List<ConstantExpression> expressions = new ArrayList<>();
 		for (Expression expression : valueExpression.getExpressions()) {
 			if (expression instanceof ConstantExpression
 					&& ((ConstantExpression) expression).getValue() instanceof String) {

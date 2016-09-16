@@ -60,7 +60,7 @@ public class SpringLoadedTests {
 		BufferedReader reader = new BufferedReader(new FileReader(
 				new File("target/spring-loaded-jvm-args/build/output.txt")));
 		try {
-			List<String> lines = new ArrayList<String>();
+			List<String> lines = new ArrayList<>();
 
 			String line;
 

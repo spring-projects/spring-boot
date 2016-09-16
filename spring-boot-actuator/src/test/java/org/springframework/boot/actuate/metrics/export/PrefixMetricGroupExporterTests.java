@@ -53,7 +53,7 @@ public class PrefixMetricGroupExporterTests {
 
 	@Test
 	public void countersIncremented() {
-		this.writer.increment("counter.foo", new Delta<Long>("bar", 1L));
+		this.writer.increment("counter.foo", new Delta<>("bar", 1L));
 		this.reader.set(new Metric<Number>("counter.foo.bar", 1));
 		this.exporter.setGroups(Collections.singleton("counter.foo"));
 		this.exporter.export();

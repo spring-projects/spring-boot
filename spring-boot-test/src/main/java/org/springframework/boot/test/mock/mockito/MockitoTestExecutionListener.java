@@ -79,7 +79,7 @@ class MockitoTestExecutionListener extends AbstractTestExecutionListener {
 	 */
 	private static class MockitoAnnotationCollection implements FieldCallback {
 
-		private final Set<Annotation> annotations = new LinkedHashSet<Annotation>();
+		private final Set<Annotation> annotations = new LinkedHashSet<>();
 
 		@Override
 		public void doWith(Field field)

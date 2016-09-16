@@ -45,7 +45,7 @@ public class ElasticsearchProperties {
 	/**
 	 * Additional properties used to configure the client.
 	 */
-	private Map<String, String> properties = new HashMap<String, String>();
+	private Map<String, String> properties = new HashMap<>();
 
 	public String getClusterName() {
 		return this.clusterName;

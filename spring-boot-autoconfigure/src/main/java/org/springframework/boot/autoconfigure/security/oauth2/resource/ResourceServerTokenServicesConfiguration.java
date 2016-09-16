@@ -279,7 +279,7 @@ public class ResourceServerTokenServicesConfiguration {
 				byte[] token = Base64.encode((username + ":" + password).getBytes());
 				headers.add("Authorization", "Basic " + new String(token));
 			}
-			HttpEntity<Void> request = new HttpEntity<Void>(headers);
+			HttpEntity<Void> request = new HttpEntity<>(headers);
 			String url = this.resource.getJwt().getKeyUri();
 			return (String) this.keyUriRestTemplate
 					.exchange(url, HttpMethod.GET, request, Map.class).getBody()

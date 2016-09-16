@@ -60,15 +60,15 @@ import static org.mockito.Mockito.mock;
  */
 public class AutoConfigurationReportLoggingInitializerTests {
 
-	private static ThreadLocal<Log> logThreadLocal = new ThreadLocal<Log>();
+	private static ThreadLocal<Log> logThreadLocal = new ThreadLocal<>();
 
 	private Log log;
 
 	private AutoConfigurationReportLoggingInitializer initializer;
 
-	protected List<String> debugLog = new ArrayList<String>();
+	protected List<String> debugLog = new ArrayList<>();
 
-	protected List<String> infoLog = new ArrayList<String>();
+	protected List<String> infoLog = new ArrayList<>();
 
 	@Before
 	public void setup() {

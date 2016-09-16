@@ -50,42 +50,42 @@ public class SpringIntegrationMetricReader implements MetricReader {
 	@Override
 	public Iterable<Metric<?>> findAll() {
 		IntegrationMBeanExporter exporter = this.exporter;
-		List<Metric<?>> metrics = new ArrayList<Metric<?>>();
+		List<Metric<?>> metrics = new ArrayList<>();
 		for (String name : exporter.getChannelNames()) {
 			String prefix = "integration.channel." + name;
 			metrics.addAll(getStatistics(prefix + ".errorRate",
 					exporter.getChannelErrorRate(name)));
-			metrics.add(new Metric<Long>(prefix + ".sendCount",
+			metrics.add(new Metric<>(prefix + ".sendCount",
 					exporter.getChannelSendCountLong(name)));
 			metrics.addAll(getStatistics(prefix + ".sendRate",
 					exporter.getChannelSendRate(name)));
-			metrics.add(new Metric<Long>(prefix + ".receiveCount",
+			metrics.add(new Metric<>(prefix + ".receiveCount",
 					exporter.getChannelReceiveCountLong(name)));
 		}
 		for (String name : exporter.getHandlerNames()) {
 			metrics.addAll(getStatistics("integration.handler." + name + ".duration",
 					exporter.getHandlerDuration(name)));
 		}
-		metrics.add(new Metric<Integer>("integration.activeHandlerCount",
+		metrics.add(new Metric<>("integration.activeHandlerCount",
 				exporter.getActiveHandlerCount()));
-		metrics.add(new Metric<Integer>("integration.handlerCount",
+		metrics.add(new Metric<>("integration.handlerCount",
 				exporter.getHandlerCount()));
-		metrics.add(new Metric<Integer>("integration.channelCount",
+		metrics.add(new Metric<>("integration.channelCount",
 				exporter.getChannelCount()));
-		metrics.add(new Metric<Integer>("integration.queuedMessageCount",
+		metrics.add(new Metric<>("integration.queuedMessageCount",
 				exporter.getQueuedMessageCount()));
 		return metrics;
 	}
 
 	private Collection<? extends Metric<?>> getStatistics(String name,
 			Statistics statistic) {
-		List<Metric<?>> metrics = new ArrayList<Metric<?>>();
-		metrics.add(new Metric<Double>(name + ".mean", statistic.getMean()));
-		metrics.add(new Metric<Double>(name + ".max", statistic.getMax()));
-		metrics.add(new Metric<Double>(name + ".min", statistic.getMin()));
+		List<Metric<?>> metrics = new ArrayList<>();
+		metrics.add(new Metric<>(name + ".mean", statistic.getMean()));
+		metrics.add(new Metric<>(name + ".max", statistic.getMax()));
+		metrics.add(new Metric<>(name + ".min", statistic.getMin()));
 		metrics.add(
-				new Metric<Double>(name + ".stdev", statistic.getStandardDeviation()));
-		metrics.add(new Metric<Long>(name + ".count", statistic.getCountLong()));
+				new Metric<>(name + ".stdev", statistic.getStandardDeviation()));
+		metrics.add(new Metric<>(name + ".count", statistic.getCountLong()));
 		return metrics;
 	}
 

@@ -43,7 +43,7 @@ public class ConfigurationMetadata {
 
 	static {
 		List<Character> chars = Arrays.asList('-', '_');
-		SEPARATORS = Collections.unmodifiableSet(new HashSet<Character>(chars));
+		SEPARATORS = Collections.unmodifiableSet(new HashSet<>(chars));
 	}
 
 	private final MultiValueMap<String, ItemMetadata> items;
@@ -51,13 +51,13 @@ public class ConfigurationMetadata {
 	private final MultiValueMap<String, ItemHint> hints;
 
 	public ConfigurationMetadata() {
-		this.items = new LinkedMultiValueMap<String, ItemMetadata>();
-		this.hints = new LinkedMultiValueMap<String, ItemHint>();
+		this.items = new LinkedMultiValueMap<>();
+		this.hints = new LinkedMultiValueMap<>();
 	}
 
 	public ConfigurationMetadata(ConfigurationMetadata metadata) {
-		this.items = new LinkedMultiValueMap<String, ItemMetadata>(metadata.items);
-		this.hints = new LinkedMultiValueMap<String, ItemHint>(metadata.hints);
+		this.items = new LinkedMultiValueMap<>(metadata.items);
+		this.hints = new LinkedMultiValueMap<>(metadata.hints);
 	}
 
 	/**
@@ -187,7 +187,7 @@ public class ConfigurationMetadata {
 
 	private static <T extends Comparable<T>> List<T> flattenValues(
 			MultiValueMap<?, T> map) {
-		List<T> content = new ArrayList<T>();
+		List<T> content = new ArrayList<>();
 		for (List<T> values : map.values()) {
 			content.addAll(values);
 		}

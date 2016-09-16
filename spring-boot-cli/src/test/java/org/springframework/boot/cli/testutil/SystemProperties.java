@@ -40,7 +40,7 @@ public final class SystemProperties {
 	 */
 	public static void doWithSystemProperties(Runnable action,
 			String... systemPropertyPairs) {
-		Map<String, String> originalValues = new HashMap<String, String>();
+		Map<String, String> originalValues = new HashMap<>();
 		for (String pair : systemPropertyPairs) {
 			String[] components = pair.split(":");
 			String key = components[0];

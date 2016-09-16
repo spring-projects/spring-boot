@@ -50,7 +50,7 @@ public class YamlPropertySourceLoaderTests {
 	@Test
 	public void orderedItems() throws Exception {
 		StringBuilder yaml = new StringBuilder();
-		List<String> expected = new ArrayList<String>();
+		List<String> expected = new ArrayList<>();
 		for (char c = 'a'; c <= 'z'; c++) {
 			yaml.append(c + ": value" + c + "\n");
 			expected.add(String.valueOf(c));

@@ -39,7 +39,7 @@ class MergedContextConfigurationProperties {
 	}
 
 	public void add(String[] properties, String... additional) {
-		Set<String> merged = new LinkedHashSet<String>(
+		Set<String> merged = new LinkedHashSet<>(
 				(Arrays.asList(this.configuration.getPropertySourceProperties())));
 		merged.addAll(Arrays.asList(properties));
 		merged.addAll(Arrays.asList(additional));

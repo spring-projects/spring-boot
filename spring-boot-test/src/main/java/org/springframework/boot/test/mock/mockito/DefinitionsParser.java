@@ -50,8 +50,8 @@ class DefinitionsParser {
 	}
 
 	DefinitionsParser(Collection<? extends Definition> existing) {
-		this.definitions = new LinkedHashSet<Definition>();
-		this.definitionFields = new LinkedHashMap<Definition, Field>();
+		this.definitions = new LinkedHashSet<>();
+		this.definitionFields = new LinkedHashMap<>();
 		if (existing != null) {
 			this.definitions.addAll(existing);
 		}
@@ -124,7 +124,7 @@ class DefinitionsParser {
 
 	private Set<ResolvableType> getOrDeduceTypes(AnnotatedElement element,
 			Class<?>[] value) {
-		Set<ResolvableType> types = new LinkedHashSet<ResolvableType>();
+		Set<ResolvableType> types = new LinkedHashSet<>();
 		for (Class<?> clazz : value) {
 			types.add(ResolvableType.forClass(clazz));
 		}

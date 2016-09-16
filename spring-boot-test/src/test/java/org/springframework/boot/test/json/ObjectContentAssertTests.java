@@ -77,7 +77,7 @@ public class ObjectContentAssertTests {
 
 			@Override
 			public ObjectContentAssert<Object> assertThat() {
-				return new ObjectContentAssert<Object>(source);
+				return new ObjectContentAssert<>(source);
 			}
 
 		};

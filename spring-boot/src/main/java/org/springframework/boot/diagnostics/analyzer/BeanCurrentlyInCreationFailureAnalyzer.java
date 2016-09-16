@@ -39,7 +39,7 @@ class BeanCurrentlyInCreationFailureAnalyzer
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure,
 			BeanCurrentlyInCreationException cause) {
-		List<String> beansInCycle = new ArrayList<String>();
+		List<String> beansInCycle = new ArrayList<>();
 		Throwable candidate = rootFailure;
 		while (candidate != null) {
 			if (candidate instanceof BeanCreationException) {

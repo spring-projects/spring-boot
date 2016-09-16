@@ -201,7 +201,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 			Class<?>... classes) {
 		ConditionEvaluationReport report = (ConditionEvaluationReport) new DirectFieldAccessor(
 				analyzer).getPropertyValue("report");
-		List<String> exclusions = new ArrayList<String>(report.getExclusions());
+		List<String> exclusions = new ArrayList<>(report.getExclusions());
 		for (Class<?> c : classes) {
 			exclusions.add(c.getName());
 		}

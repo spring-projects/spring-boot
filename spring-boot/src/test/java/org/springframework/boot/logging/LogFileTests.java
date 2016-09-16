@@ -78,7 +78,7 @@ public class LogFileTests {
 	}
 
 	private PropertyResolver getPropertyResolver(String file, String path) {
-		Map<String, Object> properties = new LinkedHashMap<String, Object>();
+		Map<String, Object> properties = new LinkedHashMap<>();
 		properties.put("logging.file", file);
 		properties.put("logging.path", path);
 		PropertySource<?> propertySource = new MapPropertySource("properties",

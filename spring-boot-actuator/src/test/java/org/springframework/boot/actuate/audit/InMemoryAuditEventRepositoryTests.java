@@ -102,7 +102,7 @@ public class InMemoryAuditEventRepositoryTests {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2000, 1, 1, 0, 0, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
 		repository.add(new AuditEvent(calendar.getTime(), "dave", "a", data));
 		calendar.add(Calendar.DAY_OF_YEAR, 1);

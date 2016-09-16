@@ -212,7 +212,7 @@ public class ConditionEvaluationReportTests {
 		assertThat(outcomes).isNotEqualTo(nullValue());
 		assertThat(getNumberOfOutcomes(outcomes)).isEqualTo(2);
 
-		List<String> messages = new ArrayList<String>();
+		List<String> messages = new ArrayList<>();
 		for (ConditionAndOutcome outcome : outcomes) {
 			messages.add(outcome.getOutcome().getMessage());
 		}

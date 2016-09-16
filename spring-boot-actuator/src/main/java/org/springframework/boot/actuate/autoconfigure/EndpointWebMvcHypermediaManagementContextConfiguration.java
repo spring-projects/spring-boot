@@ -237,7 +237,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		@Autowired
 		private List<RequestMappingHandlerAdapter> handlerAdapters;
 
-		private final Map<MediaType, HttpMessageConverter<?>> converterCache = new ConcurrentHashMap<MediaType, HttpMessageConverter<?>>();
+		private final Map<MediaType, HttpMessageConverter<?>> converterCache = new ConcurrentHashMap<>();
 
 		@Override
 		public boolean supports(MethodParameter returnType,

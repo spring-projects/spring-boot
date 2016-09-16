@@ -96,11 +96,11 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	private final MockitoBeans mockitoBeans = new MockitoBeans();
 
-	private Map<Definition, String> beanNameRegistry = new HashMap<Definition, String>();
+	private Map<Definition, String> beanNameRegistry = new HashMap<>();
 
-	private Map<Field, RegisteredField> fieldRegistry = new HashMap<Field, RegisteredField>();
+	private Map<Field, RegisteredField> fieldRegistry = new HashMap<>();
 
-	private Map<String, SpyDefinition> spies = new HashMap<String, SpyDefinition>();
+	private Map<String, SpyDefinition> spies = new HashMap<>();
 
 	/**
 	 * Create a new {@link MockitoPostProcessor} instance with the given initial
@@ -148,7 +148,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	private Set<Class<?>> getConfigurationClasses(
 			ConfigurableListableBeanFactory beanFactory) {
-		Set<Class<?>> configurationClasses = new LinkedHashSet<Class<?>>();
+		Set<Class<?>> configurationClasses = new LinkedHashSet<>();
 		for (BeanDefinition beanDefinition : getConfigurationBeanDefinitions(beanFactory)
 				.values()) {
 			configurationClasses.add(ClassUtils.resolveClassName(
@@ -159,7 +159,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	private Map<String, BeanDefinition> getConfigurationBeanDefinitions(
 			ConfigurableListableBeanFactory beanFactory) {
-		Map<String, BeanDefinition> definitions = new LinkedHashMap<String, BeanDefinition>();
+		Map<String, BeanDefinition> definitions = new LinkedHashMap<>();
 		for (String beanName : beanFactory.getBeanDefinitionNames()) {
 			BeanDefinition definition = beanFactory.getBeanDefinition(beanName);
 			if (definition.getAttribute(CONFIGURATION_CLASS_ATTRIBUTE) != null) {
@@ -236,7 +236,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		throw new IllegalStateException(
 				"Unable to register mock bean " + mockDefinition.getTypeToMock()
 						+ " expected a single existing bean to replace but found "
-						+ new TreeSet<String>(Arrays.asList(existingBeans)));
+						+ new TreeSet<>(Arrays.asList(existingBeans)));
 	}
 
 	private void registerSpy(ConfigurableListableBeanFactory beanFactory,
@@ -252,7 +252,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	private String[] getExistingBeans(ConfigurableListableBeanFactory beanFactory,
 			ResolvableType type) {
-		Set<String> beans = new LinkedHashSet<String>(
+		Set<String> beans = new LinkedHashSet<>(
 				Arrays.asList(beanFactory.getBeanNamesForType(type)));
 		String resolvedTypeName = type.resolve(Object.class).getName();
 		for (String beanName : beanFactory.getBeanNamesForType(FactoryBean.class)) {
@@ -295,7 +295,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		Assert.state(field == null || existingBeans.length == 1,
 				"Unable to register spy bean " + definition.getTypeToSpy()
 						+ " expected a single existing bean to replace but found "
-						+ new TreeSet<String>(Arrays.asList(existingBeans)));
+						+ new TreeSet<>(Arrays.asList(existingBeans)));
 		for (String beanName : existingBeans) {
 			registerSpy(definition, field, beanName);
 		}

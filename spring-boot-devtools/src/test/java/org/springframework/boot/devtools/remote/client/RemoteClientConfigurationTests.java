@@ -112,7 +112,7 @@ public class RemoteClientConfigurationTests {
 	@Test
 	public void liveReloadOnClassPathChanged() throws Exception {
 		configure();
-		Set<ChangedFiles> changeSet = new HashSet<ChangedFiles>();
+		Set<ChangedFiles> changeSet = new HashSet<>();
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
 		this.context.publishEvent(event);
 		LiveReloadConfiguration configuration = this.context

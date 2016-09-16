@@ -29,7 +29,7 @@ public class OpenTsdbName {
 
 	private String metric;
 
-	private Map<String, String> tags = new LinkedHashMap<String, String>();
+	private Map<String, String> tags = new LinkedHashMap<>();
 
 	protected OpenTsdbName() {
 	}

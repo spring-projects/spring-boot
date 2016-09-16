@@ -48,7 +48,7 @@ public class ClassPathChangedEventTests {
 
 	@Test
 	public void getChangeSet() throws Exception {
-		Set<ChangedFiles> changeSet = new LinkedHashSet<ChangedFiles>();
+		Set<ChangedFiles> changeSet = new LinkedHashSet<>();
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.source, changeSet,
 				false);
 		assertThat(event.getChangeSet()).isSameAs(changeSet);
@@ -56,7 +56,7 @@ public class ClassPathChangedEventTests {
 
 	@Test
 	public void getRestartRequired() throws Exception {
-		Set<ChangedFiles> changeSet = new LinkedHashSet<ChangedFiles>();
+		Set<ChangedFiles> changeSet = new LinkedHashSet<>();
 		ClassPathChangedEvent event;
 		event = new ClassPathChangedEvent(this.source, changeSet, false);
 		assertThat(event.isRestartRequired()).isFalse();

@@ -62,7 +62,7 @@ class SpringProfileAction extends Action implements InPlayListener {
 		}
 		ic.pushObject(this);
 		this.acceptsProfile = acceptsProfiles(ic, attributes);
-		this.events = new ArrayList<SaxEvent>();
+		this.events = new ArrayList<>();
 		ic.addInPlayListener(this);
 	}
 

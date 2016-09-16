@@ -89,7 +89,7 @@ public abstract class AbstractJsonMarshalTesterTests {
 	@Test
 	public void writeMapShouldReturnJsonContent() throws Exception {
 		ResolvableType type = ResolvableTypes.get("mapOfExampleObject");
-		Map<String, Object> value = new LinkedHashMap<String, Object>();
+		Map<String, Object> value = new LinkedHashMap<>();
 		value.put("a", OBJECT);
 		JsonContent<Object> content = createTester(type).write(value);
 		assertThat(content).isEqualToJson(MAP_JSON);

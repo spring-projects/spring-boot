@@ -200,7 +200,7 @@ public class PropertySourcesLoader {
 	 * @return the file extensions
 	 */
 	public Set<String> getAllFileExtensions() {
-		Set<String> fileExtensions = new LinkedHashSet<String>();
+		Set<String> fileExtensions = new LinkedHashSet<>();
 		for (PropertySourceLoader loader : this.loaders) {
 			fileExtensions.addAll(Arrays.asList(loader.getFileExtensions()));
 		}

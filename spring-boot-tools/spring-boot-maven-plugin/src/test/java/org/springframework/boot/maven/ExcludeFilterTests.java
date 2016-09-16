@@ -101,7 +101,7 @@ public class ExcludeFilterTests {
 		ExcludeFilter filter = new ExcludeFilter(Arrays.asList(
 				createExclude("com.foo", "bar"), createExclude("com.foo", "bar2"),
 				createExclude("org.acme", "app")));
-		Set<Artifact> artifacts = new HashSet<Artifact>();
+		Set<Artifact> artifacts = new HashSet<>();
 		artifacts.add(createArtifact("com.foo", "bar"));
 		artifacts.add(createArtifact("com.foo", "bar"));
 		Artifact anotherAcme = createArtifact("org.acme", "another-app");

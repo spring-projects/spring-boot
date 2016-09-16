@@ -272,7 +272,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	}
 
 	private Predicate[] getCompressionPredicates(Compression compression) {
-		List<Predicate> predicates = new ArrayList<Predicate>();
+		List<Predicate> predicates = new ArrayList<>();
 		predicates.add(new MaxSizePredicate(compression.getMinResponseSize()));
 		predicates.add(new CompressibleMimeTypePredicate(compression.getMimeTypes()));
 		if (compression.getExcludedUserAgents() != null) {
@@ -294,7 +294,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	}
 
 	private List<Port> getActualPorts() {
-		List<Port> ports = new ArrayList<Port>();
+		List<Port> ports = new ArrayList<>();
 		try {
 			if (!this.autoStart) {
 				ports.add(new Port(-1, "unknown"));
@@ -330,7 +330,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	}
 
 	private List<Port> getConfiguredPorts() {
-		List<Port> ports = new ArrayList<Port>();
+		List<Port> ports = new ArrayList<>();
 		for (Object listener : extractListeners()) {
 			try {
 				ports.add(getPortFromListener(listener));
@@ -438,7 +438,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		private final List<MimeType> mimeTypes;
 
 		CompressibleMimeTypePredicate(String[] mimeTypes) {
-			this.mimeTypes = new ArrayList<MimeType>(mimeTypes.length);
+			this.mimeTypes = new ArrayList<>(mimeTypes.length);
 			for (String mimeTypeString : mimeTypes) {
 				this.mimeTypes.add(MimeTypeUtils.parseMimeType(mimeTypeString));
 			}

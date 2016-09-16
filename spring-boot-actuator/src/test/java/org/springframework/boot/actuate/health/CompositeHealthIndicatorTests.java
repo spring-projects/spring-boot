@@ -63,7 +63,7 @@ public class CompositeHealthIndicatorTests {
 
 	@Test
 	public void createWithIndicators() throws Exception {
-		Map<String, HealthIndicator> indicators = new HashMap<String, HealthIndicator>();
+		Map<String, HealthIndicator> indicators = new HashMap<>();
 		indicators.put("one", this.one);
 		indicators.put("two", this.two);
 		CompositeHealthIndicator composite = new CompositeHealthIndicator(
@@ -78,7 +78,7 @@ public class CompositeHealthIndicatorTests {
 
 	@Test
 	public void createWithIndicatorsAndAdd() throws Exception {
-		Map<String, HealthIndicator> indicators = new HashMap<String, HealthIndicator>();
+		Map<String, HealthIndicator> indicators = new HashMap<>();
 		indicators.put("one", this.one);
 		indicators.put("two", this.two);
 		CompositeHealthIndicator composite = new CompositeHealthIndicator(
@@ -110,7 +110,7 @@ public class CompositeHealthIndicatorTests {
 
 	@Test
 	public void testSerialization() throws Exception {
-		Map<String, HealthIndicator> indicators = new HashMap<String, HealthIndicator>();
+		Map<String, HealthIndicator> indicators = new HashMap<>();
 		indicators.put("db1", this.one);
 		indicators.put("db2", this.two);
 		CompositeHealthIndicator innerComposite = new CompositeHealthIndicator(

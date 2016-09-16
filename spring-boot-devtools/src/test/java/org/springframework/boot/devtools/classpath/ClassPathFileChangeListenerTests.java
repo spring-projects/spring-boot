@@ -103,7 +103,7 @@ public class ClassPathFileChangeListenerTests {
 		File file = new File("f1");
 		ChangedFile file1 = new ChangedFile(folder, file, ChangedFile.Type.ADD);
 		ChangedFile file2 = new ChangedFile(folder, file, ChangedFile.Type.ADD);
-		Set<ChangedFile> files = new LinkedHashSet<ChangedFile>();
+		Set<ChangedFile> files = new LinkedHashSet<>();
 		files.add(file1);
 		files.add(file2);
 		ChangedFiles changedFiles = new ChangedFiles(new File("source"), files);

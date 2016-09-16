@@ -30,7 +30,7 @@ public class DefaultGaugeService implements GaugeService {
 
 	private final MetricWriter writer;
 
-	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<String, String>();
+	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<>();
 
 	/**
 	 * Create a {@link DefaultGaugeService} instance.
@@ -42,7 +42,7 @@ public class DefaultGaugeService implements GaugeService {
 
 	@Override
 	public void submit(String metricName, double value) {
-		this.writer.set(new Metric<Double>(wrap(metricName), value));
+		this.writer.set(new Metric<>(wrap(metricName), value));
 	}
 
 	private String wrap(String metricName) {

@@ -55,21 +55,21 @@ public class JsonContentTests {
 
 	@Test
 	public void createWhenTypeIsNullShouldCreateContent() throws Exception {
-		JsonContent<ExampleObject> content = new JsonContent<ExampleObject>(getClass(),
+		JsonContent<ExampleObject> content = new JsonContent<>(getClass(),
 				null, JSON);
 		assertThat(content).isNotNull();
 	}
 
 	@Test
 	public void assertThatShouldReturnJsonContentAssert() throws Exception {
-		JsonContent<ExampleObject> content = new JsonContent<ExampleObject>(getClass(),
+		JsonContent<ExampleObject> content = new JsonContent<>(getClass(),
 				TYPE, JSON);
 		assertThat(content.assertThat()).isInstanceOf(JsonContentAssert.class);
 	}
 
 	@Test
 	public void getJsonShouldReturnJson() throws Exception {
-		JsonContent<ExampleObject> content = new JsonContent<ExampleObject>(getClass(),
+		JsonContent<ExampleObject> content = new JsonContent<>(getClass(),
 				TYPE, JSON);
 		assertThat(content.getJson()).isEqualTo(JSON);
 
@@ -77,7 +77,7 @@ public class JsonContentTests {
 
 	@Test
 	public void toStringWhenHasTypeShouldReturnString() throws Exception {
-		JsonContent<ExampleObject> content = new JsonContent<ExampleObject>(getClass(),
+		JsonContent<ExampleObject> content = new JsonContent<>(getClass(),
 				TYPE, JSON);
 		assertThat(content.toString())
 				.isEqualTo("JsonContent " + JSON + " created from " + TYPE);
@@ -85,7 +85,7 @@ public class JsonContentTests {
 
 	@Test
 	public void toStringWhenHasNoTypeShouldReturnString() throws Exception {
-		JsonContent<ExampleObject> content = new JsonContent<ExampleObject>(getClass(),
+		JsonContent<ExampleObject> content = new JsonContent<>(getClass(),
 				null, JSON);
 		assertThat(content.toString()).isEqualTo("JsonContent " + JSON);
 	}

@@ -48,28 +48,28 @@ public class ObjectContentTests {
 
 	@Test
 	public void createWhenTypeIsNullShouldCreateContent() throws Exception {
-		ObjectContent<ExampleObject> content = new ObjectContent<ExampleObject>(null,
+		ObjectContent<ExampleObject> content = new ObjectContent<>(null,
 				OBJECT);
 		assertThat(content).isNotNull();
 	}
 
 	@Test
 	public void assertThatShouldReturnObjectContentAssert() throws Exception {
-		ObjectContent<ExampleObject> content = new ObjectContent<ExampleObject>(TYPE,
+		ObjectContent<ExampleObject> content = new ObjectContent<>(TYPE,
 				OBJECT);
 		assertThat(content.assertThat()).isInstanceOf(ObjectContentAssert.class);
 	}
 
 	@Test
 	public void getObjectShouldReturnObject() throws Exception {
-		ObjectContent<ExampleObject> content = new ObjectContent<ExampleObject>(TYPE,
+		ObjectContent<ExampleObject> content = new ObjectContent<>(TYPE,
 				OBJECT);
 		assertThat(content.getObject()).isEqualTo(OBJECT);
 	}
 
 	@Test
 	public void toStringWhenHasTypeShouldReturnString() throws Exception {
-		ObjectContent<ExampleObject> content = new ObjectContent<ExampleObject>(TYPE,
+		ObjectContent<ExampleObject> content = new ObjectContent<>(TYPE,
 				OBJECT);
 		assertThat(content.toString())
 				.isEqualTo("ObjectContent " + OBJECT + " created from " + TYPE);
@@ -77,7 +77,7 @@ public class ObjectContentTests {
 
 	@Test
 	public void toStringWhenHasNoTypeShouldReturnString() throws Exception {
-		ObjectContent<ExampleObject> content = new ObjectContent<ExampleObject>(null,
+		ObjectContent<ExampleObject> content = new ObjectContent<>(null,
 				OBJECT);
 		assertThat(content.toString()).isEqualTo("ObjectContent " + OBJECT);
 	}

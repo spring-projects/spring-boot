@@ -42,7 +42,7 @@ public class CloudAutoConfigurationTests {
 	public void testOrder() throws Exception {
 		TestAutoConfigurationSorter sorter = new TestAutoConfigurationSorter(
 				new CachingMetadataReaderFactory());
-		Collection<String> classNames = new ArrayList<String>();
+		Collection<String> classNames = new ArrayList<>();
 		classNames.add(MongoAutoConfiguration.class.getName());
 		classNames.add(DataSourceAutoConfiguration.class.getName());
 		classNames.add(MongoRepositoriesAutoConfiguration.class.getName());

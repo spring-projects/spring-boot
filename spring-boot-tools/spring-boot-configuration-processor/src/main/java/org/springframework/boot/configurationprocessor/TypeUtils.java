@@ -41,7 +41,7 @@ class TypeUtils {
 	private static final Map<TypeKind, Class<?>> PRIMITIVE_WRAPPERS;
 
 	static {
-		Map<TypeKind, Class<?>> wrappers = new HashMap<TypeKind, Class<?>>();
+		Map<TypeKind, Class<?>> wrappers = new HashMap<>();
 		wrappers.put(TypeKind.BOOLEAN, Boolean.class);
 		wrappers.put(TypeKind.BYTE, Byte.class);
 		wrappers.put(TypeKind.CHAR, Character.class);
@@ -56,7 +56,7 @@ class TypeUtils {
 	private static final Map<String, TypeKind> WRAPPER_TO_PRIMITIVE;
 
 	static {
-		Map<String, TypeKind> primitives = new HashMap<String, TypeKind>();
+		Map<String, TypeKind> primitives = new HashMap<>();
 		for (Map.Entry<TypeKind, Class<?>> entry : PRIMITIVE_WRAPPERS.entrySet()) {
 			primitives.put(entry.getValue().getName(), entry.getKey());
 		}
