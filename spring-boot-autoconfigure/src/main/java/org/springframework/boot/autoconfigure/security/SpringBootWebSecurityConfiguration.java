@@ -53,8 +53,8 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for security of a web application or
- * service. By default everything is secured with HTTP Basic authentication except the
+ * Configuration for security of a web application or service. By default everything is
+ * secured with HTTP Basic authentication except the
  * {@link SecurityProperties#getIgnored() explicitly ignored} paths (defaults to
  * <code>&#47;css&#47;**, &#47;js&#47;**, &#47;images&#47;**, &#47;**&#47;favicon.ico</code>
  * ). Many aspects of the behavior can be controller with {@link SecurityProperties} via
@@ -66,9 +66,10 @@ import org.springframework.util.StringUtils;
  * Some common simple customizations:
  * <ul>
  * <li>Switch off security completely and permanently: remove Spring Security from the
- * classpath or {@link EnableAutoConfiguration#exclude() exclude} this configuration.</li>
+ * classpath or {@link EnableAutoConfiguration#exclude() exclude}
+ * {@link SecurityAutoConfiguration}.</li>
  * <li>Switch off security temporarily (e.g. for a dev environment): set
- * {@code security.basic.enabled: false}</li>
+ * {@code security.basic.enabled=false}</li>
  * <li>Customize the user details: autowire an {@link AuthenticationManagerBuilder} into a
  * method in one of your configuration classes or equivalently add a bean of type
  * AuthenticationManager</li>
