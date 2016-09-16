@@ -80,8 +80,8 @@ public class EndpointDocumentation {
 	private MvcEndpoints mvcEndpoints;
 
 	@Autowired
-	@Qualifier("metricFilter")
-	private Filter metricFilter;
+	@Qualifier("metricsFilter")
+	private Filter metricsFilter;
 
 	@Autowired
 	@Qualifier("webRequestLoggingFilter")
@@ -95,7 +95,7 @@ public class EndpointDocumentation {
 	@Before
 	public void setUp() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
-				.addFilters(this.metricFilter, this.traceFilter)
+				.addFilters(this.metricsFilter, this.traceFilter)
 				.apply(documentationConfiguration(this.restDocumentation)).build();
 	}
 
