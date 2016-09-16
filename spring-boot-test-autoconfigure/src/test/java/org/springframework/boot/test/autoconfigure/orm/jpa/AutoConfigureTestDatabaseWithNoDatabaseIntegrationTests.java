@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.orm.jpa;
 
+import javax.sql.DataSource;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -42,6 +44,7 @@ public class AutoConfigureTestDatabaseWithNoDatabaseIntegrationTests {
 	public void testContextLoades() throws Exception {
 		// gh-6897
 		assertThat(this.context).isNotNull();
+		assertThat(this.context.getBeanNamesForType(DataSource.class)).isNotEmpty();
 	}
 
 	@TestConfiguration
