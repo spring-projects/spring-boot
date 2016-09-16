@@ -67,6 +67,18 @@ import org.springframework.test.context.junit4.SpringRunner;
  *
  * }
  * </pre>
+ * If there is more than one bean of the requested type, qualifier metadata must be
+ * specified at field level: <pre class="code">
+ * &#064;RunWith(SpringRunner.class)
+ * public class ExampleTests {
+ *
+ *     &#064;SpyBean
+ *     &#064;Qualifier("example")
+ *     private ExampleService service;
+ *
+ *     ...
+ * }
+ * </pre>
  * <p>
  * This annotation is {@code @Repeatable} and may be specified multiple times when working
  * with Java 8 or contained within a {@link SpyBeans @SpyBeans} annotation.

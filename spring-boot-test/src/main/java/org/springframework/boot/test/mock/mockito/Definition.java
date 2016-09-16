@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.mock.mockito;
 
+import java.lang.reflect.AnnotatedElement;
+
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -28,16 +30,27 @@ abstract class Definition {
 
 	private static final int MULTIPLIER = 31;
 
+	private final AnnotatedElement element;
+
 	private final String name;
 
 	private final MockReset reset;
 
 	private final boolean proxyTargetAware;
 
-	Definition(String name, MockReset reset, boolean proxyTargetAware) {
+	Definition(AnnotatedElement element, String name, MockReset reset, boolean proxyTargetAware) {
+		this.element = element;
 		this.name = name;
 		this.reset = (reset != null ? reset : MockReset.AFTER);
 		this.proxyTargetAware = proxyTargetAware;
+	}
+
+	/**
+	 * Return the {@link AnnotatedElement} that holds this definition.
+	 * @return the element that defines this definition or {@code null}
+	 */
+	public AnnotatedElement getElement() {
+		return this.element;
 	}
 
 	/**

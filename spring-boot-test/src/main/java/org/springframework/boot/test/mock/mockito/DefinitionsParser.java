@@ -38,6 +38,7 @@ import org.springframework.util.StringUtils;
  * class.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 class DefinitionsParser {
 
@@ -90,10 +91,10 @@ class DefinitionsParser {
 					"The name attribute can only be used when mocking a single class");
 		}
 		for (ResolvableType typeToMock : typesToMock) {
-			MockDefinition definition = new MockDefinition(annotation.name(), typeToMock,
-					annotation.extraInterfaces(), annotation.answer(),
+			MockDefinition definition = new MockDefinition(element, annotation.name(),
+					typeToMock,	annotation.extraInterfaces(), annotation.answer(),
 					annotation.serializable(), annotation.reset());
-			addDefinition(element, definition, "mock");
+			addDefinition(definition, "mock");
 		}
 	}
 
@@ -106,16 +107,17 @@ class DefinitionsParser {
 					"The name attribute can only be used when spying a single class");
 		}
 		for (ResolvableType typeToSpy : typesToSpy) {
-			SpyDefinition definition = new SpyDefinition(annotation.name(), typeToSpy,
-					annotation.reset(), annotation.proxyTargetAware());
-			addDefinition(element, definition, "spy");
+			SpyDefinition definition = new SpyDefinition(element, annotation.name(),
+					typeToSpy, annotation.reset(), annotation.proxyTargetAware());
+			addDefinition(definition, "spy");
 		}
 	}
 
-	private void addDefinition(AnnotatedElement element, Definition definition,
+	private void addDefinition(Definition definition,
 			String type) {
 		boolean isNewDefinition = this.definitions.add(definition);
 		Assert.state(isNewDefinition, "Duplicate " + type + " definition " + definition);
+		AnnotatedElement element = definition.getElement();
 		if (element instanceof Field) {
 			Field field = (Field) element;
 			this.definitionFields.put(definition, field);

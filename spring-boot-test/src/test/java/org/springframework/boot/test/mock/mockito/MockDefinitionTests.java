@@ -46,13 +46,14 @@ public class MockDefinitionTests {
 	public void classToMockMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("TypeToMock must not be null");
-		new MockDefinition(null, null, null, null, false, null);
+		new MockDefinition(null, null, null, null, null, false, null);
 	}
 
 	@Test
 	public void createWithDefaults() throws Exception {
-		MockDefinition definition = new MockDefinition(null, EXAMPLE_SERVICE_TYPE, null,
-				null, false, null);
+		MockDefinition definition = new MockDefinition(null, null, EXAMPLE_SERVICE_TYPE,
+				null, null, false, null);
+		assertThat(definition.getElement()).isNull();
 		assertThat(definition.getName()).isNull();
 		assertThat(definition.getTypeToMock()).isEqualTo(EXAMPLE_SERVICE_TYPE);
 		assertThat(definition.getExtraInterfaces()).isEmpty();
@@ -63,9 +64,11 @@ public class MockDefinitionTests {
 
 	@Test
 	public void createExplicit() throws Exception {
-		MockDefinition definition = new MockDefinition("name", EXAMPLE_SERVICE_TYPE,
+		MockDefinition definition = new MockDefinition(getClass(), "name",
+				EXAMPLE_SERVICE_TYPE,
 				new Class<?>[] { ExampleExtraInterface.class },
 				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE);
+		assertThat(definition.getElement()).isEqualTo(getClass());
 		assertThat(definition.getName()).isEqualTo("name");
 		assertThat(definition.getTypeToMock()).isEqualTo(EXAMPLE_SERVICE_TYPE);
 		assertThat(definition.getExtraInterfaces())
@@ -78,7 +81,8 @@ public class MockDefinitionTests {
 
 	@Test
 	public void createMock() throws Exception {
-		MockDefinition definition = new MockDefinition("name", EXAMPLE_SERVICE_TYPE,
+		MockDefinition definition = new MockDefinition(null, "name",
+				EXAMPLE_SERVICE_TYPE,
 				new Class<?>[] { ExampleExtraInterface.class },
 				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE);
 		ExampleService mock = definition.createMock();

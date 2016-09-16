@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.mock.mockito;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -49,17 +50,9 @@ class MockDefinition extends Definition {
 
 	private final boolean serializable;
 
-	MockDefinition(Class<?> classToMock) {
-		this(ResolvableType.forClass(classToMock));
-	}
-
-	MockDefinition(ResolvableType typeToMock) {
-		this(null, typeToMock, null, null, false, null);
-	}
-
-	MockDefinition(String name, ResolvableType typeToMock, Class<?>[] extraInterfaces,
+	MockDefinition(AnnotatedElement element, String name, ResolvableType typeToMock, Class<?>[] extraInterfaces,
 			Answers answer, boolean serializable, MockReset reset) {
-		super(name, reset, false);
+		super(element, name, reset, false);
 		Assert.notNull(typeToMock, "TypeToMock must not be null");
 		this.typeToMock = typeToMock;
 		this.extraInterfaces = asClassSet(extraInterfaces);

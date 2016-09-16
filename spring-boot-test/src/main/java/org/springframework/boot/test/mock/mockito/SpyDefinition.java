@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.mock.mockito;
 
+import java.lang.reflect.AnnotatedElement;
+
 import org.mockito.MockSettings;
 import org.mockito.Mockito;
 import org.mockito.internal.util.MockUtil;
@@ -39,9 +41,9 @@ class SpyDefinition extends Definition {
 
 	private final ResolvableType typeToSpy;
 
-	SpyDefinition(String name, ResolvableType typeToSpy, MockReset reset,
-			boolean proxyTargetAware) {
-		super(name, reset, proxyTargetAware);
+	SpyDefinition(AnnotatedElement element, String name, ResolvableType typeToSpy,
+			MockReset reset, boolean proxyTargetAware) {
+		super(element, name, reset, proxyTargetAware);
 		Assert.notNull(typeToSpy, "TypeToSpy must not be null");
 		this.typeToSpy = typeToSpy;
 

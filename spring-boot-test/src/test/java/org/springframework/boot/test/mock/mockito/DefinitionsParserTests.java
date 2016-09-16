@@ -28,6 +28,7 @@ import org.springframework.boot.test.mock.mockito.example.ExampleExtraInterface;
 import org.springframework.boot.test.mock.mockito.example.ExampleService;
 import org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller;
 import org.springframework.boot.test.mock.mockito.example.RealExampleService;
+import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -66,6 +67,7 @@ public class DefinitionsParserTests {
 		this.parser.parse(MockBeanAttributes.class);
 		assertThat(getDefinitions()).hasSize(1);
 		MockDefinition definition = getMockDefinition(0);
+		assertThat(definition.getElement()).isEqualTo(MockBeanAttributes.class);
 		assertThat(definition.getName()).isEqualTo("Name");
 		assertThat(definition.getTypeToMock().resolve()).isEqualTo(ExampleService.class);
 		assertThat(definition.getExtraInterfaces())
@@ -79,9 +81,15 @@ public class DefinitionsParserTests {
 	public void parseMockBeanOnClassAndField() throws Exception {
 		this.parser.parse(MockBeanOnClassAndField.class);
 		assertThat(getDefinitions()).hasSize(2);
-		assertThat(getMockDefinition(0).getTypeToMock().resolve())
+		MockDefinition classDefinition = getMockDefinition(0);
+		assertThat(classDefinition.getElement())
+				.isEqualTo(MockBeanOnClassAndField.class);
+		assertThat(classDefinition.getTypeToMock().resolve())
 				.isEqualTo(ExampleService.class);
-		assertThat(getMockDefinition(1).getTypeToMock().resolve())
+		MockDefinition fieldDefinition = getMockDefinition(1);
+		assertThat(fieldDefinition.getElement()).isEqualTo(
+				ReflectionUtils.findField(MockBeanOnClassAndField.class, "caller"));
+		assertThat(fieldDefinition.getTypeToMock().resolve())
 				.isEqualTo(ExampleServiceCaller.class);
 	}
 
@@ -141,6 +149,7 @@ public class DefinitionsParserTests {
 		this.parser.parse(SpyBeanAttributes.class);
 		assertThat(getDefinitions()).hasSize(1);
 		SpyDefinition definition = getSpyDefinition(0);
+		assertThat(definition.getElement()).isEqualTo(SpyBeanAttributes.class);
 		assertThat(definition.getName()).isEqualTo("Name");
 		assertThat(definition.getTypeToSpy().resolve())
 				.isEqualTo(RealExampleService.class);
@@ -151,10 +160,14 @@ public class DefinitionsParserTests {
 	public void parseSpyBeanOnClassAndField() throws Exception {
 		this.parser.parse(SpyBeanOnClassAndField.class);
 		assertThat(getDefinitions()).hasSize(2);
-		assertThat(getSpyDefinition(0).getTypeToSpy().resolve())
+		SpyDefinition classDefinition = getSpyDefinition(0);
+		assertThat(classDefinition.getElement())
+				.isEqualTo(SpyBeanOnClassAndField.class);
+		assertThat(classDefinition.getTypeToSpy().resolve())
 				.isEqualTo(RealExampleService.class);
-		assertThat(getSpyDefinition(1).getTypeToSpy().resolve())
-				.isEqualTo(ExampleServiceCaller.class);
+		SpyDefinition fieldDefinition = getSpyDefinition(1);
+		assertThat(fieldDefinition.getElement()).isEqualTo(
+				ReflectionUtils.findField(SpyBeanOnClassAndField.class, "caller"));
 	}
 
 	@Test
