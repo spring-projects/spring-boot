@@ -280,6 +280,12 @@
     "defaultValue": true
   },
   {
+    "name": "spring.mvc.formcontent.putfilter.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Spring's HttpPutFormContentFilter.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.rabbitmq.dynamic",
     "type": "java.lang.Boolean",
     "description": "Create an AmqpAdmin bean.",
