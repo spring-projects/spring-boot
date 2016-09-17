@@ -50,8 +50,9 @@ class MockDefinition extends Definition {
 
 	private final boolean serializable;
 
-	MockDefinition(AnnotatedElement element, String name, ResolvableType typeToMock, Class<?>[] extraInterfaces,
-			Answers answer, boolean serializable, MockReset reset) {
+	MockDefinition(AnnotatedElement element, String name, ResolvableType typeToMock,
+			Class<?>[] extraInterfaces, Answers answer, boolean serializable,
+			MockReset reset) {
 		super(element, name, reset, false);
 		Assert.notNull(typeToMock, "TypeToMock must not be null");
 		this.typeToMock = typeToMock;

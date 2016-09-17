@@ -92,7 +92,7 @@ class DefinitionsParser {
 		}
 		for (ResolvableType typeToMock : typesToMock) {
 			MockDefinition definition = new MockDefinition(element, annotation.name(),
-					typeToMock,	annotation.extraInterfaces(), annotation.answer(),
+					typeToMock, annotation.extraInterfaces(), annotation.answer(),
 					annotation.serializable(), annotation.reset());
 			addDefinition(definition, "mock");
 		}
@@ -113,8 +113,7 @@ class DefinitionsParser {
 		}
 	}
 
-	private void addDefinition(Definition definition,
-			String type) {
+	private void addDefinition(Definition definition, String type) {
 		boolean isNewDefinition = this.definitions.add(definition);
 		Assert.state(isNewDefinition, "Duplicate " + type + " definition " + definition);
 		AnnotatedElement element = definition.getElement();

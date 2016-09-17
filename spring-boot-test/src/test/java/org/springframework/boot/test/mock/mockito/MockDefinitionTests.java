@@ -65,8 +65,7 @@ public class MockDefinitionTests {
 	@Test
 	public void createExplicit() throws Exception {
 		MockDefinition definition = new MockDefinition(getClass(), "name",
-				EXAMPLE_SERVICE_TYPE,
-				new Class<?>[] { ExampleExtraInterface.class },
+				EXAMPLE_SERVICE_TYPE, new Class<?>[] { ExampleExtraInterface.class },
 				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE);
 		assertThat(definition.getElement()).isEqualTo(getClass());
 		assertThat(definition.getName()).isEqualTo("name");
@@ -81,8 +80,7 @@ public class MockDefinitionTests {
 
 	@Test
 	public void createMock() throws Exception {
-		MockDefinition definition = new MockDefinition(null, "name",
-				EXAMPLE_SERVICE_TYPE,
+		MockDefinition definition = new MockDefinition(null, "name", EXAMPLE_SERVICE_TYPE,
 				new Class<?>[] { ExampleExtraInterface.class },
 				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE);
 		ExampleService mock = definition.createMock();

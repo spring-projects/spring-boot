@@ -52,7 +52,8 @@ public class SpyDefinitionTests {
 
 	@Test
 	public void createWithDefaults() throws Exception {
-		SpyDefinition definition = new SpyDefinition(null, null, REAL_SERVICE_TYPE, null, true);
+		SpyDefinition definition = new SpyDefinition(null, null, REAL_SERVICE_TYPE, null,
+				true);
 		assertThat(definition.getElement()).isNull();
 		assertThat(definition.getName()).isNull();
 		assertThat(definition.getTypeToSpy()).isEqualTo(REAL_SERVICE_TYPE);

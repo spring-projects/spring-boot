@@ -66,8 +66,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  *
  *
  * }
- * </pre>
- * If there is more than one bean of the requested type, qualifier metadata must be
+ * </pre> If there is more than one bean of the requested type, qualifier metadata must be
  * specified at field level: <pre class="code">
  * &#064;RunWith(SpringRunner.class)
  * public class ExampleTests {

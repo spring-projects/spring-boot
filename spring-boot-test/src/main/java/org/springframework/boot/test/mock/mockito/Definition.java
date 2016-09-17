@@ -38,7 +38,8 @@ abstract class Definition {
 
 	private final boolean proxyTargetAware;
 
-	Definition(AnnotatedElement element, String name, MockReset reset, boolean proxyTargetAware) {
+	Definition(AnnotatedElement element, String name, MockReset reset,
+			boolean proxyTargetAware) {
 		this.element = element;
 		this.name = name;
 		this.reset = (reset != null ? reset : MockReset.AFTER);

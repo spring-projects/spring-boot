@@ -82,8 +82,7 @@ public class DefinitionsParserTests {
 		this.parser.parse(MockBeanOnClassAndField.class);
 		assertThat(getDefinitions()).hasSize(2);
 		MockDefinition classDefinition = getMockDefinition(0);
-		assertThat(classDefinition.getElement())
-				.isEqualTo(MockBeanOnClassAndField.class);
+		assertThat(classDefinition.getElement()).isEqualTo(MockBeanOnClassAndField.class);
 		assertThat(classDefinition.getTypeToMock().resolve())
 				.isEqualTo(ExampleService.class);
 		MockDefinition fieldDefinition = getMockDefinition(1);
@@ -161,8 +160,7 @@ public class DefinitionsParserTests {
 		this.parser.parse(SpyBeanOnClassAndField.class);
 		assertThat(getDefinitions()).hasSize(2);
 		SpyDefinition classDefinition = getSpyDefinition(0);
-		assertThat(classDefinition.getElement())
-				.isEqualTo(SpyBeanOnClassAndField.class);
+		assertThat(classDefinition.getElement()).isEqualTo(SpyBeanOnClassAndField.class);
 		assertThat(classDefinition.getTypeToSpy().resolve())
 				.isEqualTo(RealExampleService.class);
 		SpyDefinition fieldDefinition = getSpyDefinition(1);
