@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 public class LocalHostUriTemplateHandlerTests {
 
@@ -72,6 +73,15 @@ public class LocalHostUriTemplateHandlerTests {
 		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(environment,
 				"https");
 		assertThat(handler.getRootUri()).isEqualTo("https://localhost:8080");
+	}
+
+	@Test
+	public void getRootUriShouldUseContextPath() throws Exception {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("server.contextPath", "/foo");
+		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
+				environment);
+		assertThat(handler.getRootUri()).isEqualTo("http://localhost:8080/foo");
 	}
 
 }
