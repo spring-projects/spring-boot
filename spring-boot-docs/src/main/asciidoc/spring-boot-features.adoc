@@ -75,8 +75,8 @@ NOTE: Spring Boot provides numerous `FailureAnalyzer` implementations and you ca
 
 If no failure analyzers are able to handle the exception, you can still display the full
 auto-configuration report to better understand what went wrong. To do so you need to
-<<#boot-features-external-config,enable the `debug` property>> or
-<<#boot-features-custom-log-levels,enable `DEBUG` logging>> for
+<<boot-features-external-config,enable the `debug` property>> or
+<<boot-features-custom-log-levels,enable `DEBUG` logging>> for
 `org.springframework.boot.autoconfigure.logging.AutoConfigurationReportLoggingInitializer`.
 
 For instance, if you are running your application using `java -jar` you can enable the
