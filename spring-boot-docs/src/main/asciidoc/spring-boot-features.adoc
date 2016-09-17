@@ -50,7 +50,6 @@ such as the user that launched the application.
 
 [boot-features-startup-failure]
 === Startup failure
-
 If your application fails to start, registered `FailureAnalyzers` get a chance to provide
 a dedicated error message and a concrete action to fix the problem. For instance if you
 start a web application on port `8080` and that port is already in use, you should see
