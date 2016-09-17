@@ -70,37 +70,45 @@ public class ConditionalOnClassTests {
 	@Configuration
 	@ConditionalOnClass(ConditionalOnClassTests.class)
 	protected static class BasicConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnClass(name = "FOO")
 	protected static class MissingConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
 	protected static class FooConfiguration {
+
 		@Bean
 		public String foo() {
 			return "foo";
 		}
+
 	}
 
 	@Configuration
 	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
 	protected static class XmlConfiguration {
+
 	}
 
 	@Configuration
 	@Import(BasicConfiguration.class)
 	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
 	protected static class CombinedXmlConfiguration {
+
 	}
 }

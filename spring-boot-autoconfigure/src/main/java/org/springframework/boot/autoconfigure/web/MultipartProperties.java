@@ -42,6 +42,7 @@ import org.springframework.util.StringUtils;
  * {@literal String} variants that accept {@literal Kb} or {@literal Mb} suffixes.
  *
  * @author Josh Long
+ * @author Toshiaki Maki
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.http.multipart", ignoreUnknownFields = false)
@@ -74,6 +75,12 @@ public class MultipartProperties {
 	 * "MB" or "KB" to indicate a Megabyte or Kilobyte size.
 	 */
 	private String fileSizeThreshold = "0";
+
+	/**
+	 * Whether to resolve the multipart request lazily at the time of file or parameter
+	 * access.
+	 */
+	private boolean resolveLazily = false;
 
 	public boolean getEnabled() {
 		return this.enabled;
@@ -113,6 +120,14 @@ public class MultipartProperties {
 
 	public void setFileSizeThreshold(String fileSizeThreshold) {
 		this.fileSizeThreshold = fileSizeThreshold;
+	}
+
+	public boolean isResolveLazily() {
+		return this.resolveLazily;
+	}
+
+	public void setResolveLazily(boolean resolveLazily) {
+		this.resolveLazily = resolveLazily;
 	}
 
 	/**

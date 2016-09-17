@@ -46,6 +46,10 @@ When your application starts you should see something similar to the following:
 By default `INFO` logging messages will be shown, including some relevant startup details
 such as the user that launched the application.
 
+
+
+[boot-features-startup-failure]
+=== Startup failure
 If your application fails to start, registered `FailureAnalyzers` get a chance to provide
 a dedicated error message and a concrete action to fix the problem. For instance if you
 start a web application on port `8080` and that port is already in use, you should see
@@ -53,21 +57,36 @@ something similar to the following:
 
 [indent=0]
 ----
-***************************
-APPLICATION FAILED TO START
-***************************
+	***************************
+	APPLICATION FAILED TO START
+	***************************
 
-Description:
+	Description:
 
-Embedded servlet container failed to start. Port 8080 was already in use.
+	Embedded servlet container failed to start. Port 8080 was already in use.
 
-Action:
+	Action:
 
-Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+	Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
 ----
 
 NOTE: Spring Boot provides numerous `FailureAnalyzer` implementations and you can
 <<howto.adoc#howto-failure-analyzer,add your own>> very easily.
+
+If no failure analyzers are able to handle the exception, you can still display the full
+auto-configuration report to better understand what went wrong. To do so you need to
+<<boot-features-external-config,enable the `debug` property>> or
+<<boot-features-custom-log-levels,enable `DEBUG` logging>> for
+`org.springframework.boot.autoconfigure.logging.AutoConfigurationReportLoggingInitializer`.
+
+For instance, if you are running your application using `java -jar` you can enable the
+`debug` property as follows:
+
+[indent=0,subs="attributes"]
+----
+	$ java -jar myproject-0.0.1-SNAPSHOT.jar --debug
+----
+
 
 
 [[boot-features-banner]]
@@ -350,8 +369,12 @@ via `@ConfigurationProperties`.
 Spring Boot uses a very particular `PropertySource` order that is designed to allow
 sensible overriding of values. Properties are considered in the following order:
 
+. <<using-boot-devtools-globalsettings,Devtools global settings properties>>
+  on your home directory (`~/.spring-boot-devtools.properties` when devtools is active).
 . {spring-javadoc}/test/context/TestPropertySource.{dc-ext}[`@TestPropertySource`]
   annotations on your tests.
+. {dc-spring-boot-test}/context/SpringBootTest.{dc-ext}[`@SpringBootTest#properties`]
+  annotation attribute on your tests.
 . Command line arguments.
 . Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment
   variable or system property)
@@ -1597,7 +1620,7 @@ The auto-configuration adds the following features on top of Spring's defaults:
 
 If you want to keep Spring Boot MVC features, and
 you just want to add additional {spring-reference}#mvc[MVC configuration] (interceptors,
-formatters, view controllers etc.) you can add your own `@Bean` of type
+formatters, view controllers etc.) you can add your own `@Configuration` class of type
 `WebMvcConfigurerAdapter`, but *without* `@EnableWebMvc`. If you wish to provide custom
 instances of `RequestMappingHandlerMapping`, `RequestMappingHandlerAdapter` or
 `ExceptionHandlerExceptionResolver` you can declare a `WebMvcRegistrationsAdapter`
@@ -2688,6 +2711,9 @@ DataSource configuration is controlled by external configuration properties in
 	spring.datasource.driver-class-name=com.mysql.jdbc.Driver
 ----
 
+NOTE: You should at least specify the url using the `spring.datasource.url` property or
+Spring Boot will attempt to auto-configure an embedded database.
+
 TIP: You often won't need to specify the `driver-class-name` since Spring boot can deduce
 it for most databases from the `url`.
 
@@ -3759,7 +3785,8 @@ If you haven't defined a bean of type `CacheManager` or a `CacheResolver` named
 providers (in this order):
 
 * <<boot-features-caching-provider-generic,Generic>>
-* <<boot-features-caching-provider-jcache,JCache (JSR-107)>>
+* <<boot-features-caching-provider-jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast,
+  Infinspan, etc)
 * <<boot-features-caching-provider-ehcache2,EhCache 2.x>>
 * <<boot-features-caching-provider-hazelcast,Hazelcast>>
 * <<boot-features-caching-provider-infinispan,Infinispan>>
@@ -3807,12 +3834,16 @@ Generic caching is used if the context defines _at least_ one
 
 
 [[boot-features-caching-provider-jcache]]
-==== JCache
+==== JCache (JSR-107)
 JCache is bootstrapped via the presence of a `javax.cache.spi.CachingProvider` on the
-classpath (i.e. a JSR-107 compliant caching library). It might happen that more than one
-provider is present, in which case the provider must be explicitly specified. Even if the
-JSR-107 standard does not enforce a standardized way to define the location of the
-configuration file, Spring Boot does its best to accommodate with implementation details.
+classpath (i.e. a JSR-107 compliant caching library). There are various compliant
+libraries out there and Spring Boot provides dependency management for Ehcache 3,
+Hazelcast and Infinispan). Any other compliant library can be added as well.
+
+It might happen that more than one provider is present, in which case the provider must
+be explicitly specified. Even if the JSR-107 standard does not enforce a standardized
+way to define the location of the configuration file, Spring Boot does its best to
+accommodate with implementation details.
 
 [source,properties,indent=0]
 ----
@@ -4908,8 +4939,8 @@ annotations that can be used on classes in `src/test/java` to indicate that they
 not be picked up by scanning.
 
 NOTE: `@TestComponent` and `@TestConfiguration` are only needed on top level classes. If
-you define `@Configuration` or `@Component` as inner-classes within a test, they will be
-automatically filtered.
+you define `@Configuration` or `@Component` as inner-classes within a test (any class
+that has `@Test` methods or `@RunWith`), they will be automatically filtered.
 
 NOTE: If you directly use `@ComponentScan` (i.e. not via `@SpringBootApplication`) you
 will need to register the `TypeExcludeFilter` with it. See

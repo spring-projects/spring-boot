@@ -35,23 +35,23 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link AutoConfigureReportTestExecutionListener}.
+ * Tests for {@link SpringBootDependencyInjectionTestExecutionListener}.
  *
  * @author Phillip Webb
  */
-public class AutoConfigureReportTestExecutionListenerTests {
+public class SpringBootDependencyInjectionTestExecutionListenerTests {
 
 	@Rule
 	public OutputCapture out = new OutputCapture();
 
-	private AutoConfigureReportTestExecutionListener reportListener = new AutoConfigureReportTestExecutionListener();
+	private SpringBootDependencyInjectionTestExecutionListener reportListener = new SpringBootDependencyInjectionTestExecutionListener();
 
 	@Test
-	public void orderShouldBeBeforeDependencyInjectionTestExecutionListener()
+	public void orderShouldBeSameAsDependencyInjectionTestExecutionListener()
 			throws Exception {
 		Ordered injectionListener = new DependencyInjectionTestExecutionListener();
 		assertThat(this.reportListener.getOrder())
-				.isLessThan(injectionListener.getOrder());
+				.isEqualTo(injectionListener.getOrder());
 	}
 
 	@Test

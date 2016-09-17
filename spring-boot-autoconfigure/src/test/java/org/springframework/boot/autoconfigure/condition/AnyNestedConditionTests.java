@@ -30,12 +30,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link AnyNestedCondition}.
  *
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class AnyNestedConditionTests {
 
 	@Test
 	public void neither() throws Exception {
-		AnnotationConfigApplicationContext context = load(OnPropertyAorBCondition.class);
+		AnnotationConfigApplicationContext context = load(Config.class);
 		assertThat(context.containsBean("myBean")).isFalse();
 		context.close();
 	}
@@ -91,6 +92,7 @@ public class AnyNestedConditionTests {
 
 		}
 
+		@ConditionalOnExpression("true")
 		@ConditionalOnProperty("b")
 		static class HasPropertyB {
 

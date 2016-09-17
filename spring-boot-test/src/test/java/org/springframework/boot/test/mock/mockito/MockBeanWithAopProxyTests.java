@@ -35,6 +35,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -52,13 +54,15 @@ public class MockBeanWithAopProxyTests {
 
 	@Test
 	public void verifyShouldUseProxyTarget() throws Exception {
-		given(this.dateService.getDate()).willReturn(1L);
-		Long d1 = this.dateService.getDate();
+		given(this.dateService.getDate(false)).willReturn(1L);
+		Long d1 = this.dateService.getDate(false);
 		assertThat(d1).isEqualTo(1L);
-		given(this.dateService.getDate()).willReturn(2L);
-		Long d2 = this.dateService.getDate();
+		given(this.dateService.getDate(false)).willReturn(2L);
+		Long d2 = this.dateService.getDate(false);
 		assertThat(d2).isEqualTo(2L);
-		verify(this.dateService, times(2)).getDate();
+		verify(this.dateService, times(2)).getDate(false);
+		verify(this.dateService, times(2)).getDate(eq(false));
+		verify(this.dateService, times(2)).getDate(anyBoolean());
 	}
 
 	@Configuration
@@ -86,7 +90,7 @@ public class MockBeanWithAopProxyTests {
 	static class DateService {
 
 		@Cacheable(cacheNames = "test")
-		public Long getDate() {
+		public Long getDate(boolean argument) {
 			return System.nanoTime();
 		}
 

@@ -31,6 +31,7 @@ import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -74,49 +75,52 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		StringBuilder matchMessage = new StringBuilder();
+		ConditionMessage matchMessage = ConditionMessage.empty();
 		if (metadata.isAnnotated(ConditionalOnBean.class.getName())) {
 			BeanSearchSpec spec = new BeanSearchSpec(context, metadata,
 					ConditionalOnBean.class);
 			List<String> matching = getMatchingBeans(context, spec);
 			if (matching.isEmpty()) {
-				return ConditionOutcome
-						.noMatch("@ConditionalOnBean " + spec + " found no beans");
+				return ConditionOutcome.noMatch(
+						ConditionMessage.forCondition(ConditionalOnBean.class, spec)
+								.didNotFind("any beans").atAll());
 			}
-			matchMessage.append("@ConditionalOnBean ").append(spec)
-					.append(" found the following ").append(matching);
+			matchMessage = matchMessage.andCondition(ConditionalOnBean.class, spec)
+					.found("bean", "beans").items(Style.QUOTE, matching);
 		}
 		if (metadata.isAnnotated(ConditionalOnSingleCandidate.class.getName())) {
 			BeanSearchSpec spec = new SingleCandidateBeanSearchSpec(context, metadata,
 					ConditionalOnSingleCandidate.class);
 			List<String> matching = getMatchingBeans(context, spec);
 			if (matching.isEmpty()) {
-				return ConditionOutcome.noMatch(
-						"@ConditionalOnSingleCandidate " + spec + " found no beans");
+				return ConditionOutcome.noMatch(ConditionMessage
+						.forCondition(ConditionalOnSingleCandidate.class, spec)
+						.didNotFind("any beans").atAll());
 			}
 			else if (!hasSingleAutowireCandidate(context.getBeanFactory(), matching,
 					spec.getStrategy() == SearchStrategy.ALL)) {
-				return ConditionOutcome.noMatch("@ConditionalOnSingleCandidate " + spec
-						+ " found no primary candidate amongst the" + " following "
-						+ matching);
+				return ConditionOutcome.noMatch(ConditionMessage
+						.forCondition(ConditionalOnSingleCandidate.class, spec)
+						.didNotFind("a primary bean from beans")
+						.items(Style.QUOTE, matching));
 			}
-			matchMessage.append("@ConditionalOnSingleCandidate ").append(spec)
-					.append(" found a primary candidate amongst the following ")
-					.append(matching);
+			matchMessage = matchMessage
+					.andCondition(ConditionalOnSingleCandidate.class, spec)
+					.found("a primary bean from beans").items(Style.QUOTE, matching);
 		}
 		if (metadata.isAnnotated(ConditionalOnMissingBean.class.getName())) {
 			BeanSearchSpec spec = new BeanSearchSpec(context, metadata,
 					ConditionalOnMissingBean.class);
 			List<String> matching = getMatchingBeans(context, spec);
 			if (!matching.isEmpty()) {
-				return ConditionOutcome.noMatch("@ConditionalOnMissingBean " + spec
-						+ " found the following " + matching);
+				return ConditionOutcome.noMatch(ConditionMessage
+						.forCondition(ConditionalOnMissingBean.class, spec)
+						.found("bean", "beans").items(Style.QUOTE, matching));
 			}
-			matchMessage.append(matchMessage.length() == 0 ? "" : " ");
-			matchMessage.append("@ConditionalOnMissingBean ").append(spec)
-					.append(" found no beans");
+			matchMessage = matchMessage.andCondition(ConditionalOnMissingBean.class, spec)
+					.didNotFind("any beans").atAll();
 		}
-		return ConditionOutcome.match(matchMessage.toString());
+		return ConditionOutcome.match(matchMessage);
 	}
 
 	private List<String> getMatchingBeans(ConditionContext context,

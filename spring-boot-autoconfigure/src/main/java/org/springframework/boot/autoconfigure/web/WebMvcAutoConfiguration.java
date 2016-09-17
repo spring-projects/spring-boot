@@ -132,6 +132,7 @@ public class WebMvcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HttpPutFormContentFilter.class)
+	@ConditionalOnProperty(prefix = "spring.mvc.formcontent.putfilter", name = "enabled", matchIfMissing = true)
 	public OrderedHttpPutFormContentFilter httpPutFormContentFilter() {
 		return new OrderedHttpPutFormContentFilter();
 	}

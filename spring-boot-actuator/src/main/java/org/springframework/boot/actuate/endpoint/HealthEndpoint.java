@@ -43,7 +43,7 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 	private long timeToLive = 1000;
 
 	/**
-	 * Create a new {@link HealthIndicator} instance.
+	 * Create a new {@link HealthEndpoint} instance.
 	 * @param healthAggregator the health aggregator
 	 * @param healthIndicators the health indicators
 	 */

@@ -34,6 +34,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -51,11 +53,13 @@ public class SpyBeanWithAopProxyTests {
 
 	@Test
 	public void verifyShouldUseProxyTarget() throws Exception {
-		Long d1 = this.dateService.getDate();
+		Long d1 = this.dateService.getDate(false);
 		Thread.sleep(200);
-		Long d2 = this.dateService.getDate();
+		Long d2 = this.dateService.getDate(false);
 		assertThat(d1).isEqualTo(d2);
-		verify(this.dateService, times(1)).getDate();
+		verify(this.dateService, times(1)).getDate(false);
+		verify(this.dateService, times(1)).getDate(eq(false));
+		verify(this.dateService, times(1)).getDate(anyBoolean());
 	}
 
 	@Configuration
@@ -83,7 +87,7 @@ public class SpyBeanWithAopProxyTests {
 	static class DateService {
 
 		@Cacheable(cacheNames = "test")
-		public Long getDate() {
+		public Long getDate(boolean arg) {
 			return System.nanoTime();
 		}
 

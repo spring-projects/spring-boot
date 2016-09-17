@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.http.HttpStatus;
@@ -31,6 +30,7 @@ import org.springframework.web.client.RestOperations;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -42,7 +42,7 @@ public class OpenTsdbGaugeWriterTests {
 
 	private OpenTsdbGaugeWriter writer;
 
-	private RestOperations restTemplate = Mockito.mock(RestOperations.class);
+	private RestOperations restTemplate = mock(RestOperations.class);
 
 	@Before
 	public void init() {

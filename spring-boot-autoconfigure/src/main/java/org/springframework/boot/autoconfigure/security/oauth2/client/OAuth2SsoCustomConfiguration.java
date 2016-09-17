@@ -24,16 +24,11 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2SsoCustomConfiguration.WebSecurityEnhancerCondition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -49,7 +44,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Dave Syer
  */
 @Configuration
-@Conditional(WebSecurityEnhancerCondition.class)
+@Conditional(EnableOAuth2SsoCondition.class)
 public class OAuth2SsoCustomConfiguration
 		implements ImportAware, BeanPostProcessor, ApplicationContextAware {
 
@@ -107,26 +102,6 @@ public class OAuth2SsoCustomConfiguration
 				this.configurer.configure(http);
 			}
 			return invocation.proceed();
-		}
-
-	}
-
-	protected static class WebSecurityEnhancerCondition extends SpringBootCondition {
-
-		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
-			String[] enablers = context.getBeanFactory()
-					.getBeanNamesForAnnotation(EnableOAuth2Sso.class);
-			for (String name : enablers) {
-				if (context.getBeanFactory().isTypeMatch(name,
-						WebSecurityConfigurerAdapter.class)) {
-					return ConditionOutcome.match(
-							"found @EnableOAuth2Sso on a WebSecurityConfigurerAdapter");
-				}
-			}
-			return ConditionOutcome.noMatch(
-					"found no @EnableOAuth2Sso on a WebSecurityConfigurerAdapter");
 		}
 
 	}

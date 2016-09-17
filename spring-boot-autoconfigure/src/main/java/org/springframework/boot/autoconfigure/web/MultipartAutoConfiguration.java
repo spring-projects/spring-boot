@@ -43,6 +43,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  *
  * @author Greg Turnquist
  * @author Josh Long
+ * @author Toshiaki Maki
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, StandardServletMultipartResolver.class,
@@ -66,7 +67,9 @@ public class MultipartAutoConfiguration {
 	@Bean(name = DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME)
 	@ConditionalOnMissingBean(MultipartResolver.class)
 	public StandardServletMultipartResolver multipartResolver() {
-		return new StandardServletMultipartResolver();
+		StandardServletMultipartResolver multipartResolver = new StandardServletMultipartResolver();
+		multipartResolver.setResolveLazily(this.multipartProperties.isResolveLazily());
+		return multipartResolver;
 	}
 
 }

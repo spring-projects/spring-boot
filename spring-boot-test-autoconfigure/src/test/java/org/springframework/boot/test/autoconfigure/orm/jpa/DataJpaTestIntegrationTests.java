@@ -77,7 +77,8 @@ public class DataJpaTestIntegrationTests {
 				Long.class);
 		assertThat(id).isNotNull();
 		String reference = this.jdbcTemplate.queryForObject(
-				"SELECT REFERENCE FROM EXAMPLE_ENTITY WHERE ID = ?", new Object[] {id}, String.class);
+				"SELECT REFERENCE FROM EXAMPLE_ENTITY WHERE ID = ?", new Object[] { id },
+				String.class);
 		assertThat(reference).isEqualTo("123");
 	}
 

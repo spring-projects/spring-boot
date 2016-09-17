@@ -283,6 +283,7 @@ content into your application; rather pick only the properties that you need.
 	spring.http.multipart.location= # Intermediate location of uploaded files.
 	spring.http.multipart.max-file-size=1Mb # Max file size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
 	spring.http.multipart.max-request-size=10Mb # Max request size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
+	spring.http.multipart.resolve-lazily=false # Whether to resolve the multipart request lazily at the time of file or parameter access.
 
 	# JACKSON ({sc-spring-boot-autoconfigure}/jackson/JacksonProperties.{sc-ext}[JacksonProperties])
 	spring.jackson.date-format= # Date format string or a fully-qualified date format class name. For instance `yyyy-MM-dd HH:mm:ss`.
@@ -340,6 +341,7 @@ content into your application; rather pick only the properties that you need.
 	spring.mvc.dispatch-trace-request=false # Dispatch TRACE requests to the FrameworkServlet doService method.
 	spring.mvc.dispatch-options-request=true # Dispatch OPTIONS requests to the FrameworkServlet doService method.
 	spring.mvc.favicon.enabled=true # Enable resolution of favicon.ico.
+	spring.mvc.formcontent.putfilter.enabled=true # Enable Spring's HttpPutFormContentFilter.
 	spring.mvc.ignore-default-model-on-redirect=true # If the content of the "default" model should be ignored during redirect scenarios.
 	spring.mvc.locale= # Locale to use. By default, this locale is overridden by the "Accept-Language" header.
 	spring.mvc.locale-resolver=accept-header # Define how the locale should be resolved.
@@ -368,7 +370,7 @@ content into your application; rather pick only the properties that you need.
 
 	# SPRING SESSION ({sc-spring-boot-autoconfigure}/session/SessionProperties.{sc-ext}[SessionProperties])
 	spring.session.hazelcast.map-name=spring:session:sessions # Name of the map used to store sessions.
-	spring.session.jdbc.initializer.enabled=true # Create the required session tables on startup if necessary.
+	spring.session.jdbc.initializer.enabled= # Create the required session tables on startup if necessary. Enabled automatically if the default table name is set or a custom schema is configured.
 	spring.session.jdbc.schema=classpath:org/springframework/session/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.session.jdbc.table-name=SPRING_SESSION # Name of database table used to store sessions.
 	spring.session.mongo.collection-name=sessions # Collection name used to store sessions.
@@ -393,6 +395,7 @@ content into your application; rather pick only the properties that you need.
 
 	# THYMELEAF ({sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[ThymeleafAutoConfiguration])
 	spring.thymeleaf.cache=true # Enable template caching.
+	spring.thymeleaf.check-template=true # Check that the template exists before rendering it.
 	spring.thymeleaf.check-template-location=true # Check that the templates location exists.
 	spring.thymeleaf.content-type=text/html # Content-Type value.
 	spring.thymeleaf.enabled=true # Enable MVC Thymeleaf view resolution.
@@ -845,7 +848,7 @@ content into your application; rather pick only the properties that you need.
 	spring.artemis.user= # Login user of the broker.
 
 	# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchProperties.{sc-ext}[BatchProperties])
-	spring.batch.initializer.enabled=true # Create the required batch tables on startup if necessary.
+	spring.batch.initializer.enabled= # Create the required batch tables on startup if necessary. Enabled automatically if no custom table prefix is set or if a custom schema is configured.
 	spring.batch.job.enabled=true # Execute all Spring Batch jobs in the context on startup.
 	spring.batch.job.names= # Comma-separated list of job names to execute on startup (For instance `job1,job2`). By default, all Jobs found in the context are executed.
 	spring.batch.schema=classpath:org/springframework/batch/core/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
@@ -891,7 +894,7 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.listener.retry.enabled=false # Whether or not publishing retries are enabled.
 	spring.rabbitmq.listener.retry.initial-interval=1000 # Interval between the first and second attempt to deliver a message.
 	spring.rabbitmq.listener.retry.max-attempts=3 # Maximum number of attempts to deliver a message.
-	spring.rabbitmq.listener.retry.max-interval=10000 # Maximum number of attempts to deliver a message.
+	spring.rabbitmq.listener.retry.max-interval=10000 # Maximum interval between attempts.
 	spring.rabbitmq.listener.retry.multiplier=1.0 # A multiplier to apply to the previous delivery retry interval.
 	spring.rabbitmq.listener.retry.stateless=true # Whether or not retry is stateless or stateful.
 	spring.rabbitmq.listener.transaction-size= # Number of messages to be processed in a transaction. For best results it should be less than or equal to the prefetch count.

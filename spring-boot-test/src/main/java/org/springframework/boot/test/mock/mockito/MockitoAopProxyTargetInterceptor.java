@@ -17,12 +17,15 @@
 package org.springframework.boot.test.mock.mockito;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import org.aopalliance.aop.Advice;
 import org.aopalliance.intercept.Interceptor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.mockito.internal.InternalMockHandler;
+import org.mockito.internal.matchers.LocalizedMatcher;
+import org.mockito.internal.progress.ArgumentMatcherStorage;
 import org.mockito.internal.progress.MockingProgress;
 import org.mockito.internal.stubbing.InvocationContainer;
 import org.mockito.internal.util.MockUtil;
@@ -107,7 +110,7 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 			synchronized (this.monitor) {
 				VerificationMode mode = this.progress.pullVerificationMode();
 				if (mode != null) {
-					this.progress.verificationStarted(mode);
+					resetVerificationStarted(mode);
 					return true;
 				}
 				return false;
@@ -124,8 +127,17 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 							mode = new MockAwareVerificationMode(target, mockAwareMode);
 						}
 					}
-					this.progress.verificationStarted(mode);
+					resetVerificationStarted(mode);
 				}
+			}
+		}
+
+		private void resetVerificationStarted(VerificationMode mode) {
+			ArgumentMatcherStorage storage = this.progress.getArgumentMatcherStorage();
+			List<LocalizedMatcher> matchers = storage.pullLocalizedMatchers();
+			this.progress.verificationStarted(mode);
+			for (LocalizedMatcher matcher : matchers) {
+				storage.reportMatcher(matcher);
 			}
 		}
 

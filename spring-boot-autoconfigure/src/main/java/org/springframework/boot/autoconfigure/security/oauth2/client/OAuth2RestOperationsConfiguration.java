@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.security.oauth2.client;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -161,8 +162,14 @@ public class OAuth2RestOperationsConfiguration {
 			PropertyResolver resolver = new RelaxedPropertyResolver(
 					context.getEnvironment(), "security.oauth2.client.");
 			String clientId = resolver.getProperty("client-id");
-			return new ConditionOutcome(StringUtils.hasLength(clientId),
-					"Non empty security.oauth2.client.client-id");
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("OAuth Client ID");
+			if (StringUtils.hasLength(clientId)) {
+				return ConditionOutcome.match(message
+						.foundExactly("security.oauth2.client.client-id property"));
+			}
+			return ConditionOutcome.match(message
+					.didNotFind("security.oauth2.client.client-id property").atAll());
 		}
 
 	}

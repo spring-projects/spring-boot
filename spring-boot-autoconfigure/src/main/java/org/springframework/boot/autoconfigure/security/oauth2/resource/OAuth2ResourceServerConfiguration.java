@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -112,28 +113,32 @@ public class OAuth2ResourceServerConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("OAuth ResourceServer Condition");
 			Environment environment = context.getEnvironment();
 			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
 					"security.oauth2.resource.");
 			if (hasOAuthClientId(environment)) {
-				return ConditionOutcome.match("found client id");
+				return ConditionOutcome.match(message.foundExactly("client-id property"));
 			}
 			if (!resolver.getSubProperties("jwt").isEmpty()) {
-				return ConditionOutcome.match("found JWT resource configuration");
+				return ConditionOutcome
+						.match(message.foundExactly("JWT resource configuration"));
 			}
 			if (StringUtils.hasText(resolver.getProperty("user-info-uri"))) {
 				return ConditionOutcome
-						.match("found UserInfo " + "URI resource configuration");
+						.match(message.foundExactly("user-info-url property"));
 			}
 			if (ClassUtils.isPresent(AUTHORIZATION_ANNOTATION, null)) {
 				if (AuthorizationServerEndpointsConfigurationBeanCondition
 						.matches(context)) {
-					return ConditionOutcome.match(
-							"found authorization " + "server endpoints configuration");
+					return ConditionOutcome
+							.match(message.found("class").items(AUTHORIZATION_ANNOTATION));
 				}
 			}
-			return ConditionOutcome.noMatch("found neither client id nor "
-					+ "JWT resource nor authorization server");
+			return ConditionOutcome.noMatch(
+					message.didNotFind("client id, JWT resource or authorization server")
+							.atAll());
 		}
 
 		private boolean hasOAuthClientId(Environment environment) {

@@ -298,12 +298,14 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Test
 	public void relaxedPropertyNamesSame() throws Exception {
-		testRelaxedPropertyNames("test.FOO_BAR=test1", "test.FOO_BAR=test2");
+		testRelaxedPropertyNames("test.FOO_BAR=test1", "test.FOO_BAR=test2",
+				"test.BAR-B-A-Z=testa", "test.BAR-B-A-Z=testb");
 	}
 
 	@Test
 	public void relaxedPropertyNamesMixed() throws Exception {
-		testRelaxedPropertyNames("test.FOO_BAR=test2", "test.foo-bar=test1");
+		testRelaxedPropertyNames("test.FOO_BAR=test2", "test.foo-bar=test1",
+				"test.BAR-B-A-Z=testb", "test.bar_b_a_z=testa");
 	}
 
 	private void testRelaxedPropertyNames(String... environment) {
@@ -312,8 +314,9 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 				environment);
 		this.context.register(RelaxedPropertyNames.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(RelaxedPropertyNames.class).getFooBar())
-				.isEqualTo("test2");
+		RelaxedPropertyNames bean = this.context.getBean(RelaxedPropertyNames.class);
+		assertThat(bean.getFooBar()).isEqualTo("test2");
+		assertThat(bean.getBarBAZ()).isEqualTo("testb");
 	}
 
 	@Test
@@ -670,12 +673,22 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 		private String fooBar;
 
+		private String barBAZ;
+
 		public String getFooBar() {
 			return this.fooBar;
 		}
 
 		public void setFooBar(String fooBar) {
 			this.fooBar = fooBar;
+		}
+
+		public String getBarBAZ() {
+			return this.barBAZ;
+		}
+
+		public void setBarBAZ(String barBAZ) {
+			this.barBAZ = barBAZ;
 		}
 
 	}

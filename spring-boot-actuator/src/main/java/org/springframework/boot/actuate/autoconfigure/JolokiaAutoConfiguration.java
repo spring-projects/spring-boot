@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -97,8 +98,12 @@ public class JolokiaAutoConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			boolean endpointsEnabled = isEnabled(context, "endpoints.", true);
-			boolean enabled = isEnabled(context, "endpoints.jolokia.", endpointsEnabled);
-			return new ConditionOutcome(enabled, "Jolokia enabled");
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("Jolokia");
+			if (isEnabled(context, "endpoints.jolokia.", endpointsEnabled)) {
+				return ConditionOutcome.match(message.because("enabled"));
+			}
+			return ConditionOutcome.noMatch(message.because("not enabled"));
 		}
 
 		private boolean isEnabled(ConditionContext context, String prefix,

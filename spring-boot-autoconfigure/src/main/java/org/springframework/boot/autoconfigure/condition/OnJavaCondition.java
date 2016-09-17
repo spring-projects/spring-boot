@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,13 +52,13 @@ class OnJavaCondition extends SpringBootCondition {
 	protected ConditionOutcome getMatchOutcome(Range range, JavaVersion runningVersion,
 			JavaVersion version) {
 		boolean match = runningVersion.isWithin(range, version);
-		return new ConditionOutcome(match, getMessage(range, runningVersion, version));
+		String expected = String.format(
+				range == Range.EQUAL_OR_NEWER ? "(%s or newer)" : "(older than %s)",
+				version);
+		ConditionMessage message = ConditionMessage
+				.forCondition(ConditionalOnJava.class, expected)
+				.foundExactly(runningVersion);
+		return new ConditionOutcome(match, message);
 	}
 
-	private String getMessage(Range range, JavaVersion runningVersion,
-			JavaVersion version) {
-		String expected = String.format(
-				range == Range.EQUAL_OR_NEWER ? "%s or newer" : "older than %s", version);
-		return "Required JVM version " + expected + " found " + runningVersion;
-	}
 }

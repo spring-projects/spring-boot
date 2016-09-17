@@ -62,6 +62,7 @@
 		<module name="com.puppycrawl.tools.checkstyle.checks.coding.MultipleVariableDeclarationsCheck" />
 		<module name="com.puppycrawl.tools.checkstyle.checks.coding.RequireThisCheck">
 			<property name="checkMethods" value="false" />
+			<property name="validateOnlyOverlapping" value="false" />
 		</module>
 		<module name="com.puppycrawl.tools.checkstyle.checks.coding.OneStatementPerLineCheck" />
 

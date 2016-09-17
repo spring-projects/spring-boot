@@ -34,6 +34,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -52,8 +54,10 @@ public class SpyBeanWithAopProxyAndNotProxyTargetAwareTests {
 
 	@Test(expected = UnfinishedVerificationException.class)
 	public void verifyShouldUseProxyTarget() throws Exception {
-		this.dateService.getDate();
-		verify(this.dateService, times(1)).getDate();
+		this.dateService.getDate(false);
+		verify(this.dateService, times(1)).getDate(false);
+		verify(this.dateService, times(1)).getDate(eq(false));
+		verify(this.dateService, times(1)).getDate(anyBoolean());
 		reset(this.dateService);
 	}
 
@@ -82,7 +86,7 @@ public class SpyBeanWithAopProxyAndNotProxyTargetAwareTests {
 	static class DateService {
 
 		@Cacheable(cacheNames = "test")
-		public Long getDate() {
+		public Long getDate(boolean arg) {
 			return System.nanoTime();
 		}
 

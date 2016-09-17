@@ -712,11 +712,12 @@ public class ConfigFileApplicationListenerTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		this.context = application.run("--spring.profiles.active=includeprofile");
-		assertThat(this.context.getEnvironment()).has(matchingProfile("includeprofile"));
-		assertThat(this.context.getEnvironment()).has(matchingProfile("specific"));
-		assertThat(this.context.getEnvironment()).has(matchingProfile("morespecific"));
-		assertThat(this.context.getEnvironment()).has(matchingProfile("yetmorespecific"));
-		assertThat(this.context.getEnvironment()).doesNotHave(matchingProfile("missing"));
+		ConfigurableEnvironment environment = this.context.getEnvironment();
+		assertThat(environment).has(matchingProfile("includeprofile"));
+		assertThat(environment).has(matchingProfile("specific"));
+		assertThat(environment).has(matchingProfile("morespecific"));
+		assertThat(environment).has(matchingProfile("yetmorespecific"));
+		assertThat(environment).doesNotHave(matchingProfile("missing"));
 	}
 
 	@Test
@@ -824,7 +825,9 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableEnvironment environment = this.context.getEnvironment();
 		assertThat(environment.containsProperty("customprofile")).isTrue();
 		assertThat(environment.containsProperty("customprofile-specific")).isTrue();
-		assertThat(environment.containsProperty("customprofile-customdefault")).isFalse();
+		assertThat(environment.containsProperty("customprofile-customdefault")).isTrue();
+		assertThat(environment.acceptsProfiles("customdefault"))
+				.isTrue();
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(

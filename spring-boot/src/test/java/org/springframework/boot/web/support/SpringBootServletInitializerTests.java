@@ -94,6 +94,13 @@ public class SpringBootServletInitializerTests {
 				.containsOnly(WithErrorPageFilterNotRegistered.class);
 	}
 
+	@Test
+	public void servletContextApplicationListenerIsAdded() {
+		new WithConfiguredSource().createRootApplicationContext(this.servletContext);
+		assertThat(this.application.getListeners())
+				.hasAtLeastOneElementOfType(ServletContextApplicationListener.class);
+	}
+
 	private class MockSpringBootServletInitializer extends SpringBootServletInitializer {
 
 		@Override

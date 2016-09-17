@@ -28,6 +28,7 @@ import javax.cache.spi.CachingProvider;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -177,23 +178,28 @@ class JCacheCacheConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("JCache");
 			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 					context.getEnvironment(), "spring.cache.jcache.");
 			if (resolver.containsProperty("provider")) {
-				return ConditionOutcome.match("JCache provider specified");
+				return ConditionOutcome
+						.match(message.because("JCache provider specified"));
 			}
 			Iterator<CachingProvider> providers = Caching.getCachingProviders()
 					.iterator();
 			if (!providers.hasNext()) {
-				return ConditionOutcome.noMatch("No JSR-107 compliant providers");
+				return ConditionOutcome
+						.noMatch(message.didNotFind("JSR-107 provider").atAll());
 			}
 			providers.next();
 			if (providers.hasNext()) {
-				return ConditionOutcome.noMatch(
-						"Multiple default JSR-107 compliant " + "providers found");
+				return ConditionOutcome
+						.noMatch(message.foundExactly("multiple JSR-107 providers"));
 
 			}
-			return ConditionOutcome.match("Default JSR-107 compliant provider found.");
+			return ConditionOutcome
+					.match(message.foundExactly("single JSR-107 provider"));
 		}
 
 	}

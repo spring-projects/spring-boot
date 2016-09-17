@@ -47,6 +47,10 @@ abstract class AbstractTemplateResolverConfiguration {
 		this.applicationContext = applicationContext;
 	}
 
+	protected final ThymeleafProperties getProperties() {
+		return this.properties;
+	}
+
 	@PostConstruct
 	public void checkTemplateLocationExists() {
 		boolean checkTemplateLocation = this.properties.isCheckTemplateLocation();

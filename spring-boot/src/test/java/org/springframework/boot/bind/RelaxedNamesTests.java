@@ -123,4 +123,28 @@ public class RelaxedNamesTests {
 		assertThat(iterator.hasNext()).isFalse();
 	}
 
+	@Test
+	public void forCamelCase() throws Exception {
+		Iterator<String> iterator = RelaxedNames.forCamelCase("camelCase").iterator();
+		assertThat(iterator.next()).isEqualTo("camel-case");
+		assertThat(iterator.next()).isEqualTo("camel_case");
+		assertThat(iterator.next()).isEqualTo("camelCase");
+		assertThat(iterator.next()).isEqualTo("camelcase");
+		assertThat(iterator.next()).isEqualTo("CAMEL-CASE");
+		assertThat(iterator.next()).isEqualTo("CAMEL_CASE");
+		assertThat(iterator.next()).isEqualTo("CAMELCASE");
+	}
+
+	@Test
+	public void forCamelCaseWithCaps() throws Exception {
+		Iterator<String> iterator = RelaxedNames.forCamelCase("camelCASE").iterator();
+		assertThat(iterator.next()).isEqualTo("camel-c-a-s-e");
+		assertThat(iterator.next()).isEqualTo("camel_c_a_s_e");
+		assertThat(iterator.next()).isEqualTo("camelCASE");
+		assertThat(iterator.next()).isEqualTo("camelcase");
+		assertThat(iterator.next()).isEqualTo("CAMEL-C-A-S-E");
+		assertThat(iterator.next()).isEqualTo("CAMEL_C_A_S_E");
+		assertThat(iterator.next()).isEqualTo("CAMELCASE");
+	}
+
 }

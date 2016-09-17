@@ -113,6 +113,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		}
 		builder.initializers(
 				new ServletContextApplicationContextInitializer(servletContext));
+		builder.listeners(new ServletContextApplicationListener(servletContext));
 		builder.contextClass(AnnotationConfigEmbeddedWebApplicationContext.class);
 		builder = configure(builder);
 		SpringApplication application = builder.build();

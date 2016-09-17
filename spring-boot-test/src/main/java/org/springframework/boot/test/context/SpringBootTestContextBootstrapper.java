@@ -16,9 +16,11 @@
 
 package org.springframework.boot.test.context;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,11 +29,13 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestContextBootstrapper;
+import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.DefaultTestContextBootstrapper;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
@@ -72,6 +76,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	@Override
 	public TestContext buildTestContext() {
 		TestContext context = super.buildTestContext();
+		verifyConfiguration(context.getTestClass());
 		WebEnvironment webEnvironment = getWebEnvironment(context.getTestClass());
 		if (webEnvironment == WebEnvironment.MOCK && hasWebEnvironmentClasses()) {
 			context.setAttribute(ACTIVATE_SERVLET_LISTENER, true);
@@ -80,6 +85,18 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			context.setAttribute(ACTIVATE_SERVLET_LISTENER, false);
 		}
 		return context;
+	}
+
+	@Override
+	protected Set<Class<? extends TestExecutionListener>> getDefaultTestExecutionListenerClasses() {
+		Set<Class<? extends TestExecutionListener>> listeners = super.getDefaultTestExecutionListenerClasses();
+		List<DefaultTestExecutionListenersPostProcessor> postProcessors = SpringFactoriesLoader
+				.loadFactories(DefaultTestExecutionListenersPostProcessor.class,
+						getClass().getClassLoader());
+		for (DefaultTestExecutionListenersPostProcessor postProcessor : postProcessors) {
+			listeners = postProcessor.postProcessDefaultTestExecutionListeners(listeners);
+		}
+		return listeners;
 	}
 
 	@Override
@@ -244,6 +261,24 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 
 	protected SpringBootTest getAnnotation(Class<?> testClass) {
 		return AnnotatedElementUtils.getMergedAnnotation(testClass, SpringBootTest.class);
+	}
+
+	protected void verifyConfiguration(Class<?> testClass) {
+		SpringBootTest springBootTest = getAnnotation(testClass);
+		if (springBootTest != null
+				&& (springBootTest.webEnvironment() == WebEnvironment.DEFINED_PORT
+						|| springBootTest.webEnvironment() == WebEnvironment.RANDOM_PORT)
+				&& getAnnotation(WebAppConfiguration.class, testClass) != null) {
+			throw new IllegalStateException("@WebAppConfiguration should only be used "
+					+ "with @SpringBootTest when @SpringBootTest is configured with a "
+					+ "mock web environment. Please remove @WebAppConfiguration or "
+					+ "reconfigure @SpringBootTest.");
+		}
+	}
+
+	private <T extends Annotation> T getAnnotation(Class<T> annotationType,
+			Class<?> testClass) {
+		return AnnotatedElementUtils.getMergedAnnotation(testClass, annotationType);
 	}
 
 	/**

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.bind.PropertySourcesPropertyValues;
@@ -31,6 +32,7 @@ import org.springframework.util.ClassUtils;
  * enabled.
  *
  * @author Stephane Nicoll
+ * @see ConditionalOnEnabledResourceChain
  */
 class OnEnabledResourceChainCondition extends SpringBootCondition {
 
@@ -45,15 +47,21 @@ class OnEnabledResourceChainCondition extends SpringBootCondition {
 		RelaxedDataBinder binder = new RelaxedDataBinder(properties, "spring.resources");
 		binder.bind(new PropertySourcesPropertyValues(environment.getPropertySources()));
 		Boolean match = properties.getChain().getEnabled();
+		ConditionMessage.Builder message = ConditionMessage
+				.forCondition(ConditionalOnEnabledResourceChain.class);
 		if (match == null) {
-			boolean webJarsLocatorPresent = ClassUtils.isPresent(WEBJAR_ASSERT_LOCATOR,
-					getClass().getClassLoader());
-			return new ConditionOutcome(webJarsLocatorPresent,
-					"Webjars locator (" + WEBJAR_ASSERT_LOCATOR + ") is "
-							+ (webJarsLocatorPresent ? "present" : "absent"));
+			if (ClassUtils.isPresent(WEBJAR_ASSERT_LOCATOR,
+					getClass().getClassLoader())) {
+				return ConditionOutcome
+						.match(message.found("class").items(WEBJAR_ASSERT_LOCATOR));
+			}
+			return ConditionOutcome
+					.noMatch(message.didNotFind("class").items(WEBJAR_ASSERT_LOCATOR));
 		}
-		return new ConditionOutcome(match,
-				"Resource chain is " + (match ? "enabled" : "disabled"));
+		if (match) {
+			return ConditionOutcome.match(message.because("enabled"));
+		}
+		return ConditionOutcome.noMatch(message.because("disabled"));
 	}
 
 }

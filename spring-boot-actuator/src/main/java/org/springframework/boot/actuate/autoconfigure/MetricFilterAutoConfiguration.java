@@ -64,7 +64,7 @@ public class MetricFilterAutoConfiguration {
 	}
 
 	@Bean
-	public MetricsFilter metricFilter() {
+	public MetricsFilter metricsFilter() {
 		return new MetricsFilter(this.counterService, this.gaugeService, this.properties);
 	}
 

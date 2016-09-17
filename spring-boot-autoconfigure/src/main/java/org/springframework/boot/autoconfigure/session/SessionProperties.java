@@ -107,6 +107,8 @@ public class SessionProperties {
 		private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
 				+ "session/jdbc/schema-@@platform@@.sql";
 
+		private static final String DEFAULT_TABLE_NAME = "SPRING_SESSION";
+
 		/**
 		 * Path to the SQL file to use to initialize the database schema.
 		 */
@@ -115,7 +117,7 @@ public class SessionProperties {
 		/**
 		 * Name of database table used to store sessions.
 		 */
-		private String tableName = "SPRING_SESSION";
+		private String tableName = DEFAULT_TABLE_NAME;
 
 		private final Initializer initializer = new Initializer();
 
@@ -139,15 +141,24 @@ public class SessionProperties {
 			return this.initializer;
 		}
 
-		public static class Initializer {
+		public class Initializer {
 
 			/**
-			 * Create the required session tables on startup if necessary.
+			 * Create the required session tables on startup if necessary. Enabled
+			 * automatically if the default table name is set or a custom schema is
+			 * configured.
 			 */
-			private boolean enabled = true;
+			private Boolean enabled;
 
 			public boolean isEnabled() {
-				return this.enabled;
+				if (this.enabled != null) {
+					return this.enabled;
+				}
+				boolean defaultTableName = DEFAULT_TABLE_NAME
+						.equals(Jdbc.this.getTableName());
+				boolean customSchema = !DEFAULT_SCHEMA_LOCATION
+						.equals(Jdbc.this.getSchema());
+				return (defaultTableName || customSchema);
 			}
 
 			public void setEnabled(boolean enabled) {

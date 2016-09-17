@@ -54,8 +54,8 @@ public class WarPackagingTests {
 					"jetty-server-", "jetty-security-", "jetty-servlet-",
 					"jetty-servlets", "jetty-webapp-", "websocket-api",
 					"javax.annotation-api", "jetty-plus", "javax-websocket-server-impl-",
-					"asm-", "javax.websocket-api-", "asm-tree-", "asm-commons-",
-					"websocket-common-", "jetty-annotations-",
+					"apache-el", "asm-", "javax.websocket-api-", "asm-tree-",
+					"asm-commons-", "websocket-common-", "jetty-annotations-",
 					"javax-websocket-client-impl-", "websocket-client-",
 					"websocket-server-", "jetty-xml-", "websocket-servlet-"));
 

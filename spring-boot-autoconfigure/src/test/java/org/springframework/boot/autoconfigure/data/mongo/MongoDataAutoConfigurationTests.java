@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -44,6 +45,7 @@ import org.springframework.data.mapping.model.PropertyNameFieldNamingStrategy;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+import org.springframework.data.mongodb.core.mapping.MongoPersistentEntity;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -156,6 +158,17 @@ public class MongoDataAutoConfigurationTests {
 		assertThat(initialEntitySet).containsOnly(City.class, Country.class);
 	}
 
+	@Test
+	public void registersDefaultSimpleTypesWithMappingContext() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class);
+		this.context.refresh();
+		MongoMappingContext context = this.context.getBean(MongoMappingContext.class);
+		MongoPersistentEntity<?> entity = context.getPersistentEntity(Sample.class);
+		assertThat(entity.getPersistentProperty("date").isEntity()).isFalse();
+	}
+
 	public void testFieldNamingStrategy(String strategy,
 			Class<? extends FieldNamingStrategy> expectedType) {
 		this.context = new AnnotationConfigApplicationContext();
@@ -205,4 +218,9 @@ public class MongoDataAutoConfigurationTests {
 
 	}
 
+	static class Sample {
+
+		LocalDateTime date;
+
+	}
 }

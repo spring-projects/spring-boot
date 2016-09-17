@@ -40,6 +40,7 @@ import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -333,13 +334,18 @@ public class EndpointWebMvcAutoConfiguration
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("Management Server MVC");
 			if (!(context.getResourceLoader() instanceof WebApplicationContext)) {
-				return ConditionOutcome.noMatch("Non WebApplicationContext");
+				return ConditionOutcome
+						.noMatch(message.because("non WebApplicationContext"));
 			}
 			ManagementServerPort port = ManagementServerPort.get(context.getEnvironment(),
 					context.getBeanFactory());
-			return new ConditionOutcome(port == ManagementServerPort.SAME,
-					"Management context");
+			if (port == ManagementServerPort.SAME) {
+				return ConditionOutcome.match(message.because("port is same"));
+			}
+			return ConditionOutcome.noMatch(message.because("port is not same"));
 		}
 
 	}
