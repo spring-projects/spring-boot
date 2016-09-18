@@ -2377,7 +2377,9 @@ explicitly configure the paths that you do want to override.
 [[boot-features-security-oauth2]]
 === OAuth2
 If you have `spring-security-oauth2` on your classpath you can take advantage of some
-auto-configuration to make it easy to set up Authorization or Resource Server.
+auto-configuration to make it easy to set up Authorization or Resource Server. For full
+details, see the {spring-security-oauth2-reference}[Spring Security OAuth 2 Developers
+Guide].
 
 
 
