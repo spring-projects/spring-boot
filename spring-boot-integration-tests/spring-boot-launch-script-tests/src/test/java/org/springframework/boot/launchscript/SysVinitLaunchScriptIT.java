@@ -233,7 +233,7 @@ public class SysVinitLaunchScriptIT {
 
 	private DockerClient createClient() {
 		DockerClientConfig config = DockerClientConfig.createDefaultConfigBuilder()
-				.build();
+				.withVersion("1.19").build();
 		DockerClient docker = DockerClientBuilder.getInstance(config)
 				.withDockerCmdExecFactory(this.commandExecFactory).build();
 		return docker;
