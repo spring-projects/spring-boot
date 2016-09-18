@@ -64,7 +64,7 @@ public class JerseyAutoConfigurationCustomServletContextPathTests {
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/app/rest/hello",
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/rest/hello",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
