@@ -61,7 +61,7 @@ public class JsonTestersAutoConfiguration {
 
 	@Bean
 	@Scope("prototype")
-	public FactoryBean<BasicJsonTester> BasicJsonTesterFactoryBean() {
+	public FactoryBean<BasicJsonTester> basicJsonTesterFactoryBean() {
 		return new JsonTesterFactoryBean<BasicJsonTester, Void>(BasicJsonTester.class,
 				null);
 	}
@@ -155,14 +155,14 @@ public class JsonTestersAutoConfiguration {
 				@Override
 				public void doWith(Field field)
 						throws IllegalArgumentException, IllegalAccessException {
-					processFiled(bean, field);
+					processField(bean, field);
 				}
 
 			});
 			return bean;
 		}
 
-		private void processFiled(Object bean, Field field) {
+		private void processField(Object bean, Field field) {
 			if (AbstractJsonMarshalTester.class.isAssignableFrom(field.getType())
 					|| BasicJsonTester.class.isAssignableFrom(field.getType())) {
 				ResolvableType type = ResolvableType.forField(field).getGeneric();
