@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.web.client;
 
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
@@ -28,6 +29,7 @@ import org.springframework.web.util.UriTemplateHandler;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  * @since 1.4.0
  */
 public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
@@ -36,9 +38,11 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 
 	private final String scheme;
 
+	private RelaxedPropertyResolver serverPropertyResolver;
+
 	/**
 	 * Create a new {@code LocalHostUriTemplateHandler} that will generate {@code http}
-	 * URIs using the given {@code environment} to determine the port.
+	 * URIs using the given {@code environment} to determine the context path and port.
 	 * @param environment the environment used to determine the port
 	 */
 	public LocalHostUriTemplateHandler(Environment environment) {
@@ -47,7 +51,8 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 
 	/**
 	 * Create a new {@code LocalHostUriTemplateHandler} that will generate URIs with the
-	 * given {@code scheme} and use the given {@code environment} to determine the port.
+	 * given {@code scheme} and use the given {@code environment} to determine the
+	 * context-path and port.
 	 * @param environment the environment used to determine the port
 	 * @param scheme the scheme of the root uri
 	 * @since 1.4.1
@@ -58,12 +63,14 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 		Assert.notNull(scheme, "Scheme must not be null");
 		this.environment = environment;
 		this.scheme = scheme;
+		this.serverPropertyResolver = new RelaxedPropertyResolver(environment, "server.");
 	}
 
 	@Override
 	public String getRootUri() {
 		String port = this.environment.getProperty("local.server.port", "8080");
-		return this.scheme + "://localhost:" + port;
+		String contextPath = this.serverPropertyResolver.getProperty("context-path", "");
+		return this.scheme + "://localhost:" + port + contextPath;
 	}
 
 }
