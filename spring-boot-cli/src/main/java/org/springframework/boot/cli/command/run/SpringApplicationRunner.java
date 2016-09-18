@@ -80,7 +80,7 @@ public class SpringApplicationRunner {
 			System.setProperty("debug", "true");
 		}
 		else if (level == Level.OFF.intValue()) {
-			System.setProperty("spring.main.showBanner", "false");
+			System.setProperty("spring.main.banner-mode", "OFF");
 			System.setProperty("logging.level.ROOT", "OFF");
 		}
 	}
