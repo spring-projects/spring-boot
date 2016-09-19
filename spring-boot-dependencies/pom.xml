@@ -131,7 +131,7 @@
 		<mysql.version>5.1.39</mysql.version>
 		<narayana.version>5.3.4.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
-		<neo4j-ogm.version>2.0.4</neo4j-ogm.version>
+		<neo4j-ogm.version>2.0.5</neo4j-ogm.version>
 		<postgresql.version>9.4.1211.jre7</postgresql.version>
 		<querydsl.version>4.1.4</querydsl.version>
 		<reactor.version>2.0.8.RELEASE</reactor.version>
