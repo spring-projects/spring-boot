@@ -3788,7 +3788,7 @@ providers (in this order):
 
 * <<boot-features-caching-provider-generic,Generic>>
 * <<boot-features-caching-provider-jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast,
-  Infinspan, etc)
+  Infinispan, etc)
 * <<boot-features-caching-provider-ehcache2,EhCache 2.x>>
 * <<boot-features-caching-provider-hazelcast,Hazelcast>>
 * <<boot-features-caching-provider-infinispan,Infinispan>>
