@@ -958,7 +958,7 @@ For example:
 
 [source,properties,indent=0]
 ----
-	restart.include.companycommonlibs=/mycorp-common-[\\w-]+\.jar
+	restart.exclude.companycommonlibs=/mycorp-common-[\\w-]+\.jar
 	restart.include.projectcommon=/mycorp-myproj-[\\w-]+\.jar
 ----
 
