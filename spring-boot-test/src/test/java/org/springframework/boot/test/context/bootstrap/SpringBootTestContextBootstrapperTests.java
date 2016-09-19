@@ -61,10 +61,10 @@ public class SpringBootTestContextBootstrapperTests {
 		BootstrapContext bootstrapContext = mock(BootstrapContext.class);
 		bootstrapper.setBootstrapContext(bootstrapContext);
 		given((Class) bootstrapContext.getTestClass()).willReturn(testClass);
-		CacheAwareContextLoaderDelegate contextLoaderDeleagte = mock(
+		CacheAwareContextLoaderDelegate contextLoaderDelegate = mock(
 				CacheAwareContextLoaderDelegate.class);
 		given(bootstrapContext.getCacheAwareContextLoaderDelegate())
-				.willReturn(contextLoaderDeleagte);
+				.willReturn(contextLoaderDelegate);
 		bootstrapper.buildTestContext();
 	}
 
