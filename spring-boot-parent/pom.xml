@@ -70,7 +70,7 @@
 			<dependency>
 				<groupId>io.spring.gradle</groupId>
 				<artifactId>dependency-management-plugin</artifactId>
-				<version>0.6.0.RELEASE</version>
+				<version>0.6.1.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>jline</groupId>
