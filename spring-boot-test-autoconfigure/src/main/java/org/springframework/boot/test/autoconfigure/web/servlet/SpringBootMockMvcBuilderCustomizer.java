@@ -17,16 +17,26 @@
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.Filter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.ServletContextInitializerBeans;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultHandler;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.PrintingResultHandler;
 import org.springframework.test.web.servlet.setup.ConfigurableMockMvcBuilder;
 import org.springframework.util.Assert;
@@ -50,6 +60,8 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 
 	private MockMvcPrint print = MockMvcPrint.DEFAULT;
 
+	private boolean printOnlyOnFailure = true;
+
 	/**
 	 * Create a new {@link SpringBootMockMvcBuilderCustomizer} instance.
 	 * @param context the source application context
@@ -71,13 +83,25 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	}
 
 	private ResultHandler getPrintHandler() {
+		LinesWriter writer = getLinesWriter();
+		if (writer == null) {
+			return null;
+		}
+		if (this.printOnlyOnFailure) {
+			writer = new DeferredLinesWriter(this.context, writer);
+		}
+		return new LinesWritingResultHandler(writer);
+	}
+
+	private LinesWriter getLinesWriter() {
 		if (this.print == MockMvcPrint.NONE) {
 			return null;
 		}
 		if (this.print == MockMvcPrint.LOG_DEBUG) {
-			return MockMvcResultHandlers.log();
+			return new LoggingLinesWriter();
 		}
-		return new SystemResultHandler(this.print);
+		return new SystemLinesWriter(this.print);
+
 	}
 
 	private void addFilters(ConfigurableMockMvcBuilder<?> builder) {
@@ -129,47 +153,166 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 		return this.print;
 	}
 
-	/**
-	 * {@link PrintingResultHandler} to deal with {@code System.out} and
-	 * {@code System.err} printing. The actual {@link PrintStream} used to write the
-	 * response is obtained as late as possible in case an {@code OutputCaptureRule} is
-	 * being used.
-	 */
-	private static class SystemResultHandler extends PrintingResultHandler {
+	public void setPrintOnlyOnFailure(boolean printOnlyOnFailure) {
+		this.printOnlyOnFailure = printOnlyOnFailure;
+	}
 
-		protected SystemResultHandler(MockMvcPrint print) {
-			super(new SystemResultValuePrinter(print));
+	public boolean isPrintOnlyOnFailure() {
+		return this.printOnlyOnFailure;
+	}
+
+	/**
+	 * {@link ResultHandler} that prints {@link MvcResult} details to a given
+	 * {@link LinesWriter}.
+	 */
+	private static class LinesWritingResultHandler implements ResultHandler {
+
+		private final LinesWriter writer;
+
+		LinesWritingResultHandler(LinesWriter writer) {
+			this.writer = writer;
 		}
 
-		private static class SystemResultValuePrinter implements ResultValuePrinter {
+		@Override
+		public void handle(MvcResult result) throws Exception {
+			LinesPrintingResultHandler delegate = new LinesPrintingResultHandler();
+			delegate.handle(result);
+			delegate.write(this.writer);
+		}
 
-			private final MockMvcPrint print;
+		private static class LinesPrintingResultHandler extends PrintingResultHandler {
 
-			SystemResultValuePrinter(MockMvcPrint print) {
-				this.print = print;
+			protected LinesPrintingResultHandler() {
+				super(new Printer());
 			}
 
-			@Override
-			public void printHeading(String heading) {
-				getWriter().println();
-				getWriter().println(String.format("%s:", heading));
+			public void write(LinesWriter writer) {
+				writer.write(((Printer) getPrinter()).getLines());
 			}
 
-			@Override
-			public void printValue(String label, Object value) {
-				if (value != null && value.getClass().isArray()) {
-					value = CollectionUtils.arrayToList(value);
+			private static class Printer implements ResultValuePrinter {
+
+				private final List<String> lines = new ArrayList<String>();
+
+				@Override
+				public void printHeading(String heading) {
+					this.lines.add("");
+					this.lines.add(String.format("%s:", heading));
 				}
-				getWriter().println(String.format("%17s = %s", label, value));
-			}
 
-			private PrintStream getWriter() {
-				if (this.print == MockMvcPrint.SYSTEM_ERR) {
-					return System.err;
+				@Override
+				public void printValue(String label, Object value) {
+					if (value != null && value.getClass().isArray()) {
+						value = CollectionUtils.arrayToList(value);
+					}
+					this.lines.add(String.format("%17s = %s", label, value));
 				}
-				return System.out;
+
+				public List<String> getLines() {
+					return this.lines;
+				}
+
 			}
 
+		}
+
+	}
+
+	/**
+	 * Strategy interface to write MVC result lines.
+	 */
+	interface LinesWriter {
+
+		void write(List<String> lines);
+
+	}
+
+	/**
+	 * {@link LinesWriter} used to defer writing until errors are detected.
+	 * @see MockMvcPrintOnlyOnFailureTestExecutionListener
+	 */
+	static class DeferredLinesWriter implements LinesWriter {
+
+		private static final String BEAN_NAME = DeferredLinesWriter.class.getName();
+
+		private final LinesWriter delegate;
+
+		private final List<String> lines = new ArrayList<String>();
+
+		DeferredLinesWriter(WebApplicationContext context, LinesWriter delegate) {
+			Assert.state(context instanceof ConfigurableApplicationContext,
+					"A ConfigurableApplicationContext is required for printOnlyOnFailure");
+			((ConfigurableApplicationContext) context).getBeanFactory()
+					.registerSingleton(BEAN_NAME, this);
+			this.delegate = delegate;
+		}
+
+		@Override
+		public void write(List<String> lines) {
+			this.lines.addAll(lines);
+		}
+
+		public void writeDeferredResult() {
+			this.delegate.write(this.lines);
+		}
+
+		public static DeferredLinesWriter get(ApplicationContext applicationContext) {
+			try {
+				return applicationContext.getBean(BEAN_NAME, DeferredLinesWriter.class);
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				return null;
+			}
+		}
+
+	}
+
+	/**
+	 * {@link LinesWriter} to output results to the log.
+	 */
+	private static class LoggingLinesWriter implements LinesWriter {
+
+		private static final Log logger = LogFactory
+				.getLog("org.springframework.test.web.servlet.result");
+
+		@Override
+		public void write(List<String> lines) {
+			if (logger.isDebugEnabled()) {
+				StringWriter stringWriter = new StringWriter();
+				PrintWriter printWriter = new PrintWriter(stringWriter);
+				for (String line : lines) {
+					printWriter.println(line);
+				}
+				logger.debug("MvcResult details:\n" + stringWriter);
+			}
+		}
+
+	}
+
+	/**
+	 * {@link LinesWriter} to output results to {@code System.out} or {@code System.err}.
+	 */
+	private static class SystemLinesWriter implements LinesWriter {
+
+		private final MockMvcPrint print;
+
+		SystemLinesWriter(MockMvcPrint print) {
+			this.print = print;
+		}
+
+		@Override
+		public void write(List<String> lines) {
+			PrintStream printStream = getPrintStream();
+			for (String line : lines) {
+				printStream.println(line);
+			}
+		}
+
+		private PrintStream getPrintStream() {
+			if (this.print == MockMvcPrint.SYSTEM_ERR) {
+				return System.err;
+			}
+			return System.out;
 		}
 
 	}

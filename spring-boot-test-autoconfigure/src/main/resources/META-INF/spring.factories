@@ -82,4 +82,5 @@ org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomiz
 org.springframework.test.context.TestExecutionListener=\
 org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener,\
+org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener
