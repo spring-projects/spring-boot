@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.example.ExampleService;
 import org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller;
 import org.springframework.boot.test.mock.mockito.example.SimpleExampleService;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test {@link SpyBean} on a test class field can be used to inject new mock instances.
+ * Test {@link SpyBean} on a test class field can be used to inject new spy instances.
  *
  * @author Phillip Webb
  */
@@ -39,7 +38,7 @@ import static org.mockito.Mockito.verify;
 public class SpyBeanOnTestFieldForNewBeanIntegrationTests {
 
 	@SpyBean
-	private ExampleService exampleService;
+	private SimpleExampleService exampleService;
 
 	@Autowired
 	private ExampleServiceCaller caller;
@@ -51,7 +50,7 @@ public class SpyBeanOnTestFieldForNewBeanIntegrationTests {
 	}
 
 	@Configuration
-	@Import({ ExampleServiceCaller.class, SimpleExampleService.class })
+	@Import(ExampleServiceCaller.class)
 	static class Config {
 
 	}

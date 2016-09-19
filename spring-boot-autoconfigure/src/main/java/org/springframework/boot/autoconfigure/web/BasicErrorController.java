@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,7 +60,19 @@ public class BasicErrorController extends AbstractErrorController {
 	 */
 	public BasicErrorController(ErrorAttributes errorAttributes,
 			ErrorProperties errorProperties) {
-		super(errorAttributes);
+		this(errorAttributes, errorProperties,
+				Collections.<ErrorViewResolver>emptyList());
+	}
+
+	/**
+	 * Create a new {@link BasicErrorController} instance.
+	 * @param errorAttributes the error attributes
+	 * @param errorProperties configuration properties
+	 * @param errorViewResolvers error view resolvers
+	 */
+	public BasicErrorController(ErrorAttributes errorAttributes,
+			ErrorProperties errorProperties, List<ErrorViewResolver> errorViewResolvers) {
+		super(errorAttributes, errorViewResolvers);
 		Assert.notNull(errorProperties, "ErrorProperties must not be null");
 		this.errorProperties = errorProperties;
 	}
@@ -71,10 +85,12 @@ public class BasicErrorController extends AbstractErrorController {
 	@RequestMapping(produces = "text/html")
 	public ModelAndView errorHtml(HttpServletRequest request,
 			HttpServletResponse response) {
-		response.setStatus(getStatus(request).value());
-		Map<String, Object> model = getErrorAttributes(request,
-				isIncludeStackTrace(request, MediaType.TEXT_HTML));
-		return new ModelAndView("error", model);
+		HttpStatus status = getStatus(request);
+		Map<String, Object> model = Collections.unmodifiableMap(getErrorAttributes(
+				request, isIncludeStackTrace(request, MediaType.TEXT_HTML)));
+		response.setStatus(status.value());
+		ModelAndView modelAndView = resolveErrorView(request, response, status, model);
+		return (modelAndView == null ? new ModelAndView("error", model) : modelAndView);
 	}
 
 	@RequestMapping

@@ -9,6 +9,7 @@ abstraction is supported by many caching libraries, including:
 * `Infinispan`
 * `Couchbase`
 * `Redis`
+* `Caffeine`
 * `Guava`
 * Simple provider based on `ConcurrentHashMap`
 * Generic provider based on `org.springframework.Cache` bean definition(s)
@@ -42,6 +43,7 @@ If you want to configure your cache infrastructure via the standard, you need a 
 implementation and the JSR-107 api. You first need to add `javax.cache:cache-api` to your
 project. Then you could try the following:
 
+* `EhCache 3`: add `org.ehcache:ehcache`
 * `Hazelcast`: add `com.hazelcast:hazelcast`
 * `Infinispan`: add `org.infinispan:infinispan-jcache`
 
@@ -58,7 +60,9 @@ of the library that you want to use.
 === EhCache 2.x
 Simply add the `net.sf.ehcache:ehcache` dependency to the project. Since there is a
 default `ehcache.xml` configuration file at the root of the classpath, it is automatically
-used to configure the underlying `CacheManager`.
+used to configure the underlying `CacheManager`. Note that EhCache 3 uses a different
+format and doesn't default to `ehcache.xml` anymore. Check
+http://www.ehcache.org/documentation/3.0/xml.html[the documentation] for more details.
 
 
 
@@ -71,11 +75,11 @@ the underlying `HazelcastInstance`.
 
 
 === Infinispan
-Simply add the `org.infinispan:infinispan-spring4` dependency to enable support for
-Infinispan. There is no default location that Infinispan uses to look for a config
-file so if you don't specify anything it will bootstrap on a hardcoded default. You
-can set the `spring.cache.infinispan.config` property to use the provided
-`infinispan.xml` configuration instead.
+Add the `org.infinispan:infinispan-spring4-embedded` dependency to enable support for
+Infinispan. There is no default location that Infinispan uses to look for a config file
+so if you don't specify anything it will bootstrap on a hardcoded default. You can set
+the `spring.cache.infinispan.config` property to use the provided `infinispan.xml`
+configuration instead.
 
 
 

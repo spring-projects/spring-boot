@@ -17,11 +17,13 @@
 package org.springframework.boot.context.config;
 
 import java.util.Random;
+import java.util.UUID;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link RandomValuePropertySource}.
@@ -47,6 +49,13 @@ public class RandomValuePropertySourceTests {
 	public void intValue() {
 		Integer value = (Integer) this.source.getProperty("random.int");
 		assertThat(value).isNotNull();
+	}
+
+	@Test
+	public void uuidValue() {
+		String value = (String) this.source.getProperty("random.uuid");
+		assertThat(value).isNotNull();
+		assertThat(UUID.fromString(value)).isNotNull();
 	}
 
 	@Test
@@ -83,8 +92,8 @@ public class RandomValuePropertySourceTests {
 
 	@Test
 	public void longOverflow() {
-		RandomValuePropertySource source = Mockito.spy(this.source);
-		Mockito.when(source.getSource()).thenReturn(new Random() {
+		RandomValuePropertySource source = spy(this.source);
+		given(source.getSource()).willReturn(new Random() {
 
 			@Override
 			public long nextLong() {

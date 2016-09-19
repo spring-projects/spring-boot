@@ -37,12 +37,13 @@ diverge from the defaults.
 [[getting-started-system-requirements]]
 == System Requirements
 By default, Spring Boot {spring-boot-version} requires http://www.java.com[Java 7] and
-Spring Framework {spring-version} or above. You can use Spring Boot with Java 6 with some additional
-configuration. See <<howto.adoc#howto-use-java-6>> for more details. Explicit build support
-is provided for Maven (3.2+) and Gradle (1.12+).
+Spring Framework {spring-version} or above. You can use Spring Boot with Java 6 with some
+additional configuration. See <<howto.adoc#howto-use-java-6>> for more details. Explicit
+build support is provided for Maven (3.2+) and Gradle (1.12 or 2.x). Gradle 3 is not
+supported.
 
-TIP: Although you can use Spring Boot with Java 6 or 7, we generally recommend Java 8 if at
-all possible.
+TIP: Although you can use Spring Boot with Java 6 or 7, we generally recommend Java 8 if
+at all possible.
 
 === Servlet containers
 The following embedded servlet containers are supported out of the box:
@@ -58,7 +59,11 @@ The following embedded servlet containers are supported out of the box:
 |3.0
 |Java 6+
 
-|Jetty 9
+|Jetty 9.3
+|3.1
+|Java 8+
+
+|Jetty 9.2
 |3.1
 |Java 7+
 
@@ -66,7 +71,7 @@ The following embedded servlet containers are supported out of the box:
 |3.0
 |Java 6+
 
-|Undertow 1.1
+|Undertow 1.3
 |3.1
 |Java 7+
 |===
@@ -119,8 +124,8 @@ OSX Homebrew user try `brew install maven`. Ubuntu users can run
 
 Spring Boot dependencies use the `org.springframework.boot` `groupId`. Typically your
 Maven POM file will inherit from the `spring-boot-starter-parent` project and declare
-dependencies to one or more <<using-spring-boot.adoc#using-boot-starter-poms, "`Starter
-POMs`">>. Spring Boot also provides an optional
+dependencies to one or more <<using-spring-boot.adoc#using-boot-starter,
+"`Starters`">>. Spring Boot also provides an optional
 <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven plugin>> to create
 executable jars.
 
@@ -200,12 +205,13 @@ scope.
 
 [[getting-started-gradle-installation]]
 ==== Gradle installation
-Spring Boot is compatible with Gradle 1.12 or above. If you don't already have Gradle
-installed you can follow the instructions at http://www.gradle.org/.
+Spring Boot is compatible with Gradle 1.12 or 2.x. 2.14.1 is recommended. Gradle 3 is not
+supported. If you don't already have Gradle installed you can follow the instructions at
+http://www.gradle.org/.
 
 Spring Boot dependencies can be declared using the `org.springframework.boot` `group`.
 Typically your project will declare dependencies to one or more
-<<using-spring-boot.adoc#using-boot-starter-poms, "`Starter POMs`">>. Spring Boot
+<<using-spring-boot.adoc#using-boot-starter, "`Starters`">>. Spring Boot
 provides a useful <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, Gradle plugin>>
 that can be used to simplify dependency declarations and to create executable jars.
 
@@ -213,8 +219,7 @@ that can be used to simplify dependency declarations and to create executable ja
 ****
 The Gradle Wrapper provides a nice way of "`obtaining`" Gradle when you need to build a
 project. It's a small script and library that you commit alongside your code to bootstrap
-the build process. See http://www.gradle.org/docs/current/userguide/gradle_wrapper.html
-for details.
+the build process. See {gradle-user-guide}/gradle_wrapper.html for details.
 ****
 
 Here is a typical `build.gradle` file:
@@ -378,7 +383,7 @@ manually, e.g. if you have installed using SDKMAN!
 
 [indent=0]
 ----
-	$ . ~/.sdkman/springboot/current/shell-completion/bash/spring
+	$ . ~/.sdkman/candidates/springboot/current/shell-completion/bash/spring
 	$ spring <HIT TAB HERE>
 	  grab  help  jar  run  test  version
 ----
@@ -544,14 +549,14 @@ text editor for this example.
 
 [[getting-started-first-application-dependencies]]
 === Adding classpath dependencies
-Spring Boot provides a number of "`Starter POMs`" that make easy to add jars to your
+Spring Boot provides a number of "`Starters`" that make easy to add jars to your
 classpath. Our sample application has already used `spring-boot-starter-parent` in the
 `parent` section of the POM. The `spring-boot-starter-parent` is a special starter
 that provides useful Maven defaults. It also provides a
 <<using-spring-boot.adoc#using-boot-dependency-management,`dependency-management`>>
 section so that you can omit `version` tags for "`blessed`" dependencies.
 
-Other "`Starter POMs`" simply provide dependencies that you are likely to need when
+Other "`Starters`" simply provide dependencies that you are likely to need when
 developing a specific type of application. Since we are developing a web application, we
 will add a `spring-boot-starter-web` dependency -- but before that, let's look at what we
 currently have.
@@ -643,11 +648,11 @@ dependencies that you have added. Since `spring-boot-starter-web` added Tomcat a
 Spring MVC, the auto-configuration will assume that you are developing a web application
 and setup Spring accordingly.
 
-.Starter POMs and Auto-Configuration
+.Starters and Auto-Configuration
 ****
-Auto-configuration is designed to work well with "`Starter POMs`", but the two concepts
+Auto-configuration is designed to work well with "`Starters`", but the two concepts
 are not directly tied. You are free to pick-and-choose jar dependencies outside of the
-starter POMs and Spring Boot will still do its best to auto-configure your application.
+starters and Spring Boot will still do its best to auto-configure your application.
 ****
 
 

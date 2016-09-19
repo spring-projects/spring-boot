@@ -245,6 +245,18 @@ public class ThymeleafAutoConfigurationTests {
 				.isInstanceOf(GroupingStrategy.class);
 	}
 
+	@Test
+	public void cachingCanBeDisabled() {
+		this.context.register(ThymeleafAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.thymeleaf.cache:false");
+		this.context.refresh();
+		assertThat(this.context.getBean(ThymeleafViewResolver.class).isCache()).isFalse();
+		TemplateResolver templateResolver = this.context.getBean(TemplateResolver.class);
+		templateResolver.initialize();
+		assertThat(templateResolver.isCacheable()).isFalse();
+	}
+
 	@Configuration
 	@ImportAutoConfiguration({ ThymeleafAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })

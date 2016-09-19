@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class PropertySourcesPropertyValuesTests {
 
@@ -222,9 +223,31 @@ public class PropertySourcesPropertyValuesTests {
 		assertThat(target.getList()).containsExactly("f0");
 	}
 
+	@Test
+	public void testFirstCollectionPropertyWinsNestedAttributes() throws Exception {
+		ListTestBean target = new ListTestBean();
+		DataBinder binder = new DataBinder(target);
+		Map<String, Object> first = new LinkedHashMap<String, Object>();
+		first.put("list[0].description", "another description");
+		Map<String, Object> second = new LinkedHashMap<String, Object>();
+		second.put("list[0].name", "first name");
+		second.put("list[0].description", "first description");
+		second.put("list[1].name", "second name");
+		second.put("list[1].description", "second description");
+		this.propertySources.addFirst(new MapPropertySource("s", second));
+		this.propertySources.addFirst(new MapPropertySource("f", first));
+		binder.bind(new PropertySourcesPropertyValues(this.propertySources));
+		assertThat(target.getList()).hasSize(1);
+		assertThat(target.getList().get(0).getDescription())
+				.isEqualTo("another description");
+		assertThat(target.getList().get(0).getName()).isNull();
+	}
+
 	public static class TestBean {
 
 		private String name;
+
+		private String description;
 
 		public String getName() {
 			return this.name;
@@ -233,6 +256,15 @@ public class PropertySourcesPropertyValuesTests {
 		public void setName(String name) {
 			this.name = name;
 		}
+
+		public String getDescription() {
+			return this.description;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
+		}
+
 	}
 
 	public static class FooBean {
@@ -260,6 +292,21 @@ public class PropertySourcesPropertyValuesTests {
 		public void setList(List<String> list) {
 			this.list = list;
 		}
+
+	}
+
+	public static class ListTestBean {
+
+		private List<TestBean> list = new ArrayList<TestBean>();
+
+		public List<TestBean> getList() {
+			return this.list;
+		}
+
+		public void setList(List<TestBean> list) {
+			this.list = list;
+		}
+
 	}
 
 }

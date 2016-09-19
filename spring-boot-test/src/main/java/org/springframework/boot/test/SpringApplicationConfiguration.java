@@ -35,7 +35,7 @@ import org.springframework.test.context.ContextConfiguration;
  * {@code ApplicationContext} for integration tests.
  * <p>
  * Similar to the standard {@link ContextConfiguration @ContextConfiguration} but uses
- * Spring Boot's {@link SpringBootContextLoader}.
+ * Spring Boot's {@link SpringApplicationContextLoader}.
  *
  * @author Dave Syer
  * @author Sam Brannen
@@ -44,7 +44,7 @@ import org.springframework.test.context.ContextConfiguration;
  * @deprecated as of 1.4 in favor of {@link SpringBootTest} or direct use of
  * {@link SpringBootContextLoader}.
  */
-@ContextConfiguration(loader = SpringBootContextLoader.class)
+@ContextConfiguration(loader = SpringApplicationContextLoader.class)
 @Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)

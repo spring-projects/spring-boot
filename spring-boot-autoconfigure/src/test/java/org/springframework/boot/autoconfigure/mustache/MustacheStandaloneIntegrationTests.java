@@ -40,8 +40,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = {
-		"env.foo=There", "foo=World" })
+@SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = { "env.foo=There",
+		"foo=World" })
 public class MustacheStandaloneIntegrationTests {
 
 	@Autowired

@@ -81,7 +81,7 @@ public class ConditionalOnJavaTests {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.EQUAL_OR_NEWER,
 				JavaVersion.SEVEN, JavaVersion.SIX);
 		assertThat(outcome.getMessage())
-				.isEqualTo("Required JVM version " + "1.6 or newer found 1.7");
+				.isEqualTo("@ConditionalOnJava (1.6 or newer) found 1.7");
 	}
 
 	@Test
@@ -89,7 +89,7 @@ public class ConditionalOnJavaTests {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.OLDER_THAN,
 				JavaVersion.SEVEN, JavaVersion.SIX);
 		assertThat(outcome.getMessage())
-				.isEqualTo("Required JVM version " + "older than 1.6 found 1.7");
+				.isEqualTo("@ConditionalOnJava (older than 1.6) found 1.7");
 	}
 
 	@Test

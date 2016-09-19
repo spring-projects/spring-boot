@@ -17,12 +17,10 @@
 package org.springframework.boot.loader.jar;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import org.springframework.boot.loader.data.RandomAccessData;
-import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 
 /**
  * A ZIP File "Central directory file header record" (CDFH).
@@ -36,26 +34,67 @@ final class CentralDirectoryFileHeader implements FileHeader {
 
 	private static final AsciiBytes SLASH = new AsciiBytes("/");
 
-	private final byte[] header;
+	private static final byte[] NO_EXTRA = {};
+
+	private static final AsciiBytes NO_COMMENT = new AsciiBytes("");
+
+	private byte[] header;
+
+	private int headerOffset;
 
 	private AsciiBytes name;
 
-	private final byte[] extra;
+	private byte[] extra;
 
-	private final AsciiBytes comment;
+	private AsciiBytes comment;
 
-	private final long localHeaderOffset;
+	private long localHeaderOffset;
 
-	CentralDirectoryFileHeader(byte[] header, InputStream inputStream)
-			throws IOException {
+	CentralDirectoryFileHeader() {
+	}
+
+	CentralDirectoryFileHeader(byte[] header, int headerOffset, AsciiBytes name,
+			byte[] extra, AsciiBytes comment, long localHeaderOffset) {
+		super();
 		this.header = header;
-		long nameLength = Bytes.littleEndianValue(header, 28, 2);
-		long extraLength = Bytes.littleEndianValue(header, 30, 2);
-		long commentLength = Bytes.littleEndianValue(header, 32, 2);
-		this.name = new AsciiBytes(Bytes.get(inputStream, nameLength));
-		this.extra = Bytes.get(inputStream, extraLength);
-		this.comment = new AsciiBytes(Bytes.get(inputStream, commentLength));
-		this.localHeaderOffset = Bytes.littleEndianValue(header, 42, 4);
+		this.headerOffset = headerOffset;
+		this.name = name;
+		this.extra = extra;
+		this.comment = comment;
+		this.localHeaderOffset = localHeaderOffset;
+	}
+
+	void load(byte[] data, int dataOffset, RandomAccessData variableData,
+			int variableOffset, JarEntryFilter filter) throws IOException {
+		// Load fixed part
+		this.header = data;
+		this.headerOffset = dataOffset;
+		long nameLength = Bytes.littleEndianValue(data, dataOffset + 28, 2);
+		long extraLength = Bytes.littleEndianValue(data, dataOffset + 30, 2);
+		long commentLength = Bytes.littleEndianValue(data, dataOffset + 32, 2);
+		this.localHeaderOffset = Bytes.littleEndianValue(data, dataOffset + 42, 4);
+		// Load variable part
+		dataOffset += 46;
+		if (variableData != null) {
+			data = Bytes.get(variableData.getSubsection(variableOffset + 46,
+					nameLength + extraLength + commentLength));
+			dataOffset = 0;
+		}
+		this.name = new AsciiBytes(data, dataOffset, (int) nameLength);
+		if (filter != null) {
+			this.name = filter.apply(this.name);
+		}
+		this.extra = NO_EXTRA;
+		this.comment = NO_COMMENT;
+		if (extraLength > 0) {
+			this.extra = new byte[(int) extraLength];
+			System.arraycopy(data, (int) (dataOffset + nameLength), this.extra, 0,
+					this.extra.length);
+		}
+		if (commentLength > 0) {
+			this.comment = new AsciiBytes(data,
+					(int) (dataOffset + nameLength + extraLength), (int) commentLength);
+		}
 	}
 
 	public AsciiBytes getName() {
@@ -73,12 +112,12 @@ final class CentralDirectoryFileHeader implements FileHeader {
 
 	@Override
 	public int getMethod() {
-		return (int) Bytes.littleEndianValue(this.header, 10, 2);
+		return (int) Bytes.littleEndianValue(this.header, this.headerOffset + 10, 2);
 	}
 
 	public long getTime() {
-		long date = Bytes.littleEndianValue(this.header, 14, 2);
-		long time = Bytes.littleEndianValue(this.header, 12, 2);
+		long date = Bytes.littleEndianValue(this.header, this.headerOffset + 14, 2);
+		long time = Bytes.littleEndianValue(this.header, this.headerOffset + 12, 2);
 		return decodeMsDosFormatDateTime(date, time).getTimeInMillis();
 	}
 
@@ -101,17 +140,17 @@ final class CentralDirectoryFileHeader implements FileHeader {
 	}
 
 	public long getCrc() {
-		return Bytes.littleEndianValue(this.header, 16, 4);
+		return Bytes.littleEndianValue(this.header, this.headerOffset + 16, 4);
 	}
 
 	@Override
 	public long getCompressedSize() {
-		return Bytes.littleEndianValue(this.header, 20, 4);
+		return Bytes.littleEndianValue(this.header, this.headerOffset + 20, 4);
 	}
 
 	@Override
 	public long getSize() {
-		return Bytes.littleEndianValue(this.header, 24, 4);
+		return Bytes.littleEndianValue(this.header, this.headerOffset + 24, 4);
 	}
 
 	public byte[] getExtra() {
@@ -127,32 +166,20 @@ final class CentralDirectoryFileHeader implements FileHeader {
 		return this.localHeaderOffset;
 	}
 
-	public static CentralDirectoryFileHeader fromRandomAccessData(RandomAccessData data,
-			int offset) throws IOException {
-		InputStream inputStream = data.getSubsection(offset, data.getSize() - offset)
-				.getInputStream(ResourceAccess.ONCE);
-		try {
-			return fromInputStream(inputStream);
-		}
-		finally {
-			inputStream.close();
-		}
+	@Override
+	public CentralDirectoryFileHeader clone() {
+		byte[] header = new byte[46];
+		System.arraycopy(this.header, this.headerOffset, header, 0, header.length);
+		return new CentralDirectoryFileHeader(header, 0, this.name, header, this.comment,
+				this.localHeaderOffset);
 	}
 
-	/**
-	 * Create a new {@link CentralDirectoryFileHeader} instance from the specified input
-	 * stream.
-	 * @param inputStream the input stream to load data from
-	 * @return a {@link CentralDirectoryFileHeader} or {@code null}
-	 * @throws IOException in case of I/O errors
-	 */
-	static CentralDirectoryFileHeader fromInputStream(InputStream inputStream)
-			throws IOException {
-		byte[] header = new byte[46];
-		if (!Bytes.fill(inputStream, header)) {
-			return null;
-		}
-		return new CentralDirectoryFileHeader(header, inputStream);
+	public static CentralDirectoryFileHeader fromRandomAccessData(RandomAccessData data,
+			int offset, JarEntryFilter filter) throws IOException {
+		CentralDirectoryFileHeader fileHeader = new CentralDirectoryFileHeader();
+		byte[] bytes = Bytes.get(data.getSubsection(offset, 46));
+		fileHeader.load(bytes, 0, data, offset, filter);
+		return fileHeader;
 	}
 
 }

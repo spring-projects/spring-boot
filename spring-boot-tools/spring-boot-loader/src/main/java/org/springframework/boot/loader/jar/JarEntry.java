@@ -39,8 +39,8 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 
 	private long localHeaderOffset;
 
-	JarEntry(JarFile jarFile, String name, CentralDirectoryFileHeader header) {
-		super(name);
+	JarEntry(JarFile jarFile, CentralDirectoryFileHeader header) {
+		super(header.getName().toString());
 		this.jarFile = jarFile;
 		this.localHeaderOffset = header.getLocalHeaderOffset();
 		setCompressedSize(header.getCompressedSize());

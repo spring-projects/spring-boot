@@ -119,6 +119,7 @@ public class RelaxedPropertyResolverTests {
 	}
 
 	@Test
+	@Deprecated
 	public void getPropertyAsClass() throws Exception {
 		assertThat(this.resolver.getPropertyAsClass("my-class", String.class))
 				.isEqualTo(String.class);

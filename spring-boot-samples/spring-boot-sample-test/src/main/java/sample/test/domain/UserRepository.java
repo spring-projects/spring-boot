@@ -19,7 +19,7 @@ package sample.test.domain;
 import org.springframework.data.repository.Repository;
 
 /**
- * Domain repository for {@link User}
+ * Domain repository for {@link User}.
  *
  * @author Phillip Webb
  */

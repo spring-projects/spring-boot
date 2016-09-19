@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import org.junit.After;
@@ -27,11 +29,15 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.redis.RedisConnectionFailureException;
+import org.springframework.data.redis.connection.ClusterInfo;
+import org.springframework.data.redis.connection.RedisClusterConnection;
+import org.springframework.data.redis.connection.RedisClusterNode;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -39,6 +45,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link RedisHealthIndicator}.
  *
  * @author Christian Dupuis
+ * @author Richard Santana
  */
 public class RedisHealthIndicatorTests {
 
@@ -97,6 +104,32 @@ public class RedisHealthIndicatorTests {
 				.contains("Connection failed"));
 		verify(redisConnectionFactory).getConnection();
 		verify(redisConnection).info();
+	}
+
+	@Test
+	public void redisClusterIsUp() throws Exception {
+		Properties clusterProperties = new Properties();
+		clusterProperties.setProperty("cluster_size", "4");
+		clusterProperties.setProperty("cluster_slots_ok", "4");
+		clusterProperties.setProperty("cluster_slots_fail", "0");
+		List<RedisClusterNode> redisMasterNodes = Arrays.asList(
+				new RedisClusterNode("127.0.0.1", 7001),
+				new RedisClusterNode("127.0.0.2", 7001));
+		RedisClusterConnection redisConnection = mock(RedisClusterConnection.class);
+		given(redisConnection.clusterGetNodes()).willReturn(redisMasterNodes);
+		given(redisConnection.clusterGetClusterInfo())
+				.willReturn(new ClusterInfo(clusterProperties));
+		RedisConnectionFactory redisConnectionFactory = mock(
+				RedisConnectionFactory.class);
+		given(redisConnectionFactory.getConnection()).willReturn(redisConnection);
+		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(
+				redisConnectionFactory);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails().get("cluster_size")).isEqualTo(4L);
+		assertThat(health.getDetails().get("slots_up")).isEqualTo(4L);
+		assertThat(health.getDetails().get("slots_fail")).isEqualTo(0L);
+		verify(redisConnectionFactory, atLeastOnce()).getConnection();
 	}
 
 }

@@ -107,8 +107,9 @@ public class PropertyMappingContextCustomizerFactoryTests {
 		context.register(ConfigMapping.class);
 		customizer.customizeContext(context, null);
 		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage(
-				"@PropertyMapping annotations can only be used on test classes");
+		this.thrown.expectMessage("The @PropertyMapping annotation "
+				+ "@PropertyMappingContextCustomizerFactoryTests.TypeMappingAnnotation "
+				+ "cannot be used in combination with the @Component annotation @Configuration");
 		context.refresh();
 	}
 

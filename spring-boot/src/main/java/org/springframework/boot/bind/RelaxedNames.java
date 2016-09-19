@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,24 +79,30 @@ public final class RelaxedNames implements Iterable<String> {
 	enum Variation {
 
 		NONE {
+
 			@Override
 			public String apply(String value) {
 				return value;
 			}
+
 		},
 
 		LOWERCASE {
+
 			@Override
 			public String apply(String value) {
 				return value.toLowerCase();
 			}
+
 		},
 
 		UPPERCASE {
+
 			@Override
 			public String apply(String value) {
 				return value.toUpperCase();
 			}
+
 		};
 
 		public abstract String apply(String value);
@@ -109,34 +115,43 @@ public final class RelaxedNames implements Iterable<String> {
 	enum Manipulation {
 
 		NONE {
+
 			@Override
 			public String apply(String value) {
 				return value;
 			}
+
 		},
 
 		HYPHEN_TO_UNDERSCORE {
+
 			@Override
 			public String apply(String value) {
 				return value.replace("-", "_");
 			}
+
 		},
 
 		UNDERSCORE_TO_PERIOD {
+
 			@Override
 			public String apply(String value) {
 				return value.replace("_", ".");
 			}
+
 		},
 
 		PERIOD_TO_UNDERSCORE {
+
 			@Override
 			public String apply(String value) {
 				return value.replace(".", "_");
 			}
+
 		},
 
 		CAMELCASE_TO_UNDERSCORE {
+
 			@Override
 			public String apply(String value) {
 				Matcher matcher = CAMEL_CASE_PATTERN.matcher(value);
@@ -148,9 +163,11 @@ public final class RelaxedNames implements Iterable<String> {
 				matcher.appendTail(result);
 				return result.toString();
 			}
+
 		},
 
 		CAMELCASE_TO_HYPHEN {
+
 			@Override
 			public String apply(String value) {
 				Matcher matcher = CAMEL_CASE_PATTERN.matcher(value);
@@ -162,39 +179,50 @@ public final class RelaxedNames implements Iterable<String> {
 				matcher.appendTail(result);
 				return result.toString();
 			}
+
 		},
 
 		SEPARATED_TO_CAMELCASE {
+
 			@Override
 			public String apply(String value) {
 				return separatedToCamelCase(value, false);
 			}
+
 		},
 
 		CASE_INSENSITIVE_SEPARATED_TO_CAMELCASE {
+
 			@Override
 			public String apply(String value) {
 				return separatedToCamelCase(value, true);
 			}
+
 		};
+
+		private static final char[] SUFFIXES = new char[] { '_', '-', '.' };
 
 		public abstract String apply(String value);
 
 		private static String separatedToCamelCase(String value,
 				boolean caseInsensitive) {
+			if (value.length() == 0) {
+				return value;
+			}
 			StringBuilder builder = new StringBuilder();
 			for (String field : SEPARATED_TO_CAMEL_CASE_PATTERN.split(value)) {
 				field = (caseInsensitive ? field.toLowerCase() : field);
 				builder.append(
 						builder.length() == 0 ? field : StringUtils.capitalize(field));
 			}
-			for (String suffix : new String[] { "_", "-", "." }) {
-				if (value.endsWith(suffix)) {
+			char lastChar = value.charAt(value.length() - 1);
+			for (char suffix : SUFFIXES) {
+				if (lastChar == suffix) {
 					builder.append(suffix);
+					break;
 				}
 			}
 			return builder.toString();
-
 		}
 	}
 
@@ -204,7 +232,13 @@ public final class RelaxedNames implements Iterable<String> {
 	 * @return the relaxed names
 	 */
 	public static RelaxedNames forCamelCase(String name) {
-		return new RelaxedNames(Manipulation.CAMELCASE_TO_HYPHEN.apply(name));
+		StringBuffer result = new StringBuffer();
+		for (char c : name.toCharArray()) {
+			result.append(Character.isUpperCase(c) && result.length() > 0
+					&& result.charAt(result.length() - 1) != '-'
+							? "-" + Character.toLowerCase(c) : c);
+		}
+		return new RelaxedNames(result.toString());
 	}
 
 }

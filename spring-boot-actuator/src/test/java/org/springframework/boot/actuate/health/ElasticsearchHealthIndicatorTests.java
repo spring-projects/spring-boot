@@ -34,10 +34,9 @@ import org.elasticsearch.cluster.node.DiscoveryNodes;
 import org.elasticsearch.cluster.routing.RoutingTable;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -48,7 +47,6 @@ import static org.mockito.Matchers.any;
  *
  * @author Andy Wilkinson
  */
-@RunWith(MockitoJUnitRunner.class)
 public class ElasticsearchHealthIndicatorTests {
 
 	@Mock
@@ -66,9 +64,9 @@ public class ElasticsearchHealthIndicatorTests {
 
 	@Before
 	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 		given(this.client.admin()).willReturn(this.admin);
 		given(this.admin.cluster()).willReturn(this.cluster);
-
 		this.indicator = new ElasticsearchHealthIndicator(this.client, this.properties);
 	}
 

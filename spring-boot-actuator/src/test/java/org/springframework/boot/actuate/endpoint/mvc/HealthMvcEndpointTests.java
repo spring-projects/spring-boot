@@ -42,6 +42,7 @@ import static org.mockito.Mockito.mock;
  * @author Christian Dupuis
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 public class HealthMvcEndpointTests {
 
@@ -49,19 +50,30 @@ public class HealthMvcEndpointTests {
 			Collections.<String, Object>singletonMap("endpoints.health.sensitive",
 					"false"));
 
+	private static final PropertySource<?> SECURITY_ROLES = new MapPropertySource("test",
+			Collections.<String, Object>singletonMap("management.security.roles",
+					"HERO, USER"));
+
 	private HealthEndpoint endpoint = null;
 
 	private HealthMvcEndpoint mvc = null;
 
 	private MockEnvironment environment;
 
-	private UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
-			"user", "password",
-			AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
+	private UsernamePasswordAuthenticationToken user = createAuthenticationToken(
+			"ROLE_USER");
 
-	private UsernamePasswordAuthenticationToken admin = new UsernamePasswordAuthenticationToken(
-			"user", "password",
-			AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_ADMIN"));
+	private UsernamePasswordAuthenticationToken admin = createAuthenticationToken(
+			"ROLE_ADMIN");
+
+	private UsernamePasswordAuthenticationToken hero = createAuthenticationToken(
+			"ROLE_HERO");
+
+	private UsernamePasswordAuthenticationToken createAuthenticationToken(
+			String authority) {
+		return new UsernamePasswordAuthenticationToken("user", "password",
+				AuthorityUtils.commaSeparatedStringToAuthorityList(authority));
+	}
 
 	@Before
 	public void init() {
@@ -135,6 +147,28 @@ public class HealthMvcEndpointTests {
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(this.user);
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isNull();
+	}
+
+	@Test
+	public void secureCustomRole() {
+		this.environment.getPropertySources().addLast(SECURITY_ROLES);
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(this.hero);
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isEqualTo("bar");
+	}
+
+	@Test
+	public void secureCustomRoleNoAccess() {
+		this.environment.getPropertySources().addLast(SECURITY_ROLES);
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(this.admin);
 		assertThat(result instanceof Health).isTrue();
 		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
 		assertThat(((Health) result).getDetails().get("foo")).isNull();

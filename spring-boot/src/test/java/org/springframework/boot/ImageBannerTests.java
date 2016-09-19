@@ -121,7 +121,6 @@ public class ImageBannerTests {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("gradient.gif", "banner.image.width=10",
 				"banner.image.margin=0");
-		System.out.println(banner);
 		assertThat(banner).contains("@#8&o:*.  ");
 	}
 
@@ -157,7 +156,8 @@ public class ImageBannerTests {
 	}
 
 	@Test
-	public void printBannerWhenHasMarginPropertyShouldPrintSizedMargin() throws Exception {
+	public void printBannerWhenHasMarginPropertyShouldPrintSizedMargin()
+			throws Exception {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("large.gif", "banner.image.margin=4");
 		String[] lines = banner.split(NEW_LINE);

@@ -35,6 +35,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -49,7 +50,7 @@ import org.springframework.validation.Validator;
  * them to an object of a specified type and then optionally running a {@link Validator}
  * over it.
  *
- * @param <T> The target type
+ * @param <T> the target type
  * @author Dave Syer
  */
 public class PropertiesConfigurationFactory<T>
@@ -161,7 +162,10 @@ public class PropertiesConfigurationFactory<T>
 	/**
 	 * Set the properties.
 	 * @param properties the properties
+	 * @deprecated as of 1.4 in favor of {@link #setPropertySources(PropertySources)
+	 * setPropertySources} that contains a {@link PropertiesPropertySource}.
 	 */
+	@Deprecated
 	public void setProperties(Properties properties) {
 		this.properties = properties;
 	}
@@ -231,7 +235,7 @@ public class PropertiesConfigurationFactory<T>
 		try {
 			if (this.logger.isTraceEnabled()) {
 				if (this.properties != null) {
-					this.logger.trace(String.format("Properties:%n%s" + this.properties));
+					this.logger.trace(String.format("Properties:%n%s", this.properties));
 				}
 				else {
 					this.logger.trace("Property Sources: " + this.propertySources);
@@ -259,6 +263,7 @@ public class PropertiesConfigurationFactory<T>
 		if (this.conversionService != null) {
 			dataBinder.setConversionService(this.conversionService);
 		}
+		dataBinder.setAutoGrowCollectionLimit(Integer.MAX_VALUE);
 		dataBinder.setIgnoreNestedProperties(this.ignoreNestedProperties);
 		dataBinder.setIgnoreInvalidFields(this.ignoreInvalidFields);
 		dataBinder.setIgnoreUnknownFields(this.ignoreUnknownFields);

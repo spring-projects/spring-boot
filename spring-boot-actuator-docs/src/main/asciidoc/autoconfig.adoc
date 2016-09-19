@@ -1,6 +1,6 @@
 === /autoconfig
 This endpoint is a report on the Spring Boot auto-configuration process that happened when
-your application started up. It lists all the  `@Conditional` annotations that were
+your application started up. It lists all the `@Conditional` annotations that were
 evaluated as the context started and in each case it gives an indication of if (and why)
 the condition matched. A positive match results in a bean being included in the context,
 and a negative result means the opposite (the bean's class may not even be loaded).

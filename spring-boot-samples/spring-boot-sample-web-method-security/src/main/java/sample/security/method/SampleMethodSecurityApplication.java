@@ -22,7 +22,6 @@ import java.util.Map;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -34,7 +33,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -45,7 +44,7 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 	@Controller
 	protected static class HomeController {
 
-		@RequestMapping("/")
+		@GetMapping("/")
 		@Secured("ROLE_ADMIN")
 		public String home(Map<String, Object> model) {
 			model.put("message", "Hello World");
@@ -60,11 +59,6 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/login").setViewName("login");
 		registry.addViewController("/access").setViewName("access");
-	}
-
-	@Bean
-	public ApplicationSecurity applicationSecurity() {
-		return new ApplicationSecurity();
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -85,6 +79,7 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 
 	}
 
+	@Configuration
 	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 

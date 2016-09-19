@@ -64,8 +64,8 @@ public class FilteredClassPathRunner extends BlockJUnit4ClassRunner {
 
 	private URLClassLoader createTestClassLoader(Class<?> testClass) throws Exception {
 		URLClassLoader classLoader = (URLClassLoader) this.getClass().getClassLoader();
-		return new URLClassLoader(filterUrls(extractUrls(classLoader), testClass),
-				classLoader.getParent());
+		return new FilteredClassLoader(filterUrls(extractUrls(classLoader), testClass),
+				classLoader.getParent(), classLoader);
 	}
 
 	private URL[] extractUrls(URLClassLoader classLoader) throws Exception {
@@ -215,6 +215,25 @@ public class FilteredClassPathRunner extends BlockJUnit4ClassRunner {
 			finally {
 				Thread.currentThread().setContextClassLoader(originalClassLoader);
 			}
+		}
+
+	}
+
+	private static final class FilteredClassLoader extends URLClassLoader {
+
+		private final ClassLoader junitLoader;
+
+		FilteredClassLoader(URL[] urls, ClassLoader parent, ClassLoader junitLoader) {
+			super(urls, parent);
+			this.junitLoader = junitLoader;
+		}
+
+		@Override
+		public Class<?> loadClass(String name) throws ClassNotFoundException {
+			if (name.startsWith("org.junit")) {
+				return this.junitLoader.loadClass(name);
+			}
+			return super.loadClass(name);
 		}
 
 	}

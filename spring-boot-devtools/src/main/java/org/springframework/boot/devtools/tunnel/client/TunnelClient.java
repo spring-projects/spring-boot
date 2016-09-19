@@ -46,11 +46,13 @@ public class TunnelClient implements SmartInitializingSingleton {
 
 	private static final Log logger = LogFactory.getLog(TunnelClient.class);
 
+	private final TunnelClientListeners listeners = new TunnelClientListeners();
+
+	private final Object monitor = new Object();
+
 	private final int listenPort;
 
 	private final TunnelConnection tunnelConnection;
-
-	private TunnelClientListeners listeners = new TunnelClientListeners();
 
 	private ServerThread serverThread;
 
@@ -63,12 +65,14 @@ public class TunnelClient implements SmartInitializingSingleton {
 
 	@Override
 	public void afterSingletonsInstantiated() {
-		if (this.serverThread == null) {
-			try {
-				start();
-			}
-			catch (IOException ex) {
-				throw new IllegalStateException(ex);
+		synchronized (this.monitor) {
+			if (this.serverThread == null) {
+				try {
+					start();
+				}
+				catch (IOException ex) {
+					throw new IllegalStateException(ex);
+				}
 			}
 		}
 	}
@@ -77,35 +81,42 @@ public class TunnelClient implements SmartInitializingSingleton {
 	 * Start the client and accept incoming connections on the port.
 	 * @throws IOException in case of I/O errors
 	 */
-	public synchronized void start() throws IOException {
-		Assert.state(this.serverThread == null, "Server already started");
-		ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-		serverSocketChannel.socket().bind(new InetSocketAddress(this.listenPort));
-		logger.trace("Listening for TCP traffic to tunnel on port " + this.listenPort);
-		this.serverThread = new ServerThread(serverSocketChannel);
-		this.serverThread.start();
+	public void start() throws IOException {
+		synchronized (this.monitor) {
+			Assert.state(this.serverThread == null, "Server already started");
+			ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+			serverSocketChannel.socket().bind(new InetSocketAddress(this.listenPort));
+			logger.trace(
+					"Listening for TCP traffic to tunnel on port " + this.listenPort);
+			this.serverThread = new ServerThread(serverSocketChannel);
+			this.serverThread.start();
+		}
 	}
 
 	/**
 	 * Stop the client, disconnecting any servers.
 	 * @throws IOException in case of I/O errors
 	 */
-	public synchronized void stop() throws IOException {
-		if (this.serverThread != null) {
-			logger.trace("Closing tunnel client on port " + this.listenPort);
-			this.serverThread.close();
-			try {
-				this.serverThread.join(2000);
+	public void stop() throws IOException {
+		synchronized (this.monitor) {
+			if (this.serverThread != null) {
+				logger.trace("Closing tunnel client on port " + this.listenPort);
+				this.serverThread.close();
+				try {
+					this.serverThread.join(2000);
+				}
+				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
+				this.serverThread = null;
 			}
-			catch (InterruptedException ex) {
-				// Ignore
-			}
-			this.serverThread = null;
 		}
 	}
 
 	protected final ServerThread getServerThread() {
-		return this.serverThread;
+		synchronized (this.monitor) {
+			return this.serverThread;
+		}
 	}
 
 	public void addListener(TunnelClientListener listener) {

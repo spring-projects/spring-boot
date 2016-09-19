@@ -90,8 +90,6 @@ public class TestEntityManager {
 	 * @return the persisted entity
 	 */
 	public <E> E persist(E entity) {
-		Assert.state(getId(entity) == null,
-				"Entity " + entity.getClass().getName() + " already has an ID");
 		getEntityManager().persist(entity);
 		return entity;
 	}

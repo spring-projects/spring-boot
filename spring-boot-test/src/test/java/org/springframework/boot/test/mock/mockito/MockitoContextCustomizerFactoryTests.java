@@ -16,9 +16,9 @@
 
 package org.springframework.boot.test.mock.mockito;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import org.springframework.test.context.ContextCustomizer;
 
@@ -29,37 +29,41 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@RunWith(MockitoJUnitRunner.class)
 public class MockitoContextCustomizerFactoryTests {
 
 	private final MockitoContextCustomizerFactory factory = new MockitoContextCustomizerFactory();
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+	}
 
 	@Test
 	public void getContextCustomizerWithoutAnnotationReturnsCustomizer()
 			throws Exception {
 		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(NoRegisterMocksAnnotation.class, null);
+				.createContextCustomizer(NoMockBeanAnnotation.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
 	public void getContextCustomizerWithAnnotationReturnsCustomizer() throws Exception {
 		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(WithRegisterMocksAnnotation.class, null);
+				.createContextCustomizer(WithMockBeanAnnotation.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
 	public void getContextCustomizerUsesMocksAsCacheKey() throws Exception {
 		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(WithRegisterMocksAnnotation.class, null);
+				.createContextCustomizer(WithMockBeanAnnotation.class, null);
 		assertThat(customizer).isNotNull();
 		ContextCustomizer same = this.factory
-				.createContextCustomizer(WithSameRegisterMocksAnnotation.class, null);
+				.createContextCustomizer(WithSameMockBeanAnnotation.class, null);
 		assertThat(customizer).isNotNull();
-		ContextCustomizer different = this.factory.createContextCustomizer(
-				WithDifferentRegisterMocksAnnotation.class, null);
-		assertThat(customizer).isNotNull();
+		ContextCustomizer different = this.factory
+				.createContextCustomizer(WithDifferentMockBeanAnnotation.class, null);
+		assertThat(different).isNotNull();
 		assertThat(customizer.hashCode()).isEqualTo(same.hashCode());
 		assertThat(customizer.hashCode()).isNotEqualTo(different.hashCode());
 		assertThat(customizer).isEqualTo(customizer);
@@ -67,22 +71,22 @@ public class MockitoContextCustomizerFactoryTests {
 		assertThat(customizer).isNotEqualTo(different);
 	}
 
-	static class NoRegisterMocksAnnotation {
+	static class NoMockBeanAnnotation {
 
 	}
 
 	@MockBean({ Service1.class, Service2.class })
-	static class WithRegisterMocksAnnotation {
+	static class WithMockBeanAnnotation {
 
 	}
 
 	@MockBean({ Service2.class, Service1.class })
-	static class WithSameRegisterMocksAnnotation {
+	static class WithSameMockBeanAnnotation {
 
 	}
 
 	@MockBean({ Service1.class })
-	static class WithDifferentRegisterMocksAnnotation {
+	static class WithDifferentMockBeanAnnotation {
 
 	}
 

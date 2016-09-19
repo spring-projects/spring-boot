@@ -1,4 +1,4 @@
-= Starter POMs
+= Starters
 
 Spring Boot Starters are a set of convenient dependency descriptors that you can include
 in your application. You get a one-stop-shop for all the Spring and related technology
@@ -81,5 +81,32 @@ do as they were designed before this was clarified.
 
 | https://github.com/oembedler/spring-graphql-common[Spring GraphQL] (GraphQL and GraphiQL)
 | https://github.com/oembedler/graphql-spring-boot
+
+| https://www.mulesoft.com/platform/soa/mule-esb-open-source-esb[Mule ESB]
+| https://github.com/denschu/mule-spring-boot-starter
+
+| https://camunda.org/[Camunda BPM]
+| https://github.com/camunda/camunda-bpm-spring-boot-starter
+
+| http://ff4j.org/[Feature Flipping For Java (FF4J)]
+| https://github.com/clun/ff4j/
+
+| http://resteasy.jboss.org/[RESTEasy]
+| https://github.com/paypal/resteasy-spring-boot
+
+| JSF (http://primefaces.org/[PrimeFaces], http://primefaces-extensions.github.io/[PrimeFaces Extensions], http://bootsfaces.net/[BootsFaces], http://butterfaces.org/[ButterFaces], http://omnifaces.org/[OmniFaces], http://angularfaces.net/[AngularFaces], https://javaserverfaces.java.net/[Mojarra] and http://myfaces.apache.org[MyFaces])
+| http://joinfaces.org
+
+| Charon reverse proxy
+| https://github.com/mkopylec/charon-spring-boot-starter
+
+| http://www.wiremock.org[WireMock] and Spring REST Docs
+| https://github.com/ePages-de/restdocs-wiremock
+
+| https://cxf.apache.org/docs/springboot.html[Apache CXF]
+| https://github.com/apache/cxf
+
+| LDAP
+| https://github.com/eddumelendez/ldap-spring-boot
 
 |===

@@ -189,6 +189,7 @@ public class Repackager {
 			final List<Library> unpackLibraries = new ArrayList<Library>();
 			final List<Library> standardLibraries = new ArrayList<Library>();
 			libraries.doWithLibraries(new LibraryCallback() {
+
 				@Override
 				public void library(Library library) throws IOException {
 					File file = library.getFile();
@@ -201,6 +202,7 @@ public class Repackager {
 						}
 					}
 				}
+
 			});
 			writer.writeManifest(buildManifest(sourceJar));
 			Set<String> seen = new HashSet<String>();
@@ -335,6 +337,9 @@ public class Repackager {
 
 		@Override
 		public JarEntry transform(JarEntry entry) {
+			if (entry.getName().equals("META-INF/INDEX.LIST")) {
+				return null;
+			}
 			if (entry.getName().startsWith("META-INF/")
 					|| entry.getName().startsWith("BOOT-INF/")) {
 				return entry;

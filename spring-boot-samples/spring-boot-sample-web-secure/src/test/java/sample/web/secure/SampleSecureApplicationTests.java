@@ -23,7 +23,8 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.context.web.LocalServerPort;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -50,6 +51,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 public class SampleSecureApplicationTests {
 
+	@Autowired
+	private TestRestTemplate restTemplate;
+
 	@LocalServerPort
 	private int port;
 
@@ -57,8 +61,7 @@ public class SampleSecureApplicationTests {
 	public void testHome() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port, HttpMethod.GET,
+		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(entity.getHeaders().getLocation().toString())
@@ -69,9 +72,8 @@ public class SampleSecureApplicationTests {
 	public void testLoginPage() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/login", HttpMethod.GET,
-				new HttpEntity<Void>(headers), String.class);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/login",
+				HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("_csrf");
 	}
@@ -84,8 +86,8 @@ public class SampleSecureApplicationTests {
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		form.set("username", "user");
 		form.set("password", "user");
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/login", HttpMethod.POST,
+		ResponseEntity<String> entity = this.restTemplate.exchange("/login",
+				HttpMethod.POST,
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
@@ -96,8 +98,8 @@ public class SampleSecureApplicationTests {
 
 	private HttpHeaders getHeaders() {
 		HttpHeaders headers = new HttpHeaders();
-		ResponseEntity<String> page = new TestRestTemplate()
-				.getForEntity("http://localhost:" + this.port + "/login", String.class);
+		ResponseEntity<String> page = this.restTemplate.getForEntity("/login",
+				String.class);
 		assertThat(page.getStatusCode()).isEqualTo(HttpStatus.OK);
 		String cookie = page.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);
@@ -110,8 +112,8 @@ public class SampleSecureApplicationTests {
 
 	@Test
 	public void testCss() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/css/bootstrap.min.css", String.class);
+		ResponseEntity<String> entity = this.restTemplate
+				.getForEntity("/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("body");
 	}

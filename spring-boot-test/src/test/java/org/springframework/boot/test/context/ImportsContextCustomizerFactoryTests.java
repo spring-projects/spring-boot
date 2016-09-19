@@ -37,6 +37,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ImportsContextCustomizerFactory} and {@link ImportsContextCustomizer}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class ImportsContextCustomizerFactoryTests {
 
@@ -101,6 +102,12 @@ public class ImportsContextCustomizerFactoryTests {
 		assertThat(context.getBean(ImportedBean.class)).isNotNull();
 	}
 
+	@Test
+	public void selfAnnotatingAnnotationDoesNotCauseStackOverflow() {
+		assertThat(this.factory.createContextCustomizer(
+				TestWithImportAndSelfAnnotatingAnnotation.class, null)).isNotNull();
+	}
+
 	static class TestWithNoImport {
 
 	}
@@ -137,6 +144,12 @@ public class ImportsContextCustomizerFactoryTests {
 
 	}
 
+	@SelfAnnotating
+	@Import(ImportedBean.class)
+	static class TestWithImportAndSelfAnnotatingAnnotation {
+
+	}
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Import(ImportedBean.class)
 	@interface MetaImport {
@@ -150,6 +163,12 @@ public class ImportsContextCustomizerFactoryTests {
 
 	@Component
 	static class AnotherImportedBean {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@SelfAnnotating
+	static @interface SelfAnnotating {
 
 	}
 

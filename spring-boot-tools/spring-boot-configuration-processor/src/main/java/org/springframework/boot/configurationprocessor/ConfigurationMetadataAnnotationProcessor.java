@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -172,11 +172,20 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			Element returns = this.processingEnv.getTypeUtils()
 					.asElement(element.getReturnType());
 			if (returns instanceof TypeElement) {
-				this.metadataCollector.add(
-						ItemMetadata.newGroup(prefix, this.typeUtils.getType(returns),
-								this.typeUtils.getType(element.getEnclosingElement()),
-								element.toString()));
-				processTypeElement(prefix, (TypeElement) returns);
+				ItemMetadata group = ItemMetadata.newGroup(prefix,
+						this.typeUtils.getType(returns),
+						this.typeUtils.getType(element.getEnclosingElement()),
+						element.toString());
+				if (this.metadataCollector.hasSimilarGroup(group)) {
+					this.processingEnv.getMessager().printMessage(Kind.ERROR,
+							"Duplicate `@ConfigurationProperties` definition for prefix '"
+									+ prefix + "'",
+							element);
+				}
+				else {
+					this.metadataCollector.add(group);
+					processTypeElement(prefix, (TypeElement) returns);
+				}
 			}
 		}
 	}

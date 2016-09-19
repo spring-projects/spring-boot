@@ -75,8 +75,10 @@ public class FixedAuthoritiesExtractorTests {
 
 	@Test
 	public void authoritiesAsListOfMapsWithStandardKey() {
-		this.map.put("authorities",
-				Arrays.asList(Collections.singletonMap("role", "ROLE_ADMIN")));
+		Map<String, String> map = new LinkedHashMap<String, String>();
+		map.put("role", "ROLE_ADMIN");
+		map.put("extra", "value");
+		this.map.put("authorities", Arrays.asList(map));
 		assertThat(this.extractor.extractAuthorities(this.map).toString())
 				.isEqualTo("[ROLE_ADMIN]");
 	}

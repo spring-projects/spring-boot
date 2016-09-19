@@ -38,6 +38,8 @@ import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebAppl
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -63,6 +65,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
+import org.springframework.security.oauth2.client.OAuth2RestOperations;
+import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -87,10 +91,9 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -134,6 +137,8 @@ public class OAuth2AutoConfigurationTests {
 		assertThat(handler).isInstanceOf(ApprovalStoreUserApprovalHandler.class);
 		assertThat(clientDetails).isEqualTo(config);
 		verifyAuthentication(config);
+		assertThat(this.context.getBeanNamesForType(OAuth2RestOperations.class))
+				.isEmpty();
 	}
 
 	@Test
@@ -179,6 +184,18 @@ public class OAuth2AutoConfigurationTests {
 		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG)).isEqualTo(0);
 		// Scoped target and proxy:
 		assertThat(countBeans(OAuth2ClientContext.class)).isEqualTo(2);
+	}
+
+	@Test
+	public void testClientIsNotAuthCode() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(MinimalSecureNonWebApplication.class);
+		EnvironmentTestUtils.addEnvironment(context,
+				"security.oauth2.client.clientId=client");
+		context.refresh();
+		assertThat(countBeans(context, ClientCredentialsResourceDetails.class))
+				.isEqualTo(1);
+		context.close();
 	}
 
 	@Test
@@ -309,7 +326,7 @@ public class OAuth2AutoConfigurationTests {
 	private void verifyAuthentication(ClientDetails config, HttpStatus finalStatus) {
 		String baseUrl = "http://localhost:"
 				+ this.context.getEmbeddedServletContainer().getPort();
-		RestTemplate rest = new TestRestTemplate();
+		TestRestTemplate rest = new TestRestTemplate();
 		// First, verify the web endpoint can't be reached
 		assertEndpointUnauthorized(baseUrl, rest);
 		// Since we can't reach it, need to collect an authorization token
@@ -353,7 +370,7 @@ public class OAuth2AutoConfigurationTests {
 		return body;
 	}
 
-	private void assertEndpointUnauthorized(String baseUrl, RestTemplate rest) {
+	private void assertEndpointUnauthorized(String baseUrl, TestRestTemplate rest) {
 		URI uri = URI.create(baseUrl + "/secured");
 		ResponseEntity<String> entity = rest
 				.exchange(new RequestEntity<Void>(HttpMethod.GET, uri), String.class);
@@ -361,7 +378,11 @@ public class OAuth2AutoConfigurationTests {
 	}
 
 	private int countBeans(Class<?> type) {
-		return this.context.getBeanNamesForType(type).length;
+		return countBeans(this.context, type);
+	}
+
+	private int countBeans(ApplicationContext context, Class<?> type) {
+		return context.getBeanNamesForType(type).length;
 	}
 
 	@Configuration
@@ -370,6 +391,12 @@ public class OAuth2AutoConfigurationTests {
 			DispatcherServletAutoConfiguration.class, OAuth2AutoConfiguration.class,
 			WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
 	protected static class MinimalSecureWebApplication {
+
+	}
+
+	@Configuration
+	@Import({ SecurityAutoConfiguration.class, OAuth2AutoConfiguration.class })
+	protected static class MinimalSecureNonWebApplication {
 
 	}
 
@@ -441,13 +468,13 @@ public class OAuth2AutoConfigurationTests {
 	@RestController
 	protected static class TestWebApp {
 
-		@RequestMapping(value = "/securedFind", method = RequestMethod.GET)
+		@GetMapping("/securedFind")
 		@PreAuthorize("#oauth2.hasScope('read')")
 		public String secureFind() {
 			return "You reached an endpoint secured by Spring Security OAuth2";
 		}
 
-		@RequestMapping(value = "/securedSave", method = RequestMethod.POST)
+		@PostMapping("/securedSave")
 		@PreAuthorize("#oauth2.hasScope('write')")
 		public String secureSave() {
 			return "You reached an endpoint secured by Spring Security OAuth2";

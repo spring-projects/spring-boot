@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -73,6 +74,12 @@ public class SpringBootTestWebEnvironmentMockTests {
 	public void setsRequestContextHolder() throws Exception {
 		RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
 		assertThat(attributes).isNotNull();
+	}
+
+	@Test
+	public void resourcePath() throws Exception {
+		assertThat(ReflectionTestUtils.getField(this.servletContext, "resourceBasePath"))
+				.isEqualTo("src/main/webapp");
 	}
 
 	@Configuration

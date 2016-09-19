@@ -18,10 +18,10 @@ package org.springframework.boot.cli.compiler.dependencies;
 
 import java.util.Arrays;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -31,7 +31,6 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Andy Wilkinson
  */
-@RunWith(MockitoJUnitRunner.class)
 public class CompositeDependencyManagementTests {
 
 	@Mock
@@ -39,6 +38,11 @@ public class CompositeDependencyManagementTests {
 
 	@Mock
 	private DependencyManagement dependencyManagement2;
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+	}
 
 	@Test
 	public void unknownSpringBootVersion() {

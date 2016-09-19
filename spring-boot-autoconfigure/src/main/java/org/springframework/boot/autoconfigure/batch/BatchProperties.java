@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Vedran Pavic
  * @since 1.2.0
  */
 @ConfigurationProperties("spring.batch")
@@ -69,15 +70,22 @@ public class BatchProperties {
 		return this.tablePrefix;
 	}
 
-	public static class Initializer {
+	public class Initializer {
 
 		/**
-		 * Create the required batch tables on startup if necessary.
+		 * Create the required batch tables on startup if necessary. Enabled automatically
+		 * if no custom table prefix is set or if a custom schema is configured.
 		 */
-		private boolean enabled = true;
+		private Boolean enabled;
 
 		public boolean isEnabled() {
-			return this.enabled;
+			if (this.enabled != null) {
+				return this.enabled;
+			}
+			boolean defaultTablePrefix = BatchProperties.this.getTablePrefix() == null;
+			boolean customSchema = !DEFAULT_SCHEMA_LOCATION
+					.equals(BatchProperties.this.getSchema());
+			return (defaultTablePrefix || customSchema);
 		}
 
 		public void setEnabled(boolean enabled) {

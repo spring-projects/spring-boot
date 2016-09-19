@@ -167,6 +167,7 @@ public class StartMojo extends AbstractRunMojo {
 					this.lock.wait(wait);
 				}
 				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
 					throw new IllegalStateException(
 							"Interrupted while waiting for Spring Boot app to start.");
 				}
@@ -180,7 +181,7 @@ public class StartMojo extends AbstractRunMojo {
 	private void waitForSpringApplication()
 			throws MojoFailureException, MojoExecutionException {
 		try {
-			if (Boolean.TRUE.equals(isFork())) {
+			if (isFork()) {
 				waitForForkedSpringApplication();
 			}
 			else {
@@ -275,6 +276,7 @@ public class StartMojo extends AbstractRunMojo {
 					this.lock.wait(wait);
 				}
 				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
 					throw new IllegalStateException(
 							"Interrupted while waiting for Spring Boot app to start.");
 				}

@@ -34,12 +34,13 @@ import org.springframework.test.web.servlet.htmlunit.MockMvcWebClientBuilder;
  * Auto-configuration for HtmlUnit {@link WebClient} MockMVC integration.
  *
  * @author Phillip Webb
+ * @since 1.4.0
  */
 @Configuration
 @ConditionalOnClass(WebClient.class)
 @AutoConfigureAfter(MockMvcAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "spring.test.webmvc.webclient", name = "enabled", matchIfMissing = true)
-class MockMvcWebClientAutoConfiguration {
+@ConditionalOnProperty(prefix = "spring.test.mockmvc.webclient", name = "enabled", matchIfMissing = true)
+public class MockMvcWebClientAutoConfiguration {
 
 	private final Environment environment;
 

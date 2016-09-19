@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,21 +110,22 @@ class TypeElementMembers {
 
 	private boolean isGetter(ExecutableElement method) {
 		String name = method.getSimpleName().toString();
-		return (name.startsWith("get") || name.startsWith("is"))
+		return ((name.startsWith("get") && name.length() > 3)
+				|| (name.startsWith("is") && name.length() > 2))
 				&& method.getParameters().isEmpty()
 				&& (TypeKind.VOID != method.getReturnType().getKind());
 	}
 
 	private boolean isSetter(ExecutableElement method) {
 		final String name = method.getSimpleName().toString();
-		return name.startsWith("set") && method.getParameters().size() == 1
-				&& (isSetterReturnType(method));
+		return (name.startsWith("set") && name.length() > 3
+				&& method.getParameters().size() == 1 && isSetterReturnType(method));
 	}
 
 	private boolean isSetterReturnType(ExecutableElement method) {
-		return (TypeKind.VOID == method.getReturnType().getKind()
-				|| this.env.getTypeUtils().isSameType(
-						method.getEnclosingElement().asType(), method.getReturnType()));
+		TypeMirror returnType = method.getReturnType();
+		return (TypeKind.VOID == returnType.getKind() || this.env.getTypeUtils()
+				.isSameType(method.getEnclosingElement().asType(), returnType));
 	}
 
 	private String getAccessorName(String methodName) {

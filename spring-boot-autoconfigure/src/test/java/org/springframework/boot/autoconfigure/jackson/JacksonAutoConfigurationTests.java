@@ -72,6 +72,7 @@ import static org.mockito.Mockito.mock;
  * @author Marcel Overdijk
  * @author Sebastien Deleuze
  * @author Johannes Edmeier
+ * @author Grzegorz Poznachowski
  */
 public class JacksonAutoConfigurationTests {
 
@@ -420,6 +421,15 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
+	public void additionalJacksonBuilderCustomization() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class,
+				ObjectMapperBuilderCustomConfig.class);
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		assertThat(mapper.getDateFormat()).isInstanceOf(MyDateFormat.class);
+	}
+
+	@Test
 	public void parameterNamesModuleIsAutoConfigured() {
 		assertParameterNamesModuleCreatorBinding(Mode.DEFAULT,
 				JacksonAutoConfiguration.class);
@@ -506,6 +516,22 @@ public class JacksonAutoConfigurationTests {
 		@Bean
 		public ParameterNamesModule parameterNamesModule() {
 			return new ParameterNamesModule(JsonCreator.Mode.DELEGATING);
+		}
+
+	}
+
+	@Configuration
+	protected static class ObjectMapperBuilderCustomConfig {
+
+		@Bean
+		public Jackson2ObjectMapperBuilderCustomizer customDateFormat() {
+			return new Jackson2ObjectMapperBuilderCustomizer() {
+				@Override
+				public void customize(
+						Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
+					jackson2ObjectMapperBuilder.dateFormat(new MyDateFormat());
+				}
+			};
 		}
 
 	}

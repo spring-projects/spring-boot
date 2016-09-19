@@ -22,9 +22,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -34,7 +33,6 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Mattias Severson
  */
-@RunWith(MockitoJUnitRunner.class)
 public class DiskSpaceHealthIndicatorTests {
 
 	static final long THRESHOLD_BYTES = 1024;
@@ -49,6 +47,7 @@ public class DiskSpaceHealthIndicatorTests {
 
 	@Before
 	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 		given(this.fileMock.exists()).willReturn(true);
 		given(this.fileMock.canRead()).willReturn(true);
 		this.healthIndicator = new DiskSpaceHealthIndicator(

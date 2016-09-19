@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,23 +24,11 @@ import org.springframework.web.filter.CharacterEncodingFilter;
  *
  * @author Phillip Webb
  * @since 1.2.1
+ * @deprecated as of 1.4 in favor of
+ * {@link org.springframework.boot.web.filter.OrderedCharacterEncodingFilter}
  */
-public class OrderedCharacterEncodingFilter extends CharacterEncodingFilter
-		implements Ordered {
-
-	private int order = Ordered.HIGHEST_PRECEDENCE;
-
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
-
-	/**
-	 * Set the order for this filter.
-	 * @param order the order to set
-	 */
-	public void setOrder(int order) {
-		this.order = order;
-	}
+@Deprecated
+public class OrderedCharacterEncodingFilter
+		extends org.springframework.boot.web.filter.OrderedCharacterEncodingFilter {
 
 }

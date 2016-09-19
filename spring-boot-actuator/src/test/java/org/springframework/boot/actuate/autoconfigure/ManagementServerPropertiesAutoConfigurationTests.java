@@ -16,7 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import org.junit.After;
 import org.junit.Test;
+
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,6 +33,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 public class ManagementServerPropertiesAutoConfigurationTests {
+
+	private AnnotationConfigApplicationContext context;
+
+	@After
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
 
 	@Test
 	public void defaultManagementServerProperties() {
@@ -56,6 +71,35 @@ public class ManagementServerPropertiesAutoConfigurationTests {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		properties.setContextPath("/");
 		assertThat(properties.getContextPath()).isEqualTo("");
+	}
+
+	@Test
+	@Deprecated
+	public void managementRoleSetRolesProperly() {
+		ManagementServerProperties properties = load("management.security.role=FOO");
+		assertThat(properties.getSecurity().getRoles()).containsOnly("FOO");
+	}
+
+	@Test
+	public void managementRolesSetMultipleRoles() {
+		ManagementServerProperties properties = load(
+				"management.security.roles=FOO,BAR,BIZ");
+		assertThat(properties.getSecurity().getRoles()).containsOnly("FOO", "BAR", "BIZ");
+	}
+
+	public ManagementServerProperties load(String... environment) {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		ctx.register(TestConfiguration.class);
+		ctx.refresh();
+		this.context = ctx;
+		return this.context.getBean(ManagementServerProperties.class);
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(ManagementServerProperties.class)
+	static class TestConfiguration {
+
 	}
 
 }

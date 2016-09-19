@@ -31,12 +31,8 @@ import org.springframework.core.env.PropertySource;
  */
 public class BuildInfoContributor extends InfoPropertiesInfoContributor<BuildProperties> {
 
-	public BuildInfoContributor(BuildProperties properties, Mode mode) {
-		super(properties, mode);
-	}
-
 	public BuildInfoContributor(BuildProperties properties) {
-		this(properties, Mode.SIMPLE);
+		super(properties, Mode.FULL);
 	}
 
 	@Override

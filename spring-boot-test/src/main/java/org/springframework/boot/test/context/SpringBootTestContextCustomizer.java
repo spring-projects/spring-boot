@@ -16,14 +16,23 @@
 
 package org.springframework.boot.test.context;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.context.embedded.AbstractConfigurableEmbeddedServletContainer;
 import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * {@link ContextCustomizer} for {@link SpringBootTest}.
@@ -39,10 +48,22 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 		SpringBootTest annotation = AnnotatedElementUtils.getMergedAnnotation(
 				mergedContextConfiguration.getTestClass(), SpringBootTest.class);
 		if (annotation.webEnvironment().isEmbedded()) {
-			RestTemplate restTemplate = TestRestTemplateFactory
-					.createRestTemplate(context.getEnvironment());
-			context.getBeanFactory().registerSingleton("testRestTemplate", restTemplate);
+			registerTestRestTemplate(context);
 		}
+	}
+
+	private void registerTestRestTemplate(ConfigurableApplicationContext context) {
+		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+		if (beanFactory instanceof BeanDefinitionRegistry) {
+			registerTestRestTemplate(context, (BeanDefinitionRegistry) context);
+		}
+
+	}
+
+	private void registerTestRestTemplate(ConfigurableApplicationContext context,
+			BeanDefinitionRegistry registry) {
+		registry.registerBeanDefinition("testRestTemplate",
+				new RootBeanDefinition(TestRestTemplateFactory.class));
 	}
 
 	@Override
@@ -58,13 +79,65 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 		return true;
 	}
 
-	// Inner class to avoid references to web classes that may not be on the classpath
-	private static class TestRestTemplateFactory {
+	/**
+	 * {@link FactoryBean} used to create and configure a {@link TestRestTemplate}.
+	 */
+	public static class TestRestTemplateFactory
+			implements FactoryBean<TestRestTemplate>, ApplicationContextAware {
 
-		private static TestRestTemplate createRestTemplate(Environment environment) {
-			TestRestTemplate template = new TestRestTemplate();
-			template.setUriTemplateHandler(new LocalHostUriTemplateHandler(environment));
-			return template;
+		private static final HttpClientOption[] DEFAULT_OPTIONS = {};
+
+		private static final HttpClientOption[] SSL_OPTIONS = { HttpClientOption.SSL };
+
+		private TestRestTemplate object;
+
+		@Override
+		public void setApplicationContext(ApplicationContext applicationContext)
+				throws BeansException {
+			RestTemplateBuilder builder = getRestTemplateBuilder(applicationContext);
+			boolean sslEnabled = isSslEnabled(applicationContext);
+			TestRestTemplate template = new TestRestTemplate(builder.build(), null, null,
+					sslEnabled ? SSL_OPTIONS : DEFAULT_OPTIONS);
+			LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
+					applicationContext.getEnvironment(), sslEnabled ? "https" : "http");
+			template.setUriTemplateHandler(handler);
+			this.object = template;
+		}
+
+		private boolean isSslEnabled(ApplicationContext context) {
+			try {
+				AbstractConfigurableEmbeddedServletContainer container = context
+						.getBean(AbstractConfigurableEmbeddedServletContainer.class);
+				return container.getSsl() != null && container.getSsl().isEnabled();
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				return false;
+			}
+		}
+
+		private RestTemplateBuilder getRestTemplateBuilder(
+				ApplicationContext applicationContext) {
+			try {
+				return applicationContext.getBean(RestTemplateBuilder.class);
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				return new RestTemplateBuilder();
+			}
+		}
+
+		@Override
+		public boolean isSingleton() {
+			return true;
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return TestRestTemplate.class;
+		}
+
+		@Override
+		public TestRestTemplate getObject() throws Exception {
+			return this.object;
 		}
 
 	}

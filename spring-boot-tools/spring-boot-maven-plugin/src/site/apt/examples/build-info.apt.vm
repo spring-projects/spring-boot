@@ -6,7 +6,7 @@
  2016-03-17
  -----
 
-  Spring Boot Actuator displays build-related information if a <<<META-INF/boot/build.properties>>>
+  Spring Boot Actuator displays build-related information if a <<<META-INF/build-info.properties>>>
   file is present. The <<<build-info>>> goal generates such file with the coordinates of the project
   and the build time. It also allows you to add an arbitrary number of additional properties:
 
@@ -46,10 +46,10 @@
 </project>
 ---
 
-  This configuration will generate a <<<build.properties>>> at the expected location with four
-  additional keys. Note that <<<maven.compiler.source>>> and <<<maven.compiler.target>>> are
-  expected to be regular properties available in the project. They will be interpolated as you
-  would expect.
+  This configuration will generate a <<<build-info.properties>>> at the expected location with
+  four additional keys. Note that <<<maven.compiler.source>>> and <<<maven.compiler.target>>>
+  are expected to be regular properties available in the project. They will be interpolated as
+  you would expect.
 
 
 

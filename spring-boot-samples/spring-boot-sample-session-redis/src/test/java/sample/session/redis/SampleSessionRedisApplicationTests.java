@@ -21,7 +21,7 @@ import java.net.URI;
 import org.junit.Test;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.web.ServerPortInfoApplicationContextInitializer;
+import org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpHeaders;
@@ -56,6 +56,7 @@ public class SampleSessionRedisApplicationTests {
 			if (!redisServerRunning(ex)) {
 				return;
 			}
+			throw ex;
 		}
 
 		URI uri = URI.create("http://localhost:" + port + "/");

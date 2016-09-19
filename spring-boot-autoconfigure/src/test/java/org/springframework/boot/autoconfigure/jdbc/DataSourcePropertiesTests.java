@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Maciej Walkowiak
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 public class DataSourcePropertiesTests {
 
@@ -97,6 +98,24 @@ public class DataSourcePropertiesTests {
 		properties.afterPropertiesSet();
 		assertThat(properties.getPassword()).isEqualTo("bar");
 		assertThat(properties.determinePassword()).isEqualTo("bar");
+	}
+
+	@Test
+	public void determineCredentialsForSchemaScripts() {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setSchemaUsername("foo");
+		properties.setSchemaPassword("bar");
+		assertThat(properties.getSchemaUsername()).isEqualTo("foo");
+		assertThat(properties.getSchemaPassword()).isEqualTo("bar");
+	}
+
+	@Test
+	public void determineCredentialsForDataScripts() {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setDataUsername("foo");
+		properties.setDataPassword("bar");
+		assertThat(properties.getDataUsername()).isEqualTo("foo");
+		assertThat(properties.getDataPassword()).isEqualTo("bar");
 	}
 
 }

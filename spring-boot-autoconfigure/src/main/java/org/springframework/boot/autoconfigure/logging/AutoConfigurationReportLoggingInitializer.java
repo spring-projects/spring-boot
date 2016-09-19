@@ -98,9 +98,10 @@ public class AutoConfigurationReportLoggingInitializer
 		if (!this.report.getConditionAndOutcomesBySource().isEmpty()) {
 			if (isCrashReport && this.logger.isInfoEnabled()
 					&& !this.logger.isDebugEnabled()) {
-				this.logger.info(String.format("%n%nError starting ApplicationContext. "
-						+ "To display the auto-configuration report enable "
-						+ "debug logging (start with --debug)%n%n"));
+				this.logger.info(String
+						.format("%n%nError starting ApplicationContext. To display the "
+								+ "auto-configuration report re-run your application with "
+								+ "'debug' enabled."));
 			}
 			if (this.logger.isDebugEnabled()) {
 				this.logger.debug(new ConditionEvaluationReportMessage(this.report));

@@ -17,10 +17,8 @@
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
-import org.springframework.test.context.web.WebDelegatingSmartContextLoader;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 
 /**
@@ -29,12 +27,6 @@ import org.springframework.test.context.web.WebMergedContextConfiguration;
  * @author Phillip Webb
  */
 class WebMvcTestContextBootstrapper extends SpringBootTestContextBootstrapper {
-
-	@Override
-	protected Class<? extends ContextLoader> getDefaultContextLoaderClass(
-			Class<?> testClass) {
-		return WebDelegatingSmartContextLoader.class;
-	}
 
 	@Override
 	protected MergedContextConfiguration processMergedContextConfiguration(

@@ -8,12 +8,6 @@
     }
   },
   {
-    "name": "multipart.enabled",
-    "type": "java.lang.Boolean",
-    "description": "Enable support of multi-part uploads.",
-    "defaultValue": true
-  },
-  {
     "name": "server.error.whitelabel.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable the default error page displayed in browsers in case of a server error.",
@@ -286,6 +280,12 @@
     "defaultValue": true
   },
   {
+    "name": "spring.mvc.formcontent.putfilter.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Spring's HttpPutFormContentFilter.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.rabbitmq.dynamic",
     "type": "java.lang.Boolean",
     "description": "Create an AmqpAdmin bean.",
@@ -327,6 +327,17 @@
         "name": "class-reference",
         "parameters": {
           "target": "javax.cache.spi.CachingProvider"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.data.cassandra.schema-action",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.springframework.data.cassandra.config.SchemaAction"
         }
       }
     ]

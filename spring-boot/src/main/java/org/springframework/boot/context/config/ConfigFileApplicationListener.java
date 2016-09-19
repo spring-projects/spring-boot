@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -326,9 +327,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 
 		private PropertySourcesLoader propertiesLoader;
 
-		private Queue<String> profiles;
+		private Queue<Profile> profiles;
 
-		private List<String> processedProfiles;
+		private List<Profile> processedProfiles;
 
 		private boolean activatedProfiles;
 
@@ -341,16 +342,17 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		public void load() throws IOException {
 			this.propertiesLoader = new PropertySourcesLoader();
 			this.activatedProfiles = false;
-			this.profiles = Collections.asLifoQueue(new LinkedList<String>());
-			this.processedProfiles = new LinkedList<String>();
+			this.profiles = Collections.asLifoQueue(new LinkedList<Profile>());
+			this.processedProfiles = new LinkedList<Profile>();
 
 			// Pre-existing active profiles set via Environment.setActiveProfiles()
 			// are additional profiles and config files are allowed to add more if
 			// they want to, so don't call addActiveProfiles() here.
-			Set<String> initialActiveProfiles = initializeActiveProfiles();
+			Set<Profile> initialActiveProfiles = initializeActiveProfiles();
 			this.profiles.addAll(getUnprocessedActiveProfiles(initialActiveProfiles));
 			if (this.profiles.isEmpty()) {
-				for (String defaultProfile : this.environment.getDefaultProfiles()) {
+				for (String defaultProfileName : this.environment.getDefaultProfiles()) {
+					Profile defaultProfile = new Profile(defaultProfileName, true);
 					if (!this.profiles.contains(defaultProfile)) {
 						this.profiles.add(defaultProfile);
 					}
@@ -363,7 +365,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			this.profiles.add(null);
 
 			while (!this.profiles.isEmpty()) {
-				String profile = this.profiles.poll();
+				Profile profile = this.profiles.poll();
 				for (String location : getSearchLocations()) {
 					if (!location.endsWith("/")) {
 						// location is a filename already, so don't search for more
@@ -382,13 +384,13 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			addConfigurationProperties(this.propertiesLoader.getPropertySources());
 		}
 
-		private Set<String> initializeActiveProfiles() {
+		private Set<Profile> initializeActiveProfiles() {
 			if (!this.environment.containsProperty(ACTIVE_PROFILES_PROPERTY)) {
 				return Collections.emptySet();
 			}
 			// Any pre-existing active profiles set via property sources (e.g. System
 			// properties) take precedence over those added in config files.
-			Set<String> activeProfiles = getProfilesForValue(
+			Set<Profile> activeProfiles = getProfilesForValue(
 					this.environment.getProperty(ACTIVE_PROFILES_PROPERTY));
 			maybeActivateProfiles(activeProfiles);
 			return activeProfiles;
@@ -406,10 +408,11 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		 * {@link #ACTIVE_PROFILES_PROPERTY}
 		 * @return the unprocessed active profiles from the environment to enable
 		 */
-		private List<String> getUnprocessedActiveProfiles(
-				Set<String> initialActiveProfiles) {
-			List<String> unprocessedActiveProfiles = new ArrayList<String>();
-			for (String profile : this.environment.getActiveProfiles()) {
+		private List<Profile> getUnprocessedActiveProfiles(
+				Set<Profile> initialActiveProfiles) {
+			List<Profile> unprocessedActiveProfiles = new ArrayList<Profile>();
+			for (String profileName : this.environment.getActiveProfiles()) {
+				Profile profile = new Profile(profileName);
 				if (!initialActiveProfiles.contains(profile)) {
 					unprocessedActiveProfiles.add(profile);
 				}
@@ -420,7 +423,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			return unprocessedActiveProfiles;
 		}
 
-		private void load(String location, String name, String profile)
+		private void load(String location, String name, Profile profile)
 				throws IOException {
 			String group = "profile=" + (profile == null ? "" : profile);
 			if (!StringUtils.hasText(name)) {
@@ -434,7 +437,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 						// Try the profile-specific file
 						loadIntoGroup(group, location + name + "-" + profile + "." + ext,
 								null);
-						for (String processedProfile : this.processedProfiles) {
+						for (Profile processedProfile : this.processedProfiles) {
 							if (processedProfile != null) {
 								loadIntoGroup(group, location + name + "-"
 										+ processedProfile + "." + ext, profile);
@@ -453,7 +456,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		}
 
 		private PropertySource<?> loadIntoGroup(String identifier, String location,
-				String profile) throws IOException {
+				Profile profile) throws IOException {
 			Resource resource = this.resourceLoader.getResource(location);
 			PropertySource<?> propertySource = null;
 			StringBuilder msg = new StringBuilder();
@@ -461,7 +464,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 				String name = "applicationConfig: [" + location + "]";
 				String group = "applicationConfig: [" + identifier + "]";
 				propertySource = this.propertiesLoader.load(resource, group, name,
-						profile);
+						(profile == null ? null : profile.getName()));
 				if (propertySource != null) {
 					msg.append("Loaded ");
 					handleProfileProperties(propertySource);
@@ -475,7 +478,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			}
 			msg.append("config file ");
 			msg.append(getResourceDescription(location, resource));
-			if (StringUtils.hasLength(profile)) {
+			if (profile != null) {
 				msg.append(" for profile ").append(profile);
 			}
 			if (resource == null || !resource.exists()) {
@@ -503,15 +506,15 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		}
 
 		private void handleProfileProperties(PropertySource<?> propertySource) {
-			Set<String> activeProfiles = getProfilesForValue(
+			Set<Profile> activeProfiles = getProfilesForValue(
 					propertySource.getProperty(ACTIVE_PROFILES_PROPERTY));
 			maybeActivateProfiles(activeProfiles);
-			Set<String> includeProfiles = getProfilesForValue(
+			Set<Profile> includeProfiles = getProfilesForValue(
 					propertySource.getProperty(INCLUDE_PROFILES_PROPERTY));
 			addProfiles(includeProfiles);
 		}
 
-		private void maybeActivateProfiles(Set<String> profiles) {
+		private void maybeActivateProfiles(Set<Profile> profiles) {
 			if (this.activatedProfiles) {
 				if (!profiles.isEmpty()) {
 					this.logger.debug("Profiles already activated, '" + profiles
@@ -524,18 +527,33 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 				this.logger.debug("Activated profiles "
 						+ StringUtils.collectionToCommaDelimitedString(profiles));
 				this.activatedProfiles = true;
+				removeUnprocessedDefaultProfiles();
 			}
 		}
 
-		private Set<String> getProfilesForValue(Object property) {
-			String value = (property == null ? null : property.toString());
-			return asResolvedSet(value, null);
+		private void removeUnprocessedDefaultProfiles() {
+			for (Iterator<Profile> iterator = this.profiles.iterator(); iterator
+					.hasNext();) {
+				if (iterator.next().isDefaultProfile()) {
+					iterator.remove();
+				}
+			}
 		}
 
-		private void addProfiles(Set<String> profiles) {
-			for (String profile : profiles) {
+		private Set<Profile> getProfilesForValue(Object property) {
+			String value = (property == null ? null : property.toString());
+			Set<String> profileNames = asResolvedSet(value, null);
+			Set<Profile> profiles = new LinkedHashSet<Profile>();
+			for (String profileName : profileNames) {
+				profiles.add(new Profile(profileName));
+			}
+			return profiles;
+		}
+
+		private void addProfiles(Set<Profile> profiles) {
+			for (Profile profile : profiles) {
 				this.profiles.add(profile);
-				if (!this.environment.acceptsProfiles(profile)) {
+				if (!environmentHasActiveProfile(profile.getName())) {
 					// If it's already accepted we assume the order was set
 					// intentionally
 					prependProfile(this.environment, profile);
@@ -543,11 +561,21 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			}
 		}
 
-		private void prependProfile(ConfigurableEnvironment environment, String profile) {
+		private boolean environmentHasActiveProfile(String profile) {
+			for (String activeProfile : this.environment.getActiveProfiles()) {
+				if (activeProfile.equals(profile)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private void prependProfile(ConfigurableEnvironment environment,
+				Profile profile) {
 			Set<String> profiles = new LinkedHashSet<String>();
 			environment.getActiveProfiles(); // ensure they are initialized
 			// But this one should go first (last wins in a property key clash)
-			profiles.add(profile);
+			profiles.add(profile.getName());
 			profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
 			environment.setActiveProfiles(profiles.toArray(new String[profiles.size()]));
 		}
@@ -608,6 +636,53 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			else {
 				existingSources.addLast(configurationSources);
 			}
+		}
+
+	}
+
+	private static class Profile {
+
+		private final String name;
+
+		private final boolean defaultProfile;
+
+		Profile(String name) {
+			this(name, false);
+		}
+
+		Profile(String name, boolean defaultProfile) {
+			Assert.notNull(name, "Name must not be null");
+			this.name = name;
+			this.defaultProfile = defaultProfile;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public boolean isDefaultProfile() {
+			return this.defaultProfile;
+		}
+
+		@Override
+		public String toString() {
+			return this.name;
+		}
+
+		@Override
+		public int hashCode() {
+			return this.name.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == this) {
+				return true;
+			}
+			if (obj == null || obj.getClass() != getClass()) {
+				return false;
+			}
+			return ((Profile) obj).name.equals(this.name);
 		}
 
 	}

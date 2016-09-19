@@ -27,8 +27,7 @@ import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.method.HandlerMethod;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -168,7 +167,7 @@ public class EndpointHandlerMappingTests {
 		}
 
 		@Override
-		@RequestMapping(method = RequestMethod.POST)
+		@PostMapping
 		public Object invoke() {
 			return null;
 		}

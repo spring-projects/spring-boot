@@ -16,11 +16,15 @@
 
 package org.springframework.boot.test.mock.mockito;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.mockito.Mockito;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.TestContext;
@@ -50,21 +54,33 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 		if (applicationContext instanceof ConfigurableApplicationContext) {
 			resetMocks((ConfigurableApplicationContext) applicationContext, reset);
 		}
-
 	}
 
 	private void resetMocks(ConfigurableApplicationContext applicationContext,
 			MockReset reset) {
 		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 		String[] names = beanFactory.getBeanDefinitionNames();
+		Set<String> instantiatedSingletons = new HashSet<String>(
+				Arrays.asList(beanFactory.getSingletonNames()));
 		for (String name : names) {
 			BeanDefinition definition = beanFactory.getBeanDefinition(name);
-			if (AbstractBeanDefinition.SCOPE_DEFAULT.equals(definition.getScope())) {
+			if (definition.isSingleton() && instantiatedSingletons.contains(name)) {
 				Object bean = beanFactory.getBean(name);
 				if (reset.equals(MockReset.get(bean))) {
 					Mockito.reset(bean);
 				}
 			}
+		}
+		try {
+			MockitoBeans mockedBeans = beanFactory.getBean(MockitoBeans.class);
+			for (Object mockedBean : mockedBeans) {
+				if (reset.equals(MockReset.get(mockedBean))) {
+					Mockito.reset(mockedBean);
+				}
+			}
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			// Continue
 		}
 		if (applicationContext.getParent() != null) {
 			resetMocks(applicationContext.getParent(), reset);

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import com.google.common.net.HttpHeaders;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,11 +30,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -71,19 +70,17 @@ public class HalBrowserMvcEndpointDisabledIntegrationTests {
 	}
 
 	@Test
-	public void browser() throws Exception {
-		MvcResult response = this.mockMvc
-				.perform(get("/actuator/").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk()).andReturn();
-		assertThat(response.getResponse().getForwardedUrl())
-				.isEqualTo("/actuator/browser.html");
+	public void browserRedirect() throws Exception {
+		this.mockMvc.perform(get("/actuator/").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isFound()).andExpect(header().string(
+						HttpHeaders.LOCATION, "http://localhost/actuator/browser.html"));
 	}
 
 	@Test
 	public void endpointsDoNotHaveLinks() throws Exception {
 		for (MvcEndpoint endpoint : this.mvcEndpoints.getEndpoints()) {
 			String path = endpoint.getPath();
-			if ("/actuator".equals(path)) {
+			if ("/actuator".equals(path) || endpoint instanceof HeapdumpMvcEndpoint) {
 				continue;
 			}
 			path = path.length() > 0 ? path : "/";

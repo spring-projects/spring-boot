@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,15 +92,15 @@ class Installer {
 	}
 
 	public void install(List<String> artifactIdentifiers) throws Exception {
-		File libDirectory = getDefaultLibDirectory();
-		libDirectory.mkdirs();
-		Log.info("Installing into: " + libDirectory);
+		File extDirectory = getDefaultExtDirectory();
+		extDirectory.mkdirs();
+		Log.info("Installing into: " + extDirectory);
 		List<File> artifactFiles = this.dependencyResolver.resolve(artifactIdentifiers);
 		for (File artifactFile : artifactFiles) {
 			int installCount = getInstallCount(artifactFile);
 			if (installCount == 0) {
 				FileCopyUtils.copy(artifactFile,
-						new File(libDirectory, artifactFile.getName()));
+						new File(extDirectory, artifactFile.getName()));
 			}
 			setInstallCount(artifactFile, installCount + 1);
 		}
@@ -125,13 +125,13 @@ class Installer {
 	}
 
 	public void uninstall(List<String> artifactIdentifiers) throws Exception {
-		File libDirectory = getDefaultLibDirectory();
-		Log.info("Uninstalling from: " + libDirectory);
+		File extDirectory = getDefaultExtDirectory();
+		Log.info("Uninstalling from: " + extDirectory);
 		List<File> artifactFiles = this.dependencyResolver.resolve(artifactIdentifiers);
 		for (File artifactFile : artifactFiles) {
 			int installCount = getInstallCount(artifactFile);
 			if (installCount <= 1) {
-				new File(libDirectory, artifactFile.getName()).delete();
+				new File(extDirectory, artifactFile.getName()).delete();
 			}
 			setInstallCount(artifactFile, installCount - 1);
 		}
@@ -139,23 +139,30 @@ class Installer {
 	}
 
 	public void uninstallAll() throws Exception {
-		File libDirectory = getDefaultLibDirectory();
-		Log.info("Uninstalling from: " + libDirectory);
+		File extDirectory = getDefaultExtDirectory();
+		Log.info("Uninstalling from: " + extDirectory);
 		for (String name : this.installCounts.stringPropertyNames()) {
-			new File(libDirectory, name).delete();
+			new File(extDirectory, name).delete();
 		}
 		this.installCounts.clear();
 		saveInstallCounts();
 	}
 
-	private File getDefaultLibDirectory() {
+	private File getDefaultExtDirectory() {
 		String home = SystemPropertyUtils
 				.resolvePlaceholders("${spring.home:${SPRING_HOME:.}}");
-		return new File(home, "lib");
+		File extDirectory = new File(new File(home, "lib"), "ext");
+		if (!extDirectory.isDirectory()) {
+			if (!extDirectory.mkdirs()) {
+				throw new IllegalStateException(
+						"Failed to create ext directory " + extDirectory);
+			}
+		}
+		return extDirectory;
 	}
 
 	private File getInstalled() {
-		return new File(getDefaultLibDirectory(), ".installed");
+		return new File(getDefaultExtDirectory(), ".installed");
 	}
 
 }

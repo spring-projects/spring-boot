@@ -42,9 +42,15 @@ public class WebMvcProperties {
 	private DefaultMessageCodesResolver.Format messageCodesResolverFormat;
 
 	/**
-	 * Locale to use.
+	 * Locale to use. By default, this locale is overridden by the "Accept-Language"
+	 * header.
 	 */
 	private Locale locale;
+
+	/**
+	 * Define how the locale should be resolved.
+	 */
+	private LocaleResolver localeResolver = LocaleResolver.ACCEPT_HEADER;
 
 	/**
 	 * Date format to use (e.g. dd/MM/yyyy).
@@ -59,7 +65,7 @@ public class WebMvcProperties {
 	/**
 	 * Dispatch OPTIONS requests to the FrameworkServlet doService method.
 	 */
-	private boolean dispatchOptionsRequest = false;
+	private boolean dispatchOptionsRequest = true;
 
 	/**
 	 * If the content of the "default" model should be ignored during redirect scenarios.
@@ -73,6 +79,11 @@ public class WebMvcProperties {
 	private boolean throwExceptionIfNoHandlerFound = false;
 
 	/**
+	 * Enable warn logging of exceptions resolved by a "HandlerExceptionResolver".
+	 */
+	private boolean logResolvedException = false;
+
+	/**
 	 * Maps file extensions to media types for content negotiation, e.g. yml->text/yaml.
 	 */
 	private Map<String, MediaType> mediaTypes = new LinkedHashMap<String, MediaType>();
@@ -83,6 +94,8 @@ public class WebMvcProperties {
 	private String staticPathPattern = "/**";
 
 	private final Async async = new Async();
+
+	private final Servlet servlet = new Servlet();
 
 	private final View view = new View();
 
@@ -101,6 +114,14 @@ public class WebMvcProperties {
 
 	public void setLocale(Locale locale) {
 		this.locale = locale;
+	}
+
+	public LocaleResolver getLocaleResolver() {
+		return this.localeResolver;
+	}
+
+	public void setLocaleResolver(LocaleResolver localeResolver) {
+		this.localeResolver = localeResolver;
 	}
 
 	public String getDateFormat() {
@@ -126,6 +147,14 @@ public class WebMvcProperties {
 	public void setThrowExceptionIfNoHandlerFound(
 			boolean throwExceptionIfNoHandlerFound) {
 		this.throwExceptionIfNoHandlerFound = throwExceptionIfNoHandlerFound;
+	}
+
+	public boolean isLogResolvedException() {
+		return this.logResolvedException;
+	}
+
+	public void setLogResolvedException(boolean logResolvedException) {
+		this.logResolvedException = logResolvedException;
 	}
 
 	public Map<String, MediaType> getMediaTypes() {
@@ -164,6 +193,10 @@ public class WebMvcProperties {
 		return this.async;
 	}
 
+	public Servlet getServlet() {
+		return this.servlet;
+	}
+
 	public View getView() {
 		return this.view;
 	}
@@ -183,6 +216,23 @@ public class WebMvcProperties {
 
 		public void setRequestTimeout(Long requestTimeout) {
 			this.requestTimeout = requestTimeout;
+		}
+
+	}
+
+	public static class Servlet {
+
+		/**
+		 * Load on startup priority of the dispatcher servlet.
+		 */
+		private int loadOnStartup = -1;
+
+		public int getLoadOnStartup() {
+			return this.loadOnStartup;
+		}
+
+		public void setLoadOnStartup(int loadOnStartup) {
+			this.loadOnStartup = loadOnStartup;
 		}
 
 	}
@@ -214,6 +264,21 @@ public class WebMvcProperties {
 		public void setSuffix(String suffix) {
 			this.suffix = suffix;
 		}
+
+	}
+
+	public enum LocaleResolver {
+
+		/**
+		 * Always use the configured locale.
+		 */
+		FIXED,
+
+		/**
+		 * Use the "Accept-Language" header or the configured locale if the header is not
+		 * set.
+		 */
+		ACCEPT_HEADER
 
 	}
 

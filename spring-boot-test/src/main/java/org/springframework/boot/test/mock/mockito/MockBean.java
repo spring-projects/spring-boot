@@ -66,6 +66,17 @@ import org.springframework.test.context.junit4.SpringRunner;
  *
  *
  * }
+ * </pre> If there is more than one bean of the requested type, qualifier metadata must be
+ * specified at field level: <pre class="code">
+ * &#064;RunWith(SpringRunner.class)
+ * public class ExampleTests {
+ *
+ *     &#064;MockBean
+ *     &#064;Qualifier("example")
+ *     private ExampleService service;
+ *
+ *     ...
+ * }
  * </pre>
  * <p>
  * This annotation is {@code @Repeatable} and may be specified multiple times when working
@@ -105,7 +116,7 @@ public @interface MockBean {
 	 * When {@code @MockBean} also defines a {@code name} this attribute can only contain
 	 * a single value.
 	 * <p>
-	 * If this is the only attribute specified consider using the {@code value} alias
+	 * If this is the only specified attribute consider using the {@code value} alias
 	 * instead.
 	 * @return the classes to mock
 	 */

@@ -26,7 +26,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for configuring a project's main class
+ * Tests for configuring a project's main class.
  *
  * @author Dave Syer
  * @author Andy Wilkinson

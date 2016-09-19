@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties
 public class ServiceProperties {
 
-	private String vehicleServiceRootUrl = "http://localhost:8080/vs/";
+	private String vehicleServiceRootUrl = "http://localhost:8080/vs";
 
 	public String getVehicleServiceRootUrl() {
 		return this.vehicleServiceRootUrl;

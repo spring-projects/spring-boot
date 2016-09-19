@@ -16,23 +16,11 @@
 
 package org.springframework.boot.context.web;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertySource;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link ApplicationContextInitializer} that sets {@link Environment} properties for the
@@ -50,60 +38,11 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Phillip Webb
  * @since 1.3.0
+ * @deprecated as of 1.4 in favor of
+ * {@link org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer}
  */
-public class ServerPortInfoApplicationContextInitializer
-		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-	@Override
-	public void initialize(ConfigurableApplicationContext applicationContext) {
-		applicationContext.addApplicationListener(
-				new ApplicationListener<EmbeddedServletContainerInitializedEvent>() {
-
-					@Override
-					public void onApplicationEvent(
-							EmbeddedServletContainerInitializedEvent event) {
-						ServerPortInfoApplicationContextInitializer.this
-								.onApplicationEvent(event);
-					}
-
-				});
-	}
-
-	protected void onApplicationEvent(EmbeddedServletContainerInitializedEvent event) {
-		String propertyName = getPropertyName(event.getApplicationContext());
-		setPortProperty(event.getApplicationContext(), propertyName,
-				event.getEmbeddedServletContainer().getPort());
-	}
-
-	protected String getPropertyName(EmbeddedWebApplicationContext context) {
-		String name = context.getNamespace();
-		if (StringUtils.isEmpty(name)) {
-			name = "server";
-		}
-		return "local." + name + ".port";
-	}
-
-	private void setPortProperty(ApplicationContext context, String propertyName,
-			int port) {
-		if (context instanceof ConfigurableApplicationContext) {
-			setPortProperty(((ConfigurableApplicationContext) context).getEnvironment(),
-					propertyName, port);
-		}
-		if (context.getParent() != null) {
-			setPortProperty(context.getParent(), propertyName, port);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void setPortProperty(ConfigurableEnvironment environment, String propertyName,
-			int port) {
-		MutablePropertySources sources = environment.getPropertySources();
-		PropertySource<?> source = sources.get("server.ports");
-		if (source == null) {
-			source = new MapPropertySource("server.ports", new HashMap<String, Object>());
-			sources.addFirst(source);
-		}
-		((Map<String, Object>) source.getSource()).put(propertyName, port);
-	}
+@Deprecated
+public class ServerPortInfoApplicationContextInitializer extends
+		org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer {
 
 }

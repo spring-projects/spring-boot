@@ -199,7 +199,7 @@ public class CacheStatisticsAutoConfigurationTests {
 
 	private Cache getCache(String cacheName) {
 		Cache cache = this.cacheManager.getCache(cacheName);
-		Assert.notNull("No cache with name '" + cacheName + "' found.");
+		Assert.notNull(cache, "No cache with name '" + cacheName + "' found.");
 		return cache;
 	}
 

@@ -209,7 +209,7 @@ the parent.
 
 [[using-boot-gradle]]
 === Gradle
-Gradle users can directly import "`starter POMs`" in their `dependencies` section. Unlike
+Gradle users can directly import '`starters`' in their `dependencies` section. Unlike
 Maven, there is no "`super parent`" to import to share some configuration.
 
 [source,groovy,indent=0,subs="attributes"]
@@ -345,8 +345,9 @@ you don't want to use the `spring-boot-antlib` module.
 
 
 [[using-boot-starter-poms]]
-=== Starter POMs
-Starter POMs are a set of convenient dependency descriptors that you can include in your
+[[using-boot-starter]]
+=== Starters
+Starters are a set of convenient dependency descriptors that you can include in your
 application. You get a one-stop-shop for all the Spring and related technology that you
 need, without having to hunt through sample code and copy paste loads of dependency
 descriptors. For example, if you want to get started using Spring and JPA for database
@@ -389,7 +390,7 @@ or swap specific technical facets:
 .Spring Boot technical starters
 include::../../../target/generated-resources/technical-starters.adoc[]
 
-TIP: For a list of additional community contributed starter POMs, see the
+TIP: For a list of additional community contributed starters, see the
 {github-master-code}/spring-boot-starters/README.adoc[README file] in the
 `spring-boot-starters` module on GitHub.
 
@@ -525,7 +526,7 @@ configuration to replace specific parts of the auto-configuration. For example, 
 you add your own `DataSource` bean, the default embedded database support will back away.
 
 If you need to find out what auto-configuration is currently being applied, and why,
-start your application with the `--debug` switch. This will enables debug logs for a
+start your application with the `--debug` switch. This will enable debug logs for a
 selection of core loggers and log an auto-configuration report to the console.
 
 
@@ -650,7 +651,7 @@ If you can't directly import your project into your IDE, you may be able to gene
 metadata using a build plugin. Maven includes plugins for
 http://maven.apache.org/plugins/maven-eclipse-plugin/[Eclipse] and
 http://maven.apache.org/plugins/maven-idea-plugin/[IDEA]; Gradle offers plugins
-for http://www.gradle.org/docs/current/userguide/ide_support.html[various IDEs].
+for {gradle-user-guide}/userguide.html[various IDEs].
 
 TIP: If you accidentally run a web application twice you will see a "`Port already in
 use`" error. STS users can use the `Relaunch` button rather than `Run` to ensure that
@@ -693,11 +694,8 @@ You might also want to use the useful operating system environment variable:
 
 [indent=0,subs="attributes"]
 ----
-	$ export MAVEN_OPTS=-Xmx1024m -XX:MaxPermSize=128M -Djava.security.egd=file:/dev/./urandom
+	$ export MAVEN_OPTS=-Xmx1024m -XX:MaxPermSize=128M
 ----
-
-(The "`egd`" setting is to speed up Tomcat startup by giving it a faster source of
-entropy for session keys.)
 
 
 
@@ -716,7 +714,7 @@ You might also want to use this useful operating system environment variable:
 
 [indent=0,subs="attributes"]
 ----
-	$ export JAVA_OPTS=-Xmx1024m -XX:MaxPermSize=128M -Djava.security.egd=file:/dev/./urandom
+	$ export JAVA_OPTS=-Xmx1024m -XX:MaxPermSize=128M
 ----
 
 
@@ -816,10 +814,9 @@ Project`) will have the same effect.
 ====
 You can also start your application via the supported build plugins (i.e. Maven and
 Gradle) as long as forking is enabled since DevTools need an isolated application
-classloader to operate properly. You can force the plugin to fork the process as
-follows:
+classloader to operate properly. Gradle does this by default and you can force the Maven
+plugin to fork the process as follows:
 
-.Maven
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	<build>
@@ -835,13 +832,6 @@ follows:
 	</build>
 ----
 
-.Gradle
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-	bootRun {
-		addResources = true
-	}
-----
 ====
 
 TIP: Automatic restart works very well when used with LiveReload.
@@ -935,7 +925,9 @@ with a specific library, you need to set a `System` property before calling
 If you work with an IDE that continuously compiles changed files, you might prefer to
 trigger restarts only at specific times. To do this you can use a "`trigger file`", which
 is a special file that must be modified when you want to actually trigger a restart check.
-The trigger file could be updated manually, or via an IDE plugin.
+Changing the file only triggers the check and the restart will only occur if Devtools has
+detected it has to do something. The trigger file could be updated manually, or via an IDE
+plugin.
 
 To use a trigger file use the `spring.devtools.restart.trigger-file` property.
 

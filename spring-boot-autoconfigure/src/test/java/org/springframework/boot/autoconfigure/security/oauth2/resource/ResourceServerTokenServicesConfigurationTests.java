@@ -126,6 +126,19 @@ public class ResourceServerTokenServicesConfigurationTests {
 	}
 
 	@Test
+	public void userInfoWithPrincipal() {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"security.oauth2.resource.userInfoUri:http://example.com");
+		this.context = new SpringApplicationBuilder(PrincipalConfiguration.class)
+				.environment(this.environment).web(false).run();
+		UserInfoTokenServices services = this.context
+				.getBean(UserInfoTokenServices.class);
+		assertThat(services).isNotNull();
+		assertThat(services).extracting("principalExtractor")
+				.containsExactly(this.context.getBean(PrincipalExtractor.class));
+	}
+
+	@Test
 	public void userInfoWithClient() {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"security.oauth2.client.client-id=acme",
@@ -221,6 +234,23 @@ public class ResourceServerTokenServicesConfigurationTests {
 						Map<String, Object> map) {
 					return AuthorityUtils
 							.commaSeparatedStringToAuthorityList("ROLE_ADMIN");
+				}
+
+			};
+		}
+
+	}
+
+	@Configuration
+	protected static class PrincipalConfiguration extends ResourceConfiguration {
+
+		@Bean
+		PrincipalExtractor principalExtractor() {
+			return new PrincipalExtractor() {
+
+				@Override
+				public Object extractPrincipal(Map<String, Object> map) {
+					return "boot";
 				}
 
 			};

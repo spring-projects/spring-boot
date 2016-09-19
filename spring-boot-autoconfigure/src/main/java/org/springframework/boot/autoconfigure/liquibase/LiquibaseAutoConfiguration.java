@@ -21,8 +21,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import liquibase.integration.spring.SpringLiquibase;
-import liquibase.servicelocator.ServiceLocator;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -34,7 +34,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.liquibase.CommonsLoggingLiquibaseLogger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -50,6 +49,8 @@ import org.springframework.util.Assert;
  * @author Marcel Overdijk
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Eddú Meléndez
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 @Configuration
@@ -72,11 +73,15 @@ public class LiquibaseAutoConfiguration {
 
 		private final DataSource dataSource;
 
+		private final DataSource liquibaseDataSource;
+
 		public LiquibaseConfiguration(LiquibaseProperties properties,
-				ResourceLoader resourceLoader, DataSource dataSource) {
+				ResourceLoader resourceLoader, DataSource dataSource,
+				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSourceProvider) {
 			this.properties = properties;
 			this.resourceLoader = resourceLoader;
 			this.dataSource = dataSource;
+			this.liquibaseDataSource = liquibaseDataSourceProvider.getIfAvailable();
 		}
 
 		@PostConstruct
@@ -89,9 +94,6 @@ public class LiquibaseAutoConfiguration {
 								+ " (please add changelog or check your Liquibase "
 								+ "configuration)");
 			}
-			ServiceLocator serviceLocator = ServiceLocator.getInstance();
-			serviceLocator.addPackageToScan(
-					CommonsLoggingLiquibaseLogger.class.getPackage().getName());
 		}
 
 		@Bean
@@ -110,7 +112,10 @@ public class LiquibaseAutoConfiguration {
 		}
 
 		private DataSource getDataSource() {
-			if (this.properties.getUrl() == null) {
+			if (this.liquibaseDataSource != null) {
+				return this.liquibaseDataSource;
+			}
+			else if (this.properties.getUrl() == null) {
 				return this.dataSource;
 			}
 			return DataSourceBuilder.create().url(this.properties.getUrl())

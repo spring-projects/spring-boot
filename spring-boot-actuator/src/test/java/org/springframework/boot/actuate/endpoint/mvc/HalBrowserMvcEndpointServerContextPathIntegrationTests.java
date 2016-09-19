@@ -16,13 +16,14 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.net.URI;
 import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.actuate.autoconfigure.MinimalActuatorHypermediaApplication;
-import org.springframework.boot.context.web.LocalServerPort;
+import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -69,14 +70,26 @@ public class HalBrowserMvcEndpointServerContextPathIntegrationTests {
 	}
 
 	@Test
-	public void actuatorBrowser() throws Exception {
+	public void actuatorBrowserRedirect() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/spring/actuator/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+		assertThat(entity.getHeaders().getLocation()).isEqualTo(URI.create(
+				"http://localhost:" + this.port + "/spring/actuator/browser.html"));
+	}
+
+	@Test
+	public void actuatorBrowserEntryPoint() throws Exception {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		ResponseEntity<String> entity = new TestRestTemplate().exchange(
+				"http://localhost:" + this.port + "/spring/actuator/browser.html",
+				HttpMethod.GET, new HttpEntity<Void>(null, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("<title");
+		assertThat(entity.getBody()).contains("entryPoint: '/spring/actuator'");
 	}
 
 	@Test

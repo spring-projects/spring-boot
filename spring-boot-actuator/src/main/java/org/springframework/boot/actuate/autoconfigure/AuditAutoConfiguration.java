@@ -20,6 +20,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
+import org.springframework.boot.actuate.audit.listener.AbstractAuditListener;
 import org.springframework.boot.actuate.audit.listener.AuditListener;
 import org.springframework.boot.actuate.security.AbstractAuthenticationAuditListener;
 import org.springframework.boot.actuate.security.AbstractAuthorizationAuditListener;
@@ -48,6 +49,7 @@ public class AuditAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean(AbstractAuditListener.class)
 	public AuditListener auditListener() throws Exception {
 		return new AuditListener(this.auditEventRepository);
 	}

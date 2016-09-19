@@ -16,6 +16,10 @@
 
 package org.springframework.boot.test.autoconfigure.properties;
 
+import java.lang.annotation.Annotation;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -24,7 +28,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
-import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link ContextCustomizer} to map annotation attributes to {@link Environment}
@@ -72,15 +76,47 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 		public Object postProcessBeforeInitialization(Object bean, String beanName)
 				throws BeansException {
 			Class<?> beanClass = bean.getClass();
-			boolean hasComponent = AnnotationUtils.findAnnotation(beanClass,
-					Component.class) != null;
-			boolean hasPropertyMapping = AnnotationUtils.findAnnotation(beanClass,
-					PropertyMapping.class) != null;
-			if (hasComponent) {
-				Assert.state(!hasPropertyMapping,
-						"@PropertyMapping annotations can only be used on test classes");
+			Set<Class<?>> components = new LinkedHashSet<Class<?>>();
+			Set<Class<?>> propertyMappings = new LinkedHashSet<Class<?>>();
+			while (beanClass != null) {
+				for (Annotation annotation : AnnotationUtils.getAnnotations(beanClass)) {
+					if (isAnnotated(annotation, Component.class)) {
+						components.add(annotation.annotationType());
+					}
+					if (isAnnotated(annotation, PropertyMapping.class)) {
+						propertyMappings.add(annotation.annotationType());
+					}
+				}
+				beanClass = beanClass.getSuperclass();
+			}
+			if (!components.isEmpty() && !propertyMappings.isEmpty()) {
+				throw new IllegalStateException("The @PropertyMapping "
+						+ getAnnotationsDescription(propertyMappings)
+						+ " cannot be used in combination with the @Component "
+						+ getAnnotationsDescription(components));
 			}
 			return bean;
+		}
+
+		private boolean isAnnotated(Annotation element,
+				Class<? extends Annotation> annotationType) {
+			try {
+				return element.annotationType().equals(annotationType) || AnnotationUtils
+						.findAnnotation(element.annotationType(), annotationType) != null;
+			}
+			catch (Throwable ex) {
+				return false;
+			}
+		}
+
+		private String getAnnotationsDescription(Set<Class<?>> annotations) {
+			StringBuilder result = new StringBuilder();
+			for (Class<?> annotation : annotations) {
+				result.append(result.length() == 0 ? "" : ", ");
+				result.append("@" + ClassUtils.getShortName(annotation));
+			}
+			result.insert(0, annotations.size() == 1 ? "annotation " : "annotations ");
+			return result.toString();
 		}
 
 		@Override

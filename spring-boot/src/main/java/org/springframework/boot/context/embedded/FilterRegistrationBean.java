@@ -19,7 +19,8 @@ package org.springframework.boot.context.embedded;
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 
-import org.springframework.util.Assert;
+import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 
 /**
  * A {@link ServletContextInitializer} to register {@link Filter}s in a Servlet 3.0+
@@ -37,47 +38,21 @@ import org.springframework.util.Assert;
  * @see ServletContextInitializer
  * @see ServletContext#addFilter(String, Filter)
  * @see DelegatingFilterProxyRegistrationBean
+ * @deprecated as of 1.4 in favor of
+ * {@link org.springframework.boot.web.servlet.FilterRegistrationBean}
  */
-public class FilterRegistrationBean extends AbstractFilterRegistrationBean {
+@Deprecated
+public class FilterRegistrationBean
+		extends org.springframework.boot.web.servlet.FilterRegistrationBean
+		implements org.springframework.boot.context.embedded.ServletContextInitializer {
 
-	/**
-	 * Filters that wrap the servlet request should be ordered less than or equal to this.
-	 */
-	public static final int REQUEST_WRAPPER_FILTER_MAX_ORDER = AbstractFilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER;
-
-	private Filter filter;
-
-	/**
-	 * Create a new {@link FilterRegistrationBean} instance.
-	 */
 	public FilterRegistrationBean() {
+		super();
 	}
 
-	/**
-	 * Create a new {@link FilterRegistrationBean} instance to be registered with the
-	 * specified {@link ServletRegistrationBean}s.
-	 * @param filter the filter to register
-	 * @param servletRegistrationBeans associate {@link ServletRegistrationBean}s
-	 */
 	public FilterRegistrationBean(Filter filter,
 			ServletRegistrationBean... servletRegistrationBeans) {
-		super(servletRegistrationBeans);
-		Assert.notNull(filter, "Filter must not be null");
-		this.filter = filter;
-	}
-
-	@Override
-	public Filter getFilter() {
-		return this.filter;
-	}
-
-	/**
-	 * Set the filter to be registered.
-	 * @param filter the filter
-	 */
-	public void setFilter(Filter filter) {
-		Assert.notNull(filter, "Filter must not be null");
-		this.filter = filter;
+		super(filter, servletRegistrationBeans);
 	}
 
 }

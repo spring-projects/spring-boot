@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -30,6 +31,8 @@ import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.city.City;
+import org.springframework.boot.autoconfigure.data.mongo.country.Country;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -42,6 +45,7 @@ import org.springframework.data.mapping.model.PropertyNameFieldNamingStrategy;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+import org.springframework.data.mongodb.core.mapping.MongoPersistentEntity;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -139,6 +143,32 @@ public class MongoDataAutoConfigurationTests {
 		}
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	public void entityScanShouldSetInitialEntitySet() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EntityScanConfig.class,
+				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class);
+		this.context.refresh();
+		MongoMappingContext mappingContext = this.context
+				.getBean(MongoMappingContext.class);
+		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils
+				.getField(mappingContext, "initialEntitySet");
+		assertThat(initialEntitySet).containsOnly(City.class, Country.class);
+	}
+
+	@Test
+	public void registersDefaultSimpleTypesWithMappingContext() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class);
+		this.context.refresh();
+		MongoMappingContext context = this.context.getBean(MongoMappingContext.class);
+		MongoPersistentEntity<?> entity = context.getPersistentEntity(Sample.class);
+		assertThat(entity.getPersistentProperty("date").isEntity()).isFalse();
+	}
+
 	public void testFieldNamingStrategy(String strategy,
 			Class<? extends FieldNamingStrategy> expectedType) {
 		this.context = new AnnotationConfigApplicationContext();
@@ -173,6 +203,12 @@ public class MongoDataAutoConfigurationTests {
 		}
 	}
 
+	@Configuration
+	@EntityScan("org.springframework.boot.autoconfigure.data.mongo")
+	static class EntityScanConfig {
+
+	}
+
 	private static class MyConverter implements Converter<Mongo, Boolean> {
 
 		@Override
@@ -182,4 +218,9 @@ public class MongoDataAutoConfigurationTests {
 
 	}
 
+	static class Sample {
+
+		LocalDateTime date;
+
+	}
 }

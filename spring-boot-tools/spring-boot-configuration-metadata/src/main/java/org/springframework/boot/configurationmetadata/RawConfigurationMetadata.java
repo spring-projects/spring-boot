@@ -81,7 +81,7 @@ class RawConfigurationMetadata {
 			String dottedPrefix = groupId + ".";
 			String id = item.getId();
 			if (hasLength(groupId) && id.startsWith(dottedPrefix)) {
-				String name = id.substring(dottedPrefix.length(), id.length());
+				String name = id.substring(dottedPrefix.length());
 				item.setName(name);
 			}
 		}

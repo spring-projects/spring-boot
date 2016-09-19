@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.4.0.BUILD-SNAPSHOT</version>
+		<version>1.4.1.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-cli</artifactId>
@@ -324,7 +324,7 @@
 								<stringutil string="${version-type}" property="repo">
 									<lowercase />
 								</stringutil>
-								<checksum algorithm="sha-1" file="${project.build.directory}/spring-boot-cli-${project.version}-bin.tar.gz" property="checksum" />
+								<checksum algorithm="sha-256" file="${project.build.directory}/spring-boot-cli-${project.version}-bin.tar.gz" property="checksum" />
 								<echo message="Customizing homebrew for ${project.version} with checksum ${checksum} in ${repo} repo" />
 								<copy file="${basedir}/src/main/homebrew/springboot.rb" tofile="${project.build.directory}/springboot.rb" overwrite="true">
 									<filterchain>

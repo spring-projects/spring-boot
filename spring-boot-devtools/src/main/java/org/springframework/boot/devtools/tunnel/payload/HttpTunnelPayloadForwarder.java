@@ -34,11 +34,13 @@ public class HttpTunnelPayloadForwarder {
 
 	private static final int MAXIMUM_QUEUE_SIZE = 100;
 
+	private final Map<Long, HttpTunnelPayload> queue = new HashMap<Long, HttpTunnelPayload>();
+
+	private final Object monitor = new Object();
+
 	private final WritableByteChannel targetChannel;
 
 	private long lastRequestSeq = 0;
-
-	private final Map<Long, HttpTunnelPayload> queue = new HashMap<Long, HttpTunnelPayload>();
 
 	/**
 	 * Create a new {@link HttpTunnelPayloadForwarder} instance.
@@ -49,20 +51,22 @@ public class HttpTunnelPayloadForwarder {
 		this.targetChannel = targetChannel;
 	}
 
-	public synchronized void forward(HttpTunnelPayload payload) throws IOException {
-		long seq = payload.getSequence();
-		if (this.lastRequestSeq != seq - 1) {
-			Assert.state(this.queue.size() < MAXIMUM_QUEUE_SIZE,
-					"Too many messages queued");
-			this.queue.put(seq, payload);
-			return;
-		}
-		payload.logOutgoing();
-		payload.writeTo(this.targetChannel);
-		this.lastRequestSeq = seq;
-		HttpTunnelPayload queuedItem = this.queue.get(seq + 1);
-		if (queuedItem != null) {
-			forward(queuedItem);
+	public void forward(HttpTunnelPayload payload) throws IOException {
+		synchronized (this.monitor) {
+			long seq = payload.getSequence();
+			if (this.lastRequestSeq != seq - 1) {
+				Assert.state(this.queue.size() < MAXIMUM_QUEUE_SIZE,
+						"Too many messages queued");
+				this.queue.put(seq, payload);
+				return;
+			}
+			payload.logOutgoing();
+			payload.writeTo(this.targetChannel);
+			this.lastRequestSeq = seq;
+			HttpTunnelPayload queuedItem = this.queue.get(seq + 1);
+			if (queuedItem != null) {
+				forward(queuedItem);
+			}
 		}
 	}
 

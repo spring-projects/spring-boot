@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
@@ -38,13 +39,13 @@ import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoCo
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,22 +53,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JerseyAutoConfiguration} with a ObjectMapper.
  *
  * @author Eddú Meléndez
+ * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.jackson.serialization-inclusion:non-null")
 @DirtiesContext
 public class JerseyAutoConfigurationObjectMapperProviderTests {
 
 	@Autowired
-	private RestTemplate restTemplate;
+	private TestRestTemplate restTemplate;
 
 	@Test
-	public void contextLoads() {
+	public void responseIsSerializedUsingAutoConfiguredObjectMapper() {
 		ResponseEntity<String> response = this.restTemplate.getForEntity("/rest/message",
 				String.class);
 		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
-		assertThat("{\"subject\":\"Jersey\",\"body\":null}")
-				.isEqualTo(response.getBody());
+		assertThat(response.getBody()).isEqualTo("{\"subject\":\"Jersey\"}");
 	}
 
 	@MinimalWebConfiguration
@@ -119,6 +120,11 @@ public class JerseyAutoConfigurationObjectMapperProviderTests {
 
 		public void setBody(String body) {
 			this.body = body;
+		}
+
+		@XmlTransient
+		public String getFoo() {
+			return "foo";
 		}
 
 	}

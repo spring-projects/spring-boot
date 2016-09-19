@@ -48,7 +48,7 @@ public class NarayanaProperties {
 	private String transactionManagerId = "1";
 
 	/**
-	 * Enable one phase commit optimisation.
+	 * Enable one phase commit optimization.
 	 */
 	private boolean onePhaseCommit = true;
 
@@ -88,7 +88,7 @@ public class NarayanaProperties {
 	private String recoveryJmsPass = null;
 
 	/**
-	 * Comma-separated list of of orphan filters.
+	 * Comma-separated list of orphan filters.
 	 */
 	private List<String> xaResourceOrphanFilters = Arrays.asList(
 			"com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter",

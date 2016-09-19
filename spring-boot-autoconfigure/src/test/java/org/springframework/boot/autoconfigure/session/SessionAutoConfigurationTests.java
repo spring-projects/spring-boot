@@ -16,76 +16,170 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import org.junit.After;
+import java.util.Arrays;
+import java.util.Collections;
+
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
-import org.springframework.boot.redis.RedisTestServer;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.session.ExpiringSession;
+import org.springframework.session.MapSessionRepository;
+import org.springframework.session.SessionRepository;
+import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link SessionAutoConfiguration}.
  *
  * @author Dave Syer
- * @since 1.3.0
+ * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
-public class SessionAutoConfigurationTests {
+public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTests {
 
 	@Rule
-	public RedisTestServer redis = new RedisTestServer();
+	public ExpectedException thrown = ExpectedException.none();
 
-	private AnnotationConfigEmbeddedWebApplicationContext context;
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
+	@Test
+	public void contextFailsIfStoreTypeNotSet() {
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("No session repository could be auto-configured");
+		this.thrown.expectMessage("session store type is 'null'");
+		load();
 	}
 
 	@Test
-	public void flat() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
-				RedisAutoConfiguration.class, SessionAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		ServerProperties server = this.context.getBean(ServerProperties.class);
-		assertThat(server).isNotNull();
+	public void autoConfigurationDisabledIfStoreTypeSetToNone() {
+		load("spring.session.store-type=none");
+		assertThat(this.context.getBeansOfType(SessionRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void hierarchy() throws Exception {
-		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
-		parent.register(RedisAutoConfiguration.class, SessionAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		parent.refresh();
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.setParent(parent);
-		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		ServerProperties server = this.context.getBean(ServerProperties.class);
-		assertThat(server).isNotNull();
+	public void backOffIfSessionRepositoryIsPresent() {
+		load(Collections.<Class<?>>singletonList(SessionRepositoryConfiguration.class),
+				"spring.session.store-type=mongo");
+		MapSessionRepository repository = validateSessionRepository(
+				MapSessionRepository.class);
+		assertThat(this.context.getBean("mySessionRepository")).isSameAs(repository);
+	}
+
+	@Test
+	public void hashMapSessionStore() {
+		load("spring.session.store-type=hash-map");
+		MapSessionRepository repository = validateSessionRepository(
+				MapSessionRepository.class);
+		assertThat(getSessionTimeout(repository)).isNull();
+	}
+
+	@Test
+	public void hashMapSessionStoreCustomTimeout() {
+		load("spring.session.store-type=hash-map", "server.session.timeout=3000");
+		MapSessionRepository repository = validateSessionRepository(
+				MapSessionRepository.class);
+		assertThat(getSessionTimeout(repository)).isEqualTo(3000);
+	}
+
+	@Test
+	public void springSessionTimeoutIsNotAValidProperty() {
+		load("spring.session.store-type=hash-map", "spring.session.timeout=3000");
+		MapSessionRepository repository = validateSessionRepository(
+				MapSessionRepository.class);
+		assertThat(getSessionTimeout(repository)).isNull();
+	}
+
+	@Test
+	public void hazelcastSessionStore() {
+		load(Collections.<Class<?>>singletonList(HazelcastConfiguration.class),
+				"spring.session.store-type=hazelcast");
+		validateSessionRepository(MapSessionRepository.class);
+	}
+
+	@Test
+	public void hazelcastSessionStoreWithCustomizations() {
+		load(Collections.<Class<?>>singletonList(HazelcastSpecificMap.class),
+				"spring.session.store-type=hazelcast",
+				"spring.session.hazelcast.map-name=foo:bar:biz");
+		validateSessionRepository(MapSessionRepository.class);
+		HazelcastInstance hazelcastInstance = this.context
+				.getBean(HazelcastInstance.class);
+		verify(hazelcastInstance, times(1)).getMap("foo:bar:biz");
+	}
+
+	@Test
+	public void mongoSessionStore() {
+		load(Arrays.asList(EmbeddedMongoAutoConfiguration.class,
+				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class),
+				"spring.session.store-type=mongo", "spring.data.mongodb.port=0");
+		validateSessionRepository(MongoOperationsSessionRepository.class);
+	}
+
+	@Test
+	public void mongoSessionStoreWithCustomizations() {
+		load(Arrays.asList(EmbeddedMongoAutoConfiguration.class,
+				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class),
+				"spring.session.store-type=mongo", "spring.data.mongodb.port=0",
+				"spring.session.mongo.collection-name=foobar");
+		MongoOperationsSessionRepository repository = validateSessionRepository(
+				MongoOperationsSessionRepository.class);
+		assertThat(new DirectFieldAccessor(repository).getPropertyValue("collectionName"))
+				.isEqualTo("foobar");
+	}
+
+	@Test
+	public void validationFailsIfSessionRepositoryIsNotConfigured() {
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("No session repository could be auto-configured");
+		this.thrown.expectMessage("session store type is 'JDBC'");
+		load("spring.session.store-type=jdbc");
 	}
 
 	@Configuration
-	protected static class Config {
+	static class SessionRepositoryConfiguration {
 
 		@Bean
-		public EmbeddedServletContainerFactory containerFactory() {
-			return new MockEmbeddedServletContainerFactory();
+		public SessionRepository<?> mySessionRepository() {
+			return new MapSessionRepository(
+					Collections.<String, ExpiringSession>emptyMap());
+		}
+
+	}
+
+	@Configuration
+	static class HazelcastConfiguration {
+
+		@Bean
+		public HazelcastInstance hazelcastInstance() {
+			return Hazelcast.newHazelcastInstance();
+		}
+
+	}
+
+	@Configuration
+	static class HazelcastSpecificMap {
+
+		@Bean
+		@SuppressWarnings("unchecked")
+		public HazelcastInstance hazelcastInstance() {
+			IMap<Object, Object> map = mock(IMap.class);
+			HazelcastInstance mock = mock(HazelcastInstance.class);
+			given(mock.getMap("foo:bar:biz")).willReturn(map);
+			return mock;
 		}
 
 	}

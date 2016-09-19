@@ -21,6 +21,7 @@ import javax.sql.DataSource;
 import com.zaxxer.hikari.HikariDataSource;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DatabaseDriver;
@@ -38,10 +39,7 @@ abstract class DataSourceConfiguration {
 	@SuppressWarnings("unchecked")
 	protected <T> T createDataSource(DataSourceProperties properties,
 			Class<? extends DataSource> type) {
-		return (T) DataSourceBuilder.create(properties.getClassLoader()).type(type)
-				.driverClassName(properties.determineDriverClassName())
-				.url(properties.determineUrl()).username(properties.determineUsername())
-				.password(properties.determinePassword()).build();
+		return (T) properties.initializeDataSourceBuilder().type(type).build();
 	}
 
 	@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
@@ -109,6 +107,17 @@ abstract class DataSourceConfiguration {
 			return createDataSource(properties,
 					org.apache.commons.dbcp2.BasicDataSource.class);
 		}
+	}
+
+	@ConditionalOnMissingBean(DataSource.class)
+	@ConditionalOnProperty(name = "spring.datasource.type")
+	static class Generic {
+
+		@Bean
+		public DataSource dataSource(DataSourceProperties properties) {
+			return properties.initializeDataSourceBuilder().build();
+		}
+
 	}
 
 }

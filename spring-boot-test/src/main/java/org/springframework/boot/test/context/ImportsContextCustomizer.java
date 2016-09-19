@@ -49,6 +49,7 @@ import org.springframework.test.context.MergedContextConfiguration;
  * test classes.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @see ImportsContextCustomizerFactory
  */
 class ImportsContextCustomizer implements ContextCustomizer {
@@ -217,27 +218,31 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 		ContextCustomizerKey(Class<?> testClass) {
 			Set<Annotation> annotations = new HashSet<Annotation>();
-			collectClassAnnotations(testClass, annotations);
+			Set<Class<?>> seen = new HashSet<Class<?>>();
+			collectClassAnnotations(testClass, annotations, seen);
 			this.annotations = Collections.unmodifiableSet(annotations);
 		}
 
 		private void collectClassAnnotations(Class<?> classType,
-				Set<Annotation> annotations) {
-			collectElementAnnotations(classType, annotations);
-			for (Class<?> interfaceType : classType.getInterfaces()) {
-				collectClassAnnotations(interfaceType, annotations);
-			}
-			if (classType.getSuperclass() != null) {
-				collectClassAnnotations(classType.getSuperclass(), annotations);
+				Set<Annotation> annotations, Set<Class<?>> seen) {
+			if (seen.add(classType)) {
+				collectElementAnnotations(classType, annotations, seen);
+				for (Class<?> interfaceType : classType.getInterfaces()) {
+					collectClassAnnotations(interfaceType, annotations, seen);
+				}
+				if (classType.getSuperclass() != null) {
+					collectClassAnnotations(classType.getSuperclass(), annotations, seen);
+				}
 			}
 		}
 
 		private void collectElementAnnotations(AnnotatedElement element,
-				Set<Annotation> annotations) {
+				Set<Annotation> annotations, Set<Class<?>> seen) {
 			for (Annotation annotation : element.getDeclaredAnnotations()) {
 				if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
 					annotations.add(annotation);
-					collectClassAnnotations(annotation.annotationType(), annotations);
+					collectClassAnnotations(annotation.annotationType(), annotations,
+							seen);
 				}
 			}
 		}

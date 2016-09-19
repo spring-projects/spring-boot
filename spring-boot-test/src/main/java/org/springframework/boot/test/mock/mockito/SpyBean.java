@@ -24,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AliasFor;
@@ -36,7 +37,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * {@link RunWith @RunWith} the {@link SpringRunner}.
  * <p>
  * Spies can be applied by type or by {@link #name() bean name}. All beans in the context
- * of the same type will be wrapped with the spy, if no existing bean is defined a new one
+ * of the same type will be wrapped with the spy. If no existing bean is defined a new one
  * will be added.
  * <p>
  * When {@code @SpyBean} is used on a field, as well as being registered in the
@@ -65,10 +66,21 @@ import org.springframework.test.context.junit4.SpringRunner;
  *
  *
  * }
+ * </pre> If there is more than one bean of the requested type, qualifier metadata must be
+ * specified at field level: <pre class="code">
+ * &#064;RunWith(SpringRunner.class)
+ * public class ExampleTests {
+ *
+ *     &#064;SpyBean
+ *     &#064;Qualifier("example")
+ *     private ExampleService service;
+ *
+ *     ...
+ * }
  * </pre>
  * <p>
  * This annotation is {@code @Repeatable} and may be specified multiple times when working
- * with Java 8 or contained within an {@link SpyBeans @SpyBeans} annotation.
+ * with Java 8 or contained within a {@link SpyBeans @SpyBeans} annotation.
  *
  * @author Phillip Webb
  * @since 1.4.0
@@ -90,7 +102,7 @@ public @interface SpyBean {
 	/**
 	 * The classes to spy. This is an alias of {@link #classes()} which can be used for
 	 * brevity if no other attributes are defined. See {@link #classes()} for details.
-	 * @return the classes to mock
+	 * @return the classes to spy
 	 */
 	@AliasFor("classes")
 	Class<?>[] value() default {};
@@ -99,12 +111,12 @@ public @interface SpyBean {
 	 * The classes to spy. Each class specified here will result in a spy being applied.
 	 * Classes can be omitted when the annotation is used on a field.
 	 * <p>
-	 * When {@code @MockBean} also defines a {@code name} this attribute can only contain
-	 * a single value.
+	 * When {@code @SpyBean} also defines a {@code name} this attribute can only contain a
+	 * single value.
 	 * <p>
-	 * If this is the only attribute specified consider using the {@code value} alias
+	 * If this is the only specified attribute consider using the {@code value} alias
 	 * instead.
-	 * @return the classes to mock
+	 * @return the classes to spy
 	 */
 	@AliasFor("value")
 	Class<?>[] classes() default {};
@@ -115,5 +127,16 @@ public @interface SpyBean {
 	 * @return the reset mode
 	 */
 	MockReset reset() default MockReset.AFTER;
+
+	/**
+	 * Indicates that Mockito methods such as {@link Mockito#verify(Object) verify(mock)}
+	 * should use the {@code target} of AOP advised beans, rather than the proxy itself.
+	 * If set to {@code false} you may need to use the result of
+	 * {@link org.springframework.test.util.AopTestUtils#getUltimateTargetObject(Object)
+	 * AopTestUtils.getUltimateTargetObject(...)} when calling Mockito methods.
+	 * @return {@code true} if the target of AOP advised beans is used or {@code false} if
+	 * the proxy is used directly
+	 */
+	boolean proxyTargetAware() default true;
 
 }

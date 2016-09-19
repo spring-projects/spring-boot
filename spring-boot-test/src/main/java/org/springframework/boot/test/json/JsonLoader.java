@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -31,20 +32,24 @@ import org.springframework.util.FileCopyUtils;
  * Internal helper used to load JSON from various sources.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class JsonLoader {
 
 	private final Class<?> resourceLoadClass;
 
-	JsonLoader(Class<?> resourceLoadClass) {
+	private final Charset charset;
+
+	JsonLoader(Class<?> resourceLoadClass, Charset charset) {
 		this.resourceLoadClass = resourceLoadClass;
+		this.charset = charset == null ? Charset.forName("UTF-8") : charset;
 	}
 
-	public Class<?> getResourceLoadClass() {
+	Class<?> getResourceLoadClass() {
 		return this.resourceLoadClass;
 	}
 
-	public String getJson(CharSequence source) throws IOException {
+	String getJson(CharSequence source) {
 		if (source == null) {
 			return null;
 		}
@@ -55,24 +60,40 @@ class JsonLoader {
 		return source.toString();
 	}
 
-	public String getJson(String path, Class<?> resourceLoadClass) throws IOException {
+	String getJson(String path, Class<?> resourceLoadClass) {
 		return getJson(new ClassPathResource(path, resourceLoadClass));
 	}
 
-	public String getJson(byte[] source) throws IOException {
+	String getJson(byte[] source) {
 		return getJson(new ByteArrayInputStream(source));
 	}
 
-	public String getJson(File source) throws IOException {
-		return getJson(new FileInputStream(source));
+	String getJson(File source) {
+		try {
+			return getJson(new FileInputStream(source));
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Unable to load JSON from " + source, ex);
+		}
 	}
 
-	public String getJson(Resource source) throws IOException {
-		return getJson(source.getInputStream());
+	String getJson(Resource source) {
+		try {
+			return getJson(source.getInputStream());
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Unable to load JSON from " + source, ex);
+		}
 	}
 
-	public String getJson(InputStream source) throws IOException {
-		return FileCopyUtils.copyToString(new InputStreamReader(source));
+	String getJson(InputStream source) {
+		try {
+			return FileCopyUtils
+					.copyToString(new InputStreamReader(source, this.charset));
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Unable to load JSON from InputStream", ex);
+		}
 	}
 
 }

@@ -66,7 +66,7 @@ public class InstallerTests {
 		File foo = createTemporaryFile("foo.jar");
 		given(this.resolver.resolve(Arrays.asList("foo"))).willReturn(Arrays.asList(foo));
 		this.installer.install(Arrays.asList("foo"));
-		assertThat(getNamesOfFilesInLib()).containsOnly("foo.jar", ".installed");
+		assertThat(getNamesOfFilesInLibExt()).containsOnly("foo.jar", ".installed");
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class InstallerTests {
 		given(this.resolver.resolve(Arrays.asList("foo"))).willReturn(Arrays.asList(foo));
 		this.installer.install(Arrays.asList("foo"));
 		this.installer.uninstall(Arrays.asList("foo"));
-		assertThat(getNamesOfFilesInLib()).contains(".installed");
+		assertThat(getNamesOfFilesInLibExt()).contains(".installed");
 	}
 
 	@Test
@@ -88,16 +88,16 @@ public class InstallerTests {
 		given(this.resolver.resolve(Arrays.asList("charlie")))
 				.willReturn(Arrays.asList(charlie, alpha));
 		this.installer.install(Arrays.asList("bravo"));
-		assertThat(getNamesOfFilesInLib()).containsOnly("alpha.jar", "bravo.jar",
+		assertThat(getNamesOfFilesInLibExt()).containsOnly("alpha.jar", "bravo.jar",
 				".installed");
 		this.installer.install(Arrays.asList("charlie"));
-		assertThat(getNamesOfFilesInLib()).containsOnly("alpha.jar", "bravo.jar",
+		assertThat(getNamesOfFilesInLibExt()).containsOnly("alpha.jar", "bravo.jar",
 				"charlie.jar", ".installed");
 		this.installer.uninstall(Arrays.asList("bravo"));
-		assertThat(getNamesOfFilesInLib()).containsOnly("alpha.jar", "charlie.jar",
+		assertThat(getNamesOfFilesInLibExt()).containsOnly("alpha.jar", "charlie.jar",
 				".installed");
 		this.installer.uninstall(Arrays.asList("charlie"));
-		assertThat(getNamesOfFilesInLib()).containsOnly(".installed");
+		assertThat(getNamesOfFilesInLibExt()).containsOnly(".installed");
 	}
 
 	@Test
@@ -111,15 +111,15 @@ public class InstallerTests {
 				.willReturn(Arrays.asList(charlie, alpha));
 		this.installer.install(Arrays.asList("bravo"));
 		this.installer.install(Arrays.asList("charlie"));
-		assertThat(getNamesOfFilesInLib()).containsOnly("alpha.jar", "bravo.jar",
+		assertThat(getNamesOfFilesInLibExt()).containsOnly("alpha.jar", "bravo.jar",
 				"charlie.jar", ".installed");
 		this.installer.uninstallAll();
-		assertThat(getNamesOfFilesInLib()).containsOnly(".installed");
+		assertThat(getNamesOfFilesInLibExt()).containsOnly(".installed");
 	}
 
-	private Set<String> getNamesOfFilesInLib() {
+	private Set<String> getNamesOfFilesInLibExt() {
 		Set<String> names = new HashSet<String>();
-		for (File file : new File("target/lib").listFiles()) {
+		for (File file : new File("target/lib/ext").listFiles()) {
 			names.add(file.getName());
 		}
 		return names;

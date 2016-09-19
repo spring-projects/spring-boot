@@ -28,9 +28,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 @RequestMapping("/customers")
@@ -46,7 +46,7 @@ public class CustomerController {
 		this.entityLinks = entityLinks;
 	}
 
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	HttpEntity<Resources<Customer>> showCustomers() {
 		Resources<Customer> resources = new Resources<Customer>(
 				this.repository.findAll());
@@ -54,7 +54,7 @@ public class CustomerController {
 		return new ResponseEntity<Resources<Customer>>(resources, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	HttpEntity<Resource<Customer>> showCustomer(@PathVariable Long id) {
 		Resource<Customer> resource = new Resource<Customer>(this.repository.findOne(id));
 		resource.add(this.entityLinks.linkToSingleResource(Customer.class, id));

@@ -17,8 +17,6 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.net.URI;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import javax.servlet.MultipartConfigElement;
 
@@ -32,16 +30,17 @@ import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletConta
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
@@ -61,6 +60,7 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Josh Long
  * @author Ivan Sopov
+ * @author Toshiaki Maki
  */
 public class MultipartAutoConfigurationTests {
 
@@ -170,10 +170,8 @@ public class MultipartAutoConfigurationTests {
 	private void testContainerWithCustomMultipartConfigEnabledSetting(
 			final String propertyValue, int expectedNumberOfMultipartConfigElementBeans) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		Map<String, Object> properties = new LinkedHashMap<String, Object>();
-		properties.put("multipart.enabled", propertyValue);
-		MapPropertySource propertySource = new MapPropertySource("test", properties);
-		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.http.multipart.enabled=" + propertyValue);
 		this.context.register(ContainerWithNoMultipartTomcat.class,
 				BaseConfiguration.class);
 		this.context.refresh();
@@ -190,6 +188,20 @@ public class MultipartAutoConfigurationTests {
 				.getBean(MultipartResolver.class);
 		assertThat(multipartResolver)
 				.isNotInstanceOf(StandardServletMultipartResolver.class);
+	}
+
+	@Test
+	public void configureResolveLazily() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.http.multipart.resolve-lazily=true");
+		this.context.register(ContainerWithNothing.class, BaseConfiguration.class);
+		this.context.refresh();
+		StandardServletMultipartResolver multipartResolver = this.context
+				.getBean(StandardServletMultipartResolver.class);
+		boolean resolveLazily = (Boolean) ReflectionTestUtils.getField(multipartResolver,
+				"resolveLazily");
+		assertThat(resolveLazily).isTrue();
 	}
 
 	private void verify404() throws Exception {

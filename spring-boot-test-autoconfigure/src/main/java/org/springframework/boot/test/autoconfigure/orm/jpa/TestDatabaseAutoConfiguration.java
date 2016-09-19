@@ -50,11 +50,12 @@ import org.springframework.util.ObjectUtils;
  * Auto-configuration for a test database.
  *
  * @author Phillip Webb
+ * @since 1.4.0
  * @see AutoConfigureTestDatabase
  */
 @Configuration
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
-class TestDatabaseAutoConfiguration {
+public class TestDatabaseAutoConfiguration {
 
 	private final Environment environment;
 
@@ -99,10 +100,12 @@ class TestDatabaseAutoConfiguration {
 		private void process(BeanDefinitionRegistry registry,
 				ConfigurableListableBeanFactory beanFactory) {
 			BeanDefinitionHolder holder = getDataSourceBeanDefinition(beanFactory);
-			logger.info("Replacing '" + holder.getBeanName()
-					+ "' DataSource bean with embedded version");
-			registry.registerBeanDefinition(holder.getBeanName(),
-					createEmbeddedBeanDefinition());
+			if (holder != null) {
+				logger.info("Replacing '" + holder.getBeanName()
+						+ "' DataSource bean with embedded version");
+				registry.registerBeanDefinition(holder.getBeanName(),
+						createEmbeddedBeanDefinition());
+			}
 		}
 
 		private BeanDefinition createEmbeddedBeanDefinition() {
@@ -112,24 +115,23 @@ class TestDatabaseAutoConfiguration {
 		private BeanDefinitionHolder getDataSourceBeanDefinition(
 				ConfigurableListableBeanFactory beanFactory) {
 			String[] beanNames = beanFactory.getBeanNamesForType(DataSource.class);
-			if (!ObjectUtils.isEmpty(beanNames)) {
-				if (beanNames.length == 1) {
-					String beanName = beanNames[0];
-					BeanDefinition beanDefinition = beanFactory
-							.getBeanDefinition(beanName);
+			if (ObjectUtils.isEmpty(beanNames)) {
+				logger.warn("No DataSource beans found, "
+						+ "embedded version will not be used");
+			}
+			if (beanNames.length == 1) {
+				String beanName = beanNames[0];
+				BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
+				return new BeanDefinitionHolder(beanDefinition, beanName);
+			}
+			for (String beanName : beanNames) {
+				BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
+				if (beanDefinition.isPrimary()) {
 					return new BeanDefinitionHolder(beanDefinition, beanName);
 				}
-				for (String beanName : beanNames) {
-					BeanDefinition beanDefinition = beanFactory
-							.getBeanDefinition(beanName);
-					if (beanDefinition.isPrimary()) {
-						return new BeanDefinitionHolder(beanDefinition, beanName);
-					}
-					logger.warn("No primary DataSource found, "
-							+ "embedded version will not be used");
-				}
-
 			}
+			logger.warn("No primary DataSource found, "
+					+ "embedded version will not be used");
 			return null;
 		}
 
@@ -184,6 +186,10 @@ class TestDatabaseAutoConfiguration {
 			if (EmbeddedDatabaseConnection.NONE.equals(connection)) {
 				connection = EmbeddedDatabaseConnection.get(getClass().getClassLoader());
 			}
+			Assert.state(connection != EmbeddedDatabaseConnection.NONE,
+					"Cannot determine embedded database for tests. If you want "
+							+ "an embedded database please put a supported one "
+							+ "on the classpath.");
 			return new EmbeddedDatabaseBuilder().setType(connection.getType()).build();
 		}
 

@@ -16,13 +16,14 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -89,6 +90,11 @@ public class RabbitProperties {
 	private boolean publisherReturns;
 
 	/**
+	 * Connection timeout, in milliseconds; zero for infinite.
+	 */
+	private Integer connectionTimeout;
+
+	/**
 	 * Cache configuration.
 	 */
 	private final Cache cache = new Cache();
@@ -100,15 +106,24 @@ public class RabbitProperties {
 
 	private final Template template = new Template();
 
+	private List<Address> parsedAddresses;
+
 	public String getHost() {
-		if (this.addresses == null) {
-			return this.host;
+		return this.host;
+	}
+
+	/**
+	 * Returns the host from the first address, or the configured host if no addresses
+	 * have been set.
+	 * @return the host
+	 * @see #setAddresses(String)
+	 * @see #getHost()
+	 */
+	public String determineHost() {
+		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
+			return getHost();
 		}
-		String[] hosts = StringUtils.delimitedListToStringArray(this.addresses, ":");
-		if (hosts.length == 2) {
-			return hosts[0];
-		}
-		return null;
+		return this.parsedAddresses.get(0).host;
 	}
 
 	public void setHost(String host) {
@@ -116,62 +131,78 @@ public class RabbitProperties {
 	}
 
 	public int getPort() {
-		if (this.addresses == null) {
-			return this.port;
-		}
-		String[] hosts = StringUtils.delimitedListToStringArray(this.addresses, ":");
-		if (hosts.length >= 2) {
-			return Integer
-					.valueOf(StringUtils.commaDelimitedListToStringArray(hosts[1])[0]);
-		}
 		return this.port;
 	}
 
-	public void setAddresses(String addresses) {
-		this.addresses = parseAddresses(addresses);
-	}
-
-	public String getAddresses() {
-		return (this.addresses == null ? this.host + ":" + this.port : this.addresses);
-	}
-
-	private String parseAddresses(String addresses) {
-		Set<String> result = new LinkedHashSet<String>();
-		for (String address : StringUtils.commaDelimitedListToStringArray(addresses)) {
-			address = address.trim();
-			if (address.startsWith("amqp://")) {
-				address = address.substring("amqp://".length());
-			}
-			if (address.contains("@")) {
-				String[] split = StringUtils.split(address, "@");
-				String creds = split[0];
-				address = split[1];
-				split = StringUtils.split(creds, ":");
-				this.username = split[0];
-				if (split.length > 0) {
-					this.password = split[1];
-				}
-			}
-			int index = address.indexOf("/");
-			if (index >= 0 && index < address.length()) {
-				setVirtualHost(address.substring(index + 1));
-				address = address.substring(0, index);
-			}
-			if (!address.contains(":")) {
-				address = address + ":" + this.port;
-			}
-			result.add(address);
+	/**
+	 * Returns the port from the first address, or the configured port if no addresses
+	 * have been set.
+	 * @return the port
+	 * @see #setAddresses(String)
+	 * @see #getPort()
+	 */
+	public int determinePort() {
+		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
+			return getPort();
 		}
-		return (result.isEmpty() ? null
-				: StringUtils.collectionToCommaDelimitedString(result));
+		Address address = this.parsedAddresses.get(0);
+		return address.port;
 	}
 
 	public void setPort(int port) {
 		this.port = port;
 	}
 
+	public String getAddresses() {
+		return this.addresses;
+	}
+
+	/**
+	 * Returns the comma-separated addresses or a single address ({@code host:port})
+	 * created from the configured host and port if no addresses have been set.
+	 * @return the addresses
+	 */
+	public String determineAddresses() {
+		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
+			return this.host + ":" + this.port;
+		}
+		List<String> addressStrings = new ArrayList<String>();
+		for (Address parsedAddress : this.parsedAddresses) {
+			addressStrings.add(parsedAddress.host + ":" + parsedAddress.port);
+		}
+		return StringUtils.collectionToCommaDelimitedString(addressStrings);
+	}
+
+	public void setAddresses(String addresses) {
+		this.addresses = addresses;
+		this.parsedAddresses = parseAddresses(addresses);
+	}
+
+	private List<Address> parseAddresses(String addresses) {
+		List<Address> parsedAddresses = new ArrayList<Address>();
+		for (String address : StringUtils.commaDelimitedListToStringArray(addresses)) {
+			parsedAddresses.add(new Address(address));
+		}
+		return parsedAddresses;
+	}
+
 	public String getUsername() {
 		return this.username;
+	}
+
+	/**
+	 * If addresses have been set and the first address has a username it is returned.
+	 * Otherwise returns the result of calling {@code getUsername()}.
+	 * @return the username
+	 * @see #setAddresses(String)
+	 * @see #getUsername()
+	 */
+	public String determineUsername() {
+		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
+			return this.username;
+		}
+		Address address = this.parsedAddresses.get(0);
+		return address.username == null ? this.username : address.username;
 	}
 
 	public void setUsername(String username) {
@@ -180,6 +211,21 @@ public class RabbitProperties {
 
 	public String getPassword() {
 		return this.password;
+	}
+
+	/**
+	 * If addresses have been set and the first address has a password it is returned.
+	 * Otherwise returns the result of calling {@code getPassword()}.
+	 * @return the password or {@code null}
+	 * @see #setAddresses(String)
+	 * @see #getPassword()
+	 */
+	public String determinePassword() {
+		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
+			return getPassword();
+		}
+		Address address = this.parsedAddresses.get(0);
+		return address.password == null ? getPassword() : address.password;
 	}
 
 	public void setPassword(String password) {
@@ -192,6 +238,21 @@ public class RabbitProperties {
 
 	public String getVirtualHost() {
 		return this.virtualHost;
+	}
+
+	/**
+	 * If addresses have been set and the first address has a virtual host it is returned.
+	 * Otherwise returns the result of calling {@code getVirtualHost()}.
+	 * @return the virtual host or {@code null}
+	 * @see #setAddresses(String)
+	 * @see #getVirtualHost()
+	 */
+	public String determineVirtualHost() {
+		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
+			return getVirtualHost();
+		}
+		Address address = this.parsedAddresses.get(0);
+		return address.virtualHost == null ? getVirtualHost() : address.virtualHost;
 	}
 
 	public void setVirtualHost(String virtualHost) {
@@ -220,6 +281,14 @@ public class RabbitProperties {
 
 	public void setPublisherReturns(boolean publisherReturns) {
 		this.publisherReturns = publisherReturns;
+	}
+
+	public Integer getConnectionTimeout() {
+		return this.connectionTimeout;
+	}
+
+	public void setConnectionTimeout(Integer connectionTimeout) {
+		this.connectionTimeout = connectionTimeout;
 	}
 
 	public Cache getCache() {
@@ -261,6 +330,12 @@ public class RabbitProperties {
 		 */
 		private String trustStorePassword;
 
+		/**
+		 * SSL algorithm to use (e.g. TLSv1.1). Default is set automatically by the rabbit
+		 * client library.
+		 */
+		private String algorithm;
+
 		public boolean isEnabled() {
 			return this.enabled;
 		}
@@ -299,6 +374,14 @@ public class RabbitProperties {
 
 		public void setTrustStorePassword(String trustStorePassword) {
 			this.trustStorePassword = trustStorePassword;
+		}
+
+		public String getAlgorithm() {
+			return this.algorithm;
+		}
+
+		public void setAlgorithm(String sslAlgorithm) {
+			this.algorithm = sslAlgorithm;
 		}
 
 	}
@@ -621,6 +704,77 @@ public class RabbitProperties {
 
 		public void setStateless(boolean stateless) {
 			this.stateless = stateless;
+		}
+
+	}
+
+	private static final class Address {
+
+		private static final String PREFIX_AMQP = "amqp://";
+
+		private static final int DEFAULT_PORT = 5672;
+
+		private String host;
+
+		private int port;
+
+		private String username;
+
+		private String password;
+
+		private String virtualHost;
+
+		private Address(String input) {
+			input = input.trim();
+			input = trimPrefix(input);
+			input = parseUsernameAndPassword(input);
+			input = parseVirtualHost(input);
+			parseHostAndPort(input);
+		}
+
+		private String trimPrefix(String input) {
+			if (input.startsWith(PREFIX_AMQP)) {
+				input = input.substring(PREFIX_AMQP.length());
+			}
+			return input;
+		}
+
+		private String parseUsernameAndPassword(String input) {
+			if (input.contains("@")) {
+				String[] split = StringUtils.split(input, "@");
+				String creds = split[0];
+				input = split[1];
+				split = StringUtils.split(creds, ":");
+				this.username = split[0];
+				if (split.length > 0) {
+					this.password = split[1];
+				}
+			}
+			return input;
+		}
+
+		private String parseVirtualHost(String input) {
+			int hostIndex = input.indexOf("/");
+			if (hostIndex >= 0) {
+				this.virtualHost = input.substring(hostIndex + 1);
+				if (this.virtualHost.length() == 0) {
+					this.virtualHost = "/";
+				}
+				input = input.substring(0, hostIndex);
+			}
+			return input;
+		}
+
+		private void parseHostAndPort(String input) {
+			int portIndex = input.indexOf(':');
+			if (portIndex == -1) {
+				this.host = input;
+				this.port = DEFAULT_PORT;
+			}
+			else {
+				this.host = input.substring(0, portIndex);
+				this.port = Integer.valueOf(input.substring(portIndex + 1));
+			}
 		}
 
 	}

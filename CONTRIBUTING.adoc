@@ -26,13 +26,12 @@ problem.
 
 
 == Sign the Contributor License Agreement
-Before we accept a non-trivial patch or pull request we will need you to sign the
-https://support.springsource.com/spring_committer_signup[contributor's agreement].
+Before we accept a non-trivial patch or pull request we will need you to
+https://cla.pivotal.io/sign/spring[sign the Contributor License Agreement].
 Signing the contributor's agreement does not grant anyone commit rights to the main
 repository, but it does mean that we can accept your contributions, and you will get an
 author credit if we do.  Active contributors might be asked to join the core team, and
-given the ability to merge pull requests. Use '`Phillip Webb`' or '`Dave Syer`' in the
-project lead field when you complete the form.
+given the ability to merge pull requests.
 
 
 
@@ -65,7 +64,7 @@ added after the original pull request but before a merge.
 
 == Working with the code
 If you don't have an IDE preference we would recommend that you use
-http://www.springsource.com/developer/sts[Spring Tools Suite] or
+https://spring.io/tools/sts[Spring Tools Suite] or
 http://eclipse.org[Eclipse] when working with the code. We use the
 http://eclipse.org/m2e/[M2Eclipse] eclipse plugin for maven support. Other IDEs and tools
 should also work without issue.

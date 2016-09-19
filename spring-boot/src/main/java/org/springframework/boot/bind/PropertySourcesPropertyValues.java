@@ -43,7 +43,8 @@ import org.springframework.validation.DataBinder;
  */
 public class PropertySourcesPropertyValues implements PropertyValues {
 
-	private static final Pattern COLLECTION_PROPERTY = Pattern.compile("\\[(\\d+)\\]");
+	private static final Pattern COLLECTION_PROPERTY = Pattern
+			.compile("\\[(\\d+)\\](\\.\\S+)?");
 
 	private final PropertySources propertySources;
 

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.info;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -39,8 +40,9 @@ public final class Info {
 	private final Map<String, Object> details;
 
 	private Info(Builder builder) {
-		this.details = new LinkedHashMap<String, Object>();
-		this.details.putAll(builder.content);
+		LinkedHashMap<String, Object> content = new LinkedHashMap<String, Object>();
+		content.putAll(builder.content);
+		this.details = Collections.unmodifiableMap(content);
 	}
 
 	/**

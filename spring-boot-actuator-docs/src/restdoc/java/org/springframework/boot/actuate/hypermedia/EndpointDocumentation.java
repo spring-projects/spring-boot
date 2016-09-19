@@ -17,17 +17,22 @@
 package org.springframework.boot.actuate.hypermedia;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import groovy.text.Template;
 import groovy.text.TemplateEngine;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -36,6 +41,7 @@ import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -47,6 +53,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultHandler;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -60,10 +67,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 		"endpoints.health.sensitive=true", "endpoints.actuator.enabled=false" })
 @DirtiesContext
 @AutoConfigureRestDocs(EndpointDocumentation.RESTDOCS_OUTPUT_DIR)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(print = MockMvcPrint.NONE)
 public class EndpointDocumentation {
 
 	static final String RESTDOCS_OUTPUT_DIR = "target/generated-snippets";
+
+	static final File LOG_FILE = new File("target/logs/spring.log");
+
+	private static final Set<String> SKIPPED = Collections.<String>unmodifiableSet(
+			new HashSet<String>(Arrays.asList("/docs", "/logfile", "/heapdump")));
 
 	@Autowired
 	private MvcEndpoints mvcEndpoints;
@@ -74,6 +86,11 @@ public class EndpointDocumentation {
 	@Autowired
 	private MockMvc mockMvc;
 
+	@BeforeClass
+	public static void clearLog() {
+		LOG_FILE.delete();
+	}
+
 	@Test
 	public void logfile() throws Exception {
 		this.mockMvc.perform(get("/logfile").accept(MediaType.TEXT_PLAIN))
@@ -82,6 +99,8 @@ public class EndpointDocumentation {
 
 	@Test
 	public void partialLogfile() throws Exception {
+		FileCopyUtils.copy(getClass().getResourceAsStream("log.txt"),
+				new FileOutputStream(LOG_FILE));
 		this.mockMvc
 				.perform(get("/logfile").accept(MediaType.TEXT_PLAIN)
 						.header(HttpHeaders.RANGE, "bytes=0-1024"))
@@ -91,28 +110,27 @@ public class EndpointDocumentation {
 
 	@Test
 	public void endpoints() throws Exception {
-
 		final File docs = new File("src/main/asciidoc");
-
 		final Map<String, Object> model = new LinkedHashMap<String, Object>();
 		final List<EndpointDoc> endpoints = new ArrayList<EndpointDoc>();
 		model.put("endpoints", endpoints);
 		for (MvcEndpoint endpoint : getEndpoints()) {
-			final String endpointPath = StringUtils.hasText(endpoint.getPath())
-					? endpoint.getPath() : "/";
-
-			if (!endpointPath.equals("/docs") && !endpointPath.equals("/logfile")) {
+			final String endpointPath = (StringUtils.hasText(endpoint.getPath())
+					? endpoint.getPath() : "/");
+			if (!SKIPPED.contains(endpointPath)) {
 				String output = endpointPath.substring(1);
 				output = output.length() > 0 ? output : "./";
 				this.mockMvc.perform(get(endpointPath).accept(MediaType.APPLICATION_JSON))
 						.andExpect(status().isOk()).andDo(document(output))
 						.andDo(new ResultHandler() {
+
 							@Override
 							public void handle(MvcResult mvcResult) throws Exception {
 								EndpointDoc endpoint = new EndpointDoc(docs,
 										endpointPath);
 								endpoints.add(endpoint);
 							}
+
 						});
 			}
 		}

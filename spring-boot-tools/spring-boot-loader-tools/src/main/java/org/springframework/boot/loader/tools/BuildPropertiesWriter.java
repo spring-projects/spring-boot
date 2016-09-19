@@ -22,11 +22,12 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * A {@code BuildPropertiesWriter} writes the {@code build.properties} for consumption by
- * the Actuator.
+ * A {@code BuildPropertiesWriter} writes the {@code build-info.properties} for
+ * consumption by the Actuator.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
@@ -119,7 +120,19 @@ public final class BuildPropertiesWriter {
 			this.artifact = artifact;
 			this.name = name;
 			this.version = version;
+			validateAdditionalProperties(additionalProperties);
 			this.additionalProperties = additionalProperties;
+		}
+
+		private static void validateAdditionalProperties(
+				Map<String, String> additionalProperties) {
+			if (additionalProperties != null) {
+				for (Entry<String, String> property : additionalProperties.entrySet()) {
+					if (property.getValue() == null) {
+						throw new NullAdditionalPropertyValueException(property.getKey());
+					}
+				}
+			}
 		}
 
 		public String getGroup() {
@@ -140,6 +153,18 @@ public final class BuildPropertiesWriter {
 
 		public Map<String, String> getAdditionalProperties() {
 			return this.additionalProperties;
+		}
+
+	}
+
+	/**
+	 * Exception thrown when an additional property with a null value is encountered.
+	 */
+	public static class NullAdditionalPropertyValueException
+			extends IllegalArgumentException {
+
+		public NullAdditionalPropertyValueException(String name) {
+			super("Additional property '" + name + "' is illegal as its value is null");
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * {@link BeanFactoryPostProcessor} that registers beans for Servlet components found via
@@ -87,14 +87,16 @@ class ServletComponentRegisteringPostProcessor
 	}
 
 	private boolean isRunningInEmbeddedContainer() {
-		return this.applicationContext instanceof EmbeddedWebApplicationContext
-				&& ((EmbeddedWebApplicationContext) this.applicationContext)
+		return this.applicationContext instanceof WebApplicationContext
+				&& ((WebApplicationContext) this.applicationContext)
 						.getServletContext() == null;
 	}
 
 	private ClassPathScanningCandidateComponentProvider createComponentProvider() {
 		ClassPathScanningCandidateComponentProvider componentProvider = new ClassPathScanningCandidateComponentProvider(
 				false);
+		componentProvider.setEnvironment(this.applicationContext.getEnvironment());
+		componentProvider.setResourceLoader(this.applicationContext);
 		for (ServletComponentHandler handler : HANDLERS) {
 			componentProvider.addIncludeFilter(handler.getTypeFilter());
 		}

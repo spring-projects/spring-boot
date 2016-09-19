@@ -19,14 +19,13 @@ package sample.jersey;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.context.web.LocalServerPort;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,30 +33,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class SampleJerseyApplicationTests {
 
-	@LocalServerPort
-	private int port;
-
-	private RestTemplate restTemplate = new TestRestTemplate();
+	@Autowired
+	private TestRestTemplate restTemplate;
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate
-				.getForEntity("http://localhost:" + this.port + "/hello", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/hello",
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	public void reverse() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity(
-				"http://localhost:" + this.port + "/reverse?input=olleh", String.class);
+		ResponseEntity<String> entity = this.restTemplate
+				.getForEntity("/reverse?input=olleh", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("hello");
 	}
 
 	@Test
 	public void validation() {
-		ResponseEntity<String> entity = this.restTemplate
-				.getForEntity("http://localhost:" + this.port + "/reverse", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/reverse",
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 

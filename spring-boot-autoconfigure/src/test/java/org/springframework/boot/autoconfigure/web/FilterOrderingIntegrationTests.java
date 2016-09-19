@@ -32,8 +32,9 @@ import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebAppl
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory.RegisteredFilter;
-import org.springframework.boot.context.web.OrderedCharacterEncodingFilter;
-import org.springframework.boot.context.web.OrderedRequestContextFilter;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.filter.OrderedCharacterEncodingFilter;
+import org.springframework.boot.web.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -49,6 +50,7 @@ import static org.mockito.Mockito.mock;
  * Integration tests that verify the ordering of various filters that are auto-configured.
  *
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 public class FilterOrderingIntegrationTests {
 
@@ -82,9 +84,12 @@ public class FilterOrderingIntegrationTests {
 
 	private void load() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.session.store-type=hash-map");
 		this.context.register(MockEmbeddedServletContainerConfiguration.class,
 				TestRedisConfiguration.class, WebMvcAutoConfiguration.class,
-				SecurityAutoConfiguration.class, SessionAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class, SecurityAutoConfiguration.class,
+				SessionAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				HttpEncodingAutoConfiguration.class);

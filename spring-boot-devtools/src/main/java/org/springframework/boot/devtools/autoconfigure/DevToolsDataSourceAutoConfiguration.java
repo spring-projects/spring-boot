@@ -23,18 +23,25 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.devtools.autoconfigure.DevToolsDataSourceAutoConfiguration.DevToolsDataSourceCondition;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ConfigurationCondition;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -109,20 +116,44 @@ public class DevToolsDataSourceAutoConfiguration {
 
 	}
 
-	static class DevToolsDataSourceCondition extends AllNestedConditions {
+	static class DevToolsDataSourceCondition extends SpringBootCondition
+			implements ConfigurationCondition {
 
-		DevToolsDataSourceCondition() {
-			super(ConfigurationPhase.REGISTER_BEAN);
+		@Override
+		public ConfigurationPhase getConfigurationPhase() {
+			return ConfigurationPhase.REGISTER_BEAN;
 		}
 
-		@ConditionalOnBean(DataSource.class)
-		static final class DataSourceBean {
-
-		}
-
-		@ConditionalOnBean(DataSourceProperties.class)
-		static final class DataSourcePropertiesBean {
-
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("DevTools DataSource Condition");
+			String[] dataSourceBeanNames = context.getBeanFactory()
+					.getBeanNamesForType(DataSource.class);
+			if (dataSourceBeanNames.length != 1) {
+				return ConditionOutcome
+						.noMatch(message.didNotFind("a single DataSource bean").atAll());
+			}
+			if (context.getBeanFactory()
+					.getBeanNamesForType(DataSourceProperties.class).length != 1) {
+				return ConditionOutcome.noMatch(
+						message.didNotFind("a single DataSourceProperties bean").atAll());
+			}
+			BeanDefinition dataSourceDefinition = context.getRegistry()
+					.getBeanDefinition(dataSourceBeanNames[0]);
+			if (dataSourceDefinition instanceof AnnotatedBeanDefinition
+					&& ((AnnotatedBeanDefinition) dataSourceDefinition)
+							.getFactoryMethodMetadata() != null
+					&& ((AnnotatedBeanDefinition) dataSourceDefinition)
+							.getFactoryMethodMetadata().getDeclaringClassName()
+							.startsWith(DataSourceAutoConfiguration.class.getPackage()
+									.getName() + ".DataSourceConfiguration$")) {
+				return ConditionOutcome
+						.match(message.foundExactly("auto-configured DataSource"));
+			}
+			return ConditionOutcome
+					.noMatch(message.didNotFind("an auto-configured DataSource").atAll());
 		}
 
 	}

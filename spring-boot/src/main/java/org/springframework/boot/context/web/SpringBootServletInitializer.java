@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,25 +18,11 @@ package org.springframework.boot.context.web;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.builder.ParentContextApplicationContextInitializer;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.util.Assert;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.web.WebApplicationInitializer;
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.WebApplicationContext;
 
 /**
  * An opinionated {@link WebApplicationInitializer} to run a {@link SpringApplication}
@@ -60,116 +46,11 @@ import org.springframework.web.context.WebApplicationContext;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @see #configure(SpringApplicationBuilder)
+ * @deprecated as of 1.4 in favor of
+ * {@link org.springframework.boot.web.support.SpringBootServletInitializer}
  */
-public abstract class SpringBootServletInitializer implements WebApplicationInitializer {
-
-	protected Log logger; // Don't initialize early
-
-	private boolean registerErrorPageFilter = true;
-
-	/**
-	 * Set if the {@link ErrorPageFilter} should be registered. Set to {@code false} if
-	 * error page mappings should be handled via the Servlet container and not Spring
-	 * Boot.
-	 * @param registerErrorPageFilter if the {@link ErrorPageFilter} should be registered.
-	 */
-	protected final void setRegisterErrorPageFilter(boolean registerErrorPageFilter) {
-		this.registerErrorPageFilter = registerErrorPageFilter;
-	}
-
-	@Override
-	public void onStartup(ServletContext servletContext) throws ServletException {
-		// Logger initialization is deferred in case a ordered
-		// LogServletContextInitializer is being used
-		this.logger = LogFactory.getLog(getClass());
-		WebApplicationContext rootAppContext = createRootApplicationContext(
-				servletContext);
-		if (rootAppContext != null) {
-			servletContext.addListener(new ContextLoaderListener(rootAppContext) {
-				@Override
-				public void contextInitialized(ServletContextEvent event) {
-					// no-op because the application context is already initialized
-				}
-			});
-		}
-		else {
-			this.logger.debug("No ContextLoaderListener registered, as "
-					+ "createRootApplicationContext() did not "
-					+ "return an application context");
-		}
-	}
-
-	protected WebApplicationContext createRootApplicationContext(
-			ServletContext servletContext) {
-		SpringApplicationBuilder builder = createSpringApplicationBuilder();
-		builder.main(getClass());
-		ApplicationContext parent = getExistingRootWebApplicationContext(servletContext);
-		if (parent != null) {
-			this.logger.info("Root context already created (using as parent).");
-			servletContext.setAttribute(
-					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, null);
-			builder.initializers(new ParentContextApplicationContextInitializer(parent));
-		}
-		builder.initializers(
-				new ServletContextApplicationContextInitializer(servletContext));
-		builder.contextClass(AnnotationConfigEmbeddedWebApplicationContext.class);
-		builder = configure(builder);
-		SpringApplication application = builder.build();
-		if (application.getSources().isEmpty() && AnnotationUtils
-				.findAnnotation(getClass(), Configuration.class) != null) {
-			application.getSources().add(getClass());
-		}
-		Assert.state(!application.getSources().isEmpty(),
-				"No SpringApplication sources have been defined. Either override the "
-						+ "configure method or add an @Configuration annotation");
-		// Ensure error pages are registered
-		if (this.registerErrorPageFilter) {
-			application.getSources().add(ErrorPageFilter.class);
-		}
-		return run(application);
-	}
-
-	/**
-	 * Returns the {@code SpringApplicationBuilder} that is used to configure and create
-	 * the {@link SpringApplication}. The default implementation returns a new
-	 * {@code SpringApplicationBuilder} in its default state.
-	 * @return the {@code SpringApplicationBuilder}.
-	 * @since 1.3.0
-	 */
-	protected SpringApplicationBuilder createSpringApplicationBuilder() {
-		return new SpringApplicationBuilder();
-	}
-
-	/**
-	 * Called to run a fully configured {@link SpringApplication}.
-	 * @param application the application to run
-	 * @return the {@link WebApplicationContext}
-	 */
-	protected WebApplicationContext run(SpringApplication application) {
-		return (WebApplicationContext) application.run();
-	}
-
-	private ApplicationContext getExistingRootWebApplicationContext(
-			ServletContext servletContext) {
-		Object context = servletContext.getAttribute(
-				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
-		if (context instanceof ApplicationContext) {
-			return (ApplicationContext) context;
-		}
-		return null;
-	}
-
-	/**
-	 * Configure the application. Normally all you would need to do it add sources (e.g.
-	 * config classes) because other settings have sensible defaults. You might choose
-	 * (for instance) to add default command line arguments, or set an active Spring
-	 * profile.
-	 * @param builder a builder for the application context
-	 * @return the application builder
-	 * @see SpringApplicationBuilder
-	 */
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-		return builder;
-	}
+@Deprecated
+public abstract class SpringBootServletInitializer
+		extends org.springframework.boot.web.support.SpringBootServletInitializer {
 
 }

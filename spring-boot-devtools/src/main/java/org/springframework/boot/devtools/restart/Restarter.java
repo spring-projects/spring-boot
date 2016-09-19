@@ -80,9 +80,23 @@ import org.springframework.util.ReflectionUtils;
  */
 public class Restarter {
 
+	private static final Object INSTANCE_MONITOR = new Object();
+
 	private static final String[] NO_ARGS = {};
 
 	private static Restarter instance;
+
+	private final Set<URL> urls = new LinkedHashSet<URL>();
+
+	private final ClassLoaderFiles classLoaderFiles = new ClassLoaderFiles();
+
+	private final Map<String, Object> attributes = new HashMap<String, Object>();
+
+	private final BlockingDeque<LeakSafeThread> leakSafeThreads = new LinkedBlockingDeque<LeakSafeThread>();
+
+	private final Lock stopLock = new ReentrantLock();
+
+	private final Object monitor = new Object();
 
 	private Log logger = new DeferredLog();
 
@@ -100,17 +114,7 @@ public class Restarter {
 
 	private final UncaughtExceptionHandler exceptionHandler;
 
-	private final Set<URL> urls = new LinkedHashSet<URL>();
-
-	private final ClassLoaderFiles classLoaderFiles = new ClassLoaderFiles();
-
-	private final Map<String, Object> attributes = new HashMap<String, Object>();
-
-	private final BlockingDeque<LeakSafeThread> leakSafeThreads = new LinkedBlockingDeque<LeakSafeThread>();
-
 	private boolean finished = false;
-
-	private final Lock stopLock = new ReentrantLock();
 
 	private volatile ConfigurableApplicationContext rootContext;
 
@@ -394,15 +398,20 @@ public class Restarter {
 	 * Called to finish {@link Restarter} initialization when application logging is
 	 * available.
 	 */
-	synchronized void finish() {
-		if (!isFinished()) {
-			this.logger = DeferredLog.replay(this.logger, LogFactory.getLog(getClass()));
-			this.finished = true;
+	void finish() {
+		synchronized (this.monitor) {
+			if (!isFinished()) {
+				this.logger = DeferredLog.replay(this.logger,
+						LogFactory.getLog(getClass()));
+				this.finished = true;
+			}
 		}
 	}
 
-	synchronized boolean isFinished() {
-		return this.finished;
+	boolean isFinished() {
+		synchronized (this.monitor) {
+			return this.finished;
+		}
 	}
 
 	void prepare(ConfigurableApplicationContext applicationContext) {
@@ -514,7 +523,7 @@ public class Restarter {
 	public static void initialize(String[] args, boolean forceReferenceCleanup,
 			RestartInitializer initializer, boolean restartOnInitialize) {
 		Restarter localInstance = null;
-		synchronized (Restarter.class) {
+		synchronized (INSTANCE_MONITOR) {
 			if (instance == null) {
 				localInstance = new Restarter(Thread.currentThread(), args,
 						forceReferenceCleanup, initializer);
@@ -531,9 +540,11 @@ public class Restarter {
 	 * {@link #initialize(String[]) initialization}.
 	 * @return the restarter
 	 */
-	public synchronized static Restarter getInstance() {
-		Assert.state(instance != null, "Restarter has not been initialized");
-		return instance;
+	public static Restarter getInstance() {
+		synchronized (INSTANCE_MONITOR) {
+			Assert.state(instance != null, "Restarter has not been initialized");
+			return instance;
+		}
 	}
 
 	/**
@@ -541,7 +552,9 @@ public class Restarter {
 	 * @param instance the instance to set
 	 */
 	final static void setInstance(Restarter instance) {
-		Restarter.instance = instance;
+		synchronized (INSTANCE_MONITOR) {
+			Restarter.instance = instance;
+		}
 	}
 
 	/**
@@ -549,7 +562,9 @@ public class Restarter {
 	 * application code.
 	 */
 	public static void clearInstance() {
-		instance = null;
+		synchronized (INSTANCE_MONITOR) {
+			instance = null;
+		}
 	}
 
 	/**

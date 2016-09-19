@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,11 @@ public class ThymeleafProperties {
 	public static final String DEFAULT_PREFIX = "classpath:/templates/";
 
 	public static final String DEFAULT_SUFFIX = ".html";
+
+	/**
+	 * Check that the template exists before rendering it (Thymeleaf 3+).
+	 */
+	private boolean checkTemplate = true;
 
 	/**
 	 * Check that the templates location exists.
@@ -101,6 +106,14 @@ public class ThymeleafProperties {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public boolean isCheckTemplate() {
+		return this.checkTemplate;
+	}
+
+	public void setCheckTemplate(boolean checkTemplate) {
+		this.checkTemplate = checkTemplate;
 	}
 
 	public boolean isCheckTemplateLocation() {

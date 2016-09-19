@@ -70,6 +70,8 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	private static final Log logger = LogFactory
 			.getLog(UndertowEmbeddedServletContainer.class);
 
+	private final Object monitor = new Object();
+
 	private final Builder builder;
 
 	private final DeploymentManager manager;
@@ -92,12 +94,12 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
 	 * @param builder the builder
 	 * @param manager the deployment manager
-	 * @param contextPath root the context path
+	 * @param contextPath the root context path
 	 * @param port the port to listen on (not used)
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
 	 * @deprecated as of 1.4 in favor of
-	 * {@link #UndertowEmbeddedServletContainer(Builder, DeploymentManager, String, boolean, Compression)}
+	 * {@link #UndertowEmbeddedServletContainer(Undertow.Builder, DeploymentManager, String, boolean, Compression)}
 	 */
 	@Deprecated
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
@@ -109,13 +111,13 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
 	 * @param builder the builder
 	 * @param manager the deployment manager
-	 * @param contextPath root the context path
+	 * @param contextPath the root context path
 	 * @param port the port to listen on (not used)
 	 * @param useForwardHeaders if x-forward headers should be used
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
 	 * @deprecated as of 1.4 in favor of
-	 * {@link #UndertowEmbeddedServletContainer(Builder, DeploymentManager, String, boolean, boolean, Compression)}
+	 * {@link #UndertowEmbeddedServletContainer(Undertow.Builder, DeploymentManager, String, boolean, boolean, Compression)}
 	 */
 	@Deprecated
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
@@ -128,14 +130,14 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
 	 * @param builder the builder
 	 * @param manager the deployment manager
-	 * @param contextPath root the context path
+	 * @param contextPath the root context path
 	 * @param port the port to listen on (not used)
 	 * @param useForwardHeaders if x-forward headers should be used
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
-	 * @param serverHeader string to be used in http header
+	 * @param serverHeader string to be used in HTTP header
 	 * @deprecated as of 1.4 in favor of
-	 * {@link #UndertowEmbeddedServletContainer(Builder, DeploymentManager, String, boolean, boolean, Compression, String)}
+	 * {@link #UndertowEmbeddedServletContainer(Undertow.Builder, DeploymentManager, String, boolean, boolean, Compression, String)}
 	 */
 	@Deprecated
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
@@ -149,7 +151,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
 	 * @param builder the builder
 	 * @param manager the deployment manager
-	 * @param contextPath root the context path
+	 * @param contextPath the root context path
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
 	 */
@@ -162,7 +164,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
 	 * @param builder the builder
 	 * @param manager the deployment manager
-	 * @param contextPath root the context path
+	 * @param contextPath the root context path
 	 * @param useForwardHeaders if x-forward headers should be used
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
@@ -178,11 +180,11 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
 	 * @param builder the builder
 	 * @param manager the deployment manager
-	 * @param contextPath root the context path
+	 * @param contextPath the root context path
 	 * @param useForwardHeaders if x-forward headers should be used
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
-	 * @param serverHeader string to be used in http header
+	 * @param serverHeader string to be used in HTTP header
 	 */
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
 			String contextPath, boolean useForwardHeaders, boolean autoStart,
@@ -197,31 +199,33 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	}
 
 	@Override
-	public synchronized void start() throws EmbeddedServletContainerException {
-		try {
-			if (!this.autoStart) {
-				return;
-			}
-			if (this.undertow == null) {
-				this.undertow = createUndertowServer();
-			}
-			this.undertow.start();
-			this.started = true;
-			UndertowEmbeddedServletContainer.logger
-					.info("Undertow started on port(s) " + getPortsDescription());
-		}
-		catch (Exception ex) {
-			if (findBindException(ex) != null) {
-				List<Port> failedPorts = getConfiguredPorts();
-				List<Port> actualPorts = getActualPorts();
-				failedPorts.removeAll(actualPorts);
-				if (failedPorts.size() == 1) {
-					throw new PortInUseException(
-							failedPorts.iterator().next().getNumber());
+	public void start() throws EmbeddedServletContainerException {
+		synchronized (this.monitor) {
+			try {
+				if (!this.autoStart) {
+					return;
 				}
+				if (this.undertow == null) {
+					this.undertow = createUndertowServer();
+				}
+				this.undertow.start();
+				this.started = true;
+				UndertowEmbeddedServletContainer.logger
+						.info("Undertow started on port(s) " + getPortsDescription());
 			}
-			throw new EmbeddedServletContainerException(
-					"Unable to start embedded Undertow", ex);
+			catch (Exception ex) {
+				if (findBindException(ex) != null) {
+					List<Port> failedPorts = getConfiguredPorts();
+					List<Port> actualPorts = getActualPorts();
+					failedPorts.removeAll(actualPorts);
+					if (failedPorts.size() == 1) {
+						throw new PortInUseException(
+								failedPorts.iterator().next().getNumber());
+					}
+				}
+				throw new EmbeddedServletContainerException(
+						"Unable to start embedded Undertow", ex);
+			}
 		}
 	}
 
@@ -356,16 +360,18 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	}
 
 	@Override
-	public synchronized void stop() throws EmbeddedServletContainerException {
-		if (this.started) {
-			try {
-				this.started = false;
-				this.manager.stop();
-				this.undertow.stop();
-			}
-			catch (Exception ex) {
-				throw new EmbeddedServletContainerException("Unable to stop undertow",
-						ex);
+	public void stop() throws EmbeddedServletContainerException {
+		synchronized (this.monitor) {
+			if (this.started) {
+				try {
+					this.started = false;
+					this.manager.stop();
+					this.undertow.stop();
+				}
+				catch (Exception ex) {
+					throw new EmbeddedServletContainerException("Unable to stop undertow",
+							ex);
+				}
 			}
 		}
 	}

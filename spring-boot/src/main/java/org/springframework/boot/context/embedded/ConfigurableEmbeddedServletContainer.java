@@ -18,9 +18,16 @@ package org.springframework.boot.context.embedded;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.servlet.ErrorPageRegistry;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 
 /**
  * Simple interface that represents customizations to an
@@ -30,10 +37,11 @@ import java.util.concurrent.TimeUnit;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Brian Clozel
  * @see EmbeddedServletContainerFactory
  * @see EmbeddedServletContainerCustomizer
  */
-public interface ConfigurableEmbeddedServletContainer {
+public interface ConfigurableEmbeddedServletContainer extends ErrorPageRegistry {
 
 	/**
 	 * Sets the context path for the embedded servlet container. The context should start
@@ -100,16 +108,10 @@ public interface ConfigurableEmbeddedServletContainer {
 	void setRegisterDefaultServlet(boolean registerDefaultServlet);
 
 	/**
-	 * Adds error pages that will be used when handling exceptions.
-	 * @param errorPages the error pages
-	 */
-	void addErrorPages(ErrorPage... errorPages);
-
-	/**
 	 * Sets the error pages that will be used when handling exceptions.
 	 * @param errorPages the error pages
 	 */
-	void setErrorPages(Set<ErrorPage> errorPages);
+	void setErrorPages(Set<? extends ErrorPage> errorPages);
 
 	/**
 	 * Sets the mime-type mappings.
@@ -152,6 +154,12 @@ public interface ConfigurableEmbeddedServletContainer {
 	void setSsl(Ssl ssl);
 
 	/**
+	 * Sets a provider that will be used to obtain SSL stores.
+	 * @param sslStoreProvider the SSL store provider
+	 */
+	void setSslStoreProvider(SslStoreProvider sslStoreProvider);
+
+	/**
 	 * Sets the configuration that will be applied to the container's JSP servlet.
 	 * @param jspServlet the JSP servlet configuration
 	 */
@@ -169,5 +177,11 @@ public interface ConfigurableEmbeddedServletContainer {
 	 * @param serverHeader the server header value
 	 */
 	void setServerHeader(String serverHeader);
+
+	/**
+	 * Sets the Locale to Charset mappings.
+	 * @param localeCharsetMappings the Locale to Charset mappings
+	 */
+	void setLocaleCharsetMappings(Map<Locale, Charset> localeCharsetMappings);
 
 }

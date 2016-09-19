@@ -23,13 +23,36 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
+import org.springframework.boot.test.json.GsonTester;
+import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.test.context.BootstrapWith;
 
+/**
+ * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
+ * for a typical JSON test. Can be used when a test focuses <strong>only</strong> on JSON
+ * serialization.
+ * <p>
+ * Using this annotation will disable full auto-configuration and instead apply only
+ * configuration relevant to JSON tests (i.e. {@code @JsonComponent}, Jackson
+ * {@code Module})
+ * <p>
+ * By default, tests annotated with {@code JsonTest} will also initialize
+ * {@link JacksonTester} and {@link GsonTester} fields. More fine-grained control can be
+ * provided via the {@link AutoConfigureJsonTesters @AutoConfigureJsonTesters} annotation.
+ *
+ * @author Phillip Webb
+ * @see AutoConfigureJson
+ * @see AutoConfigureJsonTesters
+ * @see AutoConfigureCache
+ * @since 1.4.0
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -37,8 +60,10 @@ import org.springframework.test.context.BootstrapWith;
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(JsonExcludeFilter.class)
-@ImportJsonAutoConfiguration
+@AutoConfigureCache
+@AutoConfigureJson
 @AutoConfigureJsonTesters
+@ImportAutoConfiguration
 public @interface JsonTest {
 
 	/**

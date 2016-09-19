@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
@@ -62,7 +63,7 @@ public class ProjectInfoAutoConfiguration {
 		return new GitProperties(loadFrom(this.properties.getGit().getLocation(), "git"));
 	}
 
-	@ConditionalOnResource(resources = "${spring.info.build.location:classpath:META-INF/boot/build.properties}")
+	@ConditionalOnResource(resources = "${spring.info.build.location:classpath:META-INF/build-info.properties}")
 	@ConditionalOnMissingBean
 	@Bean
 	public BuildProperties buildProperties() throws Exception {
@@ -76,7 +77,7 @@ public class ProjectInfoAutoConfiguration {
 		Properties target = new Properties();
 		for (String key : source.stringPropertyNames()) {
 			if (key.startsWith(p)) {
-				target.put(key.substring(p.length(), key.length()), source.get(key));
+				target.put(key.substring(p.length()), source.get(key));
 			}
 		}
 		return target;
@@ -104,9 +105,13 @@ public class ProjectInfoAutoConfiguration {
 					location = "classpath:git.properties";
 				}
 			}
-			boolean match = loader.getResource(location).exists();
-			return new ConditionOutcome(match,
-					"Git info " + (match ? "found" : "not found") + " at " + location);
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("GitResource");
+			if (loader.getResource(location).exists()) {
+				return ConditionOutcome.match(message.found("git info at").items(location));
+			}
+			return ConditionOutcome
+					.noMatch(message.didNotFind("git info at").items(location));
 		}
 
 	}

@@ -16,11 +16,15 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -33,6 +37,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
@@ -48,6 +53,7 @@ import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -63,7 +69,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Import(DataSourceInitializedPublisher.Registrar.class)
 public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
-	private static final String[] NO_PACKAGES = new String[0];
+	private static final Log logger = LogFactory.getLog(JpaBaseConfiguration.class);
 
 	private final DataSource dataSource;
 
@@ -104,7 +110,8 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 			ObjectProvider<PersistenceUnitManager> persistenceUnitManagerProvider) {
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(
 				jpaVendorAdapter, this.properties.getProperties(),
-				persistenceUnitManagerProvider.getIfAvailable());
+				persistenceUnitManagerProvider.getIfAvailable(),
+				determinePersistenceUnitRootLocation());
 		builder.setCallback(getVendorCallback());
 		return builder;
 	}
@@ -138,11 +145,12 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	}
 
 	protected String[] getPackagesToScan() {
-		if (AutoConfigurationPackages.has(this.beanFactory)) {
-			List<String> basePackages = AutoConfigurationPackages.get(this.beanFactory);
-			return basePackages.toArray(new String[basePackages.size()]);
+		List<String> packages = EntityScanPackages.get(this.beanFactory)
+				.getPackageNames();
+		if (packages.isEmpty() && AutoConfigurationPackages.has(this.beanFactory)) {
+			packages = AutoConfigurationPackages.get(this.beanFactory);
 		}
-		return NO_PACKAGES;
+		return packages.toArray(new String[packages.size()]);
 	}
 
 	/**
@@ -180,6 +188,19 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
+	}
+
+	private URL determinePersistenceUnitRootLocation() {
+		Class<?> source = getClass();
+		try {
+			URL url = source.getProtectionDomain().getCodeSource().getLocation();
+			return ResourceUtils.extractJarFileURL(url);
+		}
+		catch (Exception ex) {
+			logger.info("Could not determine persistence " + "unit root location from "
+					+ source + " : " + ex);
+		}
+		return null;
 	}
 
 	@Configuration

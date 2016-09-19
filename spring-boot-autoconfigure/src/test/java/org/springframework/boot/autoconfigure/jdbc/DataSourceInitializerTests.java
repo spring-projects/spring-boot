@@ -16,7 +16,10 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
 
 import javax.sql.DataSource;
@@ -25,6 +28,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -33,6 +37,11 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -180,15 +189,11 @@ public class DataSourceInitializerTests {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-
 		DataSource dataSource = this.context.getBean(DataSource.class);
-
 		this.context.publishEvent(new DataSourceInitializedEvent(dataSource));
-
 		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
-
 		try {
 			template.queryForObject("SELECT COUNT(*) from BAR", Integer.class);
 			fail("Query should have failed as BAR table does not exist");
@@ -198,6 +203,72 @@ public class DataSourceInitializerTests {
 			int expectedCode = -5501; // user lacks privilege or object not found
 			assertThat(sqlException.getErrorCode()).isEqualTo(expectedCode);
 		}
+	}
+
+	@Test
+	public void testDataSourceInitializedWithSchemaCredentials() {
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:true",
+				"spring.datasource.sqlScriptEncoding:UTF-8",
+				"spring.datasource.schema:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "encoding-schema.sql"),
+				"spring.datasource.data:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "encoding-data.sql"),
+				"spring.datasource.schema-username:admin",
+				"spring.datasource.schema-password:admin");
+		try {
+			this.context.refresh();
+			fail("User does not exist");
+		}
+		catch (Exception ex) {
+			assertThat(ex).isInstanceOf(BeanCreationException.class);
+		}
+	}
+
+	@Test
+	public void testDataSourceInitializedWithDataCredentials() {
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:true",
+				"spring.datasource.sqlScriptEncoding:UTF-8",
+				"spring.datasource.schema:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "encoding-schema.sql"),
+				"spring.datasource.data:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "encoding-data.sql"),
+				"spring.datasource.data-username:admin",
+				"spring.datasource.data-password:admin");
+		try {
+			this.context.refresh();
+			fail("User does not exist");
+		}
+		catch (Exception ex) {
+			assertThat(ex).isInstanceOf(BeanCreationException.class);
+		}
+	}
+
+	@Test
+	public void multipleScriptsAppliedInLexicalOrder() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:true",
+				"spring.datasource.schema:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "lexical-schema-*.sql"),
+				"spring.datasource.data:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "data.sql"));
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		ReverseOrderResourceLoader resourceLoader = new ReverseOrderResourceLoader(
+				new DefaultResourceLoader());
+		this.context.setResourceLoader(resourceLoader);
+		this.context.refresh();
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isNotNull();
+		JdbcOperations template = new JdbcTemplate(dataSource);
+		assertThat(template.queryForObject("SELECT COUNT(*) from FOO", Integer.class))
+				.isEqualTo(1);
 	}
 
 	@Configuration
@@ -215,6 +286,44 @@ public class DataSourceInitializerTests {
 		@ConfigurationProperties(prefix = "datasource.two")
 		public DataSource twoDataSource() {
 			return DataSourceBuilder.create().build();
+		}
+
+	}
+
+	/**
+	 * {@link ResourcePatternResolver} used to ensure consistently wrong resource
+	 * ordering.
+	 */
+	private static class ReverseOrderResourceLoader implements ResourcePatternResolver {
+
+		private final ResourcePatternResolver resolver;
+
+		ReverseOrderResourceLoader(ResourceLoader loader) {
+			this.resolver = ResourcePatternUtils.getResourcePatternResolver(loader);
+		}
+
+		@Override
+		public Resource getResource(String location) {
+			return this.resolver.getResource(location);
+		}
+
+		@Override
+		public ClassLoader getClassLoader() {
+			return this.resolver.getClassLoader();
+		}
+
+		@Override
+		public Resource[] getResources(String locationPattern) throws IOException {
+			Resource[] resources = this.resolver.getResources(locationPattern);
+			Arrays.sort(resources, new Comparator<Resource>() {
+
+				@Override
+				public int compare(Resource r1, Resource r2) {
+					return r2.getFilename().compareTo(r1.getFilename());
+				}
+
+			});
+			return resources;
 		}
 
 	}

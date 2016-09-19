@@ -28,6 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link LocalHostUriTemplateHandler}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 public class LocalHostUriTemplateHandlerTests {
 
@@ -42,20 +44,44 @@ public class LocalHostUriTemplateHandlerTests {
 	}
 
 	@Test
-	public void getBaseUrlShouldUseLocalServerPort() throws Exception {
+	public void createWhenSchemeIsNullShouldThrowException() {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Scheme must not be null");
+		new LocalHostUriTemplateHandler(new MockEnvironment(), null);
+	}
+
+	@Test
+	public void getRootUriShouldUseLocalServerPort() throws Exception {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("local.server.port", "1234");
 		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
 				environment);
-		assertThat(handler.getBaseUrl()).isEqualTo("http://localhost:1234");
+		assertThat(handler.getRootUri()).isEqualTo("http://localhost:1234");
 	}
 
 	@Test
-	public void getBaseUrlWhenLocalServerPortMissingShouldUsePort8080() throws Exception {
+	public void getRootUriWhenLocalServerPortMissingShouldUsePort8080() throws Exception {
 		MockEnvironment environment = new MockEnvironment();
 		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
 				environment);
-		assertThat(handler.getBaseUrl()).isEqualTo("http://localhost:8080");
+		assertThat(handler.getRootUri()).isEqualTo("http://localhost:8080");
+	}
+
+	@Test
+	public void getRootUriUsesCustomScheme() {
+		MockEnvironment environment = new MockEnvironment();
+		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(environment,
+				"https");
+		assertThat(handler.getRootUri()).isEqualTo("https://localhost:8080");
+	}
+
+	@Test
+	public void getRootUriShouldUseContextPath() throws Exception {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("server.contextPath", "/foo");
+		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
+				environment);
+		assertThat(handler.getRootUri()).isEqualTo("http://localhost:8080/foo");
 	}
 
 }

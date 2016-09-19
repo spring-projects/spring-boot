@@ -22,6 +22,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactory;
@@ -86,6 +89,9 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
 			"javax.validation.ValidatorFactory" };
+
+	private static final Log logger = LogFactory
+			.getLog(ConfigurationPropertiesBindingPostProcessor.class);
 
 	private ConfigurationBeanFactoryMetaData beans = new ConfigurationBeanFactoryMetaData();
 
@@ -254,6 +260,8 @@ public class ConfigurationPropertiesBindingPostProcessor
 			return new FlatPropertySources(propertySources);
 		}
 		// empty, so not very useful, but fulfils the contract
+		logger.warn("Unable to obtain PropertySources from "
+				+ "PropertySourcesPlaceholderConfigurer or Environment");
 		return new MutablePropertySources();
 	}
 
@@ -266,6 +274,11 @@ public class ConfigurationPropertiesBindingPostProcessor
 							false);
 			if (beans.size() == 1) {
 				return beans.values().iterator().next();
+			}
+			if (beans.size() > 1 && logger.isWarnEnabled()) {
+				logger.warn("Multiple PropertySourcesPlaceholderConfigurer "
+						+ "beans registered " + beans.keySet()
+						+ ", falling back to Environment");
 			}
 		}
 		return null;
@@ -325,10 +338,8 @@ public class ConfigurationPropertiesBindingPostProcessor
 			factory.setIgnoreUnknownFields(annotation.ignoreUnknownFields());
 			factory.setExceptionIfInvalid(annotation.exceptionIfInvalid());
 			factory.setIgnoreNestedProperties(annotation.ignoreNestedProperties());
-			String targetName = (StringUtils.hasLength(annotation.value())
-					? annotation.value() : annotation.prefix());
-			if (StringUtils.hasLength(targetName)) {
-				factory.setTargetName(targetName);
+			if (StringUtils.hasLength(annotation.prefix())) {
+				factory.setTargetName(annotation.prefix());
 			}
 		}
 		try {
@@ -346,8 +357,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 			return "";
 		}
 		StringBuilder details = new StringBuilder();
-		details.append("prefix=").append((StringUtils.hasLength(annotation.value())
-				? annotation.value() : annotation.prefix()));
+		details.append("prefix=").append(annotation.prefix());
 		details.append(", ignoreInvalidFields=").append(annotation.ignoreInvalidFields());
 		details.append(", ignoreUnknownFields=").append(annotation.ignoreUnknownFields());
 		details.append(", ignoreNestedProperties=")

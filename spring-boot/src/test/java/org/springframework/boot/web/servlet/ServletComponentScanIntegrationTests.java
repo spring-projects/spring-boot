@@ -16,12 +16,17 @@
 
 package org.springframework.boot.web.servlet;
 
+import java.util.Map;
+
+import javax.servlet.MultipartConfigElement;
+
 import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.boot.context.web.ServerPortInfoApplicationContextInitializer;
+import org.springframework.boot.web.servlet.testcomponents.TestMultipartServlet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -54,6 +59,26 @@ public class ServletComponentScanIntegrationTests {
 		String response = new RestTemplate()
 				.getForObject("http://localhost:" + port + "/test", String.class);
 		assertThat(response).isEqualTo("alpha bravo");
+	}
+
+	@Test
+	public void multipartConfigIsHonoured() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(TestConfiguration.class);
+		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
+		this.context.refresh();
+		Map<String, ServletRegistrationBean> beans = this.context
+				.getBeansOfType(ServletRegistrationBean.class);
+		ServletRegistrationBean servletRegistrationBean = beans
+				.get(TestMultipartServlet.class.getName());
+		assertThat(servletRegistrationBean).isNotNull();
+		MultipartConfigElement multipartConfig = servletRegistrationBean
+				.getMultipartConfig();
+		assertThat(multipartConfig).isNotNull();
+		assertThat(multipartConfig.getLocation()).isEqualTo("test");
+		assertThat(multipartConfig.getMaxRequestSize()).isEqualTo(2048);
+		assertThat(multipartConfig.getMaxFileSize()).isEqualTo(1024);
+		assertThat(multipartConfig.getFileSizeThreshold()).isEqualTo(512);
 	}
 
 	@Configuration

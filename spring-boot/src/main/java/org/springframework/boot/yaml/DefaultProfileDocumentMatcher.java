@@ -26,7 +26,9 @@ import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
  * explicitly (i.e. matches if "spring.profiles" is not found and not otherwise).
  *
  * @author Dave Syer
+ * @deprecated since 1.4.1 as it is no longer used
  */
+@Deprecated
 public class DefaultProfileDocumentMatcher implements DocumentMatcher {
 
 	@Override

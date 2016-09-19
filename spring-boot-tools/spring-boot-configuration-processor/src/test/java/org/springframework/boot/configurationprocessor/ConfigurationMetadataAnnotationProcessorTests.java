@@ -56,10 +56,13 @@ import org.springframework.boot.configurationsample.simple.SimpleTypeProperties;
 import org.springframework.boot.configurationsample.specific.BoxingPojo;
 import org.springframework.boot.configurationsample.specific.BuilderPojo;
 import org.springframework.boot.configurationsample.specific.DeprecatedUnrelatedMethodPojo;
+import org.springframework.boot.configurationsample.specific.DoubleRegistrationProperties;
 import org.springframework.boot.configurationsample.specific.ExcludedTypesPojo;
 import org.springframework.boot.configurationsample.specific.InnerClassAnnotatedGetterConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
+import org.springframework.boot.configurationsample.specific.InvalidAccessorProperties;
+import org.springframework.boot.configurationsample.specific.InvalidDoubleRegistrationProperties;
 import org.springframework.boot.configurationsample.specific.SimplePojo;
 import org.springframework.util.FileCopyUtils;
 
@@ -332,6 +335,30 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("excluded.print-writer"));
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("excluded.writer"));
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("excluded.writer-array"));
+	}
+
+	@Test
+	public void invalidAccessor() throws IOException {
+		ConfigurationMetadata metadata = compile(InvalidAccessorProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("config"));
+		assertThat(metadata.getItems()).hasSize(1);
+	}
+
+	@Test
+	public void doubleRegistration() throws IOException {
+		ConfigurationMetadata metadata = compile(DoubleRegistrationProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("one"));
+		assertThat(metadata).has(Metadata.withGroup("two"));
+		assertThat(metadata).has(Metadata.withProperty("one.value"));
+		assertThat(metadata).has(Metadata.withProperty("two.value"));
+		assertThat(metadata.getItems()).hasSize(4);
+	}
+
+	@Test
+	public void invalidDoubleRegistration() throws IOException {
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("Compilation failed");
+		compile(InvalidDoubleRegistrationProperties.class);
 	}
 
 	@Test

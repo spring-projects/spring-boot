@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -51,7 +52,8 @@ public class FileSystemWatcherTests {
 
 	private FileSystemWatcher watcher;
 
-	private List<Set<ChangedFiles>> changes = new ArrayList<Set<ChangedFiles>>();
+	private List<Set<ChangedFiles>> changes = Collections
+			.synchronizedList(new ArrayList<Set<ChangedFiles>>());
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
@@ -153,11 +155,10 @@ public class FileSystemWatcherTests {
 
 	@Test
 	public void waitsForPollingInterval() throws Exception {
-		this.changes.clear();
-		setupWatcher(200, 1);
+		setupWatcher(100, 1);
 		File folder = startWithNewFolder();
 		touch(new File(folder, "test1.txt"));
-		Thread.sleep(400);
+		Thread.sleep(200);
 		touch(new File(folder, "test2.txt"));
 		this.watcher.stopAfter(1);
 		assertThat(this.changes.size()).isEqualTo(2);

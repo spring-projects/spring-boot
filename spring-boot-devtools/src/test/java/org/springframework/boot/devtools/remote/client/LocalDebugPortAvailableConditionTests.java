@@ -47,7 +47,8 @@ public class LocalDebugPortAvailableConditionTests {
 	public void portAvailable() throws Exception {
 		ConditionOutcome outcome = getOutcome();
 		assertThat(outcome.isMatch()).isTrue();
-		assertThat(outcome.getMessage()).isEqualTo("Local debug port available");
+		assertThat(outcome.getMessage())
+				.isEqualTo("Local Debug Port Condition found local debug port");
 	}
 
 	@Test
@@ -57,7 +58,8 @@ public class LocalDebugPortAvailableConditionTests {
 		ConditionOutcome outcome = getOutcome();
 		serverSocket.close();
 		assertThat(outcome.isMatch()).isFalse();
-		assertThat(outcome.getMessage()).isEqualTo("Local debug port unavailable");
+		assertThat(outcome.getMessage())
+				.isEqualTo("Local Debug Port Condition did not find local debug port");
 	}
 
 	private ConditionOutcome getOutcome() {

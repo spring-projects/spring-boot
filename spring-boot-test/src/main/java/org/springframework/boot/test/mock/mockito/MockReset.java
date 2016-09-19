@@ -33,6 +33,7 @@ import org.springframework.util.Assert;
  * the {@code ApplicationContext} using the static methods.
  *
  * @author Phillip Webb
+ * @since 1.4.0
  * @see ResetMocksTestExecutionListener
  */
 public enum MockReset {
@@ -55,8 +56,8 @@ public enum MockReset {
 	private static final MockUtil util = new MockUtil();
 
 	/**
-	 * Create {@link MockSettings settings} to be use used with mocks where reset should
-	 * occur before each test method runs.
+	 * Create {@link MockSettings settings} to be used with mocks where reset should occur
+	 * before each test method runs.
 	 * @return mock settings
 	 */
 	public static MockSettings before() {
@@ -64,8 +65,8 @@ public enum MockReset {
 	}
 
 	/**
-	 * Create {@link MockSettings settings} to be use used with mocks where reset should
-	 * occur after each test method runs.
+	 * Create {@link MockSettings settings} to be used with mocks where reset should occur
+	 * after each test method runs.
 	 * @return mock settings
 	 */
 	public static MockSettings after() {
@@ -73,8 +74,8 @@ public enum MockReset {
 	}
 
 	/**
-	 * Create {@link MockSettings settings} to be use used with mocks where a specific
-	 * reset should occur.
+	 * Create {@link MockSettings settings} to be used with mocks where a specific reset
+	 * should occur.
 	 * @param reset the reset type
 	 * @return mock settings
 	 */

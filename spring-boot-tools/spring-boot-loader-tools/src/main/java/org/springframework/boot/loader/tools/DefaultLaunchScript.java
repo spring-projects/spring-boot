@@ -42,7 +42,7 @@ public class DefaultLaunchScript implements LaunchScript {
 	private static final int BUFFER_SIZE = 4096;
 
 	private static final Pattern PLACEHOLDER_PATTERN = Pattern
-			.compile("\\{\\{(\\w+)(:.*?)?\\}\\}");
+			.compile("\\{\\{(\\w+)(:.*?)?\\}\\}(?!\\})");
 
 	private final String content;
 
@@ -97,7 +97,7 @@ public class DefaultLaunchScript implements LaunchScript {
 			else {
 				value = (value == null ? matcher.group(0) : value.substring(1));
 			}
-			matcher.appendReplacement(expanded, value);
+			matcher.appendReplacement(expanded, value.replace("$", "\\$"));
 		}
 		matcher.appendTail(expanded);
 		return expanded.toString();

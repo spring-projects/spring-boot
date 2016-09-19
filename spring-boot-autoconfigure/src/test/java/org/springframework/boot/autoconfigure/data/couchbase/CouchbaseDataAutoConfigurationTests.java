@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.couchbase;
 
+import java.util.Set;
+
 import javax.validation.Validator;
 
 import org.junit.After;
@@ -25,6 +27,8 @@ import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfigurer;
+import org.springframework.boot.autoconfigure.data.couchbase.city.City;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -33,9 +37,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.couchbase.config.AbstractCouchbaseDataConfiguration;
 import org.springframework.data.couchbase.config.CouchbaseConfigurer;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
+import org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext;
 import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
 import org.springframework.data.couchbase.core.query.Consistency;
 import org.springframework.data.couchbase.repository.support.IndexManager;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -108,6 +114,17 @@ public class CouchbaseDataAutoConfigurationTests {
 				.isEqualTo(Consistency.EVENTUALLY_CONSISTENT);
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	public void entityScanShouldSetInitialEntitySet() throws Exception {
+		load(EntityScanConfig.class);
+		CouchbaseMappingContext mappingContext = this.context
+				.getBean(CouchbaseMappingContext.class);
+		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils
+				.getField(mappingContext, "initialEntitySet");
+		assertThat(initialEntitySet).containsOnly(City.class);
+	}
+
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(context, environment);
@@ -143,6 +160,13 @@ public class CouchbaseDataAutoConfigurationTests {
 		protected Consistency getDefaultConsistency() {
 			return Consistency.STRONGLY_CONSISTENT;
 		}
+
+	}
+
+	@Configuration
+	@EntityScan("org.springframework.boot.autoconfigure.data.couchbase.city")
+	@Import(CustomCouchbaseConfiguration.class)
+	static class EntityScanConfig {
 
 	}
 

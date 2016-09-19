@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.amqp;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 
+import com.rabbitmq.client.Address;
 import org.aopalliance.aop.Advice;
 import org.junit.After;
 import org.junit.Rule;
@@ -101,12 +102,19 @@ public class RabbitAutoConfigurationTests {
 	public void testConnectionFactoryWithOverrides() {
 		load(TestConfiguration.class, "spring.rabbitmq.host:remote-server",
 				"spring.rabbitmq.port:9000", "spring.rabbitmq.username:alice",
-				"spring.rabbitmq.password:secret", "spring.rabbitmq.virtual_host:/vhost");
+				"spring.rabbitmq.password:secret", "spring.rabbitmq.virtual_host:/vhost",
+				"spring.rabbitmq.connection-timeout:123");
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
 		assertThat(connectionFactory.getHost()).isEqualTo("remote-server");
 		assertThat(connectionFactory.getPort()).isEqualTo(9000);
 		assertThat(connectionFactory.getVirtualHost()).isEqualTo("/vhost");
+		DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
+		com.rabbitmq.client.ConnectionFactory rcf = (com.rabbitmq.client.ConnectionFactory) dfa
+				.getPropertyValue("rabbitConnectionFactory");
+		assertThat(rcf.getConnectionTimeout()).isEqualTo(123);
+		assertThat((Address[]) dfa.getPropertyValue("addresses")).hasSize(1);
+
 	}
 
 	@Test

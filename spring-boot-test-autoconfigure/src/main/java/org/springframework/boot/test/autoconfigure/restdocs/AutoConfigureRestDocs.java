@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.AliasFor;
 
 /**
  * Annotation that can be applied to a test class to enable and configure
@@ -40,23 +41,25 @@ import org.springframework.context.annotation.Import;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@ImportAutoConfiguration(RestDocsAutoConfiguration.class)
+@ImportAutoConfiguration
 @Import(RestDocumentationContextProviderRegistrar.class)
 @PropertyMapping("spring.test.restdocs")
 public @interface AutoConfigureRestDocs {
 
 	/**
-	 * The output directory to which generated snippets will be written. A synonym for
+	 * The output directory to which generated snippets will be written. A alias for
 	 * {@link #outputDir}.
 	 * @return the output directory
 	 */
+	@AliasFor("outputDir")
 	String value() default "";
 
 	/**
-	 * The output directory to which generated snippets will be written. A synonym for
+	 * The output directory to which generated snippets will be written. A alias for
 	 * {@link #value}.
 	 * @return the output directory
 	 */
+	@AliasFor("value")
 	String outputDir() default "";
 
 	/**

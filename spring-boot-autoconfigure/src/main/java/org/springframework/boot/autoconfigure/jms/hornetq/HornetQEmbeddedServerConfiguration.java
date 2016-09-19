@@ -41,10 +41,12 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @since 1.2.0
+ * @deprecated as of 1.4 in favor of the Artemis support
  */
 @Configuration
 @ConditionalOnClass(name = HornetQConnectionFactoryFactory.EMBEDDED_JMS_CLASS)
 @ConditionalOnProperty(prefix = "spring.hornetq.embedded", name = "enabled", havingValue = "true", matchIfMissing = true)
+@Deprecated
 class HornetQEmbeddedServerConfiguration {
 
 	private final HornetQProperties properties;

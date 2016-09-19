@@ -21,7 +21,6 @@ import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseBucket;
 import com.couchbase.client.java.CouchbaseCluster;
 import com.couchbase.client.java.cluster.ClusterInfo;
-import com.couchbase.client.java.env.CouchbaseEnvironment;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -51,7 +50,7 @@ import org.springframework.data.couchbase.config.CouchbaseConfigurer;
 public class CouchbaseAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnMissingBean(CouchbaseConfigurer.class)
+	@ConditionalOnMissingBean({ CouchbaseConfigurer.class, CouchbaseConfiguration.class })
 	public static class CouchbaseConfiguration {
 
 		private final CouchbaseProperties properties;
@@ -62,8 +61,8 @@ public class CouchbaseAutoConfiguration {
 
 		@Bean
 		@Primary
-		public CouchbaseEnvironment couchbaseEnvironment() throws Exception {
-			return createEnvironment(this.properties);
+		public DefaultCouchbaseEnvironment couchbaseEnvironment() throws Exception {
+			return initializeEnvironmentBuilder(this.properties).build();
 		}
 
 		@Bean
@@ -90,11 +89,12 @@ public class CouchbaseAutoConfiguration {
 		}
 
 		/**
-		 * Create a {@link CouchbaseEnvironment} based on the specified settings.
+		 * Initialize an environment builder based on the specified settings.
 		 * @param properties the couchbase properties to use
-		 * @return a {@link CouchbaseEnvironment}
+		 * @return the {@link DefaultCouchbaseEnvironment} builder.
 		 */
-		protected CouchbaseEnvironment createEnvironment(CouchbaseProperties properties) {
+		protected DefaultCouchbaseEnvironment.Builder initializeEnvironmentBuilder(
+				CouchbaseProperties properties) {
 			CouchbaseProperties.Endpoints endpoints = properties.getEnv().getEndpoints();
 			CouchbaseProperties.Timeouts timeouts = properties.getEnv().getTimeouts();
 			DefaultCouchbaseEnvironment.Builder builder = DefaultCouchbaseEnvironment
@@ -103,6 +103,7 @@ public class CouchbaseAutoConfiguration {
 					.kvTimeout(timeouts.getKeyValue())
 					.queryEndpoints(endpoints.getQuery())
 					.queryTimeout(timeouts.getQuery()).viewEndpoints(endpoints.getView())
+					.socketConnectTimeout(timeouts.getSocketConnect())
 					.viewTimeout(timeouts.getView());
 			CouchbaseProperties.Ssl ssl = properties.getEnv().getSsl();
 			if (ssl.getEnabled()) {
@@ -114,7 +115,7 @@ public class CouchbaseAutoConfiguration {
 					builder.sslKeystorePassword(ssl.getKeyStorePassword());
 				}
 			}
-			return builder.build();
+			return builder;
 		}
 
 	}

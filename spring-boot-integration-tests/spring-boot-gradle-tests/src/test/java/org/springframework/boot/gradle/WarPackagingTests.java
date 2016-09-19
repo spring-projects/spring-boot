@@ -46,8 +46,7 @@ public class WarPackagingTests {
 
 	private static final Set<String> TOMCAT_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<String>(
 			Arrays.asList("spring-boot-starter-tomcat-", "tomcat-embed-core-",
-					"tomcat-embed-el-", "tomcat-embed-logging-juli-",
-					"tomcat-embed-websocket-"));
+					"tomcat-embed-el-", "tomcat-embed-websocket-"));
 
 	private static final Set<String> JETTY_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<String>(
 			Arrays.asList("spring-boot-starter-jetty-", "jetty-continuation",
@@ -55,8 +54,8 @@ public class WarPackagingTests {
 					"jetty-server-", "jetty-security-", "jetty-servlet-",
 					"jetty-servlets", "jetty-webapp-", "websocket-api",
 					"javax.annotation-api", "jetty-plus", "javax-websocket-server-impl-",
-					"asm-", "javax.websocket-api-", "asm-tree-", "asm-commons-",
-					"websocket-common-", "jetty-annotations-",
+					"apache-el", "asm-", "javax.websocket-api-", "asm-tree-",
+					"asm-commons-", "websocket-common-", "jetty-annotations-",
 					"javax-websocket-client-impl-", "websocket-client-",
 					"websocket-server-", "jetty-xml-", "websocket-servlet-"));
 

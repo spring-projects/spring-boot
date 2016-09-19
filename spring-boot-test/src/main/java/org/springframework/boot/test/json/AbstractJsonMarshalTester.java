@@ -53,7 +53,7 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  *     public void testWriteJson() {
  *         ExampleObject object = //...
  *         assertThat(json.write(object)).isEqualToJson("expected.json");
- *         assertThat(json.read("expected.json)).isEqualTo(object);
+ *         assertThat(json.read("expected.json")).isEqualTo(object);
  *     }
  *
  * }
@@ -62,7 +62,7 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  * <p>
  * To use this library JSONAssert must be on the test classpath.
  *
- * @param <T> The type under test
+ * @param <T> the type under test
  * @author Phillip Webb
  * @since 1.4.0
  * @see JsonContentAssert
@@ -70,9 +70,15 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  */
 public abstract class AbstractJsonMarshalTester<T> {
 
-	private final Class<?> resourceLoadClass;
+	private Class<?> resourceLoadClass;
 
-	private final ResolvableType type;
+	private ResolvableType type;
+
+	/**
+	 * Create a new uninitialized {@link AbstractJsonMarshalTester} instance.
+	 */
+	protected AbstractJsonMarshalTester() {
+	}
 
 	/**
 	 * Create a new {@link AbstractJsonMarshalTester} instance.
@@ -83,8 +89,20 @@ public abstract class AbstractJsonMarshalTester<T> {
 	public AbstractJsonMarshalTester(Class<?> resourceLoadClass, ResolvableType type) {
 		Assert.notNull(resourceLoadClass, "ResourceLoadClass must not be null");
 		Assert.notNull(type, "Type must not be null");
-		this.resourceLoadClass = resourceLoadClass;
-		this.type = type;
+		initialize(resourceLoadClass, type);
+	}
+
+	/**
+	 * Initialize the marshal tester for use.
+	 * @param resourceLoadClass the source class used when loading relative classpath
+	 * resources
+	 * @param type the type under test
+	 */
+	protected final void initialize(Class<?> resourceLoadClass, ResolvableType type) {
+		if (this.resourceLoadClass == null && this.type == null) {
+			this.resourceLoadClass = resourceLoadClass;
+			this.type = type;
+		}
 	}
 
 	/**
@@ -102,6 +120,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @throws IOException on write error
 	 */
 	public JsonContent<T> write(T value) throws IOException {
+		verify();
 		Assert.notNull(value, "Value must not be null");
 		String json = writeObject(value, this.type);
 		return new JsonContent<T>(this.resourceLoadClass, this.type, json);
@@ -114,6 +133,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @throws IOException on parse error
 	 */
 	public T parseObject(byte[] jsonBytes) throws IOException {
+		verify();
 		return parse(jsonBytes).getObject();
 	}
 
@@ -124,6 +144,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @throws IOException on parse error
 	 */
 	public ObjectContent<T> parse(byte[] jsonBytes) throws IOException {
+		verify();
 		Assert.notNull(jsonBytes, "JsonBytes must not be null");
 		return read(new ByteArrayResource(jsonBytes));
 	}
@@ -135,6 +156,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @throws IOException on parse error
 	 */
 	public T parseObject(String jsonString) throws IOException {
+		verify();
 		return parse(jsonString).getObject();
 	}
 
@@ -145,6 +167,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @throws IOException on parse error
 	 */
 	public ObjectContent<T> parse(String jsonString) throws IOException {
+		verify();
 		Assert.notNull(jsonString, "JsonString must not be null");
 		return read(new StringReader(jsonString));
 	}
@@ -157,6 +180,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @throws IOException on read error
 	 */
 	public T readObject(String resourcePath) throws IOException {
+		verify();
 		return read(resourcePath).getObject();
 	}
 
@@ -168,6 +192,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @throws IOException on read error
 	 */
 	public ObjectContent<T> read(String resourcePath) throws IOException {
+		verify();
 		Assert.notNull(resourcePath, "ResourcePath must not be null");
 		return read(new ClassPathResource(resourcePath, this.resourceLoadClass));
 	}
@@ -179,6 +204,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @throws IOException on read error
 	 */
 	public T readObject(File file) throws IOException {
+		verify();
 		return read(file).getObject();
 	}
 
@@ -189,6 +215,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @throws IOException on read error
 	 */
 	public ObjectContent<T> read(File file) throws IOException {
+		verify();
 		Assert.notNull(file, "File must not be null");
 		return read(new FileSystemResource(file));
 	}
@@ -200,6 +227,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @throws IOException on read error
 	 */
 	public T readObject(InputStream inputStream) throws IOException {
+		verify();
 		return read(inputStream).getObject();
 	}
 
@@ -210,6 +238,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @throws IOException on read error
 	 */
 	public ObjectContent<T> read(InputStream inputStream) throws IOException {
+		verify();
 		Assert.notNull(inputStream, "InputStream must not be null");
 		return read(new InputStreamResource(inputStream));
 	}
@@ -221,6 +250,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @throws IOException on read error
 	 */
 	public T readObject(Resource resource) throws IOException {
+		verify();
 		return read(resource).getObject();
 	}
 
@@ -231,6 +261,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @throws IOException on read error
 	 */
 	public ObjectContent<T> read(Resource resource) throws IOException {
+		verify();
 		Assert.notNull(resource, "Resource must not be null");
 		InputStream inputStream = resource.getInputStream();
 		T object = readObject(inputStream, this.type);
@@ -245,6 +276,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @throws IOException on read error
 	 */
 	public T readObject(Reader reader) throws IOException {
+		verify();
 		return read(reader).getObject();
 	}
 
@@ -255,6 +287,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @throws IOException on read error
 	 */
 	public ObjectContent<T> read(Reader reader) throws IOException {
+		verify();
 		Assert.notNull(reader, "Reader must not be null");
 		T object = readObject(reader, this.type);
 		closeQuietly(reader);
@@ -269,10 +302,16 @@ public abstract class AbstractJsonMarshalTester<T> {
 		}
 	}
 
+	private void verify() {
+		Assert.state(this.resourceLoadClass != null,
+				"Uninitialized JsonMarshalTester (ResourceLoadClass is null)");
+		Assert.state(this.type != null, "Uninitialized JsonMarshalTester (Type is null)");
+	}
+
 	/**
 	 * Write the specified object to a JSON string.
-	 * @param value the source value ({@code never null})
-	 * @param type the resulting type ({@code never null})
+	 * @param value the source value (never {@code null})
+	 * @param type the resulting type (never {@code null})
 	 * @return the JSON string
 	 * @throws IOException on write error
 	 */
@@ -281,9 +320,9 @@ public abstract class AbstractJsonMarshalTester<T> {
 
 	/**
 	 * Read from the specified input stream to create an object of the specified type. The
-	 * default implementation delegates to {@link #readObject(Reader, ResolvableType)}
-	 * @param inputStream the source input stream ({@code never null})
-	 * @param type the resulting type ({@code never null})
+	 * default implementation delegates to {@link #readObject(Reader, ResolvableType)}.
+	 * @param inputStream the source input stream (never {@code null})
+	 * @param type the resulting type (never {@code null})
 	 * @return the resulting object
 	 * @throws IOException on read error
 	 */
@@ -295,8 +334,8 @@ public abstract class AbstractJsonMarshalTester<T> {
 
 	/**
 	 * Read from the specified reader to create an object of the specified type.
-	 * @param reader the source reader ({@code never null})
-	 * @param type the resulting type ({@code never null})
+	 * @param reader the source reader (never {@code null})
+	 * @param type the resulting type (never {@code null})
 	 * @return the resulting object
 	 * @throws IOException on read error
 	 */
@@ -304,7 +343,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 			throws IOException;
 
 	/**
-	 * Utility class used to support field initialization. Uses by subclasses to support
+	 * Utility class used to support field initialization. Used by subclasses to support
 	 * {@code initFields}.
 	 * @param <M> The marshaller type
 	 */

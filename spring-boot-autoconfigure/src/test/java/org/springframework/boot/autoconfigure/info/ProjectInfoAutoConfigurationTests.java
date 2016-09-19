@@ -105,7 +105,7 @@ public class ProjectInfoAutoConfigurationTests {
 
 	@Test
 	public void buildPropertiesCustomLocation() {
-		load("spring.info.build.location=classpath:/org/springframework/boot/autoconfigure/info/build.properties");
+		load("spring.info.build.location=classpath:/org/springframework/boot/autoconfigure/info/build-info.properties");
 		BuildProperties buildProperties = this.context.getBean(BuildProperties.class);
 		assertThat(buildProperties.getGroup()).isEqualTo("com.example.acme");
 		assertThat(buildProperties.getArtifact()).isEqualTo("acme");
@@ -116,7 +116,7 @@ public class ProjectInfoAutoConfigurationTests {
 
 	@Test
 	public void buildPropertiesCustomInvalidLocation() {
-		load("spring.info.build.location=classpath:/org/acme/no-build.properties");
+		load("spring.info.build.location=classpath:/org/acme/no-build-info.properties");
 		Map<String, BuildProperties> beans = this.context
 				.getBeansOfType(BuildProperties.class);
 		assertThat(beans).hasSize(0);

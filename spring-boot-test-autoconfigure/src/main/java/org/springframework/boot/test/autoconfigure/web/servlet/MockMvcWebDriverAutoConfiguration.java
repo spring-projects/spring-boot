@@ -36,12 +36,13 @@ import org.springframework.test.web.servlet.htmlunit.webdriver.MockMvcHtmlUnitDr
  * Auto-configuration for Selenium {@link WebDriver} MockMVC integration.
  *
  * @author Phillip Webb
+ * @since 1.4.0
  */
 @Configuration
 @ConditionalOnClass(HtmlUnitDriver.class)
 @AutoConfigureAfter(MockMvcAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "spring.test.webmvc.webdriver", name = "enabled", matchIfMissing = true)
-class MockMvcWebDriverAutoConfiguration {
+@ConditionalOnProperty(prefix = "spring.test.mockmvc.webdriver", name = "enabled", matchIfMissing = true)
+public class MockMvcWebDriverAutoConfiguration {
 
 	private final Environment environment;
 

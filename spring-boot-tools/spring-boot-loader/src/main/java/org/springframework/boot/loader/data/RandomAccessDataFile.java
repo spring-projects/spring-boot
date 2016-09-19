@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -244,16 +244,12 @@ public class RandomAccessDataFile implements RandomAccessData {
 		}
 
 		public RandomAccessFile acquire() throws IOException {
-			try {
-				this.available.acquire();
-				RandomAccessFile file = this.files.poll();
-				return (file == null
-						? new RandomAccessFile(RandomAccessDataFile.this.file, "r")
-						: file);
+			this.available.acquireUninterruptibly();
+			RandomAccessFile file = this.files.poll();
+			if (file != null) {
+				return file;
 			}
-			catch (InterruptedException ex) {
-				throw new IOException(ex);
-			}
+			return new RandomAccessFile(RandomAccessDataFile.this.file, "r");
 		}
 
 		public void release(RandomAccessFile file) {
@@ -262,21 +258,16 @@ public class RandomAccessDataFile implements RandomAccessData {
 		}
 
 		public void close() throws IOException {
+			this.available.acquireUninterruptibly(this.size);
 			try {
-				this.available.acquire(this.size);
-				try {
-					RandomAccessFile file = this.files.poll();
-					while (file != null) {
-						file.close();
-						file = this.files.poll();
-					}
-				}
-				finally {
-					this.available.release(this.size);
+				RandomAccessFile pooledFile = this.files.poll();
+				while (pooledFile != null) {
+					pooledFile.close();
+					pooledFile = this.files.poll();
 				}
 			}
-			catch (InterruptedException ex) {
-				throw new IOException(ex);
+			finally {
+				this.available.release(this.size);
 			}
 		}
 

@@ -17,8 +17,10 @@
 package org.springframework.boot.context.embedded.jetty;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +36,7 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Test;
@@ -42,8 +45,8 @@ import org.mockito.InOrder;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 import org.springframework.boot.context.embedded.Compression;
-import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.http.HttpHeaders;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,6 +61,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Henri Kerola
  */
 public class JettyEmbeddedServletContainerFactoryTests
 		extends AbstractEmbeddedServletContainerFactoryTests {
@@ -134,6 +138,8 @@ public class JettyEmbeddedServletContainerFactoryTests
 				.getConnectionFactory(SslConnectionFactory.class);
 		assertThat(connectionFactory.getSslContextFactory().getIncludeCipherSuites())
 				.containsExactly("ALPHA", "BRAVO", "CHARLIE");
+		assertThat(connectionFactory.getSslContextFactory().getExcludeCipherSuites())
+				.isEmpty();
 	}
 
 	@Override
@@ -256,6 +262,26 @@ public class JettyEmbeddedServletContainerFactoryTests
 		assertForwardHeaderIsUsed(factory);
 	}
 
+	@Test
+	public void defaultThreadPool() throws Exception {
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		factory.setThreadPool(null);
+		assertThat(factory.getThreadPool()).isNull();
+		JettyEmbeddedServletContainer servletContainer = (JettyEmbeddedServletContainer) factory
+				.getEmbeddedServletContainer();
+		assertThat(servletContainer.getServer().getThreadPool()).isNotNull();
+	}
+
+	@Test
+	public void customThreadPool() throws Exception {
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		ThreadPool threadPool = mock(ThreadPool.class);
+		factory.setThreadPool(threadPool);
+		JettyEmbeddedServletContainer servletContainer = (JettyEmbeddedServletContainer) factory
+				.getEmbeddedServletContainer();
+		assertThat(servletContainer.getServer().getThreadPool()).isSameAs(threadPool);
+	}
+
 	@Override
 	@SuppressWarnings("serial")
 	// Workaround for Jetty issue - https://bugs.eclipse.org/bugs/show_bug.cgi?id=470646
@@ -300,6 +326,14 @@ public class JettyEmbeddedServletContainerFactoryTests
 		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container)
 				.getServer().getHandler();
 		return context.getMimeTypes().getMimeMap();
+	}
+
+	@Override
+	protected Charset getCharset(Locale locale) {
+		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container)
+				.getServer().getHandler();
+		String charsetName = context.getLocaleEncoding(locale);
+		return (charsetName != null) ? Charset.forName(charsetName) : null;
 	}
 
 }

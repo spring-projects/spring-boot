@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.mongodb.MongoClient;
@@ -39,6 +39,8 @@ import org.springframework.core.env.Environment;
  * @author Josh Long
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
+ * @author Nasko Vasilev
  */
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 public class MongoProperties {
@@ -208,7 +210,8 @@ public class MongoProperties {
 				}
 				String host = this.host == null ? "localhost" : this.host;
 				int port = determinePort(environment);
-				return new MongoClient(Arrays.asList(new ServerAddress(host, port)),
+				return new MongoClient(
+						Collections.singletonList(new ServerAddress(host, port)),
 						credentials, options);
 			}
 			// The options and credentials are in the URI
@@ -246,25 +249,10 @@ public class MongoProperties {
 	}
 
 	private Builder builder(MongoClientOptions options) {
-		Builder builder = MongoClientOptions.builder();
 		if (options != null) {
-			builder.alwaysUseMBeans(options.isAlwaysUseMBeans());
-			builder.connectionsPerHost(options.getConnectionsPerHost());
-			builder.connectTimeout(options.getConnectTimeout());
-			builder.cursorFinalizerEnabled(options.isCursorFinalizerEnabled());
-			builder.dbDecoderFactory(options.getDbDecoderFactory());
-			builder.dbEncoderFactory(options.getDbEncoderFactory());
-			builder.description(options.getDescription());
-			builder.maxWaitTime(options.getMaxWaitTime());
-			builder.readPreference(options.getReadPreference());
-			builder.socketFactory(options.getSocketFactory());
-			builder.socketKeepAlive(options.isSocketKeepAlive());
-			builder.socketTimeout(options.getSocketTimeout());
-			builder.threadsAllowedToBlockForConnectionMultiplier(
-					options.getThreadsAllowedToBlockForConnectionMultiplier());
-			builder.writeConcern(options.getWriteConcern());
+			return MongoClientOptions.builder(options);
 		}
-		return builder;
+		return MongoClientOptions.builder();
 	}
 
 }

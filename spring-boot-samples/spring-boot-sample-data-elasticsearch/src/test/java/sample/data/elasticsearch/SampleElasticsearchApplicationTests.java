@@ -16,14 +16,17 @@
 
 package sample.data.elasticsearch;
 
-import java.net.ConnectException;
+import java.io.File;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.rule.OutputCapture;
-import org.springframework.core.NestedCheckedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,34 +36,40 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Artur Konczak
  */
 public class SampleElasticsearchApplicationTests {
+
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
+	@ClassRule
+	public static SkipOnWindows skipOnWindows = new SkipOnWindows();
+
 	@Test
 	public void testDefaultSettings() throws Exception {
-		try {
-			new SpringApplicationBuilder(SampleElasticsearchApplication.class).run();
-		}
-		catch (IllegalStateException ex) {
-			if (serverNotRunning(ex)) {
-				return;
-			}
-		}
+		new SpringApplicationBuilder(SampleElasticsearchApplication.class).run();
 		String output = this.outputCapture.toString();
 		assertThat(output).contains("firstName='Alice', lastName='Smith'");
 	}
 
-	private boolean serverNotRunning(IllegalStateException ex) {
-		@SuppressWarnings("serial")
-		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
-		};
-		if (nested.contains(ConnectException.class)) {
-			Throwable root = nested.getRootCause();
-			if (root.getMessage().contains("Connection refused")) {
-				return true;
-			}
+	static class SkipOnWindows implements TestRule {
+
+		@Override
+		public Statement apply(final Statement base, Description description) {
+			return new Statement() {
+
+				@Override
+				public void evaluate() throws Throwable {
+					if (!runningOnWindows()) {
+						base.evaluate();
+					}
+				}
+
+				private boolean runningOnWindows() {
+					return File.separatorChar == '\\';
+				}
+
+			};
 		}
-		return false;
+
 	}
 
 }

@@ -23,6 +23,7 @@ import java.util.logging.LogManager;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.LoggerContextListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.impl.SLF4JLogFactory;
 import org.hamcrest.Matcher;
@@ -48,6 +49,9 @@ import org.springframework.util.StringUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link LogbackLoggingSystem}.
@@ -72,6 +76,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Before
 	public void setup() {
+		this.loggingSystem.cleanUp();
 		this.logger = new SLF4JLogFactory().getInstance(getClass().getName());
 		this.environment = new MockEnvironment();
 		this.initializationContext = new LoggingInitializationContext(this.environment);
@@ -304,15 +309,32 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void reinitializeShouldSetSystemProperty() throws Exception {
+	public void initializeShouldSetSystemProperty() throws Exception {
 		// gh-5491
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");
-		this.loggingSystem.initialize(this.initializationContext, null, null);
 		LogFile logFile = getLogFile(tmpDir() + "/example.log", null, false);
 		this.loggingSystem.initialize(this.initializationContext,
 				"classpath:logback-nondefault.xml", logFile);
 		assertThat(System.getProperty("LOG_FILE")).endsWith("example.log");
+	}
+
+	@Test
+	public void initializationIsOnlyPerformedOnceUntilCleanedUp() throws Exception {
+		LoggerContext loggerContext = (LoggerContext) StaticLoggerBinder.getSingleton()
+				.getLoggerFactory();
+		LoggerContextListener listener = mock(LoggerContextListener.class);
+		loggerContext.addListener(listener);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		verify(listener, times(1)).onReset(loggerContext);
+		this.loggingSystem.cleanUp();
+		loggerContext.addListener(listener);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		verify(listener, times(2)).onReset(loggerContext);
 	}
 
 	private String getLineWithText(File file, String outputSearch) throws Exception {

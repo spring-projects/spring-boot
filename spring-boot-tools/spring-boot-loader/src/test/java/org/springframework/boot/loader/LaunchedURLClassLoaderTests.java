@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 @SuppressWarnings("resource")
 public class LaunchedURLClassLoaderTests {
@@ -83,6 +84,25 @@ public class LaunchedURLClassLoaderTests {
 		URL resource = loader.getResource("nested.jar!/3.dat");
 		assertThat(resource.toString()).isEqualTo(url + "nested.jar!/3.dat");
 		assertThat(resource.openConnection().getInputStream().read()).isEqualTo(3);
+	}
+
+	@Test
+	public void resolveFromNestedWhileThreadIsInterrupted() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		TestJarCreator.createTestJar(file);
+		JarFile jarFile = new JarFile(file);
+		URL url = jarFile.getUrl();
+		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[] { url },
+				null);
+		try {
+			Thread.currentThread().interrupt();
+			URL resource = loader.getResource("nested.jar!/3.dat");
+			assertThat(resource.toString()).isEqualTo(url + "nested.jar!/3.dat");
+			assertThat(resource.openConnection().getInputStream().read()).isEqualTo(3);
+		}
+		finally {
+			Thread.interrupted();
+		}
 	}
 
 }

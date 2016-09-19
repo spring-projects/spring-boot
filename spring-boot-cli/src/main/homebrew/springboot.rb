@@ -4,7 +4,7 @@ class Springboot < Formula
   homepage 'http://projects.spring.io/spring-boot/'
   url 'https://repo.spring.io/${repo}/org/springframework/boot/spring-boot-cli/${project.version}/spring-boot-cli-${project.version}-bin.tar.gz'
   version '${project.version}'
-  sha1 '${checksum}'
+  sha256 '${checksum}'
   head 'https://github.com/spring-projects/spring-boot.git'
 
   if build.head?

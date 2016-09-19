@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,6 +75,20 @@ public class MetadataCollector {
 
 	public void add(ItemMetadata metadata) {
 		this.metadataItems.add(metadata);
+	}
+
+	public boolean hasSimilarGroup(ItemMetadata metadata) {
+		if (!metadata.isOfItemType(ItemMetadata.ItemType.GROUP)) {
+			throw new IllegalStateException("item " + metadata + " must be a group");
+		}
+		for (ItemMetadata existing : this.metadataItems) {
+			if (existing.isOfItemType(ItemMetadata.ItemType.GROUP)
+					&& existing.getName().equals(metadata.getName())
+					&& existing.getType().equals(metadata.getType())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public ConfigurationMetadata getMetadata() {

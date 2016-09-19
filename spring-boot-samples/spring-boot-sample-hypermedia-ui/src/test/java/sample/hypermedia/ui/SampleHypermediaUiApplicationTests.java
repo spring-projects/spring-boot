@@ -16,20 +16,19 @@
 
 package sample.hypermedia.ui;
 
-import java.net.URI;
 import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.context.web.LocalServerPort;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -40,20 +39,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 		"management.context-path=" })
 public class SampleHypermediaUiApplicationTests {
 
-	@LocalServerPort
-	private int port;
+	@Autowired
+	private TestRestTemplate restTemplate;
 
 	@Test
 	public void home() {
-		String response = new TestRestTemplate()
-				.getForObject("http://localhost:" + this.port, String.class);
+		String response = this.restTemplate.getForObject("/", String.class);
 		assertThat(response).contains("Hello World");
 	}
 
 	@Test
 	public void links() {
-		String response = new TestRestTemplate().getForObject(
-				"http://localhost:" + this.port + "/actuator", String.class);
+		String response = this.restTemplate.getForObject("/actuator", String.class);
 		assertThat(response).contains("\"_links\":");
 	}
 
@@ -61,10 +58,8 @@ public class SampleHypermediaUiApplicationTests {
 	public void linksWithJson() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		ResponseEntity<String> response = new TestRestTemplate().exchange(
-				new RequestEntity<Void>(headers, HttpMethod.GET,
-						new URI("http://localhost:" + this.port + "/actuator")),
-				String.class);
+		ResponseEntity<String> response = this.restTemplate.exchange("/actuator",
+				HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
 		assertThat(response.getBody()).contains("\"_links\":");
 	}
 
@@ -72,9 +67,8 @@ public class SampleHypermediaUiApplicationTests {
 	public void homeWithHtml() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> response = new TestRestTemplate()
-				.exchange(new RequestEntity<Void>(headers, HttpMethod.GET,
-						new URI("http://localhost:" + this.port)), String.class);
+		ResponseEntity<String> response = this.restTemplate.exchange("/", HttpMethod.GET,
+				new HttpEntity<Void>(headers), String.class);
 		assertThat(response.getBody()).contains("Hello World");
 	}
 

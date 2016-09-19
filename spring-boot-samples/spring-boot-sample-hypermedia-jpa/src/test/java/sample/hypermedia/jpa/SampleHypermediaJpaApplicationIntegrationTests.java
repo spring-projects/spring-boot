@@ -82,7 +82,7 @@ public class SampleHypermediaJpaApplicationIntegrationTests {
 		MvcResult response = this.mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isFound()).andReturn();
 		assertThat(response.getResponse().getHeaders("location").get(0))
-				.isEqualTo("/browser/index.html#");
+				.isEqualTo("http://localhost/browser/index.html#/");
 	}
 
 }

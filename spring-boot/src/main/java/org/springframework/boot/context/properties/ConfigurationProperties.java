@@ -22,6 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.core.annotation.AliasFor;
+
 /**
  * Annotation for externalized configuration. Add this to a class definition or a
  * {@code @Bean} method in a {@code @Configuration} class if you want to bind and validate
@@ -44,6 +46,7 @@ public @interface ConfigurationProperties {
 	 * for {@link #prefix()}.
 	 * @return the name prefix of the properties to bind
 	 */
+	@AliasFor("prefix")
 	String value() default "";
 
 	/**
@@ -51,6 +54,7 @@ public @interface ConfigurationProperties {
 	 * for {@link #value()}.
 	 * @return the name prefix of the properties to bind
 	 */
+	@AliasFor("value")
 	String prefix() default "";
 
 	/**

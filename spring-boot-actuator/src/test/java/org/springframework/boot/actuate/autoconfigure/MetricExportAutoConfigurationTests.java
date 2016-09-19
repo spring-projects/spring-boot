@@ -16,11 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -30,6 +31,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.export.MetricCopyExporter;
 import org.springframework.boot.actuate.metrics.export.MetricExporters;
 import org.springframework.boot.actuate.metrics.statsd.StatsdMetricWriter;
+import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
@@ -41,8 +43,13 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.SubscribableChannel;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MetricExportAutoConfiguration}.
@@ -63,6 +70,21 @@ public class MetricExportAutoConfigurationTests {
 		if (this.context != null) {
 			this.context.close();
 		}
+	}
+
+	@Test
+	public void metricsFlushAutomatically() throws Exception {
+		this.context = new AnnotationConfigApplicationContext(WriterConfig.class,
+				MetricRepositoryAutoConfiguration.class,
+				MetricExportAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		GaugeService gaugeService = this.context.getBean(GaugeService.class);
+		assertThat(gaugeService).isNotNull();
+		gaugeService.submit("foo", 2.7);
+		MetricExporters flusher = this.context.getBean(MetricExporters.class);
+		flusher.close(); // this will be called by Spring on shutdown
+		MetricWriter writer = this.context.getBean("writer", MetricWriter.class);
+		verify(writer, atLeastOnce()).set(any(Metric.class));
 	}
 
 	@Test
@@ -93,7 +115,7 @@ public class MetricExportAutoConfigurationTests {
 		exporter.setIgnoreTimestamps(true);
 		exporter.export();
 		MetricWriter writer = this.context.getBean("writer", MetricWriter.class);
-		Mockito.verify(writer, Mockito.atLeastOnce()).set(Matchers.any(Metric.class));
+		Mockito.verify(writer, Mockito.atLeastOnce()).set(any(Metric.class));
 	}
 
 	@Test
@@ -122,16 +144,24 @@ public class MetricExportAutoConfigurationTests {
 		this.context.getBean(StatsdMetricWriter.class);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void statsdWithHost() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.metrics.export.statsd.host=localhost");
-		this.context.register(WriterConfig.class, MetricEndpointConfiguration.class,
+		this.context.register(MetricEndpointConfiguration.class,
 				MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(StatsdMetricWriter.class)).isNotNull();
+		StatsdMetricWriter statsdWriter = this.context.getBean(StatsdMetricWriter.class);
+		assertThat(statsdWriter).isNotNull();
+		SchedulingConfigurer schedulingConfigurer = this.context
+				.getBean(SchedulingConfigurer.class);
+		Map<String, GaugeWriter> exporters = (Map<String, GaugeWriter>) ReflectionTestUtils
+				.getField(schedulingConfigurer, "writers");
+		assertThat(exporters).containsValue(statsdWriter);
+
 	}
 
 	@Configuration

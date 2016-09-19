@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ public class ArtifactsLibraries implements Libraries {
 		scopes.put(Artifact.SCOPE_COMPILE, LibraryScope.COMPILE);
 		scopes.put(Artifact.SCOPE_RUNTIME, LibraryScope.RUNTIME);
 		scopes.put(Artifact.SCOPE_PROVIDED, LibraryScope.PROVIDED);
+		scopes.put(Artifact.SCOPE_SYSTEM, LibraryScope.PROVIDED);
 		SCOPES = Collections.unmodifiableMap(scopes);
 	}
 

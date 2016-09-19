@@ -61,8 +61,8 @@ public class DataJpaTestWithAutoConfigureTestDatabaseReplaceExplicitIntegrationT
 	}
 
 	@Test
-	public void replacesDefinedDatasourceWithExplicit() throws Exception {
-		// H2 is explicitly defined by HSQL is the override
+	public void replacesDefinedDataSourceWithExplicit() throws Exception {
+		// H2 is explicitly defined but HSQL is the override.
 		String product = this.dataSource.getConnection().getMetaData()
 				.getDatabaseProductName();
 		assertThat(product).startsWith("HSQL");

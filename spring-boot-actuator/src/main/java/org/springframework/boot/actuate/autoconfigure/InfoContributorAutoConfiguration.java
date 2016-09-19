@@ -82,8 +82,7 @@ public class InfoContributorAutoConfiguration {
 	@ConditionalOnSingleCandidate(BuildProperties.class)
 	@Order(DEFAULT_ORDER)
 	public InfoContributor buildInfoContributor(BuildProperties buildProperties) {
-		return new BuildInfoContributor(buildProperties,
-				this.properties.getBuild().getMode());
+		return new BuildInfoContributor(buildProperties);
 	}
 
 }

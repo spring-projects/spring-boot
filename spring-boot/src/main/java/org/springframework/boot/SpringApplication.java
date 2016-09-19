@@ -71,7 +71,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
@@ -139,6 +138,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Stephane Nicoll
  * @author Jeremy Rickard
  * @author Craig Burke
+ * @author Michael Simons
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)
@@ -199,6 +199,8 @@ public class SpringApplication {
 	private boolean addCommandLineProperties = true;
 
 	private Banner banner;
+
+	private boolean printedCustomBannerViaDeprecatedMethod;
 
 	private ResourceLoader resourceLoader;
 
@@ -296,6 +298,7 @@ public class SpringApplication {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
+		FailureAnalyzers analyzers = null;
 		configureHeadlessProperty();
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.started();
@@ -304,11 +307,11 @@ public class SpringApplication {
 					args);
 			ConfigurableEnvironment environment = prepareEnvironment(listeners,
 					applicationArguments);
-			if (this.bannerMode != Banner.Mode.OFF) {
-				printBanner(environment);
-			}
+			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
-			prepareContext(context, environment, listeners, applicationArguments);
+			analyzers = new FailureAnalyzers(context);
+			prepareContext(context, environment, listeners, applicationArguments,
+					printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			listeners.finished(context, null);
@@ -320,7 +323,7 @@ public class SpringApplication {
 			return context;
 		}
 		catch (Throwable ex) {
-			handleRunFailure(context, listeners, ex);
+			handleRunFailure(context, listeners, analyzers, ex);
 			throw new IllegalStateException(ex);
 		}
 	}
@@ -340,7 +343,7 @@ public class SpringApplication {
 
 	private void prepareContext(ConfigurableApplicationContext context,
 			ConfigurableEnvironment environment, SpringApplicationRunListeners listeners,
-			ApplicationArguments applicationArguments) {
+			ApplicationArguments applicationArguments, Banner printedBanner) {
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
 		applyInitializers(context);
@@ -353,6 +356,9 @@ public class SpringApplication {
 		// Add boot specific singleton beans
 		context.getBeanFactory().registerSingleton("springApplicationArguments",
 				applicationArguments);
+		if (printedBanner != null) {
+			context.getBeanFactory().registerSingleton("springBootBanner", printedBanner);
+		}
 
 		// Load the sources
 		Set<Object> sources = getSources();
@@ -530,6 +536,29 @@ public class SpringApplication {
 		environment.setActiveProfiles(profiles.toArray(new String[profiles.size()]));
 	}
 
+	private Banner printBanner(ConfigurableEnvironment environment) {
+		if (this.bannerMode == Banner.Mode.OFF) {
+			return null;
+		}
+		if (printBannerViaDeprecatedMethod(environment)) {
+			return null;
+		}
+		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
+				: new DefaultResourceLoader(getClassLoader());
+		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(
+				resourceLoader, this.banner);
+		if (this.bannerMode == Mode.LOG) {
+			return bannerPrinter.print(environment, this.mainApplicationClass, logger);
+		}
+		return bannerPrinter.print(environment, this.mainApplicationClass, System.out);
+	}
+
+	private boolean printBannerViaDeprecatedMethod(Environment environment) {
+		this.printedCustomBannerViaDeprecatedMethod = true;
+		printBanner(environment);
+		return this.printedCustomBannerViaDeprecatedMethod;
+	}
+
 	/**
 	 * Print a custom banner message to the console, optionally extracting its location or
 	 * content from the Environment (banner.location and banner.charset). The defaults are
@@ -537,18 +566,11 @@ public class SpringApplication {
 	 * not exist or cannot be printed, a simple default is created.
 	 * @param environment the environment
 	 * @see #setBannerMode
+	 * @deprecated as of 1.4 in favor of @{@link #setBanner(Banner)}
 	 */
+	@Deprecated
 	protected void printBanner(Environment environment) {
-		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
-				: new DefaultResourceLoader(getClassLoader());
-		SpringApplicationBannerPrinter banner = new SpringApplicationBannerPrinter(resourceLoader,
-				this.banner);
-		if (this.bannerMode == Mode.LOG) {
-			banner.print(environment, this.mainApplicationClass, logger);
-		}
-		else {
-			banner.print(environment, this.mainApplicationClass, System.out);
-		}
+		this.printedCustomBannerViaDeprecatedMethod = false;
 	}
 
 	/**
@@ -581,15 +603,10 @@ public class SpringApplication {
 	 * @param context the application context
 	 */
 	protected void postProcessApplicationContext(ConfigurableApplicationContext context) {
-		if (this.webEnvironment) {
-			if (context instanceof ConfigurableWebApplicationContext) {
-				ConfigurableWebApplicationContext configurableContext = (ConfigurableWebApplicationContext) context;
-				if (this.beanNameGenerator != null) {
-					configurableContext.getBeanFactory().registerSingleton(
-							AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
-							this.beanNameGenerator);
-				}
-			}
+		if (this.beanNameGenerator != null) {
+			context.getBeanFactory().registerSingleton(
+					AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
+					this.beanNameGenerator);
 		}
 		if (this.resourceLoader != null) {
 			if (context instanceof GenericApplicationContext) {
@@ -788,14 +805,15 @@ public class SpringApplication {
 	}
 
 	private void handleRunFailure(ConfigurableApplicationContext context,
-			SpringApplicationRunListeners listeners, Throwable exception) {
+			SpringApplicationRunListeners listeners, FailureAnalyzers analyzers,
+			Throwable exception) {
 		try {
 			try {
 				handleExitCode(context, exception);
 				listeners.finished(context, exception);
 			}
 			finally {
-				reportFailure(exception, context);
+				reportFailure(analyzers, exception);
 				if (context != null) {
 					context.close();
 				}
@@ -807,11 +825,9 @@ public class SpringApplication {
 		ReflectionUtils.rethrowRuntimeException(exception);
 	}
 
-	private void reportFailure(Throwable failure,
-			ConfigurableApplicationContext context) {
+	private void reportFailure(FailureAnalyzers analyzers, Throwable failure) {
 		try {
-			if (FailureAnalyzers.analyzeAndReport(failure, getClass().getClassLoader(),
-					context)) {
+			if (analyzers != null && analyzers.analyzeAndReport(failure)) {
 				registerLoggedException(failure);
 				return;
 			}
@@ -911,6 +927,15 @@ public class SpringApplication {
 	 */
 	public void setMainApplicationClass(Class<?> mainApplicationClass) {
 		this.mainApplicationClass = mainApplicationClass;
+	}
+
+	/**
+	 * Returns whether this {@link SpringApplication} is running within a web environment.
+	 * @return {@code true} if running within a web environment, otherwise {@code false}.
+	 * @see #setWebEnvironment(boolean)
+	 */
+	public boolean isWebEnvironment() {
+		return this.webEnvironment;
 	}
 
 	/**

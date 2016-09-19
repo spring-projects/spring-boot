@@ -24,38 +24,26 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.restdocs.ManualRestDocumentation;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link ImportBeanDefinitionRegistrar} used by {@link AutoConfigureRestDocs}.
  *
  * @author Andy Wilkinson
+ * @see AutoConfigureRestDocs
  */
 class RestDocumentationContextProviderRegistrar implements ImportBeanDefinitionRegistrar {
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			BeanDefinitionRegistry registry) {
-		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder
-				.genericBeanDefinition(ManualRestDocumentation.class)
-				.addConstructorArgValue(determineOutputDir(importingClassMetadata))
-				.getBeanDefinition();
-		registry.registerBeanDefinition(ManualRestDocumentation.class.getName(),
-				beanDefinition);
-	}
-
-	private String determineOutputDir(AnnotationMetadata annotationMetadata) {
-		Map<String, Object> annotationAttributes = annotationMetadata
+		Map<String, Object> annotationAttributes = importingClassMetadata
 				.getAnnotationAttributes(AutoConfigureRestDocs.class.getName());
 		String outputDir = (String) annotationAttributes.get("outputDir");
-		if (!StringUtils.hasText(outputDir)) {
-			outputDir = (String) annotationAttributes.get("value");
-			if (!StringUtils.hasText(outputDir)) {
-				throw new IllegalStateException(
-						"Either value or outputDir must be specified on @AutoConfigureRestDocs");
-			}
-		}
-		return outputDir;
+		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder
+				.genericBeanDefinition(ManualRestDocumentation.class)
+				.addConstructorArgValue(outputDir).getBeanDefinition();
+		registry.registerBeanDefinition(ManualRestDocumentation.class.getName(),
+				beanDefinition);
 	}
 
 }

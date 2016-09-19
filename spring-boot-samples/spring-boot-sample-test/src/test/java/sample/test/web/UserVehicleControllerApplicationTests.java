@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * {@code @SpringApplicationTest} based tests for {@link UserVehicleController}.
+ * {@code @SpringBootTest} based tests for {@link UserVehicleController}.
  *
  * @author Phillip Webb
  */
@@ -67,7 +67,7 @@ public class UserVehicleControllerApplicationTests {
 
 	@Test
 	public void welcomeCommandLineRunnerShouldBeAvailable() throws Exception {
-		// Since we're a @SpringApplicationTest all beans should be available
+		// Since we're a @SpringBootTest all beans should be available.
 		assertThat(this.applicationContext.getBean(WelcomeCommandLineRunner.class))
 				.isNotNull();
 	}

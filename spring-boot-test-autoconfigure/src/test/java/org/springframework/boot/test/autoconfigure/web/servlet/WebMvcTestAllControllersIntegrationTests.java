@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest
+@WebMvcTest(secure = false)
 public class WebMvcTestAllControllersIntegrationTests {
 
 	@Autowired

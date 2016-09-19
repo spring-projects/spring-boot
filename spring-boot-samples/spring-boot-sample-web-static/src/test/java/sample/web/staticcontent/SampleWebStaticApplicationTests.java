@@ -19,7 +19,7 @@ package sample.web.staticcontent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.context.web.LocalServerPort;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -41,28 +41,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 public class SampleWebStaticApplicationTests {
 
-	@LocalServerPort
-	private int port = 0;
+	@Autowired
+	private TestRestTemplate restTemplate;
 
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate()
-				.getForEntity("http://localhost:" + this.port, String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("<title>Static");
 	}
 
 	@Test
 	public void testCss() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate()
-				.getForEntity(
-						"http://localhost:" + this.port
-								+ "/webjars/bootstrap/3.0.3/css/bootstrap.min.css",
-						String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity(
+				"/webjars/bootstrap/3.0.3/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("body");
 		assertThat(entity.getHeaders().getContentType())
-				.isEqualTo(MediaType.valueOf("text/css;charset=UTF-8"));
+				.isEqualTo(MediaType.valueOf("text/css"));
 	}
 
 }

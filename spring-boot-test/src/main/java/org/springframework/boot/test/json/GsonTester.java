@@ -39,7 +39,7 @@ import org.springframework.util.Assert;
  *     }
  *
  *     &#064;Test
- *     public void testWriteJson() {
+ *     public void testWriteJson() throws IOException {
  *         ExampleObject object = //...
  *         assertThat(json.write(object)).isEqualToJson("expected.json");
  *     }
@@ -49,13 +49,22 @@ import org.springframework.util.Assert;
  *
  * See {@link AbstractJsonMarshalTester} for more details.
  *
- * @param <T> The type under test
+ * @param <T> the type under test
  * @author Phillip Webb
  * @since 1.4.0
  */
 public class GsonTester<T> extends AbstractJsonMarshalTester<T> {
 
 	private final Gson gson;
+
+	/**
+	 * Create a new uninitialized {@link GsonTester} instance.
+	 * @param gson the Gson instance
+	 */
+	protected GsonTester(Gson gson) {
+		Assert.notNull(gson, "Gson must not be null");
+		this.gson = gson;
+	}
 
 	/**
 	 * Create a new {@link GsonTester} instance.
@@ -81,7 +90,7 @@ public class GsonTester<T> extends AbstractJsonMarshalTester<T> {
 	}
 
 	/**
-	 * Utility method to initialize {@link JacksonTester} fields. See {@link JacksonTester
+	 * Utility method to initialize {@link GsonTester} fields. See {@link GsonTester
 	 * class-level documentation} for example usage.
 	 * @param testInstance the test instance
 	 * @param gson the Gson instance
@@ -91,7 +100,7 @@ public class GsonTester<T> extends AbstractJsonMarshalTester<T> {
 	}
 
 	/**
-	 * Utility method to initialize {@link JacksonTester} fields. See {@link JacksonTester
+	 * Utility method to initialize {@link GsonTester} fields. See {@link GsonTester
 	 * class-level documentation} for example usage.
 	 * @param testInstance the test instance
 	 * @param gson an object factory to create the Gson instance
@@ -101,7 +110,7 @@ public class GsonTester<T> extends AbstractJsonMarshalTester<T> {
 	}
 
 	/**
-	 * {@link JsonTesterFieldInitializer} for Gson.
+	 * {@link FieldInitializer} for Gson.
 	 */
 	private static class GsonFieldInitializer extends FieldInitializer<Gson> {
 

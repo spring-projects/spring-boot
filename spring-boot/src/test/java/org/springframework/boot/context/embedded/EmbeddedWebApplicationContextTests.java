@@ -18,8 +18,10 @@ package org.springframework.boot.context.embedded;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.EnumSet;
 import java.util.Properties;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
@@ -48,7 +50,10 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.context.web.ServerPortInfoApplicationContextInitializer;
+import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -80,6 +85,10 @@ import static org.mockito.Mockito.withSettings;
  * @author Stephane Nicoll
  */
 public class EmbeddedWebApplicationContextTests {
+
+	private static final EnumSet<DispatcherType> ASYNC_DISPATCHER_TYPES = EnumSet.of(
+			DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST,
+			DispatcherType.ASYNC);
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -302,10 +311,10 @@ public class EmbeddedWebApplicationContextTests {
 		verify(escf.getRegisteredServlet(0).getRegistration()).addMapping("/");
 		ordered.verify(escf.getServletContext()).addFilter("filterBean1", filter1);
 		ordered.verify(escf.getServletContext()).addFilter("filterBean2", filter2);
-		verify(escf.getRegisteredFilter(0).getRegistration()).addMappingForUrlPatterns(
-				AbstractFilterRegistrationBean.ASYNC_DISPATCHER_TYPES, false, "/*");
-		verify(escf.getRegisteredFilter(1).getRegistration()).addMappingForUrlPatterns(
-				AbstractFilterRegistrationBean.ASYNC_DISPATCHER_TYPES, false, "/*");
+		verify(escf.getRegisteredFilter(0).getRegistration())
+				.addMappingForUrlPatterns(ASYNC_DISPATCHER_TYPES, false, "/*");
+		verify(escf.getRegisteredFilter(1).getRegistration())
+				.addMappingForUrlPatterns(ASYNC_DISPATCHER_TYPES, false, "/*");
 	}
 
 	@Test

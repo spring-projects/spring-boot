@@ -21,7 +21,8 @@ import java.net.URI;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.context.web.LocalServerPort;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -44,13 +45,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 public class SampleWebUiApplicationTests {
 
+	@Autowired
+	private TestRestTemplate restTemplate;
+
 	@LocalServerPort
 	private int port;
 
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate()
-				.getForEntity("http://localhost:" + this.port, String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("<title>Messages");
 		assertThat(entity.getBody()).doesNotContain("layout:fragment");
@@ -61,14 +64,13 @@ public class SampleWebUiApplicationTests {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.set("text", "FOO text");
 		map.set("summary", "FOO");
-		URI location = new TestRestTemplate()
-				.postForLocation("http://localhost:" + this.port, map);
+		URI location = this.restTemplate.postForLocation("/", map);
 		assertThat(location.toString()).contains("localhost:" + this.port);
 	}
 
 	@Test
 	public void testCss() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+		ResponseEntity<String> entity = this.restTemplate.getForEntity(
 				"http://localhost:" + this.port + "/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("body");

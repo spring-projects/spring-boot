@@ -30,6 +30,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -91,6 +92,20 @@ public class SpringApplicationBuilderTests {
 						new String[] { "bar=foo" }, "="));
 		this.context = application.run();
 		assertThat(this.context.getEnvironment().getProperty("bar")).isEqualTo("foo");
+	}
+
+	@Test
+	public void propertiesWithRepeatSeparator() throws Exception {
+		SpringApplicationBuilder application = new SpringApplicationBuilder()
+				.sources(ExampleConfig.class).contextClass(StaticApplicationContext.class)
+				.properties("one=c:\\logging.file", "two=a:b", "three:c:\\logging.file",
+						"four:a:b");
+		this.context = application.run();
+		ConfigurableEnvironment environment = this.context.getEnvironment();
+		assertThat(environment.getProperty("one")).isEqualTo("c:\\logging.file");
+		assertThat(environment.getProperty("two")).isEqualTo("a:b");
+		assertThat(environment.getProperty("three")).isEqualTo("c:\\logging.file");
+		assertThat(environment.getProperty("four")).isEqualTo("a:b");
 	}
 
 	@Test

@@ -33,7 +33,7 @@ import static org.junit.Assert.fail;
  *
  * @author Craig Walls
  */
-public class AbstractSocialAutoConfigurationTests {
+public abstract class AbstractSocialAutoConfigurationTests {
 
 	protected AnnotationConfigWebApplicationContext context;
 

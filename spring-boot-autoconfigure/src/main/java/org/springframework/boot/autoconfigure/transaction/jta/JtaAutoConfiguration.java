@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Import;
  * @author Phillip Webb
  * @since 1.2.0
  */
+@SuppressWarnings("deprecation")
 @ConditionalOnClass(javax.transaction.Transaction.class)
 @ConditionalOnProperty(prefix = "spring.jta", value = "enabled", matchIfMissing = true)
 @AutoConfigureBefore({ XADataSourceAutoConfiguration.class,

@@ -267,8 +267,8 @@ To build and run a project artifact, you can type the following:
 ----
 
 To build a war file that is both executable and deployable into an external container,
-you need to mark the embedded container dependencies as belonging to a configuration
-named "`providedRuntime`", e.g:
+you need to mark the embedded container dependencies as belonging to the war plugin's
+`providedRuntime` configuration, e.g.:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -283,10 +283,6 @@ named "`providedRuntime`", e.g:
 	repositories {
 		jcenter()
 		maven { url "http://repo.spring.io/libs-snapshot" }
-	}
-
-	configurations {
-		providedRuntime
 	}
 
 	dependencies {
@@ -454,7 +450,7 @@ BootRepackage task and instructed it to work with only `clientJar` task and
 ----
 
 The configuration that we are referring to in `BootRepackage` is a normal
-http://www.gradle.org/docs/current/dsl/org.gradle.api.artifacts.Configuration.html[Gradle
+{gradle-dsl}/org.gradle.api.artifacts.Configuration.html[Gradle
 configuration]. In the above example we created a new configuration named
 `mycustomconfiguration` instructing it to derive from a `runtime` and exclude the `log4j`
 group. If the `clientBoot` task is executed, the repackaged boot jar will have all
@@ -485,12 +481,51 @@ The following configuration options are available:
 
 |`layout`
 |The type of archive, corresponding to how the dependencies are laid out inside
- (defaults to a guess based on the archive type).
+ (defaults to a guess based on the archive type). See
+ <<build-tool-plugins-gradle-configuration-layouts,available layouts for more details>>.
 
 |`requiresUnpack`
 |A list of dependencies (in the form "`groupId:artifactId`" that must be unpacked from
  fat jars in order to run. Items are still packaged into the fat jar, but they will be
  automatically unpacked when it runs.
+|===
+
+
+
+[[build-tool-plugins-gradle-configuration-layouts]]
+==== Available layouts
+
+The `layout` attribute configures the format of the archive and whether the bootstrap
+loader should be included or not. The following layouts are available:
+
+[cols="2,4,1"]
+|===
+|Name |Description |Executable
+
+|`JAR`
+|Regular executable
+ <<appendix-executable-jar-format.adoc#executable-jar-jar-file-structure,JAR layout>>.
+|Yes
+
+|`WAR`
+|Executable
+ <<appendix-executable-jar-format.adoc#executable-jar-war-file-structure,WAR layout>>.
+ `provided` dependencies are placed in `WEB-INF/lib-provided` to avoid any clash when
+ the `war` is deployed in a servlet container.
+|Yes
+
+|`ZIP` (alias to `DIR`)
+|Similar to `JAR` layout, using
+ <<appendix-executable-jar-format.adoc#executable-jar-property-launcher-features,`PropertiesLauncher`>>.
+| Yes
+
+|`MODULE`
+|Bundle dependencies (excluding those with `provided` scope) and project resources.
+|No
+
+|`NONE`
+|Bundle all dependencies and project resources.
+|No
 |===
 
 
@@ -559,8 +594,7 @@ using Gradle and how you're trying to publish the artifacts.
 ==== Configuring Gradle to produce a pom that inherits dependency management
 The following is an example of configuring Gradle to generate a pom that inherits
 from `spring-boot-starter-parent`. Please refer to the
-http://www.gradle.org/docs/current/userguide/userguide.html[Gradle User Guide] for
-further information.
+{gradle-user-guide}/userguide.html[Gradle User Guide] for further information.
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -740,7 +774,7 @@ attributes are supported
 
 
 
-===== Examples
+==== Examples
 .Find and log
 [source,xml,indent=0]
 ----

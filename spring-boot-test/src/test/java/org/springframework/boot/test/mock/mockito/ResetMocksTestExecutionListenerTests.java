@@ -26,6 +26,7 @@ import org.springframework.boot.test.mock.mockito.example.ExampleService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,8 +42,6 @@ import static org.mockito.Mockito.mock;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ResetMocksTestExecutionListenerTests {
 
-	static boolean test001executed;
-
 	@Autowired
 	private ApplicationContext context;
 
@@ -51,7 +50,6 @@ public class ResetMocksTestExecutionListenerTests {
 		given(getMock("none").greeting()).willReturn("none");
 		given(getMock("before").greeting()).willReturn("before");
 		given(getMock("after").greeting()).willReturn("after");
-		test001executed = true;
 	}
 
 	@Test
@@ -69,18 +67,31 @@ public class ResetMocksTestExecutionListenerTests {
 	static class Config {
 
 		@Bean
-		public ExampleService before() {
-			return mock(ExampleService.class, MockReset.before());
+		public ExampleService before(MockitoBeans mockedBeans) {
+			ExampleService mock = mock(ExampleService.class, MockReset.before());
+			mockedBeans.add(mock);
+			return mock;
 		}
 
 		@Bean
-		public ExampleService after() {
-			return mock(ExampleService.class, MockReset.before());
+		public ExampleService after(MockitoBeans mockedBeans) {
+			ExampleService mock = mock(ExampleService.class, MockReset.after());
+			mockedBeans.add(mock);
+			return mock;
 		}
 
 		@Bean
-		public ExampleService none() {
-			return mock(ExampleService.class);
+		public ExampleService none(MockitoBeans mockedBeans) {
+			ExampleService mock = mock(ExampleService.class);
+			mockedBeans.add(mock);
+			return mock;
+		}
+
+		@Bean
+		@Lazy
+		public ExampleService fail() {
+			// gh-5870
+			throw new RuntimeException();
 		}
 
 	}

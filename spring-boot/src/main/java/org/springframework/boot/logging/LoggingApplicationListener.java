@@ -28,6 +28,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
@@ -214,6 +215,9 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 				.getApplicationContext().getParent() == null) {
 			onContextClosedEvent();
 		}
+		else if (event instanceof ApplicationFailedEvent) {
+			onApplicationFailedEvent();
+		}
 	}
 
 	private void onApplicationStartedEvent(ApplicationStartedEvent event) {
@@ -240,6 +244,12 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private void onContextClosedEvent() {
+		if (this.loggingSystem != null) {
+			this.loggingSystem.cleanUp();
+		}
+	}
+
+	private void onApplicationFailedEvent() {
 		if (this.loggingSystem != null) {
 			this.loggingSystem.cleanUp();
 		}

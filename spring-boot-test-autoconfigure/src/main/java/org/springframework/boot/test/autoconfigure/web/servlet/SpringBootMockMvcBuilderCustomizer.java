@@ -16,17 +16,21 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
+import java.io.PrintStream;
 import java.util.Collection;
 
 import javax.servlet.Filter;
 
-import org.springframework.boot.context.embedded.DelegatingFilterProxyRegistrationBean;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
-import org.springframework.boot.context.embedded.ServletContextInitializerBeans;
+import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.ServletContextInitializerBeans;
+import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.PrintingResultHandler;
 import org.springframework.test.web.servlet.setup.ConfigurableMockMvcBuilder;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -44,7 +48,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 
 	private boolean addFilters = true;
 
-	private boolean alwaysPrint = true;
+	private MockMvcPrint print = MockMvcPrint.DEFAULT;
 
 	/**
 	 * Create a new {@link SpringBootMockMvcBuilderCustomizer} instance.
@@ -60,9 +64,20 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 		if (this.addFilters) {
 			addFilters(builder);
 		}
-		if (this.alwaysPrint) {
-			builder.alwaysDo(MockMvcResultHandlers.print(System.out));
+		ResultHandler printHandler = getPrintHandler();
+		if (printHandler != null) {
+			builder.alwaysDo(printHandler);
 		}
+	}
+
+	private ResultHandler getPrintHandler() {
+		if (this.print == MockMvcPrint.NONE) {
+			return null;
+		}
+		if (this.print == MockMvcPrint.LOG_DEBUG) {
+			return MockMvcResultHandlers.log();
+		}
+		return new SystemResultHandler(this.print);
 	}
 
 	private void addFilters(ConfigurableMockMvcBuilder<?> builder) {
@@ -106,12 +121,57 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 		return this.addFilters;
 	}
 
-	public void setAlwaysPrint(boolean alwaysPrint) {
-		this.alwaysPrint = alwaysPrint;
+	public void setPrint(MockMvcPrint print) {
+		this.print = print;
 	}
 
-	public boolean isAlwaysPrint() {
-		return this.alwaysPrint;
+	public MockMvcPrint getPrint() {
+		return this.print;
+	}
+
+	/**
+	 * {@link PrintingResultHandler} to deal with {@code System.out} and
+	 * {@code System.err} printing. The actual {@link PrintStream} used to write the
+	 * response is obtained as late as possible in case an {@code OutputCaptureRule} is
+	 * being used.
+	 */
+	private static class SystemResultHandler extends PrintingResultHandler {
+
+		protected SystemResultHandler(MockMvcPrint print) {
+			super(new SystemResultValuePrinter(print));
+		}
+
+		private static class SystemResultValuePrinter implements ResultValuePrinter {
+
+			private final MockMvcPrint print;
+
+			SystemResultValuePrinter(MockMvcPrint print) {
+				this.print = print;
+			}
+
+			@Override
+			public void printHeading(String heading) {
+				getWriter().println();
+				getWriter().println(String.format("%s:", heading));
+			}
+
+			@Override
+			public void printValue(String label, Object value) {
+				if (value != null && value.getClass().isArray()) {
+					value = CollectionUtils.arrayToList(value);
+				}
+				getWriter().println(String.format("%17s = %s", label, value));
+			}
+
+			private PrintStream getWriter() {
+				if (this.print == MockMvcPrint.SYSTEM_ERR) {
+					return System.err;
+				}
+				return System.out;
+			}
+
+		}
+
 	}
 
 }

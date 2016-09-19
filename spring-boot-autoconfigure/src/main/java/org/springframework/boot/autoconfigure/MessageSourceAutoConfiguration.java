@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure;
 import java.nio.charset.Charset;
 
 import org.springframework.boot.autoconfigure.MessageSourceAutoConfiguration.ResourceBundleCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
@@ -161,17 +162,19 @@ public class MessageSourceAutoConfiguration {
 
 		private ConditionOutcome getMatchOutcomeForBasename(ConditionContext context,
 				String basename) {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("ResourceBundle");
 			for (String name : StringUtils.commaDelimitedListToStringArray(
 					StringUtils.trimAllWhitespace(basename))) {
 				for (Resource resource : getResources(context.getClassLoader(), name)) {
 					if (resource.exists()) {
-						return ConditionOutcome.match("Bundle found for "
-								+ "spring.messages.basename: " + name);
+						return ConditionOutcome
+								.match(message.found("bundle").items(resource));
 					}
 				}
 			}
 			return ConditionOutcome.noMatch(
-					"No bundle found for " + "spring.messages.basename: " + basename);
+					message.didNotFind("bundle with basename " + basename).atAll());
 		}
 
 		private Resource[] getResources(ClassLoader classLoader, String name) {

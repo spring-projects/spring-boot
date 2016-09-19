@@ -28,9 +28,11 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
 
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.glassfish.jersey.CommonProperties;
@@ -40,7 +42,6 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -53,10 +54,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
-import org.springframework.boot.context.embedded.RegistrationBean;
-import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.RegistrationBean;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -234,23 +235,57 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	@Configuration
 	static class JacksonResourceConfigCustomizer {
 
+		private static final String JAXB_ANNOTATION_INTROSPECTOR_CLASS_NAME = "com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector";
+
 		@Bean
-		public ResourceConfigCustomizer resourceConfigCustomizer() {
+		public ResourceConfigCustomizer resourceConfigCustomizer(
+				final ObjectMapper objectMapper) {
+			addJaxbAnnotationIntrospectorIfPresent(objectMapper);
 			return new ResourceConfigCustomizer() {
 				@Override
 				public void customize(ResourceConfig config) {
 					config.register(JacksonFeature.class);
-					config.register(ObjectMapperContextResolver.class);
+					config.register(new ObjectMapperContextResolver(objectMapper),
+							ContextResolver.class);
 				}
 			};
 		}
 
-		@Provider
-		static class ObjectMapperContextResolver
+		private void addJaxbAnnotationIntrospectorIfPresent(ObjectMapper objectMapper) {
+			if (ClassUtils.isPresent(JAXB_ANNOTATION_INTROSPECTOR_CLASS_NAME,
+					getClass().getClassLoader())) {
+				new ObjectMapperCustomizer().addJaxbAnnotationIntrospector(objectMapper);
+			}
+		}
+
+		private static final class ObjectMapperCustomizer {
+
+			private void addJaxbAnnotationIntrospector(ObjectMapper objectMapper) {
+				JaxbAnnotationIntrospector jaxbAnnotationIntrospector = new JaxbAnnotationIntrospector(
+						objectMapper.getTypeFactory());
+				objectMapper.setAnnotationIntrospectors(
+						createPair(objectMapper.getSerializationConfig(),
+								jaxbAnnotationIntrospector),
+						createPair(objectMapper.getDeserializationConfig(),
+								jaxbAnnotationIntrospector));
+			}
+
+			private AnnotationIntrospector createPair(MapperConfig<?> config,
+					JaxbAnnotationIntrospector jaxbAnnotationIntrospector) {
+				return AnnotationIntrospector.pair(config.getAnnotationIntrospector(),
+						jaxbAnnotationIntrospector);
+			}
+
+		}
+
+		private static final class ObjectMapperContextResolver
 				implements ContextResolver<ObjectMapper> {
 
-			@Autowired
-			private ObjectMapper objectMapper;
+			private final ObjectMapper objectMapper;
+
+			private ObjectMapperContextResolver(ObjectMapper objectMapper) {
+				this.objectMapper = objectMapper;
+			}
 
 			@Override
 			public ObjectMapper getContext(Class<?> type) {

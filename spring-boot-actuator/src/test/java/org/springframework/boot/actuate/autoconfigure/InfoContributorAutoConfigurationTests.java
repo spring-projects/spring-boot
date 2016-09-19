@@ -115,23 +115,11 @@ public class InfoContributorAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void buildPropertiesDefaultMode() {
+	public void buildProperties() {
 		load(BuildPropertiesConfiguration.class);
 		Map<String, InfoContributor> beans = this.context
 				.getBeansOfType(InfoContributor.class);
 		assertThat(beans).containsKeys("buildInfoContributor");
-		Map<String, Object> content = invokeContributor(
-				this.context.getBean("buildInfoContributor", InfoContributor.class));
-		Object build = content.get("build");
-		assertThat(build).isInstanceOf(Map.class);
-		Map<String, Object> buildInfo = (Map<String, Object>) build;
-		assertThat(buildInfo).containsOnlyKeys("group", "artifact");
-	}
-
-	@SuppressWarnings("unchecked")
-	@Test
-	public void buildPropertiesFullMode() {
-		load(BuildPropertiesConfiguration.class, "management.info.build.mode=full");
 		Map<String, Object> content = invokeContributor(
 				this.context.getBean("buildInfoContributor", InfoContributor.class));
 		Object build = content.get("build");

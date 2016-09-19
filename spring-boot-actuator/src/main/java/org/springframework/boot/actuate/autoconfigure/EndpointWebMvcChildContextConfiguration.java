@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,9 @@ import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.catalina.Valve;
+import org.apache.catalina.valves.AccessLogValve;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
@@ -43,7 +46,10 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.context.embedded.ErrorPage;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
+import org.springframework.boot.web.servlet.ErrorPage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -104,6 +110,17 @@ public class EndpointWebMvcChildContextConfiguration {
 	@Bean
 	public ServerCustomization serverCustomization() {
 		return new ServerCustomization();
+	}
+
+	@Bean
+	public UndertowAccessLogCustomizer undertowAccessLogCustomizer() {
+		return new UndertowAccessLogCustomizer();
+	}
+
+	@Bean
+	@ConditionalOnClass(name = "org.apache.catalina.valves.AccessLogValve")
+	public TomcatAccessLogCustomizer tomcatAccessLogCustomizer() {
+		return new TomcatAccessLogCustomizer();
 	}
 
 	/*
@@ -188,6 +205,9 @@ public class EndpointWebMvcChildContextConfiguration {
 			container.setContextPath("");
 			// and add the management-specific bits
 			container.setPort(this.managementServerProperties.getPort());
+			if (this.managementServerProperties.getSsl() != null) {
+				container.setSsl(this.managementServerProperties.getSsl());
+			}
 			container.setServerHeader(this.server.getServerHeader());
 			container.setAddress(this.managementServerProperties.getAddress());
 			container.addErrorPages(new ErrorPage(this.server.getError().getPath()));
@@ -314,6 +334,77 @@ public class EndpointWebMvcChildContextConfiguration {
 				}
 			}
 			return null;
+		}
+
+	}
+
+	static abstract class AccessLogCustomizer<T extends EmbeddedServletContainerFactory>
+			implements EmbeddedServletContainerCustomizer, Ordered {
+
+		private final Class<T> factoryClass;
+
+		AccessLogCustomizer(Class<T> factoryClass) {
+			this.factoryClass = factoryClass;
+		}
+
+		protected String customizePrefix(String prefix) {
+			return "management_" + prefix;
+		}
+
+		@Override
+		public int getOrder() {
+			return 1;
+		}
+
+		@Override
+		public void customize(ConfigurableEmbeddedServletContainer container) {
+			if (this.factoryClass.isInstance(container)) {
+				customize(this.factoryClass.cast(container));
+			}
+		}
+
+		abstract void customize(T container);
+
+	}
+
+	static class TomcatAccessLogCustomizer
+			extends AccessLogCustomizer<TomcatEmbeddedServletContainerFactory> {
+
+		TomcatAccessLogCustomizer() {
+			super(TomcatEmbeddedServletContainerFactory.class);
+		}
+
+		@Override
+		public void customize(TomcatEmbeddedServletContainerFactory container) {
+			AccessLogValve accessLogValve = findAccessLogValve(container);
+			if (accessLogValve == null) {
+				return;
+			}
+			accessLogValve.setPrefix(customizePrefix(accessLogValve.getPrefix()));
+		}
+
+		private AccessLogValve findAccessLogValve(
+				TomcatEmbeddedServletContainerFactory container) {
+			for (Valve engineValve : container.getEngineValves()) {
+				if (engineValve instanceof AccessLogValve) {
+					return (AccessLogValve) engineValve;
+				}
+			}
+			return null;
+		}
+
+	}
+
+	static class UndertowAccessLogCustomizer
+			extends AccessLogCustomizer<UndertowEmbeddedServletContainerFactory> {
+
+		UndertowAccessLogCustomizer() {
+			super(UndertowEmbeddedServletContainerFactory.class);
+		}
+
+		@Override
+		public void customize(UndertowEmbeddedServletContainerFactory container) {
+			container.setAccessLogPrefix(customizePrefix(container.getAccessLogPrefix()));
 		}
 
 	}
