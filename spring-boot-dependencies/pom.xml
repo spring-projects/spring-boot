@@ -92,6 +92,7 @@
 		<httpasyncclient.version>4.1.2</httpasyncclient.version>
 		<httpclient.version>4.5.2</httpclient.version>
 		<httpcore.version>4.4.5</httpcore.version>
+		<ignite.version>1.7.0</ignite.version>
 		<infinispan.version>8.2.2.Final</infinispan.version>
 		<jackson.version>2.8.2</jackson.version>
 		<janino.version>2.7.8</janino.version>
@@ -1806,6 +1807,21 @@
 				<groupId>org.hsqldb</groupId>
 				<artifactId>hsqldb</artifactId>
 				<version>${hsqldb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.ignite</groupId>
+				<artifactId>ignite-core</artifactId>
+				<version>${ignite.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.ignite</groupId>
+				<artifactId>ignite-slf4j</artifactId>
+				<version>${ignite.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.ignite</groupId>
+				<artifactId>ignite-spring</artifactId>
+				<version>${ignite.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.infinispan</groupId>

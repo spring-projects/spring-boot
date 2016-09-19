@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfigurati
 import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
+import org.springframework.boot.autoconfigure.ignite.IgniteAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
@@ -66,7 +67,7 @@ import org.springframework.util.Assert;
 @EnableConfigurationProperties(CacheProperties.class)
 @AutoConfigureBefore(HibernateJpaAutoConfiguration.class)
 @AutoConfigureAfter({ CouchbaseAutoConfiguration.class, HazelcastAutoConfiguration.class,
-		RedisAutoConfiguration.class })
+		IgniteAutoConfiguration.class, RedisAutoConfiguration.class })
 @Import({ CacheManagerCustomizers.class, CacheConfigurationImportSelector.class })
 public class CacheAutoConfiguration {
 
