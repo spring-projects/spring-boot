@@ -56,7 +56,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 
 	private final ConcurrentHashMap<String, PropertySource<?>> collectionOwners = new ConcurrentHashMap<String, PropertySource<?>>();
 
-	private boolean resolvePlaceholders = true;
+	private final boolean resolvePlaceholders;
 
 	/**
 	 * Create a new PropertyValues from the given PropertySources.
@@ -104,15 +104,6 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 		for (PropertySource<?> source : propertySources) {
 			processPropertySource(source, resolver);
 		}
-	}
-
-	/**
-	 * Flag to indicate that placeholders should be replaced during binding. Default is
-	 * true.
-	 * @param resolvePlaceholders flag value
-	 */
-	public void setResolvePlaceholders(boolean resolvePlaceholders) {
-		this.resolvePlaceholders = resolvePlaceholders;
 	}
 
 	private void processPropertySource(PropertySource<?> source,

@@ -34,7 +34,6 @@ public class ConnectorStartFailedException extends EmbeddedServletContainerExcep
 	/**
 	 * Creates a new {@code ConnectorStartFailedException} for a connector that's
 	 * configured to listen on the given {@code port}.
-	 *
 	 * @param port the port
 	 */
 	public ConnectorStartFailedException(int port) {
