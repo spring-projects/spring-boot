@@ -208,7 +208,6 @@ public class PropertiesConfigurationFactory<T>
 	/**
 	 * Flag to indicate that placeholders should be replaced during binding. Default is
 	 * true.
-	 *
 	 * @param resolvePlaceholders flag value
 	 */
 	public void setResolvePlaceholders(boolean resolvePlaceholders) {
