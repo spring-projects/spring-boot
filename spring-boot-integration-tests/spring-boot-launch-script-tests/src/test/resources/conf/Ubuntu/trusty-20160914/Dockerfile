@@ -1,4 +1,4 @@
-FROM ubuntu:xenial-20160503
+FROM ubuntu:trusty-20160914
 RUN apt-get update && \
     apt-get install -y software-properties-common && \
     add-apt-repository ppa:webupd8team/java -y && \
