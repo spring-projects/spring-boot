@@ -41,6 +41,7 @@ import org.springframework.boot.context.embedded.AbstractEmbeddedServletContaine
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 import org.springframework.boot.context.embedded.ExampleServlet;
 import org.springframework.boot.context.embedded.MimeMappings.Mapping;
+import org.springframework.boot.context.embedded.PortInUseException;
 import org.springframework.boot.web.servlet.ErrorPage;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.http.HttpStatus;
@@ -289,6 +290,13 @@ public class UndertowEmbeddedServletContainerFactoryTests
 				.getField(this.container, "manager")).getDeployment().getDeploymentInfo();
 		String charsetName = info.getLocaleCharsetMapping().get(locale.toString());
 		return (charsetName != null) ? Charset.forName(charsetName) : null;
+	}
+
+	@Override
+	protected void handleExceptionCausedByBlockedPort(RuntimeException ex,
+			int blockedPort) {
+		assertThat(ex).isInstanceOf(PortInUseException.class);
+		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
 	}
 
 }

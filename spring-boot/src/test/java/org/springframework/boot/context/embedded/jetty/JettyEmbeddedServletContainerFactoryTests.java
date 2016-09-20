@@ -45,6 +45,7 @@ import org.mockito.InOrder;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 import org.springframework.boot.context.embedded.Compression;
+import org.springframework.boot.context.embedded.PortInUseException;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.http.HttpHeaders;
@@ -334,6 +335,13 @@ public class JettyEmbeddedServletContainerFactoryTests
 				.getServer().getHandler();
 		String charsetName = context.getLocaleEncoding(locale);
 		return (charsetName != null) ? Charset.forName(charsetName) : null;
+	}
+
+	@Override
+	protected void handleExceptionCausedByBlockedPort(RuntimeException ex,
+			int blockedPort) {
+		assertThat(ex).isInstanceOf(PortInUseException.class);
+		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
 	}
 
 }

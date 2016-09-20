@@ -840,8 +840,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 					AbstractEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
-				catch (PortInUseException ex) {
-					assertThat(ex.getPort()).isEqualTo(port);
+				catch (RuntimeException ex) {
+					handleExceptionCausedByBlockedPort(ex, port);
 				}
 			}
 
@@ -864,8 +864,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 					AbstractEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
-				catch (PortInUseException ex) {
-					assertThat(ex.getPort()).isEqualTo(port);
+				catch (RuntimeException ex) {
+					handleExceptionCausedByBlockedPort(ex, port);
 				}
 			}
 
@@ -885,6 +885,9 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	protected abstract void addConnector(int port,
 			AbstractEmbeddedServletContainerFactory factory);
+
+	protected abstract void handleExceptionCausedByBlockedPort(RuntimeException ex,
+			int blockedPort);
 
 	private boolean doTestCompression(int contentSize, String[] mimeTypes,
 			String[] excludedUserAgents) throws Exception {
