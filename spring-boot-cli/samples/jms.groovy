@@ -1,9 +1,9 @@
 package org.test
 
-@Grab("spring-boot-starter-hornetq")
-@Grab("hornetq-jms-server")
+@Grab("spring-boot-starter-artemis")
+@Grab("artemis-jms-server")
 import java.util.concurrent.CountDownLatch
-import org.hornetq.jms.server.config.impl.JMSQueueConfigurationImpl
+import org.apache.activemq.artemis.jms.server.config.impl.JMSQueueConfigurationImpl
 
 @Log
 @Configuration
@@ -17,7 +17,7 @@ class JmsExample implements CommandLineRunner {
 
 	void run(String... args) {
 		def messageCreator = { session ->
-			session.createObjectMessage("Greetings from Spring Boot via HornetQ")
+			session.createObjectMessage("Greetings from Spring Boot via Artemis")
 		} as MessageCreator
 		log.info "Sending JMS message..."
 		jmsTemplate.send("spring-boot", messageCreator)
@@ -32,7 +32,12 @@ class JmsExample implements CommandLineRunner {
 	}
 
 	@Bean JMSQueueConfigurationImpl springBootQueue() {
-		new  JMSQueueConfigurationImpl('spring-boot', null, false)
+		def queueConf = new  JMSQueueConfigurationImpl()
+		queueConf.with {
+			name = 'spring-boot'
+			durable = false
+		}
+		queueConf
 	}
 
 }

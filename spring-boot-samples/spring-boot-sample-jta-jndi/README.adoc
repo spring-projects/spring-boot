@@ -117,7 +117,7 @@ https://access.redhat.com/documentation/en-US/JBoss_Enterprise_Application_Platf
 
 ### JMS Destination
 You will also need to configure a `javax.jms.Destination` by contributing the following to
-the `hornetq-server` element:
+the `artemis-server` element:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----

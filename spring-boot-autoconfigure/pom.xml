@@ -271,16 +271,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.hornetq</groupId>
-			<artifactId>hornetq-jms-client</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.hornetq</groupId>
-			<artifactId>hornetq-jms-server</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-jcache</artifactId>
 			<optional>true</optional>
@@ -590,6 +580,11 @@
 		<dependency>
 			<groupId>org.jooq</groupId>
 			<artifactId>jooq</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss</groupId>
+			<artifactId>jboss-transaction-spi</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
