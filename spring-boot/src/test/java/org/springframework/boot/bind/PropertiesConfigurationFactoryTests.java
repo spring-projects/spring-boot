@@ -106,6 +106,35 @@ public class PropertiesConfigurationFactoryTests {
 	}
 
 	@Test
+	public void systemEnvironmentBindingWithDefaults() throws Exception {
+		setupFactory();
+		MutablePropertySources propertySources = new MutablePropertySources();
+		MockPropertySource propertySource = new MockPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+		propertySource.setProperty("name", "${foo.name:bar}");
+		propertySources.addFirst(propertySource);
+		this.factory.setPropertySources(propertySources);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertThat(foo.name).isEqualTo("bar");
+	}
+
+	@Test
+	public void systemEnvironmentNoResolvePlaceholders() throws Exception {
+		setupFactory();
+		MutablePropertySources propertySources = new MutablePropertySources();
+		MockPropertySource propertySource = new MockPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+		propertySource.setProperty("name", "${foo.name:bar}");
+		propertySources.addFirst(propertySource);
+		this.factory.setPropertySources(propertySources);
+		this.factory.setResolvePlaceholders(false);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertThat(foo.name).isEqualTo("${foo.name:bar}");
+	}
+
+	@Test
 	public void systemPropertyBindingFailuresAreIgnored() throws Exception {
 		setupFactory();
 		MutablePropertySources propertySources = new MutablePropertySources();

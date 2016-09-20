@@ -86,6 +86,8 @@ public class PropertiesConfigurationFactory<T>
 
 	private ConversionService conversionService;
 
+	private boolean resolvePlaceholders = true;
+
 	/**
 	 * Create a new {@link PropertiesConfigurationFactory} instance.
 	 * @param target the target object to bind too
@@ -201,6 +203,16 @@ public class PropertiesConfigurationFactory<T>
 	 */
 	public void setExceptionIfInvalid(boolean exceptionIfInvalid) {
 		this.exceptionIfInvalid = exceptionIfInvalid;
+	}
+
+	/**
+	 * Flag to indicate that placeholders should be replaced during binding. Default is
+	 * true.
+	 *
+	 * @param resolvePlaceholders flag value
+	 */
+	public void setResolvePlaceholders(boolean resolvePlaceholders) {
+		this.resolvePlaceholders = resolvePlaceholders;
 	}
 
 	@Override
@@ -322,7 +334,8 @@ public class PropertiesConfigurationFactory<T>
 			Iterable<String> relaxedTargetNames) {
 		PropertyNamePatternsMatcher includes = getPropertyNamePatternsMatcher(names,
 				relaxedTargetNames);
-		return new PropertySourcesPropertyValues(this.propertySources, names, includes);
+		return new PropertySourcesPropertyValues(this.propertySources, names, includes,
+				this.resolvePlaceholders);
 	}
 
 	private PropertyNamePatternsMatcher getPropertyNamePatternsMatcher(Set<String> names,
