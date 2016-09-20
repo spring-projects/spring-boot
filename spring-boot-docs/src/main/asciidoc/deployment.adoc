@@ -548,9 +548,12 @@ the following example and place it in `/etc/systemd/system` directory:
 TIP: Remember to change the `Description`, `User` and `ExecStart` fields for your
 application.
 
+TIP: Note that `ExecStart` field does not declare the script action command, which means
+that `run` command is used by default.
+
 Note that unlike when running as an `init.d` service, user that runs the application, PID
-file and console log file behave differently under `systemd` and must be configured using
-appropriate fields in '`service`' script. Consult the
+file and console log file are managed by `systemd` itself and therefore must be configured
+using appropriate fields in '`service`' script. Consult the
 http://www.freedesktop.org/software/systemd/man/systemd.service.html[service unit
 configuration man page] for more details.
 
