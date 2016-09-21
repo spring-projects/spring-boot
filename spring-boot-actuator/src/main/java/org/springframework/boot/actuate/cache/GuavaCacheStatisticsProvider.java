@@ -26,7 +26,9 @@ import org.springframework.cache.guava.GuavaCache;
  *
  * @author Stephane Nicoll
  * @since 1.3.0
+ * @deprecated as of 1.5 following the removal of Guava support in Spring Framework 5
  */
+@Deprecated
 public class GuavaCacheStatisticsProvider implements CacheStatisticsProvider<GuavaCache> {
 
 	@Override

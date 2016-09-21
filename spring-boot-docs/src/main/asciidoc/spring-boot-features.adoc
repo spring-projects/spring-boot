@@ -3799,7 +3799,7 @@ providers (in this order):
 * <<boot-features-caching-provider-couchbase,Couchbase>>
 * <<boot-features-caching-provider-redis,Redis>>
 * <<boot-features-caching-provider-caffeine,Caffeine>>
-* <<boot-features-caching-provider-guava,Guava>>
+* <<boot-features-caching-provider-guava,Guava>> (deprecated)
 * <<boot-features-caching-provider-simple,Simple>>
 
 TIP: It is also possible to _force_ the cache provider to use via the `spring.cache.type`
@@ -4019,7 +4019,7 @@ auto-configuration.
 
 
 [[boot-features-caching-provider-guava]]
-==== Guava
+==== Guava (deprecated)
 If Guava is present, a `GuavaCacheManager` is auto-configured. Caches can be created
 on startup using the `spring.cache.cache-names` property and customized by one of the
 following (in this order):

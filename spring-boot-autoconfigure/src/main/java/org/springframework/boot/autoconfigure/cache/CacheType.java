@@ -69,6 +69,7 @@ public enum CacheType {
 	/**
 	 * Guava backed caching.
 	 */
+	@Deprecated
 	GUAVA,
 
 	/**

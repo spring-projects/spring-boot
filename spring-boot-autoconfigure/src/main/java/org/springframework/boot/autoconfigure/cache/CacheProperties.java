@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -266,10 +267,15 @@ public class CacheProperties {
 		 */
 		private String spec;
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(
+				reason = "Caffeine will supersede the Guava support in Spring Boot 2.0",
+				replacement = "spring.cache.caffeine.spec")
 		public String getSpec() {
 			return this.spec;
 		}
 
+		@Deprecated
 		public void setSpec(String spec) {
 			this.spec = spec;
 		}
