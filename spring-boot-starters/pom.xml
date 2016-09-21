@@ -73,7 +73,6 @@
 		<module>spring-boot-starter-web</module>
 		<module>spring-boot-starter-websocket</module>
 		<module>spring-boot-starter-web-services</module>
-		<module>spring-boot-starter-ws</module>
 	</modules>
 
 	<build>
