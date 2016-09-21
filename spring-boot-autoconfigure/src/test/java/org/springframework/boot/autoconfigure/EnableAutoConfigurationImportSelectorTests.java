@@ -46,7 +46,6 @@ import static org.mockito.BDDMockito.given;
  * @author Stephane Nicoll
  *
  */
-@SuppressWarnings("deprecation")
 public class EnableAutoConfigurationImportSelectorTests {
 
 	private final EnableAutoConfigurationImportSelector importSelector = new EnableAutoConfigurationImportSelector();
@@ -138,7 +137,8 @@ public class EnableAutoConfigurationImportSelectorTests {
 
 	@Test
 	public void combinedExclusionsAreApplied() {
-		configureExclusions(new String[] { GroovyTemplateAutoConfiguration.class.getName() },
+		configureExclusions(
+				new String[] { GroovyTemplateAutoConfiguration.class.getName() },
 				new String[] { FreeMarkerAutoConfiguration.class.getName() },
 				new String[] { ThymeleafAutoConfiguration.class.getName() });
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);

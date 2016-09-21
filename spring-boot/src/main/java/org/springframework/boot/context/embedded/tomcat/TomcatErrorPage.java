@@ -56,11 +56,12 @@ class TomcatErrorPage {
 	private Object createNativePage(ErrorPage errorPage) {
 		try {
 			if (ClassUtils.isPresent(ERROR_PAGE_CLASS, null)) {
-				return BeanUtils.instantiate(ClassUtils.forName(ERROR_PAGE_CLASS, null));
+				return BeanUtils
+						.instantiateClass(ClassUtils.forName(ERROR_PAGE_CLASS, null));
 			}
 			if (ClassUtils.isPresent(LEGACY_ERROR_PAGE_CLASS, null)) {
-				return BeanUtils
-						.instantiate(ClassUtils.forName(LEGACY_ERROR_PAGE_CLASS, null));
+				return BeanUtils.instantiateClass(
+						ClassUtils.forName(LEGACY_ERROR_PAGE_CLASS, null));
 			}
 		}
 		catch (ClassNotFoundException ex) {

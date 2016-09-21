@@ -102,7 +102,7 @@ public class PropertiesConfigurationFactory<T>
 	@SuppressWarnings("unchecked")
 	public PropertiesConfigurationFactory(Class<?> type) {
 		Assert.notNull(type);
-		this.target = (T) BeanUtils.instantiate(type);
+		this.target = (T) BeanUtils.instantiateClass(type);
 	}
 
 	/**
@@ -226,8 +226,7 @@ public class PropertiesConfigurationFactory<T>
 	}
 
 	public void bindPropertiesToTarget() throws BindException {
-		Assert.state(this.propertySources != null,
-				"PropertySources should not be null");
+		Assert.state(this.propertySources != null, "PropertySources should not be null");
 		try {
 			if (this.logger.isTraceEnabled()) {
 				this.logger.trace("Property Sources: " + this.propertySources);
@@ -262,7 +261,8 @@ public class PropertiesConfigurationFactory<T>
 		customizeBinder(dataBinder);
 		Iterable<String> relaxedTargetNames = getRelaxedTargetNames();
 		Set<String> names = getNames(relaxedTargetNames);
-		PropertyValues propertyValues = getPropertySourcesPropertyValues(names, relaxedTargetNames);
+		PropertyValues propertyValues = getPropertySourcesPropertyValues(names,
+				relaxedTargetNames);
 		dataBinder.bind(propertyValues);
 		if (this.validator != null) {
 			validate(dataBinder);

@@ -317,7 +317,7 @@ public class RestTemplateBuilder {
 	public RestTemplateBuilder requestFactory(
 			Class<? extends ClientHttpRequestFactory> requestFactory) {
 		Assert.notNull(requestFactory, "RequestFactory must not be null");
-		return requestFactory(BeanUtils.instantiate(requestFactory));
+		return requestFactory(BeanUtils.instantiateClass(requestFactory));
 	}
 
 	/**
@@ -500,7 +500,7 @@ public class RestTemplateBuilder {
 	 */
 
 	public <T extends RestTemplate> T build(Class<T> restTemplateClass) {
-		return configure(BeanUtils.instantiate(restTemplateClass));
+		return configure(BeanUtils.instantiateClass(restTemplateClass));
 	}
 
 	/**
@@ -580,7 +580,8 @@ public class RestTemplateBuilder {
 			if (ClassUtils.isPresent(candidate.getKey(), classLoader)) {
 				Class<?> factoryClass = ClassUtils.resolveClassName(candidate.getValue(),
 						classLoader);
-				return (ClientHttpRequestFactory) BeanUtils.instantiate(factoryClass);
+				return (ClientHttpRequestFactory) BeanUtils
+						.instantiateClass(factoryClass);
 			}
 		}
 		return new SimpleClientHttpRequestFactory();
