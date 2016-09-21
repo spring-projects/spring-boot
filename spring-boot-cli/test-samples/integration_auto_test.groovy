@@ -1,5 +1,4 @@
-@SpringApplicationConfiguration(ReactorApplication)
-@IntegrationTest('server.port:0')
+@SpringBootTest(classes=ReactorApplication, webEnvironment=WebEnvironment.RANDOM_PORT)
 class RestTests {
 
 	@Autowired
