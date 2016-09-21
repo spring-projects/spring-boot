@@ -17,7 +17,6 @@
 package org.springframework.boot.configurationmetadata;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * Define a configuration property. Each property is fully identified by its
