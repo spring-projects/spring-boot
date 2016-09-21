@@ -29,15 +29,4 @@ class OnEnabledHealthIndicatorCondition extends OnEnabledEndpointElementConditio
 		super("management.health.", ConditionalOnEnabledHealthIndicator.class);
 	}
 
-	@Override
-	protected String getEndpointElementOutcomeMessage(String name, boolean match) {
-		return "The health indicator " + name + " is " + (match ? "enabled" : "disabled");
-	}
-
-	@Override
-	protected String getDefaultEndpointElementOutcomeMessage(boolean match) {
-		return "All default health indicators are " + (match ? "enabled" : "disabled")
-				+ " by default";
-	}
-
 }

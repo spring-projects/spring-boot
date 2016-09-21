@@ -44,15 +44,6 @@ abstract class OnEnabledEndpointElementCondition extends SpringBootCondition {
 		this.annotationType = annotationType;
 	}
 
-	protected String getEndpointElementOutcomeMessage(String name, boolean match) {
-		return "The endpoint element " + name + " is " + (match ? "enabled" : "disabled");
-	}
-
-	protected String getDefaultEndpointElementOutcomeMessage(boolean match) {
-		return "All default endpoint elements are " + (match ? "enabled" : "disabled")
-				+ " by default";
-	}
-
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
