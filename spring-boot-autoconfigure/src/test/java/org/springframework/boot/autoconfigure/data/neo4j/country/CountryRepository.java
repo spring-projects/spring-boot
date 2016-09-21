@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.data.neo4j.country;
 
 import org.springframework.data.neo4j.repository.GraphRepository;
 
+@SuppressWarnings("deprecation")
 public interface CountryRepository extends GraphRepository<Country> {
 
 }
