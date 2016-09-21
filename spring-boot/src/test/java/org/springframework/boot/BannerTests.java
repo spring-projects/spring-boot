@@ -129,22 +129,6 @@ public class BannerTests {
 		assertThat(this.context.containsBean("springBootBanner")).isFalse();
 	}
 
-	@Test
-	public void testDeprecatePrintBanner() throws Exception {
-		SpringApplication application = new SpringApplication(Config.class) {
-
-			@Override
-			protected void printBanner(Environment environment) {
-				System.out.println("I printed a deprecated banner");
-			};
-
-		};
-		application.setWebEnvironment(false);
-		this.context = application.run();
-		assertThat(this.out.toString()).contains("I printed a deprecated banner");
-		assertThat(this.context.containsBean("springBootBanner")).isFalse();
-	}
-
 	static class DummyBanner implements Banner {
 
 		@Override

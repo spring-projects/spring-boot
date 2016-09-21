@@ -296,7 +296,6 @@ content into your application; rather pick only the properties that you need.
 	spring.jackson.parser.*= # Jackson on/off features for parsers.
 	spring.jackson.property-naming-strategy= # One of the constants on Jackson's PropertyNamingStrategy. Can also be a fully-qualified class name of a PropertyNamingStrategy subclass.
 	spring.jackson.serialization.*= # Jackson on/off features that affect the way Java objects are serialized.
-	spring.jackson.serialization-inclusion= # Controls the inclusion of properties during serialization. Configured with one of the values in Jackson's JsonInclude.Include enumeration.
 	spring.jackson.time-zone= # Time zone used when formatting dates. For instance `America/Los_Angeles`
 
 	# JERSEY ({sc-spring-boot-autoconfigure}/jersey/JerseyProperties.{sc-ext}[JerseyProperties])

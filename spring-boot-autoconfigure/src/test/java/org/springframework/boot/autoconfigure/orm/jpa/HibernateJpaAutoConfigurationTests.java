@@ -88,7 +88,7 @@ public class HibernateJpaAutoConfigurationTests
 	public void testCustomNamingStrategy() throws Exception {
 		HibernateVersion.setRunning(HibernateVersion.V4);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jpa.hibernate.namingStrategy:"
+				"spring.jpa.hibernate.naming.strategy:"
 						+ "org.hibernate.cfg.EJB3NamingStrategy");
 		setupTestConfiguration();
 		this.context.refresh();

@@ -43,8 +43,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(Parameterized.class)
 public class PropertiesConfigurationFactoryParameterizedTests {
 
-	private final boolean usePropertySource;
-
 	private String targetName;
 
 	private PropertiesConfigurationFactory<Foo> factory = new PropertiesConfigurationFactory<Foo>(
@@ -52,14 +50,11 @@ public class PropertiesConfigurationFactoryParameterizedTests {
 
 	@Parameters
 	public static Object[] parameters() {
-		return new Object[] { new Object[] { false, false }, new Object[] { false, true },
-				new Object[] { true, false }, new Object[] { true, true } };
+		return new Object[] { new Object[] { false }, new Object[] { true } };
 	}
 
-	public PropertiesConfigurationFactoryParameterizedTests(boolean ignoreUnknownFields,
-			boolean usePropertySource) {
+	public PropertiesConfigurationFactoryParameterizedTests(boolean ignoreUnknownFields) {
 		this.factory.setIgnoreUnknownFields(ignoreUnknownFields);
-		this.usePropertySource = usePropertySource;
 	}
 
 	@Test
@@ -102,18 +97,12 @@ public class PropertiesConfigurationFactoryParameterizedTests {
 		return bindFoo(values);
 	}
 
-	@Deprecated
 	private Foo bindFoo(final String values) throws Exception {
 		Properties properties = PropertiesLoaderUtils
 				.loadProperties(new ByteArrayResource(values.getBytes()));
-		if (this.usePropertySource) {
-			MutablePropertySources propertySources = new MutablePropertySources();
-			propertySources.addFirst(new PropertiesPropertySource("test", properties));
-			this.factory.setPropertySources(propertySources);
-		}
-		else {
-			this.factory.setProperties(properties);
-		}
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addFirst(new PropertiesPropertySource("test", properties));
+		this.factory.setPropertySources(propertySources);
 
 		this.factory.afterPropertiesSet();
 		return this.factory.getObject();

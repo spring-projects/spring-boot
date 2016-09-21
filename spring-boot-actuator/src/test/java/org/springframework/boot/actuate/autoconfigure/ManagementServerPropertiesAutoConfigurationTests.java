@@ -74,13 +74,6 @@ public class ManagementServerPropertiesAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	public void managementRoleSetRolesProperly() {
-		ManagementServerProperties properties = load("management.security.role=FOO");
-		assertThat(properties.getSecurity().getRoles()).containsOnly("FOO");
-	}
-
-	@Test
 	public void managementRolesSetMultipleRoles() {
 		ManagementServerProperties properties = load(
 				"management.security.roles=FOO,BAR,BIZ");

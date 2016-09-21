@@ -28,14 +28,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -67,8 +65,6 @@ public class PropertiesConfigurationFactory<T>
 	private boolean ignoreInvalidFields;
 
 	private boolean exceptionIfInvalid = true;
-
-	private Properties properties;
 
 	private PropertySources propertySources;
 
@@ -162,17 +158,6 @@ public class PropertiesConfigurationFactory<T>
 	}
 
 	/**
-	 * Set the properties.
-	 * @param properties the properties
-	 * @deprecated as of 1.4 in favor of {@link #setPropertySources(PropertySources)
-	 * setPropertySources} that contains a {@link PropertiesPropertySource}.
-	 */
-	@Deprecated
-	public void setProperties(Properties properties) {
-		this.properties = properties;
-	}
-
-	/**
 	 * Set the property sources.
 	 * @param propertySources the property sources
 	 */
@@ -241,16 +226,12 @@ public class PropertiesConfigurationFactory<T>
 	}
 
 	public void bindPropertiesToTarget() throws BindException {
-		Assert.state(this.properties != null || this.propertySources != null,
-				"Properties or propertySources should not be null");
+		Assert.state(this.propertySources != null,
+				"PropertySources should not be null");
 		try {
 			if (this.logger.isTraceEnabled()) {
-				if (this.properties != null) {
-					this.logger.trace(String.format("Properties:%n%s", this.properties));
-				}
-				else {
-					this.logger.trace("Property Sources: " + this.propertySources);
-				}
+				this.logger.trace("Property Sources: " + this.propertySources);
+
 			}
 			this.hasBeenBound = true;
 			doBindPropertiesToTarget();
@@ -281,7 +262,7 @@ public class PropertiesConfigurationFactory<T>
 		customizeBinder(dataBinder);
 		Iterable<String> relaxedTargetNames = getRelaxedTargetNames();
 		Set<String> names = getNames(relaxedTargetNames);
-		PropertyValues propertyValues = getPropertyValues(names, relaxedTargetNames);
+		PropertyValues propertyValues = getPropertySourcesPropertyValues(names, relaxedTargetNames);
 		dataBinder.bind(propertyValues);
 		if (this.validator != null) {
 			validate(dataBinder);
@@ -319,14 +300,6 @@ public class PropertiesConfigurationFactory<T>
 			}
 		}
 		return names;
-	}
-
-	private PropertyValues getPropertyValues(Set<String> names,
-			Iterable<String> relaxedTargetNames) {
-		if (this.properties != null) {
-			return new MutablePropertyValues(this.properties);
-		}
-		return getPropertySourcesPropertyValues(names, relaxedTargetNames);
 	}
 
 	private PropertyValues getPropertySourcesPropertyValues(Set<String> names,

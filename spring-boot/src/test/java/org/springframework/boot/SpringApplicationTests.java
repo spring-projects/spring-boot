@@ -81,7 +81,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -163,25 +162,6 @@ public class SpringApplicationTests {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Cannot load configuration");
 		new SpringApplication(InaccessibleConfiguration.class).run();
-	}
-
-	@Test
-	@Deprecated
-	public void disableBannerWithMode() throws Exception {
-		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
-		application.setWebEnvironment(false);
-		application.setBannerMode(Banner.Mode.OFF);
-		this.context = application.run();
-		verify(application, never()).printBanner((Environment) anyObject());
-	}
-
-	@Test
-	@Deprecated
-	public void disableBannerViaBannerModeProperty() throws Exception {
-		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
-		application.setWebEnvironment(false);
-		this.context = application.run("--spring.main.banner-mode=off");
-		verify(application, never()).printBanner((Environment) anyObject());
 	}
 
 	@Test

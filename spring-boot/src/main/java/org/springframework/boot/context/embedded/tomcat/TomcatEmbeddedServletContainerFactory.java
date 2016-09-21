@@ -610,17 +610,6 @@ public class TomcatEmbeddedServletContainerFactory
 	 * Returns a mutable collection of the {@link Valve}s that will be applied to the
 	 * Tomcat {@link Context}.
 	 * @return the contextValves the valves that will be applied
-	 * @deprecated as of 1.4 in favor of {@link #getContextValves()}
-	 */
-	@Deprecated
-	public Collection<Valve> getValves() {
-		return getContextValves();
-	}
-
-	/**
-	 * Returns a mutable collection of the {@link Valve}s that will be applied to the
-	 * Tomcat {@link Context}.
-	 * @return the contextValves the valves that will be applied
 	 * @see #getEngineValves()
 	 */
 	public Collection<Valve> getContextValves() {

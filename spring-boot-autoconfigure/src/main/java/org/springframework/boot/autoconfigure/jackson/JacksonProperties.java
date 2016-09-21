@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties to configure Jackson.
@@ -145,17 +144,6 @@ public class JacksonProperties {
 
 	public Map<JsonGenerator.Feature, Boolean> getGenerator() {
 		return this.generator;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "ObjectMapper.setSerializationInclusion was deprecated in Jackson 2.7", replacement = "spring.jackson.default-property-inclusion")
-	public JsonInclude.Include getSerializationInclusion() {
-		return getDefaultPropertyInclusion();
-	}
-
-	@Deprecated
-	public void setSerializationInclusion(JsonInclude.Include serializationInclusion) {
-		setDefaultPropertyInclusion(serializationInclusion);
 	}
 
 	public JsonInclude.Include getDefaultPropertyInclusion() {
