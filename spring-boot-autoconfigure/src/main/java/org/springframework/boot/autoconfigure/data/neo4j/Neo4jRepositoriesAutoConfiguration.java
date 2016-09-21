@@ -52,6 +52,7 @@ import org.springframework.data.neo4j.repository.support.GraphRepositoryFactoryB
  * @since 1.4.0
  * @see EnableNeo4jRepositories
  */
+@SuppressWarnings("deprecation")
 @Configuration
 @ConditionalOnClass({ Neo4jSession.class, GraphRepository.class })
 @ConditionalOnMissingBean({ GraphRepositoryFactoryBean.class,

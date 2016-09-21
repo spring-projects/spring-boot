@@ -30,6 +30,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  *
  * @author Michael Hunger
  */
+@SuppressWarnings("deprecation")
 class Neo4jRepositoriesAutoConfigureRegistrar
 		extends AbstractRepositoryConfigurationSourceSupport {
 
