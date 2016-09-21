@@ -29,8 +29,6 @@ import org.springframework.boot.actuate.metrics.export.Exporter;
 import org.springframework.boot.actuate.metrics.export.MetricCopyExporter;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.repository.MetricRepository;
-import org.springframework.boot.actuate.metrics.writer.DefaultCounterService;
-import org.springframework.boot.actuate.metrics.writer.DefaultGaugeService;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
@@ -81,32 +79,6 @@ import org.springframework.messaging.MessageChannel;
 public class MetricRepositoryAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnJava(value = JavaVersion.EIGHT, range = Range.OLDER_THAN)
-	@ConditionalOnMissingBean(GaugeService.class)
-	static class LegacyMetricServicesConfiguration {
-
-		private final MetricWriter writer;
-
-		LegacyMetricServicesConfiguration(@ActuatorMetricWriter MetricWriter writer) {
-			this.writer = writer;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(CounterService.class)
-		public DefaultCounterService counterService() {
-			return new DefaultCounterService(this.writer);
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(GaugeService.class)
-		public DefaultGaugeService gaugeService() {
-			return new DefaultGaugeService(this.writer);
-		}
-
-	}
-
-	@Configuration
-	@ConditionalOnJava(JavaVersion.EIGHT)
 	@ConditionalOnMissingBean(GaugeService.class)
 	static class FastMetricServicesConfiguration {
 

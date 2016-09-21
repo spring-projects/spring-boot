@@ -594,12 +594,10 @@
 					<skip>${disable.checks}</skip>
 					<signature>
 						<groupId>org.codehaus.mojo.signature</groupId>
-						<artifactId>java16</artifactId>
-						<version>1.1</version>
+						<artifactId>java18</artifactId>
+						<version>1.0</version>
 					</signature>
 					<annotations>
-						<annotation>org.springframework.lang.UsesJava8</annotation>
-						<annotation>org.springframework.lang.UsesJava7</annotation>
 						<annotation>org.springframework.boot.lang.UsesUnsafeJava</annotation>
 					</annotations>
 				</configuration>
