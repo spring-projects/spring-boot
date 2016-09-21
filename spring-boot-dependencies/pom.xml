@@ -345,11 +345,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-redis</artifactId>
-				<version>1.5.0.BUILD-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-neo4j</artifactId>
 				<version>1.5.0.BUILD-SNAPSHOT</version>
 			</dependency>
@@ -522,11 +517,6 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-web-services</artifactId>
-				<version>1.5.0.BUILD-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-ws</artifactId>
 				<version>1.5.0.BUILD-SNAPSHOT</version>
 			</dependency>
 
