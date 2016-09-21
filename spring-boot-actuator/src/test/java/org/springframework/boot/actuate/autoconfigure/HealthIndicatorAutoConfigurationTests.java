@@ -33,9 +33,11 @@ import org.springframework.boot.actuate.health.ElasticsearchHealthIndicator;
 import org.springframework.boot.actuate.health.ElasticsearchJestHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.HeapMemoryHealthIndicator;
 import org.springframework.boot.actuate.health.JmsHealthIndicator;
 import org.springframework.boot.actuate.health.MailHealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
+import org.springframework.boot.actuate.health.NonHeapMemoryHealthIndicator;
 import org.springframework.boot.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
 import org.springframework.boot.actuate.health.SolrHealthIndicator;
@@ -72,6 +74,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Ben Hale
  */
 public class HealthIndicatorAutoConfigurationTests {
 
@@ -89,7 +92,9 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.register(HealthIndicatorAutoConfiguration.class,
 				ManagementServerProperties.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -132,7 +137,9 @@ public class HealthIndicatorAutoConfigurationTests {
 				ManagementServerProperties.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.defaults.enabled:false",
-				"management.health.diskspace.enabled:true");
+				"management.health.diskspace.enabled:true",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -146,7 +153,9 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.register(RedisAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -161,7 +170,9 @@ public class HealthIndicatorAutoConfigurationTests {
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.redis.enabled:false",
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -176,7 +187,9 @@ public class HealthIndicatorAutoConfigurationTests {
 				ManagementServerProperties.class, MongoDataAutoConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -192,7 +205,9 @@ public class HealthIndicatorAutoConfigurationTests {
 				HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.mongo.enabled:false",
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -209,7 +224,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
-		assertThat(beans).hasSize(4);
+		assertThat(beans).hasSize(6);
 	}
 
 	@Test
@@ -217,7 +232,9 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -235,7 +252,9 @@ public class HealthIndicatorAutoConfigurationTests {
 				HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.test.validation-query:SELECT from FOOBAR",
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -252,7 +271,9 @@ public class HealthIndicatorAutoConfigurationTests {
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.db.enabled:false",
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -266,7 +287,9 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.register(RabbitAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -281,7 +304,9 @@ public class HealthIndicatorAutoConfigurationTests {
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.rabbit.enabled:false",
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -295,7 +320,9 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.register(SolrAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -310,7 +337,9 @@ public class HealthIndicatorAutoConfigurationTests {
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.solr.enabled:false",
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -322,6 +351,9 @@ public class HealthIndicatorAutoConfigurationTests {
 	@Test
 	public void diskSpaceHealthIndicator() {
 		this.context.register(HealthIndicatorAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+			"management.health.heapmemory.enabled:false",
+			"management.health.nonheapmemory.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -331,10 +363,40 @@ public class HealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
+	public void heapmemoryHealthIndicator() {
+		this.context.register(HealthIndicatorAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+			"management.health.diskspace.enabled:false",
+			"management.health.nonheapmemory.enabled:false");
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+			.getBeansOfType(HealthIndicator.class);
+		assertThat(beans).hasSize(1);
+		assertThat(beans.values().iterator().next().getClass())
+			.isEqualTo(HeapMemoryHealthIndicator.class);
+	}
+
+	@Test
+	public void nonheapmemoryHealthIndicator() {
+		this.context.register(HealthIndicatorAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+			"management.health.diskspace.enabled:false",
+			"management.health.heapmemory.enabled:false");
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+			.getBeansOfType(HealthIndicator.class);
+		assertThat(beans).hasSize(1);
+		assertThat(beans.values().iterator().next().getClass())
+			.isEqualTo(NonHeapMemoryHealthIndicator.class);
+	}
+
+	@Test
 	public void mailHealthIndicator() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.mail.host:smtp.acme.org",
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.register(MailSenderAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
@@ -350,7 +412,9 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void notMailHealthIndicator() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.mail.host:smtp.acme.org", "management.health.mail.enabled:false",
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.register(MailSenderAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
@@ -365,7 +429,9 @@ public class HealthIndicatorAutoConfigurationTests {
 	@Test
 	public void jmsHealthIndicator() {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.register(ActiveMQAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
@@ -381,7 +447,9 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void notJmsHealthIndicator() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.jms.enabled:false",
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.register(ActiveMQAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
@@ -397,7 +465,9 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void elasticsearchHealthIndicator() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.data.elasticsearch.properties.path.home:target",
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.register(JestClientConfiguration.class,
 				JestAutoConfiguration.class, ElasticsearchAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
@@ -413,7 +483,9 @@ public class HealthIndicatorAutoConfigurationTests {
 	@Test
 	public void elasticsearchJestHealthIndicator() {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.register(JestClientConfiguration.class,
 				JestAutoConfiguration.class, ManagementServerProperties.class,
 				HealthIndicatorAutoConfiguration.class);
@@ -431,7 +503,9 @@ public class HealthIndicatorAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.elasticsearch.enabled:false",
 				"spring.data.elasticsearch.properties.path.home:target",
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.register(JestClientConfiguration.class,
 				JestAutoConfiguration.class, ElasticsearchAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
@@ -447,7 +521,9 @@ public class HealthIndicatorAutoConfigurationTests {
 	@Test
 	public void cassandraHealthIndicator() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.register(CassandraConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
@@ -461,7 +537,9 @@ public class HealthIndicatorAutoConfigurationTests {
 	@Test
 	public void couchbaseHealthIndicator() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false",
+				"management.health.heapmemory.enabled:false",
+				"management.health.nonheapmemory.enabled:false");
 		this.context.register(CouchbaseConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();

@@ -37,9 +37,13 @@ import org.springframework.boot.actuate.health.DiskSpaceHealthIndicator;
 import org.springframework.boot.actuate.health.DiskSpaceHealthIndicatorProperties;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.HeapMemoryHealthIndicator;
+import org.springframework.boot.actuate.health.HeapMemoryHealthIndicatorProperties;
 import org.springframework.boot.actuate.health.JmsHealthIndicator;
 import org.springframework.boot.actuate.health.MailHealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
+import org.springframework.boot.actuate.health.NonHeapMemoryHealthIndicator;
+import org.springframework.boot.actuate.health.NonHeapMemoryHealthIndicatorProperties;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
@@ -86,6 +90,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @author Phillip Webb
  * @author Tommy Ludwig
  * @author Eddú Meléndez
+ * @author Ben Hale
  * @since 1.1.0
  */
 @Configuration
@@ -311,6 +316,42 @@ public class HealthIndicatorAutoConfiguration {
 		@Bean
 		public DiskSpaceHealthIndicatorProperties diskSpaceHealthIndicatorProperties() {
 			return new DiskSpaceHealthIndicatorProperties();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnEnabledHealthIndicator("heapmemory")
+	public static class HeapMemoryHealthIndicatorConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(name = "heapMemoryHealthIndicator")
+		public HeapMemoryHealthIndicator heapMemoryHealthIndicator(
+			HeapMemoryHealthIndicatorProperties properties) {
+			return new HeapMemoryHealthIndicator(properties);
+		}
+
+		@Bean
+		public HeapMemoryHealthIndicatorProperties heapMemoryHealthIndicatorProperties() {
+			return new HeapMemoryHealthIndicatorProperties();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnEnabledHealthIndicator("nonheapmemory")
+	public static class NonHeapMemoryHealthIndicatorConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(name = "nonHeapMemoryHealthIndicator")
+		public NonHeapMemoryHealthIndicator nonHeapMemoryHealthIndicator(
+			NonHeapMemoryHealthIndicatorProperties properties) {
+			return new NonHeapMemoryHealthIndicator(properties);
+		}
+
+		@Bean
+		public NonHeapMemoryHealthIndicatorProperties nonHeapMemoryHealthIndicatorProperties() {
+			return new NonHeapMemoryHealthIndicatorProperties();
 		}
 
 	}

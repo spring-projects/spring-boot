@@ -310,6 +310,9 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |{sc-spring-boot-actuator}/health/ElasticsearchHealthIndicator.{sc-ext}[`ElasticsearchHealthIndicator`]
 |Checks that an Elasticsearch cluster is up.
 
+|{sc-spring-boot-actuator}/health/HeapMemoryHealthIndicator.{sc-ext}[`HeapMemoryHealthIndicator`]
+|Checks for low heap memory space.
+
 |{sc-spring-boot-actuator}/health/JmsHealthIndicator.{sc-ext}[`JmsHealthIndicator`]
 |Checks that a JMS broker is up.
 
@@ -318,6 +321,9 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 
 |{sc-spring-boot-actuator}/health/MongoHealthIndicator.{sc-ext}[`MongoHealthIndicator`]
 |Checks that a Mongo database is up.
+
+|{sc-spring-boot-actuator}/health/NonHeapMemoryHealthIndicator.{sc-ext}[`NonHeapMemoryHealthIndicator`]
+|Checks for low non-heap memory space.
 
 |{sc-spring-boot-actuator}/health/RabbitHealthIndicator.{sc-ext}[`RabbitHealthIndicator`]
 |Checks that a Rabbit server is up.
