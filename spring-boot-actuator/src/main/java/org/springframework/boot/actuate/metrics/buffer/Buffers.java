@@ -25,9 +25,9 @@ import java.util.function.Predicate;
 /**
  * Base class used to manage a map of {@link Buffer} objects.
  *
+ * @param <B> The buffer type
  * @author Dave Syer
  * @author Phillip Webb
- * @param <B> The buffer type
  */
 abstract class Buffers<B extends Buffer<?>> {
 
