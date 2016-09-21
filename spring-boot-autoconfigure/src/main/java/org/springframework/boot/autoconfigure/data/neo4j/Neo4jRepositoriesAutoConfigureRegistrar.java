@@ -21,7 +21,7 @@ import java.lang.annotation.Annotation;
 import org.springframework.boot.autoconfigure.data.AbstractRepositoryConfigurationSourceSupport;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
-import org.springframework.data.neo4j.repository.config.Neo4jRepositoryConfigurationExtension;
+import org.springframework.data.neo4j.repository.config.GraphRepositoryConfigurationExtension;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
 /**
@@ -45,7 +45,7 @@ class Neo4jRepositoriesAutoConfigureRegistrar
 
 	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
-		return new Neo4jRepositoryConfigurationExtension();
+		return new GraphRepositoryConfigurationExtension();
 	}
 
 	@EnableNeo4jRepositories

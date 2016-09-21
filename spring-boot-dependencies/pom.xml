@@ -52,7 +52,7 @@
 		<atomikos.version>3.9.3</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
 		<caffeine.version>2.3.3</caffeine.version>
-		<cassandra-driver.version>2.1.9</cassandra-driver.version>
+		<cassandra-driver.version>3.1.0</cassandra-driver.version>
 		<classmate.version>1.3.1</classmate.version>
 		<commons-beanutils.version>1.9.2</commons-beanutils.version>
 		<commons-collections.version>3.2.2</commons-collections.version>
@@ -104,7 +104,7 @@
 		<jboss-logging.version>3.3.0.Final</jboss-logging.version>
 		<jboss-transaction-spi.version>7.3.4.Final</jboss-transaction-spi.version>
 		<jdom2.version>2.0.6</jdom2.version>
-		<jedis.version>2.8.1</jedis.version>
+		<jedis.version>2.9.0</jedis.version>
 		<jersey.version>2.23.2</jersey.version>
 		<jest.version>2.0.3</jest.version>
 		<jetty.version>9.3.11.v20160721</jetty.version>
@@ -148,8 +148,8 @@
 		<spring-amqp.version>1.6.2.RELEASE</spring-amqp.version>
 		<spring-cloud-connectors.version>1.2.3.RELEASE</spring-cloud-connectors.version>
 		<spring-batch.version>3.0.7.RELEASE</spring-batch.version>
-		<spring-data-releasetrain.version>Hopper-SR3</spring-data-releasetrain.version>
-		<spring-hateoas.version>0.21.0.BUILD-SNAPSHOT</spring-hateoas.version>
+		<spring-data-releasetrain.version>Ingalls-M1</spring-data-releasetrain.version>
+		<spring-hateoas.version>0.21.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>4.3.2.RELEASE</spring-integration.version>
 		<spring-integration-java-dsl.version>1.1.3.RELEASE</spring-integration-java-dsl.version>
 		<spring-loaded.version>1.2.6.RELEASE</spring-loaded.version>
