@@ -18,6 +18,7 @@ package org.springframework.boot.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
@@ -57,6 +58,7 @@ import static org.hamcrest.Matchers.not;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Ben Hale
  */
 public class LoggingApplicationListenerTests {
 
@@ -517,6 +519,16 @@ public class LoggingApplicationListenerTests {
 		}
 
 		@Override
+		public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+			return null;
+		}
+
+		@Override
+		public Collection<LoggerConfiguration> listLoggerConfigurations() {
+			return null;
+		}
+
+		@Override
 		public void setLogLevel(String loggerName, LogLevel level) {
 
 		}
@@ -558,6 +570,16 @@ public class LoggingApplicationListenerTests {
 		@Override
 		public void beforeInitialize() {
 
+		}
+
+		@Override
+		public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+			return null;
+		}
+
+		@Override
+		public Collection<LoggerConfiguration> listLoggerConfigurations() {
+			return null;
 		}
 
 		@Override

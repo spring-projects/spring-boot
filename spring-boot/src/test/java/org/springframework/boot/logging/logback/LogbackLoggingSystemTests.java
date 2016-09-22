@@ -18,6 +18,7 @@ package org.springframework.boot.logging.logback;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.Collection;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
@@ -39,6 +40,7 @@ import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.testutil.Matched;
@@ -59,6 +61,7 @@ import static org.mockito.Mockito.verify;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Ben Hale
  */
 public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
@@ -157,6 +160,28 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext,
 				"classpath:logback-nonexistent.xml", null);
+	}
+
+	@Test
+	public void getLoggingConfiguration() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
+		assertThat(this.loggingSystem.getLoggerConfiguration(getClass().getName()))
+				.isEqualTo(new LoggerConfiguration(getClass().getName(),
+						LogLevel.DEBUG, LogLevel.DEBUG));
+	}
+
+	@Test
+	public void listLoggingConfigurations() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
+		Collection<LoggerConfiguration> loggerConfigurations = this.loggingSystem
+				.listLoggerConfigurations();
+		assertThat(loggerConfigurations.size()).isGreaterThan(0);
+		assertThat(loggerConfigurations.iterator().next().getName()).isEqualTo(
+				org.slf4j.Logger.ROOT_LOGGER_NAME);
 	}
 
 	@Test

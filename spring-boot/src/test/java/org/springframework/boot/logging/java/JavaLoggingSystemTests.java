@@ -19,7 +19,9 @@ package org.springframework.boot.logging.java;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Locale;
+import java.util.logging.Level;
 
 import org.apache.commons.logging.impl.Jdk14Logger;
 import org.junit.After;
@@ -29,6 +31,7 @@ import org.junit.Test;
 
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -40,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Ben Hale
  */
 public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 
@@ -72,6 +76,11 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	@After
 	public void clearLocale() {
 		Locale.setDefault(this.defaultLocale);
+	}
+
+	@After
+	public void resetLogger() {
+		this.logger.getLogger().setLevel(Level.OFF);
 	}
 
 	@Test
@@ -137,6 +146,27 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, "classpath:logging-nonexistent.properties",
 				null);
+	}
+
+	@Test
+	public void getLoggingConfiguration() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
+		assertThat(this.loggingSystem.getLoggerConfiguration(getClass().getName()))
+				.isEqualTo(new LoggerConfiguration(getClass().getName(),
+						LogLevel.DEBUG, LogLevel.DEBUG));
+	}
+
+	@Test
+	public void listLoggingConfigurations() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
+		Collection<LoggerConfiguration> loggerConfigurations = this.loggingSystem
+				.listLoggerConfigurations();
+		assertThat(loggerConfigurations.size()).isGreaterThan(0);
+		assertThat(loggerConfigurations.iterator().next().getName()).isEmpty();
 	}
 
 	@Test

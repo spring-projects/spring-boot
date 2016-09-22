@@ -21,6 +21,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,6 +39,7 @@ import org.junit.Test;
 
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.testutil.Matched;
 import org.springframework.util.FileCopyUtils;
@@ -57,6 +59,7 @@ import static org.mockito.Mockito.verify;
  * @author Daniel Fullarton
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Ben Hale
  */
 public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
@@ -118,6 +121,27 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	public void testNonexistentConfigLocation() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, "classpath:log4j2-nonexistent.xml", null);
+	}
+
+	@Test
+	public void getLoggingConfiguration() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
+		assertThat(this.loggingSystem.getLoggerConfiguration(getClass().getName()))
+				.isEqualTo(new LoggerConfiguration(getClass().getName(),
+						LogLevel.DEBUG, LogLevel.DEBUG));
+	}
+
+	@Test
+	public void listLoggingConfigurations() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
+		Collection<LoggerConfiguration> loggerConfigurations = this.loggingSystem
+				.listLoggerConfigurations();
+		assertThat(loggerConfigurations.size()).isGreaterThan(0);
+		assertThat(loggerConfigurations.iterator().next().getName()).isEmpty();
 	}
 
 	@Test

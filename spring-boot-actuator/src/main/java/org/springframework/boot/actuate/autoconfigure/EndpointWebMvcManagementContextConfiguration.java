@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
@@ -33,6 +34,7 @@ import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HeapdumpMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.LogFileMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.LoggersMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
@@ -57,6 +59,7 @@ import org.springframework.web.cors.CorsConfiguration;
  * Configuration to expose {@link Endpoint} instances over Spring MVC.
  *
  * @author Dave Syer
+ * @author Ben Hale
  * @since 1.3.0
  */
 @ManagementContextConfiguration
@@ -148,6 +151,13 @@ public class EndpointWebMvcManagementContextConfiguration {
 					.addStatusMapping(this.healthMvcEndpointProperties.getMapping());
 		}
 		return healthMvcEndpoint;
+	}
+
+	@Bean
+	@ConditionalOnBean(LoggersEndpoint.class)
+	@ConditionalOnEnabledEndpoint("loggers")
+	public LoggersMvcEndpoint loggersMvcEndpoint(LoggersEndpoint delegate) {
+		return new LoggersMvcEndpoint(delegate);
 	}
 
 	@Bean
