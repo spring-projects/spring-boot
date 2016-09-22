@@ -37,6 +37,7 @@ import org.springframework.boot.actuate.endpoint.FlywayEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.actuate.endpoint.LiquibaseEndpoint;
+import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
@@ -59,6 +60,7 @@ import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -75,7 +77,7 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Meang Akira Tanaka
- *
+ * @author Ben Hale
  */
 @Configuration
 @AutoConfigureAfter({ FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class })
@@ -133,6 +135,13 @@ public class EndpointAutoConfiguration {
 	public InfoEndpoint infoEndpoint() throws Exception {
 		return new InfoEndpoint(this.infoContributors == null
 				? Collections.<InfoContributor>emptyList() : this.infoContributors);
+	}
+
+	@Bean
+	@ConditionalOnBean(LoggingSystem.class)
+	@ConditionalOnMissingBean
+	public LoggersEndpoint loggersEndpoint(LoggingSystem loggingSystem) {
+		return new LoggersEndpoint(loggingSystem);
 	}
 
 	@Bean

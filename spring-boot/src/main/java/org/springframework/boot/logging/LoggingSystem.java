@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Ben Hale
  */
 public abstract class LoggingSystem {
 
@@ -93,6 +95,26 @@ public abstract class LoggingSystem {
 	}
 
 	/**
+	 * Returns the current configuration for a {@link LoggingSystem}'s logger.
+	 * @param loggerName the name of the logger
+	 * @return the current configuration
+	 */
+	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+		throw new UnsupportedOperationException(
+				"Getting a logger configuration is not supported");
+	}
+
+	/**
+	 * Returns a collection of the current configuration for all a {@link LoggingSystem}'s
+	 * loggers.
+	 * @return the current configurations
+	 */
+	public Collection<LoggerConfiguration> listLoggerConfigurations() {
+		throw new UnsupportedOperationException(
+				"Listing logger configurations is not supported");
+	}
+
+	/**
 	 * Sets the logging level for a given logger.
 	 * @param loggerName the name of the logger to set
 	 * @param level the log level
@@ -139,6 +161,16 @@ public abstract class LoggingSystem {
 		@Override
 		public void beforeInitialize() {
 
+		}
+
+		@Override
+		public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+			return null;
+		}
+
+		@Override
+		public Collection<LoggerConfiguration> listLoggerConfigurations() {
+			return Collections.emptyList();
 		}
 
 		@Override

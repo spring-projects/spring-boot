@@ -18,8 +18,12 @@ package org.springframework.boot.logging.java;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -28,6 +32,8 @@ import java.util.logging.Logger;
 import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggerConfiguration;
+import org.springframework.boot.logging.LoggerConfigurationComparator;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.util.Assert;
@@ -41,10 +47,16 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Ben Hale
  */
 public class JavaLoggingSystem extends AbstractLoggingSystem {
 
+	private static final LoggerConfigurationComparator COMPARATOR =
+			new LoggerConfigurationComparator("");
+
 	private static final Map<LogLevel, Level> LEVELS;
+
+	private static final Map<Level, LogLevel> LOG_LEVELS;
 
 	static {
 		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
@@ -56,6 +68,12 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		levels.put(LogLevel.FATAL, Level.SEVERE);
 		levels.put(LogLevel.OFF, Level.OFF);
 		LEVELS = Collections.unmodifiableMap(levels);
+
+		Map<Level, LogLevel> logLevels = new HashMap<Level, LogLevel>();
+		for (Map.Entry<LogLevel, Level> entry : LEVELS.entrySet()) {
+			logLevels.put(entry.getValue(), entry.getKey());
+		}
+		LOG_LEVELS = Collections.unmodifiableMap(logLevels);
 	}
 
 	public JavaLoggingSystem(ClassLoader classLoader) {
@@ -109,6 +127,24 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
+	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+		return toLoggerConfiguration(Logger.getLogger(loggerName));
+	}
+
+	@Override
+	public Collection<LoggerConfiguration> listLoggerConfigurations() {
+		List<LoggerConfiguration> result = new ArrayList<LoggerConfiguration>();
+		for (Enumeration<String> loggerNames =
+			LogManager.getLogManager().getLoggerNames();
+			loggerNames.hasMoreElements(); ) {
+			result.add(toLoggerConfiguration(Logger.getLogger(
+					loggerNames.nextElement())));
+		}
+		Collections.sort(result, COMPARATOR);
+		return result;
+	}
+
+	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
 		Assert.notNull(level, "Level must not be null");
 		String name = (StringUtils.hasText(loggerName) ? loggerName : "");
@@ -119,6 +155,20 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	@Override
 	public Runnable getShutdownHandler() {
 		return new ShutdownHandler();
+	}
+
+	private static LoggerConfiguration toLoggerConfiguration(Logger logger) {
+		return new LoggerConfiguration(logger.getName(),
+				LOG_LEVELS.get(logger.getLevel()),
+				LOG_LEVELS.get(getEffectiveLevel(logger)));
+	}
+
+	private static Level getEffectiveLevel(Logger root) {
+		Logger logger = root;
+		while (logger.getLevel() == null) {
+			logger = logger.getParent();
+		}
+		return logger.getLevel();
 	}
 
 	private final class ShutdownHandler implements Runnable {
