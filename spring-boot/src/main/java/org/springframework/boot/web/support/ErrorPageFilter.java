@@ -223,12 +223,12 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		if (this.subtypes.containsKey(type)) {
 			return this.exceptions.get(this.subtypes.get(type));
 		}
-		Class<?> subtype = type;
-		while (subtype != Object.class) {
-			subtype = subtype.getSuperclass();
-			if (this.exceptions.containsKey(subtype)) {
-				this.subtypes.put(subtype, type);
-				return this.exceptions.get(subtype);
+		Class<?> supertype = type;
+		while (supertype != Object.class) {
+			supertype = supertype.getSuperclass();
+			if (this.exceptions.containsKey(supertype)) {
+				this.subtypes.put(type, supertype);
+				return this.exceptions.get(supertype);
 			}
 		}
 		return this.global;
