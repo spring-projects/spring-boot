@@ -55,7 +55,13 @@ public class EmbeddedDataSourceConfiguration implements BeanClassLoaderAware {
 	public EmbeddedDatabase dataSource() {
 		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
 				.setType(EmbeddedDatabaseConnection.get(this.classLoader).getType());
-		this.database = builder.setName(this.properties.getName()).build();
+		if (this.properties.isGenerateName()) {
+			builder.generateUniqueName(true);
+		}
+		else {
+			builder.setName(this.properties.getName());
+		}
+		this.database = builder.build();
 		return this.database;
 	}
 

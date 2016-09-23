@@ -58,6 +58,11 @@ public class DataSourceProperties
 	private String name = "testdb";
 
 	/**
+	 * If <code>true</code> the database name is randomly generated.
+	 */
+	private boolean generateName = false;
+
+	/**
 	 * Fully qualified name of the connection pool implementation to use. By default, it
 	 * is auto-detected from the classpath.
 	 */
@@ -181,6 +186,14 @@ public class DataSourceProperties
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public boolean isGenerateName() {
+		return this.generateName;
+	}
+
+	public void setGenerateName(boolean generateName) {
+		this.generateName = generateName;
 	}
 
 	public Class<? extends DataSource> getType() {

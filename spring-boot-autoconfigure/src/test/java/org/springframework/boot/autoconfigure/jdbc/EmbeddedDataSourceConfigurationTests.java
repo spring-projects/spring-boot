@@ -16,11 +16,17 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Properties;
+
 import javax.sql.DataSource;
 
 import org.junit.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.env.PropertiesPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,6 +46,36 @@ public class EmbeddedDataSourceConfigurationTests {
 		this.context.refresh();
 		assertThat(this.context.getBean(DataSource.class)).isNotNull();
 		this.context.close();
+	}
+
+	@Test
+	public void generatesUniqueDatabaseName() throws Exception {
+		Properties myProps = new Properties();
+		myProps.setProperty("spring.datasource.generate-name", "true");
+
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EmbeddedDataSourceConfiguration.class);
+		this.context.getEnvironment().getPropertySources().addFirst(new PropertiesPropertySource("whatever", myProps));
+		this.context.refresh();
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertThat(getDatabaseName(dataSource)).isNotEqualToIgnoringCase("testdb");
+		this.context.close();
+	}
+
+	private String getDatabaseName(DataSource dataSource) throws SQLException {
+		Connection connection = dataSource.getConnection();
+		try {
+			ResultSet catalogs = connection.getMetaData().getCatalogs();
+			if (catalogs.next()) {
+				return catalogs.getString(1);
+			}
+			else {
+				throw new IllegalStateException("Unable to get database name");
+			}
+		}
+		finally {
+			connection.close();
+		}
 	}
 
 }
