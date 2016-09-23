@@ -189,7 +189,7 @@ public class DataSourceProperties
 	}
 
 	public boolean isGenerateName() {
-		return generateName;
+		return this.generateName;
 	}
 
 	public void setGenerateName(boolean generateName) {

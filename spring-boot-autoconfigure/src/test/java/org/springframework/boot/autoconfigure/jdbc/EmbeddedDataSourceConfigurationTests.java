@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
+
 import javax.sql.DataSource;
 
 import org.junit.Test;
@@ -65,9 +66,14 @@ public class EmbeddedDataSourceConfigurationTests {
 		Connection connection = dataSource.getConnection();
 		try {
 			ResultSet catalogs = connection.getMetaData().getCatalogs();
-			catalogs.next();
-			return catalogs.getString(1);
-		} finally {
+			if (catalogs.next()) {
+				return catalogs.getString(1);
+			}
+			else {
+				throw new IllegalStateException("Unable to get database name");
+			}
+		}
+		finally {
 			connection.close();
 		}
 	}
