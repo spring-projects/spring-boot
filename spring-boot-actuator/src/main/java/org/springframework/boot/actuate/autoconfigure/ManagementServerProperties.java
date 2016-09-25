@@ -197,11 +197,6 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 			this.roles = roles;
 		}
 
-		@Deprecated
-		public void setRole(String role) {
-			this.roles = Collections.singletonList(role);
-		}
-
 		public List<String> getRoles() {
 			return this.roles;
 		}

@@ -20,8 +20,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.neo4j.repository.GraphRepository;
 
+@SuppressWarnings("deprecation")
 public interface CityRepository extends GraphRepository<City> {
 
+	@Override
 	Page<City> findAll(Pageable pageable);
 
 }

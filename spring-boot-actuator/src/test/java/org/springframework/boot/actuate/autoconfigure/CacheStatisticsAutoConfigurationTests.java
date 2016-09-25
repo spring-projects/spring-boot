@@ -24,7 +24,6 @@ import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.google.common.cache.CacheBuilder;
 import com.hazelcast.cache.HazelcastCachingProvider;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
@@ -45,7 +44,6 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerUtils;
-import org.springframework.cache.guava.GuavaCacheManager;
 import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -107,14 +105,6 @@ public class CacheStatisticsAutoConfigurationTests {
 		load(InfinispanConfig.class);
 		CacheStatisticsProvider provider = this.context.getBean(
 				"infinispanCacheStatisticsProvider", CacheStatisticsProvider.class);
-		doTestCoreStatistics(provider, true);
-	}
-
-	@Test
-	public void basicGuavaCacheStatistics() {
-		load(GuavaConfig.class);
-		CacheStatisticsProvider provider = this.context
-				.getBean("guavaCacheStatisticsProvider", CacheStatisticsProvider.class);
 		doTestCoreStatistics(provider, true);
 	}
 
@@ -287,19 +277,6 @@ public class CacheStatisticsAutoConfigurationTests {
 			finally {
 				in.close();
 			}
-		}
-
-	}
-
-	@Configuration
-	static class GuavaConfig {
-
-		@Bean
-		public GuavaCacheManager cacheManager() throws IOException {
-			GuavaCacheManager cacheManager = new GuavaCacheManager();
-			cacheManager.setCacheBuilder(CacheBuilder.newBuilder().recordStats());
-			cacheManager.setCacheNames(Arrays.asList("books", "speakers"));
-			return cacheManager;
 		}
 
 	}

@@ -85,7 +85,6 @@ org.springframework.boot.autoconfigure.social.FacebookAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.LinkedInAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.TwitterAutoConfiguration,\
 org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration,\
-org.springframework.boot.autoconfigure.velocity.VelocityAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration,\
@@ -114,5 +113,4 @@ org.springframework.boot.autoconfigure.freemarker.FreeMarkerTemplateAvailability
 org.springframework.boot.autoconfigure.mustache.MustacheTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafTemplateAvailabilityProvider,\
-org.springframework.boot.autoconfigure.velocity.VelocityTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.web.JspTemplateAvailabilityProvider

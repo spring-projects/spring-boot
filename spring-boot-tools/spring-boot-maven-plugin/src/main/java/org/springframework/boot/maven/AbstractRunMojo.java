@@ -139,7 +139,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private File classesDirectory;
 
 	/**
-	 * Flag to indicate if the run processes should be forked. {@code fork } is
+	 * Flag to indicate if the run processes should be forked. {@code fork} is
 	 * automatically enabled if an agent or jvmArguments are specified, or if devtools is
 	 * present.
 	 * @since 1.2

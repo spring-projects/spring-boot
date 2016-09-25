@@ -66,7 +66,6 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
 import org.springframework.boot.context.embedded.undertow.UndertowBuilderCustomizer;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.EnvironmentAware;
@@ -671,29 +670,6 @@ public class ServerProperties
 
 		public void setMinSpareThreads(int minSpareThreads) {
 			this.minSpareThreads = minSpareThreads;
-		}
-
-		/**
-		 * Get the max http header size.
-		 * @return the max http header size.
-		 * @deprecated as of 1.4 in favor of
-		 * {@link ServerProperties#getMaxHttpHeaderSize()}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.max-http-header-size")
-		public int getMaxHttpHeaderSize() {
-			return this.maxHttpHeaderSize;
-		}
-
-		/**
-		 * Set the max http header size.
-		 * @param maxHttpHeaderSize the max http header size.
-		 * @deprecated as of 1.4 in favor of
-		 * {@link ServerProperties#setMaxHttpHeaderSize(int)}
-		 */
-		@Deprecated
-		public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
-			this.maxHttpHeaderSize = maxHttpHeaderSize;
 		}
 
 		public Accesslog getAccesslog() {

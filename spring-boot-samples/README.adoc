@@ -222,9 +222,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-undertow-ssl[spring-boot-sample-undertow-ssl]
 | Embedded Undertow configured to use SSL
 
-| link:spring-boot-sample-velocity[spring-boot-sample-velocity]
-| Non-web application that uses Velocity templates
-
 | link:spring-boot-sample-war[spring-boot-sample-war]
 | Web application packaged as a war file
 
@@ -260,9 +257,6 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-web-ui[spring-boot-sample-web-ui]
 | Web application with a basic UI built using Bootstrap and JQuery
-
-| link:spring-boot-sample-web-velocity[spring-boot-sample-web-velocity]
-| Web application that uses Velocity templates
 
 | link:spring-boot-sample-webservices[spring-boot-sample-webservices]
 | Simple contract-first SOAP web service with Spring Web Services

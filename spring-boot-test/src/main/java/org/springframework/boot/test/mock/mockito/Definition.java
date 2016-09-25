@@ -16,8 +16,6 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import java.lang.reflect.AnnotatedElement;
-
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -30,27 +28,20 @@ abstract class Definition {
 
 	private static final int MULTIPLIER = 31;
 
-	private final AnnotatedElement element;
-
 	private final String name;
 
 	private final MockReset reset;
 
 	private final boolean proxyTargetAware;
 
-	Definition(AnnotatedElement element, String name, MockReset reset, boolean proxyTargetAware) {
-		this.element = element;
+	private final QualifierDefinition qualifier;
+
+	Definition(String name, MockReset reset, boolean proxyTargetAware,
+			QualifierDefinition qualifier) {
 		this.name = name;
 		this.reset = (reset != null ? reset : MockReset.AFTER);
 		this.proxyTargetAware = proxyTargetAware;
-	}
-
-	/**
-	 * Return the {@link AnnotatedElement} that holds this definition.
-	 * @return the element that defines this definition or {@code null}
-	 */
-	public AnnotatedElement getElement() {
-		return this.element;
+		this.qualifier = qualifier;
 	}
 
 	/**
@@ -77,6 +68,14 @@ abstract class Definition {
 		return this.proxyTargetAware;
 	}
 
+	/**
+	 * Return the qualifier or {@code null}.
+	 * @return the qualifier
+	 */
+	public QualifierDefinition getQualifier() {
+		return this.qualifier;
+	}
+
 	@Override
 	public int hashCode() {
 		int result = 1;
@@ -84,6 +83,7 @@ abstract class Definition {
 		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.reset);
 		result = MULTIPLIER * result
 				+ ObjectUtils.nullSafeHashCode(this.proxyTargetAware);
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.qualifier);
 		return result;
 	}
 
@@ -101,6 +101,7 @@ abstract class Definition {
 		result &= ObjectUtils.nullSafeEquals(this.reset, other.reset);
 		result &= ObjectUtils.nullSafeEquals(this.proxyTargetAware,
 				other.proxyTargetAware);
+		result &= ObjectUtils.nullSafeEquals(this.qualifier, other.qualifier);
 		return result;
 	}
 

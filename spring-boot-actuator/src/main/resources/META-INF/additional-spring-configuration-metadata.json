@@ -164,15 +164,6 @@
     "defaultValue": true
   },
   {
-    "name": "management.security.role",
-    "type": "java.lang.String",
-    "description": "Roles required to access the management endpoint.",
-    "defaultValue": "ADMIN",
-    "deprecation": {
-      "replacement": "management.security.roles"
-    }
-  },
-  {
     "name": "spring.git.properties",
     "type": "java.lang.String",
     "description": "Resource reference to a generated git info properties file.",

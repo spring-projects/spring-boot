@@ -42,7 +42,6 @@ final class CacheConfigurations {
 		mappings.put(CacheType.COUCHBASE, CouchbaseCacheConfiguration.class);
 		mappings.put(CacheType.REDIS, RedisCacheConfiguration.class);
 		mappings.put(CacheType.CAFFEINE, CaffeineCacheConfiguration.class);
-		mappings.put(CacheType.GUAVA, GuavaCacheConfiguration.class);
 		mappings.put(CacheType.SIMPLE, SimpleCacheConfiguration.class);
 		mappings.put(CacheType.NONE, NoOpCacheConfiguration.class);
 		MAPPINGS = Collections.unmodifiableMap(mappings);

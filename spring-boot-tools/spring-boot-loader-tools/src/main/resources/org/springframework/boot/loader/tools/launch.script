@@ -110,6 +110,7 @@ fi
 # Build the pid and log filenames
 if [[ "$identity" == "$init_script" ]] || [[ "$identity" == "$APP_NAME" ]]; then
   PID_FOLDER="$PID_FOLDER/${identity}"
+  pid_subfolder=$PID_FOLDER
 fi
 pid_file="$PID_FOLDER/${identity}.pid"
 log_file="$LOG_FOLDER/$LOG_FILENAME"
@@ -147,6 +148,9 @@ do_start() {
   mkdir "$PID_FOLDER" &> /dev/null
   if [[ -n "$run_user" ]]; then
     checkPermissions || return $?
+    if [[ -z "$pid_subfolder" ]]; then
+      chown "$run_user" "$pid_subfolder"
+    fi
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
     if [ $USE_START_STOP_DAEMON = true ] && type start-stop-daemon > /dev/null 2>&1; then

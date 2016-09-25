@@ -38,7 +38,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.lang.UsesJava7;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StreamUtils;
@@ -187,7 +186,6 @@ public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint {
 	 * {@link HeapDumper} that uses {@code com.sun.management.HotSpotDiagnosticMXBean}
 	 * available on Oracle and OpenJDK to dump the heap to a file.
 	 */
-	@UsesJava7
 	protected static class HotSpotDiagnosticMXBeanHeapDumper implements HeapDumper {
 
 		private Object diagnosticMXBean;

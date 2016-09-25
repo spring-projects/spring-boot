@@ -498,4 +498,11 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		return ((TomcatEmbeddedServletContainer) this.container).getTomcat();
 	}
 
+	@Override
+	protected void handleExceptionCausedByBlockedPort(RuntimeException ex,
+			int blockedPort) {
+		assertThat(ex).isInstanceOf(ConnectorStartFailedException.class);
+		assertThat(((ConnectorStartFailedException) ex).getPort()).isEqualTo(blockedPort);
+	}
+
 }

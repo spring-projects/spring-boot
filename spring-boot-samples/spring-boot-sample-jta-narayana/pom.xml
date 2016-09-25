@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>spring-boot-samples</artifactId>
 		<groupId>org.springframework.boot</groupId>
-		<version>1.4.1.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-sample-jta-narayana</artifactId>
 	<name>Spring Boot Narayana JTA Sample</name>

@@ -34,7 +34,6 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.Netty4ClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
-import org.springframework.http.client.OkHttpClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -478,19 +477,23 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@Deprecated
 	public void connectTimeoutCanBeConfiguredOnOkHttp2RequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(OkHttpClientHttpRequestFactory.class)
+				.requestFactory(
+						org.springframework.http.client.OkHttpClientHttpRequestFactory.class)
 				.setConnectTimeout(1234).build().getRequestFactory();
 		assertThat(((OkHttpClient) ReflectionTestUtils.getField(requestFactory, "client"))
 				.getConnectTimeout()).isEqualTo(1234);
 	}
 
 	@Test
+	@Deprecated
 	public void readTimeoutCanBeConfiguredOnOkHttp2RequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(OkHttpClientHttpRequestFactory.class).setReadTimeout(1234)
-				.build().getRequestFactory();
+				.requestFactory(
+						org.springframework.http.client.OkHttpClientHttpRequestFactory.class)
+				.setReadTimeout(1234).build().getRequestFactory();
 		assertThat(((OkHttpClient) ReflectionTestUtils.getField(requestFactory, "client"))
 				.getReadTimeout()).isEqualTo(1234);
 	}

@@ -1266,7 +1266,7 @@ Jackson which map onto properties in the environment:
 |`spring.jackson.serialization.<feature_name>=true\|false`
 
 |`com.fasterxml.jackson.annotation.JsonInclude.Include`
-|`spring.jackson.serialization-inclusion=always\|non_null\|non_absent\|non_default\|non_empty`
+|`spring.jackson.default-property-inclusion=always\|non_null\|non_absent\|non_default\|non_empty`
 |===
 
 For example, to enable pretty print, set `spring.jackson.serialization.indent_output=true`.
@@ -1417,41 +1417,11 @@ added.
   suffix (externalized to `spring.groovy.template.prefix` and
   `spring.groovy.template.suffix`, defaults '`classpath:/templates/`' and '`.tpl`'
   respectively). It can be overridden by providing a bean of the same name.
-* If you use Velocity you will also have a `VelocityViewResolver` with id '`velocityViewResolver`'.
-  It looks for resources in a loader path (externalized to `spring.velocity.resourceLoaderPath`,
-  default '`classpath:/templates/`') by surrounding the view name with a prefix and suffix
-  (externalized to `spring.velocity.prefix` and `spring.velocity.suffix`, with empty  and '`.vm`'
-  defaults respectively). It can be overridden by providing a bean of the same name.
 
 Check out {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`],
 {sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[`ThymeleafAutoConfiguration`],
 {sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[`FreeMarkerAutoConfiguration`],
-{sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[`GroovyTemplateAutoConfiguration`] and
-{sc-spring-boot-autoconfigure}/velocity/VelocityAutoConfiguration.{sc-ext}[`VelocityAutoConfiguration`]
-
-
-
-[[howto-customize-view-resolvers-velocity]]
-=== Velocity
-By default, Spring Boot configures a `VelocityViewResolver`. If you need a
-`VelocityLayoutViewResolver` instead, you can easily configure your own by creating a bean
-with name `velocityViewResolver`. You can also inject the `VelocityProperties` instance to
-apply the base defaults to your custom view resolver.
-
-The following example replaces the auto-configured velocity view resolver with a
-`VelocityLayoutViewResolver` defining a customized `layoutUrl` and all settings that would
-have been applied from the auto-configuration:
-
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
-----
-	@Bean(name = "velocityViewResolver")
-	public VelocityLayoutViewResolver velocityViewResolver(VelocityProperties properties) {
-		VelocityLayoutViewResolver resolver = new VelocityLayoutViewResolver();
-		properties.applyToViewResolver(resolver);
-		resolver.setLayoutUrl("layout/default.vm");
-		return resolver;
-	}
-----
+{sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[`GroovyTemplateAutoConfiguration`]
 
 
 
@@ -2370,14 +2340,6 @@ for other Groovy customization options.
 
 
 
-[[howto-reload-velocity-content]]
-==== Velocity templates
-If you are using Velocity, then set `spring.velocity.cache` to `false`. See
-{sc-spring-boot-autoconfigure}/velocity/VelocityAutoConfiguration.{sc-ext}[`VelocityAutoConfiguration`]
-for other Velocity customization options.
-
-
-
 [[howto-reload-fast-restart]]
 === Fast application restarts
 The `spring-boot-devtools` module includes support for automatic application restarts.
@@ -2643,14 +2605,24 @@ details.
 
 
 [[howto-create-an-additional-executable-jar]]
-=== Create an additional executable JAR
-If you want to use your project as a library jar for other projects to depend on, and in
-addition have an executable (e.g. demo) version of it, you will want to configure the
-build in a slightly different way.
+=== Use a Spring Boot application as a dependency
+Like a war file, a Spring Boot application is not intended to be used as a dependency. If
+your application contains classes that you want to share with other projects, the
+recommended approach is to move that code into a separate module. The separate module can
+then be depended upon by your application and other projects.
 
-For Maven the normal JAR plugin and the Spring Boot plugin both have a '`classifier`'
-configuration that you can add to create an additional JAR. Example (using the Spring
-Boot Starter Parent to manage the plugin versions and other configuration defaults):
+If you cannot rearrange your code as recommended above, Spring Boot's Maven and Gradle
+plugins must be configured to produce a separate artifact that is suitable for use as a
+dependency. The executable archive cannot be used as a dependency as the
+<<appendix-executable-jar-format.adoc#executable-jar-jar-file-structure,exectuable jar
+format>> packages application classes in `BOOT-INF/classes`. This means
+that they cannot be found when the executable jar is used as a dependency.
+
+To produce the two artifacts, one that can be used as a dependency and one that is
+executable, a classifier must be specified. This classifier is applied to the name of the
+executable archive, leaving the default archive for use as dependency.
+
+To configure a classifier of `exec` in Maven, the following configuration can be used:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -2667,10 +2639,7 @@ Boot Starter Parent to manage the plugin versions and other configuration defaul
 	</build>
 ----
 
-Two jars are produced, the default one, and an executable one using the Boot plugin with
-classifier '`exec`'.
-
-For Gradle users the steps are similar. Example:
+And when using Gradle, the following configuration can be used:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----

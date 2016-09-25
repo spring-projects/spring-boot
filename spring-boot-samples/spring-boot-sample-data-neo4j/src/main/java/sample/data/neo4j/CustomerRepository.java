@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.springframework.data.neo4j.repository.GraphRepository;
 
+@SuppressWarnings("deprecation")
 public interface CustomerRepository extends GraphRepository<Customer> {
 
 	public Customer findByFirstName(String firstName);

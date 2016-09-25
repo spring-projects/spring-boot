@@ -186,6 +186,10 @@ public class TestDatabaseAutoConfiguration {
 			if (EmbeddedDatabaseConnection.NONE.equals(connection)) {
 				connection = EmbeddedDatabaseConnection.get(getClass().getClassLoader());
 			}
+			Assert.state(connection != EmbeddedDatabaseConnection.NONE,
+					"Cannot determine embedded database for tests. If you want "
+							+ "an embedded database please put a supported one "
+							+ "on the classpath.");
 			return new EmbeddedDatabaseBuilder().setType(connection.getType()).build();
 		}
 

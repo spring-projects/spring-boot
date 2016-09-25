@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Answers;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.mock.mockito.example.ExampleExtraInterface;
 import org.springframework.boot.test.mock.mockito.example.ExampleService;
 import org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller;
@@ -67,7 +68,6 @@ public class DefinitionsParserTests {
 		this.parser.parse(MockBeanAttributes.class);
 		assertThat(getDefinitions()).hasSize(1);
 		MockDefinition definition = getMockDefinition(0);
-		assertThat(definition.getElement()).isEqualTo(MockBeanAttributes.class);
 		assertThat(definition.getName()).isEqualTo("Name");
 		assertThat(definition.getTypeToMock().resolve()).isEqualTo(ExampleService.class);
 		assertThat(definition.getExtraInterfaces())
@@ -75,6 +75,7 @@ public class DefinitionsParserTests {
 		assertThat(definition.getAnswer()).isEqualTo(Answers.RETURNS_SMART_NULLS);
 		assertThat(definition.isSerializable()).isEqualTo(true);
 		assertThat(definition.getReset()).isEqualTo(MockReset.NONE);
+		assertThat(definition.getQualifier()).isNull();
 	}
 
 	@Test
@@ -82,15 +83,15 @@ public class DefinitionsParserTests {
 		this.parser.parse(MockBeanOnClassAndField.class);
 		assertThat(getDefinitions()).hasSize(2);
 		MockDefinition classDefinition = getMockDefinition(0);
-		assertThat(classDefinition.getElement())
-				.isEqualTo(MockBeanOnClassAndField.class);
 		assertThat(classDefinition.getTypeToMock().resolve())
 				.isEqualTo(ExampleService.class);
+		assertThat(classDefinition.getQualifier()).isNull();
 		MockDefinition fieldDefinition = getMockDefinition(1);
-		assertThat(fieldDefinition.getElement()).isEqualTo(
-				ReflectionUtils.findField(MockBeanOnClassAndField.class, "caller"));
 		assertThat(fieldDefinition.getTypeToMock().resolve())
 				.isEqualTo(ExampleServiceCaller.class);
+		QualifierDefinition qualifier = QualifierDefinition.forElement(
+				ReflectionUtils.findField(MockBeanOnClassAndField.class, "caller"));
+		assertThat(fieldDefinition.getQualifier()).isNotNull().isEqualTo(qualifier);
 	}
 
 	@Test
@@ -149,11 +150,11 @@ public class DefinitionsParserTests {
 		this.parser.parse(SpyBeanAttributes.class);
 		assertThat(getDefinitions()).hasSize(1);
 		SpyDefinition definition = getSpyDefinition(0);
-		assertThat(definition.getElement()).isEqualTo(SpyBeanAttributes.class);
 		assertThat(definition.getName()).isEqualTo("Name");
 		assertThat(definition.getTypeToSpy().resolve())
 				.isEqualTo(RealExampleService.class);
 		assertThat(definition.getReset()).isEqualTo(MockReset.NONE);
+		assertThat(definition.getQualifier()).isNull();
 	}
 
 	@Test
@@ -161,13 +162,13 @@ public class DefinitionsParserTests {
 		this.parser.parse(SpyBeanOnClassAndField.class);
 		assertThat(getDefinitions()).hasSize(2);
 		SpyDefinition classDefinition = getSpyDefinition(0);
-		assertThat(classDefinition.getElement())
-				.isEqualTo(SpyBeanOnClassAndField.class);
+		assertThat(classDefinition.getQualifier()).isNull();
 		assertThat(classDefinition.getTypeToSpy().resolve())
 				.isEqualTo(RealExampleService.class);
 		SpyDefinition fieldDefinition = getSpyDefinition(1);
-		assertThat(fieldDefinition.getElement()).isEqualTo(
+		QualifierDefinition qualifier = QualifierDefinition.forElement(
 				ReflectionUtils.findField(SpyBeanOnClassAndField.class, "caller"));
+		assertThat(fieldDefinition.getQualifier()).isNotNull().isEqualTo(qualifier);
 	}
 
 	@Test
@@ -234,6 +235,7 @@ public class DefinitionsParserTests {
 	static class MockBeanOnClassAndField {
 
 		@MockBean(ExampleServiceCaller.class)
+		@Qualifier("test")
 		private Object caller;
 
 	}
@@ -281,6 +283,7 @@ public class DefinitionsParserTests {
 	static class SpyBeanOnClassAndField {
 
 		@SpyBean(ExampleServiceCaller.class)
+		@Qualifier("test")
 		private Object caller;
 
 	}

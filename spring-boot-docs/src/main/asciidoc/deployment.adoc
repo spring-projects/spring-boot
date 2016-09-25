@@ -709,7 +709,7 @@ To learn about securing this file appropriately, please refer to
 
 
 [[deployment-windows]]
-== Microsoft Windows services
+=== Microsoft Windows services
 Spring Boot application can be started as Windows service using
 https://github.com/kohsuke/winsw[`winsw`].
 

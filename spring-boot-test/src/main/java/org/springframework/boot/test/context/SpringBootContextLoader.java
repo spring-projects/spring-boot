@@ -162,7 +162,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		initializers.addAll(application.getInitializers());
 		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : config
 				.getContextInitializerClasses()) {
-			initializers.add(BeanUtils.instantiate(initializerClass));
+			initializers.add(BeanUtils.instantiateClass(initializerClass));
 		}
 		return initializers;
 	}

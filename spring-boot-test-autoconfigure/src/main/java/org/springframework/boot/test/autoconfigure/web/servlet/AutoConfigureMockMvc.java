@@ -62,6 +62,12 @@ public @interface AutoConfigureMockMvc {
 	MockMvcPrint print() default MockMvcPrint.DEFAULT;
 
 	/**
+	 * If {@link MvcResult} information should be printed only if the test fails.
+	 * @return {@code true} if printing only occurs on failure
+	 */
+	boolean printOnlyOnFailure() default true;
+
+	/**
 	 * If a {@link WebClient} should be auto-configured when HtmlUnit is on the classpath.
 	 * Defaults to {@code true}.
 	 * @return if a {@link WebClient} is auto-configured

@@ -17,7 +17,6 @@
 package org.springframework.boot.test.mock.mockito;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -44,7 +43,6 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
-import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -209,9 +207,8 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		definition.setFactoryMethodName("createMock");
 		definition.getConstructorArgumentValues().addIndexedArgumentValue(0,
 				mockDefinition);
-		AnnotatedElement element = mockDefinition.getElement();
-		if (element instanceof Field) {
-			definition.setQualifiedElement(element);
+		if (mockDefinition.getQualifier() != null) {
+			mockDefinition.getQualifier().applyTo(definition);
 		}
 		return definition;
 	}
@@ -232,17 +229,17 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		if (StringUtils.hasLength(mockDefinition.getName())) {
 			return mockDefinition.getName();
 		}
-		String[] existingBeans = findCandidateBeans(beanFactory, mockDefinition);
-		if (ObjectUtils.isEmpty(existingBeans)) {
+		Set<String> existingBeans = findCandidateBeans(beanFactory, mockDefinition);
+		if (existingBeans.isEmpty()) {
 			return this.beanNameGenerator.generateBeanName(beanDefinition, registry);
 		}
-		if (existingBeans.length == 1) {
-			return existingBeans[0];
+		if (existingBeans.size() == 1) {
+			return existingBeans.iterator().next();
 		}
 		throw new IllegalStateException(
 				"Unable to register mock bean " + mockDefinition.getTypeToMock()
 						+ " expected a single matching bean to replace but found "
-						+ new TreeSet<String>(Arrays.asList(existingBeans)));
+						+ existingBeans);
 	}
 
 	private void registerSpy(ConfigurableListableBeanFactory beanFactory,
@@ -256,22 +253,17 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		}
 	}
 
-	private String[] findCandidateBeans(ConfigurableListableBeanFactory beanFactory,
+	private Set<String> findCandidateBeans(ConfigurableListableBeanFactory beanFactory,
 			MockDefinition mockDefinition) {
-		String[] beans = getExistingBeans(beanFactory, mockDefinition.getTypeToMock());
-		// Attempt to filter using qualifiers
-		if (beans.length > 1 && mockDefinition.getElement() instanceof Field) {
-			DependencyDescriptor descriptor = new DependencyDescriptor(
-					(Field) mockDefinition.getElement(), true);
-			Set<String> candidates = new LinkedHashSet<String>();
-			for (String bean : beans) {
-				if (beanFactory.isAutowireCandidate(bean, descriptor)) {
-					candidates.add(bean);
-				}
+		QualifierDefinition qualifier = mockDefinition.getQualifier();
+		Set<String> candidates = new TreeSet<String>();
+		for (String candidate : getExistingBeans(beanFactory,
+				mockDefinition.getTypeToMock())) {
+			if (qualifier == null || qualifier.matches(beanFactory, candidate)) {
+				candidates.add(candidate);
 			}
-			return candidates.toArray(new String[candidates.size()]);
 		}
-		return beans;
+		return candidates;
 	}
 
 	private String[] getExistingBeans(ConfigurableListableBeanFactory beanFactory,

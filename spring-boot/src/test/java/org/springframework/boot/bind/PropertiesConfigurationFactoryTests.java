@@ -18,6 +18,7 @@ package org.springframework.boot.bind;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Properties;
 
 import javax.validation.Validation;
 import javax.validation.constraints.NotNull;
@@ -28,6 +29,7 @@ import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.boot.context.config.RandomValuePropertySource;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.core.io.ByteArrayResource;
@@ -56,6 +58,7 @@ public class PropertiesConfigurationFactoryTests {
 
 	@Test
 	public void testValidPropertiesLoadsWithDash() throws Exception {
+		this.ignoreUnknownFields = false;
 		Foo foo = createFoo("na-me: blah\nbar: blah");
 		assertThat(foo.bar).isEqualTo("blah");
 		assertThat(foo.name).isEqualTo("blah");
@@ -103,6 +106,35 @@ public class PropertiesConfigurationFactoryTests {
 		this.factory.afterPropertiesSet();
 		Foo foo = this.factory.getObject();
 		assertThat(foo.name).isEqualTo("bar");
+	}
+
+	@Test
+	public void systemEnvironmentBindingWithDefaults() throws Exception {
+		setupFactory();
+		MutablePropertySources propertySources = new MutablePropertySources();
+		MockPropertySource propertySource = new MockPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+		propertySource.setProperty("name", "${foo.name:bar}");
+		propertySources.addFirst(propertySource);
+		this.factory.setPropertySources(propertySources);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertThat(foo.name).isEqualTo("bar");
+	}
+
+	@Test
+	public void systemEnvironmentNoResolvePlaceholders() throws Exception {
+		setupFactory();
+		MutablePropertySources propertySources = new MutablePropertySources();
+		MockPropertySource propertySource = new MockPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+		propertySource.setProperty("name", "${foo.name:bar}");
+		propertySources.addFirst(propertySource);
+		this.factory.setPropertySources(propertySources);
+		this.factory.setResolvePlaceholders(false);
+		this.factory.afterPropertiesSet();
+		Foo foo = this.factory.getObject();
+		assertThat(foo.name).isEqualTo("${foo.name:bar}");
 	}
 
 	@Test
@@ -181,10 +213,12 @@ public class PropertiesConfigurationFactoryTests {
 		return bindFoo(values);
 	}
 
-	@Deprecated
 	private Foo bindFoo(final String values) throws Exception {
-		this.factory.setProperties(PropertiesLoaderUtils
-				.loadProperties(new ByteArrayResource(values.getBytes())));
+		Properties properties = PropertiesLoaderUtils
+				.loadProperties(new ByteArrayResource(values.getBytes()));
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addFirst(new PropertiesPropertySource("test", properties));
+		this.factory.setPropertySources(propertySources);
 		this.factory.afterPropertiesSet();
 		return this.factory.getObject();
 	}

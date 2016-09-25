@@ -56,8 +56,6 @@ public class CacheProperties {
 
 	private final JCache jcache = new JCache();
 
-	private final Guava guava = new Guava();
-
 	public CacheType getType() {
 		return this.type;
 	}
@@ -96,10 +94,6 @@ public class CacheProperties {
 
 	public JCache getJcache() {
 		return this.jcache;
-	}
-
-	public Guava getGuava() {
-		return this.guava;
 	}
 
 	/**
@@ -251,27 +245,6 @@ public class CacheProperties {
 
 		public void setConfig(Resource config) {
 			this.config = config;
-		}
-
-	}
-
-	/**
-	 * Guava specific cache properties.
-	 */
-	public static class Guava {
-
-		/**
-		 * The spec to use to create caches. Check CacheBuilderSpec for more details on
-		 * the spec format.
-		 */
-		private String spec;
-
-		public String getSpec() {
-			return this.spec;
-		}
-
-		public void setSpec(String spec) {
-			this.spec = spec;
 		}
 
 	}

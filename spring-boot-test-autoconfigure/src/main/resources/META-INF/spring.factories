@@ -75,9 +75,12 @@ org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExe
 org.springframework.test.context.ContextCustomizerFactory=\
 org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizerFactory,\
-org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizerFactory
+org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizerFactory,\
+org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizerFactory
 
 # Test Execution Listeners
 org.springframework.test.context.TestExecutionListener=\
 org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener,\
-org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener
+org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener,\
+org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener,\
+org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener

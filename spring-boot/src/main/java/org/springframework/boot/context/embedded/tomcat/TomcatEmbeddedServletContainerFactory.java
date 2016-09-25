@@ -254,7 +254,7 @@ public class TomcatEmbeddedServletContainerFactory
 		// Otherwise the default location of a Spring DispatcherServlet cannot be set
 		defaultServlet.setOverridable(true);
 		context.addChild(defaultServlet);
-		context.addServletMapping("/", "default");
+		addServletMapping(context, "/", "default");
 	}
 
 	private void addJspServlet(Context context) {
@@ -268,8 +268,13 @@ public class TomcatEmbeddedServletContainerFactory
 		}
 		jspServlet.setLoadOnStartup(3);
 		context.addChild(jspServlet);
-		context.addServletMapping("*.jsp", "jsp");
-		context.addServletMapping("*.jspx", "jsp");
+		addServletMapping(context, "*.jsp", "jsp");
+		addServletMapping(context, "*.jspx", "jsp");
+	}
+
+	@SuppressWarnings("deprecation")
+	private void addServletMapping(Context context, String pattern, String name) {
+		context.addServletMapping(pattern, name);
 	}
 
 	private void addJasperInitializer(TomcatEmbeddedContext context) {
@@ -599,17 +604,6 @@ public class TomcatEmbeddedServletContainerFactory
 	public void setContextValves(Collection<? extends Valve> contextValves) {
 		Assert.notNull(contextValves, "Valves must not be null");
 		this.contextValves = new ArrayList<Valve>(contextValves);
-	}
-
-	/**
-	 * Returns a mutable collection of the {@link Valve}s that will be applied to the
-	 * Tomcat {@link Context}.
-	 * @return the contextValves the valves that will be applied
-	 * @deprecated as of 1.4 in favor of {@link #getContextValves()}
-	 */
-	@Deprecated
-	public Collection<Valve> getValves() {
-		return getContextValves();
 	}
 
 	/**

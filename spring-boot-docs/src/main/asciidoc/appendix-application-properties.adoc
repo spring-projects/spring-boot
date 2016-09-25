@@ -71,7 +71,6 @@ content into your application; rather pick only the properties that you need.
 	spring.cache.caffeine.spec= # The spec to use to create caches. Check CaffeineSpec for more details on the spec format.
 	spring.cache.couchbase.expiration=0 # Entry expiration in milliseconds. By default the entries never expire.
 	spring.cache.ehcache.config= # The location of the configuration file to use to initialize EhCache.
-	spring.cache.guava.spec= # The spec to use to create caches. Check CacheBuilderSpec for more details on the spec format.
 	spring.cache.hazelcast.config= # The location of the configuration file to use to initialize Hazelcast.
 	spring.cache.infinispan.config= # The location of the configuration file to use to initialize Infinispan.
 	spring.cache.jcache.config= # The location of the configuration file to use to initialize the cache manager.
@@ -296,7 +295,6 @@ content into your application; rather pick only the properties that you need.
 	spring.jackson.parser.*= # Jackson on/off features for parsers.
 	spring.jackson.property-naming-strategy= # One of the constants on Jackson's PropertyNamingStrategy. Can also be a fully-qualified class name of a PropertyNamingStrategy subclass.
 	spring.jackson.serialization.*= # Jackson on/off features that affect the way Java objects are serialized.
-	spring.jackson.serialization-inclusion= # Controls the inclusion of properties during serialization. Configured with one of the values in Jackson's JsonInclude.Include enumeration.
 	spring.jackson.time-zone= # Time zone used when formatting dates. For instance `America/Los_Angeles`
 
 	# JERSEY ({sc-spring-boot-autoconfigure}/jersey/JerseyProperties.{sc-ext}[JerseyProperties])
@@ -406,28 +404,6 @@ content into your application; rather pick only the properties that you need.
 	spring.thymeleaf.suffix=.html # Suffix that gets appended to view names when building a URL.
 	spring.thymeleaf.template-resolver-order= # Order of the template resolver in the chain.
 	spring.thymeleaf.view-names= # Comma-separated list of view names that can be resolved.
-
-	# VELOCITY TEMPLATES ({sc-spring-boot-autoconfigure}/velocity/VelocityAutoConfiguration.{sc-ext}[VelocityAutoConfiguration])
-	spring.velocity.allow-request-override=false # Set whether HttpServletRequest attributes are allowed to override (hide) controller generated model attributes of the same name.
-	spring.velocity.allow-session-override=false # Set whether HttpSession attributes are allowed to override (hide) controller generated model attributes of the same name.
-	spring.velocity.cache= # Enable template caching.
-	spring.velocity.charset=UTF-8 # Template encoding.
-	spring.velocity.check-template-location=true # Check that the templates location exists.
-	spring.velocity.content-type=text/html # Content-Type value.
-	spring.velocity.date-tool-attribute= # Name of the DateTool helper object to expose in the Velocity context of the view.
-	spring.velocity.enabled=true # Enable MVC view resolution for this technology.
-	spring.velocity.expose-request-attributes=false # Set whether all request attributes should be added to the model prior to merging with the template.
-	spring.velocity.expose-session-attributes=false # Set whether all HttpSession attributes should be added to the model prior to merging with the template.
-	spring.velocity.expose-spring-macro-helpers=true # Set whether to expose a RequestContext for use by Spring's macro library, under the name "springMacroRequestContext".
-	spring.velocity.number-tool-attribute= # Name of the NumberTool helper object to expose in the Velocity context of the view.
-	spring.velocity.prefer-file-system-access=true # Prefer file system access for template loading. File system access enables hot detection of template changes.
-	spring.velocity.prefix= # Prefix that gets prepended to view names when building a URL.
-	spring.velocity.properties.*= # Additional velocity properties.
-	spring.velocity.request-context-attribute= # Name of the RequestContext attribute for all views.
-	spring.velocity.resource-loader-path=classpath:/templates/ # Template path.
-	spring.velocity.suffix=.vm # Suffix that gets appended to view names when building a URL.
-	spring.velocity.toolbox-config-location= # Velocity Toolbox config location. For instance `/WEB-INF/toolbox.xml`
-	spring.velocity.view-names= # White list of view names that can be resolved.
 
 	# SPRING WEB SERVICES ({sc-spring-boot-autoconfigure}/webservices/WebServicesProperties.{sc-ext}[WebServicesProperties])
 	spring.webservices.path=/services # Path that serves as the base URI for the services.

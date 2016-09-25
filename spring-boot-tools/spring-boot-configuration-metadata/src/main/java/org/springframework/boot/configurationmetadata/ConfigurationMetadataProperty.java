@@ -17,7 +17,6 @@
 package org.springframework.boot.configurationmetadata;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * Define a configuration property. Each property is fully identified by its
@@ -139,30 +138,6 @@ public class ConfigurationMetadataProperty implements Serializable {
 	 */
 	public Hints getHints() {
 		return this.hints;
-	}
-
-	/**
-	 * The list of well-defined values, if any. If no extra {@link ValueProvider provider}
-	 * is specified, these values are to be considered a closed-set of the available
-	 * values for this item.
-	 * @return the value hints
-	 * @see #getHints()
-	 */
-	@Deprecated
-	public List<ValueHint> getValueHints() {
-		return this.hints.getValueHints();
-	}
-
-	/**
-	 * The value providers that are applicable to this item. Only one
-	 * {@link ValueProvider} is enabled for an item: the first in the list that is
-	 * supported should be used.
-	 * @return the value providers
-	 * @see #getHints()
-	 */
-	@Deprecated
-	public List<ValueProvider> getValueProviders() {
-		return this.hints.getValueProviders();
 	}
 
 	/**

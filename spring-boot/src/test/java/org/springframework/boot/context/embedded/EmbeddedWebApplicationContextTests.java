@@ -31,8 +31,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.struts.mock.MockHttpServletRequest;
-import org.apache.struts.mock.MockHttpServletResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -63,6 +61,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockFilterConfig;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.SessionScope;
@@ -471,14 +471,11 @@ public class EmbeddedWebApplicationContextTests {
 		ConfigurableListableBeanFactory factory = this.context.getBeanFactory();
 		factory.registerScope(WebApplicationContext.SCOPE_REQUEST, scope);
 		factory.registerScope(WebApplicationContext.SCOPE_SESSION, scope);
-		factory.registerScope(WebApplicationContext.SCOPE_GLOBAL_SESSION, scope);
 		addEmbeddedServletContainerFactoryBean();
 		this.context.refresh();
 		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_REQUEST))
 				.isSameAs(scope);
 		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_SESSION))
-				.isSameAs(scope);
-		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_GLOBAL_SESSION))
 				.isSameAs(scope);
 	}
 

@@ -67,7 +67,7 @@ public class DataSourceBuilder {
 
 	public DataSource build() {
 		Class<? extends DataSource> type = getType();
-		DataSource result = BeanUtils.instantiate(type);
+		DataSource result = BeanUtils.instantiateClass(type);
 		maybeGetDriverClassName();
 		bind(result);
 		return result;

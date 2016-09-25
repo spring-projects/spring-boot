@@ -1070,9 +1070,13 @@ as `@Valid` to trigger its validation. For example, building upon the above
 ----
 
 You can also add a custom Spring `Validator` by creating a bean definition called
-`configurationPropertiesValidator`. There is a
-{github-code}/spring-boot-samples/spring-boot-sample-property-validation[Validation sample]
-so you can see how to set things up.
+`configurationPropertiesValidator`. The `@Bean` method should be declared `static`. The
+configuration properties validator is created very early in the application's lifecycle
+and declaring the `@Bean` method as static allows the bean to be created without having to
+instantiate the `@Configuration` class. This avoids any problems that may be caused by
+early instantiation. There is a
+{github-code}/spring-boot-samples/spring-boot-sample-property-validation[property
+validation sample] so you can see how to set things up.
 
 TIP: The `spring-boot-actuator` module includes an endpoint that exposes all
 `@ConfigurationProperties` beans. Simply point your web browser to `/configprops`
@@ -1770,7 +1774,7 @@ solution for all static resources, effectively adding a content hash in URLs, su
 ----
 
 NOTE: Links to resources are rewritten at runtime in template, thanks to a
-`ResourceUrlEncodingFilter`, auto-configured for Thymeleaf, Velocity and FreeMarker. You
+`ResourceUrlEncodingFilter`, auto-configured for Thymeleaf and FreeMarker. You
 should manually declare this filter when using JSPs. Other template engines aren't
 automatically supported right now, but can be with custom template macros/helpers and the
 use of the
@@ -1817,7 +1821,7 @@ will automatically configure Spring MVC to use it.
 [[boot-features-spring-mvc-template-engines]]
 ==== Template engines
 As well as REST web services, you can also use Spring MVC to serve dynamic HTML content.
-Spring MVC supports a variety of templating technologies including Velocity, FreeMarker
+Spring MVC supports a variety of templating technologies including FreeMarker
 and JSPs. Many other templating engines also ship their own Spring MVC integrations.
 
 Spring Boot includes auto-configuration support for the following templating engines:
@@ -1825,7 +1829,6 @@ Spring Boot includes auto-configuration support for the following templating eng
  * http://freemarker.org/docs/[FreeMarker]
  * http://docs.groovy-lang.org/docs/next/html/documentation/template-engines.html#_the_markuptemplateengine[Groovy]
  * http://www.thymeleaf.org[Thymeleaf]
- * http://velocity.apache.org[Velocity] (deprecated in 1.4)
  * http://mustache.github.io/[Mustache]
 
 TIP: JSPs should be avoided if possible, there are several
@@ -2377,7 +2380,9 @@ explicitly configure the paths that you do want to override.
 [[boot-features-security-oauth2]]
 === OAuth2
 If you have `spring-security-oauth2` on your classpath you can take advantage of some
-auto-configuration to make it easy to set up Authorization or Resource Server.
+auto-configuration to make it easy to set up Authorization or Resource Server. For full
+details, see the {spring-security-oauth2-reference}[Spring Security OAuth 2 Developers
+Guide].
 
 
 
@@ -3786,14 +3791,13 @@ providers (in this order):
 
 * <<boot-features-caching-provider-generic,Generic>>
 * <<boot-features-caching-provider-jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast,
-  Infinspan, etc)
+  Infinispan, etc)
 * <<boot-features-caching-provider-ehcache2,EhCache 2.x>>
 * <<boot-features-caching-provider-hazelcast,Hazelcast>>
 * <<boot-features-caching-provider-infinispan,Infinispan>>
 * <<boot-features-caching-provider-couchbase,Couchbase>>
 * <<boot-features-caching-provider-redis,Redis>>
 * <<boot-features-caching-provider-caffeine,Caffeine>>
-* <<boot-features-caching-provider-guava,Guava>>
 * <<boot-features-caching-provider-simple,Simple>>
 
 TIP: It is also possible to _force_ the cache provider to use via the `spring.cache.type`
@@ -3986,10 +3990,10 @@ recommend to keep this setting enabled if you create your own `RedisCacheManager
 
 [[boot-features-caching-provider-caffeine]]
 ==== Caffeine
-Caffeine is a Java 8 rewrite of Guava’s cache and will supersede the Guava support in
-Spring Boot 2.0. If Caffeine is present, a `CaffeineCacheManager` is auto-configured.
-Caches can be created on startup using the `spring.cache.cache-names` property and
-customized by one of the following (in this order):
+Caffeine is a Java 8 rewrite of Guava’s cache that supersede the Guava support. If
+Caffeine is present, a `CaffeineCacheManager` is auto-configured. Caches can be created
+on startup using the `spring.cache.cache-names` property and customized by one of the
+following (in this order):
 
 1. A cache spec defined by `spring.cache.caffeine.spec`
 2. A `com.github.benmanes.caffeine.cache.CaffeineSpec` bean is defined
@@ -4008,33 +4012,6 @@ Besides, if a `com.github.benmanes.caffeine.cache.CacheLoader` bean is defined, 
 automatically associated to the `CaffeineCacheManager`. Since the `CacheLoader` is
 going to be associated to _all_ caches managed by the cache manager, it must be defined
 as `CacheLoader<Object, Object>`. Any other generic type will be ignored by the
-auto-configuration.
-
-
-
-[[boot-features-caching-provider-guava]]
-==== Guava
-If Guava is present, a `GuavaCacheManager` is auto-configured. Caches can be created
-on startup using the `spring.cache.cache-names` property and customized by one of the
-following (in this order):
-
-1. A cache spec defined by `spring.cache.guava.spec`
-2. A `com.google.common.cache.CacheBuilderSpec` bean is defined
-3. A `com.google.common.cache.CacheBuilder` bean is defined
-
-For instance, the following configuration creates a `foo` and `bar` caches with a maximum
-size of 500 and a _time to live_ of 10 minutes
-
-[source,properties,indent=0]
-----
-    spring.cache.cache-names=foo,bar
-	spring.cache.guava.spec=maximumSize=500,expireAfterAccess=600s
-----
-
-Besides, if a `com.google.common.cache.CacheLoader` bean is defined, it is automatically
-associated to the `GuavaCacheManager`. Since the `CacheLoader` is going to be associated
-to _all_ caches managed by the cache manager, it must be defined as
-`CacheLoader<Object, Object>`. Any other generic type will be ignored by the
 auto-configuration.
 
 
