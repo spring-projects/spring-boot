@@ -275,6 +275,7 @@ content into your application; rather pick only the properties that you need.
 	spring.http.encoding.force= # Force the encoding to the configured charset on HTTP requests and responses.
 	spring.http.encoding.force-request= # Force the encoding to the configured charset on HTTP requests. Defaults to true when "force" has not been specified.
 	spring.http.encoding.force-response= # Force the encoding to the configured charset on HTTP responses.
+	spring.http.encoding.mapping= # Locale to Encoding mapping.
 
 	# MULTIPART ({sc-spring-boot-autoconfigure}/web/MultipartProperties.{sc-ext}[MultipartProperties])
 	spring.http.multipart.enabled=true # Enable support of multi-part uploads.
