@@ -68,7 +68,7 @@ class CaffeineCacheConfiguration {
 	}
 
 	@Bean
-	public CaffeineCacheManager caffeineCacheManager() {
+	public CaffeineCacheManager cacheManager() {
 		CaffeineCacheManager cacheManager = createCacheManager();
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		if (!CollectionUtils.isEmpty(cacheNames)) {
