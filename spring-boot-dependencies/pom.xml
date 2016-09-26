@@ -176,7 +176,7 @@
 		<thymeleaf-extras-data-attribute.version>1.3</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>2.1.0.RELEASE</thymeleaf-extras-java8time.version>
 		<tomcat.version>8.5.5</tomcat.version>
-		<undertow.version>1.3.25.Final</undertow.version>
+		<undertow.version>1.4.3.Final</undertow.version>
 		<webjars-hal-browser.version>9f96c74</webjars-hal-browser.version>
 		<webjars-locator.version>0.32</webjars-locator.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
