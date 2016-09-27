@@ -3927,8 +3927,9 @@ Caches can be created on startup via the `spring.cache.cache-names` property. If
 
 [[boot-features-caching-provider-couchbase]]
 ==== Couchbase
-If Couchbase is available and <<boot-features-couchbase,configured>>, a
-`CouchbaseCacheManager` is auto-configured. It is also possible to create additional
+If the Couchbase java client and the `couchbase-spring-cache` implementation are
+available and Couchbase is <<boot-features-couchbase,configured>>, a
+`CouchbaseCacheManager` will be auto-configured. It is also possible to create additional
 caches on startup using the `spring.cache.cache-names` property. These will operate on
 the `Bucket` that was auto-configured. You can _also_ create additional caches on another
 `Bucket` using the customizer: assume you need two caches on the "main" `Bucket` (`foo`
