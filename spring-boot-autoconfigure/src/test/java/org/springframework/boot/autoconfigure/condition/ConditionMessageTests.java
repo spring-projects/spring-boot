@@ -45,13 +45,13 @@ public class ConditionMessageTests {
 	}
 
 	@Test
-	public void toStringWhenHasMessageShouldReturnMessage() throws Exception {
+	public void toStringWhenEmptyShouldReturnEmptyString() throws Exception {
 		ConditionMessage message = ConditionMessage.empty();
 		assertThat(message.toString()).isEqualTo("");
 	}
 
 	@Test
-	public void toStringWhenEmptyShouldReturnEmptyString() throws Exception {
+	public void toStringWhenHasMessageShouldReturnMessage() throws Exception {
 		ConditionMessage message = ConditionMessage.of("Test");
 		assertThat(message.toString()).isEqualTo("Test");
 	}
