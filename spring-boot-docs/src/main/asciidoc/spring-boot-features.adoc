@@ -3925,8 +3925,9 @@ Caches can be created on startup via the `spring.cache.cache-names` property. If
 
 [[boot-features-caching-provider-couchbase]]
 ==== Couchbase
-If Couchbase is available and <<boot-features-couchbase,configured>>, a
-`CouchbaseCacheManager` is auto-configured. It is also possible to create additional
+If the Couchbase java client and the `couchbase-spring-cache` implementation are
+available and Couchbase is <<boot-features-couchbase,configured>>, a
+`CouchbaseCacheManager` will be auto-configured. It is also possible to create additional
 caches on startup using the `spring.cache.cache-names` property. These will operate on
 the `Bucket` that was auto-configured. You can _also_ create additional caches on another
 `Bucket` using the customizer: assume you need two caches on the "main" `Bucket` (`foo`
@@ -5050,7 +5051,7 @@ configure elements of the auto-configuration you can use the `@AutoConfigureJson
 annotation.
 
 Spring Boot includes AssertJ based helpers that work with the JSONassert and JsonPath
-libraries to check that JSON is as expected. The `JacksonHelper`, `GsonHelper` and
+libraries to check that JSON is as expected. The `JacksonTester`, `GsonTester` and
 `BasicJsonTester` classes can be used for Jackson, Gson and Strings respectively. Any
 helper fields on the test class can be `@Autowired` when using `@JsonTest`.
 
