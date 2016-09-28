@@ -224,16 +224,16 @@ public class DataSourceAutoConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("EmbeddedDataAvailable");
+					.forCondition("DataSourceAvailable");
 			if (hasBean(context, DataSource.class)
 					|| hasBean(context, XADataSource.class)) {
 				return ConditionOutcome
-						.match(message.foundExactly("existing database bean"));
+						.match(message.foundExactly("existing data source bean"));
 			}
 			if (anyMatches(context, metadata, this.pooledCondition,
 					this.embeddedCondition)) {
 				return ConditionOutcome
-						.match(message.foundExactly("existing auto-configured database"));
+						.match(message.foundExactly("existing auto-configured data source bean"));
 			}
 			return ConditionOutcome
 					.noMatch(message.didNotFind("any existing data source bean").atAll());

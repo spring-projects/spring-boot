@@ -36,7 +36,7 @@ import org.springframework.util.ClassUtils;
  */
 class OnEnabledResourceChainCondition extends SpringBootCondition {
 
-	private static final String WEBJAR_ASSERT_LOCATOR = "org.webjars.WebJarAssetLocator";
+	private static final String WEBJAR_ASSET_LOCATOR = "org.webjars.WebJarAssetLocator";
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
@@ -50,13 +50,13 @@ class OnEnabledResourceChainCondition extends SpringBootCondition {
 		ConditionMessage.Builder message = ConditionMessage
 				.forCondition(ConditionalOnEnabledResourceChain.class);
 		if (match == null) {
-			if (ClassUtils.isPresent(WEBJAR_ASSERT_LOCATOR,
+			if (ClassUtils.isPresent(WEBJAR_ASSET_LOCATOR,
 					getClass().getClassLoader())) {
 				return ConditionOutcome
-						.match(message.found("class").items(WEBJAR_ASSERT_LOCATOR));
+						.match(message.found("class").items(WEBJAR_ASSET_LOCATOR));
 			}
 			return ConditionOutcome
-					.noMatch(message.didNotFind("class").items(WEBJAR_ASSERT_LOCATOR));
+					.noMatch(message.didNotFind("class").items(WEBJAR_ASSET_LOCATOR));
 		}
 		if (match) {
 			return ConditionOutcome.match(message.because("enabled"));

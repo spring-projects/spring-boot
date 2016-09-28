@@ -21,9 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -46,9 +44,6 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  */
 public class QualifierDefinitionTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
 	private ConfigurableListableBeanFactory beanFactory;
