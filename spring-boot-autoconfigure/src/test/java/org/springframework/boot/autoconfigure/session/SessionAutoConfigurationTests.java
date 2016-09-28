@@ -37,6 +37,7 @@ import org.springframework.session.ExpiringSession;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
+import org.springframework.session.hazelcast.HazelcastSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -107,7 +108,7 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	public void hazelcastSessionStore() {
 		load(Collections.<Class<?>>singletonList(HazelcastConfiguration.class),
 				"spring.session.store-type=hazelcast");
-		validateSessionRepository(MapSessionRepository.class);
+		validateSessionRepository(HazelcastSessionRepository.class);
 	}
 
 	@Test
@@ -115,7 +116,7 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		load(Collections.<Class<?>>singletonList(HazelcastSpecificMap.class),
 				"spring.session.store-type=hazelcast",
 				"spring.session.hazelcast.map-name=foo:bar:biz");
-		validateSessionRepository(MapSessionRepository.class);
+		validateSessionRepository(HazelcastSessionRepository.class);
 		HazelcastInstance hazelcastInstance = this.context
 				.getBean(HazelcastInstance.class);
 		verify(hazelcastInstance, times(1)).getMap("foo:bar:biz");
