@@ -110,6 +110,7 @@
 		<jetty.version>9.3.11.v20160721</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jetty-el.version>8.0.33</jetty-el.version>
+		<jms-api.version>1.1-rev-1</jms-api.version>
 		<jmustache.version>1.12</jmustache.version>
 		<jna.version>4.2.2</jna.version>
 		<joda-time.version>2.9.4</joda-time.version>
@@ -991,7 +992,7 @@
 			<dependency>
 				<groupId>javax.jms</groupId>
 				<artifactId>jms-api</artifactId>
-				<version>1.1-rev-1</version>
+				<version>${jms-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.mail</groupId>
