@@ -102,6 +102,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>javax.jms</groupId>
+			<artifactId>javax.jms-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<optional>true</optional>
@@ -115,6 +120,12 @@
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-broker</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>geronimo-jms_1.1_spec</artifactId>
+					<groupId>org.apache.geronimo.specs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>

@@ -98,6 +98,7 @@
 		<janino.version>2.7.8</janino.version>
 		<javassist.version>3.20.0-GA</javassist.version> <!-- Same as Hibernate -->
 		<javax-cache.version>1.0.0</javax-cache.version>
+		<javax-jms.version>2.0.1</javax-jms.version>
 		<javax-mail.version>1.5.6</javax-mail.version>
 		<javax-transaction.version>1.2</javax-transaction.version>
 		<jaxen.version>1.1.6</jaxen.version>
@@ -111,7 +112,6 @@
 		<jetty.version>9.3.11.v20160721</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jetty-el.version>8.0.33</jetty-el.version>
-		<jms-api.version>1.1-rev-1</jms-api.version>
 		<jmustache.version>1.12</jmustache.version>
 		<jna.version>4.2.2</jna.version>
 		<joda-time.version>2.9.4</joda-time.version>
@@ -956,8 +956,8 @@
 			</dependency>
 			<dependency>
 				<groupId>javax.jms</groupId>
-				<artifactId>jms-api</artifactId>
-				<version>${jms-api.version}</version>
+				<artifactId>javax.jms-api</artifactId>
+				<version>${javax-jms.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.mail</groupId>

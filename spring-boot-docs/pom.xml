@@ -206,7 +206,7 @@
 		</dependency>
 		<dependency>
 			<groupId>javax.jms</groupId>
-			<artifactId>jms-api</artifactId>
+			<artifactId>javax.jms-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -243,21 +243,45 @@
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-client</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>geronimo-jms_1.1_spec</artifactId>
+					<groupId>org.apache.geronimo.specs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>artemis-jms-client</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>geronimo-jms_2.0_spec</artifactId>
+					<groupId>org.apache.geronimo.specs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-jms-pool</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>geronimo-jms_1.1_spec</artifactId>
+					<groupId>org.apache.geronimo.specs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>artemis-jms-server</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>geronimo-jms_2.0_spec</artifactId>
+					<groupId>org.apache.geronimo.specs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>

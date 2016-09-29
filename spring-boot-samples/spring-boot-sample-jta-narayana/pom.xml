@@ -33,6 +33,12 @@
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>artemis-jms-server</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>geronimo-jms_2.0_spec</artifactId>
+					<groupId>org.apache.geronimo.specs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
