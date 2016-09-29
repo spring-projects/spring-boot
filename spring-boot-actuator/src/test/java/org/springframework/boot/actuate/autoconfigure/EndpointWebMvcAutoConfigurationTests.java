@@ -191,6 +191,32 @@ public class EndpointWebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	public void onDifferentPortManagementSslDisabled() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.applicationContext,
+				"management.ssl.enabled:false");
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
+				DifferentPortConfig.class, BaseConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		this.applicationContext.refresh();
+		assertContent("/controller", ports.get().server, "controlleroutput");
+		assertContent("/endpoint", ports.get().server, null);
+		assertContent("/controller", ports.get().management, null);
+		assertContent("/endpoint", ports.get().management, "endpointoutput");
+		assertContent("/error", ports.get().management, startsWith("{"));
+		ApplicationContext managementContext = this.applicationContext
+				.getBean(ManagementContextResolver.class).getApplicationContext();
+		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(
+				managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
+		assertThat(interceptors).hasSize(1);
+		ManagementServerProperties managementServerProperties = this.applicationContext
+				.getBean(ManagementServerProperties.class);
+		assertThat(managementServerProperties.getSsl()).isNotNull();
+		assertThat(managementServerProperties.getSsl().isEnabled()).isFalse();
+		this.applicationContext.close();
+		assertAllClosed();
+	}
+
+	@Test
 	public void onDifferentPortWithSpecificContainer() throws Exception {
 		this.applicationContext.register(SpecificContainerConfig.class, RootConfig.class,
 				DifferentPortConfig.class, EndpointConfig.class, BaseConfiguration.class,
