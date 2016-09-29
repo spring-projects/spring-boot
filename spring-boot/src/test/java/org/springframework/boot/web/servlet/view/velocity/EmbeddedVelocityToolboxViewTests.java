@@ -22,14 +22,14 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.struts.mock.MockHttpServletRequest;
-import org.apache.struts.mock.MockHttpServletResponse;
-import org.apache.struts.mock.MockServletContext;
 import org.apache.velocity.tools.ToolContext;
 import org.junit.Test;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
 
