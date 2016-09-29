@@ -831,20 +831,6 @@ content into your application; rather pick only the properties that you need.
 	spring.batch.schema=classpath:org/springframework/batch/core/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.batch.table-prefix= # Table prefix for all the batch meta-data tables.
 
-	# HORNETQ ({sc-spring-boot-autoconfigure}/jms/hornetq/HornetQProperties.{sc-ext}[HornetQProperties])
-	spring.hornetq.embedded.cluster-password= # Cluster password. Randomly generated on startup by default.
-	spring.hornetq.embedded.data-directory= # Journal file directory. Not necessary if persistence is turned off.
-	spring.hornetq.embedded.enabled=true # Enable embedded mode if the HornetQ server APIs are available.
-	spring.hornetq.embedded.persistent=false # Enable persistent store.
-	spring.hornetq.embedded.queues= # Comma-separated list of queues to create on startup.
-	spring.hornetq.embedded.server-id= # Server id. By default, an auto-incremented counter is used.
-	spring.hornetq.embedded.topics= # Comma-separated list of topics to create on startup.
-	spring.hornetq.host=localhost # HornetQ broker host.
-	spring.hornetq.mode= # HornetQ deployment mode, auto-detected by default.
-	spring.hornetq.password= # Login password of the broker.
-	spring.hornetq.port=5445 # HornetQ broker port.
-	spring.hornetq.user= # Login user of the broker.
-
 	# JMS ({sc-spring-boot-autoconfigure}/jms/JmsProperties.{sc-ext}[JmsProperties])
 	spring.jms.jndi-name= # Connection factory JNDI name. When set, takes precedence to others connection factory auto-configurations.
 	spring.jms.listener.acknowledge-mode= # Acknowledge mode of the container. By default, the listener is transacted with automatic acknowledgment.

@@ -83,9 +83,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-hibernate4[spring-boot-sample-hibernate52]
 | Demonstrates how to use Hibernate 5.2
 
-| link:spring-boot-sample-hornetq[spring-boot-sample-hornetq]
-| Message-oriented application using HornetQ
-
 | link:spring-boot-sample-hypermedia[spring-boot-sample-hypermedia]
 | Demonstrates Actuator's hypermedia support, including HAL Browser
 

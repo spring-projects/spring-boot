@@ -1774,10 +1774,16 @@ solution for all static resources, effectively adding a content hash in URLs, su
 ----
 
 NOTE: Links to resources are rewritten at runtime in template, thanks to a
+<<<<<<< HEAD
 `ResourceUrlEncodingFilter`, auto-configured for Thymeleaf and FreeMarker. You
 should manually declare this filter when using JSPs. Other template engines aren't
 automatically supported right now, but can be with custom template macros/helpers and the
 use of the
+=======
+`ResourceUrlEncodingFilter`, auto-configured for Thymeleaf and FreeMarker. You should
+manually declare this filter when using JSPs. Other template engines aren't automatically
+supported right now, but can be with custom template macros/helpers and the use of the
+>>>>>>> 1.5.x
 {spring-javadoc}/web/servlet/resource/ResourceUrlProvider.{dc-ext}[`ResourceUrlProvider`].
 
 When loading resources dynamically with, for example, a JavaScript module loader, renaming
@@ -1821,7 +1827,11 @@ will automatically configure Spring MVC to use it.
 [[boot-features-spring-mvc-template-engines]]
 ==== Template engines
 As well as REST web services, you can also use Spring MVC to serve dynamic HTML content.
+<<<<<<< HEAD
 Spring MVC supports a variety of templating technologies including FreeMarker
+=======
+Spring MVC supports a variety of templating technologies including Thymeleaf, FreeMarker
+>>>>>>> 1.5.x
 and JSPs. Many other templating engines also ship their own Spring MVC integrations.
 
 Spring Boot includes auto-configuration support for the following templating engines:
@@ -4094,11 +4104,6 @@ resolved against their provided names.
 
 [[boot-features-artemis]]
 ==== Artemis support
-Apache Artemis was formed in 2015 when HornetQ was donated to the Apache Foundation. Make
-sure to use that rather than the deprecated HornetQ support.
-
-NOTE: You should not try and use Artemis and HornetQ at the same time.
-
 Spring Boot can auto-configure a `ConnectionFactory` when it detects that Artemis is
 available on the classpath. If the broker is present, an embedded broker is started and
 configured automatically (unless the mode property has been explicitly set). The supported
@@ -4139,55 +4144,6 @@ for more of the supported options.
 
 No JNDI lookup is involved at all and destinations are resolved against their names,
 either using the '`name`' attribute in the Artemis configuration or the names provided
-through configuration.
-
-
-
-[[boot-features-hornetq]]
-==== HornetQ support
-
-NOTE: HornetQ is deprecated in 1.4, consider migrating to <<boot-features-artemis,artemis>>
-
-Spring Boot can auto-configure a `ConnectionFactory` when it detects that HornetQ is
-available on the classpath. If the broker is present, an embedded broker is started and
-configured automatically (unless the mode property has been explicitly set). The supported
-modes are: `embedded` (to make explicit that an embedded broker is required and should
-lead to an error if the broker is not available in the classpath), and `native` to connect
-to a broker using the `netty` transport protocol. When the latter is configured, Spring
-Boot configures a `ConnectionFactory` connecting to a broker running on the local machine
-with the default settings.
-
-NOTE: If you are using `spring-boot-starter-hornetq` the necessary dependencies to
-connect to an existing HornetQ instance are provided, as well as the Spring infrastructure
-to integrate with JMS. Adding `org.hornetq:hornetq-jms-server` to your application allows
-you to use the embedded mode.
-
-HornetQ configuration is controlled by external configuration properties in
-`+spring.hornetq.*+`. For example, you might declare the following section in
-`application.properties`:
-
-[source,properties,indent=0]
-----
-	spring.hornetq.mode=native
-	spring.hornetq.host=192.168.1.210
-	spring.hornetq.port=9876
-	spring.hornetq.user=admin
-	spring.hornetq.password=secret
-----
-
-When embedding the broker, you can choose if you want to enable persistence, and the list
-of destinations that should be made available. These can be specified as a comma-separated
-list to create them with the default options; or you can define bean(s) of type
-`org.hornetq.jms.server.config.JMSQueueConfiguration` or
-`org.hornetq.jms.server.config.TopicConfiguration`, for advanced queue and topic
-configurations respectively.
-
-See
-{sc-spring-boot-autoconfigure}/jms/hornetq/HornetQProperties.{sc-ext}[`HornetQProperties`]
-for more of the supported options.
-
-No JNDI lookup is involved at all and destinations are resolved against their names,
-either using the '`name`' attribute in the HornetQ configuration or the names provided
 through configuration.
 
 
