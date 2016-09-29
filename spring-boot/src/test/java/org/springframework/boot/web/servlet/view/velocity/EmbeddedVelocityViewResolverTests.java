@@ -16,12 +16,12 @@
 
 package org.springframework.boot.web.servlet.view.velocity;
 
-import org.apache.struts.mock.MockServletContext;
 import org.junit.Test;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
