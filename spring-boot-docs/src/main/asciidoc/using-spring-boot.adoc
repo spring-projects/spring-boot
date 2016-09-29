@@ -826,6 +826,7 @@ plugin to fork the process as follows:
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<fork>true</fork>
+					<addResources>true</addResources>
 				</configuration>
 			</plugin>
 		</plugins>
