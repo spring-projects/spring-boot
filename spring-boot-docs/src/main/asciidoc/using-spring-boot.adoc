@@ -996,6 +996,12 @@ the `spring.devtools.livereload.enabled` property to `false`.
 NOTE: You can only run one LiveReload server at a time, if you start multiple applications
 from your IDE only the first will have livereload support.
 
+TIP: If you are running other LiveReload servers on your machine (for example using a `Guardfile`
+to work on reference documentation for your project), it can interfere with the LiveReload
+server running on your machine. For example, you may notice that saving your reference doc
+file causes the web page to reload. Shut down and only be running one LiveReload on your
+entire machine so that you know where LiveReload events in the browser are being routed.
+
 
 
 [[using-boot-devtools-globalsettings]]
