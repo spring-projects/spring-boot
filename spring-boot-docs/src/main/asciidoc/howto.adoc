@@ -1435,7 +1435,7 @@ for example:
 ----
 	<properties>
 		<thymeleaf.version>3.0.0.RELEASE</thymeleaf.version>
-		<thymeleaf-layout-dialect.version>2.0.0</thymeleaf-layout-dialect.version>
+		<thymeleaf-layout-dialect.version>2.0.3</thymeleaf-layout-dialect.version>
 	</dependency>
 ----
 
