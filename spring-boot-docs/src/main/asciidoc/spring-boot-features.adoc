@@ -5193,7 +5193,7 @@ Data JPA tests may also inject a
 bean which provides an alternative to the standard JPA `EntityManager` specifically
 designed for tests. If you want to use `TestEntityManager` outside of `@DataJpaTests` you
 can also use the `@AutoConfigureTestEntityManager` annotation. A `JdbcTemplate` is also
-available should you need that.
+available if you need that.
 
 [source,java,indent=0]
 ----
