@@ -141,7 +141,7 @@ public final class ConditionMessage {
 	/**
 	 * Factory method to create a new {@link ConditionMessage} with a specific message.
 	 * @param message the source message (may be a format string if {@code args} are
-	 * specified
+	 * specified)
 	 * @param args format arguments for the message
 	 * @return a new {@link ConditionMessage} instance
 	 */
@@ -155,7 +155,7 @@ public final class ConditionMessage {
 	/**
 	 * Factory method to create a new {@link ConditionMessage} comprised of the specified
 	 * messages.
-	 * @param messages the source messages (may be {@code null}
+	 * @param messages the source messages (may be {@code null})
 	 * @return a new {@link ConditionMessage} instance
 	 */
 	public static ConditionMessage of(Collection<? extends ConditionMessage> messages) {
@@ -283,7 +283,7 @@ public final class ConditionMessage {
 
 		/**
 		 * Indicates something is not available. For example {@code notAvailable("time")}
-		 * results in the message "time in not available".
+		 * results in the message "time is not available".
 		 * @param item the item that is not available
 		 * @return a built {@link ConditionMessage}
 		 */
@@ -374,9 +374,9 @@ public final class ConditionMessage {
 		}
 
 		/**
-		 * Indicate the items. For example
-		 * {@code didNotFind("bean", "beans").items(Collections.singleton("x")} results in
-		 * the message "did not find bean x".
+		 * Indicate the items with a {@link Style}. For example
+		 * {@code didNotFind("bean", "beans").items(Style.QUOTE, Collections.singleton("x")} results in
+		 * the message "did not find bean 'x'".
 		 * @param style the render style
 		 * @param items the source of the items (may be {@code null})
 		 * @return a built {@link ConditionMessage}
