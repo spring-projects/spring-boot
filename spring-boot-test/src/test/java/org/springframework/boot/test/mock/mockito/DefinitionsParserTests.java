@@ -169,6 +169,8 @@ public class DefinitionsParserTests {
 		QualifierDefinition qualifier = QualifierDefinition.forElement(
 				ReflectionUtils.findField(SpyBeanOnClassAndField.class, "caller"));
 		assertThat(fieldDefinition.getQualifier()).isNotNull().isEqualTo(qualifier);
+		assertThat(fieldDefinition.getTypeToSpy().resolve())
+				.isEqualTo(ExampleServiceCaller.class);
 	}
 
 	@Test
