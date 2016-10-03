@@ -204,7 +204,7 @@ If you are using a milestone or snapshot release you will also need to add appro
 [[build-tool-plugins-gradle-dependency-management]]
 === Gradle dependency management
 The `spring-boot` plugin automatically applies the
-{dependency-management-plugin}/[Dependency Management Plugin] and configures in to import
+{dependency-management-plugin}/[Dependency Management Plugin] and configures it to import
 the `spring-boot-starter-parent` bom. This provides a similar dependency management
 experience to the one that is enjoyed by Maven users. For example, it allows you to omit
 version numbers when declaring dependencies that are managed in the bom. To make use of
