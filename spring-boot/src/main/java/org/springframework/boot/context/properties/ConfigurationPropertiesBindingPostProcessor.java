@@ -196,6 +196,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 	}
 
 	@Override
+	@Deprecated
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 	}
