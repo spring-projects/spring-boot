@@ -3020,21 +3020,19 @@ and/or jar. Useful reading is in the http://spring.io/guides/gs/convert-jar-to-w
 Started Guide on Converting a jar to a war].
 
 Create a deployable war by extending `SpringBootServletInitializer` (e.g. in a class
-called `Application`), and add the Spring Boot `@EnableAutoConfiguration` annotation.
+called `Application`), and add the Spring Boot `@SpringBootApplication` annotation.
 Example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Configuration
-	@EnableAutoConfiguration
-	@ComponentScan
+	@SpringBootApplication
 	public class Application extends SpringBootServletInitializer {
 
 		@Override
 		protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 			// Customize the application or call application.sources(...) to add sources
-			// Since our example is itself a @Configuration class we actually don't
-			// need to override this method.
+			// Since our example is itself a @Configuration class (via @SpringBootApplication)
+			// we actually don't need to override this method.
 			return application;
 		}
 
@@ -3072,6 +3070,34 @@ Once the war is working we make it executable by adding a `main` method to our
 		SpringApplication.run(Application.class, args);
 	}
 ----
+
+[NOTE]
+====
+If you intend to start your application as a war or as an executable application, you
+need to share the customizations of the builder in a method that is both available to the
+`ServletInitializr` callback and the `main` method, something like:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@SpringBootApplication
+	public class Application extends SpringBootServletInitializer {
+
+		@Override
+		protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+			return configureApplication(builder);
+		}
+
+		public static void main(String[] args) {
+			configureApplication(new SpringApplicationBuilder()).run(args);
+		}
+
+		private static SpringApplicationBuilder configureApplication(SpringApplicationBuilder builder) {
+			return builder.sources(Application.class).bannerMode(Banner.Mode.OFF);
+		}
+
+	}
+----
+====
 
 Applications can fall into more than one category:
 
