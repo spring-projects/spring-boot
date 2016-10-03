@@ -553,12 +553,12 @@ content into your application; rather pick only the properties that you need.
 	spring.data.mongodb.database=test # Database name.
 	spring.data.mongodb.field-naming-strategy= # Fully qualified name of the FieldNamingStrategy to use.
 	spring.data.mongodb.grid-fs-database= # GridFS database name.
-	spring.data.mongodb.host=localhost # Mongo server host.
-	spring.data.mongodb.password= # Login password of the mongo server.
-	spring.data.mongodb.port=27017 # Mongo server port.
+	spring.data.mongodb.host=localhost # Mongo server host. Cannot be set with uri.
+	spring.data.mongodb.password= # Login password of the mongo server. Cannot be set with uri.
+	spring.data.mongodb.port=27017 # Mongo server port. Cannot be set with uri.
 	spring.data.mongodb.repositories.enabled=true # Enable Mongo repositories.
-	spring.data.mongodb.uri=mongodb://localhost/test # Mongo database URI. When set, host and port are ignored.
-	spring.data.mongodb.username= # Login user of the mongo server.
+	spring.data.mongodb.uri=mongodb://localhost/test # Mongo database URI. Cannot be set with host, port and credentials.
+	spring.data.mongodb.username= # Login user of the mongo server. Cannot be set with uri.
 
 	# DATA REDIS
 	spring.data.redis.repositories.enabled=true # Enable Redis repositories.
