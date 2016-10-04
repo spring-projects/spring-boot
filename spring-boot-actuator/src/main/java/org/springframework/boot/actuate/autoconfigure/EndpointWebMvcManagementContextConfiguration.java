@@ -183,14 +183,15 @@ public class EndpointWebMvcManagementContextConfiguration {
 				AnnotatedTypeMetadata metadata) {
 			Environment environment = context.getEnvironment();
 			String config = environment.resolvePlaceholders("${logging.file:}");
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("Log File");
+			ConditionMessage.Builder message = ConditionMessage.forCondition("Log File");
 			if (StringUtils.hasText(config)) {
-				return ConditionOutcome.match(message.found("logging.file").items(config));
+				return ConditionOutcome
+						.match(message.found("logging.file").items(config));
 			}
 			config = environment.resolvePlaceholders("${logging.path:}");
 			if (StringUtils.hasText(config)) {
-				return ConditionOutcome.match(message.found("logging.path").items(config));
+				return ConditionOutcome
+						.match(message.found("logging.path").items(config));
 			}
 			config = new RelaxedPropertyResolver(environment, "endpoints.logfile.")
 					.getProperty("external-file");

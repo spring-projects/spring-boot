@@ -107,8 +107,8 @@ public class IntegrationAutoConfigurationTests {
 	public void primaryExporterIsAllowed() {
 		load(CustomMBeanExporter.class);
 		assertThat(this.context.getBeansOfType(MBeanExporter.class)).hasSize(2);
-		assertThat(this.context.getBean(MBeanExporter.class)).isSameAs(
-				this.context.getBean("myMBeanExporter"));
+		assertThat(this.context.getBean(MBeanExporter.class))
+				.isSameAs(this.context.getBean("myMBeanExporter"));
 	}
 
 	private static void assertDomains(MBeanServer mBeanServer, boolean expected,

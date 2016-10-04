@@ -16,8 +16,7 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch.jest;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -34,8 +33,7 @@ public class JestProperties {
 	/**
 	 * Comma-separated list of the Elasticsearch instances to use.
 	 */
-	private List<String> uris = new ArrayList<String>(Collections.singletonList(
-			"http://localhost:9200"));
+	private List<String> uris = Arrays.asList("http://localhost:9200");
 
 	/**
 	 * Login user.

@@ -50,8 +50,7 @@ class OnEnabledResourceChainCondition extends SpringBootCondition {
 		ConditionMessage.Builder message = ConditionMessage
 				.forCondition(ConditionalOnEnabledResourceChain.class);
 		if (match == null) {
-			if (ClassUtils.isPresent(WEBJAR_ASSET_LOCATOR,
-					getClass().getClassLoader())) {
+			if (ClassUtils.isPresent(WEBJAR_ASSET_LOCATOR, getClass().getClassLoader())) {
 				return ConditionOutcome
 						.match(message.found("class").items(WEBJAR_ASSET_LOCATOR));
 			}
