@@ -147,12 +147,12 @@
 		<solr.version>5.5.3</solr.version>
 		<spock.version>1.0-groovy-2.4</spock.version>
 		<spring.version>5.0.0.BUILD-SNAPSHOT</spring.version>
-		<spring-amqp.version>1.6.2.RELEASE</spring-amqp.version>
+		<spring-amqp.version>1.6.3.RELEASE</spring-amqp.version>
 		<spring-cloud-connectors.version>1.2.3.RELEASE</spring-cloud-connectors.version>
 		<spring-batch.version>3.0.7.RELEASE</spring-batch.version>
 		<spring-data-releasetrain.version>Ingalls-M1</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.21.0.RELEASE</spring-hateoas.version>
-		<spring-integration.version>4.3.2.RELEASE</spring-integration.version>
+		<spring-integration.version>4.3.4.RELEASE</spring-integration.version>
 		<spring-integration-java-dsl.version>1.2.0.RC1</spring-integration-java-dsl.version>
 		<spring-loaded.version>1.2.6.RELEASE</spring-loaded.version>
 		<spring-mobile.version>1.1.5.RELEASE</spring-mobile.version>
