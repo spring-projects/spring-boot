@@ -3791,9 +3791,10 @@ enabled via the `@EnableCaching` annotation.
 NOTE: If you are using the cache infrastructure with beans that are not interface-based,
 make sure to enable the `proxyTargetClass` attribute of `@EnableCaching`.
 
-TIP: Use the `spring-boot-starter-cache` '`Starter`' to quickly add required caching
-dependencies. If you are adding dependencies manually you should note that certain
-implementations are only provided by the `spring-context-support` jar.
+TIP: Use the `spring-boot-starter-cache` '`Starter`' to quickly add basic caching
+dependencies. The starter brings `spring-context-support`: if you are adding dependencies
+manually, you must include it if you intend to use the JCache, EhCache 2.x or Guava
+support.
 
 If you haven't defined a bean of type `CacheManager` or a `CacheResolver` named
 `cacheResolver` (see `CachingConfigurer`), Spring Boot tries to detect the following
@@ -3850,9 +3851,10 @@ Generic caching is used if the context defines _at least_ one
 [[boot-features-caching-provider-jcache]]
 ==== JCache (JSR-107)
 JCache is bootstrapped via the presence of a `javax.cache.spi.CachingProvider` on the
-classpath (i.e. a JSR-107 compliant caching library). There are various compliant
+classpath (i.e. a JSR-107 compliant caching library) and the `JCacheCacheManager`
+provided by the `spring-boot-starter-cache` '`Starter`'. There are various compliant
 libraries out there and Spring Boot provides dependency management for Ehcache 3,
-Hazelcast and Infinispan). Any other compliant library can be added as well.
+Hazelcast and Infinispan. Any other compliant library can be added as well.
 
 It might happen that more than one provider is present, in which case the provider must
 be explicitly specified. Even if the JSR-107 standard does not enforce a standardized
@@ -3887,8 +3889,9 @@ abstraction expects. No further customization is applied on it.
 [[boot-features-caching-provider-ehcache2]]
 ==== EhCache 2.x
 EhCache 2.x is used if a file named `ehcache.xml` can be found at the root of the
-classpath. If EhCache 2.x and such file is present it is used to bootstrap the cache
-manager. An alternate configuration file can be provide a well using:
+classpath. If EhCache 2.x, the `EhCacheCacheManager` provided by the
+`spring-boot-starter-cache` '`Starter`' and such file is present it is used to bootstrap
+the cache manager. An alternate configuration file can be provide a well using:
 
 [source,properties,indent=0]
 ----
@@ -4002,7 +4005,8 @@ recommend to keep this setting enabled if you create your own `RedisCacheManager
 [[boot-features-caching-provider-caffeine]]
 ==== Caffeine
 Caffeine is a Java 8 rewrite of Guava’s cache that supersede the Guava support. If
-Caffeine is present, a `CaffeineCacheManager` is auto-configured. Caches can be created
+Caffeine is present, a `CaffeineCacheManager` (provided by the
+`spring-boot-starter-cache` '`Starter`') is auto-configured. Caches can be created
 on startup using the `spring.cache.cache-names` property and customized by one of the
 following (in this order):
 
