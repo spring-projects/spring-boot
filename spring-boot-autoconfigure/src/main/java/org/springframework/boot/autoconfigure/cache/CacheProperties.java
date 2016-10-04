@@ -268,9 +268,7 @@ public class CacheProperties {
 		private String spec;
 
 		@Deprecated
-		@DeprecatedConfigurationProperty(
-				reason = "Caffeine will supersede the Guava support in Spring Boot 2.0",
-				replacement = "spring.cache.caffeine.spec")
+		@DeprecatedConfigurationProperty(reason = "Caffeine will supersede the Guava support in Spring Boot 2.0", replacement = "spring.cache.caffeine.spec")
 		public String getSpec() {
 			return this.spec;
 		}

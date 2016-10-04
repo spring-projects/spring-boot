@@ -205,8 +205,8 @@ public class MongoProperties {
 		try {
 			if (hasCustomAddress() || hasCustomCredentials()) {
 				if (this.uri != null) {
-					throw new IllegalStateException("Invalid mongo configuration, " +
-							"either uri or host/port/credentials must be specified");
+					throw new IllegalStateException("Invalid mongo configuration, "
+							+ "either uri or host/port/credentials must be specified");
 				}
 				if (options == null) {
 					options = MongoClientOptions.builder().build();
