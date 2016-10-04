@@ -82,6 +82,7 @@
 		<module>spring-boot-sample-session-redis</module>
 		<module>spring-boot-sample-simple</module>
 		<module>spring-boot-sample-test</module>
+		<module>spring-boot-sample-test-nomockito</module>
 		<module>spring-boot-sample-testng</module>
 		<module>spring-boot-sample-tomcat</module>
 		<module>spring-boot-sample-tomcat-jsp</module>
