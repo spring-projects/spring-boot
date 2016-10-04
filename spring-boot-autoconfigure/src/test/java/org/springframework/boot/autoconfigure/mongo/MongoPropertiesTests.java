@@ -134,8 +134,8 @@ public class MongoPropertiesTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Invalid mongo configuration, " +
-				"either uri or host/port/credentials must be specified");
+		this.thrown.expectMessage("Invalid mongo configuration, "
+				+ "either uri or host/port/credentials must be specified");
 		properties.createMongoClient(null, null);
 	}
 
@@ -146,8 +146,8 @@ public class MongoPropertiesTests {
 		properties.setHost("localhost");
 		properties.setPort(4567);
 		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Invalid mongo configuration, " +
-				"either uri or host/port/credentials must be specified");
+		this.thrown.expectMessage("Invalid mongo configuration, "
+				+ "either uri or host/port/credentials must be specified");
 		properties.createMongoClient(null, null);
 	}
 

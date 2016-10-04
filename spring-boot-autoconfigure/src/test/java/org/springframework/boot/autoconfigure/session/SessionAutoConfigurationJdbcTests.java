@@ -54,8 +54,8 @@ public class SessionAutoConfigurationJdbcTests
 				JdbcOperationsSessionRepository.class);
 		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
 				.isEqualTo("SPRING_SESSION");
-		assertThat(this.context.getBean(SessionProperties.class)
-				.getJdbc().getInitializer().isEnabled()).isTrue();
+		assertThat(this.context.getBean(SessionProperties.class).getJdbc()
+				.getInitializer().isEnabled()).isTrue();
 		assertThat(this.context.getBean(JdbcOperations.class)
 				.queryForList("select * from SPRING_SESSION")).isEmpty();
 	}
@@ -70,8 +70,8 @@ public class SessionAutoConfigurationJdbcTests
 				JdbcOperationsSessionRepository.class);
 		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
 				.isEqualTo("SPRING_SESSION");
-		assertThat(this.context.getBean(SessionProperties.class)
-				.getJdbc().getInitializer().isEnabled()).isFalse();
+		assertThat(this.context.getBean(SessionProperties.class).getJdbc()
+				.getInitializer().isEnabled()).isFalse();
 		this.thrown.expect(BadSqlGrammarException.class);
 		assertThat(this.context.getBean(JdbcOperations.class)
 				.queryForList("select * from SPRING_SESSION")).isEmpty();
@@ -88,8 +88,8 @@ public class SessionAutoConfigurationJdbcTests
 				JdbcOperationsSessionRepository.class);
 		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
 				.isEqualTo("FOO_BAR");
-		assertThat(this.context.getBean(SessionProperties.class)
-				.getJdbc().getInitializer().isEnabled()).isTrue();
+		assertThat(this.context.getBean(SessionProperties.class).getJdbc()
+				.getInitializer().isEnabled()).isTrue();
 		assertThat(this.context.getBean(JdbcOperations.class)
 				.queryForList("select * from FOO_BAR")).isEmpty();
 	}
@@ -104,8 +104,8 @@ public class SessionAutoConfigurationJdbcTests
 				JdbcOperationsSessionRepository.class);
 		assertThat(new DirectFieldAccessor(repository).getPropertyValue("tableName"))
 				.isEqualTo("FOO_BAR");
-		assertThat(this.context.getBean(SessionProperties.class)
-				.getJdbc().getInitializer().isEnabled()).isFalse();
+		assertThat(this.context.getBean(SessionProperties.class).getJdbc()
+				.getInitializer().isEnabled()).isFalse();
 		this.thrown.expect(BadSqlGrammarException.class);
 		assertThat(this.context.getBean(JdbcOperations.class)
 				.queryForList("select * from SPRING_SESSION")).isEmpty();

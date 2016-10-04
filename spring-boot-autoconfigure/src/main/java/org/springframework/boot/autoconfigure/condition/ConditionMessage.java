@@ -375,8 +375,8 @@ public final class ConditionMessage {
 
 		/**
 		 * Indicate the items with a {@link Style}. For example
-		 * {@code didNotFind("bean", "beans").items(Style.QUOTE, Collections.singleton("x")} results in
-		 * the message "did not find bean 'x'".
+		 * {@code didNotFind("bean", "beans").items(Style.QUOTE, Collections.singleton("x")}
+		 * results in the message "did not find bean 'x'".
 		 * @param style the render style
 		 * @param items the source of the items (may be {@code null})
 		 * @return a built {@link ConditionMessage}
