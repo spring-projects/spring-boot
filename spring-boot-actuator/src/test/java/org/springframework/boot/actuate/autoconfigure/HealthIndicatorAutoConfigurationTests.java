@@ -398,9 +398,9 @@ public class HealthIndicatorAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.data.elasticsearch.properties.path.home:target",
 				"management.health.diskspace.enabled:false");
-		this.context.register(JestClientConfiguration.class,
-				JestAutoConfiguration.class, ElasticsearchAutoConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
+		this.context.register(JestClientConfiguration.class, JestAutoConfiguration.class,
+				ElasticsearchAutoConfiguration.class, ManagementServerProperties.class,
+				HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
 
 		Map<String, HealthIndicator> beans = this.context
@@ -414,9 +414,8 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void elasticsearchJestHealthIndicator() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.diskspace.enabled:false");
-		this.context.register(JestClientConfiguration.class,
-				JestAutoConfiguration.class, ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
+		this.context.register(JestClientConfiguration.class, JestAutoConfiguration.class,
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
 
 		Map<String, HealthIndicator> beans = this.context
@@ -432,9 +431,9 @@ public class HealthIndicatorAutoConfigurationTests {
 				"management.health.elasticsearch.enabled:false",
 				"spring.data.elasticsearch.properties.path.home:target",
 				"management.health.diskspace.enabled:false");
-		this.context.register(JestClientConfiguration.class,
-				JestAutoConfiguration.class, ElasticsearchAutoConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
+		this.context.register(JestClientConfiguration.class, JestAutoConfiguration.class,
+				ElasticsearchAutoConfiguration.class, ManagementServerProperties.class,
+				HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
 
 		Map<String, HealthIndicator> beans = this.context

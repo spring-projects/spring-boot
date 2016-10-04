@@ -178,8 +178,7 @@ class JCacheCacheConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("JCache");
+			ConditionMessage.Builder message = ConditionMessage.forCondition("JCache");
 			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 					context.getEnvironment(), "spring.cache.jcache.");
 			if (resolver.containsProperty("provider")) {

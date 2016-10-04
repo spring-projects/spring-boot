@@ -132,8 +132,8 @@ public class OAuth2ResourceServerConfiguration {
 			if (ClassUtils.isPresent(AUTHORIZATION_ANNOTATION, null)) {
 				if (AuthorizationServerEndpointsConfigurationBeanCondition
 						.matches(context)) {
-					return ConditionOutcome
-							.match(message.found("class").items(AUTHORIZATION_ANNOTATION));
+					return ConditionOutcome.match(
+							message.found("class").items(AUTHORIZATION_ANNOTATION));
 				}
 			}
 			return ConditionOutcome.noMatch(
