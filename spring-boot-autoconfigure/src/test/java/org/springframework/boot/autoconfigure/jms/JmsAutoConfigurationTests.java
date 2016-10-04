@@ -44,6 +44,7 @@ import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.support.converter.MessageConverter;
+import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -237,11 +238,41 @@ public class JmsAutoConfigurationTests {
 	}
 
 	@Test
-	public void testJmsTemplateWithMessageConverters() {
+	public void testJmsTemplateWithMessageConverter() {
 		load(MessageConvertersConfiguration.class);
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		assertThat(jmsTemplate.getMessageConverter())
 				.isSameAs(this.context.getBean("myMessageConverter"));
+	}
+
+	@Test
+	public void testJmsTemplateWithDestinationResolver() {
+		load(DestinationResolversConfiguration.class);
+		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
+		assertThat(jmsTemplate.getDestinationResolver())
+				.isSameAs(this.context.getBean("myDestinationResolver"));
+	}
+
+	@Test
+	public void testJmsTemplateFullCustomization() {
+		load(MessageConvertersConfiguration.class,
+				"spring.jms.template.default-destination=testQueue",
+				"spring.jms.template.delivery-delay=500",
+				"spring.jms.template.delivery-mode=non-persistent",
+				"spring.jms.template.priority=6",
+				"spring.jms.template.time-to-live=6000",
+				"spring.jms.template.receive-timeout=2000");
+		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
+		assertThat(jmsTemplate.getMessageConverter())
+				.isSameAs(this.context.getBean("myMessageConverter"));
+		assertThat(jmsTemplate.isPubSubDomain()).isFalse();
+		assertThat(jmsTemplate.getDefaultDestinationName()).isEqualTo("testQueue");
+		assertThat(jmsTemplate.getDeliveryDelay()).isEqualTo(500);
+		assertThat(jmsTemplate.getDeliveryMode()).isEqualTo(1);
+		assertThat(jmsTemplate.getPriority()).isEqualTo(6);
+		assertThat(jmsTemplate.getTimeToLive()).isEqualTo(6000);
+		assertThat(jmsTemplate.isExplicitQosEnabled()).isTrue();
+		assertThat(jmsTemplate.getReceiveTimeout()).isEqualTo(2000);
 	}
 
 	@Test
@@ -489,6 +520,22 @@ public class JmsAutoConfigurationTests {
 		@Bean
 		public MessageConverter anotherMessageConverter() {
 			return mock(MessageConverter.class);
+		}
+
+	}
+
+	@Configuration
+	protected static class DestinationResolversConfiguration {
+
+		@Bean
+		@Primary
+		public DestinationResolver myDestinationResolver() {
+			return mock(DestinationResolver.class);
+		}
+
+		@Bean
+		public DestinationResolver anotherDestinationResolver() {
+			return mock(DestinationResolver.class);
 		}
 
 	}

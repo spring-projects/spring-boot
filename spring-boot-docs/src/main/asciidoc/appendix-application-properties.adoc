@@ -838,6 +838,13 @@ content into your application; rather pick only the properties that you need.
 	spring.jms.listener.concurrency= # Minimum number of concurrent consumers.
 	spring.jms.listener.max-concurrency= # Maximum number of concurrent consumers.
 	spring.jms.pub-sub-domain=false # Specify if the default destination type is topic.
+	spring.jms.template.default-destination= # Default destination to use on send/receive operations that do not have a destination parameter.
+    spring.jms.template.delivery-delay= # Delivery delay to use for send calls in milliseconds.
+    spring.jms.template.delivery-mode= # Delivery mode. Enable QoS when set.
+    spring.jms.template.priority= # Priority of a message when sending. Enable QoS when set.
+    spring.jms.template.qos-enabled= # Enable explicit QoS when sending a message.
+    spring.jms.template.receive-timeout= # Timeout to use for receive calls in milliseconds.
+    spring.jms.template.time-to-live= # Time-to-live of a message when sending in milliseconds. Enable QoS when set.
 
 	# RABBIT ({sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[RabbitProperties])
 	spring.rabbitmq.addresses= # Comma-separated list of addresses to which the client should connect.
