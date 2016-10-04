@@ -82,8 +82,7 @@ public class ManagementServerPropertiesAutoConfigurationTests {
 
 	@Test
 	public void managementRolesAllowsIndexedAccess() {
-		ManagementServerProperties properties = load(
-				"management.security.roles[0]=FOO");
+		ManagementServerProperties properties = load("management.security.roles[0]=FOO");
 		assertThat(properties.getSecurity().getRoles()).containsOnly("FOO");
 	}
 
