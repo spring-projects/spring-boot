@@ -46,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @IntegrationTest({ "server.port=0", "value1=123" })
 @TestPropertySource(properties = "value2=456", locations = "classpath:/test-property-source-annotation.properties")
 @Deprecated
+@SuppressWarnings("deprecation")
 public class SpringApplicationIntegrationTestPropertyLocationTests {
 
 	@Autowired

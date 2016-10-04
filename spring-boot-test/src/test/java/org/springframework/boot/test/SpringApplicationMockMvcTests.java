@@ -51,6 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringApplicationConfiguration(classes = Config.class)
 @WebAppConfiguration
 @Deprecated
+@SuppressWarnings("deprecation")
 public class SpringApplicationMockMvcTests {
 
 	@Autowired

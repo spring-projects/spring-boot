@@ -43,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = Config.class, loader = SpringApplicationContextLoader.class)
 @WebAppConfiguration
 @Deprecated
+@SuppressWarnings("deprecation")
 public class SpringApplicationMockServletTests {
 
 	@Autowired
