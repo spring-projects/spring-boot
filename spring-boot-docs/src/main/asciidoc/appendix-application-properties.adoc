@@ -593,7 +593,6 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.data= # Data (DML) script resource reference.
 	spring.datasource.data-username= # User of the database to execute DML scripts (if different).
 	spring.datasource.data-password= # Password of the database to execute DML scripts (if different).
-	spring.datasource.dbcp.*= # Commons DBCP specific settings
 	spring.datasource.dbcp2.*= # Commons DBCP2 specific settings
 	spring.datasource.driver-class-name= # Fully qualified name of the JDBC driver. Auto-detected based on the URL by default.
 	spring.datasource.hikari.*= # Hikari specific settings

@@ -26,7 +26,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
 import org.junit.Test;
 

@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
+@Deprecated
 public class CommonsDbcpDataSourceConfigurationTests {
 
 	private static final String PREFIX = "spring.datasource.dbcp.";

@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
+@Deprecated
 public class CommonsDbcpDataSourcePoolMetadataTests
 		extends AbstractDataSourcePoolMetadataTests<CommonsDbcpDataSourcePoolMetadata> {
 

@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jmx.export.MBeanExporter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link JndiDataSourceAutoConfiguration}
@@ -120,7 +121,7 @@ public class JndiDataSourceAutoConfigurationTests {
 	@Test
 	public void standardDataSourceIsNotExcludedFromExport()
 			throws IllegalStateException, NamingException {
-		DataSource dataSource = new org.apache.commons.dbcp.BasicDataSource();
+		DataSource dataSource = mock(DataSource.class);
 		configureJndi("foo", dataSource);
 
 		this.context = new AnnotationConfigApplicationContext();

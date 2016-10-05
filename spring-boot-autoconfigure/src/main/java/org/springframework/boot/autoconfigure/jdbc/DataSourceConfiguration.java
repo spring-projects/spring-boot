@@ -77,6 +77,7 @@ abstract class DataSourceConfiguration {
 
 	@ConditionalOnClass(org.apache.commons.dbcp.BasicDataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp.BasicDataSource", matchIfMissing = true)
+	@Deprecated
 	static class Dbcp extends DataSourceConfiguration {
 
 		@Bean

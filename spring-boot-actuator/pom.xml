@@ -275,8 +275,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<!-- Annotation processing -->
