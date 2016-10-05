@@ -34,7 +34,7 @@ import org.springframework.boot.loader.tools.Layouts;
  * two of them. E.g.
  *
  * <pre>
- *     apply plugin: "spring-boot"
+ *     apply plugin: 'org.springframework.boot'
  *     springBoot {
  *         mainClass = 'org.demo.Application'
  *         layout = 'ZIP'

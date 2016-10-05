@@ -257,7 +257,7 @@ endif::[]
 	}
 
 	apply plugin: 'java'
-	apply plugin: 'spring-boot'
+	apply plugin: 'org.springframework.boot'
 
 	repositories {
 ifeval::["{spring-boot-repo}" != "release"]
