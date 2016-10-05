@@ -17,11 +17,8 @@
 package org.springframework.boot.cli.command.archive;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 import org.springframework.boot.cli.command.Command;
-import org.springframework.boot.loader.tools.JarWriter;
 import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.boot.loader.tools.LibraryScope;
 
@@ -30,7 +27,6 @@ import org.springframework.boot.loader.tools.LibraryScope;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @author Henri Kerola
  */
 public class JarCommand extends ArchiveCommand {
 
@@ -48,13 +44,6 @@ public class JarCommand extends ArchiveCommand {
 		@Override
 		protected LibraryScope getLibraryScope(File file) {
 			return LibraryScope.COMPILE;
-		}
-
-		@Override
-		protected void writeClasspathEntry(JarWriter writer,
-				ResourceMatcher.MatchedResource entry) throws IOException {
-			writer.writeEntry(entry.getName(),
-					new FileInputStream(entry.getFile()));
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.cli.command.archive;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -93,7 +94,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 
 		private final String type;
 
-		protected final Layout layout;
+		private final Layout layout;
 
 		private OptionSpec<String> includeOption;
 
@@ -102,6 +103,10 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 		public ArchiveOptionHandler(String type, Layout layout) {
 			this.type = type;
 			this.layout = layout;
+		}
+
+		protected Layout getLayout() {
+			return this.layout;
 		}
 
 		@Override
@@ -284,8 +289,11 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 			return libraries;
 		}
 
-		protected abstract void writeClasspathEntry(JarWriter writer,
-				MatchedResource entry) throws IOException;
+		protected void writeClasspathEntry(JarWriter writer,
+				MatchedResource entry) throws IOException {
+			writer.writeEntry(entry.getName(),
+					new FileInputStream(entry.getFile()));
+		}
 
 		protected abstract LibraryScope getLibraryScope(File file);
 

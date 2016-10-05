@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,9 +66,10 @@ public class WarCommand extends ArchiveCommand {
 		@Override
 		protected void writeClasspathEntry(JarWriter writer,
 				ResourceMatcher.MatchedResource entry) throws IOException {
-			writer.writeEntry(this.layout.getClassesLocation() + entry.getName(),
+			writer.writeEntry(getLayout().getClassesLocation() + entry.getName(),
 					new FileInputStream(entry.getFile()));
 		}
+
 	}
 
 }
