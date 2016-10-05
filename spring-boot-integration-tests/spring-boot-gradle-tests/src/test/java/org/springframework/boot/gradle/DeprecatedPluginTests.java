@@ -22,8 +22,6 @@ import org.junit.Test;
 
 import org.springframework.boot.test.rule.OutputCapture;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Tests for using the old, deprecated plugin ID.
  *
@@ -39,12 +37,10 @@ public class DeprecatedPluginTests {
 	public OutputCapture output = new OutputCapture();
 
 	@Test
-	public void deprecatedIdWorksAndLogsAWarning() throws Exception {
+	public void deprecatedIdWorks() throws Exception {
 		this.project = new ProjectCreator().createProject("deprecated-plugin");
 		this.project.newBuild().forTasks("build")
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
-		assertThat(this.output.toString())
-				.contains("The plugin id 'spring-boot' is deprecated");
 	}
 
 }
