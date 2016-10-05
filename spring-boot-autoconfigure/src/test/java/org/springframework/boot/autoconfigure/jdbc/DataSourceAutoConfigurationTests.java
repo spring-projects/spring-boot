@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -138,15 +138,19 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	public void commonsDbcpIsFallback() throws Exception {
-		BasicDataSource dataSource = autoConfigureDataSource(BasicDataSource.class,
+		org.apache.commons.dbcp.BasicDataSource dataSource = autoConfigureDataSource(
+				org.apache.commons.dbcp.BasicDataSource.class,
 				"org.apache.tomcat", "com.zaxxer.hikari");
 		assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
 	}
 
 	@Test
+	@Deprecated
 	public void commonsDbcpValidatesConnectionByDefault() {
-		BasicDataSource dataSource = autoConfigureDataSource(BasicDataSource.class,
+		org.apache.commons.dbcp.BasicDataSource dataSource = autoConfigureDataSource(
+				org.apache.commons.dbcp.BasicDataSource.class,
 				"org.apache.tomcat", "com.zaxxer.hikari");
 		assertThat(dataSource.getTestOnBorrow()).isTrue();
 		assertThat(dataSource.getValidationQuery())
@@ -155,9 +159,8 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void commonsDbcp2IsFallback() throws Exception {
-		org.apache.commons.dbcp2.BasicDataSource dataSource = autoConfigureDataSource(
-				org.apache.commons.dbcp2.BasicDataSource.class, "org.apache.tomcat",
-				"com.zaxxer.hikari", "org.apache.commons.dbcp.");
+		BasicDataSource dataSource = autoConfigureDataSource(BasicDataSource.class,
+				"org.apache.tomcat", "com.zaxxer.hikari", "org.apache.commons.dbcp.");
 		assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
 	}
 

@@ -2690,7 +2690,8 @@ Here's the algorithm for choosing a specific implementation:
   that is available we always choose it.
 * Otherwise, if HikariCP is available we will use it.
 * If neither the Tomcat pooling datasource nor HikariCP are available and if Commons DBCP
-  is available we will use it, but we don't recommend it in production.
+  is available we will use it, but we don't recommend it in production and its support
+  is deprecated.
 * Lastly, if Commons DBCP2 is available we will use it.
 
 If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa`
@@ -2730,9 +2731,8 @@ See {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[`DataSourc
 for more of the supported options. These are the standard options that work regardless of
 the actual implementation. It is also possible to fine-tune implementation-specific
 settings using their respective prefix (`+spring.datasource.tomcat.*+`,
-`+spring.datasource.hikari.*+`, `+spring.datasource.dbcp.*+` and
-`+spring.datasource.dbcp2.*+`). Refer to the documentation of the connection pool
-implementation you are using for more details.
+`+spring.datasource.hikari.*+`, and `+spring.datasource.dbcp2.*+`). Refer to the
+documentation of the connection pool implementation you are using for more details.
 
 For instance, if you are using the
 http://tomcat.apache.org/tomcat-8.0-doc/jdbc-pool.html#Common_Attributes[Tomcat connection pool]
