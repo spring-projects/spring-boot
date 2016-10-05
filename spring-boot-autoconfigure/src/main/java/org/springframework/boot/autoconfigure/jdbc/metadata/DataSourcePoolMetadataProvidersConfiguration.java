@@ -78,28 +78,6 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(org.apache.commons.dbcp.BasicDataSource.class)
-	@Deprecated
-	static class CommonsDbcpPoolDataSourceMetadataProviderConfiguration {
-
-		@Bean
-		public DataSourcePoolMetadataProvider commonsDbcpPoolDataSourceMetadataProvider() {
-			return new DataSourcePoolMetadataProvider() {
-				@Override
-				public DataSourcePoolMetadata getDataSourcePoolMetadata(
-						DataSource dataSource) {
-					if (dataSource instanceof org.apache.commons.dbcp.BasicDataSource) {
-						return new CommonsDbcpDataSourcePoolMetadata(
-								(org.apache.commons.dbcp.BasicDataSource) dataSource);
-					}
-					return null;
-				}
-			};
-		}
-
-	}
-
-	@Configuration
 	@ConditionalOnClass(BasicDataSource.class)
 	static class CommonsDbcp2PoolDataSourceMetadataProviderConfiguration {
 

@@ -2700,10 +2700,8 @@ Here's the algorithm for choosing a specific implementation:
 * We prefer the Tomcat pooling `DataSource` for its performance and concurrency, so if
   that is available we always choose it.
 * Otherwise, if HikariCP is available we will use it.
-* If neither the Tomcat pooling datasource nor HikariCP are available and if Commons DBCP
-  is available we will use it, but we don't recommend it in production and its support
-  is deprecated.
-* Lastly, if Commons DBCP2 is available we will use it.
+* If neither the Tomcat pooling datasource nor HikariCP are available and if Commons
+  DBCP2 is available we will use it.
 
 If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa`
 '`starters`' you will automatically get a dependency to `tomcat-jdbc`.
