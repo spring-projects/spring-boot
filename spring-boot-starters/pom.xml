@@ -28,6 +28,7 @@
 		<module>spring-boot-starter-batch</module>
 		<module>spring-boot-starter-cache</module>
 		<module>spring-boot-starter-cloud-connectors</module>
+		<module>spring-boot-starter-cxf</module>
 		<module>spring-boot-starter-data-cassandra</module>
 		<module>spring-boot-starter-data-couchbase</module>
 		<module>spring-boot-starter-data-elasticsearch</module>

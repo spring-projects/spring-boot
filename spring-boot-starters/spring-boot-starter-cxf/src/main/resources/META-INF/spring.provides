@@ -1,0 +1,1 @@
+provides: cxf-rt-frontend-jaxws,cxf-rt-transports-http

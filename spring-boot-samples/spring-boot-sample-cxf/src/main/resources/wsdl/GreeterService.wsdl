@@ -1,0 +1,41 @@
+<definitions name="GreeterService"
+		targetNamespace="http://sample/cxf"
+		xmlns="http://schemas.xmlsoap.org/wsdl/"
+		xmlns:tns="http://sample/cxf"
+		xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<message name="GreetRequest">
+		<part name="name" type="xsd:string"/>
+	</message>
+
+	<message name="GreetResponse">
+		<part name="greeting" type="xsd:string"/>
+	</message>
+
+	<portType name="GreeterPortType">
+		<operation name="greet">
+			<input message="tns:GreetRequest"/>
+			<output message="tns:GreetResponse"/>
+		</operation>
+	</portType>
+
+	<binding name="GreeterBinding" type="tns:GreeterPortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="greet">
+			<soap:operation soapAction="greet"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+
+	<service name="GreeterService">
+		<port name="GreeterPort" binding="tns:GreeterBinding">
+			<soap:address location="http://localhost:8080/services/GreeterService"/>
+		</port>
+	</service>
+</definitions>

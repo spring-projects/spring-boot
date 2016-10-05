@@ -5546,6 +5546,18 @@ via the `spring-boot-starter-webservices` module.
 
 
 
+[[boot-features-cxf]]
+== CXF
+https://cxf.apache.org/[Apache CXF] is an open source services framework. CXF helps you
+build and develop services using frontend programming APIs, like JAX-WS and JAX-RS. Spring
+Boot offers basic auto-configuration for the JAX-WS services so that all is required is
+defining your `Endpoints`.
+
+The Apache CXF JAX-WS features can be easily accessed via the `spring-boot-starter-cxf`
+module.
+
+
+
 [[boot-features-developing-auto-configuration]]
 == Creating your own auto-configuration
 If you work in a company that develops shared libraries, or if you work on an open-source
