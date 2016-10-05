@@ -24,7 +24,9 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
+import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Reservoir;
 import com.codahale.metrics.Timer;
 
 import org.springframework.boot.actuate.metrics.CounterService;
@@ -53,6 +55,8 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 
 	private final MetricRegistry registry;
 
+	private ReservoirFactory reservoirFactory;
+
 	private final ConcurrentMap<String, SimpleGauge> gauges = new ConcurrentHashMap<String, SimpleGauge>();
 
 	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<String, String>();
@@ -63,6 +67,18 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 	 */
 	public DropwizardMetricServices(MetricRegistry registry) {
 		this.registry = registry;
+	}
+
+	/**
+	 * Create a new {@link DropwizardMetricServices} instance.
+	 * @param registry the underlying metric registry
+	 * @param reservoirFactory the factory that instantiates the {@link Reservoir} that
+	 *                            will be used on Timers and Histograms
+	 */
+	public DropwizardMetricServices(MetricRegistry registry,
+			ReservoirFactory reservoirFactory) {
+		this.registry = registry;
+		this.reservoirFactory = reservoirFactory;
 	}
 
 	@Override
@@ -91,17 +107,54 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 	public void submit(String name, double value) {
 		if (name.startsWith("histogram")) {
 			long longValue = (long) value;
-			Histogram metric = this.registry.histogram(name);
+			Histogram metric = registerHistogram(name);
 			metric.update(longValue);
 		}
 		else if (name.startsWith("timer")) {
 			long longValue = (long) value;
-			Timer metric = this.registry.timer(name);
+			Timer metric = registerTimer(name);
 			metric.update(longValue, TimeUnit.MILLISECONDS);
 		}
 		else {
 			name = wrapGaugeName(name);
 			setGaugeValue(name, value);
+		}
+	}
+
+	private Histogram registerHistogram(String name) {
+		if (this.reservoirFactory == null) {
+			return this.registry.histogram(name);
+		}
+		else {
+			Histogram histogram = new Histogram(this.reservoirFactory.getObject());
+			return getOrAddMetric(name, histogram);
+		}
+	}
+
+	private Timer registerTimer(String name) {
+		if (this.reservoirFactory == null) {
+			return this.registry.timer(name);
+		}
+		else {
+			Timer timer = new Timer(this.reservoirFactory.getObject());
+			return getOrAddMetric(name, timer);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends Metric> T getOrAddMetric(String name, T newMetric) {
+		Metric metric = this.registry.getMetrics().get(name);
+		if (metric == null) {
+			return this.registry.register(name, newMetric);
+		}
+		else {
+			if (metric.getClass().equals(newMetric.getClass())) {
+				return (T) metric;
+			}
+			else {
+				throw new IllegalArgumentException(
+						name + " is already used for a different type of metric");
+			}
 		}
 	}
 
@@ -146,6 +199,10 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 			name = wrapCounterName(name);
 		}
 		this.registry.remove(name);
+	}
+
+	void setReservoirFactory(ReservoirFactory reservoirFactory) {
+		this.reservoirFactory = reservoirFactory;
 	}
 
 	/**

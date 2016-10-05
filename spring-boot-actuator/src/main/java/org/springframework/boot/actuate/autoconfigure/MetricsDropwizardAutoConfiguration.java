@@ -18,10 +18,12 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import com.codahale.metrics.MetricRegistry;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
+import org.springframework.boot.actuate.metrics.dropwizard.ReservoirFactory;
 import org.springframework.boot.actuate.metrics.reader.MetricRegistryMetricReader;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -41,6 +43,9 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureBefore(MetricRepositoryAutoConfiguration.class)
 public class MetricsDropwizardAutoConfiguration {
 
+	@Autowired(required = false)
+	private ReservoirFactory reservoirFactory;
+
 	@Bean
 	@ConditionalOnMissingBean
 	public MetricRegistry metricRegistry() {
@@ -52,7 +57,12 @@ public class MetricsDropwizardAutoConfiguration {
 			GaugeService.class })
 	public DropwizardMetricServices dropwizardMetricServices(
 			MetricRegistry metricRegistry) {
-		return new DropwizardMetricServices(metricRegistry);
+		if (this.reservoirFactory == null) {
+			return new DropwizardMetricServices(metricRegistry);
+		}
+		else {
+			return new DropwizardMetricServices(metricRegistry, this.reservoirFactory);
+		}
 	}
 
 	@Bean

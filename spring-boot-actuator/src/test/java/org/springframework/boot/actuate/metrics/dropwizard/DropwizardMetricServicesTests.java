@@ -20,8 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Reservoir;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.UniformReservoir;
 import org.junit.Test;
+
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link DropwizardMetricServices}.
  *
  * @author Dave Syer
+ * @author Lucas Saldanha
  */
 public class DropwizardMetricServicesTests {
 
@@ -78,10 +85,47 @@ public class DropwizardMetricServicesTests {
 	}
 
 	@Test
+	public void setCustomReservoirTimer() {
+		this.writer.setReservoirFactory(new ReservoirFactory() {
+			@Override
+			protected Reservoir defaultReservoir() {
+				return new UniformReservoir();
+			}
+		});
+
+		this.writer.submit("timer.foo", 200);
+		this.writer.submit("timer.foo", 300);
+		assertThat(this.registry.timer("timer.foo").getCount()).isEqualTo(2);
+
+		Timer timer = (Timer) this.registry.getMetrics().get("timer.foo");
+		Histogram histogram = (Histogram) ReflectionTestUtils
+				.getField(timer, "histogram");
+		assertThat(ReflectionTestUtils.getField(histogram, "reservoir").getClass()
+				.equals(UniformReservoir.class)).isTrue();
+	}
+
+	@Test
 	public void setPredefinedHistogram() {
 		this.writer.submit("histogram.foo", 2.1);
 		this.writer.submit("histogram.foo", 2.3);
 		assertThat(this.registry.histogram("histogram.foo").getCount()).isEqualTo(2);
+	}
+
+	@Test
+	public void setCustomReservoirHistogram() {
+		this.writer.setReservoirFactory(new ReservoirFactory() {
+			@Override
+			protected Reservoir defaultReservoir() {
+				return new UniformReservoir();
+			}
+		});
+
+		this.writer.submit("histogram.foo", 2.1);
+		this.writer.submit("histogram.foo", 2.3);
+		assertThat(this.registry.histogram("histogram.foo").getCount()).isEqualTo(2);
+		assertThat(ReflectionTestUtils
+				.getField(this.registry.getMetrics().get("histogram.foo"), "reservoir")
+				.getClass().equals(UniformReservoir.class)).isTrue();
 	}
 
 	/**
