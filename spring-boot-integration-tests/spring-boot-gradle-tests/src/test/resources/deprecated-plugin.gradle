@@ -7,24 +7,20 @@ buildscript {
 	}
 }
 
-apply plugin: 'org.springframework.boot'
+apply plugin: 'spring-boot'
 
-group = 'flatdir'
+group = 'deprecated-plugin'
 version = '0.0.0'
-
-bootRun {
-  main = 'Foo'
-}
-
-jar {
-	baseName =  'flatdir'
-}
 
 repositories {
 	mavenLocal()
-	flatDir( dirs:'lib' )
+	mavenCentral()
+}
+
+springBoot {
+	mainClass 'com.example.Main'
 }
 
 dependencies {
-	compile ':foo:1.0.0'
+	compile 'org.springframework.boot:spring-boot-starter'
 }
