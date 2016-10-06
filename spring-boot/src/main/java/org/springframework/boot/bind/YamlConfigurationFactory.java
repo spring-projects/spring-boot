@@ -138,7 +138,7 @@ public class YamlConfigurationFactory<T>
 				+ "either set it directly or set the resource to load it from");
 		try {
 			if (this.logger.isTraceEnabled()) {
-				this.logger.trace(String.format("Yaml document is %n%s" + this.yaml));
+				this.logger.trace(String.format("Yaml document is %n%s", this.yaml));
 			}
 			Constructor constructor = new YamlJavaBeanPropertyConstructor(this.type,
 					this.propertyAliases);
