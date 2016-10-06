@@ -2653,6 +2653,14 @@ http://hsqldb.org/[HSQL] and http://db.apache.org/derby/[Derby] databases. You d
 to provide any connection URLs, simply include a build dependency to the embedded database
 that you want to use.
 
+[NOTE]
+====
+If you are using this feature in your tests, you may notice that the same database is
+reused by your whole test suite regardless of the number of application contexts that
+you use. If you want to make sure that each context has a separate embedded database,
+you should set `spring.datasource.generate-unique-name` to `true`.
+====
+
 For example, typical POM dependencies would be:
 
 [source,xml,indent=0]
