@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
  * automatically (for example in tests).
  * <p>
  * Application should only ever include <em>one</em>
- * {@code @SpringApplicationConfiguration} and most idiomatic Spring Boot applications
+ * {@code @SpringBootConfiguration} and most idiomatic Spring Boot applications
  * will inherit it from {@code @SpringBootApplication}.
  *
  * @author Phillip Webb
