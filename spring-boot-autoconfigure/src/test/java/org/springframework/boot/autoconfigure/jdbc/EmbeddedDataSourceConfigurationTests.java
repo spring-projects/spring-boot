@@ -19,14 +19,14 @@ package org.springframework.boot.autoconfigure.jdbc;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.core.env.PropertiesPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,32 +34,40 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link EmbeddedDataSourceConfiguration}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class EmbeddedDataSourceConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@Test
-	public void testDefaultEmbeddedDatabase() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EmbeddedDataSourceConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(DataSource.class)).isNotNull();
-		this.context.close();
+	@After
+	public void closeContext() {
+		if (this.context != null) {
+			this.context.close();
+		}
 	}
 
 	@Test
-	public void generatesUniqueDatabaseName() throws Exception {
-		Properties myProps = new Properties();
-		myProps.setProperty("spring.datasource.generate-name", "true");
+	public void defaultEmbeddedDatabase() {
+		this.context = load();
+		assertThat(this.context.getBean(DataSource.class)).isNotNull();
+	}
 
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EmbeddedDataSourceConfiguration.class);
-		this.context.getEnvironment().getPropertySources().addFirst(new PropertiesPropertySource("whatever", myProps));
-		this.context.refresh();
-		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(getDatabaseName(dataSource)).isNotEqualToIgnoringCase("testdb");
-		this.context.close();
+	@Test
+	public void generateUniqueName() throws Exception {
+		this.context = load("spring.datasource.generate-unique-name=true");
+		AnnotationConfigApplicationContext context2 =
+				load("spring.datasource.generate-unique-name=true");
+		try {
+			DataSource dataSource = this.context.getBean(DataSource.class);
+			DataSource dataSource2 = context2.getBean(DataSource.class);
+			assertThat(getDatabaseName(dataSource))
+					.isNotEqualTo(getDatabaseName(dataSource2));
+			System.out.println(dataSource2);
+		}
+		finally {
+			context2.close();
+		}
 	}
 
 	private String getDatabaseName(DataSource dataSource) throws SQLException {
@@ -76,6 +84,14 @@ public class EmbeddedDataSourceConfigurationTests {
 		finally {
 			connection.close();
 		}
+	}
+
+	private AnnotationConfigApplicationContext load(String... environment) {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		ctx.register(EmbeddedDataSourceConfiguration.class);
+		ctx.refresh();
+		return ctx;
 	}
 
 }

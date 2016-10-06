@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.sql.DataSource;
 
@@ -58,9 +59,9 @@ public class DataSourceProperties
 	private String name = "testdb";
 
 	/**
-	 * If <code>true</code> the database name is randomly generated.
+	 * Generate a random datasource name.
 	 */
-	private boolean generateName = false;
+	private boolean generateUniqueName;
 
 	/**
 	 * Fully qualified name of the connection pool implementation to use. By default, it
@@ -153,6 +154,8 @@ public class DataSourceProperties
 
 	private Xa xa = new Xa();
 
+	private String uniqueName;
+
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
@@ -188,12 +191,12 @@ public class DataSourceProperties
 		this.name = name;
 	}
 
-	public boolean isGenerateName() {
-		return this.generateName;
+	public boolean isGenerateUniqueName() {
+		return this.generateUniqueName;
 	}
 
-	public void setGenerateName(boolean generateName) {
-		this.generateName = generateName;
+	public void setGenerateUniqueName(boolean generateUniqueName) {
+		this.generateUniqueName = generateUniqueName;
 	}
 
 	public Class<? extends DataSource> getType() {
@@ -281,12 +284,22 @@ public class DataSourceProperties
 		if (StringUtils.hasText(this.url)) {
 			return this.url;
 		}
-		String url = this.embeddedDatabaseConnection.getUrl(this.name);
+		String url = this.embeddedDatabaseConnection.getUrl(determineDatabaseName());
 		if (!StringUtils.hasText(url)) {
 			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection,
 					this.environment, "url");
 		}
 		return url;
+	}
+
+	private String determineDatabaseName() {
+		if (this.generateUniqueName) {
+			if (this.uniqueName == null) {
+				this.uniqueName = UUID.randomUUID().toString();
+			}
+			return this.uniqueName;
+		}
+		return this.name;
 	}
 
 	/**
