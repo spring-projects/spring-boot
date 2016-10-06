@@ -58,6 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Vedran Pavic
  */
 public abstract class AbstractJpaAutoConfigurationTests {
 
@@ -102,8 +103,19 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testOpenEntityManagerInViewInterceptorCreated() throws Exception {
+	public void testOpenEntityManagerInViewInterceptorNotRegistered() throws Exception {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+		context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
+		context.refresh();
+		assertThat(getInterceptorBeans(context).length).isEqualTo(0);
+		context.close();
+	}
+
+	@Test
+	public void testOpenEntityManagerInViewInterceptorRegistered() throws Exception {
+		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, "spring.jpa.open_in_view:true");
 		context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 		context.refresh();
@@ -115,6 +127,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	public void testOpenEntityManagerInViewInterceptorNotRegisteredWhenFilterPresent()
 			throws Exception {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, "spring.jpa.open_in_view:true");
 		context.register(TestFilterConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
@@ -124,10 +137,10 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Test
-	public void testOpenEntityManagerInViewInterceptorNotRegisteredWhenExplicitlyOff()
+	public void testOpenEntityManagerInViewInterceptorNotWebApplication()
 			throws Exception {
-		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.jpa.open_in_view:false");
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, "spring.jpa.open_in_view:true");
 		context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 		context.refresh();

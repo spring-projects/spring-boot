@@ -144,7 +144,7 @@
     "name": "spring.jpa.open-in-view",
     "type": "java.lang.Boolean",
     "description": "Register OpenEntityManagerInViewInterceptor. Binds a JPA EntityManager to the thread for the entire processing of the request.",
-    "defaultValue": true
+    "defaultValue": false
   },
   {
     "name": "spring.jta.enabled",
