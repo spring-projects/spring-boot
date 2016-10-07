@@ -993,8 +993,9 @@ http://livereload.com/extensions/[livereload.com].
 If you don't want to start the LiveReload server when your application runs you can set
 the `spring.devtools.livereload.enabled` property to `false`.
 
-NOTE: You can only run one LiveReload server at a time, if you start multiple applications
-from your IDE only the first will have livereload support.
+NOTE: You can only run one LiveReload server at a time. Before starting your application,
+ensure that no other LiveReload servers are running. If you start multiple applications
+from your IDE, only the first will have LiveReload support.
 
 
 
