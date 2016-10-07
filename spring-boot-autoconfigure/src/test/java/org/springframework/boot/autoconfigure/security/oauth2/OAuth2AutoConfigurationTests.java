@@ -17,10 +17,14 @@
 package org.springframework.boot.autoconfigure.security.oauth2;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.springframework.aop.support.AopUtils;
@@ -112,6 +116,14 @@ public class OAuth2AutoConfigurationTests {
 	private static final Class<?> AUTHORIZATION_SERVER_CONFIG = OAuth2AuthorizationServerConfiguration.class;
 
 	private AnnotationConfigEmbeddedWebApplicationContext context;
+
+	@BeforeClass
+	@AfterClass
+	public static void uninstallUrlStreamHandlerFactory() {
+		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
+				null);
+		ReflectionTestUtils.setField(URL.class, "factory", null);
+	}
 
 	@Test
 	public void testDefaultConfiguration() {

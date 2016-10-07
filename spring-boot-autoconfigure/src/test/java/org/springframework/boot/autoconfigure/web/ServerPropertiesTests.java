@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -32,7 +33,10 @@ import javax.servlet.SessionTrackingMode;
 import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
 import org.apache.catalina.valves.RemoteIpValve;
+import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -48,6 +52,7 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -75,6 +80,14 @@ public class ServerPropertiesTests {
 
 	@Captor
 	private ArgumentCaptor<ServletContextInitializer[]> initializersCaptor;
+
+	@BeforeClass
+	@AfterClass
+	public static void uninstallUrlStreamHandlerFactory() {
+		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
+				null);
+		ReflectionTestUtils.setField(URL.class, "factory", null);
+	}
 
 	@Before
 	public void setup() {

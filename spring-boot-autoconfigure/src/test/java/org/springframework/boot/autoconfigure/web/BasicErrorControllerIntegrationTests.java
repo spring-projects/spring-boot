@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +28,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -47,6 +51,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -72,6 +77,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BasicErrorControllerIntegrationTests {
 
 	private ConfigurableApplicationContext context;
+
+	@BeforeClass
+	@AfterClass
+	public static void uninstallUrlStreamHandlerFactory() {
+		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
+				null);
+		ReflectionTestUtils.setField(URL.class, "factory", null);
+	}
 
 	@After
 	public void closeContext() {
