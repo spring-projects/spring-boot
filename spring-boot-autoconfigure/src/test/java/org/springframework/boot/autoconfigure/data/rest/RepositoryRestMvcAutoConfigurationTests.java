@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
+import org.springframework.data.rest.core.mapping.RepositoryDetectionStrategy.RepositoryDetectionStrategies;
 import org.springframework.data.rest.webmvc.BaseUri;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.http.MediaType;
@@ -94,6 +95,7 @@ public class RepositoryRestMvcAutoConfigurationTests {
 				"spring.data.rest.page-param-name:_page",
 				"spring.data.rest.limit-param-name:_limit",
 				"spring.data.rest.sort-param-name:_sort",
+				"spring.data.rest.detection-strategy=visibility",
 				"spring.data.rest.default-media-type:application/my-json",
 				"spring.data.rest.return-body-on-create:false",
 				"spring.data.rest.return-body-on-update:false",
@@ -107,6 +109,8 @@ public class RepositoryRestMvcAutoConfigurationTests {
 		assertThat(bean.getPageParamName()).isEqualTo("_page");
 		assertThat(bean.getLimitParamName()).isEqualTo("_limit");
 		assertThat(bean.getSortParamName()).isEqualTo("_sort");
+		assertThat(bean.getRepositoryDetectionStrategy())
+				.isEqualTo(RepositoryDetectionStrategies.VISIBILITY);
 		assertThat(bean.getDefaultMediaType())
 				.isEqualTo(MediaType.parseMediaType("application/my-json"));
 		assertThat(bean.returnBodyOnCreate(null)).isFalse();
