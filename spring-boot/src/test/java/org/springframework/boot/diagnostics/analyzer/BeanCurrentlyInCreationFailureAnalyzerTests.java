@@ -16,11 +16,21 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.FailureAnalyzer;
+import org.springframework.boot.diagnostics.analyzer.BeanCurrentlyInCreationFailureAnalyzerTests.CycleWithAutowiredFields.BeanThreeConfiguration;
+import org.springframework.boot.diagnostics.analyzer.BeanCurrentlyInCreationFailureAnalyzerTests.CycleWithAutowiredFields.BeanTwoConfiguration;
+import org.springframework.boot.diagnostics.analyzer.BeanCurrentlyInCreationFailureAnalyzerTests.CyclicBeanMethodsConfiguration.InnerConfiguration;
+import org.springframework.boot.diagnostics.analyzer.BeanCurrentlyInCreationFailureAnalyzerTests.CyclicBeanMethodsConfiguration.InnerConfiguration.InnerInnerConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -39,10 +49,25 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 	private final FailureAnalyzer analyzer = new BeanCurrentlyInCreationFailureAnalyzer();
 
 	@Test
-	public void cyclicBeanMethods() {
+	public void cyclicBeanMethods() throws IOException {
 		FailureAnalysis analysis = performAnalysis(CyclicBeanMethodsConfiguration.class);
+		List<String> lines = readDescriptionLines(analysis);
+		assertThat(lines).hasSize(9);
+		assertThat(lines.get(0)).isEqualTo(
+				"The dependencies of some of the beans in the application context form a cycle:");
+		assertThat(lines.get(1)).isEqualTo("");
+		assertThat(lines.get(2)).isEqualTo("┌─────┐");
+		assertThat(lines.get(3)).startsWith(
+				"|  one defined in " + InnerInnerConfiguration.class.getName());
+		assertThat(lines.get(4)).isEqualTo("↑     ↓");
+		assertThat(lines.get(5))
+				.startsWith("|  two defined in " + InnerConfiguration.class.getName());
+		assertThat(lines.get(6)).isEqualTo("↑     ↓");
+		assertThat(lines.get(7)).startsWith(
+				"|  three defined in " + CyclicBeanMethodsConfiguration.class.getName());
+		assertThat(lines.get(8)).isEqualTo("└─────┘");
 		assertThat(analysis.getDescription()).startsWith(
-				"There is a circular dependency between 3 beans in the application context:");
+				"The dependencies of some of the beans in the application context form a cycle:");
 		assertThat(analysis.getDescription()).contains(
 				"one defined in " + CyclicBeanMethodsConfiguration.class.getName());
 		assertThat(analysis.getDescription()).contains(
@@ -52,22 +77,74 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	@Test
-	public void cycleWithAutowiredFields() {
+	public void cycleWithAutowiredFields() throws IOException {
 		FailureAnalysis analysis = performAnalysis(CycleWithAutowiredFields.class);
 		assertThat(analysis.getDescription()).startsWith(
-				"There is a circular dependency between 3 beans in the application context:");
-		assertThat(analysis.getDescription()).contains("three defined in "
-				+ CycleWithAutowiredFields.BeanThreeConfiguration.class.getName());
-		assertThat(analysis.getDescription())
-				.contains("one defined in " + CycleWithAutowiredFields.class.getName());
-		assertThat(analysis.getDescription())
-				.contains(CycleWithAutowiredFields.BeanTwoConfiguration.class.getName()
-						+ " (field private " + BeanThree.class.getName());
+				"The dependencies of some of the beans in the application context form a cycle:");
+		List<String> lines = readDescriptionLines(analysis);
+		assertThat(lines).hasSize(9);
+		assertThat(lines.get(0)).isEqualTo(
+				"The dependencies of some of the beans in the application context form a cycle:");
+		assertThat(lines.get(1)).isEqualTo("");
+		assertThat(lines.get(2)).isEqualTo("┌─────┐");
+		assertThat(lines.get(3)).startsWith(
+				"|  three defined in " + BeanThreeConfiguration.class.getName());
+		assertThat(lines.get(4)).isEqualTo("↑     ↓");
+		assertThat(lines.get(5)).startsWith(
+				"|  one defined in " + CycleWithAutowiredFields.class.getName());
+		assertThat(lines.get(6)).isEqualTo("↑     ↓");
+		assertThat(lines.get(7)).startsWith("|  " + BeanTwoConfiguration.class.getName()
+				+ " (field private " + BeanThree.class.getName());
+		assertThat(lines.get(8)).isEqualTo("└─────┘");
+	}
+
+	@Test
+	public void cycleReferencedViaOtherBeans() throws IOException {
+		FailureAnalysis analysis = performAnalysis(
+				CycleReferencedViaOtherBeansConfiguration.class);
+		List<String> lines = readDescriptionLines(analysis);
+		assertThat(lines).hasSize(12);
+		assertThat(lines.get(0)).isEqualTo(
+				"The dependencies of some of the beans in the application context form a cycle:");
+		assertThat(lines.get(1)).isEqualTo("");
+		assertThat(lines.get(2))
+				.contains("refererOne " + "(field " + RefererTwo.class.getName());
+		assertThat(lines.get(3)).isEqualTo("      ↓");
+		assertThat(lines.get(4))
+				.contains("refererTwo " + "(field " + BeanOne.class.getName());
+		assertThat(lines.get(5)).isEqualTo("┌─────┐");
+		assertThat(lines.get(6)).startsWith("|  one defined in "
+				+ CycleReferencedViaOtherBeansConfiguration.class.getName());
+		assertThat(lines.get(7)).isEqualTo("↑     ↓");
+		assertThat(lines.get(8)).startsWith("|  two defined in "
+				+ CycleReferencedViaOtherBeansConfiguration.class.getName());
+		assertThat(lines.get(9)).isEqualTo("↑     ↓");
+		assertThat(lines.get(10)).startsWith("|  three defined in "
+				+ CycleReferencedViaOtherBeansConfiguration.class.getName());
+		assertThat(lines.get(11)).isEqualTo("└─────┘");
+	}
+
+	private List<String> readDescriptionLines(FailureAnalysis analysis)
+			throws IOException {
+		BufferedReader lineReader = new BufferedReader(
+				new StringReader(analysis.getDescription()));
+		try {
+			List<String> lines = new ArrayList<String>();
+			String line;
+			while ((line = lineReader.readLine()) != null) {
+				lines.add(line);
+			}
+			return lines;
+		}
+		finally {
+			lineReader.close();
+		}
 	}
 
 	private FailureAnalysis performAnalysis(Class<?> configuration) {
 		FailureAnalysis analysis = this.analyzer.analyze(createFailure(configuration));
 		assertThat(analysis).isNotNull();
+		System.out.println(analysis.getDescription());
 		return analysis;
 	}
 
@@ -89,8 +166,38 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 		return null;
 	}
 
-	@Configuration
+	@org.springframework.context.annotation.Configuration
 	static class CyclicBeanMethodsConfiguration {
+
+		@Bean
+		public BeanThree three(BeanOne one) {
+			return new BeanThree();
+		}
+
+		@org.springframework.context.annotation.Configuration
+		static class InnerConfiguration {
+
+			@Bean
+			public BeanTwo two(BeanThree three) {
+				return new BeanTwo();
+			}
+
+			@Configuration
+			static class InnerInnerConfiguration {
+
+				@Bean
+				public BeanOne one(BeanTwo two) {
+					return new BeanOne();
+				}
+
+			}
+
+		}
+
+	}
+
+	@Configuration
+	static class CycleReferencedViaOtherBeansConfiguration {
 
 		@Bean
 		public BeanOne one(BeanTwo two) {
@@ -103,13 +210,33 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 		}
 
 		@Bean
-		public BeanThree three(BeanOne one) {
+		public BeanThree three(BeanOne beanOne) {
 			return new BeanThree();
+		}
+
+		@Configuration
+		static class InnerConfiguration {
+
+			@Bean
+			public RefererTwo refererTwo() {
+				return new RefererTwo();
+			}
+
+			@Configuration
+			static class InnerInnerConfiguration {
+
+				@Bean
+				public RefererOne refererOne() {
+					return new RefererOne();
+				}
+
+			}
+
 		}
 
 	}
 
-	@Configuration
+	@org.springframework.context.annotation.Configuration
 	public static class CycleWithAutowiredFields {
 
 		@Bean
@@ -127,6 +254,7 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 			public BeanTwo two() {
 				return new BeanTwo();
 			}
+
 		}
 
 		public static class BeanThreeConfiguration {
@@ -135,7 +263,22 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 			public BeanThree three(BeanOne one) {
 				return new BeanThree();
 			}
+
 		}
+
+	}
+
+	static class RefererOne {
+
+		@Autowired
+		RefererTwo refererTwo;
+
+	}
+
+	static class RefererTwo {
+
+		@Autowired
+		BeanOne beanOne;
 
 	}
 
