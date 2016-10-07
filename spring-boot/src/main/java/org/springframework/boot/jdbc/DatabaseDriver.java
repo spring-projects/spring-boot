@@ -38,7 +38,8 @@ public enum DatabaseDriver {
 	/**
 	 * Apache Derby.
 	 */
-	DERBY("Apache Derby", "org.apache.derby.jdbc.EmbeddedDriver", null,
+	DERBY("Apache Derby", "org.apache.derby.jdbc.EmbeddedDriver",
+			"org.apache.derby.jdbc.EmbeddedXADataSource",
 			"SELECT 1 FROM SYSIBM.SYSDUMMY1"),
 
 	/**
