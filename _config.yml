@@ -26,7 +26,7 @@ name: Spring Boot
 project: spring-boot
 
 # Project github URL
-github_repo_url: http://github.com/spring-projects/spring-boot
+github_repo_url: https://github.com/spring-projects/spring-boot
 
 # If you want to include a custom pom.xml or gradle template set these value to true and add _include files
 custom_pom_template: true
@@ -35,9 +35,9 @@ custom_gradle_template: true
 
 ### The following properties are constant for most projects
 
-main_site_url: http://spring.io
-projects_site_url: http://projects.spring.io
-questions_url: http://spring.io/questions
+main_site_url: https://spring.io
+projects_site_url: https://projects.spring.io
+questions_url: https://spring.io/questions
 
 version: 1.0.0.BUILD-SNAPSHOT
 exclude: [code]
