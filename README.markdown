@@ -107,7 +107,7 @@ Assuming you're already within your project's clone directory, and you've alread
 
 Use the `--watch` flag to pick up changes to files as you make them, allowing you a nice edit-and-refresh workflow.
 
-    jekyll serve --watch
+    bundle exec jekyll serve --watch
 
 > **Important:** Because the `baseurl` is set explicitly within your project's `_config.yml` file, you'll need to fully-qualify the URL to view your project. For example, if your project is named "spring-xyz", your URL when running Jekyll locally will be <http://localhost:4000/spring-xyz/>. Don't forget the trailing slash! You'll get a 404 without it.
 
