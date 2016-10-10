@@ -38,9 +38,11 @@ import org.crsh.plugin.PluginDiscovery;
 import org.crsh.plugin.PluginLifeCycle;
 import org.crsh.plugin.PropertyDescriptor;
 import org.crsh.plugin.ServiceLoaderDiscovery;
+import org.crsh.plugin.WebPluginLifeCycle;
 import org.crsh.vfs.FS;
 import org.crsh.vfs.spi.AbstractFSDriver;
 import org.crsh.vfs.spi.FSDriver;
+import org.crsh.web.servlet.CRaSHConnector;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -78,12 +80,14 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for embedding an extensible shell
  * into a Spring Boot enabled application. By default a SSH daemon is started on port
  * 2000. If the CRaSH Telnet plugin is available on the classpath, Telnet daemon will be
- * launched on port 5000.
+ * launched on port 5000. If the CRaSH Web plugin is available on the classpath, Web
+ * daemon will be launched.
  * <p>
  * The default shell authentication method uses a username and password combination. If no
  * configuration is provided the default username is 'user' and the password will be
@@ -163,6 +167,30 @@ public class CrshAutoConfiguration {
 			return new SimpleAuthenticationProperties();
 		}
 
+	}
+
+	@Configuration
+	static class CrshWebPlugin {
+
+		@Bean
+		@ConditionalOnProperty(name = "management.shell.web.enabled", havingValue = "true")
+		public WebPluginLifeCycle webPluginLifeCycle() {
+			return new WebPluginLifeCycle();
+		}
+
+		@Bean
+		@ConditionalOnProperty(name = "management.shell.web.enabled", havingValue = "true")
+		@ConditionalOnClass(CRaSHConnector.class)
+		public CRaSHConnector cRaSHWebConnector() {
+			return new CRaSHConnector();
+		}
+
+		@Bean
+		@ConditionalOnProperty(name = "management.shell.web.enabled", havingValue = "true")
+		@ConditionalOnMissingBean(ServerEndpointExporter.class)
+		public ServerEndpointExporter serverEndpointExporter() {
+			return new ServerEndpointExporter();
+		}
 	}
 
 	/**

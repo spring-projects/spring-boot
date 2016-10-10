@@ -250,6 +250,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.crashub</groupId>
+			<artifactId>crash.connectors.web</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.jolokia</groupId>
 			<artifactId>jolokia-core</artifactId>
 			<optional>true</optional>
@@ -368,6 +373,10 @@
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
 	</dependencies>
 </project>

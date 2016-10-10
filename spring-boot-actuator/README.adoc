@@ -3,7 +3,7 @@
 Spring Boot Actuator includes a number of additional features to help you monitor and
 manage your application when it's pushed to production. You can choose to manage and
 monitor your application using HTTP endpoints, with JMX or even by remote shell (SSH or
-Telnet).  Auditing, health and metrics gathering can be automatically applied to your
+Telnet or Websocket).  Auditing, health and metrics gathering can be automatically applied to your
 application. The
 http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready[user guide]
 covers the features in more detail.

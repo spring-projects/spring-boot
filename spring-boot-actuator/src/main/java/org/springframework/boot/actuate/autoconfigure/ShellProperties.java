@@ -38,6 +38,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Alex Fainshtein
  */
 @ConfigurationProperties(prefix = ShellProperties.SHELL_PREFIX, ignoreUnknownFields = true)
 public class ShellProperties {
@@ -82,6 +83,8 @@ public class ShellProperties {
 	private final Ssh ssh = new Ssh();
 
 	private final Telnet telnet = new Telnet();
+
+	private final Web web = new Web();
 
 	public Auth getAuth() {
 		return this.auth;
@@ -143,6 +146,10 @@ public class ShellProperties {
 		return this.telnet;
 	}
 
+	public Web getWeb() {
+		return this.web;
+	}
+
 	/**
 	 * Return a properties file configured from these settings that can be applied to a
 	 * CRaSH shell instance.
@@ -152,6 +159,7 @@ public class ShellProperties {
 		Properties properties = new Properties();
 		this.ssh.applyToCrshShellConfig(properties);
 		this.telnet.applyToCrshShellConfig(properties);
+		this.web.applyToCrshShellConfig(properties);
 
 		for (CrshShellProperties shellProperties : this.additionalProperties) {
 			shellProperties.applyToCrshShellConfig(properties);
@@ -162,13 +170,16 @@ public class ShellProperties {
 					String.valueOf(this.commandRefreshInterval));
 		}
 
-		// special handling for disabling Ssh and Telnet support
+		// special handling for disabling Ssh, Telnet and Web support
 		List<String> dp = new ArrayList<String>(Arrays.asList(this.disabledPlugins));
 		if (!this.ssh.isEnabled()) {
 			dp.add("org.crsh.ssh.SSHPlugin");
 		}
 		if (!this.telnet.isEnabled()) {
 			dp.add("org.crsh.telnet.TelnetPlugin");
+		}
+		if (!this.web.isEnabled()) {
+			dp.add("org.crsh.web.servlet.WebPlugin");
 		}
 		this.disabledPlugins = dp.toArray(new String[dp.size()]);
 
@@ -368,6 +379,34 @@ public class ShellProperties {
 
 		public Integer getPort() {
 			return this.port;
+		}
+
+	}
+
+	/**
+	 * Web properties.
+	 */
+	public static class Web extends CrshShellProperties {
+
+		/**
+		 * Enable CRaSH websocket support. Enabled by default if the WebPlugin is
+		 * available.
+		 */
+		private boolean enabled = false;
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		@Override
+		protected void applyToCrshShellConfig(Properties config) {
+			if (this.enabled) {
+				config.put("crash.web.enabled", String.valueOf(this.enabled));
+			}
 		}
 
 	}

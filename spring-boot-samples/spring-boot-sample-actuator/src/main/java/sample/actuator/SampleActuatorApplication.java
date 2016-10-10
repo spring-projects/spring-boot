@@ -32,5 +32,4 @@ public class SampleActuatorApplication implements HealthIndicator {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleActuatorApplication.class, args);
 	}
-
 }

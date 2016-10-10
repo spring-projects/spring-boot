@@ -156,6 +156,22 @@ public class ShellPropertiesTests {
 	}
 
 	@Test
+	public void testBindingWeb() {
+		ShellProperties props = load(ShellProperties.class,
+				"management.shell.web.enabled=true");
+		Properties p = props.asCrshShellConfig();
+		assertThat(p.get("crash.web.enabled")).isEqualTo("true");
+	}
+
+	@Test
+	public void testBindingWebIgnored() {
+		ShellProperties props = load(ShellProperties.class,
+				"management.shell.web.enabled=false");
+		Properties p = props.asCrshShellConfig();
+		assertThat(p.get("crash.web.enabled")).isNull();
+	}
+
+	@Test
 	public void testBindingJaas() {
 		JaasAuthenticationProperties props = load(JaasAuthenticationProperties.class,
 				"management.shell.auth.jaas.domain=my-test-domain");
