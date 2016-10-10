@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
  */
 public class JdbcSessionDatabaseInitializer extends AbstractDatabaseInitializer {
 
-	private SessionProperties.Jdbc properties;
+	private final SessionProperties.Jdbc properties;
 
 	public JdbcSessionDatabaseInitializer(DataSource dataSource,
 			ResourceLoader resourceLoader, SessionProperties properties) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
  */
 public class BatchDatabaseInitializer extends AbstractDatabaseInitializer {
 
-	private BatchProperties properties;
+	private final BatchProperties properties;
 
 	public BatchDatabaseInitializer(DataSource dataSource,
 			ResourceLoader resourceLoader, BatchProperties properties) {
@@ -50,7 +50,8 @@ public class BatchDatabaseInitializer extends AbstractDatabaseInitializer {
 	}
 
 	@Override
-	protected String customizeDatabaseName(String databaseName) {
+	protected String getDatabaseName() {
+		String databaseName = super.getDatabaseName();
 		if ("oracle".equals(databaseName)) {
 			return "oracle10g";
 		}

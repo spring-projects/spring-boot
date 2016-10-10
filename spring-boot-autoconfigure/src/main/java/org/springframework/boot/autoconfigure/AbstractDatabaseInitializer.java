@@ -28,20 +28,21 @@ import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.util.Assert;
 
 /**
- * Abstract base class for database schema initializers.
+ * Base class used for database initialization.
  *
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  * @since 1.5.0
  */
 public abstract class AbstractDatabaseInitializer {
 
 	private static final String PLATFORM_PLACEHOLDER = "@@platform@@";
 
-	private DataSource dataSource;
+	private final DataSource dataSource;
 
-	private ResourceLoader resourceLoader;
+	private final ResourceLoader resourceLoader;
 
-	public AbstractDatabaseInitializer(DataSource dataSource, ResourceLoader resourceLoader) {
+	protected AbstractDatabaseInitializer(DataSource dataSource, ResourceLoader resourceLoader) {
 		Assert.notNull(dataSource, "DataSource must not be null");
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
 		this.dataSource = dataSource;
@@ -54,7 +55,7 @@ public abstract class AbstractDatabaseInitializer {
 			ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
 			String schemaLocation = getSchemaLocation();
 			if (schemaLocation.contains(PLATFORM_PLACEHOLDER)) {
-				String platform = customizeDatabaseName(getDatabaseName());
+				String platform = getDatabaseName();
 				schemaLocation = schemaLocation.replace(PLATFORM_PLACEHOLDER, platform);
 			}
 			populator.addScript(this.resourceLoader.getResource(schemaLocation));
@@ -67,11 +68,7 @@ public abstract class AbstractDatabaseInitializer {
 
 	protected abstract String getSchemaLocation();
 
-	protected String customizeDatabaseName(String databaseName) {
-		return databaseName;
-	}
-
-	private String getDatabaseName() {
+	protected String getDatabaseName() {
 		try {
 			String databaseProductName = JdbcUtils.extractDatabaseMetaData(
 					this.dataSource, "getDatabaseProductName").toString();
@@ -81,7 +78,7 @@ public abstract class AbstractDatabaseInitializer {
 			if (databaseDriver == DatabaseDriver.UNKNOWN) {
 				throw new IllegalStateException("Unable to detect database type");
 			}
-			return databaseDriver.toString().toLowerCase();
+			return databaseDriver.getId();
 		}
 		catch (MetaDataAccessException ex) {
 			throw new IllegalStateException("Unable to detect database type", ex);
