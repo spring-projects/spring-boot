@@ -40,6 +40,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.util.StringUtils;
 
@@ -77,8 +78,9 @@ public class BatchAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(DataSource.class)
-	public BatchDatabaseInitializer batchDatabaseInitializer() {
-		return new BatchDatabaseInitializer();
+	public BatchDatabaseInitializer batchDatabaseInitializer(DataSource dataSource,
+			ResourceLoader resourceLoader) {
+		return new BatchDatabaseInitializer(dataSource, resourceLoader, this.properties);
 	}
 
 	@Bean
