@@ -115,10 +115,8 @@ public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint {
 
 	private File createTempFile(boolean live) throws IOException {
 		String date = new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date());
-		File file = File.createTempFile("heapdump" + date + (live ? "-live" : ""),
+		return File.createTempFile("heapdump" + date + (live ? "-live" : ""),
 				".hprof");
-		file.delete();
-		return file;
 	}
 
 	/**
