@@ -658,15 +658,15 @@ public class ServerProperties
 		private Charset uriEncoding;
 
 		/**
-		 * Maximum amount of connections accept and process.
-		 * <p>Once the limit has been reached,
-		 * the operating system may still accept connections based on the @link{acceptCount} setting.</p>
+		 * Maximum number of connections that the server will accept and process
+		 * at any given time. Once the limit has been reached, the operating system
+		 * may still accept connections based on the "acceptCount" property.
 		 */
 		private int maxConnections = 0;
 
 		/**
-		 * Maximum queue length for incoming connection requests when all possible request processing threads are in use.
-		 * Any requests received when the queue is full will be refused.
+		 * Maximum queue length for incoming connection requests when all possible
+		 * request processing threads are in use.
 		 */
 		private int acceptCount = 0;
 
