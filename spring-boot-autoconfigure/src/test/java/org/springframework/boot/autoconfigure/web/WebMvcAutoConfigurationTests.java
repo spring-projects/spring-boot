@@ -577,7 +577,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void welcomePageMappingOnlyHandlesRequestsThatAcceptTextHtml()
+	public void welcomePageMappingDoesNotHandleRequestThatDoNotAcceptTextHtml()
 			throws Exception {
 		load("spring.resources.static-locations:classpath:/welcome-page/");
 		assertThat(this.context.getBeansOfType(WelcomePageHandlerMapping.class))
@@ -585,6 +585,27 @@ public class WebMvcAutoConfigurationTests {
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 		mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void welcomePageMappingHandlesRequestsWithNoAcceptHeader() throws Exception {
+		load("spring.resources.static-locations:classpath:/welcome-page/");
+		assertThat(this.context.getBeansOfType(WelcomePageHandlerMapping.class))
+				.hasSize(1);
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/")).andExpect(status().isOk())
+				.andExpect(forwardedUrl("index.html"));
+	}
+
+	@Test
+	public void welcomePageMappingHandlesRequestsWithEmptyAcceptHeader()
+			throws Exception {
+		load("spring.resources.static-locations:classpath:/welcome-page/");
+		assertThat(this.context.getBeansOfType(WelcomePageHandlerMapping.class))
+				.hasSize(1);
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/").header(HttpHeaders.ACCEPT, ""))
+				.andExpect(status().isOk()).andExpect(forwardedUrl("index.html"));
 	}
 
 	@Test
