@@ -136,6 +136,15 @@ public class EndpointHandlerMappingTests {
 		assertThat(mapping.getHandler(request("POST", "/a"))).isNull();
 	}
 
+	@Test
+	public void getEndpointsForSpecifiedType() throws Exception {
+		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
+		TestActionEndpoint other = new TestActionEndpoint(new TestEndpoint("b"));
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
+				Arrays.asList(endpoint, other));
+		assertThat(mapping.getEndpoints(TestMvcEndpoint.class)).containsExactly(endpoint);
+	}
+
 	private MockHttpServletRequest request(String method, String requestURI) {
 		return new MockHttpServletRequest(method, requestURI);
 	}

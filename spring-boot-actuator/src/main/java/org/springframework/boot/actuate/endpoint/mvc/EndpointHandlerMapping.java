@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -196,9 +197,29 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 	/**
 	 * Return the endpoints.
 	 * @return the endpoints
+	 * @see #getEndpoints(Class)
 	 */
 	public Set<? extends MvcEndpoint> getEndpoints() {
-		return new HashSet<MvcEndpoint>(this.endpoints);
+		return getEndpoints(MvcEndpoint.class);
+	}
+
+	/**
+	 * Return the endpoints of the specified type.
+	 * @param <E> the endpoint type
+	 * @param type the endpoint type
+	 * @return the endpoints
+	 * @see #getEndpoints()
+	 * @since 1.5.0
+	 */
+	@SuppressWarnings("unchecked")
+	public <E extends MvcEndpoint> Set<E> getEndpoints(Class<E> type) {
+		Set<E> result = new HashSet<E>(this.endpoints.size());
+		for (MvcEndpoint candidate : this.endpoints) {
+			if (type.isInstance(candidate)) {
+				result.add((E) candidate);
+			}
+		}
+		return Collections.unmodifiableSet(result);
 	}
 
 	@Override
