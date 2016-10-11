@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
+import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.support.StaticApplicationContext;
@@ -78,16 +79,41 @@ public class MvcEndpointsTests {
 				.isEqualTo("/foo/bar");
 	}
 
+	@Test
+	public void getEndpointsForSpecifiedType() throws Exception {
+		this.context.getDefaultListableBeanFactory().registerSingleton("endpoint-1",
+				new TestMvcEndpoint(new TestEndpoint()));
+		this.context.getDefaultListableBeanFactory().registerSingleton("endpoint-2",
+				new OtherTestMvcEndpoint(new TestEndpoint()));
+		this.endpoints.setApplicationContext(this.context);
+		this.endpoints.afterPropertiesSet();
+		assertThat(this.endpoints.getEndpoints(TestMvcEndpoint.class)).hasSize(1);
+	}
+
 	@ConfigurationProperties("endpoints.test")
 	protected static class TestEndpoint extends AbstractEndpoint<String> {
 
-		public TestEndpoint() {
+		TestEndpoint() {
 			super("test");
 		}
 
 		@Override
 		public String invoke() {
 			return "foo";
+		}
+	}
+
+	private static class TestMvcEndpoint extends EndpointMvcAdapter {
+
+		TestMvcEndpoint(Endpoint<?> delegate) {
+			super(delegate);
+		}
+	}
+
+	private static class OtherTestMvcEndpoint extends EndpointMvcAdapter {
+
+		OtherTestMvcEndpoint(Endpoint<?> delegate) {
+			super(delegate);
 		}
 	}
 

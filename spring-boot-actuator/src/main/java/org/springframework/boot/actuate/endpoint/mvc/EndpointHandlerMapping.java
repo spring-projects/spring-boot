@@ -209,29 +209,9 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 	/**
 	 * Return the endpoints.
 	 * @return the endpoints
-	 * @see #getEndpoints(Class)
 	 */
-	public Set<? extends MvcEndpoint> getEndpoints() {
-		return getEndpoints(MvcEndpoint.class);
-	}
-
-	/**
-	 * Return the endpoints of the specified type.
-	 * @param <E> the endpoint type
-	 * @param type the endpoint type
-	 * @return the endpoints
-	 * @see #getEndpoints()
-	 * @since 1.5.0
-	 */
-	@SuppressWarnings("unchecked")
-	public <E extends MvcEndpoint> Set<E> getEndpoints(Class<E> type) {
-		Set<E> result = new HashSet<E>(this.endpoints.size());
-		for (MvcEndpoint candidate : this.endpoints) {
-			if (type.isInstance(candidate)) {
-				result.add((E) candidate);
-			}
-		}
-		return Collections.unmodifiableSet(result);
+	public Set<MvcEndpoint> getEndpoints() {
+		return Collections.unmodifiableSet(this.endpoints);
 	}
 
 	@Override

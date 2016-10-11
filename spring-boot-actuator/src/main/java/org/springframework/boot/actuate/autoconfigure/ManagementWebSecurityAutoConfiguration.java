@@ -406,7 +406,8 @@ public class ManagementWebSecurityAutoConfiguration {
 			EndpointHandlerMapping endpointHandlerMapping = null;
 			ApplicationContext context = this.contextResolver.getApplicationContext();
 			if (context.getBeanNamesForType(EndpointHandlerMapping.class).length > 0) {
-				endpointHandlerMapping = context.getBean(EndpointHandlerMapping.class);
+				endpointHandlerMapping = context.getBean("endpointHandlerMapping",
+						EndpointHandlerMapping.class);
 			}
 			if (endpointHandlerMapping == null) {
 				// Maybe there are actually no endpoints (e.g. management.port=-1)

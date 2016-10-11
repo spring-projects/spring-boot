@@ -138,15 +138,6 @@ public class EndpointHandlerMappingTests {
 	}
 
 	@Test
-	public void getEndpointsForSpecifiedType() throws Exception {
-		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
-		TestActionEndpoint other = new TestActionEndpoint(new TestEndpoint("b"));
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(endpoint, other));
-		assertThat(mapping.getEndpoints(TestMvcEndpoint.class)).containsExactly(endpoint);
-	}
-
-	@Test
 	public void pathNotMappedWhenGetPathReturnsNull() throws Exception {
 		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
 		TestActionEndpoint other = new TestActionEndpoint(new TestEndpoint("b"));
