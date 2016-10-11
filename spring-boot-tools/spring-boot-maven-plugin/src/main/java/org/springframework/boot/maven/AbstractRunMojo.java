@@ -88,8 +88,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private Boolean noverify;
 
 	/**
-	 * The working directory of the application. If specified by default the process
-	 * will be started by forking a new JVM.
+	 * Current working directory to use for the application. If not specified, basedir
+	 * will be used NOTE: the use of working directory means that processes will be
+	 * started by forking a new JVM.
 	 * @since 1.5
 	 */
 	@Parameter(property = "run.workingDirectory")

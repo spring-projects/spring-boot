@@ -77,7 +77,7 @@ public class RunProcess {
 	protected int run(boolean waitForProcess, Collection<String> args)
 			throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(this.command);
-		builder.directory(workingDirectory);
+		builder.directory(this.workingDirectory);
 		builder.command().addAll(args);
 		builder.redirectErrorStream(true);
 		boolean inheritedIO = inheritIO(builder);

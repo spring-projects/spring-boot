@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ public class StartMojo extends AbstractRunMojo {
 	@Override
 	protected void runWithForkedJvm(File workingDirectory, List<String> args)
 			throws MojoExecutionException, MojoFailureException {
-		RunProcess runProcess = runProcess(args, workingDirectory);
+		RunProcess runProcess = runProcess(workingDirectory, args);
 		try {
 			waitForSpringApplication();
 		}
@@ -104,9 +104,11 @@ public class StartMojo extends AbstractRunMojo {
 		}
 	}
 
-	private RunProcess runProcess(List<String> args, File workingDirectory) throws MojoExecutionException {
+	private RunProcess runProcess(File workingDirectory, List<String> args)
+			throws MojoExecutionException {
 		try {
-			RunProcess runProcess = new RunProcess(workingDirectory, new JavaExecutable().toString());
+			RunProcess runProcess = new RunProcess(workingDirectory,
+					new JavaExecutable().toString());
 			runProcess.run(false, args.toArray(new String[args.size()]));
 			return runProcess;
 		}
