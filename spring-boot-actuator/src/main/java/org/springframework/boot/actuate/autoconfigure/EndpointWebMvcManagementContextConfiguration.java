@@ -83,12 +83,7 @@ public class EndpointWebMvcManagementContextConfiguration {
 		CorsConfiguration corsConfiguration = getCorsConfiguration(this.corsProperties);
 		EndpointHandlerMapping mapping = new EndpointHandlerMapping(endpoints,
 				corsConfiguration);
-		boolean disabled = this.managementServerProperties.getPort() != null
-				&& this.managementServerProperties.getPort() == -1;
-		mapping.setDisabled(disabled);
-		if (!disabled) {
-			mapping.setPrefix(this.managementServerProperties.getContextPath());
-		}
+		mapping.setPrefix(this.managementServerProperties.getContextPath());
 		if (this.mappingCustomizers != null) {
 			for (EndpointHandlerMappingCustomizer customizer : this.mappingCustomizers) {
 				customizer.customize(mapping);
