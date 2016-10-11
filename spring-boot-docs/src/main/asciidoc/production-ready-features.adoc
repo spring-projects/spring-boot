@@ -803,7 +803,7 @@ If you are using Jolokia but you don't want Spring Boot to configure it, simply 
 
 
 [[production-ready-remote-shell]]
-== Monitoring and management using a remote shell
+== Monitoring and management using a remote shell (deprecated)
 Spring Boot supports an integrated Java shell called '`CRaSH`'. You can use CRaSH to
 `ssh` or `telnet` into your running application. To enable remote shell support, add
 the following dependency to your project:

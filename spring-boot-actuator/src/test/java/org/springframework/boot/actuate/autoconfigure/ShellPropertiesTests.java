@@ -49,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Christian Dupuis
  * @author Stephane Nicoll
  */
+@Deprecated
 public class ShellPropertiesTests {
 
 	@Rule

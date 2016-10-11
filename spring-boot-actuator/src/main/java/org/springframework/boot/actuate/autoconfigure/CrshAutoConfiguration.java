@@ -121,6 +121,7 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(ShellProperties.class)
 @AutoConfigureAfter({ SecurityAutoConfiguration.class,
 		ManagementWebSecurityAutoConfiguration.class })
+@Deprecated
 public class CrshAutoConfiguration {
 
 	public static final String AUTH_PREFIX = ShellProperties.SHELL_PREFIX + ".auth";
