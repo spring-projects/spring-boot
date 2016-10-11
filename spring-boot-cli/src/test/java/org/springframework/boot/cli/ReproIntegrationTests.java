@@ -61,7 +61,7 @@ public class ReproIntegrationTests {
 	public void jarFileExtensionNeeded() throws Exception {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("is not a JAR file");
-		this.cli.jar("secure.groovy");
+		this.cli.jar("secure.groovy", "data-jpa.groovy");
 	}
 
 }
