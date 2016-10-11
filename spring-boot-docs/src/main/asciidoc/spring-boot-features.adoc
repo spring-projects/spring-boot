@@ -4983,11 +4983,13 @@ For convenience, tests that need to make REST calls to the started server can ad
 ----
 	import org.junit.*;
 	import org.junit.runner.*;
-	import org.springframework.boot.test.context.web.*;
+	import org.springframework.beans.factory.annotation.*;
+	import org.springframework.boot.test.context.*;
 	import org.springframework.boot.test.web.client.*;
 	import org.springframework.test.context.junit4.*;
 
-	import static org.assertj.core.api.Assertions.*
+	import static org.assertj.core.api.Assertions.*;
+	import static org.springframework.boot.test.context.SpringBootTest.*;
 
 	@RunWith(SpringRunner.class)
 	@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
