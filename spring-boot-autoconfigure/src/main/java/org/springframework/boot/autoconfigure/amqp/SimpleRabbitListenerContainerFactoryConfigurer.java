@@ -90,6 +90,9 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer {
 		if (listenerConfig.getDefaultRequeueRejected() != null) {
 			factory.setDefaultRequeueRejected(listenerConfig.getDefaultRequeueRejected());
 		}
+		if (listenerConfig.getIdleEventInterval() != null) {
+			factory.setIdleEventInterval(listenerConfig.getIdleEventInterval());
+		}
 		ListenerRetry retryConfig = listenerConfig.getRetry();
 		if (retryConfig.isEnabled()) {
 			RetryInterceptorBuilder<?> builder = (retryConfig.isStateless()
