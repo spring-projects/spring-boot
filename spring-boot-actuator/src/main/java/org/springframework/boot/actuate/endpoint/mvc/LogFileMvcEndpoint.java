@@ -46,7 +46,7 @@ import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "endpoints.logfile")
-public class LogFileMvcEndpoint extends AbstractMvcEndpoint {
+public class LogFileMvcEndpoint extends AbstractNamedMvcEndpoint {
 
 	private static final Log logger = LogFactory.getLog(LogFileMvcEndpoint.class);
 
@@ -57,7 +57,7 @@ public class LogFileMvcEndpoint extends AbstractMvcEndpoint {
 	private File externalFile;
 
 	public LogFileMvcEndpoint() {
-		super("/logfile", true);
+		super("logfile", "/logfile", true);
 	}
 
 	public File getExternalFile() {

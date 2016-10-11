@@ -56,7 +56,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 @ConfigurationProperties("endpoints.heapdump")
 @HypermediaDisabled
-public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint {
+public class HeapdumpMvcEndpoint extends AbstractNamedMvcEndpoint {
 
 	private final long timeout;
 
@@ -69,7 +69,7 @@ public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint {
 	}
 
 	protected HeapdumpMvcEndpoint(long timeout) {
-		super("/heapdump", true);
+		super("heapdump", "/heapdump", true);
 		this.timeout = timeout;
 	}
 
