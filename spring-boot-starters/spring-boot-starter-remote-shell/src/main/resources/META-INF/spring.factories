@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.springframework.boot.starter.remote.shell.RemoteShellStarterDeprecatedWarningAutoConfiguration

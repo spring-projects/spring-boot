@@ -68,6 +68,7 @@ import static org.hamcrest.CoreMatchers.isA;
  * @author Stephane Nicoll
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
+@Deprecated
 public class CrshAutoConfigurationTests {
 
 	private AnnotationConfigWebApplicationContext context;

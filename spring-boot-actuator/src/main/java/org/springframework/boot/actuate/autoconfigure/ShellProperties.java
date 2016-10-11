@@ -40,6 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  */
 @ConfigurationProperties(prefix = ShellProperties.SHELL_PREFIX, ignoreUnknownFields = true)
+@Deprecated
 public class ShellProperties {
 
 	public static final String SHELL_PREFIX = "management.shell";
