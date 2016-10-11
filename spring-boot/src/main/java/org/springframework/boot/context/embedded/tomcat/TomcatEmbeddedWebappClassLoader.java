@@ -46,10 +46,9 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 	@Override
 	public synchronized Class<?> loadClass(String name, boolean resolve)
 			throws ClassNotFoundException {
-		Class<?> resultClass = null;
 
 		// Check local class caches
-		resultClass = (resultClass == null ? findLoadedClass0(name) : resultClass);
+		Class<?> resultClass =  findLoadedClass0(name);
 		resultClass = (resultClass == null ? findLoadedClass(name) : resultClass);
 		if (resultClass != null) {
 			return resolveIfNecessary(resultClass, resolve);
@@ -62,12 +61,12 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 		boolean delegateLoad = (this.delegate || filter(name, true));
 
 		if (delegateLoad) {
-			resultClass = (resultClass == null ? loadFromParent(name) : resultClass);
+			resultClass = loadFromParent(name);
 		}
 		resultClass = (resultClass == null ? findClassIgnoringNotFound(name)
 				: resultClass);
-		if (!delegateLoad) {
-			resultClass = (resultClass == null ? loadFromParent(name) : resultClass);
+		if (!delegateLoad && resultClass == null) {
+			resultClass = loadFromParent(name);
 		}
 
 		if (resultClass == null) {

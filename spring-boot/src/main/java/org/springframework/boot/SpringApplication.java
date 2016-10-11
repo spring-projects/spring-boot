@@ -507,7 +507,7 @@ public class SpringApplication {
 				PropertySource<?> source = sources.get(name);
 				CompositePropertySource composite = new CompositePropertySource(name);
 				composite.addPropertySource(new SimpleCommandLinePropertySource(
-						name + "-" + args.hashCode(), args));
+						name + "-" + Arrays.hashCode(args), args));
 				composite.addPropertySource(source);
 				sources.replace(name, composite);
 			}
