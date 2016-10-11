@@ -61,6 +61,7 @@ import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.accept.ContentNegotiationManager;
@@ -516,13 +517,18 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public Object getHandlerInternal(HttpServletRequest request) throws Exception {
-			for (MediaType mediaType : MediaType
-					.parseMediaTypes(request.getHeader(HttpHeaders.ACCEPT))) {
+			for (MediaType mediaType : getAcceptedMediaTypes(request)) {
 				if (mediaType.includes(MediaType.TEXT_HTML)) {
 					return super.getHandlerInternal(request);
 				}
 			}
 			return null;
+		}
+
+		private List<MediaType> getAcceptedMediaTypes(HttpServletRequest request) {
+			String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
+			return MediaType.parseMediaTypes(
+					StringUtils.hasText(acceptHeader) ? acceptHeader : "*/*");
 		}
 
 	}
