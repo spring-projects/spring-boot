@@ -863,6 +863,7 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.listener.auto-startup=true # Start the container automatically on startup.
 	spring.rabbitmq.listener.concurrency= # Minimum number of consumers.
 	spring.rabbitmq.listener.default-requeue-rejected= # Whether or not to requeue delivery failures; default `true`.
+	spring.rabbitmq.idle-event-interval= # How often idle container events should be published in milliseconds.
 	spring.rabbitmq.listener.max-concurrency= # Maximum number of consumers.
 	spring.rabbitmq.listener.prefetch= # Number of messages to be handled in a single request. It should be greater than or equal to the transaction size (if used).
 	spring.rabbitmq.listener.retry.enabled=false # Whether or not publishing retries are enabled.

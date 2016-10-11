@@ -504,7 +504,7 @@ public class RabbitProperties {
 		private Boolean defaultRequeueRejected;
 
 		/**
-		 * How often to publish idle container events.
+		 * How often idle container events should be published in milliseconds.
 		 */
 		private Long idleEventInterval;
 
@@ -571,7 +571,7 @@ public class RabbitProperties {
 		}
 
 		public Long getIdleEventInterval() {
-			return idleEventInterval;
+			return this.idleEventInterval;
 		}
 
 		public void setIdleEventInterval(Long idleEventInterval) {
