@@ -21,11 +21,8 @@ initialization performed by Boot
 	<logger name="org.apache.coyote.http11.Http11NioProtocol" level="WARN"/>
 	<logger name="org.apache.sshd.common.util.SecurityUtils" level="WARN"/>
 	<logger name="org.apache.tomcat.util.net.NioSelectorPool" level="WARN"/>
-	<logger name="org.crsh.plugin" level="WARN"/>
-	<logger name="org.crsh.ssh" level="WARN"/>
 	<logger name="org.eclipse.jetty.util.component.AbstractLifeCycle" level="ERROR"/>
 	<logger name="org.hibernate.validator.internal.util.Version" level="WARN"/>
-	<logger name="org.springframework.boot.actuate.autoconfigure.CrshAutoConfiguration" level="WARN"/>
 	<logger name="org.springframework.boot.actuate.endpoint.jmx" additivity="false">
 		<appender-ref ref="DEBUG_LEVEL_REMAPPER"/>
 	</logger>

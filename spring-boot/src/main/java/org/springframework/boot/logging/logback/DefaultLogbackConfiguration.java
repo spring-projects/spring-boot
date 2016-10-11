@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,12 +101,8 @@ class DefaultLogbackConfiguration {
 		config.logger("org.apache.coyote.http11.Http11NioProtocol", Level.WARN);
 		config.logger("org.apache.sshd.common.util.SecurityUtils", Level.WARN);
 		config.logger("org.apache.tomcat.util.net.NioSelectorPool", Level.WARN);
-		config.logger("org.crsh.plugin", Level.WARN);
-		config.logger("org.crsh.ssh", Level.WARN);
 		config.logger("org.eclipse.jetty.util.component.AbstractLifeCycle", Level.ERROR);
 		config.logger("org.hibernate.validator.internal.util.Version", Level.WARN);
-		config.logger("org.springframework.boot.actuate.autoconfigure."
-				+ "CrshAutoConfiguration", Level.WARN);
 		config.logger("org.springframework.boot.actuate.endpoint.jmx", null, false,
 				debugRemapAppender);
 		config.logger("org.thymeleaf", null, false, debugRemapAppender);

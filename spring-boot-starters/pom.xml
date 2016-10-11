@@ -60,7 +60,6 @@
 		<module>spring-boot-starter-social-facebook</module>
 		<module>spring-boot-starter-social-twitter</module>
 		<module>spring-boot-starter-social-linkedin</module>
-		<module>spring-boot-starter-remote-shell</module>
 		<module>spring-boot-starter-test</module>
 		<module>spring-boot-starter-thymeleaf</module>
 		<module>spring-boot-starter-tomcat</module>

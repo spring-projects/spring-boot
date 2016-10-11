@@ -235,21 +235,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.crashub</groupId>
-			<artifactId>crash.shell</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.crashub</groupId>
-			<artifactId>crash.cli</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.crashub</groupId>
-			<artifactId>crash.embed.spring</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.jolokia</groupId>
 			<artifactId>jolokia-core</artifactId>
 			<optional>true</optional>
@@ -332,11 +317,6 @@
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.crashub</groupId>
-			<artifactId>crash.connectors.telnet</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
