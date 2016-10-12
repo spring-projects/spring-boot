@@ -4925,28 +4925,7 @@ For convenience, tests that need to make REST calls to the started server can ad
 
 [source,java,indent=0]
 ----
-	import org.junit.*;
-	import org.junit.runner.*;
-	import org.springframework.boot.test.context.web.*;
-	import org.springframework.boot.test.web.client.*;
-	import org.springframework.test.context.junit4.*;
-
-	import static org.assertj.core.api.Assertions.*
-
-	@RunWith(SpringRunner.class)
-	@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
-	public class MyWebIntegrationTests {
-
-		@Autowired
-		private TestRestTemplate restTemplate;
-
-		@Test
-		public void exampleTest() {
-			String body = this.restTemplate.getForObject("/", String.class);
-			assertThat(body).isEqualTo("Hello World");
-		}
-
-	}
+include::{code-examples}/test/web/RandomPortExampleTests.java[tag=test-random-port]
 ----
 
 
