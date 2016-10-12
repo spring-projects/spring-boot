@@ -32,8 +32,8 @@ public class BatchDatabaseInitializer extends AbstractDatabaseInitializer {
 
 	private final BatchProperties properties;
 
-	public BatchDatabaseInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader, BatchProperties properties) {
+	public BatchDatabaseInitializer(DataSource dataSource, ResourceLoader resourceLoader,
+			BatchProperties properties) {
 		super(dataSource, resourceLoader);
 		Assert.notNull(properties, "BatchProperties must not be null");
 		this.properties = properties;

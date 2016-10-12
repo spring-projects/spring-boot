@@ -259,8 +259,7 @@ public class JmsAutoConfigurationTests {
 				"spring.jms.template.default-destination=testQueue",
 				"spring.jms.template.delivery-delay=500",
 				"spring.jms.template.delivery-mode=non-persistent",
-				"spring.jms.template.priority=6",
-				"spring.jms.template.time-to-live=6000",
+				"spring.jms.template.priority=6", "spring.jms.template.time-to-live=6000",
 				"spring.jms.template.receive-timeout=2000");
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		assertThat(jmsTemplate.getMessageConverter())

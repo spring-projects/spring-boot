@@ -149,8 +149,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Flag to indicate if the run processes should be forked. {@code fork} is
-	 * automatically enabled if an agent, jvmArguments or working directory are
-	 * specified, or if devtools is present.
+	 * automatically enabled if an agent, jvmArguments or working directory are specified,
+	 * or if devtools is present.
 	 * @since 1.2
 	 */
 	@Parameter(property = "fork")
@@ -206,7 +206,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private boolean hasWorkingDirectorySet() {
-		return (this.workingDirectory != null);
+		return this.workingDirectory != null;
 	}
 
 	private void findAgent() {

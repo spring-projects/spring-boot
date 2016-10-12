@@ -141,8 +141,8 @@ public class DataSourceAutoConfigurationTests {
 	@Deprecated
 	public void commonsDbcpIsFallback() throws Exception {
 		org.apache.commons.dbcp.BasicDataSource dataSource = autoConfigureDataSource(
-				org.apache.commons.dbcp.BasicDataSource.class,
-				"org.apache.tomcat", "com.zaxxer.hikari");
+				org.apache.commons.dbcp.BasicDataSource.class, "org.apache.tomcat",
+				"com.zaxxer.hikari");
 		assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
 	}
 
@@ -150,8 +150,8 @@ public class DataSourceAutoConfigurationTests {
 	@Deprecated
 	public void commonsDbcpValidatesConnectionByDefault() {
 		org.apache.commons.dbcp.BasicDataSource dataSource = autoConfigureDataSource(
-				org.apache.commons.dbcp.BasicDataSource.class,
-				"org.apache.tomcat", "com.zaxxer.hikari");
+				org.apache.commons.dbcp.BasicDataSource.class, "org.apache.tomcat",
+				"com.zaxxer.hikari");
 		assertThat(dataSource.getTestOnBorrow()).isTrue();
 		assertThat(dataSource.getValidationQuery())
 				.isEqualTo(DatabaseDriver.HSQLDB.getValidationQuery());

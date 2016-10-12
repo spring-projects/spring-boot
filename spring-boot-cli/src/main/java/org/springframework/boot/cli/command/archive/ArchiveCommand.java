@@ -289,10 +289,9 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 			return libraries;
 		}
 
-		protected void writeClasspathEntry(JarWriter writer,
-				MatchedResource entry) throws IOException {
-			writer.writeEntry(entry.getName(),
-					new FileInputStream(entry.getFile()));
+		protected void writeClasspathEntry(JarWriter writer, MatchedResource entry)
+				throws IOException {
+			writer.writeEntry(entry.getName(), new FileInputStream(entry.getFile()));
 		}
 
 		protected abstract LibraryScope getLibraryScope(File file);

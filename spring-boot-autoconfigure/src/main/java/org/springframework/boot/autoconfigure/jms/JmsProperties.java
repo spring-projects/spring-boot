@@ -135,8 +135,8 @@ public class JmsProperties {
 	public static class Template {
 
 		/**
-		 * Default destination to use on send/receive operations that do not
-		 * have a destination parameter.
+		 * Default destination to use on send/receive operations that do not have a
+		 * destination parameter.
 		 */
 		private String defaultDestination;
 
@@ -156,16 +156,14 @@ public class JmsProperties {
 		private Integer priority;
 
 		/**
-		 * Time-to-live of a message when sending in milliseconds. Enable
-		 * QoS when set.
+		 * Time-to-live of a message when sending in milliseconds. Enable QoS when set.
 		 */
 		private Long timeToLive;
 
 		/**
-		 * Enable explicit QoS when sending a message. When enabled, the
-		 * delivery mode, priority and time-to-live properties will be
-		 * used when sending a message. QoS is automatically enabled when
-		 * at least one of those settings is customized.
+		 * Enable explicit QoS when sending a message. When enabled, the delivery mode,
+		 * priority and time-to-live properties will be used when sending a message. QoS
+		 * is automatically enabled when at least one of those settings is customized.
 		 */
 		private Boolean qosEnabled;
 
@@ -291,8 +289,8 @@ public class JmsProperties {
 		NON_PERSISTENT(1),
 
 		/*
-		 * Instructs the JMS provider to log the message to stable storage as part of
-		 * the client's send operation.
+		 * Instructs the JMS provider to log the message to stable storage as part of the
+		 * client's send operation.
 		 */
 		PERSISTENT(2);
 

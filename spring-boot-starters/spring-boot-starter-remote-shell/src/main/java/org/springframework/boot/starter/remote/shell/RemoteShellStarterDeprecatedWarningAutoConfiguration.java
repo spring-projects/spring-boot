@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
  * the starter.
  *
  * @author Stephane Nicoll
- * @since 1.4.0
+ * @since 1.5.0
  */
 @Configuration
 @Deprecated
@@ -40,10 +40,8 @@ public class RemoteShellStarterDeprecatedWarningAutoConfiguration {
 
 	@PostConstruct
 	public void logWarning() {
-		logger.warn("spring-boot-starter-remote-shell is deprecated since Spring Boot " +
-				"1.5 and will be removed in Spring Boot 2.0");
+		logger.warn("spring-boot-starter-remote-shell is deprecated since Spring Boot "
+				+ "1.5 and will be removed in Spring Boot 2.0");
 	}
 
 }
-
-

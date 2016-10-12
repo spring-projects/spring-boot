@@ -115,6 +115,7 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Matt Benson
  * @see ShellProperties
+ * @deprecated as of 1.5
  */
 @Configuration
 @ConditionalOnClass(PluginLifeCycle.class)
