@@ -17,7 +17,6 @@
 	</organization>
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
-		<disable.checks>true</disable.checks>
 	</properties>
 	<dependencies>
 		<dependency>
