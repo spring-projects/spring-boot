@@ -89,14 +89,13 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 					add(this.negativeMatches, entry.getKey(), entry.getValue());
 				}
 			}
-			this.parent = report.getParent() != null ? new Report(report.getParent())
-					: null;
+			boolean hasParent = report.getParent() != null;
+			this.parent = (hasParent ? new Report(report.getParent()) : null);
 		}
 
 		private void add(Map<String, MessageAndConditions> map, String source,
 				ConditionAndOutcomes conditionAndOutcomes) {
 			String name = ClassUtils.getShortName(source);
-
 			map.put(name, new MessageAndConditions(conditionAndOutcomes));
 		}
 

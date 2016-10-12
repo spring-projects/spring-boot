@@ -65,8 +65,7 @@ public class RepositoryRestProperties {
 	/**
 	 * Strategy to use to determine which repositories get exposed.
 	 */
-	private RepositoryDetectionStrategies detectionStrategy =
-			RepositoryDetectionStrategies.DEFAULT;
+	private RepositoryDetectionStrategies detectionStrategy = RepositoryDetectionStrategies.DEFAULT;
 
 	/**
 	 * Content type to use as a default when none is specified.

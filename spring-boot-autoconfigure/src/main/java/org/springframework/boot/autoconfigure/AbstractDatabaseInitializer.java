@@ -42,7 +42,8 @@ public abstract class AbstractDatabaseInitializer {
 
 	private final ResourceLoader resourceLoader;
 
-	protected AbstractDatabaseInitializer(DataSource dataSource, ResourceLoader resourceLoader) {
+	protected AbstractDatabaseInitializer(DataSource dataSource,
+			ResourceLoader resourceLoader) {
 		Assert.notNull(dataSource, "DataSource must not be null");
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
 		this.dataSource = dataSource;
@@ -51,17 +52,18 @@ public abstract class AbstractDatabaseInitializer {
 
 	@PostConstruct
 	protected void initialize() {
-		if (isEnabled()) {
-			ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-			String schemaLocation = getSchemaLocation();
-			if (schemaLocation.contains(PLATFORM_PLACEHOLDER)) {
-				String platform = getDatabaseName();
-				schemaLocation = schemaLocation.replace(PLATFORM_PLACEHOLDER, platform);
-			}
-			populator.addScript(this.resourceLoader.getResource(schemaLocation));
-			populator.setContinueOnError(true);
-			DatabasePopulatorUtils.execute(populator, this.dataSource);
+		if (!isEnabled()) {
+			return;
 		}
+		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+		String schemaLocation = getSchemaLocation();
+		if (schemaLocation.contains(PLATFORM_PLACEHOLDER)) {
+			String platform = getDatabaseName();
+			schemaLocation = schemaLocation.replace(PLATFORM_PLACEHOLDER, platform);
+		}
+		populator.addScript(this.resourceLoader.getResource(schemaLocation));
+		populator.setContinueOnError(true);
+		DatabasePopulatorUtils.execute(populator, this.dataSource);
 	}
 
 	protected abstract boolean isEnabled();
@@ -70,11 +72,10 @@ public abstract class AbstractDatabaseInitializer {
 
 	protected String getDatabaseName() {
 		try {
-			String databaseProductName = JdbcUtils.extractDatabaseMetaData(
-					this.dataSource, "getDatabaseProductName").toString();
-			databaseProductName = JdbcUtils.commonDatabaseName(databaseProductName);
-			DatabaseDriver databaseDriver = DatabaseDriver.fromProductName(
-					databaseProductName);
+			String productName = JdbcUtils.commonDatabaseName(JdbcUtils
+					.extractDatabaseMetaData(this.dataSource, "getDatabaseProductName")
+					.toString());
+			DatabaseDriver databaseDriver = DatabaseDriver.fromProductName(productName);
 			if (databaseDriver == DatabaseDriver.UNKNOWN) {
 				throw new IllegalStateException("Unable to detect database type");
 			}

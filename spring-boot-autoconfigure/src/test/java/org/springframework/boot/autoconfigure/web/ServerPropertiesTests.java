@@ -444,9 +444,9 @@ public class ServerPropertiesTests {
 
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
-		TomcatEmbeddedServletContainer  embeddedContainer =
-				(TomcatEmbeddedServletContainer) container.getEmbeddedServletContainer();
-		assertThat(((AbstractProtocol) embeddedContainer.getTomcat().getConnector()
+		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
+				.getEmbeddedServletContainer();
+		assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
 				.getProtocolHandler()).getBacklog()).isEqualTo(10);
 	}
 
@@ -458,9 +458,9 @@ public class ServerPropertiesTests {
 
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
-		TomcatEmbeddedServletContainer  embeddedContainer =
-				(TomcatEmbeddedServletContainer) container.getEmbeddedServletContainer();
-		assertThat(((AbstractProtocol) embeddedContainer.getTomcat().getConnector()
+		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
+				.getEmbeddedServletContainer();
+		assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
 				.getProtocolHandler()).getMaxConnections()).isEqualTo(5);
 	}
 

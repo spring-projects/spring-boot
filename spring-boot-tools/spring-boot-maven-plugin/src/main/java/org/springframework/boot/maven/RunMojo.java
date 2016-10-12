@@ -64,9 +64,11 @@ public class RunMojo extends AbstractRunMojo {
 	}
 
 	@Override
-	protected void runWithForkedJvm(File workingDirectory, List<String> args) throws MojoExecutionException {
+	protected void runWithForkedJvm(File workingDirectory, List<String> args)
+			throws MojoExecutionException {
 		try {
-			RunProcess runProcess = new RunProcess(workingDirectory, new JavaExecutable().toString());
+			RunProcess runProcess = new RunProcess(workingDirectory,
+					new JavaExecutable().toString());
 			Runtime.getRuntime()
 					.addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
 			int exitCode = runProcess.run(true, args.toArray(new String[args.size()]));

@@ -56,8 +56,7 @@ public class WarCommandIT {
 		assertThat(invocation.getOutput()).contains("Tomcat started");
 		assertThat(invocation.getOutput())
 				.contains("/WEB-INF/lib-provided/tomcat-embed-core");
-		assertThat(invocation.getOutput())
-				.contains("WEB-INF/classes!/root.properties");
+		assertThat(invocation.getOutput()).contains("WEB-INF/classes!/root.properties");
 		process.destroy();
 	}
 
