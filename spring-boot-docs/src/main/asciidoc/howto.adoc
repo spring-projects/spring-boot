@@ -3241,12 +3241,12 @@ but the rest of it is normal for a Spring application in Servlet 2.5. Example:
 		</listener>
 
 		<filter>
-			<filter-name>metricFilter</filter-name>
+			<filter-name>metricsFilter</filter-name>
 			<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
 		</filter>
 
 		<filter-mapping>
-			<filter-name>metricFilter</filter-name>
+			<filter-name>metricsFilter</filter-name>
 			<url-pattern>/*</url-pattern>
 		</filter-mapping>
 
