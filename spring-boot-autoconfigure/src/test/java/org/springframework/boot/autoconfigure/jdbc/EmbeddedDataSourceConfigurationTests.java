@@ -56,14 +56,13 @@ public class EmbeddedDataSourceConfigurationTests {
 	@Test
 	public void generateUniqueName() throws Exception {
 		this.context = load("spring.datasource.generate-unique-name=true");
-		AnnotationConfigApplicationContext context2 =
-				load("spring.datasource.generate-unique-name=true");
+		AnnotationConfigApplicationContext context2 = load(
+				"spring.datasource.generate-unique-name=true");
 		try {
 			DataSource dataSource = this.context.getBean(DataSource.class);
 			DataSource dataSource2 = context2.getBean(DataSource.class);
 			assertThat(getDatabaseName(dataSource))
 					.isNotEqualTo(getDatabaseName(dataSource2));
-			System.out.println(dataSource2);
 		}
 		finally {
 			context2.close();

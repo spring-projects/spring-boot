@@ -39,40 +39,42 @@ class BeanCurrentlyInCreationFailureAnalyzer
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure,
 			BeanCurrentlyInCreationException cause) {
-		List<BeanInCycle> beansInCycle = new ArrayList<BeanInCycle>();
+		List<BeanInCycle> cycle = new ArrayList<BeanInCycle>();
 		Throwable candidate = rootFailure;
 		int cycleStart = -1;
 		while (candidate != null) {
-			if (candidate instanceof BeanCreationException) {
-				BeanCreationException creationEx = (BeanCreationException) candidate;
-				if (StringUtils.hasText(creationEx.getBeanName())) {
-					BeanInCycle beanInCycle = new BeanInCycle(creationEx);
-					int index = beansInCycle.indexOf(beanInCycle);
-					if (index == -1) {
-						beansInCycle.add(beanInCycle);
-					}
-					else {
-						cycleStart = index;
-					}
+			BeanInCycle beanInCycle = BeanInCycle.get(candidate);
+			if (beanInCycle != null) {
+				int index = cycle.indexOf(beanInCycle);
+				if (index == -1) {
+					cycle.add(beanInCycle);
 				}
+				cycleStart = (cycleStart == -1 ? index : cycleStart);
 			}
 			candidate = candidate.getCause();
 		}
+		String message = buildMessage(cycle, cycleStart);
+		return new FailureAnalysis(message, null, cause);
+	}
+
+	private String buildMessage(List<BeanInCycle> beansInCycle, int cycleStart) {
 		StringBuilder message = new StringBuilder();
 		message.append(String.format("The dependencies of some of the beans in the "
 				+ "application context form a cycle:%n%n"));
 		for (int i = 0; i < beansInCycle.size(); i++) {
+			BeanInCycle beanInCycle = beansInCycle.get(i);
 			if (i == cycleStart) {
 				message.append(String.format("┌─────┐%n"));
 			}
 			else if (i > 0) {
-				message.append(String.format("%s     ↓%n", i < cycleStart ? " " : "↑"));
+				String leftSide = (i < cycleStart ? " " : "↑");
+				message.append(String.format("%s     ↓%n", leftSide));
 			}
-			message.append(String.format("%s  %s%n", i < cycleStart ? " " : "|",
-					beansInCycle.get(i)));
+			String leftSide = i < cycleStart ? " " : "|";
+			message.append(String.format("%s  %s%n", leftSide, beanInCycle));
 		}
 		message.append(String.format("└─────┘%n"));
-		return new FailureAnalysis(message.toString(), null, cause);
+		return message.toString();
 	}
 
 	private static final class BeanInCycle {
@@ -114,19 +116,29 @@ class BeanCurrentlyInCreationFailureAnalyzer
 			if (this == obj) {
 				return true;
 			}
-			if (obj == null) {
+			if (obj == null || getClass() != obj.getClass()) {
 				return false;
 			}
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-			BeanInCycle other = (BeanInCycle) obj;
-			return this.name.equals(other.name);
+			return this.name.equals(((BeanInCycle) obj).name);
 		}
 
 		@Override
 		public String toString() {
 			return this.name + this.description;
+		}
+
+		public static BeanInCycle get(Throwable ex) {
+			if (ex instanceof BeanCreationException) {
+				return get((BeanCreationException) ex);
+			}
+			return null;
+		}
+
+		private static BeanInCycle get(BeanCreationException ex) {
+			if (StringUtils.hasText(ex.getBeanName())) {
+				return new BeanInCycle(ex);
+			}
+			return null;
 		}
 
 	}
