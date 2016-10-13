@@ -22,6 +22,8 @@ import java.util.List;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -34,6 +36,7 @@ import org.springframework.util.MultiValueMap;
  * @author Dave Syer
  * @see ConditionalOnResource
  */
+@Order(Ordered.HIGHEST_PRECEDENCE + 20)
 class OnResourceCondition extends SpringBootCondition {
 
 	private final ResourceLoader defaultResourceLoader = new DefaultResourceLoader();
