@@ -2216,6 +2216,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.session</groupId>
+				<artifactId>spring-session-data-geode</artifactId>
+				<version>${spring-session.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.session</groupId>
 				<artifactId>spring-session-data-mongo</artifactId>
 				<version>${spring-session.version}</version>
 			</dependency>
