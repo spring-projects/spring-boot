@@ -60,7 +60,7 @@ public class ServletPathSampleActuatorApplicationTests {
 
 	@Test
 	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/spring/health",
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/spring//application/health",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");

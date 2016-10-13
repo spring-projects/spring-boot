@@ -72,7 +72,7 @@ public class MvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/mappings")).andExpect(content().string(startsWith("{\"")));
+		mockMvc.perform(get("/application/mappings")).andExpect(content().string(startsWith("{\"")));
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class MvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(DefaultConfiguration.class);
 		MockMvc mockMvc = createMockMvc();
-		mockMvc.perform(get("/beans.cmd")).andExpect(status().isNotFound());
+		mockMvc.perform(get("/application/beans.cmd")).andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -107,7 +107,7 @@ public class MvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/beans.json")).andExpect(status().isOk());
+		mockMvc.perform(get("/application/beans.json")).andExpect(status().isOk());
 	}
 
 	@Test
@@ -115,8 +115,8 @@ public class MvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/info")).andExpect(status().isOk());
-		mockMvc.perform(get("/actuator")).andExpect(status().isOk());
+		mockMvc.perform(get("/application/info")).andExpect(status().isOk());
+		mockMvc.perform(get("/application")).andExpect(status().isOk());
 	}
 
 	@Test
@@ -136,7 +136,7 @@ public class MvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/beans")).andExpect(status().isUnauthorized());
+		mockMvc.perform(get("/application/beans")).andExpect(status().isUnauthorized());
 	}
 
 	@Test
@@ -194,7 +194,7 @@ public class MvcEndpointIntegrationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.security.enabled:false");
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/beans")).andExpect(status().isOk());
+		mockMvc.perform(get("/application/beans")).andExpect(status().isOk());
 	}
 
 	private void assertIndentedJsonResponse(Class<?> configuration) throws Exception {
@@ -205,7 +205,7 @@ public class MvcEndpointIntegrationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.jackson.serialization.indent-output:true");
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/mappings"))
+		mockMvc.perform(get("/application/mappings"))
 				.andExpect(content().string(startsWith("{" + LINE_SEPARATOR)));
 	}
 

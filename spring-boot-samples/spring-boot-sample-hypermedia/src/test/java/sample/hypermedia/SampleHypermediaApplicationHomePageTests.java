@@ -51,7 +51,7 @@ public class SampleHypermediaApplicationHomePageTests {
 	public void linksWithJson() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		ResponseEntity<String> response = this.restTemplate.exchange("/actuator",
+		ResponseEntity<String> response = this.restTemplate.exchange("/application",
 				HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
 		assertThat(response.getBody()).contains("\"_links\":");
 	}
@@ -60,7 +60,7 @@ public class SampleHypermediaApplicationHomePageTests {
 	public void halWithHtml() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> response = this.restTemplate.exchange("/actuator/",
+		ResponseEntity<String> response = this.restTemplate.exchange("/application/",
 				HttpMethod.GET, new HttpEntity<Void>(headers), String.class);
 		assertThat(response.getBody()).contains("HAL Browser");
 	}

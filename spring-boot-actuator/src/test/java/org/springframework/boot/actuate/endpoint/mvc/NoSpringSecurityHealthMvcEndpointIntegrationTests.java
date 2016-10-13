@@ -74,7 +74,7 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		mockMvc.perform(get("/health").with(getRequestPostProcessor()))
+		mockMvc.perform(get("/application/health").with(getRequestPostProcessor()))
 				.andExpect(status().isOk())
 				.andExpect(content().string("{\"status\":\"UP\"}"));
 	}
@@ -88,7 +88,7 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 				"management.security.enabled:false");
 		this.context.refresh();
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		mockMvc.perform(get("/health")).andExpect(status().isOk())
+		mockMvc.perform(get("/application/health")).andExpect(status().isOk())
 				.andExpect(content().string(containsString(
 						"\"status\":\"UP\",\"test\":{\"status\":\"UP\",\"hello\":\"world\"}")));
 	}

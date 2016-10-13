@@ -62,7 +62,7 @@ public class MvcEndpointCorsIntegrationTests {
 	@Test
 	public void corsIsDisabledByDefault() throws Exception {
 		createMockMvc()
-				.perform(options("/beans").header("Origin", "foo.example.com")
+				.perform(options("/application/beans").header("Origin", "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
 				.andExpect(
 						header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
@@ -73,7 +73,7 @@ public class MvcEndpointCorsIntegrationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"endpoints.cors.allowed-origins:foo.example.com");
 		createMockMvc()
-				.perform(options("/beans").header("Origin", "bar.example.com")
+				.perform(options("/application/beans").header("Origin", "bar.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
 				.andExpect(status().isForbidden());
 		performAcceptedCorsRequest();
@@ -101,7 +101,7 @@ public class MvcEndpointCorsIntegrationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"endpoints.cors.allowed-origins:foo.example.com");
 		createMockMvc()
-				.perform(options("/beans").header("Origin", "foo.example.com")
+				.perform(options("/application/beans").header("Origin", "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha"))
 				.andExpect(status().isForbidden());
@@ -113,7 +113,7 @@ public class MvcEndpointCorsIntegrationTests {
 				"endpoints.cors.allowed-origins:foo.example.com",
 				"endpoints.cors.allowed-headers:Alpha,Bravo");
 		createMockMvc()
-				.perform(options("/beans").header("Origin", "foo.example.com")
+				.perform(options("/application/beans").header("Origin", "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha"))
 				.andExpect(status().isOk()).andExpect(header()
@@ -125,7 +125,7 @@ public class MvcEndpointCorsIntegrationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"endpoints.cors.allowed-origins:foo.example.com");
 		createMockMvc()
-				.perform(options("/health").header(HttpHeaders.ORIGIN, "foo.example.com")
+				.perform(options("/application/health").header(HttpHeaders.ORIGIN, "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PATCH"))
 				.andExpect(status().isForbidden());
 	}
@@ -136,7 +136,7 @@ public class MvcEndpointCorsIntegrationTests {
 				"endpoints.cors.allowed-origins:foo.example.com",
 				"endpoints.cors.allowed-methods:GET,HEAD");
 		createMockMvc()
-				.perform(options("/health").header(HttpHeaders.ORIGIN, "foo.example.com")
+				.perform(options("/application/health").header(HttpHeaders.ORIGIN, "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "HEAD"))
 				.andExpect(status().isOk()).andExpect(header()
 						.string(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET,HEAD"));
@@ -165,10 +165,10 @@ public class MvcEndpointCorsIntegrationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"endpoints.cors.allowed-origins:foo.example.com");
 		createMockMvc()
-				.perform(options("/jolokia").header("Origin", "bar.example.com")
+				.perform(options("/application/jolokia").header("Origin", "bar.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
 				.andExpect(status().isForbidden());
-		performAcceptedCorsRequest("/jolokia");
+		performAcceptedCorsRequest("/application/jolokia");
 	}
 
 	private MockMvc createMockMvc() {
@@ -177,7 +177,7 @@ public class MvcEndpointCorsIntegrationTests {
 	}
 
 	private ResultActions performAcceptedCorsRequest() throws Exception {
-		return performAcceptedCorsRequest("/beans");
+		return performAcceptedCorsRequest("/application/beans");
 	}
 
 	private ResultActions performAcceptedCorsRequest(String url) throws Exception {

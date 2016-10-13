@@ -65,7 +65,7 @@ public class InfoMvcEndpointWithNoInfoContributorsTests {
 
 	@Test
 	public void home() throws Exception {
-		this.mvc.perform(get("/info")).andExpect(status().isOk());
+		this.mvc.perform(get("/application/info")).andExpect(status().isOk());
 	}
 
 	@Import({ JacksonAutoConfiguration.class, AuditAutoConfiguration.class,

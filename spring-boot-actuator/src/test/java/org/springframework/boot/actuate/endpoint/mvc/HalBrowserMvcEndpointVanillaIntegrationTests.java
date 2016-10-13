@@ -70,35 +70,35 @@ public class HalBrowserMvcEndpointVanillaIntegrationTests {
 
 	@Test
 	public void links() throws Exception {
-		this.mockMvc.perform(get("/actuator").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/application").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists())
 				.andExpect(header().doesNotExist("cache-control"));
 	}
 
 	@Test
 	public void linksWithTrailingSlash() throws Exception {
-		this.mockMvc.perform(get("/actuator/").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/application/").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists())
 				.andExpect(header().doesNotExist("cache-control"));
 	}
 
 	@Test
 	public void browser() throws Exception {
-		this.mockMvc.perform(get("/actuator/").accept(MediaType.TEXT_HTML))
+		this.mockMvc.perform(get("/application/").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isFound()).andExpect(header().string(
-						HttpHeaders.LOCATION, "http://localhost/actuator/browser.html"));
+						HttpHeaders.LOCATION, "http://localhost/application/browser.html"));
 	}
 
 	@Test
 	public void trace() throws Exception {
-		this.mockMvc.perform(get("/trace").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/application/trace").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$._links").doesNotExist())
 				.andExpect(jsonPath("$").isArray());
 	}
 
 	@Test
 	public void envValue() throws Exception {
-		this.mockMvc.perform(get("/env/user.home").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/application/env/user.home").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$._links").doesNotExist());
 	}
@@ -107,11 +107,11 @@ public class HalBrowserMvcEndpointVanillaIntegrationTests {
 	public void endpointsAllListed() throws Exception {
 		for (MvcEndpoint endpoint : this.mvcEndpoints.getEndpoints()) {
 			String path = endpoint.getPath();
-			if ("/actuator".equals(path)) {
+			if ("/application".equals(path)) {
 				continue;
 			}
 			path = path.startsWith("/") ? path.substring(1) : path;
-			this.mockMvc.perform(get("/actuator").accept(MediaType.APPLICATION_JSON))
+			this.mockMvc.perform(get("/application").accept(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$._links.%s.href", path).exists());
 		}
@@ -126,10 +126,10 @@ public class HalBrowserMvcEndpointVanillaIntegrationTests {
 			if (collections.contains(path)) {
 				continue;
 			}
-			path = path.length() > 0 ? path : "/";
+			path = "/application" + (path.length() > 0 ? path : "/");
 			this.mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk()).andExpect(jsonPath("$._links.self.href")
-							.value("http://localhost" + endpoint.getPath()));
+							.value("http://localhost/application" + endpoint.getPath()));
 		}
 	}
 

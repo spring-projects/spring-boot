@@ -50,22 +50,22 @@ public class SampleHypermediaGsonApplicationTests {
 
 	@Test
 	public void health() throws Exception {
-		this.mockMvc.perform(get("/health").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/application/health").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.links[0].href").value("http://localhost/health"))
+				.andExpect(jsonPath("$.links[0].href").value("http://localhost/application/health"))
 				.andExpect(jsonPath("$.content.status").exists());
 	}
 
 	@Test
 	public void trace() throws Exception {
-		this.mockMvc.perform(get("/trace").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/application/trace").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.links").doesNotExist())
 				.andExpect(jsonPath("$").isArray());
 	}
 
 	@Test
 	public void envValue() throws Exception {
-		this.mockMvc.perform(get("/env/user.home").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/application/env/user.home").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$._links").doesNotExist());
 	}

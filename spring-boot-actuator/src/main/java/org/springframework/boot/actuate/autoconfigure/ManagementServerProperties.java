@@ -79,7 +79,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	/**
 	 * Management endpoint context-path.
 	 */
-	private String contextPath = "";
+	private String contextPath = "/application";
 
 	/**
 	 * Add the "X-Application-Context" HTTP header in each response.

@@ -74,14 +74,14 @@ public class AuditEventsMvcEndpointTests {
 
 	@Test
 	public void contentTypeDefaultsToActuatorV2Json() throws Exception {
-		this.mvc.perform(get("/auditevents")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/auditevents")).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
 						"application/vnd.spring-boot.actuator.v2+json;charset=UTF-8"));
 	}
 
 	@Test
 	public void contentTypeCanBeApplicationJson() throws Exception {
-		this.mvc.perform(get("/auditevents").header(HttpHeaders.ACCEPT,
+		this.mvc.perform(get("/application/auditevents").header(HttpHeaders.ACCEPT,
 				MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
 						MediaType.APPLICATION_JSON_UTF8_VALUE));
@@ -90,20 +90,20 @@ public class AuditEventsMvcEndpointTests {
 	@Test
 	public void invokeWhenDisabledShouldReturnNotFoundStatus() throws Exception {
 		this.context.getBean(AuditEventsMvcEndpoint.class).setEnabled(false);
-		this.mvc.perform(get("/auditevents").param("after", "2016-11-01T10:00:00+0000"))
+		this.mvc.perform(get("/application/auditevents").param("after", "2016-11-01T10:00:00+0000"))
 				.andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void invokeFilterByDateAfter() throws Exception {
-		this.mvc.perform(get("/auditevents").param("after", "2016-11-01T13:00:00+0000"))
+		this.mvc.perform(get("/application/auditevents").param("after", "2016-11-01T13:00:00+0000"))
 				.andExpect(status().isOk())
 				.andExpect(content().string("{\"events\":[]}"));
 	}
 
 	@Test
 	public void invokeFilterByPrincipalAndDateAfter() throws Exception {
-		this.mvc.perform(get("/auditevents").param("principal", "user").param("after",
+		this.mvc.perform(get("/application/auditevents").param("principal", "user").param("after",
 				"2016-11-01T10:00:00+0000"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(
@@ -113,7 +113,7 @@ public class AuditEventsMvcEndpointTests {
 
 	@Test
 	public void invokeFilterByPrincipalAndDateAfterAndType() throws Exception {
-		this.mvc.perform(get("/auditevents").param("principal", "admin")
+		this.mvc.perform(get("/application/auditevents").param("principal", "admin")
 				.param("after", "2016-11-01T10:00:00+0000").param("type", "logout"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(

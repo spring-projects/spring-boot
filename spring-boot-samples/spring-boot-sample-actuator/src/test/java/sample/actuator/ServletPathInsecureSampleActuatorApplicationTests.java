@@ -62,7 +62,7 @@ public class ServletPathInsecureSampleActuatorApplicationTests {
 	@Test
 	public void testMetricsIsSecure() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/spring/metrics",
+		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/spring//application/metrics",
 				Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}

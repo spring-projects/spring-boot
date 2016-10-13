@@ -74,7 +74,7 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 		this.context.refresh();
 		EndpointHandlerMapping mapping = this.context.getBean("endpointHandlerMapping",
 				EndpointHandlerMapping.class);
-		assertThat(mapping.getPrefix()).isEmpty();
+		assertThat(mapping.getPrefix()).isEqualTo("/application");
 		MvcEndpointSecurityInterceptor securityInterceptor = (MvcEndpointSecurityInterceptor) ReflectionTestUtils
 				.getField(mapping, "securityInterceptor");
 		Object secure = ReflectionTestUtils.getField(securityInterceptor, "secure");

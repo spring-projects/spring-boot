@@ -79,20 +79,20 @@ public class JolokiaMvcEndpointIntegrationTests {
 
 	@Test
 	public void search() throws Exception {
-		this.mvc.perform(get("/jolokia/search/java.lang:*")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/jolokia/search/java.lang:*")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("GarbageCollector")));
 	}
 
 	@Test
 	public void read() throws Exception {
-		this.mvc.perform(get("/jolokia/read/java.lang:type=Memory"))
+		this.mvc.perform(get("/application/jolokia/read/java.lang:type=Memory"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("NonHeapMemoryUsage")));
 	}
 
 	@Test
 	public void list() throws Exception {
-		this.mvc.perform(get("/jolokia/list/java.lang/type=Memory/attr"))
+		this.mvc.perform(get("/application/jolokia/list/java.lang/type=Memory/attr"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("NonHeapMemoryUsage")));
 	}

@@ -63,7 +63,7 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/actuator", HttpMethod.GET,
+				"http://localhost:" + this.port + "/application", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"_links\":");
@@ -75,7 +75,7 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/actuator/", HttpMethod.GET,
+				"http://localhost:" + this.port + "/application/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"_links\":");
@@ -87,11 +87,11 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/actuator/", HttpMethod.GET,
+				"http://localhost:" + this.port + "/application/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(entity.getHeaders().getLocation()).isEqualTo(
-				URI.create("http://localhost:" + this.port + "/actuator/browser.html"));
+				URI.create("http://localhost:" + this.port + "/application/browser.html"));
 	}
 
 	@MinimalActuatorHypermediaApplication

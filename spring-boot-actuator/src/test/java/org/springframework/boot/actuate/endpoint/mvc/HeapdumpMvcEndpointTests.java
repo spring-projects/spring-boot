@@ -82,26 +82,26 @@ public class HeapdumpMvcEndpointTests {
 	@Test
 	public void invokeWhenDisabledShouldReturnNotFoundStatus() throws Exception {
 		this.endpoint.setEnabled(false);
-		this.mvc.perform(get("/heapdump")).andExpect(status().isNotFound());
+		this.mvc.perform(get("/application/heapdump")).andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void invokeWhenNotAvailableShouldReturnServiceUnavailableStatus()
 			throws Exception {
 		this.endpoint.setAvailable(false);
-		this.mvc.perform(get("/heapdump")).andExpect(status().isServiceUnavailable());
+		this.mvc.perform(get("/application/heapdump")).andExpect(status().isServiceUnavailable());
 	}
 
 	@Test
 	public void invokeWhenLockedShouldReturnTooManyRequestsStatus() throws Exception {
 		this.endpoint.setLocked(true);
-		this.mvc.perform(get("/heapdump")).andExpect(status().isTooManyRequests());
+		this.mvc.perform(get("/application/heapdump")).andExpect(status().isTooManyRequests());
 		assertThat(Thread.interrupted()).isTrue();
 	}
 
 	@Test
 	public void invokeShouldReturnGzipContent() throws Exception {
-		MvcResult result = this.mvc.perform(get("/heapdump")).andExpect(status().isOk())
+		MvcResult result = this.mvc.perform(get("/application/heapdump")).andExpect(status().isOk())
 				.andReturn();
 		byte[] bytes = result.getResponse().getContentAsByteArray();
 		GZIPInputStream stream = new GZIPInputStream(new ByteArrayInputStream(bytes));
@@ -111,7 +111,7 @@ public class HeapdumpMvcEndpointTests {
 
 	@Test
 	public void invokeOptionsShouldReturnSize() throws Exception {
-		this.mvc.perform(options("/heapdump")).andExpect(status().isOk());
+		this.mvc.perform(options("/application/heapdump")).andExpect(status().isOk());
 	}
 
 	@Import({ JacksonAutoConfiguration.class, AuditAutoConfiguration.class,

@@ -49,35 +49,35 @@ public class BootCuriesHrefIntegrationTests {
 	@Test
 	public void basicCuriesHref() {
 		int port = load("endpoints.docs.curies.enabled:true", "server.port:0");
-		assertThat(getCurieHref("http://localhost:" + port + "/actuator")).isEqualTo(
-				"http://localhost:" + port + "/docs/#spring_boot_actuator__{rel}");
+		assertThat(getCurieHref("http://localhost:" + port + "/application")).isEqualTo(
+				"http://localhost:" + port + "/application/docs/#spring_boot_actuator__{rel}");
 	}
 
 	@Test
 	public void curiesHrefWithCustomContextPath() {
 		int port = load("endpoints.docs.curies.enabled:true", "server.port:0",
 				"server.servlet.context-path:/context");
-		assertThat(getCurieHref("http://localhost:" + port + "/context/actuator"))
+		assertThat(getCurieHref("http://localhost:" + port + "/context/application"))
 				.isEqualTo("http://localhost:" + port
-						+ "/context/docs/#spring_boot_actuator__{rel}");
+						+ "/context/application/docs/#spring_boot_actuator__{rel}");
 	}
 
 	@Test
 	public void curiesHrefWithCustomServletPath() {
 		int port = load("endpoints.docs.curies.enabled:true", "server.port:0",
 				"server.servlet.path:/servlet");
-		assertThat(getCurieHref("http://localhost:" + port + "/servlet/actuator"))
+		assertThat(getCurieHref("http://localhost:" + port + "/servlet/application"))
 				.isEqualTo("http://localhost:" + port
-						+ "/servlet/docs/#spring_boot_actuator__{rel}");
+						+ "/servlet/application/docs/#spring_boot_actuator__{rel}");
 	}
 
 	@Test
 	public void curiesHrefWithCustomServletAndContextPaths() {
 		int port = load("endpoints.docs.curies.enabled:true", "server.port:0",
 				"server.servlet.context-path:/context", "server.servlet.path:/servlet");
-		assertThat(getCurieHref("http://localhost:" + port + "/context/servlet/actuator"))
+		assertThat(getCurieHref("http://localhost:" + port + "/context/servlet/application"))
 				.isEqualTo("http://localhost:" + port
-						+ "/context/servlet/docs/#spring_boot_actuator__{rel}");
+						+ "/context/servlet/application/docs/#spring_boot_actuator__{rel}");
 	}
 
 	@Test
@@ -95,8 +95,8 @@ public class BootCuriesHrefIntegrationTests {
 		int port = load("endpoints.docs.curies.enabled:true", "server.port:0",
 				"server.servlet.context-path:/context", "server.servlet.path:/servlet",
 				"management.port:0");
-		assertThat(getCurieHref("http://localhost:" + port + "/actuator/")).isEqualTo(
-				"http://localhost:" + port + "/docs/#spring_boot_actuator__{rel}");
+		assertThat(getCurieHref("http://localhost:" + port + "/application/")).isEqualTo(
+				"http://localhost:" + port + "/application/docs/#spring_boot_actuator__{rel}");
 	}
 
 	@Test

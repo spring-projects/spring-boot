@@ -80,7 +80,7 @@ public class EnvironmentMvcEndpointTests {
 
 	@Test
 	public void homeContentTypeDefaultsToActuatorV2Json() throws Exception {
-		this.mvc.perform(get("/env")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/env")).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
 						"application/vnd.spring-boot.actuator.v2+json;charset=UTF-8"));
 	}
@@ -88,21 +88,21 @@ public class EnvironmentMvcEndpointTests {
 	@Test
 	public void homeContentTypeCanBeApplicationJson() throws Exception {
 		this.mvc.perform(
-				get("/env").header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
+				get("/application/env").header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk()).andExpect(header().string("Content-Type",
 						MediaType.APPLICATION_JSON_UTF8_VALUE));
 	}
 
 	@Test
 	public void subContentTypeDefaultsToActuatorV2Json() throws Exception {
-		this.mvc.perform(get("/env/foo")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/env/foo")).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
 						"application/vnd.spring-boot.actuator.v2+json;charset=UTF-8"));
 	}
 
 	@Test
 	public void subContentTypeCanBeApplicationJson() throws Exception {
-		this.mvc.perform(get("/env/foo").header(HttpHeaders.ACCEPT,
+		this.mvc.perform(get("/application/env/foo").header(HttpHeaders.ACCEPT,
 				MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
 						MediaType.APPLICATION_JSON_UTF8_VALUE));
@@ -110,20 +110,20 @@ public class EnvironmentMvcEndpointTests {
 
 	@Test
 	public void home() throws Exception {
-		this.mvc.perform(get("/env")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/env")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("systemProperties")));
 	}
 
 	@Test
 	public void sub() throws Exception {
-		this.mvc.perform(get("/env/foo")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/env/foo")).andExpect(status().isOk())
 				.andExpect(content().string("{\"foo\":\"bar\"}"));
 	}
 
 	@Test
 	public void subWhenDisabled() throws Exception {
 		this.context.getBean(EnvironmentEndpoint.class).setEnabled(false);
-		this.mvc.perform(get("/env/foo")).andExpect(status().isNotFound());
+		this.mvc.perform(get("/application/env/foo")).andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -132,7 +132,7 @@ public class EnvironmentMvcEndpointTests {
 		map.put("food", null);
 		((ConfigurableEnvironment) this.context.getEnvironment()).getPropertySources()
 				.addFirst(new MapPropertySource("null-value", map));
-		this.mvc.perform(get("/env/foo.*")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/env/foo.*")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("\"foo\":\"bar\"")))
 				.andExpect(content().string(containsString("\"fool\":\"baz\"")));
 	}
@@ -144,7 +144,7 @@ public class EnvironmentMvcEndpointTests {
 		map.put("my.foo", "${my.bar}");
 		((ConfigurableEnvironment) this.context.getEnvironment()).getPropertySources()
 				.addFirst(new MapPropertySource("unresolved-placeholder", map));
-		this.mvc.perform(get("/env/my.*")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/env/my.*")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("\"my.foo\":\"${my.bar}\"")));
 	}
 
@@ -155,7 +155,7 @@ public class EnvironmentMvcEndpointTests {
 		map.put("my.password", "hello");
 		((ConfigurableEnvironment) this.context.getEnvironment()).getPropertySources()
 				.addFirst(new MapPropertySource("placeholder", map));
-		this.mvc.perform(get("/env/my.*")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/env/my.*")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("\"my.foo\":\"******\"")));
 	}
 

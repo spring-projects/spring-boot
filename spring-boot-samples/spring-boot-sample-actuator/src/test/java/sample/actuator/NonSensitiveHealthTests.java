@@ -46,7 +46,7 @@ public class NonSensitiveHealthTests {
 
 	@Test
 	public void testSecureHealth() throws Exception {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/health",
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/application/health",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).doesNotContain("\"hello\":1");

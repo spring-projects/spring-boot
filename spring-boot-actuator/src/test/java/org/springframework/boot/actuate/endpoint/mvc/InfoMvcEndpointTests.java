@@ -75,7 +75,7 @@ public class InfoMvcEndpointTests {
 
 	@Test
 	public void home() throws Exception {
-		this.mvc.perform(get("/info")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/info")).andExpect(status().isOk())
 				.andExpect(content().string(containsString(
 						"\"beanName1\":{\"key11\":\"value11\",\"key12\":\"value12\"}")))
 				.andExpect(content().string(containsString(
@@ -84,7 +84,7 @@ public class InfoMvcEndpointTests {
 
 	@Test
 	public void contentTypeDefaultsToActuatorV2Json() throws Exception {
-		this.mvc.perform(get("/info")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/info")).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
 						"application/vnd.spring-boot.actuator.v2+json;charset=UTF-8"));
 	}
@@ -92,7 +92,7 @@ public class InfoMvcEndpointTests {
 	@Test
 	public void contentTypeCanBeApplicationJson() throws Exception {
 		this.mvc.perform(
-				get("/info").header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
+				get("/application/info").header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk()).andExpect(header().string("Content-Type",
 						MediaType.APPLICATION_JSON_UTF8_VALUE));
 	}

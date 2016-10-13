@@ -73,7 +73,7 @@ public class HeapdumpMvcEndpointSecureOptionsTests {
 
 	@Test
 	public void invokeOptionsShouldReturnSize() throws Exception {
-		this.mvc.perform(options("/heapdump")).andExpect(status().isOk());
+		this.mvc.perform(options("/application/heapdump")).andExpect(status().isOk());
 	}
 
 	@Import({ JacksonAutoConfiguration.class,

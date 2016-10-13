@@ -63,7 +63,7 @@ public class SampleActuatorLog4J2ApplicationTests {
 
 	@Test
 	public void validateLoggersEndpoint() throws Exception {
-		this.mvc.perform(get("/loggers/org.apache.coyote.http11.Http11NioProtocol"))
+		this.mvc.perform(get("/application/loggers/org.apache.coyote.http11.Http11NioProtocol"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(equalTo("{\"configuredLevel\":\"WARN\","
 						+ "\"effectiveLevel\":\"WARN\"}")));
