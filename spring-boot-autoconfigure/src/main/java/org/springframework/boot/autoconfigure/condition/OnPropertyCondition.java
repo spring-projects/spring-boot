@@ -26,7 +26,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.Assert;
@@ -43,6 +45,7 @@ import org.springframework.util.StringUtils;
  * @since 1.1.0
  * @see ConditionalOnProperty
  */
+@Order(Ordered.HIGHEST_PRECEDENCE + 40)
 class OnPropertyCondition extends SpringBootCondition {
 
 	@Override
