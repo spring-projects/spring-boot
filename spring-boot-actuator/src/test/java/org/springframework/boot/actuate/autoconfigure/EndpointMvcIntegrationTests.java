@@ -86,7 +86,7 @@ public class EndpointMvcIntegrationTests {
 	@Test
 	public void envEndpointNotHidden() throws InterruptedException {
 		String body = new TestRestTemplate().getForObject(
-				"http://localhost:" + this.port + "/env/user.dir", String.class);
+				"http://localhost:" + this.port + "/application/env/user.dir", String.class);
 		assertThat(body).isNotNull().contains("spring-boot-actuator");
 		assertThat(this.interceptor.invoked()).isTrue();
 	}
@@ -94,7 +94,7 @@ public class EndpointMvcIntegrationTests {
 	@Test
 	public void healthEndpointNotHidden() throws InterruptedException {
 		String body = new TestRestTemplate()
-				.getForObject("http://localhost:" + this.port + "/health", String.class);
+				.getForObject("http://localhost:" + this.port + "/application/health", String.class);
 		assertThat(body).isNotNull().contains("status");
 		assertThat(this.interceptor.invoked()).isTrue();
 	}

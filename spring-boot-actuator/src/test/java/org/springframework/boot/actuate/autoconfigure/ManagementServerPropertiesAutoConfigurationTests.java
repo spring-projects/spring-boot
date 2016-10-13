@@ -45,7 +45,7 @@ public class ManagementServerPropertiesAutoConfigurationTests {
 	public void defaultManagementServerProperties() {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		assertThat(properties.getPort()).isNull();
-		assertThat(properties.getContextPath()).isEqualTo("");
+		assertThat(properties.getContextPath()).isEqualTo("/application");
 	}
 
 	@Test

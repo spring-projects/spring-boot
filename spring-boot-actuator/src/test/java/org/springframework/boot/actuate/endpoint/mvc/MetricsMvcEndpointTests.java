@@ -75,57 +75,57 @@ public class MetricsMvcEndpointTests {
 
 	@Test
 	public void home() throws Exception {
-		this.mvc.perform(get("/metrics")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/metrics")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("\"foo\":1")));
 	}
 
 	@Test
 	public void homeWhenDisabled() throws Exception {
 		this.context.getBean(MetricsEndpoint.class).setEnabled(false);
-		this.mvc.perform(get("/metrics")).andExpect(status().isNotFound());
+		this.mvc.perform(get("/application/metrics")).andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void specificMetric() throws Exception {
-		this.mvc.perform(get("/metrics/foo")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/metrics/foo")).andExpect(status().isOk())
 				.andExpect(content().string(equalTo("{\"foo\":1}")));
 	}
 
 	@Test
 	public void specificMetricWhenDisabled() throws Exception {
 		this.context.getBean(MetricsEndpoint.class).setEnabled(false);
-		this.mvc.perform(get("/metrics/foo")).andExpect(status().isNotFound());
+		this.mvc.perform(get("/application/metrics/foo")).andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void specificMetricThatDoesNotExist() throws Exception {
-		this.mvc.perform(get("/metrics/bar")).andExpect(status().isNotFound());
+		this.mvc.perform(get("/application/metrics/bar")).andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void regexAll() throws Exception {
 		String expected = "\"foo\":1,\"group1.a\":1,\"group1.b\":1,\"group2.a\":1,\"group2_a\":1";
-		this.mvc.perform(get("/metrics/.*")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/metrics/.*")).andExpect(status().isOk())
 				.andExpect(content().string(containsString(expected)));
 	}
 
 	@Test
 	public void regexGroupDot() throws Exception {
 		String expected = "\"group1.a\":1,\"group1.b\":1,\"group2.a\":1";
-		this.mvc.perform(get("/metrics/group[0-9]+\\..*")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/metrics/group[0-9]+\\..*")).andExpect(status().isOk())
 				.andExpect(content().string(containsString(expected)));
 	}
 
 	@Test
 	public void regexGroup1() throws Exception {
 		String expected = "\"group1.a\":1,\"group1.b\":1";
-		this.mvc.perform(get("/metrics/group1\\..*")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/metrics/group1\\..*")).andExpect(status().isOk())
 				.andExpect(content().string(containsString(expected)));
 	}
 
 	@Test
 	public void specificMetricWithDot() throws Exception {
-		this.mvc.perform(get("/metrics/group2.a")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/metrics/group2.a")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("1")));
 	}
 

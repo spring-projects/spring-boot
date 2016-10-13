@@ -155,10 +155,10 @@ public class EndpointWebMvcAutoConfigurationTests {
 				EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
-		assertContent("/endpoint", ports.get().server, "endpointoutput");
+		assertContent("/application/endpoint", ports.get().server, "endpointoutput");
 		assertContent("/controller", ports.get().management, null);
-		assertContent("/endpoint", ports.get().management, null);
-		assertThat(hasHeader("/endpoint", ports.get().server, "X-Application-Context"))
+		assertContent("/application/endpoint", ports.get().management, null);
+		assertThat(hasHeader("/application/endpoint", ports.get().server, "X-Application-Context"))
 				.isTrue();
 		assertThat(this.applicationContext.containsBean("applicationContextIdFilter"))
 				.isTrue();
@@ -287,7 +287,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/endpoint", ports.get().server, null);
 		assertContent("/controller", managementPort, null);
-		assertContent("/endpoint", managementPort, "endpointoutput");
+		assertContent("/application/endpoint", managementPort, "endpointoutput");
 	}
 
 	@Test
@@ -330,7 +330,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/endpoint", ports.get().server, null);
 		assertContent("/controller", ports.get().management, null);
-		assertContent("/endpoint", ports.get().management, "endpointoutput");
+		assertContent("/application/endpoint", ports.get().management, "endpointoutput");
 	}
 
 	@Test

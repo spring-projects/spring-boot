@@ -77,20 +77,20 @@ public class EnvironmentMvcEndpointTests {
 
 	@Test
 	public void home() throws Exception {
-		this.mvc.perform(get("/env")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/env")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("systemProperties")));
 	}
 
 	@Test
 	public void sub() throws Exception {
-		this.mvc.perform(get("/env/foo")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/env/foo")).andExpect(status().isOk())
 				.andExpect(content().string("{\"foo\":\"bar\"}"));
 	}
 
 	@Test
 	public void subWhenDisabled() throws Exception {
 		this.context.getBean(EnvironmentEndpoint.class).setEnabled(false);
-		this.mvc.perform(get("/env/foo")).andExpect(status().isNotFound());
+		this.mvc.perform(get("/application/env/foo")).andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class EnvironmentMvcEndpointTests {
 		map.put("food", null);
 		((ConfigurableEnvironment) this.context.getEnvironment()).getPropertySources()
 				.addFirst(new MapPropertySource("null-value", map));
-		this.mvc.perform(get("/env/foo.*")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/env/foo.*")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("\"foo\":\"bar\"")))
 				.andExpect(content().string(containsString("\"fool\":\"baz\"")));
 	}

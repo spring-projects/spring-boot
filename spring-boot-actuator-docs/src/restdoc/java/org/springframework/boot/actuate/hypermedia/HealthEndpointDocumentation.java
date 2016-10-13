@@ -50,7 +50,7 @@ public class HealthEndpointDocumentation {
 
 	@Test
 	public void health() throws Exception {
-		this.mockMvc.perform(get("/health").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/application/health").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andDo(document("health/insensitive"));
 	}
 

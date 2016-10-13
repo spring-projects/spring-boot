@@ -46,7 +46,7 @@ public class HalJsonMvcEndpoint extends AbstractNamedMvcEndpoint {
 		if (StringUtils.hasText(managementServletContext.getContextPath())) {
 			return "";
 		}
-		return "/actuator";
+		return "/application";
 	}
 
 	@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)

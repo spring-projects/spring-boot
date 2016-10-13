@@ -71,7 +71,7 @@ public class SampleActuatorUiApplicationTests {
 	@Test
 	public void testMetrics() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/metrics",
+		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/application/metrics",
 				Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}

@@ -109,7 +109,7 @@ public class SampleMethodSecurityApplicationTests {
 
 	@Test
 	public void testManagementProtected() throws Exception {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/beans",
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/application/beans",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
@@ -120,7 +120,7 @@ public class SampleMethodSecurityApplicationTests {
 				"admin", "admin");
 		this.restTemplate.getRestTemplate().getInterceptors().add(basicAuthInterceptor);
 		try {
-			ResponseEntity<String> entity = this.restTemplate.getForEntity("/beans",
+			ResponseEntity<String> entity = this.restTemplate.getForEntity("/application/beans",
 					String.class);
 			assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		}
@@ -136,7 +136,7 @@ public class SampleMethodSecurityApplicationTests {
 				"user", "user");
 		this.restTemplate.getRestTemplate().getInterceptors().add(basicAuthInterceptor);
 		try {
-			ResponseEntity<String> entity = this.restTemplate.getForEntity("/beans",
+			ResponseEntity<String> entity = this.restTemplate.getForEntity("/application/beans",
 					String.class);
 			assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 		}
