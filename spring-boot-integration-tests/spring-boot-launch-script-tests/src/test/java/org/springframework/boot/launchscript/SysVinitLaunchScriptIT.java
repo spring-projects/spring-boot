@@ -198,6 +198,18 @@ public class SysVinitLaunchScriptIT {
 		doLaunch("launch-with-use-of-start-stop-daemon-disabled.sh");
 	}
 
+	@Test
+	public void launchWithRelativePidFolder() throws Exception {
+		String output = doTest("launch-with-relative-pid-folder.sh");
+		assertThat(output).has(
+				coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
+		assertThat(output).has(
+				coloredString(AnsiColor.GREEN, "Running [" + extractPid(output) + "]"));
+		assertThat(output).has(
+				coloredString(AnsiColor.GREEN, "Stopped [" + extractPid(output) + "]"));
+
+	}
+
 	private void doLaunch(String script) throws Exception {
 		assertThat(doTest(script)).contains("Launched");
 	}
