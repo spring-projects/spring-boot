@@ -207,7 +207,12 @@ public class SysVinitLaunchScriptIT {
 				coloredString(AnsiColor.GREEN, "Running [" + extractPid(output) + "]"));
 		assertThat(output).has(
 				coloredString(AnsiColor.GREEN, "Stopped [" + extractPid(output) + "]"));
+	}
 
+	@Test
+	public void launchWithRelativeLogFolder() throws Exception {
+		String output = doTest("launch-with-relative-log-folder.sh");
+		assertThat(output).contains("Log written");
 	}
 
 	private void doLaunch(String script) throws Exception {
