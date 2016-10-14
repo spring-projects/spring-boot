@@ -1,7 +1,7 @@
 source ./test-functions.sh
-mkdir ./pid
 install_service
-echo 'PID_FOLDER=./pid' > /test-service/spring-boot-app.conf
+mkdir /test-service/pid
+echo 'PID_FOLDER=pid' > /test-service/spring-boot-app.conf
 start_service
 echo "PID: $(cat /test-service/pid/spring-boot-app/spring-boot-app.pid)"
 await_app
