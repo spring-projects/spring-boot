@@ -44,6 +44,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -107,11 +108,13 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@ConditionalOnMissingBean
 	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(
 			JpaVendorAdapter jpaVendorAdapter,
-			ObjectProvider<PersistenceUnitManager> persistenceUnitManagerProvider) {
+			ObjectProvider<PersistenceUnitManager> persistenceUnitManagerProvider,
+			ObjectProvider<AsyncTaskExecutor> bootstrapExecutorProvider) {
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(
 				jpaVendorAdapter, this.properties.getProperties(),
 				persistenceUnitManagerProvider.getIfAvailable(),
-				determinePersistenceUnitRootLocation());
+				determinePersistenceUnitRootLocation(),
+				bootstrapExecutorProvider.getIfUnique());
 		builder.setCallback(getVendorCallback());
 		return builder;
 	}

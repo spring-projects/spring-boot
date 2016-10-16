@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
@@ -41,6 +42,7 @@ import org.springframework.util.ClassUtils;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @since 1.3.0
  */
 public class EntityManagerFactoryBuilder {
@@ -52,6 +54,8 @@ public class EntityManagerFactoryBuilder {
 	private final Map<String, Object> jpaProperties;
 
 	private final URL persistenceUnitRootLocation;
+
+	private final AsyncTaskExecutor bootstrapExecutor;
 
 	private EntityManagerFactoryBeanCallback callback;
 
@@ -82,10 +86,31 @@ public class EntityManagerFactoryBuilder {
 	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
 			Map<String, ?> jpaProperties, PersistenceUnitManager persistenceUnitManager,
 			URL persistenceUnitRootLocation) {
+		this(jpaVendorAdapter, jpaProperties, persistenceUnitManager,
+				persistenceUnitRootLocation, null);
+	}
+
+	/**
+	 * Create a new instance passing in the common pieces that will be shared if multiple
+	 * EntityManagerFactory instances are created.
+	 * @param jpaVendorAdapter a vendor adapter
+	 * @param jpaProperties JPA properties to be passed to the persistence provider.
+	 * @param persistenceUnitManager optional source of persistence unit information (can
+	 * be null)
+	 * @param persistenceUnitRootLocation the persistence unit root location to use as a
+	 * fallback (can be null)
+	 * @param bootstrapExecutor optional asynchronous executor for background
+	 * bootstrapping (can be null)
+	 * @since 1.5.0
+	 */
+	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
+			Map<String, ?> jpaProperties, PersistenceUnitManager persistenceUnitManager,
+			URL persistenceUnitRootLocation, AsyncTaskExecutor bootstrapExecutor) {
 		this.jpaVendorAdapter = jpaVendorAdapter;
 		this.persistenceUnitManager = persistenceUnitManager;
 		this.jpaProperties = new LinkedHashMap<String, Object>(jpaProperties);
 		this.persistenceUnitRootLocation = persistenceUnitRootLocation;
+		this.bootstrapExecutor = bootstrapExecutor;
 	}
 
 	public Builder dataSource(DataSource dataSource) {
@@ -192,7 +217,10 @@ public class EntityManagerFactoryBuilder {
 			}
 			entityManagerFactoryBean.setJpaVendorAdapter(
 					EntityManagerFactoryBuilder.this.jpaVendorAdapter);
-
+			if (EntityManagerFactoryBuilder.this.bootstrapExecutor != null) {
+				entityManagerFactoryBean.setBootstrapExecutor(
+						EntityManagerFactoryBuilder.this.bootstrapExecutor);
+			}
 			if (this.jta) {
 				entityManagerFactoryBean.setJtaDataSource(this.dataSource);
 			}
