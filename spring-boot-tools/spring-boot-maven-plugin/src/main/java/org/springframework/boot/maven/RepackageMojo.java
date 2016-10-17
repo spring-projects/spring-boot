@@ -167,11 +167,11 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private Properties embeddedLaunchScriptProperties;
 
 	/**
-	 * Exclude Spring Boot devtools.
+	 * Exclude Spring Boot devtools from the repackaged archive.
 	 * @since 1.3
 	 */
-	@Parameter(defaultValue = "false")
-	private boolean excludeDevtools;
+	@Parameter(defaultValue = "true")
+	private boolean excludeDevtools = true;
 
 	/**
 	 * Include system scoped dependencies.
