@@ -620,6 +620,10 @@ for Gradle and to `${project.name}` for Maven.
 |`useStartStopDaemon`
 |If the `start-stop-daemon` command, when it's available, should be used to control the
  process. Defaults to `true`.
+
+|`stopWaitTime`
+|The default value for `STOP_WAIT_TIME`. Only valid for an `init.d` service.
+ Defaults to 60 seconds.
 |===
 
 
@@ -680,6 +684,10 @@ The following environment properties are supported with the default script:
 |`DEBUG`
 |if not empty will set the `-x` flag on the shell process, making it easy to see the logic
  in the script.
+
+|`STOP_WAIT_TIME`
+|The time in seconds to wait when stopping the application before forcing a shutdown
+ (`60` by default).
 |===
 
 NOTE: The `PID_FOLDER`, `LOG_FOLDER` and `LOG_FILENAME` variables are only valid for an

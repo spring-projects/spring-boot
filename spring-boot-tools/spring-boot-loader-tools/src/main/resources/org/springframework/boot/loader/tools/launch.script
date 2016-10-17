@@ -73,6 +73,8 @@ fi
 # Initialize log file name if not provided by the config file
 [[ -z "$LOG_FILENAME" ]] && LOG_FILENAME="${identity}.log"
 
+# Initialize stop wait time if not provided by the config file
+[[ -z "$STOP_WAIT_TIME" ]] && STOP_WAIT_TIME={{stopWaitTime:60}}
 
 # ANSI Colors
 echoRed() { echo $'\e[0;31m'"$1"$'\e[0m'; }
@@ -192,9 +194,9 @@ stop() {
 
 do_stop() {
   kill "$1" &> /dev/null || { echoRed "Unable to kill process $1"; return 1; }
-  for i in $(seq 1 60); do
+  for i in $(seq 1 $STOP_WAIT_TIME); do
     isRunning "$1" || { echoGreen "Stopped [$1]"; rm -f "$2"; return 0; }
-    [[ $i -eq 30 ]] && kill "$1" &> /dev/null
+    [[ $i -eq STOP_WAIT_TIME/2 ]] && kill "$1" &> /dev/null
     sleep 1
   done
   echoRed "Unable to kill process $1";

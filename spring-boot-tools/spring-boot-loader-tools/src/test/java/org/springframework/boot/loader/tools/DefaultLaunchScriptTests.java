@@ -92,6 +92,11 @@ public class DefaultLaunchScriptTests {
 	}
 
 	@Test
+	public void stopWaitTimeCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("stopWaitTime");
+	}
+
+	@Test
 	public void defaultForUseStartStopDaemonIsTrue() throws Exception {
 		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
 		String content = new String(script.toByteArray());
@@ -103,6 +108,13 @@ public class DefaultLaunchScriptTests {
 		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
 		String content = new String(script.toByteArray());
 		assertThat(content).contains("MODE=\"auto\"");
+	}
+
+	@Test
+	public void defaultForStopWaitTimeIs60() throws Exception {
+		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
+		String content = new String(script.toByteArray());
+		assertThat(content).contains("STOP_WAIT_TIME=60");
 	}
 
 	@Test
