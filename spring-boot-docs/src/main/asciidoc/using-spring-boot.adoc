@@ -768,9 +768,9 @@ applied to other modules using your project. Gradle does not support `optional`
 dependencies out-of-the-box so you may want to have a look to the
 {propdeps-plugin}[`propdeps-plugin`] in the meantime.
 
-TIP: If you want to ensure that devtools is never included in a production build, you can
-use the `excludeDevtools` build property to completely remove the JAR. The property is
-supported with both the Maven and Gradle plugins.
+TIP: repackaged archives do not contain devtools by default. If you want to use certain
+remote devtools feature, you'll need to enable the `excludeDevtools` build property to
+include it. The property is supported with both the Maven and Gradle plugins.
 
 
 

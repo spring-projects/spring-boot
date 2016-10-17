@@ -400,7 +400,7 @@ want the other Boot features but not this one)
 
 |`excludeDevtools`
 |Boolean flag to indicate if the devtools jar should be excluded from the repackaged
-archives. Defaults to `false`.
+archives. Defaults to `true`.
 |===
 
 

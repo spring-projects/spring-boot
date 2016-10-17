@@ -99,7 +99,7 @@ public class SpringBootPluginExtension {
 	/**
 	 * Whether Spring Boot Devtools should be excluded from the fat jar.
 	 */
-	boolean excludeDevtools = false;
+	boolean excludeDevtools = true;
 
 	/**
 	 * Location of an agent jar to attach to the VM when running the application with
