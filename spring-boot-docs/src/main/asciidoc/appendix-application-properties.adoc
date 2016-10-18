@@ -127,8 +127,8 @@ content into your application; rather pick only the properties that you need.
 	spring.pid.file= # Location of the PID file to write (if ApplicationPidFileWriter is used).
 
 	# PROFILES
-	spring.profiles.active= # Comma-separated list of <<howto-set-active-spring-profiles,active profiles>>.
-	spring.profiles.include= # Unconditionally activate the specified comma separated profiles.
+	spring.profiles.active= # Comma-separated list (or list if using YAML) of <<howto-set-active-spring-profiles,active profiles>>.
+	spring.profiles.include= # Unconditionally activate the specified comma separated profiles (or list of profiles if using YAML).
 
 	# SENDGRID ({sc-spring-boot-autoconfigure}/sendgrid/SendGridAutoConfiguration.{sc-ext}[SendGridAutoConfiguration])
 	spring.sendgrid.api-key= # SendGrid api key (alternative to username/password)

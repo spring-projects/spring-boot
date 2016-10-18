@@ -537,6 +537,14 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void yamlSetsMultiProfilesWhenListProvided() throws Exception {
+		this.initializer.setSearchNames("testsetmultiprofileslist");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getActiveProfiles()).containsExactly("dev",
+				"healthcheck");
+	}
+
+	@Test
 	public void yamlSetsMultiProfilesWithWhitespace() throws Exception {
 		this.initializer.setSearchNames("testsetmultiprofileswhitespace");
 		this.initializer.postProcessEnvironment(this.environment, this.application);

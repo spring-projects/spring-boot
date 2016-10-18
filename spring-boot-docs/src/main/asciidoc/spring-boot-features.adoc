@@ -1173,7 +1173,9 @@ For example, when an application with following properties is run using the swit
 	my.property: fromyamlfile
 	---
 	spring.profiles: prod
-	spring.profiles.include: proddb,prodmq
+	spring.profiles.include:
+	  - proddb
+		- prodmq
 ----
 
 NOTE: Remember that the `spring.profiles` property can be defined in a YAML document
