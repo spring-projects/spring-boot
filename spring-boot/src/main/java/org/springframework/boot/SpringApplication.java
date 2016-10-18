@@ -200,8 +200,6 @@ public class SpringApplication {
 
 	private Banner banner;
 
-	private boolean printedCustomBannerViaDeprecatedMethod;
-
 	private ResourceLoader resourceLoader;
 
 	private BeanNameGenerator beanNameGenerator;

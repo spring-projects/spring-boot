@@ -244,6 +244,7 @@ public class ShellPropertiesTests {
 		return this.context.getBean(type);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Configuration
 	@EnableConfigurationProperties({ ShellProperties.class,
 			JaasAuthenticationProperties.class, KeyAuthenticationProperties.class,
@@ -253,6 +254,7 @@ public class ShellPropertiesTests {
 	}
 
 	@Configuration
+	@Deprecated
 	public static class TestShellConfiguration {
 
 		public static String uuid = UUID.randomUUID().toString();

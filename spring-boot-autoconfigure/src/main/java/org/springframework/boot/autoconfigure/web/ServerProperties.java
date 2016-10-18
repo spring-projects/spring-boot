@@ -66,6 +66,7 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
 import org.springframework.boot.context.embedded.undertow.UndertowBuilderCustomizer;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.EnvironmentAware;
@@ -1216,6 +1217,7 @@ public class ServerProperties
 		/**
 		 * Number of buffer per region.
 		 */
+		@Deprecated
 		private Integer buffersPerRegion;
 
 		/**
@@ -1243,6 +1245,7 @@ public class ServerProperties
 			this.bufferSize = bufferSize;
 		}
 
+		@DeprecatedConfigurationProperty(reason = "The property is not used by Undertow. See https://issues.jboss.org/browse/UNDERTOW-587 for details")
 		public Integer getBuffersPerRegion() {
 			return this.buffersPerRegion;
 		}
@@ -1283,9 +1286,6 @@ public class ServerProperties
 				UndertowEmbeddedServletContainerFactory factory) {
 			if (this.bufferSize != null) {
 				factory.setBufferSize(this.bufferSize);
-			}
-			if (this.buffersPerRegion != null) {
-				factory.setBuffersPerRegion(this.buffersPerRegion);
 			}
 			if (this.ioThreads != null) {
 				factory.setIoThreads(this.ioThreads);

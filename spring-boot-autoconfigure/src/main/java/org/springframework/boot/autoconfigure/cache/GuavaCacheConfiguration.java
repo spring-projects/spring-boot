@@ -43,6 +43,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass({ CacheBuilder.class, GuavaCacheManager.class })
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional(CacheCondition.class)
+@Deprecated
 class GuavaCacheConfiguration {
 
 	private final CacheProperties cacheProperties;

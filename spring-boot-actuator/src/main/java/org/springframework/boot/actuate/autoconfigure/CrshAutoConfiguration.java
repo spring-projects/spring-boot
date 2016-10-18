@@ -142,6 +142,7 @@ public class CrshAutoConfiguration {
 	}
 
 	@Configuration
+	@Deprecated
 	static class CrshAdditionalPropertiesConfiguration {
 
 		@Bean
@@ -173,6 +174,7 @@ public class CrshAutoConfiguration {
 	@Configuration
 	@ConditionalOnProperty(prefix = AUTH_PREFIX, name = "type", havingValue = "spring", matchIfMissing = true)
 	@ConditionalOnBean(AuthenticationManager.class)
+	@Deprecated
 	public static class AuthenticationManagerAdapterConfiguration {
 
 		private final ManagementServerProperties management;

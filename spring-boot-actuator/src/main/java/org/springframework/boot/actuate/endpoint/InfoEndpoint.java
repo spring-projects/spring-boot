@@ -16,14 +16,11 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
-import org.springframework.boot.actuate.info.MapInfoContributor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -47,14 +44,6 @@ public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 		super("info", false);
 		Assert.notNull(infoContributors, "Info contributors must not be null");
 		this.infoContributors = infoContributors;
-	}
-
-	private static List<InfoContributor> createContributors(Map<String, Object> info,
-			InfoContributor[] infoContributors) {
-		List<InfoContributor> result = new ArrayList<InfoContributor>(
-				Arrays.asList(infoContributors));
-		result.add(0, new MapInfoContributor(info));
-		return result;
 	}
 
 	@Override

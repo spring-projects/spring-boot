@@ -42,10 +42,15 @@ final class CacheConfigurations {
 		mappings.put(CacheType.COUCHBASE, CouchbaseCacheConfiguration.class);
 		mappings.put(CacheType.REDIS, RedisCacheConfiguration.class);
 		mappings.put(CacheType.CAFFEINE, CaffeineCacheConfiguration.class);
-		mappings.put(CacheType.GUAVA, GuavaCacheConfiguration.class);
+		addGuavaMapping(mappings);
 		mappings.put(CacheType.SIMPLE, SimpleCacheConfiguration.class);
 		mappings.put(CacheType.NONE, NoOpCacheConfiguration.class);
 		MAPPINGS = Collections.unmodifiableMap(mappings);
+	}
+
+	@Deprecated
+	private static void addGuavaMapping(Map<CacheType, Class<?>> mappings) {
+		mappings.put(CacheType.GUAVA, GuavaCacheConfiguration.class);
 	}
 
 	private CacheConfigurations() {

@@ -110,8 +110,6 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private Integer bufferSize;
 
-	private Integer buffersPerRegion;
-
 	private Integer ioThreads;
 
 	private Integer workerThreads;
@@ -235,9 +233,6 @@ public class UndertowEmbeddedServletContainerFactory
 		Builder builder = Undertow.builder();
 		if (this.bufferSize != null) {
 			builder.setBufferSize(this.bufferSize);
-		}
-		if (this.buffersPerRegion != null) {
-			builder.setBuffersPerRegion(this.buffersPerRegion);
 		}
 		if (this.ioThreads != null) {
 			builder.setIoThreads(this.ioThreads);
@@ -544,8 +539,9 @@ public class UndertowEmbeddedServletContainerFactory
 		this.bufferSize = bufferSize;
 	}
 
+	@Deprecated
 	public void setBuffersPerRegion(Integer buffersPerRegion) {
-		this.buffersPerRegion = buffersPerRegion;
+
 	}
 
 	public void setIoThreads(Integer ioThreads) {
