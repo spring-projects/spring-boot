@@ -24,9 +24,9 @@ import java.net.URLConnection;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.util.Enumeration;
+import java.util.jar.JarFile;
 
 import org.springframework.boot.loader.jar.Handler;
-import org.springframework.boot.loader.jar.JarFile;
 
 /**
  * {@link ClassLoader} used by the {@link Launcher}.
@@ -131,8 +131,10 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 					String classEntryName = className.replace(".", "/") + ".class";
 					for (URL url : getURLs()) {
 						try {
-							if (url.getContent() instanceof JarFile) {
-								JarFile jarFile = (JarFile) url.getContent();
+							URLConnection connection = url.openConnection();
+							if (connection instanceof JarURLConnection) {
+								JarFile jarFile = ((JarURLConnection) connection)
+										.getJarFile();
 								if (jarFile.getEntry(classEntryName) != null
 										&& jarFile.getEntry(packageEntryName) != null
 										&& jarFile.getManifest() != null) {
@@ -175,8 +177,8 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 	private void clearCache(URLConnection connection) throws IOException {
 		Object jarFile = ((JarURLConnection) connection).getJarFile();
-		if (jarFile instanceof JarFile) {
-			((JarFile) jarFile).clearCache();
+		if (jarFile instanceof org.springframework.boot.loader.jar.JarFile) {
+			((org.springframework.boot.loader.jar.JarFile) jarFile).clearCache();
 		}
 	}
 
