@@ -79,7 +79,7 @@ public class EndpointWebMvcManagementContextConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public EndpointHandlerMapping endpointHandlerMapping() {
-		Set<? extends MvcEndpoint> endpoints = mvcEndpoints().getEndpoints();
+		Set<MvcEndpoint> endpoints = mvcEndpoints().getEndpoints();
 		CorsConfiguration corsConfiguration = getCorsConfiguration(this.corsProperties);
 		EndpointHandlerMapping mapping = new EndpointHandlerMapping(endpoints,
 				corsConfiguration);

@@ -17,12 +17,18 @@
 package org.springframework.boot.actuate.cloudfoundry;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
+import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
+import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
+import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -57,6 +63,28 @@ public class CloudFoundryEndpointHandlerMappingTests {
 		assertThat(handlerMapping.getPath(testMvcEndpoint)).isEqualTo("/a");
 	}
 
+	@Test
+	public void doesNotRegisterHalJsonMvcEndpoint() throws Exception {
+		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
+				Collections.<NamedMvcEndpoint>singleton(new TestHalJsonMvcEndpoint()));
+		assertThat(handlerMapping.getEndpoints()).hasSize(0);
+	}
+
+	@Test
+	public void registersCloudFoundryDiscoveryEndpoint() throws Exception {
+		StaticApplicationContext context = new StaticApplicationContext();
+		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
+				Collections.<NamedMvcEndpoint>emptyList());
+		handlerMapping.setPrefix("/test");
+		handlerMapping.setApplicationContext(context);
+		handlerMapping.afterPropertiesSet();
+		HandlerExecutionChain handler = handlerMapping
+				.getHandler(new MockHttpServletRequest("GET", "/test"));
+		HandlerMethod handlerMethod = (HandlerMethod) handler.getHandler();
+		assertThat(handlerMethod.getBean())
+				.isInstanceOf(CloudFoundryDiscoveryMvcEndpoint.class);
+	}
+
 	private static class TestEndpoint extends AbstractEndpoint<Object> {
 
 		TestEndpoint(String id) {
@@ -76,6 +104,21 @@ public class CloudFoundryEndpointHandlerMappingTests {
 			super(delegate);
 		}
 
+	}
+
+	private static class TestHalJsonMvcEndpoint extends HalJsonMvcEndpoint {
+
+		TestHalJsonMvcEndpoint() {
+			super(new ManagementServletContext() {
+
+				@Override
+				public String getContextPath() {
+					return "";
+				}
+
+			});
+
+		}
 	}
 
 }
