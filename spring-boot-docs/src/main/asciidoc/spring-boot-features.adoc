@@ -4827,7 +4827,8 @@ how your tests will run:
 * `MOCK` -- Loads a `WebApplicationContext` and provides a mock servlet environment.
   Embedded servlet containers are not started when using this annotation. If servlet
   APIs are not on your classpath this mode will transparently fallback to creating a
-  regular non-web `ApplicationContext`.
+  regular non-web `ApplicationContext`. Can be used in conjunction with
+  `@AutoConfigureMockMvc` for `MockMvc`-based testing of your application.
 * `RANDOM_PORT` -- Loads an `EmbeddedWebApplicationContext` and provides a real
   servlet environment. Embedded servlet containers are started and listening on a random
   port.
