@@ -115,7 +115,6 @@
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
 			<artifactId>kotlin-runtime</artifactId>
-			<version>1.0.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
