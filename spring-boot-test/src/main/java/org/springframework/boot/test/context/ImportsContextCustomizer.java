@@ -207,10 +207,10 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 	/**
 	 * The key used to ensure correct application context caching. Keys are generated
-	 * based on <em>all</em> the annotations used with the test. We must use something
-	 * broader than just {@link Import @Import} annotations since an {@code @Import} may
-	 * use an {@link ImportSelector} which could make decisions based on anything
-	 * available from {@link AnnotationMetadata}.
+	 * based on <em>all</em> the annotations used with the test that aren't core Java or
+	 * Kotlin annotations. We must use something broader than just {@link Import @Import}
+	 * annotations since an {@code @Import} may use an {@link ImportSelector} which could
+	 * make decisions based on anything available from {@link AnnotationMetadata}.
 	 */
 	static class ContextCustomizerKey {
 
@@ -239,12 +239,22 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		private void collectElementAnnotations(AnnotatedElement element,
 				Set<Annotation> annotations, Set<Class<?>> seen) {
 			for (Annotation annotation : element.getDeclaredAnnotations()) {
-				if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
+				if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)
+						&& !isIgnoredKotlinAnnotation(annotation)) {
 					annotations.add(annotation);
 					collectClassAnnotations(annotation.annotationType(), annotations,
 							seen);
 				}
 			}
+		}
+
+		private boolean isIgnoredKotlinAnnotation(Annotation annotation) {
+			return "kotlin.Metadata".equals(annotation.annotationType().getName())
+					|| isInKotlinAnnotationPackage(annotation);
+		}
+
+		private boolean isInKotlinAnnotationPackage(Annotation annotation) {
+			return annotation.annotationType().getName().startsWith("kotlin.annotation.");
 		}
 
 		@Override
