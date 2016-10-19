@@ -1465,7 +1465,7 @@ By default, `spring-boot-starter-thymeleaf` uses Thymeleaf 2.1. If you are using
 ----
 	<properties>
 		<thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
-		<thymeleaf-layout-dialect.version>2.0.3</thymeleaf-layout-dialect.version>
+		<thymeleaf-layout-dialect.version>2.0.4</thymeleaf-layout-dialect.version>
 	</properties>
 ----
 
