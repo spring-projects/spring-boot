@@ -39,8 +39,8 @@ diverge from the defaults.
 By default, Spring Boot {spring-boot-version} requires http://www.java.com[Java 7] and
 Spring Framework {spring-version} or above. You can use Spring Boot with Java 6 with some
 additional configuration. See <<howto.adoc#howto-use-java-6>> for more details. Explicit
-build support is provided for Maven (3.2+) and Gradle (1.12 or 2.x). Gradle 3 is not
-supported.
+build support is provided for Maven (3.2+) and Gradle (1.12 or 2.x). Support for Gradle
+2.7 and earlier is deprecated. Gradle 3 is not supported.
 
 TIP: Although you can use Spring Boot with Java 6 or 7, we generally recommend Java 8 if
 at all possible.
@@ -205,9 +205,9 @@ scope.
 
 [[getting-started-gradle-installation]]
 ==== Gradle installation
-Spring Boot is compatible with Gradle 1.12 or 2.x. 2.14.1 is recommended. Gradle 3 is not
-supported. If you don't already have Gradle installed you can follow the instructions at
-http://www.gradle.org/.
+Spring Boot is compatible with Gradle 1.12 or 2.x but support for 2.7 and earlier is
+deprecated. Gradle 2.14.1 is recommended. Gradle 3 is not supported. If you don't already
+have Gradle installed you can follow the instructions at http://www.gradle.org/.
 
 Spring Boot dependencies can be declared using the `org.springframework.boot` `group`.
 Typically your project will declare dependencies to one or more
