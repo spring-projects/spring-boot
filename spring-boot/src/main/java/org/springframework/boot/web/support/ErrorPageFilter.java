@@ -83,8 +83,6 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 	private final Map<Class<?>, String> exceptions = new HashMap<Class<?>, String>();
 
-	private final Map<Class<?>, Class<?>> subtypes = new HashMap<Class<?>, Class<?>>();
-
 	private final OncePerRequestFilter delegate = new OncePerRequestFilter() {
 
 		@Override
@@ -217,19 +215,12 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 	}
 
 	private String getErrorPath(Class<?> type) {
-		if (this.exceptions.containsKey(type)) {
-			return this.exceptions.get(type);
-		}
-		if (this.subtypes.containsKey(type)) {
-			return this.exceptions.get(this.subtypes.get(type));
-		}
-		Class<?> subtype = type;
-		while (subtype != Object.class) {
-			subtype = subtype.getSuperclass();
-			if (this.exceptions.containsKey(subtype)) {
-				this.subtypes.put(subtype, type);
-				return this.exceptions.get(subtype);
+		while (type != Object.class) {
+			String path = this.exceptions.get(type);
+			if (path != null) {
+				return path;
 			}
+			type = type.getSuperclass();
 		}
 		return this.global;
 	}
