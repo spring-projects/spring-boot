@@ -27,7 +27,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
-import org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -91,12 +91,12 @@ public class EnableAutoConfigurationImportSelectorTests {
 	@Test
 	public void classNamesExclusionsAreApplied() {
 		configureExclusions(new String[0],
-				new String[] { ThymeleafAutoConfiguration.class.getName() },
+				new String[] { MustacheAutoConfiguration.class.getName() },
 				new String[0]);
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
 		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions())
-				.contains(ThymeleafAutoConfiguration.class.getName());
+				.contains(MustacheAutoConfiguration.class.getName());
 	}
 
 	@Test
@@ -113,12 +113,12 @@ public class EnableAutoConfigurationImportSelectorTests {
 	public void severalPropertyExclusionsAreApplied() {
 		configureExclusions(new String[0], new String[0],
 				new String[] { FreeMarkerAutoConfiguration.class.getName(),
-						ThymeleafAutoConfiguration.class.getName() });
+						MustacheAutoConfiguration.class.getName() });
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 2);
 		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions())
 				.contains(FreeMarkerAutoConfiguration.class.getName(),
-						ThymeleafAutoConfiguration.class.getName());
+						MustacheAutoConfiguration.class.getName());
 	}
 
 	@Test
@@ -127,25 +127,24 @@ public class EnableAutoConfigurationImportSelectorTests {
 		this.environment.setProperty("spring.autoconfigure.exclude[0]",
 				FreeMarkerAutoConfiguration.class.getName());
 		this.environment.setProperty("spring.autoconfigure.exclude[1]",
-				ThymeleafAutoConfiguration.class.getName());
+				MustacheAutoConfiguration.class.getName());
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 2);
 		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions())
 				.contains(FreeMarkerAutoConfiguration.class.getName(),
-						ThymeleafAutoConfiguration.class.getName());
+						MustacheAutoConfiguration.class.getName());
 	}
 
 	@Test
 	public void combinedExclusionsAreApplied() {
-		configureExclusions(
-				new String[] { GroovyTemplateAutoConfiguration.class.getName() },
+		configureExclusions(new String[] { MustacheAutoConfiguration.class.getName() },
 				new String[] { FreeMarkerAutoConfiguration.class.getName() },
 				new String[] { ThymeleafAutoConfiguration.class.getName() });
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 3);
 		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions())
 				.contains(FreeMarkerAutoConfiguration.class.getName(),
-						GroovyTemplateAutoConfiguration.class.getName(),
+						MustacheAutoConfiguration.class.getName(),
 						ThymeleafAutoConfiguration.class.getName());
 	}
 

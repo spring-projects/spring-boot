@@ -16,6 +16,7 @@
 
 package org.springframework.boot.maven;
 
+import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
@@ -63,9 +64,11 @@ public class RunMojo extends AbstractRunMojo {
 	}
 
 	@Override
-	protected void runWithForkedJvm(List<String> args) throws MojoExecutionException {
+	protected void runWithForkedJvm(File workingDirectory, List<String> args)
+			throws MojoExecutionException {
 		try {
-			RunProcess runProcess = new RunProcess(new JavaExecutable().toString());
+			RunProcess runProcess = new RunProcess(workingDirectory,
+					new JavaExecutable().toString());
 			Runtime.getRuntime()
 					.addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
 			int exitCode = runProcess.run(true, args.toArray(new String[args.size()]));

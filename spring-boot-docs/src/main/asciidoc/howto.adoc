@@ -24,9 +24,9 @@ can send us a {github-code}[pull request].
 
 [[howto-failure-analyzer]]
 === Create your own FailureAnalyzer
-{dc-spring-boot}/diagnostics/FailureAnalyzer.{dc-ext}[[`FailureAnalyzer`] is a great way
+{dc-spring-boot}/diagnostics/FailureAnalyzer.{dc-ext}[`FailureAnalyzer`] is a great way
 to intercept an exception on startup and turn it into a human-readable message, wrapped
-into a {dc-spring-boot}/diagnostics/FailureAnalysis.{dc-ext}[[`FailureAnalysis`]. Spring
+into a {dc-spring-boot}/diagnostics/FailureAnalysis.{dc-ext}[`FailureAnalysis`]. Spring
 Boot provides such analyzer for application context related exceptions, JSR-303
 validations and more. It is actually very easy to create your own.
 
@@ -34,7 +34,7 @@ validations and more. It is actually very easy to create your own.
 presence of a specified exception type in the exception to handle. You can extend from
 that so that your implementation gets a chance to handle the exception only when it is
 actually present. If for whatever reason you can't handle the exception, return `null`
-to let another implementation a chance to handle the exception.
+to give another implementation a chance to handle the exception.
 
 `FailureAnalyzer` implementations are to be registered in a `META-INF/spring.factories`:
 the following registers `ProjectConstraintViolationFailureAnalyzer`:
@@ -1420,24 +1420,27 @@ added.
 
 Check out {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`],
 {sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[`ThymeleafAutoConfiguration`],
-{sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[`FreeMarkerAutoConfiguration`],
+{sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[`FreeMarkerAutoConfiguration`] and
 {sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[`GroovyTemplateAutoConfiguration`]
 
 
 
 [[howto-use-thymeleaf-3]]
 === Use Thymeleaf 3
-By default, `spring-boot-starter-thymeleaf` uses Thymeleaf 2.1. You can use Thymeleaf
-3 by overriding the `thymeleaf.version` and `thymeleaf-layout-dialect.version` properties,
-for example:
+By default, `spring-boot-starter-thymeleaf` uses Thymeleaf 2.1. If you are using the
+`spring-boot-starter-parent`, you can use Thymeleaf 3 by overriding the
+`thymeleaf.version` and `thymeleaf-layout-dialect.version` properties, for example:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	<properties>
-		<thymeleaf.version>3.0.0.RELEASE</thymeleaf.version>
-		<thymeleaf-layout-dialect.version>2.0.0</thymeleaf-layout-dialect.version>
-	</dependency>
+		<thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
+		<thymeleaf-layout-dialect.version>2.0.4</thymeleaf-layout-dialect.version>
+	</properties>
 ----
+
+NOTE: if you are managing dependencies yourself, look at `spring-boot-dependencies` for
+the list of artifacts that are related to those two versions.
 
 To avoid a warning message about the HTML 5 template mode being deprecated and the HTML
 template mode being used instead, you may also want to explicitly configure
@@ -2001,9 +2004,10 @@ NOTE: You can output the schema creation by enabling the `org.hibernate.SQL` log
 is done for you automatically if you enable the <<boot-features-logging-console-output,debug mode>>.
 
 In addition, a file named `import.sql` in the root of the classpath will be executed on
-startup. This can be useful for demos and for testing if you are careful, but probably
-not something you want to be on the classpath in production. It is a Hibernate feature
-(nothing to do with Spring).
+startup if Hibernate creates the schema from scratch (that is if the `ddl-auto` property
+is set to `create` or `create-drop`). This can be useful for demos and for testing if you
+are careful, but probably not something you want to be on the classpath in production. It
+is a Hibernate feature (nothing to do with Spring).
 
 
 [[howto-initialize-a-database-using-spring-jdbc]]
@@ -2614,7 +2618,7 @@ then be depended upon by your application and other projects.
 If you cannot rearrange your code as recommended above, Spring Boot's Maven and Gradle
 plugins must be configured to produce a separate artifact that is suitable for use as a
 dependency. The executable archive cannot be used as a dependency as the
-<<appendix-executable-jar-format.adoc#executable-jar-jar-file-structure,exectuable jar
+<<appendix-executable-jar-format.adoc#executable-jar-jar-file-structure,executable jar
 format>> packages application classes in `BOOT-INF/classes`. This means
 that they cannot be found when the executable jar is used as a dependency.
 
@@ -3020,21 +3024,19 @@ and/or jar. Useful reading is in the http://spring.io/guides/gs/convert-jar-to-w
 Started Guide on Converting a jar to a war].
 
 Create a deployable war by extending `SpringBootServletInitializer` (e.g. in a class
-called `Application`), and add the Spring Boot `@EnableAutoConfiguration` annotation.
+called `Application`), and add the Spring Boot `@SpringBootApplication` annotation.
 Example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Configuration
-	@EnableAutoConfiguration
-	@ComponentScan
+	@SpringBootApplication
 	public class Application extends SpringBootServletInitializer {
 
 		@Override
 		protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 			// Customize the application or call application.sources(...) to add sources
-			// Since our example is itself a @Configuration class we actually don't
-			// need to override this method.
+			// Since our example is itself a @Configuration class (via @SpringBootApplication)
+			// we actually don't need to override this method.
 			return application;
 		}
 
@@ -3072,6 +3074,34 @@ Once the war is working we make it executable by adding a `main` method to our
 		SpringApplication.run(Application.class, args);
 	}
 ----
+
+[NOTE]
+====
+If you intend to start your application as a war or as an executable application, you
+need to share the customizations of the builder in a method that is both available to the
+`ServletInitializr` callback and the `main` method, something like:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@SpringBootApplication
+	public class Application extends SpringBootServletInitializer {
+
+		@Override
+		protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+			return configureApplication(builder);
+		}
+
+		public static void main(String[] args) {
+			configureApplication(new SpringApplicationBuilder()).run(args);
+		}
+
+		private static SpringApplicationBuilder configureApplication(SpringApplicationBuilder builder) {
+			return builder.sources(Application.class).bannerMode(Banner.Mode.OFF);
+		}
+
+	}
+----
+====
 
 Applications can fall into more than one category:
 
@@ -3173,12 +3203,12 @@ but the rest of it is normal for a Spring application in Servlet 2.5. Example:
 		</listener>
 
 		<filter>
-			<filter-name>metricFilter</filter-name>
+			<filter-name>metricsFilter</filter-name>
 			<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
 		</filter>
 
 		<filter-mapping>
-			<filter-name>metricFilter</filter-name>
+			<filter-name>metricsFilter</filter-name>
 			<url-pattern>/*</url-pattern>
 		</filter-mapping>
 

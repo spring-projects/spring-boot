@@ -26,6 +26,7 @@ import org.mockito.listeners.MethodInvocationReport;
 import org.mockito.mock.MockCreationSettings;
 
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * Reset strategy used on a mock bean. Usually applied to a mock via the
@@ -52,8 +53,6 @@ public enum MockReset {
 	 * Don't reset the mock.
 	 */
 	NONE;
-
-	private static final MockUtil util = new MockUtil();
 
 	/**
 	 * Create {@link MockSettings settings} to be used with mocks where reset should occur
@@ -105,12 +104,15 @@ public enum MockReset {
 	@SuppressWarnings("rawtypes")
 	static MockReset get(Object mock) {
 		MockReset reset = MockReset.NONE;
-		if (util.isMock(mock)) {
-			MockCreationSettings settings = util.getMockSettings(mock);
-			List listeners = settings.getInvocationListeners();
-			for (Object listener : listeners) {
-				if (listener instanceof ResetInvocationListener) {
-					reset = ((ResetInvocationListener) listener).getReset();
+		if (ClassUtils.isPresent("org.mockito.internal.util.MockUtil", null)) {
+			MockUtil mockUtil = new MockUtil();
+			if (mockUtil.isMock(mock)) {
+				MockCreationSettings settings = mockUtil.getMockSettings(mock);
+				List listeners = settings.getInvocationListeners();
+				for (Object listener : listeners) {
+					if (listener instanceof ResetInvocationListener) {
+						reset = ((ResetInvocationListener) listener).getReset();
+					}
 				}
 			}
 		}

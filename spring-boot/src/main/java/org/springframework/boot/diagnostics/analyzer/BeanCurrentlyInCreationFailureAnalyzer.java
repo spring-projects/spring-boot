@@ -39,45 +39,108 @@ class BeanCurrentlyInCreationFailureAnalyzer
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure,
 			BeanCurrentlyInCreationException cause) {
-		List<String> beansInCycle = new ArrayList<String>();
+		List<BeanInCycle> cycle = new ArrayList<BeanInCycle>();
 		Throwable candidate = rootFailure;
+		int cycleStart = -1;
 		while (candidate != null) {
-			if (candidate instanceof BeanCreationException) {
-				BeanCreationException creationEx = (BeanCreationException) candidate;
-				if (StringUtils.hasText(creationEx.getBeanName())) {
-					beansInCycle
-							.add(creationEx.getBeanName() + getDescription(creationEx));
+			BeanInCycle beanInCycle = BeanInCycle.get(candidate);
+			if (beanInCycle != null) {
+				int index = cycle.indexOf(beanInCycle);
+				if (index == -1) {
+					cycle.add(beanInCycle);
 				}
+				cycleStart = (cycleStart == -1 ? index : cycleStart);
 			}
 			candidate = candidate.getCause();
 		}
+		String message = buildMessage(cycle, cycleStart);
+		return new FailureAnalysis(message, null, cause);
+	}
+
+	private String buildMessage(List<BeanInCycle> beansInCycle, int cycleStart) {
 		StringBuilder message = new StringBuilder();
-		int uniqueBeans = beansInCycle.size() - 1;
-		message.append(
-				String.format("There is a circular dependency between %s beans in the "
-						+ "application context:%n", uniqueBeans));
-		for (String bean : beansInCycle) {
-			message.append(String.format("\t- %s%n", bean));
+		message.append(String.format("The dependencies of some of the beans in the "
+				+ "application context form a cycle:%n%n"));
+		for (int i = 0; i < beansInCycle.size(); i++) {
+			BeanInCycle beanInCycle = beansInCycle.get(i);
+			if (i == cycleStart) {
+				message.append(String.format("┌─────┐%n"));
+			}
+			else if (i > 0) {
+				String leftSide = (i < cycleStart ? " " : "↑");
+				message.append(String.format("%s     ↓%n", leftSide));
+			}
+			String leftSide = i < cycleStart ? " " : "|";
+			message.append(String.format("%s  %s%n", leftSide, beanInCycle));
 		}
-		return new FailureAnalysis(message.toString(), null, cause);
+		message.append(String.format("└─────┘%n"));
+		return message.toString();
 	}
 
-	private String getDescription(BeanCreationException ex) {
-		if (StringUtils.hasText(ex.getResourceDescription())) {
-			return String.format(" defined in %s", ex.getResourceDescription());
-		}
-		InjectionPoint failedInjectionPoint = findFailedInjectionPoint(ex);
-		if (failedInjectionPoint != null && failedInjectionPoint.getField() != null) {
-			return String.format(" (field %s)", failedInjectionPoint.getField());
-		}
-		return "";
-	}
+	private static final class BeanInCycle {
 
-	private InjectionPoint findFailedInjectionPoint(BeanCreationException ex) {
-		if (!(ex instanceof UnsatisfiedDependencyException)) {
+		private final String name;
+
+		private final String description;
+
+		private BeanInCycle(BeanCreationException ex) {
+			this.name = ex.getBeanName();
+			this.description = determineDescription(ex);
+		}
+
+		private String determineDescription(BeanCreationException ex) {
+			if (StringUtils.hasText(ex.getResourceDescription())) {
+				return String.format(" defined in %s", ex.getResourceDescription());
+			}
+			InjectionPoint failedInjectionPoint = findFailedInjectionPoint(ex);
+			if (failedInjectionPoint != null && failedInjectionPoint.getField() != null) {
+				return String.format(" (field %s)", failedInjectionPoint.getField());
+			}
+			return "";
+		}
+
+		private InjectionPoint findFailedInjectionPoint(BeanCreationException ex) {
+			if (!(ex instanceof UnsatisfiedDependencyException)) {
+				return null;
+			}
+			return ((UnsatisfiedDependencyException) ex).getInjectionPoint();
+		}
+
+		@Override
+		public int hashCode() {
+			return this.name.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null || getClass() != obj.getClass()) {
+				return false;
+			}
+			return this.name.equals(((BeanInCycle) obj).name);
+		}
+
+		@Override
+		public String toString() {
+			return this.name + this.description;
+		}
+
+		public static BeanInCycle get(Throwable ex) {
+			if (ex instanceof BeanCreationException) {
+				return get((BeanCreationException) ex);
+			}
 			return null;
 		}
-		return ((UnsatisfiedDependencyException) ex).getInjectionPoint();
+
+		private static BeanInCycle get(BeanCreationException ex) {
+			if (StringUtils.hasText(ex.getBeanName())) {
+				return new BeanInCycle(ex);
+			}
+			return null;
+		}
+
 	}
 
 }

@@ -106,7 +106,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 	@Test
 	public void basicMessagingWithStringResponse() throws Throwable {
 		Object result = performStompSubscription("/app/string");
-		assertThat(new String((byte[]) result)).isEqualTo(String.format("string data"));
+		assertThat(new String((byte[]) result)).isEqualTo("string data");
 	}
 
 	@Test

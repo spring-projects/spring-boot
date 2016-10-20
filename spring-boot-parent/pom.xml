@@ -208,6 +208,11 @@
 				<version>${gradle.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-runtime</artifactId>
+				<version>1.0.4</version>
+			</dependency>
+			<dependency>
 				<groupId>org.zeroturnaround</groupId>
 				<artifactId>zt-zip</artifactId>
 				<version>1.7</version>

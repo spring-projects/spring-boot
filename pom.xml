@@ -248,6 +248,44 @@
 									</target>
 								</configuration>
 							</execution>
+							<execution>
+								<id>fixup-sample-ant</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<inherited>false</inherited>
+								<configuration>
+									<target>
+										<property name="sourceFile" value="spring-boot-samples/spring-boot-sample-ant/pom.xml" />
+										<xslt in="${sourceFile}" out="${sourceFile}.new" force="true">
+											<style>
+												<string><![CDATA[
+<xsl:stylesheet version="2.0"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:m="http://maven.apache.org/POM/4.0.0"
+	exclude-result-prefixes="m">
+
+	<xsl:template match="node()|@*">
+		<xsl:copy>
+			<xsl:apply-templates select="node()|@*" />
+		</xsl:copy>
+	</xsl:template>
+
+	<xsl:template
+		match="m:build/m:plugins/m:plugin[m:artifactId/text() = 'maven-antrun-plugin']/m:dependencies/m:dependency[m:artifactId/text() = 'spring-boot-antlib']/m:version/text()">
+		<xsl:value-of select="/m:project/m:parent/m:version/text()"/>
+	</xsl:template>
+</xsl:stylesheet>
+				]]>
+												</string>
+											</style>
+										</xslt>
+										<move file="${sourceFile}" tofile="${sourceFile}.old" />
+										<move file="${sourceFile}.new" tofile="${sourceFile}" />
+										<delete file="${sourceFile}.old" />
+									</target>
+								</configuration>
+							</execution>
 						</executions>
 					</plugin>
 					<plugin>

@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,7 @@ import java.util.Set;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
@@ -113,31 +115,42 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 			return;
 		}
 		String[] patterns = getPatterns(handler, mapping);
-		super.registerHandlerMethod(handler, method, withNewPatterns(mapping, patterns));
+		if (!ObjectUtils.isEmpty(patterns)) {
+			super.registerHandlerMethod(handler, method,
+					withNewPatterns(mapping, patterns));
+		}
 	}
 
 	private String[] getPatterns(Object handler, RequestMappingInfo mapping) {
-		String path = getPath(handler);
-		String prefix = StringUtils.hasText(this.prefix) ? this.prefix + path : path;
-		Set<String> defaultPatterns = mapping.getPatternsCondition().getPatterns();
-		if (defaultPatterns.isEmpty()) {
-			return new String[] { prefix, prefix + ".json" };
-		}
-		List<String> patterns = new ArrayList<String>(defaultPatterns);
-		for (int i = 0; i < patterns.size(); i++) {
-			patterns.set(i, prefix + patterns.get(i));
-		}
-		return patterns.toArray(new String[patterns.size()]);
-	}
-
-	private String getPath(Object handler) {
 		if (handler instanceof String) {
 			handler = getApplicationContext().getBean((String) handler);
 		}
-		if (handler instanceof MvcEndpoint) {
-			return ((MvcEndpoint) handler).getPath();
+		Assert.state(handler instanceof MvcEndpoint, "Only MvcEndpoints are supported");
+		String path = getPath((MvcEndpoint) handler);
+		return (path == null ? null : getEndpointPatterns(path, mapping));
+	}
+
+	/**
+	 * Return the path that should be used to map the given {@link MvcEndpoint}.
+	 * @param endpoint the endpoint to map
+	 * @return the path to use for the endpoint or {@code null} if no mapping is required
+	 */
+	protected String getPath(MvcEndpoint endpoint) {
+		return endpoint.getPath();
+	}
+
+	private String[] getEndpointPatterns(String path, RequestMappingInfo mapping) {
+		String patternPrefix = StringUtils.hasText(this.prefix) ? this.prefix + path
+				: path;
+		Set<String> defaultPatterns = mapping.getPatternsCondition().getPatterns();
+		if (defaultPatterns.isEmpty()) {
+			return new String[] { patternPrefix, patternPrefix + ".json" };
 		}
-		return "";
+		List<String> patterns = new ArrayList<String>(defaultPatterns);
+		for (int i = 0; i < patterns.size(); i++) {
+			patterns.set(i, patternPrefix + patterns.get(i));
+		}
+		return patterns.toArray(new String[patterns.size()]);
 	}
 
 	private RequestMappingInfo withNewPatterns(RequestMappingInfo mapping,
@@ -196,9 +209,29 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 	/**
 	 * Return the endpoints.
 	 * @return the endpoints
+	 * @see #getEndpoints(Class)
 	 */
 	public Set<? extends MvcEndpoint> getEndpoints() {
-		return new HashSet<MvcEndpoint>(this.endpoints);
+		return getEndpoints(MvcEndpoint.class);
+	}
+
+	/**
+	 * Return the endpoints of the specified type.
+	 * @param <E> the endpoint type
+	 * @param type the endpoint type
+	 * @return the endpoints
+	 * @see #getEndpoints()
+	 * @since 1.5.0
+	 */
+	@SuppressWarnings("unchecked")
+	public <E extends MvcEndpoint> Set<E> getEndpoints(Class<E> type) {
+		Set<E> result = new HashSet<E>(this.endpoints.size());
+		for (MvcEndpoint candidate : this.endpoints) {
+			if (type.isInstance(candidate)) {
+				result.add((E) candidate);
+			}
+		}
+		return Collections.unmodifiableSet(result);
 	}
 
 	@Override

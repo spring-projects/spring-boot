@@ -145,7 +145,7 @@ public class SampleIntegrationTests {
 	@Test
 	public void jmsSample() throws Exception {
 		String output = this.cli.run("jms.groovy");
-		assertThat(output).contains("Received Greetings from Spring Boot via HornetQ");
+		assertThat(output).contains("Received Greetings from Spring Boot via Artemis");
 	}
 
 	@Test

@@ -42,6 +42,7 @@ import org.springframework.boot.configurationsample.lombok.LombokInnerClassPrope
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
 import org.springframework.boot.configurationsample.lombok.SimpleLombokPojo;
+import org.springframework.boot.configurationsample.method.DeprecatedMethodConfig;
 import org.springframework.boot.configurationsample.method.EmptyTypeMethodConfig;
 import org.springframework.boot.configurationsample.method.InvalidMethodConfig;
 import org.springframework.boot.configurationsample.method.MethodAndClassConfig;
@@ -282,6 +283,35 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public void emptyTypeMethodConfig() throws Exception {
 		ConfigurationMetadata metadata = compile(EmptyTypeMethodConfig.class);
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("something.foo"));
+	}
+
+	@Test
+	public void deprecatedMethodConfig() throws Exception {
+		Class<DeprecatedMethodConfig> type = DeprecatedMethodConfig.class;
+		ConfigurationMetadata metadata = compile(type);
+		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
+				.fromSource(DeprecatedMethodConfig.Foo.class)
+				.withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
+				.fromSource(DeprecatedMethodConfig.Foo.class)
+				.withDeprecation(null, null));
+	}
+
+	@Test
+	@SuppressWarnings("deprecation")
+	public void deprecatedMethodConfigOnClass() throws Exception {
+		Class<?> type = org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.class;
+		ConfigurationMetadata metadata = compile(type);
+		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
+				.fromSource(
+						org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
+				.withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
+				.fromSource(
+						org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
+				.withDeprecation(null, null));
 	}
 
 	@Test

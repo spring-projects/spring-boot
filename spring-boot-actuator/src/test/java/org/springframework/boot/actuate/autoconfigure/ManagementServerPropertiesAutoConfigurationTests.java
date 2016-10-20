@@ -80,6 +80,12 @@ public class ManagementServerPropertiesAutoConfigurationTests {
 		assertThat(properties.getSecurity().getRoles()).containsOnly("FOO", "BAR", "BIZ");
 	}
 
+	@Test
+	public void managementRolesAllowsIndexedAccess() {
+		ManagementServerProperties properties = load("management.security.roles[0]=FOO");
+		assertThat(properties.getSecurity().getRoles()).containsOnly("FOO");
+	}
+
 	public ManagementServerProperties load(String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(ctx, environment);

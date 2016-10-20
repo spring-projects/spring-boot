@@ -58,8 +58,8 @@ class SessionCondition extends SpringBootCondition {
 			return ConditionOutcome.match(message
 					.found("spring.session.store-type property").items(sessionStoreType));
 		}
-		return ConditionOutcome
-				.noMatch(message.found("spring.session.store-type property").items(value));
+		return ConditionOutcome.noMatch(
+				message.found("spring.session.store-type property").items(value));
 	}
 
 }

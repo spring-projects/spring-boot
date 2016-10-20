@@ -253,27 +253,6 @@
         "name": "any"
       }
     ]
-  },
-  {
-    "name": "management.shell.auth.type",
-    "values": [
-      {
-        "value": "simple",
-        "description": "Use a simple user/password based authentication."
-      },
-      {
-        "value": "spring",
-        "description": "Integrate with Spring Security."
-      },
-      {
-        "value": "key",
-        "description": "Use a Key-based authentication."
-      },
-      {
-        "value": "jaas",
-        "description": "Use JAAS authentication."
-      }
-    ]
   }
 ]}
 

@@ -56,7 +56,7 @@ public class JestAutoConfiguration {
 		this.gsonProvider = gsonProvider;
 	}
 
-	@Bean
+	@Bean(destroyMethod = "shutdownClient")
 	@ConditionalOnMissingBean
 	public JestClient jestClient() {
 		JestClientFactory factory = new JestClientFactory();

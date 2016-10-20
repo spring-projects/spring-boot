@@ -83,12 +83,7 @@ public class EndpointWebMvcManagementContextConfiguration {
 		CorsConfiguration corsConfiguration = getCorsConfiguration(this.corsProperties);
 		EndpointHandlerMapping mapping = new EndpointHandlerMapping(endpoints,
 				corsConfiguration);
-		boolean disabled = this.managementServerProperties.getPort() != null
-				&& this.managementServerProperties.getPort() == -1;
-		mapping.setDisabled(disabled);
-		if (!disabled) {
-			mapping.setPrefix(this.managementServerProperties.getContextPath());
-		}
+		mapping.setPrefix(this.managementServerProperties.getContextPath());
 		if (this.mappingCustomizers != null) {
 			for (EndpointHandlerMappingCustomizer customizer : this.mappingCustomizers) {
 				customizer.customize(mapping);
@@ -183,14 +178,15 @@ public class EndpointWebMvcManagementContextConfiguration {
 				AnnotatedTypeMetadata metadata) {
 			Environment environment = context.getEnvironment();
 			String config = environment.resolvePlaceholders("${logging.file:}");
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("Log File");
+			ConditionMessage.Builder message = ConditionMessage.forCondition("Log File");
 			if (StringUtils.hasText(config)) {
-				return ConditionOutcome.match(message.found("logging.file").items(config));
+				return ConditionOutcome
+						.match(message.found("logging.file").items(config));
 			}
 			config = environment.resolvePlaceholders("${logging.path:}");
 			if (StringUtils.hasText(config)) {
-				return ConditionOutcome.match(message.found("logging.path").items(config));
+				return ConditionOutcome
+						.match(message.found("logging.path").items(config));
 			}
 			config = new RelaxedPropertyResolver(environment, "endpoints.logfile.")
 					.getProperty("external-file");

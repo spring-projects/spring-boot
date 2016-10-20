@@ -32,6 +32,7 @@ import javax.servlet.SessionTrackingMode;
 import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
 import org.apache.catalina.valves.RemoteIpValve;
+import org.apache.coyote.AbstractProtocol;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -433,6 +434,34 @@ public class ServerPropertiesTests {
 		assertThat(remoteIpValve.getRemoteIpHeader()).isEqualTo("x-my-remote-ip-header");
 		assertThat(remoteIpValve.getPortHeader()).isEqualTo("x-my-forward-port");
 		assertThat(remoteIpValve.getInternalProxies()).isEqualTo("192.168.0.1");
+	}
+
+	@Test
+	public void customTomcatAcceptCount() {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.accept-count", "10");
+		bindProperties(map);
+
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(container);
+		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
+				.getEmbeddedServletContainer();
+		assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
+				.getProtocolHandler()).getBacklog()).isEqualTo(10);
+	}
+
+	@Test
+	public void customTomcatMaxConnections() {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.max-connections", "5");
+		bindProperties(map);
+
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(container);
+		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
+				.getEmbeddedServletContainer();
+		assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
+				.getProtocolHandler()).getMaxConnections()).isEqualTo(5);
 	}
 
 	@Test

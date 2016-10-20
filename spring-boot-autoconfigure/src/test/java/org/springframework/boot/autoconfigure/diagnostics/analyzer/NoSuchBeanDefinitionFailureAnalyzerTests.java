@@ -184,15 +184,15 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	private void assertBeanMethodDisabled(FailureAnalysis analysis, String description,
 			Class<?> target, String methodName) {
 		String expected = String.format("Bean method '%s' in '%s' not loaded because",
-				methodName, ClassUtils.getShortName(target), description);
+				methodName, ClassUtils.getShortName(target));
 		assertThat(analysis.getDescription()).contains(expected);
 		assertThat(analysis.getDescription()).contains(description);
 	}
 
 	private void assertClassDisabled(FailureAnalysis analysis, String description,
 			String methodName) {
-		String expected = String.format("Bean method '%s' not loaded because", methodName,
-				description);
+		String expected = String.format("Bean method '%s' not loaded because",
+				methodName);
 		assertThat(analysis.getDescription()).contains(expected);
 		assertThat(analysis.getDescription()).contains(description);
 	}

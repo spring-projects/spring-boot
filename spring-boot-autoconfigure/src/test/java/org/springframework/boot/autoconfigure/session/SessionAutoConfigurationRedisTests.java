@@ -50,7 +50,8 @@ public class SessionAutoConfigurationRedisTests
 	public void redisSessionStoreIsTheDefault() {
 		load(Collections.<Class<?>>singletonList(RedisAutoConfiguration.class));
 		validateSpringSessionUsesRedis();
-		this.output.expect(containsString("Spring Session store type is mandatory: set 'spring.session.store-type=redis' in your configuration"));
+		this.output.expect(containsString(
+				"Spring Session store type is mandatory: set 'spring.session.store-type=redis' in your configuration"));
 	}
 
 	@Test
@@ -58,7 +59,8 @@ public class SessionAutoConfigurationRedisTests
 		load(Collections.<Class<?>>singletonList(RedisAutoConfiguration.class),
 				"spring.session.store-type=redis");
 		validateSpringSessionUsesRedis();
-		this.output.expect(not(containsString("Spring Session store type is mandatory: set 'spring.session.store-type=redis' in your configuration")));
+		this.output.expect(not(containsString(
+				"Spring Session store type is mandatory: set 'spring.session.store-type=redis' in your configuration")));
 	}
 
 	private void validateSpringSessionUsesRedis() {
