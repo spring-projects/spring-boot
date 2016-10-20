@@ -118,6 +118,7 @@ public class TestDatabaseAutoConfiguration {
 			if (ObjectUtils.isEmpty(beanNames)) {
 				logger.warn("No DataSource beans found, "
 						+ "embedded version will not be used");
+				return null;
 			}
 			if (beanNames.length == 1) {
 				String beanName = beanNames[0];
