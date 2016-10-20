@@ -52,6 +52,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		properties.put("spring.resources.cache-period", "0");
 		properties.put("spring.template.provider.cache", "false");
 		properties.put("spring.mvc.log-resolved-exception", "true");
+		properties.put("server.jsp-servlet.init-parameters.development", "true");
 		PROPERTIES = Collections.unmodifiableMap(properties);
 	}
 

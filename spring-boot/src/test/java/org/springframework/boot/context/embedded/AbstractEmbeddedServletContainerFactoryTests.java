@@ -67,8 +67,11 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.jasper.EmbeddedServletOptions;
+import org.apache.jasper.servlet.JspServlet;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -98,6 +101,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
@@ -883,6 +887,29 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		assertThat(getCharset(Locale.ITALIAN)).isNull();
 	}
 
+	@Test
+	public void jspServletInitParameters() throws Exception {
+		Map<String, String> initParameters = new HashMap<String, String>();
+		initParameters.put("a", "alpha");
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.getJspServlet().setInitParameters(initParameters);
+		this.container = factory.getEmbeddedServletContainer();
+		Assume.assumeThat(getJspServlet(), notNullValue());
+		JspServlet jspServlet = getJspServlet();
+		assertThat(jspServlet.getInitParameter("a")).isEqualTo("alpha");
+	}
+
+	@Test
+	public void jspServletIsNotInDevelopmentModeByDefault() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory.getEmbeddedServletContainer();
+		Assume.assumeThat(getJspServlet(), notNullValue());
+		JspServlet jspServlet = getJspServlet();
+		EmbeddedServletOptions options = (EmbeddedServletOptions) ReflectionTestUtils
+				.getField(jspServlet, "options");
+		assertThat(options.getDevelopment()).isEqualTo(false);
+	}
+
 	protected abstract void addConnector(int port,
 			AbstractEmbeddedServletContainerFactory factory);
 
@@ -1032,7 +1059,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	protected abstract AbstractEmbeddedServletContainerFactory getFactory();
 
-	protected abstract Object getJspServlet();
+	protected abstract org.apache.jasper.servlet.JspServlet getJspServlet()
+			throws Exception;
 
 	protected ServletContextInitializer exampleServletRegistration() {
 		return new ServletRegistrationBean(new ExampleServlet(), "/hello");
