@@ -20,13 +20,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.ServletException;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
@@ -36,11 +36,12 @@ import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Service;
 import org.apache.catalina.SessionIdGenerator;
 import org.apache.catalina.Valve;
-import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.CharsetMapper;
 import org.apache.catalina.valves.RemoteIpValve;
+import org.apache.jasper.servlet.JspServlet;
 import org.apache.tomcat.util.net.SSLHostConfig;
 import org.junit.After;
 import org.junit.Rule;
@@ -360,17 +361,6 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	}
 
 	@Test
-	public void jspServletInitParameters() {
-		Map<String, String> initParameters = new HashMap<String, String>();
-		initParameters.put("a", "alpha");
-		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		factory.getJspServlet().setInitParameters(initParameters);
-		this.container = factory.getEmbeddedServletContainer();
-		Wrapper jspServlet = getJspServlet();
-		assertThat(jspServlet.findInitParameter("a")).isEqualTo("alpha");
-	}
-
-	@Test
 	public void useForwardHeaders() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		factory.addContextValves(new RemoteIpValve());
@@ -462,10 +452,15 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	}
 
 	@Override
-	protected Wrapper getJspServlet() {
+	protected JspServlet getJspServlet() throws ServletException {
 		Container context = ((TomcatEmbeddedServletContainer) this.container).getTomcat()
 				.getHost().findChildren()[0];
-		return (Wrapper) context.findChild("jsp");
+		StandardWrapper standardWrapper = (StandardWrapper) context.findChild("jsp");
+		if (standardWrapper == null) {
+			return null;
+		}
+		standardWrapper.load();
+		return (JspServlet) standardWrapper.getServlet();
 	}
 
 	@SuppressWarnings("unchecked")
