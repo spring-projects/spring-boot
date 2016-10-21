@@ -22,6 +22,7 @@ import java.util.Collections;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.AbstractEndpointHandlerMappingTests;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
@@ -39,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class CloudFoundryEndpointHandlerMappingTests {
+public class CloudFoundryEndpointHandlerMappingTests extends AbstractEndpointHandlerMappingTests {
 
 	@Test
 	public void getHandlerExecutionChainShouldHaveSecurityInterceptor() throws Exception {
@@ -117,7 +118,6 @@ public class CloudFoundryEndpointHandlerMappingTests {
 				}
 
 			});
-
 		}
 	}
 
