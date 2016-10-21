@@ -212,7 +212,7 @@ public class AbstractEndpointHandlerMapping<E extends MvcEndpoint>
 
 	/**
 	 * Returns if this mapping is disabled.
-	 * @return if the mapping is disabled
+	 * @return {@code true} if the mapping is disabled
 	 */
 	public boolean isDisabled() {
 		return this.disabled;
