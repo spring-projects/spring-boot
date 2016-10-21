@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.compiler.grape;
+package org.springframework.boot.aether.maven;
 
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.repository.LocalRepository;
 
-import org.springframework.boot.cli.compiler.maven.MavenSettings;
-import org.springframework.boot.cli.compiler.maven.MavenSettingsReader;
+import org.springframework.boot.aether.RepositorySystemSessionConfiguration;
 
 /**
  * Auto-configuration for a RepositorySystemSession that uses Maven's settings.xml to
@@ -29,8 +28,8 @@ import org.springframework.boot.cli.compiler.maven.MavenSettingsReader;
  *
  * @author Andy Wilkinson
  */
-public class SettingsXmlRepositorySystemSessionAutoConfiguration
-		implements RepositorySystemSessionAutoConfiguration {
+public class SettingsXmlRepositorySystemSessionConfiguration
+		implements RepositorySystemSessionConfiguration {
 
 	@Override
 	public void apply(DefaultRepositorySystemSession session,

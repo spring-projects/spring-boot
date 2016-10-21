@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.compiler.grape;
+package org.springframework.boot.aether.maven;
 
 import java.io.File;
 
@@ -38,7 +38,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import org.springframework.boot.cli.testutil.SystemProperties;
+import org.springframework.boot.aether.testutil.SystemProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -46,11 +46,11 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 
 /**
- * Tests for {@link SettingsXmlRepositorySystemSessionAutoConfiguration}.
+ * Tests for {@link SettingsXmlRepositorySystemSessionConfiguration}.
  *
  * @author Andy Wilkinson
  */
-public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
+public class SettingsXmlRepositorySystemSessionConfigurationTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -94,8 +94,8 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 		SystemProperties.doWithSystemProperties(new Runnable() {
 			@Override
 			public void run() {
-				new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(session,
-						SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem);
+				new SettingsXmlRepositorySystemSessionConfiguration().apply(session,
+						SettingsXmlRepositorySystemSessionConfigurationTests.this.repositorySystem);
 			}
 		}, "user.home:src/test/resources/maven-settings/property-interpolation",
 				"foo:bar");
@@ -110,8 +110,8 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 		SystemProperties.doWithSystemProperties(new Runnable() {
 			@Override
 			public void run() {
-				new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(session,
-						SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem);
+				new SettingsXmlRepositorySystemSessionConfiguration().apply(session,
+						SettingsXmlRepositorySystemSessionConfigurationTests.this.repositorySystem);
 			}
 		}, "user.home:" + userHome);
 

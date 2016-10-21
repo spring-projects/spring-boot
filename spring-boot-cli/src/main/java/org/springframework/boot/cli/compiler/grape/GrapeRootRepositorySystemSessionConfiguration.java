@@ -23,6 +23,7 @@ import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
 
+import org.springframework.boot.aether.RepositorySystemSessionConfiguration;
 import org.springframework.util.StringUtils;
 
 /**
@@ -32,8 +33,8 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @since 1.2.5
  */
-public class GrapeRootRepositorySystemSessionAutoConfiguration
-		implements RepositorySystemSessionAutoConfiguration {
+public class GrapeRootRepositorySystemSessionConfiguration
+		implements RepositorySystemSessionConfiguration {
 
 	@Override
 	public void apply(DefaultRepositorySystemSession session,

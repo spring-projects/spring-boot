@@ -27,20 +27,16 @@ import java.util.Map;
 
 import groovy.grape.GrapeEngine;
 import groovy.lang.GroovyClassLoader;
-import org.eclipse.aether.DefaultRepositorySystemSession;
-import org.eclipse.aether.RepositorySystem;
+
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
-import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.Exclusion;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.resolution.ArtifactResolutionException;
-import org.eclipse.aether.resolution.ArtifactResult;
-import org.eclipse.aether.resolution.DependencyRequest;
-import org.eclipse.aether.resolution.DependencyResult;
 import org.eclipse.aether.util.artifact.JavaScopes;
-import org.eclipse.aether.util.filter.DependencyFilterUtils;
+
+import org.springframework.boot.aether.AetherEngine;
+import org.springframework.boot.aether.DependencyResolutionFailedException;
 
 /**
  * A {@link GrapeEngine} implementation that uses
@@ -63,40 +59,15 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private final DependencyResolutionContext resolutionContext;
 
-	private final ProgressReporter progressReporter;
+	private final AetherEngine engine;
 
 	private final GroovyClassLoader classLoader;
 
-	private final DefaultRepositorySystemSession session;
-
-	private final RepositorySystem repositorySystem;
-
-	private final List<RemoteRepository> repositories;
-
-	public AetherGrapeEngine(GroovyClassLoader classLoader,
-			RepositorySystem repositorySystem,
-			DefaultRepositorySystemSession repositorySystemSession,
-			List<RemoteRepository> remoteRepositories,
+	public AetherGrapeEngine(GroovyClassLoader classLoader, AetherEngine engine,
 			DependencyResolutionContext resolutionContext) {
 		this.classLoader = classLoader;
-		this.repositorySystem = repositorySystem;
-		this.session = repositorySystemSession;
+		this.engine = engine;
 		this.resolutionContext = resolutionContext;
-		this.repositories = new ArrayList<RemoteRepository>();
-		List<RemoteRepository> remotes = new ArrayList<RemoteRepository>(
-				remoteRepositories);
-		Collections.reverse(remotes); // priority is reversed in addRepository
-		for (RemoteRepository repository : remotes) {
-			addRepository(repository);
-		}
-		this.progressReporter = getProgressReporter(this.session);
-	}
-
-	private ProgressReporter getProgressReporter(DefaultRepositorySystemSession session) {
-		if (Boolean.getBoolean("groovy.grape.report.downloads")) {
-			return new DetailedProgressReporter(session, System.out);
-		}
-		return new SummaryProgressReporter(session, System.out);
 	}
 
 	@Override
@@ -114,9 +85,6 @@ public class AetherGrapeEngine implements GrapeEngine {
 			for (File file : files) {
 				classLoader.addURL(file.toURI().toURL());
 			}
-		}
-		catch (ArtifactResolutionException ex) {
-			throw new DependencyResolutionFailedException(ex);
 		}
 		catch (MalformedURLException ex) {
 			throw new DependencyResolutionFailedException(ex);
@@ -196,23 +164,6 @@ public class AetherGrapeEngine implements GrapeEngine {
 		return (transitive == null ? true : transitive);
 	}
 
-	private List<Dependency> getDependencies(DependencyResult dependencyResult) {
-		List<Dependency> dependencies = new ArrayList<Dependency>();
-		for (ArtifactResult artifactResult : dependencyResult.getArtifactResults()) {
-			dependencies.add(
-					new Dependency(artifactResult.getArtifact(), JavaScopes.COMPILE));
-		}
-		return dependencies;
-	}
-
-	private List<File> getFiles(DependencyResult dependencyResult) {
-		List<File> files = new ArrayList<File>();
-		for (ArtifactResult result : dependencyResult.getArtifactResults()) {
-			files.add(result.getArtifact().getFile());
-		}
-		return files;
-	}
-
 	private GroovyClassLoader getClassLoader(Map args) {
 		GroovyClassLoader classLoader = (GroovyClassLoader) args.get("classLoader");
 		return (classLoader == null ? this.classLoader : classLoader);
@@ -229,41 +180,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 	}
 
 	protected void addRepository(RemoteRepository repository) {
-		if (this.repositories.contains(repository)) {
-			return;
-		}
-		repository = getPossibleMirror(repository);
-		repository = applyProxy(repository);
-		repository = applyAuthentication(repository);
-		this.repositories.add(0, repository);
-	}
-
-	private RemoteRepository getPossibleMirror(RemoteRepository remoteRepository) {
-		RemoteRepository mirror = this.session.getMirrorSelector()
-				.getMirror(remoteRepository);
-		if (mirror != null) {
-			return mirror;
-		}
-		return remoteRepository;
-	}
-
-	private RemoteRepository applyProxy(RemoteRepository repository) {
-		if (repository.getProxy() == null) {
-			RemoteRepository.Builder builder = new RemoteRepository.Builder(repository);
-			builder.setProxy(this.session.getProxySelector().getProxy(repository));
-			repository = builder.build();
-		}
-		return repository;
-	}
-
-	private RemoteRepository applyAuthentication(RemoteRepository repository) {
-		if (repository.getAuthentication() == null) {
-			RemoteRepository.Builder builder = new RemoteRepository.Builder(repository);
-			builder.setAuthentication(this.session.getAuthenticationSelector()
-					.getAuthentication(repository));
-			repository = builder.build();
-		}
-		return repository;
+		this.engine.addRepository(repository);
 	}
 
 	@Override
@@ -280,54 +197,17 @@ public class AetherGrapeEngine implements GrapeEngine {
 	public URI[] resolve(Map args, List depsInfo, Map... dependencyMaps) {
 		List<Exclusion> exclusions = createExclusions(args);
 		List<Dependency> dependencies = createDependencies(dependencyMaps, exclusions);
-		try {
-			List<File> files = resolve(dependencies);
-			List<URI> uris = new ArrayList<URI>(files.size());
-			for (File file : files) {
-				uris.add(file.toURI());
-			}
-			return uris.toArray(new URI[uris.size()]);
+		List<File> files = resolve(dependencies);
+		List<URI> uris = new ArrayList<URI>(files.size());
+		for (File file : files) {
+			uris.add(file.toURI());
 		}
-		catch (Exception ex) {
-			throw new DependencyResolutionFailedException(ex);
-		}
+		return uris.toArray(new URI[uris.size()]);
 	}
 
 	private List<File> resolve(List<Dependency> dependencies)
-			throws ArtifactResolutionException {
-		try {
-			CollectRequest collectRequest = getCollectRequest(dependencies);
-			DependencyRequest dependencyRequest = getDependencyRequest(collectRequest);
-			DependencyResult result = this.repositorySystem
-					.resolveDependencies(this.session, dependencyRequest);
-			addManagedDependencies(result);
-			return getFiles(result);
-		}
-		catch (Exception ex) {
-			throw new DependencyResolutionFailedException(ex);
-		}
-		finally {
-			this.progressReporter.finished();
-		}
-	}
-
-	private CollectRequest getCollectRequest(List<Dependency> dependencies) {
-		CollectRequest collectRequest = new CollectRequest((Dependency) null,
-				dependencies, new ArrayList<RemoteRepository>(this.repositories));
-		collectRequest
-				.setManagedDependencies(this.resolutionContext.getManagedDependencies());
-		return collectRequest;
-	}
-
-	private DependencyRequest getDependencyRequest(CollectRequest collectRequest) {
-		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest,
-				DependencyFilterUtils.classpathFilter(JavaScopes.COMPILE,
-						JavaScopes.RUNTIME));
-		return dependencyRequest;
-	}
-
-	private void addManagedDependencies(DependencyResult result) {
-		this.resolutionContext.addManagedDependencies(getDependencies(result));
+			throws DependencyResolutionFailedException {
+		return this.engine.resolve(dependencies);
 	}
 
 	@Override
