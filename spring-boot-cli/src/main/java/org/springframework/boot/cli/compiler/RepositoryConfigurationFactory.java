@@ -28,9 +28,9 @@ import org.codehaus.plexus.interpolation.Interpolator;
 import org.codehaus.plexus.interpolation.PropertiesBasedValueSource;
 import org.codehaus.plexus.interpolation.RegexBasedInterpolator;
 
+import org.springframework.boot.aether.maven.MavenSettings;
+import org.springframework.boot.aether.maven.MavenSettingsReader;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
-import org.springframework.boot.cli.compiler.maven.MavenSettings;
-import org.springframework.boot.cli.compiler.maven.MavenSettingsReader;
 import org.springframework.util.StringUtils;
 
 /**

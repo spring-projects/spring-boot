@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.compiler.grape;
+package org.springframework.boot.aether;
 
 import java.io.File;
 import java.util.Arrays;
@@ -29,13 +29,13 @@ import org.eclipse.aether.util.repository.JreProxySelector;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@link RepositorySystemSessionAutoConfiguration} that, in the absence of any
+ * A {@link RepositorySystemSessionConfiguration} that, in the absence of any
  * configuration, applies sensible defaults.
  *
  * @author Andy Wilkinson
  */
 public class DefaultRepositorySystemSessionAutoConfiguration
-		implements RepositorySystemSessionAutoConfiguration {
+		implements RepositorySystemSessionConfiguration {
 
 	@Override
 	public void apply(DefaultRepositorySystemSession session,

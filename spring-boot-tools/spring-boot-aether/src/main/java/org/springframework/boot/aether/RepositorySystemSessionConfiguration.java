@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.compiler.grape;
+package org.springframework.boot.aether;
+
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositorySystem;
 
 /**
- * Thrown to indicate a failure during dependency resolution.
+ * Strategy that can be used to apply some auto-configuration during the installation of
+ * an {@link AetherEngine}.
  *
  * @author Andy Wilkinson
  */
-@SuppressWarnings("serial")
-public class DependencyResolutionFailedException extends RuntimeException {
+public interface RepositorySystemSessionConfiguration {
 
 	/**
-	 * Creates a new {@code DependencyResolutionFailedException} with the given
-	 * {@code cause}.
-	 * @param cause The cause of the resolution failure
+	 * Apply the configuration.
+	 * @param session the repository system session
+	 * @param repositorySystem the repository system
 	 */
-	public DependencyResolutionFailedException(Throwable cause) {
-		super(cause);
-	}
+	void apply(DefaultRepositorySystemSession session, RepositorySystem repositorySystem);
 
 }

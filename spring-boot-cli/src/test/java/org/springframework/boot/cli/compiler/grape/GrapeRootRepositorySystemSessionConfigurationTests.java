@@ -39,11 +39,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link GrapeRootRepositorySystemSessionAutoConfiguration}
+ * Tests for {@link GrapeRootRepositorySystemSessionConfiguration}
  *
  * @author Andy Wilkinson
  */
-public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
+public class GrapeRootRepositorySystemSessionConfigurationTests {
 
 	private DefaultRepositorySystemSession session = MavenRepositorySystemUtils
 			.newSession();
@@ -69,12 +69,12 @@ public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 										.getArgumentAt(1, LocalRepository.class);
 								return new SimpleLocalRepositoryManagerFactory()
 										.newInstance(
-												GrapeRootRepositorySystemSessionAutoConfigurationTests.this.session,
+												GrapeRootRepositorySystemSessionConfigurationTests.this.session,
 												localRepository);
 							}
 
 						});
-		new GrapeRootRepositorySystemSessionAutoConfiguration().apply(this.session,
+		new GrapeRootRepositorySystemSessionConfiguration().apply(this.session,
 				this.repositorySystem);
 		verify(this.repositorySystem, times(0))
 				.newLocalRepositoryManager(eq(this.session), any(LocalRepository.class));
@@ -89,7 +89,7 @@ public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 
 		System.setProperty("grape.root", "foo");
 		try {
-			new GrapeRootRepositorySystemSessionAutoConfiguration().apply(this.session,
+			new GrapeRootRepositorySystemSessionConfiguration().apply(this.session,
 					this.repositorySystem);
 		}
 		finally {
@@ -111,7 +111,7 @@ public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 			LocalRepository localRepository = invocation.getArgumentAt(1,
 					LocalRepository.class);
 			return new SimpleLocalRepositoryManagerFactory().newInstance(
-					GrapeRootRepositorySystemSessionAutoConfigurationTests.this.session,
+					GrapeRootRepositorySystemSessionConfigurationTests.this.session,
 					localRepository);
 		}
 

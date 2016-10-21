@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.compiler.grape;
+package org.springframework.boot.aether;
 
 /**
  * Reports progress on a dependency resolution operation.

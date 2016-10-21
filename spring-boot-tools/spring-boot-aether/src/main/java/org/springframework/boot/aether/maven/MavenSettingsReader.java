@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.compiler.maven;
+package org.springframework.boot.aether.maven;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -31,8 +31,6 @@ import org.apache.maven.settings.crypto.SettingsDecryptionResult;
 import org.sonatype.plexus.components.cipher.DefaultPlexusCipher;
 import org.sonatype.plexus.components.cipher.PlexusCipherException;
 import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
-
-import org.springframework.boot.cli.util.Log;
 
 /**
  * {@code MavenSettingsReader} reads settings from a user's Maven settings.xml file,
@@ -57,7 +55,7 @@ public class MavenSettingsReader {
 		Settings settings = loadSettings();
 		SettingsDecryptionResult decrypted = decryptSettings(settings);
 		if (!decrypted.getProblems().isEmpty()) {
-			Log.error(
+			System.err.println(
 					"Maven settings decryption failed. Some Maven repositories may be inaccessible");
 			// Continue - the encrypted credentials may not be used
 		}

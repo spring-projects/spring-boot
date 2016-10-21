@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.compiler.maven;
+package org.springframework.boot.aether.maven;
 
 import java.io.BufferedReader;
 import java.io.File;
