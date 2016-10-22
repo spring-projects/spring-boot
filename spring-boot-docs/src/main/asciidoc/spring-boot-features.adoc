@@ -1763,7 +1763,7 @@ version.
 NOTE: If you are using JBoss, you'll need to declare the `webjars-locator-jboss-vfs`
 dependency instead of the `webjars-locator`; otherwise all Webjars resolve as a `404`.
 
-To use cache bursting, the following configuration will configure a cache busting
+To use cache busting, the following configuration will configure a cache busting
 solution for all static resources, effectively adding a content hash in URLs, such as
 `<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`:
 
