@@ -19,12 +19,9 @@ package org.springframework.boot.logging.java;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -51,29 +48,19 @@ import org.springframework.util.StringUtils;
  */
 public class JavaLoggingSystem extends AbstractLoggingSystem {
 
-	private static final LoggerConfigurationComparator COMPARATOR =
-			new LoggerConfigurationComparator("");
+	private static final LoggerConfigurationComparator COMPARATOR = new LoggerConfigurationComparator(
+			"");
 
-	private static final Map<LogLevel, Level> LEVELS;
-
-	private static final Map<Level, LogLevel> LOG_LEVELS;
+	private static final LogLevels<Level> LEVELS = new LogLevels<Level>();
 
 	static {
-		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
-		levels.put(LogLevel.TRACE, Level.FINEST);
-		levels.put(LogLevel.DEBUG, Level.FINE);
-		levels.put(LogLevel.INFO, Level.INFO);
-		levels.put(LogLevel.WARN, Level.WARNING);
-		levels.put(LogLevel.ERROR, Level.SEVERE);
-		levels.put(LogLevel.FATAL, Level.SEVERE);
-		levels.put(LogLevel.OFF, Level.OFF);
-		LEVELS = Collections.unmodifiableMap(levels);
-
-		Map<Level, LogLevel> logLevels = new HashMap<Level, LogLevel>();
-		for (Map.Entry<LogLevel, Level> entry : LEVELS.entrySet()) {
-			logLevels.put(entry.getValue(), entry.getKey());
-		}
-		LOG_LEVELS = Collections.unmodifiableMap(logLevels);
+		LEVELS.map(LogLevel.TRACE, Level.FINEST);
+		LEVELS.map(LogLevel.DEBUG, Level.FINE);
+		LEVELS.map(LogLevel.INFO, Level.INFO);
+		LEVELS.map(LogLevel.WARN, Level.WARNING);
+		LEVELS.map(LogLevel.ERROR, Level.SEVERE);
+		LEVELS.map(LogLevel.FATAL, Level.SEVERE);
+		LEVELS.map(LogLevel.OFF, Level.OFF);
 	}
 
 	public JavaLoggingSystem(ClassLoader classLoader) {
@@ -127,48 +114,48 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
-		return toLoggerConfiguration(Logger.getLogger(loggerName));
-	}
-
-	@Override
-	public Collection<LoggerConfiguration> listLoggerConfigurations() {
-		List<LoggerConfiguration> result = new ArrayList<LoggerConfiguration>();
-		for (Enumeration<String> loggerNames =
-			LogManager.getLogManager().getLoggerNames();
-			loggerNames.hasMoreElements(); ) {
-			result.add(toLoggerConfiguration(Logger.getLogger(
-					loggerNames.nextElement())));
-		}
-		Collections.sort(result, COMPARATOR);
-		return result;
-	}
-
-	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
 		Assert.notNull(level, "Level must not be null");
 		String name = (StringUtils.hasText(loggerName) ? loggerName : "");
 		Logger logger = Logger.getLogger(name);
-		logger.setLevel(LEVELS.get(level));
+		if (logger != null) {
+			logger.setLevel(LEVELS.convertSystemToNative(level));
+		}
 	}
 
 	@Override
-	public Runnable getShutdownHandler() {
-		return new ShutdownHandler();
+	public List<LoggerConfiguration> getLoggerConfigurations() {
+		List<LoggerConfiguration> result = new ArrayList<LoggerConfiguration>();
+		Enumeration<String> names = LogManager.getLogManager().getLoggerNames();
+		while (names.hasMoreElements()) {
+			result.add(getLoggerConfiguration(names.nextElement()));
+		}
+		Collections.sort(result, COMPARATOR);
+		return Collections.unmodifiableList(result);
 	}
 
-	private static LoggerConfiguration toLoggerConfiguration(Logger logger) {
-		return new LoggerConfiguration(logger.getName(),
-				LOG_LEVELS.get(logger.getLevel()),
-				LOG_LEVELS.get(getEffectiveLevel(logger)));
+	@Override
+	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+		Logger logger = Logger.getLogger(loggerName);
+		if (logger == null) {
+			return null;
+		}
+		LogLevel level = LEVELS.convertNativeToSystem(logger.getLevel());
+		LogLevel effectiveLevel = LEVELS.convertNativeToSystem(getEffectiveLevel(logger));
+		return new LoggerConfiguration(logger.getName(), level, effectiveLevel);
 	}
 
-	private static Level getEffectiveLevel(Logger root) {
+	private Level getEffectiveLevel(Logger root) {
 		Logger logger = root;
 		while (logger.getLevel() == null) {
 			logger = logger.getParent();
 		}
 		return logger.getLevel();
+	}
+
+	@Override
+	public Runnable getShutdownHandler() {
+		return new ShutdownHandler();
 	}
 
 	private final class ShutdownHandler implements Runnable {

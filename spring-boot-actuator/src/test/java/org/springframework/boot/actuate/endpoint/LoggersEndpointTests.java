@@ -17,10 +17,10 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.util.Collections;
-import java.util.Map;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.LoggersEndpoint.LoggerLevels;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
@@ -45,25 +45,24 @@ public class LoggersEndpointTests extends AbstractEndpointTests<LoggersEndpoint>
 	}
 
 	@Test
-	public void invoke() throws Exception {
-		given(getLoggingSystem().listLoggerConfigurations()).willReturn(Collections
-				.singleton(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG)));
-		Map<String, String> loggingConfiguration = getEndpointBean().invoke()
-				.get("ROOT");
-		assertThat(loggingConfiguration.get("configuredLevel")).isNull();
-		assertThat(loggingConfiguration.get("effectiveLevel")).isEqualTo("DEBUG");
+	public void invokeShouldReturnConfigurations() throws Exception {
+		given(getLoggingSystem().getLoggerConfigurations()).willReturn(Collections
+				.singletonList(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG)));
+		LoggerLevels levels = getEndpointBean().invoke().get("ROOT");
+		assertThat(levels.getConfiguredLevel()).isNull();
+		assertThat(levels.getEffectiveLevel()).isEqualTo("DEBUG");
 	}
 
-	public void get() throws Exception {
+	public void invokeWhenNameSpecifiedShouldReturnLevels() throws Exception {
 		given(getLoggingSystem().getLoggerConfiguration("ROOT"))
 				.willReturn(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG));
-		Map<String, String> loggingConfiguration = getEndpointBean().get("ROOT");
-		assertThat(loggingConfiguration.get("configuredLevel")).isNull();
-		assertThat(loggingConfiguration.get("effectiveLevel")).isEqualTo("DEBUG");
+		LoggerLevels levels = getEndpointBean().invoke("ROOT");
+		assertThat(levels.getConfiguredLevel()).isNull();
+		assertThat(levels.getEffectiveLevel()).isEqualTo("DEBUG");
 	}
 
-	public void set() throws Exception {
-		getEndpointBean().set("ROOT", LogLevel.DEBUG);
+	public void setLogLevelShouldSetLevelOnLoggingSystem() throws Exception {
+		getEndpointBean().setLogLevel("ROOT", LogLevel.DEBUG);
 		verify(getLoggingSystem()).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 

@@ -20,11 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -33,6 +30,7 @@ import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.LoggerConfig;
@@ -62,31 +60,21 @@ import org.springframework.util.StringUtils;
  */
 public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
-	private static final LoggerConfigurationComparator COMPARATOR =
-			new LoggerConfigurationComparator(LogManager.ROOT_LOGGER_NAME);
+	private static final LoggerConfigurationComparator COMPARATOR = new LoggerConfigurationComparator(
+			LogManager.ROOT_LOGGER_NAME);
 
 	private static final String FILE_PROTOCOL = "file";
 
-	private static final Map<LogLevel, Level> LEVELS;
-
-	private static final Map<Level, LogLevel> LOG_LEVELS;
+	private static final LogLevels<Level> LEVELS = new LogLevels<Level>();
 
 	static {
-		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
-		levels.put(LogLevel.TRACE, Level.TRACE);
-		levels.put(LogLevel.DEBUG, Level.DEBUG);
-		levels.put(LogLevel.INFO, Level.INFO);
-		levels.put(LogLevel.WARN, Level.WARN);
-		levels.put(LogLevel.ERROR, Level.ERROR);
-		levels.put(LogLevel.FATAL, Level.FATAL);
-		levels.put(LogLevel.OFF, Level.OFF);
-		LEVELS = Collections.unmodifiableMap(levels);
-
-		Map<Level, LogLevel> logLevels = new HashMap<Level, LogLevel>();
-		for (Map.Entry<LogLevel, Level> entry : LEVELS.entrySet()) {
-			logLevels.put(entry.getValue(), entry.getKey());
-		}
-		LOG_LEVELS = Collections.unmodifiableMap(logLevels);
+		LEVELS.map(LogLevel.TRACE, Level.TRACE);
+		LEVELS.map(LogLevel.DEBUG, Level.DEBUG);
+		LEVELS.map(LogLevel.INFO, Level.INFO);
+		LEVELS.map(LogLevel.WARN, Level.WARN);
+		LEVELS.map(LogLevel.ERROR, Level.ERROR);
+		LEVELS.map(LogLevel.FATAL, Level.FATAL);
+		LEVELS.map(LogLevel.OFF, Level.OFF);
 	}
 
 	private static final Filter FILTER = new AbstractFilter() {
@@ -210,24 +198,8 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
-		return toLoggerConfiguration(getLoggerConfig(loggerName));
-	}
-
-	@Override
-	public Collection<LoggerConfiguration> listLoggerConfigurations() {
-		List<LoggerConfiguration> result = new ArrayList<LoggerConfiguration>();
-		for (LoggerConfig loggerConfig :
-				getLoggerContext().getConfiguration().getLoggers().values()) {
-			result.add(toLoggerConfiguration(loggerConfig));
-		}
-		Collections.sort(result, COMPARATOR);
-		return result;
-	}
-
-	@Override
 	public void setLogLevel(String loggerName, LogLevel logLevel) {
-		Level level = LEVELS.get(logLevel);
+		Level level = LEVELS.convertSystemToNative(logLevel);
 		LoggerConfig loggerConfig = getLoggerConfig(loggerName);
 		if (loggerConfig == null) {
 			loggerConfig = new LoggerConfig(loggerName, level, true);
@@ -237,6 +209,30 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 			loggerConfig.setLevel(level);
 		}
 		getLoggerContext().updateLoggers();
+	}
+
+	@Override
+	public List<LoggerConfiguration> getLoggerConfigurations() {
+		List<LoggerConfiguration> result = new ArrayList<LoggerConfiguration>();
+		Configuration configuration = getLoggerContext().getConfiguration();
+		for (LoggerConfig loggerConfig : configuration.getLoggers().values()) {
+			result.add(convertLoggerConfiguration(loggerConfig));
+		}
+		Collections.sort(result, COMPARATOR);
+		return result;
+	}
+
+	@Override
+	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+		return convertLoggerConfiguration(getLoggerConfig(loggerName));
+	}
+
+	private LoggerConfiguration convertLoggerConfiguration(LoggerConfig loggerConfig) {
+		if (loggerConfig == null) {
+			return null;
+		}
+		LogLevel level = LEVELS.convertNativeToSystem(loggerConfig.getLevel());
+		return new LoggerConfiguration(loggerConfig.getName(), level, level);
 	}
 
 	@Override
@@ -270,12 +266,6 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	private void markAsUninitialized(LoggerContext loggerContext) {
 		loggerContext.setExternalContext(null);
-	}
-
-	private static LoggerConfiguration toLoggerConfiguration(LoggerConfig loggerConfig) {
-		return new LoggerConfiguration(loggerConfig.getName(),
-				LOG_LEVELS.get(loggerConfig.getLevel()),
-				LOG_LEVELS.get(loggerConfig.getLevel()));
 	}
 
 	private final class ShutdownHandler implements Runnable {

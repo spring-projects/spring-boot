@@ -25,13 +25,13 @@ import org.springframework.util.ObjectUtils;
  * @author Ben Hale
  * @since 1.5.0
  */
-public class LoggerConfiguration {
+public final class LoggerConfiguration {
+
+	private final String name;
 
 	private final LogLevel configuredLevel;
 
 	private final LogLevel effectiveLevel;
-
-	private final String name;
 
 	/**
 	 * Create a new {@link LoggerConfiguration instance}.

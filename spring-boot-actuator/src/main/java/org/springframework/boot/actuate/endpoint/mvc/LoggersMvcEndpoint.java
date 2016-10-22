@@ -19,8 +19,10 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
+import org.springframework.boot.actuate.endpoint.LoggersEndpoint.LoggerLevels;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,11 +56,11 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 			// disabled
 			return getDisabledResponse();
 		}
-		return this.delegate.get(name);
+		LoggerLevels levels = this.delegate.invoke(name);
+		return (levels == null ? ResponseEntity.notFound().build() : levels);
 	}
 
-	@PostMapping(value = "/{name:.*}", consumes = MediaType.APPLICATION_JSON_VALUE,
-			produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/{name:.*}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	@HypermediaDisabled
 	public Object set(@PathVariable String name,
@@ -69,8 +71,8 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 			return getDisabledResponse();
 		}
 		String level = configuration.get("configuredLevel");
-		this.delegate.set(name, level == null ? null : LogLevel.valueOf(level));
-		return ResponseEntity.EMPTY;
+		this.delegate.setLogLevel(name, level == null ? null : LogLevel.valueOf(level));
+		return HttpEntity.EMPTY;
 	}
 
 }

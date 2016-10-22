@@ -31,10 +31,12 @@ import org.springframework.util.Assert;
  * {@link Endpoint} to expose a collection of {@link LoggerConfiguration}s.
  *
  * @author Ben Hale
+ * @author Phillip Webb
  * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "endpoints.loggers")
-public class LoggersEndpoint extends AbstractEndpoint<Map<String, Map<String, String>>> {
+public class LoggersEndpoint
+		extends AbstractEndpoint<Map<String, LoggersEndpoint.LoggerLevels>> {
 
 	private final LoggingSystem loggingSystem;
 
@@ -49,44 +51,58 @@ public class LoggersEndpoint extends AbstractEndpoint<Map<String, Map<String, St
 	}
 
 	@Override
-	public Map<String, Map<String, String>> invoke() {
-		Collection<LoggerConfiguration> loggerConfigurations = this.loggingSystem
-				.listLoggerConfigurations();
-
-		if (loggerConfigurations == null) {
+	public Map<String, LoggerLevels> invoke() {
+		Collection<LoggerConfiguration> configurations = this.loggingSystem
+				.getLoggerConfigurations();
+		if (configurations == null) {
 			return Collections.emptyMap();
 		}
-
-		Map<String, Map<String, String>> result = new LinkedHashMap<String,
-				Map<String, String>>(loggerConfigurations.size());
-
-		for (LoggerConfiguration loggerConfiguration : loggerConfigurations) {
-			result.put(loggerConfiguration.getName(), result(loggerConfiguration));
+		Map<String, LoggerLevels> result = new LinkedHashMap<String, LoggerLevels>(
+				configurations.size());
+		for (LoggerConfiguration configuration : configurations) {
+			result.put(configuration.getName(), new LoggerLevels(configuration));
 		}
-
 		return result;
 	}
 
-	public Map<String, String> get(String name) {
+	public LoggerLevels invoke(String name) {
 		Assert.notNull(name, "Name must not be null");
-		return result(this.loggingSystem.getLoggerConfiguration(name));
+		LoggerConfiguration configuration = this.loggingSystem
+				.getLoggerConfiguration(name);
+		return (configuration == null ? null : new LoggerLevels(configuration));
 	}
 
-	public void set(String name, LogLevel level) {
+	public void setLogLevel(String name, LogLevel level) {
 		Assert.notNull(name, "Name must not be empty");
 		this.loggingSystem.setLogLevel(name, level);
 	}
 
-	private static Map<String, String> result(LoggerConfiguration loggerConfiguration) {
-		if (loggerConfiguration == null) {
-			return Collections.emptyMap();
+	/**
+	 * Levels configured for a given logger exposed in a JSON friendly way.
+	 */
+	public static class LoggerLevels {
+
+		private String configuredLevel;
+
+		private String effectiveLevel;
+
+		public LoggerLevels(LoggerConfiguration configuration) {
+			this.configuredLevel = getName(configuration.getConfiguredLevel());
+			this.effectiveLevel = getName(configuration.getEffectiveLevel());
 		}
-		Map<String, String> result = new LinkedHashMap<String, String>(3);
-		LogLevel configuredLevel = loggerConfiguration.getConfiguredLevel();
-		result.put("configuredLevel",
-				configuredLevel != null ? configuredLevel.name() : null);
-		result.put("effectiveLevel", loggerConfiguration.getEffectiveLevel().name());
-		return result;
+
+		private String getName(LogLevel level) {
+			return (level == null ? null : level.name());
+		}
+
+		public String getConfiguredLevel() {
+			return this.configuredLevel;
+		}
+
+		public String getEffectiveLevel() {
+			return this.effectiveLevel;
+		}
+
 	}
 
 }

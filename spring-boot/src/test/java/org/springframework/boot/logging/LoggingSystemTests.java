@@ -49,7 +49,7 @@ public class LoggingSystemTests {
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void listLoggerConfigurationsIsUnsupported() {
-		new StubLoggingSystem().listLoggerConfigurations();
+		new StubLoggingSystem().getLoggerConfigurations();
 	}
 
 	private static final class StubLoggingSystem extends LoggingSystem {

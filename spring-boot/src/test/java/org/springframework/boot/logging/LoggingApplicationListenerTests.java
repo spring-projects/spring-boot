@@ -18,7 +18,7 @@ package org.springframework.boot.logging;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
@@ -519,18 +519,17 @@ public class LoggingApplicationListenerTests {
 		}
 
 		@Override
+		public void setLogLevel(String loggerName, LogLevel level) {
+		}
+
+		@Override
+		public List<LoggerConfiguration> getLoggerConfigurations() {
+			return null;
+		}
+
+		@Override
 		public LoggerConfiguration getLoggerConfiguration(String loggerName) {
 			return null;
-		}
-
-		@Override
-		public Collection<LoggerConfiguration> listLoggerConfigurations() {
-			return null;
-		}
-
-		@Override
-		public void setLogLevel(String loggerName, LogLevel level) {
-
 		}
 
 		@Override
@@ -564,27 +563,24 @@ public class LoggingApplicationListenerTests {
 		private boolean cleanedUp = false;
 
 		public TestCleanupLoggingSystem(ClassLoader classLoader) {
-
 		}
 
 		@Override
 		public void beforeInitialize() {
+		}
 
+		@Override
+		public void setLogLevel(String loggerName, LogLevel level) {
+		}
+
+		@Override
+		public List<LoggerConfiguration> getLoggerConfigurations() {
+			return null;
 		}
 
 		@Override
 		public LoggerConfiguration getLoggerConfiguration(String loggerName) {
 			return null;
-		}
-
-		@Override
-		public Collection<LoggerConfiguration> listLoggerConfigurations() {
-			return null;
-		}
-
-		@Override
-		public void setLogLevel(String loggerName, LogLevel level) {
-
 		}
 
 		@Override

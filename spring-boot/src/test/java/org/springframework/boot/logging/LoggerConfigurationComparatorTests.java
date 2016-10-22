@@ -27,8 +27,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class LoggerConfigurationComparatorTests {
 
-	private final LoggerConfigurationComparator comparator =
-			new LoggerConfigurationComparator("ROOT");
+	private final LoggerConfigurationComparator comparator = new LoggerConfigurationComparator(
+			"ROOT");
 
 	@Test
 	public void rootLoggerFirst() {
