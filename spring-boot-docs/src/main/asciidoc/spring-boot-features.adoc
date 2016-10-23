@@ -1774,16 +1774,9 @@ solution for all static resources, effectively adding a content hash in URLs, su
 ----
 
 NOTE: Links to resources are rewritten at runtime in template, thanks to a
-<<<<<<< HEAD
-`ResourceUrlEncodingFilter`, auto-configured for Thymeleaf and FreeMarker. You
-should manually declare this filter when using JSPs. Other template engines aren't
-automatically supported right now, but can be with custom template macros/helpers and the
-use of the
-=======
 `ResourceUrlEncodingFilter`, auto-configured for Thymeleaf and FreeMarker. You should
 manually declare this filter when using JSPs. Other template engines aren't automatically
 supported right now, but can be with custom template macros/helpers and the use of the
->>>>>>> 1.5.x
 {spring-javadoc}/web/servlet/resource/ResourceUrlProvider.{dc-ext}[`ResourceUrlProvider`].
 
 When loading resources dynamically with, for example, a JavaScript module loader, renaming
@@ -1827,11 +1820,7 @@ will automatically configure Spring MVC to use it.
 [[boot-features-spring-mvc-template-engines]]
 ==== Template engines
 As well as REST web services, you can also use Spring MVC to serve dynamic HTML content.
-<<<<<<< HEAD
-Spring MVC supports a variety of templating technologies including FreeMarker
-=======
 Spring MVC supports a variety of templating technologies including Thymeleaf, FreeMarker
->>>>>>> 1.5.x
 and JSPs. Many other templating engines also ship their own Spring MVC integrations.
 
 Spring Boot includes auto-configuration support for the following templating engines:
