@@ -108,7 +108,7 @@ public abstract class MainClassFinder {
 	 * @return the first callback result or {@code null}
 	 * @throws IOException in case of I/O errors
 	 */
-	static <T> T doWithMainClasses(File rootFolder, ClassNameCallback<T> callback)
+	public static <T> T doWithMainClasses(File rootFolder, ClassNameCallback<T> callback)
 			throws IOException {
 		if (!rootFolder.exists()) {
 			return null; // nothing to do
@@ -199,7 +199,7 @@ public abstract class MainClassFinder {
 	 * @return the first callback result or {@code null}
 	 * @throws IOException in case of I/O errors
 	 */
-	static <T> T doWithMainClasses(JarFile jarFile, String classesLocation,
+	public static <T> T doWithMainClasses(JarFile jarFile, String classesLocation,
 			ClassNameCallback<T> callback) throws IOException {
 		List<JarEntry> classEntries = getClassEntries(jarFile, classesLocation);
 		Collections.sort(classEntries, new ClassEntryComparator());

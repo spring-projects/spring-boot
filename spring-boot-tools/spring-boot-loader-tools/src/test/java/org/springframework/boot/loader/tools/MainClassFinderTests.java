@@ -26,9 +26,10 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.boot.loader.tools.MainClassFinder.ClassNameCallback;
 import org.springframework.boot.loader.tools.sample.ClassWithMainMethod;
 import org.springframework.boot.loader.tools.sample.ClassWithoutMainMethod;
+import org.springframework.boot.loader.util.MainClassFinder;
+import org.springframework.boot.loader.util.MainClassFinder.ClassNameCallback;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -29,7 +29,7 @@ import org.gradle.api.tasks.SourceSetOutput;
 import org.gradle.api.tasks.TaskAction;
 
 import org.springframework.boot.gradle.SpringBootPluginExtension;
-import org.springframework.boot.loader.tools.MainClassFinder;
+import org.springframework.boot.loader.util.MainClassFinder;
 
 /**
  * Task to find and set the 'mainClassName' convention when it's missing by searching the
