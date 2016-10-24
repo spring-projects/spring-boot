@@ -42,6 +42,7 @@ import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.LogFileMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.LoggersMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
@@ -50,6 +51,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,6 +64,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for configuring the path of an MVC endpoint.
  *
  * @author Andy Wilkinson
+ * @author Ben Hale
  */
 @RunWith(Parameterized.class)
 public class MvcEndpointPathConfigurationTests {
@@ -95,6 +98,7 @@ public class MvcEndpointPathConfigurationTests {
 				new Object[] { "jolokia", JolokiaMvcEndpoint.class },
 				new Object[] { "liquibase", LiquibaseEndpoint.class },
 				new Object[] { "logfile", LogFileMvcEndpoint.class },
+				new Object[] { "loggers", LoggersMvcEndpoint.class },
 				new Object[] { "mappings", RequestMappingEndpoint.class },
 				new Object[] { "metrics", MetricsMvcEndpoint.class },
 				new Object[] { "shutdown", ShutdownEndpoint.class },
@@ -149,6 +153,11 @@ public class MvcEndpointPathConfigurationTests {
 		public ConditionEvaluationReport conditionEvaluationReport(
 				ConfigurableListableBeanFactory beanFactory) {
 			return ConditionEvaluationReport.get(beanFactory);
+		}
+
+		@Bean
+		LoggingSystem loggingSystem() {
+			return LoggingSystem.get(getClass().getClassLoader());
 		}
 
 		@Bean
