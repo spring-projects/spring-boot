@@ -384,9 +384,6 @@ public class TomcatEmbeddedServletContainerFactoryTests
 				.getEmbeddedServletContainer(sessionServletRegistration());
 		this.container.start();
 		String s3 = getResponse(getLocalUrl("/session"));
-		System.out.println(s1);
-		System.out.println(s2);
-		System.out.println(s3);
 		String message = "Session error s1=" + s1 + " s2=" + s2 + " s3=" + s3;
 		assertThat(s2.split(":")[0]).as(message).isEqualTo(s1.split(":")[1]);
 		assertThat(s3.split(":")[0]).as(message).isNotEqualTo(s2.split(":")[1]);
