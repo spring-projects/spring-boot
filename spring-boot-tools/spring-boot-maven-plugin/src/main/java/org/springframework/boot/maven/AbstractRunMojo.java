@@ -38,7 +38,7 @@ import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactFeatur
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
 
 import org.springframework.boot.loader.tools.FileUtils;
-import org.springframework.boot.loader.tools.MainClassFinder;
+import org.springframework.boot.loader.util.MainClassFinder;
 
 /**
  * Base class to run a spring application.
