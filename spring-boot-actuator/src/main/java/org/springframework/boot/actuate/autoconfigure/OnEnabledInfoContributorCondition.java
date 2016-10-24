@@ -29,15 +29,4 @@ class OnEnabledInfoContributorCondition extends OnEnabledEndpointElementConditio
 		super("management.info.", ConditionalOnEnabledInfoContributor.class);
 	}
 
-	@Override
-	protected String getEndpointElementOutcomeMessage(String name, boolean match) {
-		return "The info contributor " + name + " is " + (match ? "enabled" : "disabled");
-	}
-
-	@Override
-	protected String getDefaultEndpointElementOutcomeMessage(boolean match) {
-		return "All default info contributors are " + (match ? "enabled" : "disabled")
-				+ " by default";
-	}
-
 }
