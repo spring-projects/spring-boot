@@ -36,6 +36,8 @@ import org.springframework.boot.actuate.endpoint.FlywayEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.actuate.endpoint.LiquibaseEndpoint;
+import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
+import org.springframework.boot.actuate.endpoint.LoggersEndpoint.LoggerLevels;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
@@ -52,6 +54,7 @@ import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.bind.PropertySourcesBinder;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -75,6 +78,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Meang Akira Tanaka
+ * @author Ben Hale
  */
 public class EndpointAutoConfigurationTests {
 
@@ -89,12 +93,13 @@ public class EndpointAutoConfigurationTests {
 
 	@Test
 	public void endpoints() throws Exception {
-		load(EndpointAutoConfiguration.class);
+		load(CustomLoggingConfig.class, EndpointAutoConfiguration.class);
 		assertThat(this.context.getBean(BeansEndpoint.class)).isNotNull();
 		assertThat(this.context.getBean(DumpEndpoint.class)).isNotNull();
 		assertThat(this.context.getBean(EnvironmentEndpoint.class)).isNotNull();
 		assertThat(this.context.getBean(HealthEndpoint.class)).isNotNull();
 		assertThat(this.context.getBean(InfoEndpoint.class)).isNotNull();
+		assertThat(this.context.getBean(LoggersEndpoint.class)).isNotNull();
 		assertThat(this.context.getBean(MetricsEndpoint.class)).isNotNull();
 		assertThat(this.context.getBean(ShutdownEndpoint.class)).isNotNull();
 		assertThat(this.context.getBean(TraceEndpoint.class)).isNotNull();
@@ -119,6 +124,14 @@ public class EndpointAutoConfigurationTests {
 		assertThat(bean).isNotNull();
 		Health result = bean.invoke();
 		assertThat(result).isNotNull();
+	}
+
+	@Test
+	public void loggersEndpointHasLoggers() throws Exception {
+		load(CustomLoggingConfig.class, EndpointAutoConfiguration.class);
+		LoggersEndpoint endpoint = this.context.getBean(LoggersEndpoint.class);
+		Map<String, LoggerLevels> loggers = endpoint.invoke();
+		assertThat(loggers.size()).isGreaterThan(0);
 	}
 
 	@Test
@@ -242,6 +255,16 @@ public class EndpointAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(config);
 		this.context.refresh();
+	}
+
+	@Configuration
+	static class CustomLoggingConfig {
+
+		@Bean
+		LoggingSystem loggingSystem() {
+			return LoggingSystem.get(getClass().getClassLoader());
+		}
+
 	}
 
 	@Configuration
