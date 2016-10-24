@@ -144,7 +144,6 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 	private FailureAnalysis performAnalysis(Class<?> configuration) {
 		FailureAnalysis analysis = this.analyzer.analyze(createFailure(configuration));
 		assertThat(analysis).isNotNull();
-		System.out.println(analysis.getDescription());
 		return analysis;
 	}
 
