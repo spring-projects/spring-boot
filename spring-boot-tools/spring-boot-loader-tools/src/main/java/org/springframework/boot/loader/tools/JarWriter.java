@@ -55,6 +55,8 @@ public class JarWriter {
 
 	private static final String NESTED_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
 
+	private static final String NESTED_WRAPPER_JAR = "META-INF/loader/spring-boot-thin-wrapper.jar";
+
 	private static final int BUFFER_SIZE = 32 * 1024;
 
 	private final JarOutputStream jarOutput;
@@ -208,7 +210,18 @@ public class JarWriter {
 	 * @throws IOException if the classes cannot be written
 	 */
 	public void writeLoaderClasses() throws IOException {
-		URL loaderJar = getClass().getClassLoader().getResource(NESTED_LOADER_JAR);
+		writeLoaderClasses(NESTED_LOADER_JAR);
+	}
+
+	/**
+	 * Write the required spring-boot-loader classes to the JAR.
+	 *
+	 * @param launcherClassName the class that is going to be the main class
+	 * @throws IOException if the classes cannot be written
+	 */
+	public void writeLoaderClasses(String launcherClassName) throws IOException {
+		String loaderJarLocation = launcherClassName.contains("Thin") ? NESTED_WRAPPER_JAR : NESTED_LOADER_JAR;
+		URL loaderJar = getClass().getClassLoader().getResource(loaderJarLocation);
 		JarInputStream inputStream = new JarInputStream(
 				new BufferedInputStream(loaderJar.openStream()));
 		JarEntry entry;

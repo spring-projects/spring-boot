@@ -29,6 +29,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.tools.JarWriter.EntryTransformer;
+import org.springframework.boot.loader.util.MainClassFinder;
 import org.springframework.lang.UsesJava8;
 
 /**
@@ -217,7 +218,7 @@ public class Repackager {
 			}
 			writeNestedLibraries(standardLibraries, seen, writer);
 			if (this.layout.isExecutable()) {
-				writer.writeLoaderClasses();
+				writer.writeLoaderClasses(this.layout.getLauncherClassName());
 			}
 		}
 		finally {

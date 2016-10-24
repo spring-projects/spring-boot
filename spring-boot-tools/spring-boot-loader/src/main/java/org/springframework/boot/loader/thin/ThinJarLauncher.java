@@ -41,10 +41,12 @@ import org.springframework.boot.loader.archive.Archive.Entry;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
 import org.springframework.boot.loader.util.MainClassFinder;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.core.io.support.ResourcePatternUtils;
 
 /**
  * Launcher that downloads the dependencies for the app before it starts.
@@ -53,7 +55,10 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
  */
 public class ThinJarLauncher extends ExecutableArchiveLauncher {
 
-	private static final String DEFAULT_BOM = "org.springframework.boot:spring-boot-dependencies:1.4.1.RELEASE";
+	private static final String DEFAULT_BOM = "org.springframework.boot:spring-boot-dependencies";
+
+	private static final String DEFAULT_VERSION = "1.5.0.BUILD-SNAPSHOT";
+
 	private PomLoader pomLoader = new PomLoader();
 
 	public static void main(String[] args) throws Exception {
@@ -154,11 +159,11 @@ public class ThinJarLauncher extends ExecutableArchiveLauncher {
 		dependencies.addAll(getPomDependencies());
 
 		if (boms.isEmpty()) {
-			boms.add(dependency(DEFAULT_BOM));
+			boms.add(dependency(getDefaultBom()));
 		}
 
-		List<Archive> archives = archives(
-				resolve(new ArrayList<Dependency>(boms), new ArrayList<Dependency>(dependencies)));
+		List<Archive> archives = archives(resolve(new ArrayList<Dependency>(boms),
+				new ArrayList<Dependency>(dependencies)));
 		if (!archives.isEmpty()) {
 			archives.set(0, getArchive());
 		}
@@ -166,6 +171,15 @@ public class ThinJarLauncher extends ExecutableArchiveLauncher {
 			archives.add(getArchive());
 		}
 		return archives;
+	}
+
+	private String getDefaultBom() {
+		return DEFAULT_BOM + ":" + getVersion();
+	}
+
+	private String getVersion() {
+		Package pkg = ThinJarLauncher.class.getPackage();
+		return (pkg != null ? pkg.getImplementationVersion() : DEFAULT_VERSION);
 	}
 
 	private Properties loadLibraryProperties() throws IOException, MalformedURLException {
@@ -257,6 +271,15 @@ public class ThinJarLauncher extends ExecutableArchiveLauncher {
 
 	private Resource getPom() throws Exception {
 		Resource pom = new UrlResource(getArchive().getUrl() + "pom.xml");
+		if (!pom.exists()) {
+			for (Resource resource : ResourcePatternUtils
+					.getResourcePatternResolver(new DefaultResourceLoader())
+					.getResources(getArchive().getUrl() + "META-INF/maven/**/pom.xml")) {
+				if (resource.exists()) {
+					return resource;
+				}
+			}
+		}
 		if (!pom.exists()) {
 			pom = new FileSystemResource("./pom.xml");
 		}

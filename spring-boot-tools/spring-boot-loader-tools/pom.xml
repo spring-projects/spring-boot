@@ -23,12 +23,15 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 		</dependency>
-		<!-- Provided -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-thin-wrapper</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-loader</artifactId>
-			<scope>provided</scope>
 		</dependency>
+		<!-- Provided -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
@@ -65,6 +68,12 @@
 									<artifactId>spring-boot-loader</artifactId>
 									<version>${project.version}</version>
 									<destFileName>spring-boot-loader.jar</destFileName>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.springframework.boot</groupId>
+									<artifactId>spring-boot-thin-wrapper</artifactId>
+									<version>${project.version}</version>
+									<destFileName>spring-boot-thin-wrapper.jar</destFileName>
 								</artifactItem>
 							</artifactItems>
 							<outputDirectory>${basedir}/target/generated-resources/loader/META-INF/loader</outputDirectory>
