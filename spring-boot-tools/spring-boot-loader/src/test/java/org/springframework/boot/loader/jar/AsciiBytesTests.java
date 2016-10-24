@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link AsciiBytes}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class AsciiBytesTests {
 
@@ -140,16 +141,26 @@ public class AsciiBytesTests {
 
 	@Test
 	public void hashCodeSameAsString() throws Exception {
-		String s = "abcABC123xyz!";
-		AsciiBytes a = new AsciiBytes(s);
-		assertThat(s.hashCode()).isEqualTo(a.hashCode());
+		hashCodeSameAsString("abcABC123xyz!");
 	}
 
 	@Test
 	public void hashCodeSameAsStringWithSpecial() throws Exception {
-		String s = "special/\u00EB.dat";
-		AsciiBytes a = new AsciiBytes(s);
-		assertThat(s.hashCode()).isEqualTo(a.hashCode());
+		hashCodeSameAsString("special/\u00EB.dat");
+	}
+
+	@Test
+	public void hashCodeSameAsStringWithCyrillicCharacters() throws Exception {
+		hashCodeSameAsString("\u0432\u0435\u0441\u043D\u0430");
+	}
+
+	@Test
+	public void hashCodeSameAsStringWithEmoji() throws Exception {
+		hashCodeSameAsString("\ud83d\udca9");
+	}
+
+	private void hashCodeSameAsString(String input) {
+		assertThat(new AsciiBytes(input).hashCode()).isEqualTo(input.hashCode());
 	}
 
 }
