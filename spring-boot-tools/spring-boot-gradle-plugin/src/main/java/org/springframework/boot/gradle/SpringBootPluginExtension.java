@@ -291,6 +291,8 @@ public class SpringBootPluginExtension {
 
 		MODULE(new Layouts.Module()),
 
+		THIN(new Layouts.Thin()),
+
 		NONE(new Layouts.None());
 
 		Layout layout;
