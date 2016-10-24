@@ -22,6 +22,8 @@
 	<modules>
 		<module>spring-boot-configuration-metadata</module>
 		<module>spring-boot-configuration-processor</module>
+		<module>spring-boot-thin-wrapper</module>
+		<module>spring-boot-aether</module>
 		<module>spring-boot-loader</module>
 		<module>spring-boot-loader-tools</module>
 		<module>spring-boot-maven-plugin</module>
