@@ -119,6 +119,33 @@ public final class Layouts {
 	}
 
 	/**
+	 * Thin executable layout.
+	 */
+	public static class Thin implements Layout {
+
+		@Override
+		public String getLauncherClassName() {
+			return "org.springframework.boot.loader.wrapper.ThinJarWrapper";
+		}
+
+		@Override
+		public boolean isExecutable() {
+			return true;
+		}
+
+		@Override
+		public String getLibraryDestination(String libraryName, LibraryScope scope) {
+			return null;
+		}
+
+		@Override
+		public String getClassesLocation() {
+			return "";
+		}
+
+	}
+
+	/**
 	 * Executable WAR layout.
 	 */
 	public static class War implements Layout {
