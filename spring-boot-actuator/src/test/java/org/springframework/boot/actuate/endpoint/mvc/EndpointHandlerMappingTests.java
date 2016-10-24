@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Dave Syer
  */
-public class EndpointHandlerMappingTests {
+public class EndpointHandlerMappingTests extends AbstractEndpointHandlerMappingTests {
 
 	private final StaticApplicationContext context = new StaticApplicationContext();
 
@@ -137,19 +136,6 @@ public class EndpointHandlerMappingTests {
 		assertThat(mapping.getHandler(request("POST", "/a"))).isNull();
 	}
 
-	@Test
-	public void pathNotMappedWhenGetPathReturnsNull() throws Exception {
-		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
-		TestActionEndpoint other = new TestActionEndpoint(new TestEndpoint("b"));
-		EndpointHandlerMapping mapping = new TestEndpointHandlerMapping(
-				Arrays.asList(endpoint, other));
-		mapping.setApplicationContext(this.context);
-		mapping.afterPropertiesSet();
-		assertThat(mapping.getHandlerMethods()).hasSize(1);
-		assertThat(mapping.getHandler(request("GET", "/a"))).isNull();
-		assertThat(mapping.getHandler(request("POST", "/b"))).isNotNull();
-	}
-
 	private MockHttpServletRequest request(String method, String requestURI) {
 		return new MockHttpServletRequest(method, requestURI);
 	}
@@ -184,22 +170,6 @@ public class EndpointHandlerMappingTests {
 		@Override
 		@PostMapping
 		public Object invoke() {
-			return null;
-		}
-
-	}
-
-	static class TestEndpointHandlerMapping extends EndpointHandlerMapping {
-
-		TestEndpointHandlerMapping(Collection<? extends MvcEndpoint> endpoints) {
-			super(endpoints);
-		}
-
-		@Override
-		protected String getPath(MvcEndpoint endpoint) {
-			if (endpoint instanceof TestActionEndpoint) {
-				return super.getPath(endpoint);
-			}
 			return null;
 		}
 
