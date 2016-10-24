@@ -489,6 +489,32 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void customTomcatTldSkip() {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.additional-tld-skip-patterns", "foo.jar,bar.jar");
+		bindProperties(map);
+
+		testCustomTomcatTldSkip("foo.jar", "bar.jar");
+	}
+
+	@Test
+	public void customTomcatTldSkipAsList() {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.additional-tld-skip-patterns[0]", "biz.jar");
+		map.put("server.tomcat.additional-tld-skip-patterns[1]", "bah.jar");
+		bindProperties(map);
+
+		testCustomTomcatTldSkip("biz.jar", "bah.jar");
+	}
+
+	private void testCustomTomcatTldSkip(String... expectedJars) {
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(container);
+		assertThat(container.getTldSkipPatterns()).contains(expectedJars);
+		assertThat(container.getTldSkipPatterns()).contains("junit-*.jar", "spring-boot-*.jar");
+	}
+
+	@Test
 	public void defaultUseForwardHeadersUndertow() throws Exception {
 		UndertowEmbeddedServletContainerFactory container = spy(
 				new UndertowEmbeddedServletContainerFactory());
