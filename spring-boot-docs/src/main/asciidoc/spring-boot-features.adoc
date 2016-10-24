@@ -3378,9 +3378,6 @@ properties:
 [[boot-features-connecting-to-neo4j-embedded]]
 ==== Using the embedded mode
 
-NOTE: Neo4j's embedded mode is subject to a different licensing, make sure to review it
-before integrating the dependency in your application.
-
 If you add `org.neo4j:neo4j-ogm-embedded-driver` to the dependencies of your application,
 Spring Boot will automatically configure an in-process embedded instance of Neo4j that
 will not persist any data when your application shuts down. You can explicitly disable
