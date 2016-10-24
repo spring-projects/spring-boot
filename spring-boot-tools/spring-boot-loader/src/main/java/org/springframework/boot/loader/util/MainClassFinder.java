@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.tools;
+package org.springframework.boot.loader.util;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -46,10 +46,7 @@ import org.springframework.asm.Type;
  * search.
  *
  * @author Phillip Webb
- *
- * @deprecated in favour of MainClassFinder in spring-boot-loader
  */
-@Deprecated
 public abstract class MainClassFinder {
 
 	private static final String DOT_CLASS = ".class";

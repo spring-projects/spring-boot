@@ -33,7 +33,7 @@ import java.net.URLClassLoader;
 public class ThinJarWrapper {
 
 	/**
-	 * System property key for the main library where the launcher class is located. 
+	 * System property key for the main library where the launcher class is located.
 	 */
 	public static final String MAIN_LIBRARY = "main.library";
 
@@ -57,7 +57,7 @@ public class ThinJarWrapper {
 
 	private static final String DEFAULT_LAUNCHER_CLASS = "org.springframework.boot.loader.thin.ThinJarLauncher";
 
-	private static final String DEFAULT_LIBRARY = "org.springframework.boot.experimental:spring-boot-thin-launcher:0.0.1.BUILD-SNAPSHOT";
+	private static final String DEFAULT_LIBRARY = "org.springframework.boot:spring-boot-loader:exec:1.5.0.BUILD-SNAPSHOT";
 
 	private Library library;
 
@@ -214,7 +214,7 @@ public class ThinJarWrapper {
 		public String getPath() {
 			return "/" + this.groupId.replace(".", "/") + "/" + this.artifactId + "/"
 					+ this.version + "/" + this.artifactId + "-" + this.version
-					+ (this.classifier != null ? this.classifier : "") + ".jar";
+					+ (this.classifier != null ? "-" + this.classifier : "") + ".jar";
 		}
 
 	}
