@@ -37,8 +37,9 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  * annotations.
  *
  * @author Phillip Webb
+ * @since 1.4.2
  */
-class MockitoTestExecutionListener extends AbstractTestExecutionListener {
+public class MockitoTestExecutionListener extends AbstractTestExecutionListener {
 
 	@Override
 	public void prepareTestInstance(TestContext testContext) throws Exception {
