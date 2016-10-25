@@ -956,6 +956,7 @@ public class ServerProperties
 			valve.setPrefix(this.accesslog.getPrefix());
 			valve.setSuffix(this.accesslog.getSuffix());
 			valve.setRenameOnRotate(this.accesslog.isRenameOnRotate());
+			valve.setRotatable(this.accesslog.isRotatable());
 			factory.addEngineValves(valve);
 		}
 
@@ -1005,6 +1006,11 @@ public class ServerProperties
 			 */
 			private boolean renameOnRotate;
 
+			/**
+			 * Enable access log rotation.
+			 */
+			private boolean rotatable = true;
+
 			public boolean isEnabled() {
 				return this.enabled;
 			}
@@ -1053,6 +1059,13 @@ public class ServerProperties
 				this.renameOnRotate = renameOnRotate;
 			}
 
+			public boolean isRotatable() {
+				return this.rotatable;
+			}
+
+			public void setRotatable(boolean rotatable) {
+				this.rotatable = rotatable;
+			}
 		}
 
 	}
