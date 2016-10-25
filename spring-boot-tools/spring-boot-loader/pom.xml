@@ -27,17 +27,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-aether</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.2</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<scope>test</scope>
@@ -77,29 +66,6 @@
 									<goal>install</goal>
 									<goal>run</goal>
 								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-assembly-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>stub</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>single</goal>
-								</goals>
-								<inherited>false</inherited>
-								<configuration>
-									<attach>true</attach>
-									<descriptor>${basedir}/src/assembly/launcher.xml</descriptor>
-									<archive>
-										<manifest>
-											<mainClass>org.springframework.boot.loader.thin.ThinJarLauncher</mainClass>
-										</manifest>
-									</archive>
-								</configuration>
 							</execution>
 						</executions>
 					</plugin>
