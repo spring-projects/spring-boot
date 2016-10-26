@@ -956,7 +956,7 @@ public class ServerProperties
 			valve.setPrefix(this.accesslog.getPrefix());
 			valve.setSuffix(this.accesslog.getSuffix());
 			valve.setRenameOnRotate(this.accesslog.isRenameOnRotate());
-			valve.setRotatable(this.accesslog.isRotatable());
+			valve.setRotatable(this.accesslog.isRotate());
 			factory.addEngineValves(valve);
 		}
 
@@ -1002,14 +1002,14 @@ public class ServerProperties
 			private String suffix = ".log";
 
 			/**
+			 * Enable access log rotation.
+			 */
+			private boolean rotate = true;
+
+			/**
 			 * Defer inclusion of the date stamp in the file name until rotate time.
 			 */
 			private boolean renameOnRotate;
-
-			/**
-			 * Enable access log rotation.
-			 */
-			private boolean rotatable = true;
 
 			public boolean isEnabled() {
 				return this.enabled;
@@ -1051,6 +1051,14 @@ public class ServerProperties
 				this.suffix = suffix;
 			}
 
+			public boolean isRotate() {
+				return this.rotate;
+			}
+
+			public void setRotate(boolean rotate) {
+				this.rotate = rotate;
+			}
+
 			public boolean isRenameOnRotate() {
 				return this.renameOnRotate;
 			}
@@ -1059,13 +1067,6 @@ public class ServerProperties
 				this.renameOnRotate = renameOnRotate;
 			}
 
-			public boolean isRotatable() {
-				return this.rotatable;
-			}
-
-			public void setRotatable(boolean rotatable) {
-				this.rotatable = rotatable;
-			}
 		}
 
 	}
@@ -1309,21 +1310,14 @@ public class ServerProperties
 			if (this.directBuffers != null) {
 				factory.setDirectBuffers(this.directBuffers);
 			}
-			if (this.accesslog.dir != null) {
-				factory.setAccessLogDirectory(this.accesslog.dir);
-			}
-			if (this.accesslog.pattern != null) {
-				factory.setAccessLogPattern(this.accesslog.pattern);
-			}
-			if (this.accesslog.prefix != null) {
-				factory.setAccessLogPrefix(this.accesslog.prefix);
-			}
-			if (this.accesslog.suffix != null) {
-				factory.setAccessLogSuffix(this.accesslog.suffix);
-			}
 			if (this.accesslog.enabled != null) {
 				factory.setAccessLogEnabled(this.accesslog.enabled);
 			}
+			factory.setAccessLogDirectory(this.accesslog.dir);
+			factory.setAccessLogPattern(this.accesslog.pattern);
+			factory.setAccessLogPrefix(this.accesslog.prefix);
+			factory.setAccessLogSuffix(this.accesslog.suffix);
+			factory.setAccessLogRotate(this.accesslog.rotate);
 			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
 			if (serverProperties.getMaxHttpHeaderSize() > 0) {
 				customizeMaxHttpHeaderSize(factory,
@@ -1406,6 +1400,11 @@ public class ServerProperties
 			 */
 			private File dir = new File("logs");
 
+			/**
+			 * Enable access log rotation.
+			 */
+			private boolean rotate = true;
+
 			public Boolean getEnabled() {
 				return this.enabled;
 			}
@@ -1446,6 +1445,13 @@ public class ServerProperties
 				this.dir = dir;
 			}
 
+			public boolean isRotate() {
+				return this.rotate;
+			}
+
+			public void setRotate(boolean rotate) {
+				this.rotate = rotate;
+			}
 		}
 
 	}
