@@ -126,6 +126,8 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private boolean accessLogEnabled = false;
 
+	private boolean accessLogRotate = true;
+
 	private boolean useForwardHeaders;
 
 	/**
@@ -411,7 +413,7 @@ public class UndertowEmbeddedServletContainerFactory
 					: "access_log.");
 			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
 					createWorker(), this.accessLogDirectory, prefix,
-					this.accessLogSuffix);
+					this.accessLogSuffix, this.accessLogRotate);
 			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
 					: "common";
 			return new AccessLogHandler(handler, accessLogReceiver, formatString,
@@ -582,6 +584,10 @@ public class UndertowEmbeddedServletContainerFactory
 
 	public boolean isAccessLogEnabled() {
 		return this.accessLogEnabled;
+	}
+
+	public void setAccessLogRotate(boolean accessLogRotate) {
+		this.accessLogRotate = accessLogRotate;
 	}
 
 	protected final boolean isUseForwardHeaders() {
