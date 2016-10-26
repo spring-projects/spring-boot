@@ -21,12 +21,17 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-loader</artifactId>
-			<scope>provided</scope>
+			<artifactId>spring-boot-loader-tools</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-loader-tools</artifactId>
+			<artifactId>spring-boot-loader</artifactId>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -45,6 +50,7 @@
 					<artifactSet>
 						<includes>
 							<include>org.springframework.boot:spring-boot-loader-tools</include>
+							<include>org.springframework.boot:spring-boot-loader</include>
 							<include>org.springframework:spring-core</include>
 						</includes>
 					</artifactSet>

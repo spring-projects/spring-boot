@@ -39,6 +39,7 @@
 									<type>jar</type>
 								</artifactItem>
 							</artifactItems>
+							<excludes>/*/MANIFEST.MF,/*/manifest.mf</excludes>
 							<outputDirectory>${project.build.directory}/assembly</outputDirectory>
 						</configuration>
 					</execution>

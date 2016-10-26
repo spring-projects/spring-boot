@@ -18,22 +18,10 @@ package org.springframework.boot.cli.compiler.grape;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ServiceLoader;
 
 import groovy.lang.GroovyClassLoader;
-import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
-import org.eclipse.aether.DefaultRepositorySystemSession;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
-import org.eclipse.aether.impl.DefaultServiceLocator;
-import org.eclipse.aether.internal.impl.DefaultRepositorySystem;
-import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.repository.RepositoryPolicy;
-import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
-import org.eclipse.aether.spi.connector.transport.TransporterFactory;
-import org.eclipse.aether.spi.locator.ServiceLocator;
-import org.eclipse.aether.transport.file.FileTransporterFactory;
-import org.eclipse.aether.transport.http.HttpTransporterFactory;
+
+import org.springframework.boot.aether.AetherEngine;
 
 /**
  * Utility class to create a pre-configured {@link AetherGrapeEngine}.
@@ -44,55 +32,21 @@ public abstract class AetherGrapeEngineFactory {
 
 	public static AetherGrapeEngine create(GroovyClassLoader classLoader,
 			List<RepositoryConfiguration> repositoryConfigurations,
-			DependencyResolutionContext dependencyResolutionContext) {
-
-		RepositorySystem repositorySystem = createServiceLocator()
-				.getService(RepositorySystem.class);
-
-		DefaultRepositorySystemSession repositorySystemSession = MavenRepositorySystemUtils
-				.newSession();
-
-		ServiceLoader<RepositorySystemSessionAutoConfiguration> autoConfigurations = ServiceLoader
-				.load(RepositorySystemSessionAutoConfiguration.class);
-
-		for (RepositorySystemSessionAutoConfiguration autoConfiguration : autoConfigurations) {
-			autoConfiguration.apply(repositorySystemSession, repositorySystem);
-		}
-
-		new DefaultRepositorySystemSessionAutoConfiguration()
-				.apply(repositorySystemSession, repositorySystem);
-
-		return new AetherGrapeEngine(classLoader, repositorySystem,
-				repositorySystemSession, createRepositories(repositoryConfigurations),
-				dependencyResolutionContext);
+			DependencyResolutionContext dependencyManagement) {
+		AetherEngine engine = AetherEngine.create(convert(repositoryConfigurations),
+				dependencyManagement);
+		return new AetherGrapeEngine(classLoader, engine, dependencyManagement);
 	}
 
-	private static ServiceLocator createServiceLocator() {
-		DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
-		locator.addService(RepositorySystem.class, DefaultRepositorySystem.class);
-		locator.addService(RepositoryConnectorFactory.class,
-				BasicRepositoryConnectorFactory.class);
-		locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
-		locator.addService(TransporterFactory.class, FileTransporterFactory.class);
-		return locator;
-	}
-
-	private static List<RemoteRepository> createRepositories(
+	private static List<org.springframework.boot.aether.RepositoryConfiguration> convert(
 			List<RepositoryConfiguration> repositoryConfigurations) {
-		List<RemoteRepository> repositories = new ArrayList<RemoteRepository>(
-				repositoryConfigurations.size());
+		List<org.springframework.boot.aether.RepositoryConfiguration> list = new ArrayList<org.springframework.boot.aether.RepositoryConfiguration>();
 		for (RepositoryConfiguration repositoryConfiguration : repositoryConfigurations) {
-			RemoteRepository.Builder builder = new RemoteRepository.Builder(
-					repositoryConfiguration.getName(), "default",
-					repositoryConfiguration.getUri().toASCIIString());
-
-			if (!repositoryConfiguration.getSnapshotsEnabled()) {
-				builder.setSnapshotPolicy(
-						new RepositoryPolicy(false, RepositoryPolicy.UPDATE_POLICY_NEVER,
-								RepositoryPolicy.CHECKSUM_POLICY_IGNORE));
-			}
-			repositories.add(builder.build());
+			list.add(new org.springframework.boot.aether.RepositoryConfiguration(
+					repositoryConfiguration.getName(), repositoryConfiguration.getUri(),
+					repositoryConfiguration.getSnapshotsEnabled()));
 		}
-		return repositories;
+		return list;
 	}
+
 }

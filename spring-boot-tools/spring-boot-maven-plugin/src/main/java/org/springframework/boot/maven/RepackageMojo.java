@@ -126,7 +126,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * The type of archive (which corresponds to how the dependencies are laid out inside
-	 * it). Possible values are JAR, WAR, ZIP, DIR, NONE. Defaults to a guess based on the
+	 * it). Possible values are JAR, THIN, WAR, ZIP, DIR, NONE. Defaults to a guess based on the
 	 * archive type.
 	 * @since 1.0
 	 */
@@ -197,7 +197,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		File source = this.project.getArtifact().getFile();
 		File target = getTargetFile();
 		Repackager repackager = getRepackager(source);
-		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
+		Set<Artifact> artifacts = filterDependencies(getLibraries(),
 				getFilters(getAdditionalFilters()));
 		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack,
 				getLog());
@@ -209,6 +209,10 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
 		updateArtifact(source, target, repackager.getBackupFile());
+	}
+
+	private Set<Artifact> getLibraries() {
+		return this.project.getArtifacts();
 	}
 
 	private File getTargetFile() {
@@ -342,7 +346,12 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		/**
 		 * No Layout.
 		 */
-		NONE(new Layouts.None());
+		NONE(new Layouts.None()),
+
+		/**
+		 * Thin Layout.
+		 */
+		THIN(new Layouts.Thin());
 
 		private final Layout layout;
 

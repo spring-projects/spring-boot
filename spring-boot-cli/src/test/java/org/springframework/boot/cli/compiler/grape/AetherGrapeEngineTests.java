@@ -16,7 +16,6 @@
 
 package org.springframework.boot.cli.compiler.grape;
 
-import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,12 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 import groovy.lang.GroovyClassLoader;
-import org.eclipse.aether.DefaultRepositorySystemSession;
-import org.eclipse.aether.repository.Authentication;
-import org.eclipse.aether.repository.RemoteRepository;
-import org.junit.Test;
 
-import org.springframework.test.util.ReflectionTestUtils;
+import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -64,59 +59,6 @@ public class AetherGrapeEngineTests {
 		createGrapeEngine(this.springMilestones).grab(args,
 				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE"));
 		assertThat(this.groovyClassLoader.getURLs()).hasSize(5);
-	}
-
-	@Test
-	public void proxySelector() {
-		doWithCustomUserHome(new Runnable() {
-
-			@Override
-			public void run() {
-				AetherGrapeEngine grapeEngine = createGrapeEngine();
-
-				DefaultRepositorySystemSession session = (DefaultRepositorySystemSession) ReflectionTestUtils
-						.getField(grapeEngine, "session");
-
-				assertThat(session.getProxySelector() instanceof CompositeProxySelector)
-						.isTrue();
-			}
-
-		});
-	}
-
-	@Test
-	public void repositoryMirrors() {
-		doWithCustomUserHome(new Runnable() {
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public void run() {
-				AetherGrapeEngine grapeEngine = createGrapeEngine();
-
-				List<RemoteRepository> repositories = (List<RemoteRepository>) ReflectionTestUtils
-						.getField(grapeEngine, "repositories");
-				assertThat(repositories).hasSize(1);
-				assertThat(repositories.get(0).getId()).isEqualTo("central-mirror");
-			}
-		});
-	}
-
-	@Test
-	public void repositoryAuthentication() {
-		doWithCustomUserHome(new Runnable() {
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public void run() {
-				AetherGrapeEngine grapeEngine = createGrapeEngine();
-
-				List<RemoteRepository> repositories = (List<RemoteRepository>) ReflectionTestUtils
-						.getField(grapeEngine, "repositories");
-				assertThat(repositories).hasSize(1);
-				Authentication authentication = repositories.get(0).getAuthentication();
-				assertThat(authentication).isNotNull();
-			}
-		});
 	}
 
 	@Test
@@ -242,25 +184,4 @@ public class AetherGrapeEngineTests {
 		return exclusion;
 	}
 
-	private void doWithCustomUserHome(Runnable action) {
-		doWithSystemProperty("user.home",
-				new File("src/test/resources").getAbsolutePath(), action);
-	}
-
-	private void doWithSystemProperty(String key, String value, Runnable action) {
-		String previousValue = setOrClearSystemProperty(key, value);
-		try {
-			action.run();
-		}
-		finally {
-			setOrClearSystemProperty(key, previousValue);
-		}
-	}
-
-	private String setOrClearSystemProperty(String key, String value) {
-		if (value != null) {
-			return System.setProperty(key, value);
-		}
-		return System.clearProperty(key);
-	}
 }

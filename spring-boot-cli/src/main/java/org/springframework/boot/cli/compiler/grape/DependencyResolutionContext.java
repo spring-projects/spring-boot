@@ -17,16 +17,14 @@
 package org.springframework.boot.cli.compiler.grape;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.Exclusion;
 import org.eclipse.aether.util.artifact.JavaScopes;
 
+import org.springframework.boot.aether.DependencyManagementContext;
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
 import org.springframework.boot.cli.compiler.dependencies.CompositeDependencyManagement;
 import org.springframework.boot.cli.compiler.dependencies.DependencyManagement;
@@ -39,11 +37,7 @@ import org.springframework.boot.cli.compiler.dependencies.SpringBootDependencies
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-public class DependencyResolutionContext {
-
-	private final Map<String, Dependency> managedDependencyByGroupAndArtifact = new HashMap<String, Dependency>();
-
-	private final List<Dependency> managedDependencies = new ArrayList<Dependency>();
+public class DependencyResolutionContext extends DependencyManagementContext {
 
 	private DependencyManagement dependencyManagement = null;
 
@@ -53,46 +47,12 @@ public class DependencyResolutionContext {
 		addDependencyManagement(new SpringBootDependenciesDependencyManagement());
 	}
 
-	private String getIdentifier(Dependency dependency) {
-		return getIdentifier(dependency.getArtifact().getGroupId(),
-				dependency.getArtifact().getArtifactId());
-	}
-
-	private String getIdentifier(String groupId, String artifactId) {
-		return groupId + ":" + artifactId;
-	}
-
 	public ArtifactCoordinatesResolver getArtifactCoordinatesResolver() {
 		return this.artifactCoordinatesResolver;
 	}
 
-	public String getManagedVersion(String groupId, String artifactId) {
-		Dependency dependency = getManagedDependency(groupId, artifactId);
-		if (dependency == null) {
-			dependency = this.managedDependencyByGroupAndArtifact
-					.get(getIdentifier(groupId, artifactId));
-		}
-		return dependency != null ? dependency.getArtifact().getVersion() : null;
-	}
-
-	public List<Dependency> getManagedDependencies() {
-		return Collections.unmodifiableList(this.managedDependencies);
-	}
-
-	private Dependency getManagedDependency(String group, String artifact) {
-		return this.managedDependencyByGroupAndArtifact
-				.get(getIdentifier(group, artifact));
-	}
-
-	void addManagedDependencies(List<Dependency> dependencies) {
-		this.managedDependencies.addAll(dependencies);
-		for (Dependency dependency : dependencies) {
-			this.managedDependencyByGroupAndArtifact.put(getIdentifier(dependency),
-					dependency);
-		}
-	}
-
 	public void addDependencyManagement(DependencyManagement dependencyManagement) {
+		List<Dependency> dependencies = new ArrayList<Dependency>();
 		for (org.springframework.boot.cli.compiler.dependencies.Dependency dependency : dependencyManagement
 				.getDependencies()) {
 			List<Exclusion> aetherExclusions = new ArrayList<Exclusion>();
@@ -105,10 +65,9 @@ public class DependencyResolutionContext {
 					new DefaultArtifact(dependency.getGroupId(),
 							dependency.getArtifactId(), "jar", dependency.getVersion()),
 					JavaScopes.COMPILE, false, aetherExclusions);
-			this.managedDependencies.add(0, aetherDependency);
-			this.managedDependencyByGroupAndArtifact.put(getIdentifier(aetherDependency),
-					aetherDependency);
+			dependencies.add(aetherDependency);
 		}
+		addManagedDependencies(dependencies);
 		this.dependencyManagement = this.dependencyManagement == null
 				? dependencyManagement
 				: new CompositeDependencyManagement(dependencyManagement,
