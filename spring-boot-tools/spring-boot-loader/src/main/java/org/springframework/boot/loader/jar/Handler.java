@@ -198,23 +198,23 @@ public class Handler extends URLStreamHandler {
 
 	@Override
 	protected boolean sameFile(URL u1, URL u2) {
-		if (!u1.getProtocol().equals("jar") || u2.getProtocol().equals("jar")) {
-			return super.sameFile(u1, u2);
+		if (!u1.getProtocol().equals("jar") || !u2.getProtocol().equals("jar")) {
+			return false;
 		}
 		int separator1 = u1.getFile().indexOf(SEPARATOR);
-		int separator2 = u1.getFile().indexOf(SEPARATOR);
-		if (separator1 < 0 || separator2 < 0) {
+		int separator2 = u2.getFile().indexOf(SEPARATOR);
+		if (separator1 == -1 || separator2 == -1) {
 			return super.sameFile(u1, u2);
 		}
-		String root1 = u1.getFile().substring(separator1 + SEPARATOR.length());
-		String root2 = u2.getFile().substring(separator2 + SEPARATOR.length());
-		if (!root1.equals(root2)) {
-			return super.sameFile(u1, u2);
+		String nested1 = u1.getFile().substring(separator1 + SEPARATOR.length());
+		String nested2 = u2.getFile().substring(separator2 + SEPARATOR.length());
+		if (!nested1.equals(nested2)) {
+			return false;
 		}
-		String nested1 = u1.getFile().substring(0, separator1);
-		String nested2 = u1.getFile().substring(0, separator2);
+		String root1 = u1.getFile().substring(0, separator1);
+		String root2 = u2.getFile().substring(0, separator2);
 		try {
-			return super.sameFile(new URL(nested1), new URL(nested2));
+			return super.sameFile(new URL(root1), new URL(root2));
 		}
 		catch (MalformedURLException ex) {
 			// Continue

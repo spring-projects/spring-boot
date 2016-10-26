@@ -89,6 +89,36 @@ public class HandlerTests {
 				.isEqualTo("jar:jar:file:/other.jar!/nested!/entry.txt");
 	}
 
+	@Test
+	public void sameFileReturnsFalseForUrlsWithDifferentProtocols()
+			throws MalformedURLException {
+		assertThat(this.handler.sameFile(new URL("jar:file:foo.jar!/content.txt"),
+				new URL("file:/foo.jar"))).isFalse();
+	}
+
+	@Test
+	public void sameFileReturnsFalseForDifferentFileInSameJar()
+			throws MalformedURLException {
+		assertThat(this.handler.sameFile(
+				new URL("jar:file:foo.jar!/the/path/to/the/first/content.txt"),
+				new URL("jar:file:/foo.jar!/content.txt"))).isFalse();
+	}
+
+	@Test
+	public void sameFileReturnsFalseForSameFileInDifferentJars()
+			throws MalformedURLException {
+		assertThat(this.handler.sameFile(
+				new URL("jar:file:/the/path/to/the/first.jar!/content.txt"),
+				new URL("jar:file:/second.jar!/content.txt"))).isFalse();
+	}
+
+	@Test
+	public void sameFileReturnsTrueForSameFileInSameJar() throws MalformedURLException {
+		assertThat(this.handler.sameFile(
+				new URL("jar:file:/the/path/to/the/first.jar!/content.txt"),
+				new URL("jar:file:/the/path/to/the/first.jar!/content.txt"))).isTrue();
+	}
+
 	private URL createUrl(String file) throws MalformedURLException {
 		return new URL("jar", null, -1, file, this.handler);
 	}
