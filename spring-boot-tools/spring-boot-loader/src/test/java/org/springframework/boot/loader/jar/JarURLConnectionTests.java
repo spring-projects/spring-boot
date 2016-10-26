@@ -18,7 +18,6 @@ package org.springframework.boot.loader.jar;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.net.URL;
 
 import org.junit.Before;
@@ -127,15 +126,14 @@ public class JarURLConnectionTests {
 	}
 
 	@Test
-	public void nestedJarNotFound() throws Exception {
-		URL url = new URL(
-				"jar:file:" + getAbsolutePath() + "!/nested.jar!/missing.jar!/1.dat");
+	public void connectionToEntryInNestedJarFromUrlThatUsesExistingUrlAsContext()
+			throws Exception {
+		URL url = new URL(new URL("jar", null, -1,
+				"file:" + getAbsolutePath() + "!/nested.jar!/", new Handler()), "/3.dat");
 		JarFile nested = this.jarFile
 				.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
-		JarURLConnection connection = JarURLConnection.get(url, nested);
-		this.thrown.expect(FileNotFoundException.class);
-		this.thrown.expectMessage("JAR entry missing.jar not found in");
-		connection.connect();
+		assertThat(JarURLConnection.get(url, nested).getInputStream())
+				.hasSameContentAs(new ByteArrayInputStream(new byte[] { 3 }));
 	}
 
 	private String getAbsolutePath() {
