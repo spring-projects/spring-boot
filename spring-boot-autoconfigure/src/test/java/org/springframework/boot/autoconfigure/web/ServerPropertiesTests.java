@@ -137,6 +137,7 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.accesslog.pattern", "%h %t '%r' %s %b");
 		map.put("server.tomcat.accesslog.prefix", "foo");
+		map.put("server.tomcat.accesslog.rotate", "false");
 		map.put("server.tomcat.accesslog.rename-on-rotate", "true");
 		map.put("server.tomcat.accesslog.suffix", "-bar.log");
 		map.put("server.tomcat.protocol_header", "X-Forwarded-Protocol");
@@ -147,6 +148,7 @@ public class ServerPropertiesTests {
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
 		assertThat(tomcat.getAccesslog().getPattern()).isEqualTo("%h %t '%r' %s %b");
 		assertThat(tomcat.getAccesslog().getPrefix()).isEqualTo("foo");
+		assertThat(tomcat.getAccesslog().isRotate()).isFalse();
 		assertThat(tomcat.getAccesslog().isRenameOnRotate()).isTrue();
 		assertThat(tomcat.getAccesslog().getSuffix()).isEqualTo("-bar.log");
 		assertThat(tomcat.getRemoteIpHeader()).isEqualTo("Remote-Ip");
@@ -462,6 +464,28 @@ public class ServerPropertiesTests {
 				.getEmbeddedServletContainer();
 		assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
 				.getProtocolHandler()).getMaxConnections()).isEqualTo(5);
+	}
+
+	@Test
+	public void customizeUndertowAccessLog() {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.undertow.accesslog.enabled", "true");
+		map.put("server.undertow.accesslog.pattern", "foo");
+		map.put("server.undertow.accesslog.prefix", "test_log");
+		map.put("server.undertow.accesslog.suffix", "txt");
+		map.put("server.undertow.accesslog.dir", "test-logs");
+		map.put("server.undertow.accesslog.rotate", "false");
+		bindProperties(map);
+
+		UndertowEmbeddedServletContainerFactory container = spy(
+				new UndertowEmbeddedServletContainerFactory());
+		this.properties.getUndertow().customizeUndertow(this.properties, container);
+		verify(container).setAccessLogEnabled(true);
+		verify(container).setAccessLogPattern("foo");
+		verify(container).setAccessLogPrefix("test_log");
+		verify(container).setAccessLogSuffix("txt");
+		verify(container).setAccessLogDirectory(new File("test-logs"));
+		verify(container).setAccessLogRotate(false);
 	}
 
 	@Test
