@@ -410,6 +410,19 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void profilesAddedToEnvironmentAndViaPropertyFromNestedFolder() throws Exception {
+		// External profile takes precedence over profile added via the environment
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.profiles.active=nested");
+		this.environment.addActiveProfile("dev");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getActiveProfiles()).contains("dev", "nested");
+		assertThat(this.environment.getProperty("my.property"))
+				.isEqualTo("fromnestedpropertiesfile");
+		validateProfilePrecedence(null, "dev", "nested");
+	}
+
+	@Test
 	public void profilesAddedToEnvironmentAndViaPropertyDuplicate() throws Exception {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.profiles.active=dev,other");

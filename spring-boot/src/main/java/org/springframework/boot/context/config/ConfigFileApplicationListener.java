@@ -443,6 +443,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 										+ processedProfile + "." + ext, profile);
 							}
 						}
+						loadIntoGroup(group, location + profile + "/" + name + "." + ext, null);
 						// Sometimes people put "spring.profiles: dev" in
 						// application-dev.yml (gh-340). Arguably we should try and error
 						// out on that, but we can be kind and load it anyway.
