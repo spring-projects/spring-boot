@@ -71,8 +71,7 @@ if [[ -z "$identity" ]]; then
 fi
 
 # Initialize log file name if not provided by the config file
-[[ -z "$LOG_FILENAME" ]] && LOG_FILENAME="${identity}.log"
-
+[[ -z "$LOG_FILENAME" ]] && LOG_FILENAME="{{logFilename:${identity}.log}}"
 
 # ANSI Colors
 echoRed() { echo $'\e[0;31m'"$1"$'\e[0m'; }
@@ -114,7 +113,7 @@ if [[ "$identity" == "$init_script" ]] || [[ "$identity" == "$APP_NAME" ]]; then
   PID_FOLDER="$PID_FOLDER/${identity}"
   pid_subfolder=$PID_FOLDER
 fi
-pid_file="$PID_FOLDER/${identity}.pid"
+pid_file="$PID_FOLDER/{{pidFilename:${identity}.pid}}"
 log_file="$LOG_FOLDER/$LOG_FILENAME"
 
 # Determine the user to run as if we are root
