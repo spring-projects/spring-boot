@@ -227,6 +227,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		repackager.setMainClass(this.mainClass);
 		if (this.layout != null) {
 			getLog().info("Layout: " + this.layout);
+			repackager.setLayout(LayoutType.layout(this.layout));
 		}
 		return repackager;
 	}

@@ -28,14 +28,15 @@ public class LayoutTypeTests {
 
 	@Test
 	public void standardType() {
-		assertThat(LayoutType.layout("DIR")).isEqualTo(LayoutType.valueOf("DIR").layout());
+		assertThat(LayoutType.layout("DIR"))
+				.isEqualTo(LayoutType.valueOf("DIR").layout());
 	}
 
 	@Test
 	public void customType() {
 		assertThat(LayoutType.layout("CUSTOM")).isNotNull();
 	}
-	
+
 	public static class TestLayoutFactory implements LayoutFactory {
 
 		@Override
@@ -46,6 +47,7 @@ public class LayoutTypeTests {
 		@Override
 		public String getName() {
 			return "CUSTOM";
-		}}
+		}
+	}
 
 }

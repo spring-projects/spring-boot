@@ -493,7 +493,7 @@ The following configuration options are available:
 
 
 [[build-tool-plugins-gradle-configuration-layouts]]
-==== Available layouts
+==== Available built-in layouts
 
 The `layout` attribute configures the format of the archive and whether the bootstrap
 loader should be included or not. The following layouts are available:
@@ -528,6 +528,37 @@ loader should be included or not. The following layouts are available:
 |No
 |===
 
+
+
+[[build-tool-plugins-gradle-configuration-custom-layout]]
+==== Using a custom layout
+If you have custom requirements for how to arrange the dependencies and loader classes
+inside the repackaged jar, you can use a custom layout in addition to the built-in values.
+Any library which defines one or more `LayoutFactory` implementations and
+lists them in `META-INF/spring.factories` can be added to the build script dependencies
+and then the layout type becomes available in the `springBoot` configuration. For example
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+buildscript {
+	ext {
+		springBootVersion = '1.5.0.BUILD-SNAPSHOT'
+		customVersion = '0.0.1.BUILD-SNAPSHOT'
+	}
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
+	dependencies {
+		classpath("com.example:custom-layout:${customVersion}")
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+springBoot {
+	layout = 'CUSTOM'
+}
+----
 
 
 [[build-tool-plugins-understanding-the-gradle-plugin]]
