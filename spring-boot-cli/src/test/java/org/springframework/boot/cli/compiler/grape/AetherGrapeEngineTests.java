@@ -32,6 +32,7 @@ import org.eclipse.aether.repository.Authentication;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.junit.Test;
 
+import org.springframework.boot.cli.compiler.dependencies.SpringBootDependenciesDependencyManagement;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,8 +55,11 @@ public class AetherGrapeEngineTests {
 		repositoryConfigurations.add(new RepositoryConfiguration("central",
 				URI.create("http://repo1.maven.org/maven2"), false));
 		repositoryConfigurations.addAll(Arrays.asList(additionalRepositories));
+		DependencyResolutionContext dependencyResolutionContext = new DependencyResolutionContext();
+		dependencyResolutionContext.addDependencyManagement(
+				new SpringBootDependenciesDependencyManagement());
 		return AetherGrapeEngineFactory.create(this.groovyClassLoader,
-				repositoryConfigurations, new DependencyResolutionContext());
+				repositoryConfigurations, dependencyResolutionContext);
 	}
 
 	@Test

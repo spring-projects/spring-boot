@@ -31,7 +31,6 @@ import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesRes
 import org.springframework.boot.cli.compiler.dependencies.CompositeDependencyManagement;
 import org.springframework.boot.cli.compiler.dependencies.DependencyManagement;
 import org.springframework.boot.cli.compiler.dependencies.DependencyManagementArtifactCoordinatesResolver;
-import org.springframework.boot.cli.compiler.dependencies.SpringBootDependenciesDependencyManagement;
 
 /**
  * Context used when resolving dependencies.
@@ -48,10 +47,6 @@ public class DependencyResolutionContext {
 	private DependencyManagement dependencyManagement = null;
 
 	private ArtifactCoordinatesResolver artifactCoordinatesResolver;
-
-	public DependencyResolutionContext() {
-		addDependencyManagement(new SpringBootDependenciesDependencyManagement());
-	}
 
 	private String getIdentifier(Dependency dependency) {
 		return getIdentifier(dependency.getArtifact().getGroupId(),
