@@ -53,8 +53,6 @@ import org.springframework.lang.UsesJava7;
  */
 public class JarWriter {
 
-	private static final String NESTED_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
-
 	private static final int BUFFER_SIZE = 32 * 1024;
 
 	private final JarOutputStream jarOutput;
@@ -206,9 +204,20 @@ public class JarWriter {
 	/**
 	 * Write the required spring-boot-loader classes to the JAR.
 	 * @throws IOException if the classes cannot be written
+	 * @deprecated us {@link #writeLoaderClasses(String)} instead
 	 */
+	@Deprecated
 	public void writeLoaderClasses() throws IOException {
-		URL loaderJar = getClass().getClassLoader().getResource(NESTED_LOADER_JAR);
+		writeLoaderClasses(Layouts.DEFAULT_LOADER_JAR);
+	}
+
+	/**
+	 * Write the required spring-boot-loader classes to the JAR.
+	 * @param loaderJarPath the path to the loader jar (in the classpath)
+	 * @throws IOException if the classes cannot be written
+	 */
+	public void writeLoaderClasses(String loaderJarPath) throws IOException {
+		URL loaderJar = getClass().getClassLoader().getResource(loaderJarPath);
 		JarInputStream inputStream = new JarInputStream(
 				new BufferedInputStream(loaderJar.openStream()));
 		JarEntry entry;

@@ -18,14 +18,14 @@ package org.springframework.boot.loader.tools;
 
 /**
  * Strategy for creating instances of {@link Layout}.
- * 
+ *
  * @author Dave Syer
  *
  */
 public interface LayoutFactory {
-	
+
 	Layout getLayout();
-	
+
 	String getName();
 
 }

@@ -24,6 +24,8 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * Archive layout types.
+ *
+ * @author Dave Syer
  */
 public enum LayoutType {
 

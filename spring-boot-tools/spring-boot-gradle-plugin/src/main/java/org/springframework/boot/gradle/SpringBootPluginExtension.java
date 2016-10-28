@@ -20,14 +20,14 @@ import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
+import groovy.lang.Closure;
+
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 
 import org.springframework.boot.gradle.buildinfo.BuildInfo;
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.LayoutType;
-
-import groovy.lang.Closure;
 
 /**
  * Gradle DSL Extension for 'Spring Boot'. Most of the time Spring Boot can guess the
