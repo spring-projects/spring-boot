@@ -79,7 +79,7 @@ public class DependencyResolutionContext {
 				.get(getIdentifier(group, artifact));
 	}
 
-	void addManagedDependencies(List<Dependency> dependencies) {
+	public void addManagedDependencies(List<Dependency> dependencies) {
 		this.managedDependencies.addAll(dependencies);
 		for (Dependency dependency : dependencies) {
 			this.managedDependencyByGroupAndArtifact.put(getIdentifier(dependency),
