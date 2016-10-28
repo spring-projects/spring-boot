@@ -42,8 +42,7 @@ import org.apache.maven.shared.artifact.filter.collection.ScopeFilter;
 
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
-import org.springframework.boot.loader.tools.Layout;
-import org.springframework.boot.loader.tools.Layouts;
+import org.springframework.boot.loader.tools.LayoutType;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Repackager;
 
@@ -131,7 +130,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.0
 	 */
 	@Parameter
-	private LayoutType layout;
+	private String layout;
 
 	/**
 	 * A list of the libraries that must be unpacked from fat jars in order to run.
@@ -228,7 +227,6 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		repackager.setMainClass(this.mainClass);
 		if (this.layout != null) {
 			getLog().info("Layout: " + this.layout);
-			repackager.setLayout(this.layout.layout());
 		}
 		return repackager;
 	}
@@ -307,53 +305,6 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			this.project.getArtifact().setFile(repackaged);
 			getLog().info("Replacing main artifact " + source + " to " + repackaged);
 		}
-	}
-
-	/**
-	 * Archive layout types.
-	 */
-	public enum LayoutType {
-
-		/**
-		 * Jar Layout.
-		 */
-		JAR(new Layouts.Jar()),
-
-		/**
-		 * War Layout.
-		 */
-		WAR(new Layouts.War()),
-
-		/**
-		 * Zip Layout.
-		 */
-		ZIP(new Layouts.Expanded()),
-
-		/**
-		 * Dir Layout.
-		 */
-		DIR(new Layouts.Expanded()),
-
-		/**
-		 * Module Layout.
-		 */
-		MODULE(new Layouts.Module()),
-
-		/**
-		 * No Layout.
-		 */
-		NONE(new Layouts.None());
-
-		private final Layout layout;
-
-		public Layout layout() {
-			return this.layout;
-		}
-
-		LayoutType(Layout layout) {
-			this.layout = layout;
-		}
-
 	}
 
 	private static class LoggingRepackager extends Repackager {

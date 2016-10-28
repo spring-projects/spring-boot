@@ -20,13 +20,14 @@ import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
-import groovy.lang.Closure;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 
 import org.springframework.boot.gradle.buildinfo.BuildInfo;
 import org.springframework.boot.loader.tools.Layout;
-import org.springframework.boot.loader.tools.Layouts;
+import org.springframework.boot.loader.tools.LayoutType;
+
+import groovy.lang.Closure;
 
 /**
  * Gradle DSL Extension for 'Spring Boot'. Most of the time Spring Boot can guess the
@@ -88,7 +89,7 @@ public class SpringBootPluginExtension {
 	 * the MANIFEST.MF 'Main-Class' to be PropertiesLauncher. Gradle will coerce literal
 	 * String values to the correct type.
 	 */
-	LayoutType layout;
+	String layout;
 
 	/**
 	 * Libraries that must be unpacked from fat jars in order to run. Use Strings in the
@@ -145,7 +146,7 @@ public class SpringBootPluginExtension {
 	 * @return the Layout to use or null if not explicitly set
 	 */
 	public Layout convertLayout() {
-		return (this.layout == null ? null : this.layout.layout);
+		return (this.layout == null ? null : LayoutType.layout(this.layout));
 	}
 
 	public String getMainClass() {
@@ -188,11 +189,11 @@ public class SpringBootPluginExtension {
 		this.backupSource = backupSource;
 	}
 
-	public LayoutType getLayout() {
+	public String getLayout() {
 		return this.layout;
 	}
 
-	public void setLayout(LayoutType layout) {
+	public void setLayout(String layout) {
 		this.layout = layout;
 	}
 
@@ -274,31 +275,6 @@ public class SpringBootPluginExtension {
 			taskConfigurer.setDelegate(bootBuildInfo);
 			taskConfigurer.call();
 		}
-	}
-
-	/**
-	 * Layout Types.
-	 */
-	enum LayoutType {
-
-		JAR(new Layouts.Jar()),
-
-		WAR(new Layouts.War()),
-
-		ZIP(new Layouts.Expanded()),
-
-		DIR(new Layouts.Expanded()),
-
-		MODULE(new Layouts.Module()),
-
-		NONE(new Layouts.None());
-
-		Layout layout;
-
-		LayoutType(Layout layout) {
-			this.layout = layout;
-		}
-
 	}
 
 }
