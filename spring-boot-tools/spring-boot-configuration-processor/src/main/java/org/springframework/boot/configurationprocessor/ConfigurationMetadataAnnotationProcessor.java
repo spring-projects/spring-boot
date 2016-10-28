@@ -161,7 +161,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private void processAnnotatedTypeElement(String prefix, TypeElement element) {
-		String type = this.typeUtils.getType(element);
+		String type = this.typeUtils.getQualifiedName(element);
 		this.metadataCollector.add(ItemMetadata.newGroup(prefix, type, type, null));
 		processTypeElement(prefix, element, null);
 	}
@@ -173,8 +173,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 					.asElement(element.getReturnType());
 			if (returns instanceof TypeElement) {
 				ItemMetadata group = ItemMetadata.newGroup(prefix,
-						this.typeUtils.getType(returns),
-						this.typeUtils.getType(element.getEnclosingElement()),
+						this.typeUtils.getQualifiedName(returns),
+						this.typeUtils.getQualifiedName(element.getEnclosingElement()),
 						element.toString());
 				if (this.metadataCollector.hasSimilarGroup(group)) {
 					this.processingEnv.getMessager().printMessage(Kind.ERROR,
@@ -226,7 +226,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			boolean isCollection = this.typeUtils.isCollectionOrMap(returnType);
 			if (!isExcluded && !isNested && (setter != null || isCollection)) {
 				String dataType = this.typeUtils.getType(returnType);
-				String sourceType = this.typeUtils.getType(element);
+				String sourceType = this.typeUtils.getQualifiedName(element);
 				String description = this.typeUtils.getJavaDoc(field);
 				Object defaultValue = fieldValues.get(name);
 				boolean deprecated = isDeprecated(getter) || isDeprecated(setter)
@@ -270,7 +270,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			boolean hasSetter = hasLombokSetter(field, element);
 			if (!isExcluded && !isNested && (hasSetter || isCollection)) {
 				String dataType = this.typeUtils.getType(returnType);
-				String sourceType = this.typeUtils.getType(element);
+				String sourceType = this.typeUtils.getQualifiedName(element);
 				String description = this.typeUtils.getJavaDoc(field);
 				Object defaultValue = fieldValues.get(name);
 				boolean deprecated = isDeprecated(field) || isDeprecated(source);
@@ -329,8 +329,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				&& annotation == null && isNested) {
 			String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, name);
 			this.metadataCollector.add(ItemMetadata.newGroup(nestedPrefix,
-					this.typeUtils.getType(returnElement),
-					this.typeUtils.getType(element),
+					this.typeUtils.getQualifiedName(returnElement),
+					this.typeUtils.getQualifiedName(element),
 					(getter == null ? null : getter.toString())));
 			processTypeElement(nestedPrefix, (TypeElement) returnElement, source);
 		}
