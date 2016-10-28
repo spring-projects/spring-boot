@@ -69,7 +69,7 @@ public class MetadataCollector {
 
 	private void markAsProcessed(Element element) {
 		if (element instanceof TypeElement) {
-			this.processedSourceTypes.add(this.typeUtils.getType(element));
+			this.processedSourceTypes.add(this.typeUtils.getQualifiedName(element));
 		}
 	}
 

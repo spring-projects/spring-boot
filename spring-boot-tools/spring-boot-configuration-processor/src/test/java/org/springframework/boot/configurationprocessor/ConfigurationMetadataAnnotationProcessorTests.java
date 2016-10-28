@@ -57,6 +57,7 @@ import org.springframework.boot.configurationsample.specific.BoxingPojo;
 import org.springframework.boot.configurationsample.specific.BuilderPojo;
 import org.springframework.boot.configurationsample.specific.DeprecatedUnrelatedMethodPojo;
 import org.springframework.boot.configurationsample.specific.ExcludedTypesPojo;
+import org.springframework.boot.configurationsample.specific.GenericConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassAnnotatedGetterConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
@@ -337,6 +338,35 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = compile(InvalidAccessorProperties.class);
 		assertThat(metadata, containsGroup("config"));
 		assertThat(metadata.getItems(), hasSize(1));
+	}
+
+	@Test
+	public void genericTypes() throws IOException {
+		ConfigurationMetadata metadata = compile(GenericConfig.class);
+		assertThat(metadata, containsGroup("generic").ofType(
+				"org.springframework.boot.configurationsample.specific.GenericConfig"));
+		assertThat(metadata, containsGroup("generic.foo").ofType(
+				"org.springframework.boot.configurationsample.specific.GenericConfig$Foo"));
+		assertThat(metadata, containsGroup("generic.foo.bar").ofType(
+				"org.springframework.boot.configurationsample.specific.GenericConfig$Bar"));
+		assertThat(metadata, containsGroup("generic.foo.bar.biz").ofType(
+				"org.springframework.boot.configurationsample.specific.GenericConfig$Bar$Biz"));
+		assertThat(metadata, containsProperty("generic.foo.name")
+				.ofType(String.class)
+				.fromSource(GenericConfig.Foo.class));
+		assertThat(metadata, containsProperty("generic.foo.string-to-bar")
+				.ofType("java.util.Map<java.lang.String,org.springframework.boot.configurationsample.specific.GenericConfig.Bar<java.lang.Integer>>")
+				.fromSource(GenericConfig.Foo.class));
+		assertThat(metadata, containsProperty("generic.foo.string-to-integer")
+				.ofType("java.util.Map<java.lang.String,java.lang.Integer>")
+				.fromSource(GenericConfig.Foo.class));
+		assertThat(metadata, containsProperty("generic.foo.bar.name")
+				.ofType("java.lang.String")
+				.fromSource(GenericConfig.Bar.class));
+		assertThat(metadata, containsProperty("generic.foo.bar.biz.name")
+				.ofType("java.lang.String")
+				.fromSource(GenericConfig.Bar.Biz.class));
+		assertThat(metadata.getItems(), hasSize(9));
 	}
 
 	@Test

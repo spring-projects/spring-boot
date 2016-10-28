@@ -164,12 +164,13 @@ The JSON object contained in the `properties` array can contain the following at
 
 |`type`
 | String
-| The class name of the data type of the property. For example, `java.lang.String`. This
-  attribute can be used to guide the user as to the types of values that they can enter.
-  For consistency, the type of a primitive is specified using its wrapper counterpart,
-  i.e. `boolean` becomes `java.lang.Boolean`. Note that this class may be a complex type
-  that gets converted from a String as values are bound. May be omitted if the type is
-  not known.
+| The full signature of the data type of the property. For example, `java.lang.String`
+  but also a full generic type such as `java.util.Map<java.util.String,acme.MyEnum>`.
+  This attribute can be used to guide the user as to the types of values that they can
+  enter. For consistency, the type of a primitive is specified using its wrapper
+  counterpart, i.e. `boolean` becomes `java.lang.Boolean`. Note that this class may be
+  a complex type that gets converted from a String as values are bound. May be omitted
+  if the type is not known.
 
 |`description`
 | String
