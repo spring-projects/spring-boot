@@ -57,13 +57,15 @@ HAL browser is not active).
 
 
 == Hypermedia Support
-If https://projects.spring.io/spring-hateoas[Spring HATEOAS] is enabled  (i.e. if it is
-on the classpath by default) then the Actuator endpoint responses are enhanced with
-hypermedia in the form of "links". The default media type for responses is
-http://stateless.co/hal_specification.html[HAL], resulting in each resource having an
-extra property called "_links". You can change the media type to another one supported by
-Spring HATEOAS by providing your own `@EnableHypermedia` annotation and custom providers
-as necessary.
+If `endpoints.hypermedia.enabled` is set to `true` and
+https://projects.spring.io/spring-hateoas[Spring HATEOAS] is on the classpath  (e.g.
+through the `spring-boot-starter-hateoas` or if you are using
+http://projects.spring.io/spring-data-rest[Spring Data REST]) then the Actuator endpoint
+responses are enhanced with hypermedia in the form of "links". The default media type for
+responses is http://stateless.co/hal_specification.html[HAL], resulting in each resource
+having an extra property called "_links". You can change the media type to another one
+supported by Spring HATEOAS by providing your own `@EnableHypermedia` annotation and
+custom providers as necessary.
 
 Example enhanced "/metrics" endpoint with additional "_links":
 
