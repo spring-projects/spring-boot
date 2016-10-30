@@ -301,8 +301,11 @@ public class Repackager {
 				(this.layout instanceof RepackagingLayout)
 						? ((RepackagingLayout) this.layout).getRepackagedClassesLocation()
 						: this.layout.getClassesLocation());
-		manifest.getMainAttributes().putValue(BOOT_LIB_ATTRIBUTE,
-				this.layout.getLibraryDestination("", LibraryScope.COMPILE));
+		String libraryDestination = this.layout.getLibraryDestination("",
+				LibraryScope.COMPILE);
+		if (libraryDestination != null) {
+			manifest.getMainAttributes().putValue(BOOT_LIB_ATTRIBUTE, libraryDestination);
+		}
 		return manifest;
 	}
 

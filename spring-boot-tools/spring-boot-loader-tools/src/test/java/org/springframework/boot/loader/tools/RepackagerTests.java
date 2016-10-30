@@ -40,8 +40,8 @@ import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -346,7 +346,8 @@ public class RepackagerTests {
 		Layout layout = mock(Layout.class);
 		final LibraryScope scope = mock(LibraryScope.class);
 		given(layout.getLauncherClassName()).willReturn("testLauncher");
-		given(layout.getLibraryDestination(anyString(), eq(scope))).willReturn("test/");
+		given(layout.getLibraryDestination(anyString(), any(LibraryScope.class)))
+				.willReturn("test/");
 		repackager.setLayout(layout);
 		repackager.repackage(new Libraries() {
 			@Override
@@ -355,6 +356,32 @@ public class RepackagerTests {
 			}
 		});
 		assertThat(hasEntry(file, "test/" + libJarFile.getName())).isTrue();
+		assertThat(getManifest(file).getMainAttributes().getValue("Spring-Boot-Lib"))
+				.isEqualTo("test/");
+		assertThat(getManifest(file).getMainAttributes().getValue("Main-Class"))
+				.isEqualTo("testLauncher");
+	}
+
+	@Test
+	public void customLayoutNoBootLib() throws Exception {
+		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
+		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
+		final File libJarFile = libJar.getFile();
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File file = this.testJarFile.getFile();
+		Repackager repackager = new Repackager(file);
+		Layout layout = mock(Layout.class);
+		final LibraryScope scope = mock(LibraryScope.class);
+		given(layout.getLauncherClassName()).willReturn("testLauncher");
+		repackager.setLayout(layout);
+		repackager.repackage(new Libraries() {
+			@Override
+			public void doWithLibraries(LibraryCallback callback) throws IOException {
+				callback.library(new Library(libJarFile, scope));
+			}
+		});
+		assertThat(getManifest(file).getMainAttributes())
+				.doesNotContainKey("Spring-Boot-Lib");
 		assertThat(getManifest(file).getMainAttributes().getValue("Main-Class"))
 				.isEqualTo("testLauncher");
 	}
