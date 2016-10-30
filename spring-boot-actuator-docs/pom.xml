@@ -86,10 +86,12 @@
 		<dependency>
 			<groupId>org.springframework.hateoas</groupId>
 			<artifactId>spring-hateoas</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.plugin</groupId>
 			<artifactId>spring-plugin-core</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>

@@ -39,7 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = SpringBootHypermediaApplication.class, loader = SpringBootContextLoader.class)
 @WebAppConfiguration
-@TestPropertySource(properties = { "spring.jackson.serialization.indent_output=true", "endpoints.hypermedia.enabled=true" })
+@TestPropertySource(properties = { "spring.jackson.serialization.indent_output=true",
+		"endpoints.hypermedia.enabled=true" })
 @DirtiesContext
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs("target/generated-snippets")
@@ -58,7 +59,8 @@ public class HypermediaEndpointDocumentation {
 	public void metrics() throws Exception {
 		this.mockMvc.perform(get("/metrics").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$._links.self.href").value("http://localhost:8080/metrics"))
+				.andExpect(jsonPath("$._links.self.href")
+						.value("http://localhost:8080/metrics"))
 				.andDo(document("metrics/hypermedia"));
 	}
 
