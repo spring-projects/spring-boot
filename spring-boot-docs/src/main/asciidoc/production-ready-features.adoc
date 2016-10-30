@@ -203,7 +203,8 @@ For example, to mark _all_ endpoints as sensitive except `info`:
 
 [[production-ready-endpoint-hypermedia]]
 === Hypermedia for actuator MVC endpoints
-If http://projects.spring.io/spring-hateoas[Spring HATEOAS] is on the classpath (e.g.
+If `endpoints.hypermedia.enabled` is set to `true` and
+http://projects.spring.io/spring-hateoas[Spring HATEOAS] is on the classpath (e.g.
 through the `spring-boot-starter-hateoas` or if you are using
 http://projects.spring.io/spring-data-rest[Spring Data REST]) then the HTTP endpoints
 from the Actuator are enhanced with hypermedia links, and a "`discovery page`" is added

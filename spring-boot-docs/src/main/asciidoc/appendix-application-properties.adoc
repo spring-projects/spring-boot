@@ -946,6 +946,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.heapdump.enabled= # Enable the endpoint.
 	endpoints.heapdump.path= # Endpoint path.
 	endpoints.heapdump.sensitive= # Mark if the endpoint exposes sensitive information.
+	endpoints.hypermedia.enabled=false # Enable hypermedia support for endpoints.
 	endpoints.info.enabled= # Enable the endpoint.
 	endpoints.info.id= # Endpoint identifier.
 	endpoints.info.path= # Endpoint path.
