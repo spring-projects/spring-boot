@@ -261,8 +261,8 @@ public class RabbitAutoConfigurationTests {
 		load(TestConfiguration.class, "spring.rabbitmq.dynamic:false");
 		// There should NOT be an AmqpAdmin bean when dynamic is switch to false
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.thrown.expectMessage("No qualifying bean of type "
-				+ "[org.springframework.amqp.core.AmqpAdmin] is defined");
+		this.thrown.expectMessage("No qualifying bean of type");
+		this.thrown.expectMessage(AmqpAdmin.class.getName());
 		this.context.getBean(AmqpAdmin.class);
 	}
 
