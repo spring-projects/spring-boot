@@ -110,7 +110,7 @@ public class LoggersMvcEndpointTests {
 	}
 
 	@Test
-	public void getLoggesWhenDisabledShouldReturnNotFound() throws Exception {
+	public void getLoggersRootWhenDisabledShouldReturnNotFound() throws Exception {
 		this.context.getBean(LoggersEndpoint.class).setEnabled(false);
 		this.mvc.perform(get("/loggers/ROOT")).andExpect(status().isNotFound());
 	}
