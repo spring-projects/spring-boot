@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 package org.springframework.boot.context.embedded.tomcat;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
 
@@ -40,7 +40,8 @@ import org.springframework.util.StringUtils;
  * {@link JarScanner} due to API changes introduced in Tomcat 8.
  *
  * @author Phillip Webb
- * @see #apply(TomcatEmbeddedContext, String)
+ * @author Stephane Nicoll
+ * @see #apply(TomcatEmbeddedContext, Set)
  */
 class SkipPatternJarScanner extends StandardJarScanner {
 
@@ -50,10 +51,10 @@ class SkipPatternJarScanner extends StandardJarScanner {
 
 	private final SkipPattern pattern;
 
-	SkipPatternJarScanner(JarScanner jarScanner, String pattern) {
+	SkipPatternJarScanner(JarScanner jarScanner, Set<String> patterns) {
 		Assert.notNull(jarScanner, "JarScanner must not be null");
 		this.jarScanner = jarScanner;
-		this.pattern = (pattern == null ? new SkipPattern() : new SkipPattern(pattern));
+		this.pattern = (patterns == null ? new SkipPattern(defaultPatterns()) : new SkipPattern(patterns));
 		setPatternToTomcat8SkipFilter(this.pattern);
 	}
 
@@ -80,13 +81,105 @@ class SkipPatternJarScanner extends StandardJarScanner {
 	}
 
 	/**
+	 * Return the default skip patterns to use.
+	 * @return the default skip patterns
+	 */
+	static Set<String> defaultPatterns() {
+		return new LinkedHashSet<String>(Arrays.asList(
+				// Same as Tomcat
+				"ant-*.jar",
+				"aspectj*.jar",
+				"commons-beanutils*.jar",
+				"commons-codec*.jar",
+				"commons-collections*.jar",
+				"commons-dbcp*.jar",
+				"commons-digester*.jar",
+				"commons-fileupload*.jar",
+				"commons-httpclient*.jar",
+				"commons-io*.jar",
+				"commons-lang*.jar",
+				"commons-logging*.jar",
+				"commons-math*.jar",
+				"commons-pool*.jar",
+				"geronimo-spec-jaxrpc*.jar",
+				"h2*.jar",
+				"hamcrest*.jar",
+				"hibernate*.jar",
+				"jmx*.jar",
+				"jmx-tools-*.jar",
+				"jta*.jar",
+				"junit-*.jar",
+				"httpclient*.jar",
+				"log4j-*.jar",
+				"mail*.jar",
+				"org.hamcrest*.jar",
+				"slf4j*.jar",
+				"tomcat-embed-core-*.jar",
+				"tomcat-embed-logging-*.jar",
+				"tomcat-jdbc-*.jar",
+				"tomcat-juli-*.jar",
+				"tools.jar",
+				"wsdl4j*.jar",
+				"xercesImpl-*.jar",
+				"xmlParserAPIs-*.jar",
+				"xml-apis-*.jar",
+
+				// Additional
+				"antlr-*.jar",
+				"aopalliance-*.jar",
+				"aspectjrt-*.jar",
+				"aspectjweaver-*.jar",
+				"classmate-*.jar",
+				"dom4j-*.jar",
+				"ecj-*.jar",
+				"ehcache-core-*.jar",
+				"hibernate-core-*.jar",
+				"hibernate-commons-annotations-*.jar",
+				"hibernate-entitymanager-*.jar",
+				"hibernate-jpa-2.1-api-*.jar",
+				"hibernate-validator-*.jar",
+				"hsqldb-*.jar",
+				"jackson-annotations-*.jar",
+				"jackson-core-*.jar",
+				"jackson-databind-*.jar",
+				"jandex-*.jar",
+				"javassist-*.jar",
+				"jboss-logging-*.jar",
+				"jboss-transaction-api_*.jar",
+				"jcl-over-slf4j-*.jar",
+				"jdom-*.jar",
+				"jul-to-slf4j-*.jar",
+				"log4j-over-slf4j-*.jar",
+				"logback-classic-*.jar",
+				"logback-core-*.jar",
+				"rome-*.jar",
+				"slf4j-api-*.jar",
+				"spring-aop-*.jar",
+				"spring-aspects-*.jar",
+				"spring-beans-*.jar",
+				"spring-boot-*.jar",
+				"spring-core-*.jar",
+				"spring-context-*.jar",
+				"spring-data-*.jar",
+				"spring-expression-*.jar",
+				"spring-jdbc-*.jar,",
+				"spring-orm-*.jar",
+				"spring-oxm-*.jar",
+				"spring-tx-*.jar",
+				"snakeyaml-*.jar",
+				"tomcat-embed-el-*.jar",
+				"validation-api-*.jar",
+				"xml-apis-*.jar"));
+	}
+
+	/**
 	 * Apply this decorator the specified context.
 	 * @param context the context to apply to
-	 * @param pattern the jar skip pattern or {@code null} for defaults
+	 * @param patterns the jar skip patterns or {@code null} for defaults
 	 */
-	public static void apply(TomcatEmbeddedContext context, String pattern) {
+	static void apply(TomcatEmbeddedContext context, Set<String> patterns) {
 		SkipPatternJarScanner scanner = new SkipPatternJarScanner(context.getJarScanner(),
-				pattern);
+				patterns);
 		context.setJarScanner(scanner);
 	}
 
@@ -116,97 +209,9 @@ class SkipPatternJarScanner extends StandardJarScanner {
 
 		private Set<String> patterns = new LinkedHashSet<String>();
 
-		protected SkipPattern() {
-			// Same as Tomcat
-			add("ant-*.jar");
-			add("aspectj*.jar");
-			add("commons-beanutils*.jar");
-			add("commons-codec*.jar");
-			add("commons-collections*.jar");
-			add("commons-dbcp*.jar");
-			add("commons-digester*.jar");
-			add("commons-fileupload*.jar");
-			add("commons-httpclient*.jar");
-			add("commons-io*.jar");
-			add("commons-lang*.jar");
-			add("commons-logging*.jar");
-			add("commons-math*.jar");
-			add("commons-pool*.jar");
-			add("geronimo-spec-jaxrpc*.jar");
-			add("h2*.jar");
-			add("hamcrest*.jar");
-			add("hibernate*.jar");
-			add("jmx*.jar");
-			add("jmx-tools-*.jar");
-			add("jta*.jar");
-			add("junit-*.jar");
-			add("httpclient*.jar");
-			add("log4j-*.jar");
-			add("mail*.jar");
-			add("org.hamcrest*.jar");
-			add("slf4j*.jar");
-			add("tomcat-embed-core-*.jar");
-			add("tomcat-embed-logging-*.jar");
-			add("tomcat-jdbc-*.jar");
-			add("tomcat-juli-*.jar");
-			add("tools.jar");
-			add("wsdl4j*.jar");
-			add("xercesImpl-*.jar");
-			add("xmlParserAPIs-*.jar");
-			add("xml-apis-*.jar");
-
-			// Additional
-			add("antlr-*.jar");
-			add("aopalliance-*.jar");
-			add("aspectjrt-*.jar");
-			add("aspectjweaver-*.jar");
-			add("classmate-*.jar");
-			add("dom4j-*.jar");
-			add("ecj-*.jar");
-			add("ehcache-core-*.jar");
-			add("hibernate-core-*.jar");
-			add("hibernate-commons-annotations-*.jar");
-			add("hibernate-entitymanager-*.jar");
-			add("hibernate-jpa-2.1-api-*.jar");
-			add("hibernate-validator-*.jar");
-			add("hsqldb-*.jar");
-			add("jackson-annotations-*.jar");
-			add("jackson-core-*.jar");
-			add("jackson-databind-*.jar");
-			add("jandex-*.jar");
-			add("javassist-*.jar");
-			add("jboss-logging-*.jar");
-			add("jboss-transaction-api_*.jar");
-			add("jcl-over-slf4j-*.jar");
-			add("jdom-*.jar");
-			add("jul-to-slf4j-*.jar");
-			add("log4j-over-slf4j-*.jar");
-			add("logback-classic-*.jar");
-			add("logback-core-*.jar");
-			add("rome-*.jar");
-			add("slf4j-api-*.jar");
-			add("spring-aop-*.jar");
-			add("spring-aspects-*.jar");
-			add("spring-beans-*.jar");
-			add("spring-boot-*.jar");
-			add("spring-core-*.jar");
-			add("spring-context-*.jar");
-			add("spring-data-*.jar");
-			add("spring-expression-*.jar");
-			add("spring-jdbc-*.jar,");
-			add("spring-orm-*.jar");
-			add("spring-oxm-*.jar");
-			add("spring-tx-*.jar");
-			add("snakeyaml-*.jar");
-			add("tomcat-embed-el-*.jar");
-			add("validation-api-*.jar");
-			add("xml-apis-*.jar");
-		}
-
-		SkipPattern(String patterns) {
-			StringTokenizer tokenizer = new StringTokenizer(patterns, ",");
-			while (tokenizer.hasMoreElements()) {
-				add(tokenizer.nextToken());
+		SkipPattern(Set<String> patterns) {
+			for (String pattern : patterns) {
+				add(pattern);
 			}
 		}
 
