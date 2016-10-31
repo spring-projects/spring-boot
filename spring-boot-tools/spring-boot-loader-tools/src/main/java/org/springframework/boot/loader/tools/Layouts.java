@@ -34,7 +34,7 @@ import java.util.Set;
 public final class Layouts {
 
 	/**
-	 * Default value for {@link #getLoaderJarPath()}.
+	 * Default value for {@link Layout#getLoaderJarPath()}.
 	 */
 	public static final String DEFAULT_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
 
