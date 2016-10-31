@@ -68,7 +68,7 @@ public enum DatabaseDriver {
 	/**
 	 * Maria DB.
 	 */
-	MARIADB("maridb", "MySQL", "org.mariadb.jdbc.Driver",
+	MARIADB("mariadb", "MySQL", "org.mariadb.jdbc.Driver",
 			"org.mariadb.jdbc.MariaDbDataSource", "SELECT 1"),
 
 	/**
