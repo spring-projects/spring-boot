@@ -41,6 +41,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -48,6 +50,8 @@ import org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -58,6 +62,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Vedran Pavic
  */
 public abstract class AbstractJpaAutoConfigurationTests {
 
@@ -196,6 +201,41 @@ public abstract class AbstractJpaAutoConfigurationTests {
 				.isEqualTo(this.context.getBean(PersistenceUnitManager.class));
 	}
 
+	@Test
+	public void withTaskExecutor() {
+		setupTestConfiguration(TestConfigurationWithTaskExecutor.class);
+		this.context.refresh();
+		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = this.context
+				.getBean(LocalContainerEntityManagerFactoryBean.class);
+		AsyncTaskExecutor bootstrapExecutor = (AsyncTaskExecutor) ReflectionTestUtils
+				.getField(entityManagerFactoryBean, "bootstrapExecutor");
+		assertThat(bootstrapExecutor).isEqualTo(
+				this.context.getBean(AsyncTaskExecutor.class));
+	}
+
+	@Test
+	public void withMultipleTaskExecutors() {
+		setupTestConfiguration(TestConfigurationWithMultipleTaskExecutors.class);
+		this.context.refresh();
+		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = this.context
+				.getBean(LocalContainerEntityManagerFactoryBean.class);
+		AsyncTaskExecutor bootstrapExecutor = (AsyncTaskExecutor) ReflectionTestUtils
+				.getField(entityManagerFactoryBean, "bootstrapExecutor");
+		assertThat(bootstrapExecutor).isNull();
+	}
+
+	@Test
+	public void withPrimaryTaskExecutor() {
+		setupTestConfiguration(TestConfigurationWithPrimaryTaskExecutor.class);
+		this.context.refresh();
+		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = this.context
+				.getBean(LocalContainerEntityManagerFactoryBean.class);
+		AsyncTaskExecutor bootstrapExecutor = (AsyncTaskExecutor) ReflectionTestUtils
+				.getField(entityManagerFactoryBean, "bootstrapExecutor");
+		assertThat(bootstrapExecutor).isEqualTo(
+				this.context.getBean("taskExecutorOne", AsyncTaskExecutor.class));
+	}
+
 	protected void setupTestConfiguration() {
 		setupTestConfiguration(TestConfiguration.class);
 	}
@@ -302,6 +342,47 @@ public abstract class AbstractJpaAutoConfigurationTests {
 			persistenceUnitManager.setDefaultDataSource(this.dataSource);
 			persistenceUnitManager.setPackagesToScan(City.class.getPackage().getName());
 			return persistenceUnitManager;
+		}
+
+	}
+
+	@Configuration
+	protected static class TestConfigurationWithTaskExecutor extends TestConfiguration {
+
+		@Bean
+		public ThreadPoolTaskExecutor taskExecutor() {
+			return new ThreadPoolTaskExecutor();
+		}
+
+	}
+
+	@Configuration
+	protected static class TestConfigurationWithMultipleTaskExecutors extends TestConfiguration {
+
+		@Bean
+		public ThreadPoolTaskExecutor taskExecutorOne() {
+			return new ThreadPoolTaskExecutor();
+		}
+
+		@Bean
+		public ThreadPoolTaskExecutor taskExecutorTwo() {
+			return new ThreadPoolTaskExecutor();
+		}
+
+	}
+
+	@Configuration
+	protected static class TestConfigurationWithPrimaryTaskExecutor extends TestConfiguration {
+
+		@Bean
+		@Primary
+		public ThreadPoolTaskExecutor taskExecutorOne() {
+			return new ThreadPoolTaskExecutor();
+		}
+
+		@Bean
+		public ThreadPoolTaskExecutor taskExecutorTwo() {
+			return new ThreadPoolTaskExecutor();
 		}
 
 	}
