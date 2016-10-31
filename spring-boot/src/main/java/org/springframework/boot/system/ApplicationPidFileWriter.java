@@ -30,6 +30,7 @@ import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
@@ -49,7 +50,8 @@ import org.springframework.util.Assert;
  * <p>
  * Note: access to the Spring {@link Environment} is only possible when the
  * {@link #setTriggerEventType(Class) triggerEventType} is set to
- * {@link ApplicationEnvironmentPreparedEvent} or {@link ApplicationPreparedEvent}.
+ * {@link ApplicationEnvironmentPreparedEvent}, {@link ApplicationReadyEvent}, or
+ * {@link ApplicationPreparedEvent}.
  *
  * @author Jakub Kubrynski
  * @author Dave Syer
@@ -229,6 +231,10 @@ public class ApplicationPidFileWriter
 			}
 			if (event instanceof ApplicationPreparedEvent) {
 				return ((ApplicationPreparedEvent) event).getApplicationContext()
+						.getEnvironment();
+			}
+			if (event instanceof ApplicationReadyEvent) {
+				return ((ApplicationReadyEvent) event).getApplicationContext()
 						.getEnvironment();
 			}
 			return null;
