@@ -374,8 +374,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withGroup("generic.foo.bar.biz").ofType(
 				"org.springframework.boot.configurationsample.specific.GenericConfig$Bar$Biz"));
 		assertThat(metadata).has(Metadata.withProperty("generic.foo.name")
-				.ofType(String.class)
-				.fromSource(GenericConfig.Foo.class));
+				.ofType(String.class).fromSource(GenericConfig.Foo.class));
 		assertThat(metadata).has(Metadata.withProperty("generic.foo.string-to-bar")
 				.ofType("java.util.Map<java.lang.String,org.springframework.boot.configurationsample.specific.GenericConfig.Bar<java.lang.Integer>>")
 				.fromSource(GenericConfig.Foo.class));
@@ -383,11 +382,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.ofType("java.util.Map<java.lang.String,java.lang.Integer>")
 				.fromSource(GenericConfig.Foo.class));
 		assertThat(metadata).has(Metadata.withProperty("generic.foo.bar.name")
-				.ofType("java.lang.String")
-				.fromSource(GenericConfig.Bar.class));
+				.ofType("java.lang.String").fromSource(GenericConfig.Bar.class));
 		assertThat(metadata).has(Metadata.withProperty("generic.foo.bar.biz.name")
-				.ofType("java.lang.String")
-				.fromSource(GenericConfig.Bar.Biz.class));
+				.ofType("java.lang.String").fromSource(GenericConfig.Bar.Biz.class));
 		assertThat(metadata.getItems()).hasSize(9);
 	}
 
