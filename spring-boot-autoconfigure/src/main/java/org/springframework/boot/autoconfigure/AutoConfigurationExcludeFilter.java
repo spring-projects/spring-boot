@@ -27,8 +27,7 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
 
 /**
- * A {@link TypeFilter} implementation that matches registered auto-configuration
- * classes.
+ * A {@link TypeFilter} implementation that matches registered auto-configuration classes.
  *
  * @author Stephane Nicoll
  * @since 1.5.0
@@ -37,7 +36,7 @@ public class AutoConfigurationExcludeFilter implements TypeFilter, BeanClassLoad
 
 	private ClassLoader beanClassLoader;
 
-	private List<String> candidateAutoConfigurations;
+	private volatile List<String> autoConfigurations;
 
 	@Override
 	public void setBeanClassLoader(ClassLoader beanClassLoader) {
@@ -50,22 +49,22 @@ public class AutoConfigurationExcludeFilter implements TypeFilter, BeanClassLoad
 		return isConfiguration(metadataReader) && isAutoConfiguration(metadataReader);
 	}
 
-	protected List<String> getCandidateAutoConfigurations() {
-		if (this.candidateAutoConfigurations == null) {
-			this.candidateAutoConfigurations = SpringFactoriesLoader.loadFactoryNames(
-					EnableAutoConfiguration.class, this.beanClassLoader);
-		}
-		return this.candidateAutoConfigurations;
-	}
-
 	private boolean isConfiguration(MetadataReader metadataReader) {
 		return metadataReader.getAnnotationMetadata()
 				.isAnnotated(Configuration.class.getName());
 	}
 
 	private boolean isAutoConfiguration(MetadataReader metadataReader) {
-		return getCandidateAutoConfigurations().contains(
-				metadataReader.getClassMetadata().getClassName());
+		return getAutoConfigurations()
+				.contains(metadataReader.getClassMetadata().getClassName());
+	}
+
+	protected List<String> getAutoConfigurations() {
+		if (this.autoConfigurations == null) {
+			this.autoConfigurations = SpringFactoriesLoader.loadFactoryNames(
+					EnableAutoConfiguration.class, this.beanClassLoader);
+		}
+		return this.autoConfigurations;
 	}
 
 }

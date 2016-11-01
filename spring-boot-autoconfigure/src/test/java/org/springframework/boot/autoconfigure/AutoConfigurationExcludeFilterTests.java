@@ -41,6 +41,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class AutoConfigurationExcludeFilterTests {
 
+	private static final Class<?> FILTERED = ExampleFilteredAutoConfiguration.class;
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -59,9 +61,8 @@ public class AutoConfigurationExcludeFilterTests {
 		assertThat(this.context.getBeansOfType(String.class)).hasSize(1);
 		assertThat(this.context.getBean(String.class)).isEqualTo("test");
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(ExampleFilteredAutoConfiguration.class);
+		this.context.getBean(FILTERED);
 	}
-
 
 	@Configuration
 	@ComponentScan(basePackageClasses = ExampleConfiguration.class, excludeFilters = @ComponentScan.Filter(type = FilterType.CUSTOM, classes = TestAutoConfigurationExcludeFilter.class))
@@ -71,10 +72,12 @@ public class AutoConfigurationExcludeFilterTests {
 
 	static class TestAutoConfigurationExcludeFilter
 			extends AutoConfigurationExcludeFilter {
+
 		@Override
-		protected List<String> getCandidateAutoConfigurations() {
-			return Collections.singletonList(ExampleFilteredAutoConfiguration.class.getName());
+		protected List<String> getAutoConfigurations() {
+			return Collections.singletonList(FILTERED.getName());
 		}
+
 	}
 
 }
