@@ -28,7 +28,6 @@ import org.springframework.boot.actuate.metrics.buffer.GaugeBuffers;
 import org.springframework.boot.actuate.metrics.export.Exporter;
 import org.springframework.boot.actuate.metrics.export.MetricCopyExporter;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
-import org.springframework.boot.actuate.metrics.repository.MetricRepository;
 import org.springframework.boot.actuate.metrics.writer.DefaultCounterService;
 import org.springframework.boot.actuate.metrics.writer.DefaultGaugeService;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
@@ -46,12 +45,12 @@ import org.springframework.messaging.MessageChannel;
  * user-facing {@link GaugeService} and {@link CounterService} instances, and also back
  * end repositories to catch the data pumped into them.
  * <p>
- * An {@link InMemoryMetricRepository} is always created unless another
- * {@link MetricRepository} is already provided by the user. In general, even if metric
- * data needs to be stored and analysed remotely, it is recommended to use an in-memory
- * repository to buffer metric updates locally. The values can be exported (e.g. on a
- * periodic basis) using an {@link Exporter}, most implementations of which have
- * optimizations for sending data to remote repositories.
+ * In general, even if metric data needs to be stored and analysed remotely, it is
+ * recommended to use in-memory storage to buffer metric updates locally as is done by the
+ * default {@link InMemoryMetricRepository} (Java 7) or {@link CounterBuffers} and
+ * {@link GaugeBuffers} (Java 8). The values can be exported (e.g. on a periodic basis)
+ * using an {@link Exporter}, most implementations of which have optimizations for sending
+ * data to remote repositories.
  * <p>
  * If Spring Messaging is on the classpath and a {@link MessageChannel} called
  * "metricsChannel" is also available, all metric update events are published additionally
