@@ -4547,7 +4547,7 @@ configure a `RestTemplate`. For example, to add BASIC auth support you can use
 [[boot-features-restclient-customization]]
 === RestTemplate customization
 There are three main approaches to `RestTemplate` customization, depending on how broadly
-to want the customizations to apply.
+you want the customizations to apply.
 
 To make the scope of any customizations as narrow as possible, inject the auto-configured
 `RestTemplateBuilder` and then calls its methods as required. Each method call returns a
