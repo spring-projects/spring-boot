@@ -36,6 +36,7 @@ import javax.servlet.Servlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -229,7 +230,7 @@ public class ServletContextInitializerBeans
 		String[] names = beanFactory.getBeanNamesForType(type, true, false);
 		Map<String, T> map = new LinkedHashMap<String, T>();
 		for (String name : names) {
-			if (!excludes.contains(name)) {
+			if (!excludes.contains(name) && !ScopedProxyUtils.isScopedTarget(name)) {
 				T bean = beanFactory.getBean(name, type);
 				if (!excludes.contains(bean)) {
 					map.put(name, bean);
