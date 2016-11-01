@@ -37,7 +37,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -245,7 +244,6 @@ public class ThymeleafAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnJava(ConditionalOnJava.JavaVersion.EIGHT)
 	@ConditionalOnClass(Java8TimeDialect.class)
 	protected static class ThymeleafJava8TimeDialect {
 
