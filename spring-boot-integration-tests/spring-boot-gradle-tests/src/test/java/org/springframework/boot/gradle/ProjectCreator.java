@@ -34,7 +34,7 @@ public class ProjectCreator {
 	private String gradleVersion;
 
 	public ProjectCreator() {
-		this("1.12");
+		this("2.9");
 	}
 
 	public ProjectCreator(String gradleVersion) {
