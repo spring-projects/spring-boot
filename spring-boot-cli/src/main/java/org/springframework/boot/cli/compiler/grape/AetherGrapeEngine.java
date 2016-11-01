@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,10 +93,25 @@ public class AetherGrapeEngine implements GrapeEngine {
 	}
 
 	private ProgressReporter getProgressReporter(DefaultRepositorySystemSession session) {
-		if (Boolean.getBoolean("groovy.grape.report.downloads")) {
+		String progressReporter = System.getProperty(
+				"org.springframework.boot.cli.compiler.grape.ProgressReporter");
+		if ("detail".equals(progressReporter)
+				|| Boolean.getBoolean("groovy.grape.report.downloads")) {
 			return new DetailedProgressReporter(session, System.out);
 		}
-		return new SummaryProgressReporter(session, System.out);
+		else if ("none".equals(progressReporter)) {
+			return new ProgressReporter() {
+
+				@Override
+				public void finished() {
+
+				}
+
+			};
+		}
+		else {
+			return new SummaryProgressReporter(session, System.out);
+		}
 	}
 
 	@Override
@@ -340,4 +355,5 @@ public class AetherGrapeEngine implements GrapeEngine {
 		throw new UnsupportedOperationException(
 				"Grabbing an endorsed module is not supported");
 	}
+
 }
