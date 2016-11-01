@@ -4460,11 +4460,17 @@ configure a `RestTemplate`. For example, to add BASIC auth support you can use
 
 [[boot-features-restclient-customization]]
 === RestTemplate customization
-When a `RestTemplateBuilder` builds a `RestTemplate` it can be further customized using
-a `RestTemplateCustomizer`. Any `RestTemplateCustomizer` beans will be automatically
-added to the auto-configured `RestTemplateBuilder`. Furthermore, a new
-`RestTemplateBuilder` with additional customizers can be created by calling
-`additionalCustomizers(RestTemplateCustomizer...)`.
+There are three main approaches to `RestTemplate` customization, depending on how broadly
+to want the customizations to apply.
+
+To make the scope of any customizations as narrow as possible, inject the auto-configured
+`RestTemplateBuilder` and then calls its methods as required. Each method call returns a
+new `RestTemplateBuilder` instance so the customizations will only affect this use of
+the builder.
+
+To make a application-wide, additive customization a `RestTemplateCustomizer` bean can be
+used. All such beans are automatically registered with the auto-configured
+`RestTemplateBuilder` and will be applied to any templates that are built with it.
 
 Here's an example of a customizer that configures the use of a proxy for all hosts except
 `192.168.0.5`:
@@ -4473,6 +4479,10 @@ Here's an example of a customizer that configures the use of a proxy for all hos
 ----
 include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[tag=customizer]
 ----
+
+Lastly, the most extreme (and rarely used) option is to create your own
+`RestTemplateBuilder` bean. This will switch off the auto-configuration of a
+`RestTemplateBuilder` and will prevent any `RestTemplateCustomizer` beans from being used.
 
 
 
