@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import java.io.File;
 import java.io.IOException;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -82,7 +83,8 @@ public class LogFileMvcEndpoint extends AbstractNamedMvcEndpoint {
 			}
 			resource = null;
 		}
-		new Handler(resource).handleRequest(request, response);
+		Handler handler = new Handler(resource, request.getServletContext());
+		handler.handleRequest(request, response);
 	}
 
 	private Resource getLogFileResource() {
@@ -104,10 +106,11 @@ public class LogFileMvcEndpoint extends AbstractNamedMvcEndpoint {
 
 		private final Resource resource;
 
-		Handler(Resource resource) {
+		Handler(Resource resource, ServletContext servletContext) {
 			this.resource = resource;
 			getLocations().add(resource);
 			try {
+				setServletContext(servletContext);
 				afterPropertiesSet();
 			}
 			catch (Exception ex) {
