@@ -40,25 +40,15 @@ public interface Layout {
 	String getLibraryDestination(String libraryName, LibraryScope scope);
 
 	/**
-	 * Returns the location of classes within the archive. Empty if the location is the
-	 * root path, otherwise ends with a slash ('/').
+	 * Returns the location of classes within the archive.
 	 * @return the classes location
 	 */
 	String getClassesLocation();
 
 	/**
-	 * Returns if loader classes should be included to make the archive executable. If
-	 * true, then {@link #getLoaderJarPath()} should point to a valid jar file that
-	 * contains the loader classes.
+	 * Returns if loader classes should be included to make the archive executable.
 	 * @return if the layout is executable
 	 */
 	boolean isExecutable();
-
-	/**
-	 * Returns the path to a nested jar that contains the loader, and which will be
-	 * unpacked into the root of the repackaged jar.
-	 * @return the path to a nested jar that contains the loader
-	 */
-	String getLoaderJarPath();
 
 }
