@@ -34,6 +34,8 @@ import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.MethodCallback;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
@@ -55,6 +57,29 @@ public class TestRestTemplateTests {
 		RestTemplate delegate = new RestTemplate();
 		given(builder.build()).willReturn(delegate);
 		assertThat(new TestRestTemplate(builder).getRestTemplate()).isEqualTo(delegate);
+	}
+
+	@Test
+	public void fromRestTemplateBuilderShouldOverrideDefaultResponseErrorHandlerWithNoOpResponseErrorHandler() {
+		RestTemplateBuilder builder = mock(RestTemplateBuilder.class);
+		RestTemplate delegate = new RestTemplate();
+		ResponseErrorHandler defaultErrorHandler = delegate.getErrorHandler();
+		assertThat(defaultErrorHandler).isOfAnyClassIn(DefaultResponseErrorHandler.class);
+		given(builder.build()).willReturn(delegate);
+		assertThat(new TestRestTemplate(builder).getRestTemplate().getErrorHandler())
+				.isOfAnyClassIn(TestRestTemplate.NoOpResponseErrorHandler.class);
+	}
+
+	@Test
+	public void fromRestTemplateBuilderShouldUseCustomErrorHandlerEvenIfDerivedFromDefaultResponseErrorHandler() {
+		RestTemplateBuilder builder = mock(RestTemplateBuilder.class);
+		RestTemplate delegate = new RestTemplate();
+		ResponseErrorHandler customErrorHandler = new DefaultResponseErrorHandler() { };
+		assertThat(customErrorHandler).isNotOfAnyClassIn(DefaultResponseErrorHandler.class);
+		delegate.setErrorHandler(customErrorHandler);
+		given(builder.build()).willReturn(delegate);
+		assertThat(new TestRestTemplate(builder).getRestTemplate().getErrorHandler())
+				.isEqualTo(customErrorHandler);
 	}
 
 	@Test
