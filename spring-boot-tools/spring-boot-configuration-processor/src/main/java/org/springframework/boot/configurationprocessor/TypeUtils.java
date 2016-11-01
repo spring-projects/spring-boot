@@ -96,8 +96,8 @@ class TypeUtils {
 	/**
 	 * Return the qualified name of the specified element.
 	 * @param element the element to handle
-	 * @return the fully qualified name of the element, suitable for a call
-	 * to {@link Class#forName(String)}
+	 * @return the fully qualified name of the element, suitable for a call to
+	 * {@link Class#forName(String)}
 	 */
 	public String getQualifiedName(Element element) {
 		if (element == null) {
@@ -106,19 +106,20 @@ class TypeUtils {
 		TypeElement enclosingElement = getEnclosingTypeElement(element.asType());
 		if (enclosingElement != null) {
 			return getQualifiedName(enclosingElement) + "$"
-					+ ((DeclaredType) element.asType()).asElement().getSimpleName().toString();
+					+ ((DeclaredType) element.asType()).asElement().getSimpleName()
+							.toString();
 		}
 		if (element instanceof TypeElement) {
 			return ((TypeElement) element).getQualifiedName().toString();
 		}
-		throw new IllegalStateException("Could not extract qualified name from "
-				+ element);
+		throw new IllegalStateException(
+				"Could not extract qualified name from " + element);
 	}
 
 	/**
 	 * Return the type of the specified {@link TypeMirror} including all its generic
 	 * information.
-	 * @param type  the type to handle
+	 * @param type the type to handle
 	 * @return a representation of the type including all its generic information
 	 */
 	public String getType(TypeMirror type) {

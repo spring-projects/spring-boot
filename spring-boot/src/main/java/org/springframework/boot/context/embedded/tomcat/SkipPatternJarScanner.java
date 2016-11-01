@@ -17,9 +17,6 @@
 package org.springframework.boot.context.embedded.tomcat;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -49,18 +46,19 @@ class SkipPatternJarScanner extends StandardJarScanner {
 
 	private final JarScanner jarScanner;
 
-	private final SkipPattern pattern;
+	private final Set<String> patterns;
 
 	SkipPatternJarScanner(JarScanner jarScanner, Set<String> patterns) {
 		Assert.notNull(jarScanner, "JarScanner must not be null");
+		Assert.notNull(jarScanner, "Patterns must not be null");
 		this.jarScanner = jarScanner;
-		this.pattern = (patterns == null ? new SkipPattern(defaultPatterns()) : new SkipPattern(patterns));
-		setPatternToTomcat8SkipFilter(this.pattern);
+		this.patterns = patterns;
+		setPatternToTomcat8SkipFilter();
 	}
 
-	private void setPatternToTomcat8SkipFilter(SkipPattern pattern) {
+	private void setPatternToTomcat8SkipFilter() {
 		if (ClassUtils.isPresent(JAR_SCAN_FILTER_CLASS, null)) {
-			new Tomcat8TldSkipSetter(this).setSkipPattern(pattern);
+			new Tomcat8TldSkipSetter(this).setSkipPattern(this.patterns);
 		}
 	}
 
@@ -73,103 +71,11 @@ class SkipPatternJarScanner extends StandardJarScanner {
 		Assert.notNull(scanMethod, "Unable to find scan method");
 		try {
 			scanMethod.invoke(this.jarScanner, context, classloader, callback,
-					(jarsToSkip == null ? this.pattern.asSet() : jarsToSkip));
+					(jarsToSkip == null ? this.patterns : jarsToSkip));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Tomcat 7 reflection failed", ex);
 		}
-	}
-
-	/**
-	 * Return the default skip patterns to use.
-	 * @return the default skip patterns
-	 */
-	static Set<String> defaultPatterns() {
-		return new LinkedHashSet<String>(Arrays.asList(
-				// Same as Tomcat
-				"ant-*.jar",
-				"aspectj*.jar",
-				"commons-beanutils*.jar",
-				"commons-codec*.jar",
-				"commons-collections*.jar",
-				"commons-dbcp*.jar",
-				"commons-digester*.jar",
-				"commons-fileupload*.jar",
-				"commons-httpclient*.jar",
-				"commons-io*.jar",
-				"commons-lang*.jar",
-				"commons-logging*.jar",
-				"commons-math*.jar",
-				"commons-pool*.jar",
-				"geronimo-spec-jaxrpc*.jar",
-				"h2*.jar",
-				"hamcrest*.jar",
-				"hibernate*.jar",
-				"jmx*.jar",
-				"jmx-tools-*.jar",
-				"jta*.jar",
-				"junit-*.jar",
-				"httpclient*.jar",
-				"log4j-*.jar",
-				"mail*.jar",
-				"org.hamcrest*.jar",
-				"slf4j*.jar",
-				"tomcat-embed-core-*.jar",
-				"tomcat-embed-logging-*.jar",
-				"tomcat-jdbc-*.jar",
-				"tomcat-juli-*.jar",
-				"tools.jar",
-				"wsdl4j*.jar",
-				"xercesImpl-*.jar",
-				"xmlParserAPIs-*.jar",
-				"xml-apis-*.jar",
-
-				// Additional
-				"antlr-*.jar",
-				"aopalliance-*.jar",
-				"aspectjrt-*.jar",
-				"aspectjweaver-*.jar",
-				"classmate-*.jar",
-				"dom4j-*.jar",
-				"ecj-*.jar",
-				"ehcache-core-*.jar",
-				"hibernate-core-*.jar",
-				"hibernate-commons-annotations-*.jar",
-				"hibernate-entitymanager-*.jar",
-				"hibernate-jpa-2.1-api-*.jar",
-				"hibernate-validator-*.jar",
-				"hsqldb-*.jar",
-				"jackson-annotations-*.jar",
-				"jackson-core-*.jar",
-				"jackson-databind-*.jar",
-				"jandex-*.jar",
-				"javassist-*.jar",
-				"jboss-logging-*.jar",
-				"jboss-transaction-api_*.jar",
-				"jcl-over-slf4j-*.jar",
-				"jdom-*.jar",
-				"jul-to-slf4j-*.jar",
-				"log4j-over-slf4j-*.jar",
-				"logback-classic-*.jar",
-				"logback-core-*.jar",
-				"rome-*.jar",
-				"slf4j-api-*.jar",
-				"spring-aop-*.jar",
-				"spring-aspects-*.jar",
-				"spring-beans-*.jar",
-				"spring-boot-*.jar",
-				"spring-core-*.jar",
-				"spring-context-*.jar",
-				"spring-data-*.jar",
-				"spring-expression-*.jar",
-				"spring-jdbc-*.jar,",
-				"spring-orm-*.jar",
-				"spring-oxm-*.jar",
-				"spring-tx-*.jar",
-				"snakeyaml-*.jar",
-				"tomcat-embed-el-*.jar",
-				"validation-api-*.jar",
-				"xml-apis-*.jar"));
 	}
 
 	/**
@@ -194,41 +100,10 @@ class SkipPatternJarScanner extends StandardJarScanner {
 			this.jarScanner = jarScanner;
 		}
 
-		public void setSkipPattern(SkipPattern pattern) {
+		public void setSkipPattern(Set<String> patterns) {
 			StandardJarScanFilter filter = new StandardJarScanFilter();
-			filter.setTldSkip(pattern.asCommaDelimitedString());
+			filter.setTldSkip(StringUtils.collectionToCommaDelimitedString(patterns));
 			this.jarScanner.setJarScanFilter(filter);
-		}
-
-	}
-
-	/**
-	 * Skip patterns used by Spring Boot.
-	 */
-	private static class SkipPattern {
-
-		private Set<String> patterns = new LinkedHashSet<String>();
-
-		SkipPattern(Set<String> patterns) {
-			for (String pattern : patterns) {
-				add(pattern);
-			}
-		}
-
-		protected void add(String patterns) {
-			Assert.notNull(patterns, "Patterns must not be null");
-			if (patterns.length() > 0 && !patterns.trim().startsWith(",")) {
-				this.patterns.add(",");
-			}
-			this.patterns.add(patterns);
-		}
-
-		public String asCommaDelimitedString() {
-			return StringUtils.collectionToCommaDelimitedString(this.patterns);
-		}
-
-		public Set<String> asSet() {
-			return Collections.unmodifiableSet(this.patterns);
 		}
 
 	}

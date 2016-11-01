@@ -127,7 +127,7 @@ public class TomcatEmbeddedServletContainerFactory
 	private String protocol = DEFAULT_PROTOCOL;
 
 	private Set<String> tldSkipPatterns = new LinkedHashSet<String>(
-			SkipPatternJarScanner.defaultPatterns());
+			TldSkipPatterns.DEFAULT);
 
 	private Charset uriEncoding = DEFAULT_CHARSET;
 
@@ -554,23 +554,12 @@ public class TomcatEmbeddedServletContainerFactory
 	 * A comma-separated list of jars to ignore for TLD scanning. See Tomcat's
 	 * catalina.properties for typical values. Defaults to a list drawn from that source.
 	 * @param tldSkip the jars to skip when scanning for TLDs etc
-	 * @deprecated since 1.5.0 in favor of {@link #setTldSkipPatterns(List)}
+	 * @deprecated since 1.5.0 in favor of {@link #setTldSkipPatterns(Collection)}
 	 */
 	@Deprecated
 	public void setTldSkip(String tldSkip) {
 		Assert.notNull(tldSkip, "TldSkip must not be null");
-		setTldSkipPatterns(Arrays.asList(
-				StringUtils.commaDelimitedListToStringArray(tldSkip)));
-	}
-
-	/**
-	 * Set the patterns that match jars to ignore for TLD scanning. See Tomcat's
-	 * catalina.properties for typical values. Defaults to a list drawn from that source.
-	 * @param patterns the jar patterns to skip when scanning for TLDs etc
-	 */
-	public void setTldSkipPatterns(List<String> patterns) {
-		Assert.notNull(patterns, "patterns must not be null");
-		this.tldSkipPatterns = new LinkedHashSet<String>(patterns);
+		setTldSkipPatterns(StringUtils.commaDelimitedListToSet(tldSkip));
 	}
 
 	/**
@@ -582,12 +571,22 @@ public class TomcatEmbeddedServletContainerFactory
 	}
 
 	/**
+	 * Set the patterns that match jars to ignore for TLD scanning. See Tomcat's
+	 * catalina.properties for typical values. Defaults to a list drawn from that source.
+	 * @param patterns the jar patterns to skip when scanning for TLDs etc
+	 */
+	public void setTldSkipPatterns(Collection<String> patterns) {
+		Assert.notNull(patterns, "Patterns must not be null");
+		this.tldSkipPatterns = new LinkedHashSet<String>(patterns);
+	}
+
+	/**
 	 * Add patterns that match jars to ignore for TLD scanning. See Tomcat's
 	 * catalina.properties for typical values.
 	 * @param patterns the additional jar patterns to skip when scanning for TLDs etc
 	 */
-	public void addAdditionalTldSkipPatterns(String... patterns) {
-		Assert.notNull(patterns, "patterns must not be null");
+	public void addTldSkipPatterns(String... patterns) {
+		Assert.notNull(patterns, "Patterns must not be null");
 		this.tldSkipPatterns.addAll(Arrays.asList(patterns));
 	}
 

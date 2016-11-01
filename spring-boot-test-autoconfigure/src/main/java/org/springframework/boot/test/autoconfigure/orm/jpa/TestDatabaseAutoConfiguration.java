@@ -101,15 +101,20 @@ public class TestDatabaseAutoConfiguration {
 				ConfigurableListableBeanFactory beanFactory) {
 			BeanDefinitionHolder holder = getDataSourceBeanDefinition(beanFactory);
 			if (holder != null) {
-				logger.info("Replacing '" + holder.getBeanName()
-						+ "' DataSource bean with embedded version");
-				registry.registerBeanDefinition(holder.getBeanName(),
-						createEmbeddedBeanDefinition());
+				String beanName = holder.getBeanName();
+				boolean primary = holder.getBeanDefinition().isPrimary();
+				logger.info("Replacing '" + beanName + "' DataSource bean with "
+						+ (primary ? "primary " : "") + "embedded version");
+				registry.registerBeanDefinition(beanName,
+						createEmbeddedBeanDefinition(primary));
 			}
 		}
 
-		private BeanDefinition createEmbeddedBeanDefinition() {
-			return new RootBeanDefinition(EmbeddedDataSourceFactoryBean.class);
+		private BeanDefinition createEmbeddedBeanDefinition(boolean primary) {
+			BeanDefinition beanDefinition = new RootBeanDefinition(
+					EmbeddedDataSourceFactoryBean.class);
+			beanDefinition.setPrimary(primary);
+			return beanDefinition;
 		}
 
 		private BeanDefinitionHolder getDataSourceBeanDefinition(

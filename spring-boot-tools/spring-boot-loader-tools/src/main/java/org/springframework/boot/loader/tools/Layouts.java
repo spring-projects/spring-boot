@@ -33,11 +33,6 @@ import java.util.Set;
  */
 public final class Layouts {
 
-	/**
-	 * Default value for {@link Layout#getLoaderJarPath()}.
-	 */
-	public static final String DEFAULT_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
-
 	private Layouts() {
 	}
 
@@ -92,11 +87,6 @@ public final class Layouts {
 			return true;
 		}
 
-		@Override
-		public String getLoaderJarPath() {
-			return DEFAULT_LOADER_JAR;
-		}
-
 	}
 
 	/**
@@ -124,11 +114,6 @@ public final class Layouts {
 		@Override
 		public boolean isExecutable() {
 			return false;
-		}
-
-		@Override
-		public String getLoaderJarPath() {
-			return DEFAULT_LOADER_JAR;
 		}
 
 	}
@@ -169,11 +154,6 @@ public final class Layouts {
 			return true;
 		}
 
-		@Override
-		public String getLoaderJarPath() {
-			return DEFAULT_LOADER_JAR;
-		}
-
 	}
 
 	/**
@@ -206,11 +186,6 @@ public final class Layouts {
 		@Override
 		public boolean isExecutable() {
 			return false;
-		}
-
-		@Override
-		public String getLoaderJarPath() {
-			return DEFAULT_LOADER_JAR;
 		}
 
 	}

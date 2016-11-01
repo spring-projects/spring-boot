@@ -493,7 +493,6 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.additional-tld-skip-patterns", "foo.jar,bar.jar");
 		bindProperties(map);
-
 		testCustomTomcatTldSkip("foo.jar", "bar.jar");
 	}
 
@@ -503,7 +502,6 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.additional-tld-skip-patterns[0]", "biz.jar");
 		map.put("server.tomcat.additional-tld-skip-patterns[1]", "bah.jar");
 		bindProperties(map);
-
 		testCustomTomcatTldSkip("biz.jar", "bah.jar");
 	}
 
@@ -511,7 +509,8 @@ public class ServerPropertiesTests {
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
 		assertThat(container.getTldSkipPatterns()).contains(expectedJars);
-		assertThat(container.getTldSkipPatterns()).contains("junit-*.jar", "spring-boot-*.jar");
+		assertThat(container.getTldSkipPatterns()).contains("junit-*.jar",
+				"spring-boot-*.jar");
 	}
 
 	@Test

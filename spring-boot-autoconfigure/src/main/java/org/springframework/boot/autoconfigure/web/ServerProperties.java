@@ -675,9 +675,9 @@ public class ServerProperties
 		private int acceptCount = 0;
 
 		/**
-		 * Comma-separated list of additional patterns that match jars to ignore for
-		 * TLD scanning. The special '?' and '*' characters can be used in the pattern
-		 * to match one and only one character and zero or more characters respectively.
+		 * Comma-separated list of additional patterns that match jars to ignore for TLD
+		 * scanning. The special '?' and '*' characters can be used in the pattern to
+		 * match one and only one character and zero or more characters respectively.
 		 */
 		private List<String> additionalTldSkipPatterns = new ArrayList<String>();
 

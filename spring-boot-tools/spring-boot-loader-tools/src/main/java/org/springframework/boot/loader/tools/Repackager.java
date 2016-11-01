@@ -216,7 +216,7 @@ public class Repackager {
 			}
 			writeNestedLibraries(standardLibraries, seen, writer);
 			if (this.layout.isExecutable()) {
-				writer.writeLoaderClasses(this.layout.getLoaderJarPath());
+				writer.writeLoaderClasses();
 			}
 		}
 		finally {

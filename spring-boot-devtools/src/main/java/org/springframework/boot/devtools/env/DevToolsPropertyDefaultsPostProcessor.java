@@ -21,10 +21,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 
@@ -59,7 +62,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment,
 			SpringApplication application) {
-		if (isLocalApplication(environment)) {
+		if (isLocalApplication(environment) && canAddProperties(environment)) {
 			PropertySource<?> propertySource = new MapPropertySource("refresh",
 					PROPERTIES);
 			environment.getPropertySources().addLast(propertySource);
@@ -68,6 +71,26 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 
 	private boolean isLocalApplication(ConfigurableEnvironment environment) {
 		return environment.getPropertySources().get("remoteUrl") == null;
+	}
+
+	private boolean canAddProperties(Environment environment) {
+		return isRestarterInitialized() || isRemoteRestartEnabled(environment);
+	}
+
+	private boolean isRestarterInitialized() {
+		try {
+			Restarter restarter = Restarter.getInstance();
+			return (restarter != null && restarter.getInitialUrls() != null);
+		}
+		catch (Exception ex) {
+			return false;
+		}
+	}
+
+	private boolean isRemoteRestartEnabled(Environment environment) {
+		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
+				"spring.devtools.remote.");
+		return resolver.containsProperty("secret");
 	}
 
 }

@@ -16,11 +16,20 @@
 
 package org.springframework.boot.devtools.env;
 
-import org.junit.After;
-import org.junit.Test;
+import java.net.URL;
+import java.util.Collections;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.devtools.restart.RestartInitializer;
+import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,13 +41,22 @@ import org.springframework.context.annotation.Configuration;
  */
 public class DevToolPropertiesIntegrationTests {
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	private ConfigurableApplicationContext context;
+
+	@Before
+	public void setup() {
+		Restarter.initialize(new String[] {}, false, new MockInitializer(), false);
+	}
 
 	@After
 	public void cleanup() {
 		if (this.context != null) {
 			this.context.close();
 		}
+		Restarter.clearInstance();
 	}
 
 	@Test
@@ -55,6 +73,33 @@ public class DevToolPropertiesIntegrationTests {
 		SpringApplication application = new SpringApplication(
 				BeanConditionConfiguration.class);
 		application.setWebEnvironment(false);
+		this.context = application.run();
+		this.context.getBean(MyBean.class);
+	}
+
+	@Test
+	public void postProcessWhenRestarterDisabledAndRemoteSecretNotSetShouldNotAddPropertySource()
+			throws Exception {
+		Restarter.clearInstance();
+		Restarter.disable();
+		SpringApplication application = new SpringApplication(
+				BeanConditionConfiguration.class);
+		application.setWebEnvironment(false);
+		this.context = application.run();
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(MyBean.class);
+	}
+
+	@Test
+	public void postProcessWhenRestarterDisabledAndRemoteSecretSetShouldAddPropertySource()
+			throws Exception {
+		Restarter.clearInstance();
+		Restarter.disable();
+		SpringApplication application = new SpringApplication(
+				BeanConditionConfiguration.class);
+		application.setWebEnvironment(false);
+		application.setDefaultProperties(Collections.<String, Object>singletonMap(
+				"spring.devtools.remote.secret", "donttell"));
 		this.context = application.run();
 		this.context.getBean(MyBean.class);
 	}
@@ -79,4 +124,12 @@ public class DevToolPropertiesIntegrationTests {
 
 	}
 
+	static class MockInitializer implements RestartInitializer {
+
+		@Override
+		public URL[] getInitialUrls(Thread thread) {
+			return new URL[] {};
+		}
+
+	}
 }
