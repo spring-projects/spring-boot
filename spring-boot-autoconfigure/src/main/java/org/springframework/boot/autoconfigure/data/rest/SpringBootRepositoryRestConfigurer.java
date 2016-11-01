@@ -20,8 +20,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
+import org.springframework.data.rest.core.event.ValidatingRepositoryEventListener;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.validation.Validator;
 
 /**
  * A {@code RepositoryRestConfigurer} that applies configuration items from the
@@ -33,6 +35,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
  * @author Stephane Nicoll
  */
 class SpringBootRepositoryRestConfigurer extends RepositoryRestConfigurerAdapter {
+	@Autowired
+	private Validator validator;
 
 	@Autowired(required = false)
 	private Jackson2ObjectMapperBuilder objectMapperBuilder;
@@ -52,4 +56,9 @@ class SpringBootRepositoryRestConfigurer extends RepositoryRestConfigurerAdapter
 		}
 	}
 
+	@Override
+	public void configureValidatingRepositoryEventListener(ValidatingRepositoryEventListener validatingListener) {
+		validatingListener.addValidator("beforeCreate", validator);
+		validatingListener.addValidator("beforeSave", validator);
+	}
 }
