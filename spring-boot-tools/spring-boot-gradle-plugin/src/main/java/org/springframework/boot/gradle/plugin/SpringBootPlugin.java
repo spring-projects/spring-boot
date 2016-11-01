@@ -45,10 +45,10 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		if (GradleVersion.current().compareTo(GradleVersion.version("2.8")) < 0) {
+		if (GradleVersion.current().compareTo(GradleVersion.version("2.9")) < 0) {
 			logger.warn("Spring Boot plugin's support for Gradle "
 					+ GradleVersion.current().getVersion()
-					+ " is deprecated. Please upgrade to Gradle 2.8 or later.");
+					+ " is deprecated. Please upgrade to Gradle 2.9 or later.");
 		}
 		project.getExtensions().create("springBoot", SpringBootPluginExtension.class,
 				project);
