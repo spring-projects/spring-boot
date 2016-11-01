@@ -74,7 +74,7 @@
 		<elasticsearch.version>2.4.0</elasticsearch.version>
 		<gemfire.version>8.2.0</gemfire.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
-		<gradle.version>1.12</gradle.version>
+		<gradle.version>2.9</gradle.version>
 		<groovy.version>2.4.7</groovy.version>
 		<gson.version>2.7</gson.version>
 		<h2.version>1.4.193</h2.version>
