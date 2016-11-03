@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.cloudfoundry;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -32,6 +33,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -86,6 +88,8 @@ public class CloudFoundryActuatorAutoConfiguration {
 	private CorsConfiguration getCorsConfiguration() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 		corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
+		corsConfiguration.setAllowedMethods(
+				Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
 		return corsConfiguration;
 	}
 

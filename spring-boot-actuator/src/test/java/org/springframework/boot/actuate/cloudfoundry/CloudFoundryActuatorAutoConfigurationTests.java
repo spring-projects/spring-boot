@@ -32,9 +32,11 @@ import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfi
 import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.cors.CorsConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,6 +77,11 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	public void cloudFoundryPlatformActive() throws Exception {
 		CloudFoundryEndpointHandlerMapping handlerMapping = x();
 		assertThat(handlerMapping.getPrefix()).isEqualTo("/cloudfoundryapplication");
+		CorsConfiguration corsConfiguration = (CorsConfiguration) ReflectionTestUtils
+				.getField(handlerMapping, "corsConfiguration");
+		assertThat(corsConfiguration.getAllowedOrigins()).contains("*");
+		assertThat(corsConfiguration.getAllowedMethods()).contains(HttpMethod.GET.name(),
+				HttpMethod.POST.name());
 	}
 
 	@Test
