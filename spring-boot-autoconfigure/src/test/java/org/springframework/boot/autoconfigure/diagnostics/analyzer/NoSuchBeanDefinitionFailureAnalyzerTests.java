@@ -87,8 +87,8 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	public void failureAnalysisForMissingCollectionType() throws Exception {
 		FailureAnalysis analysis = analyzeFailure(
 				createFailure(StringCollectionConfiguration.class));
-		assertDescriptionConstructorMissingType(analysis, StringCollectionHandler.class, 0,
-				String.class);
+		assertDescriptionConstructorMissingType(analysis, StringCollectionHandler.class,
+				0, String.class);
 		assertBeanMethodDisabled(analysis,
 				"did not find property 'spring.string.enabled'",
 				TestPropertyAutoConfiguration.class, "string");
@@ -217,7 +217,8 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 	private void assertClassDisabled(FailureAnalysis analysis, String description,
 			String methodName) {
-		String expected = String.format("Bean method '%s' not loaded because", methodName);
+		String expected = String.format("Bean method '%s' not loaded because",
+				methodName);
 		assertThat(analysis.getDescription()).contains(expected);
 		assertThat(analysis.getDescription()).contains(description);
 	}
