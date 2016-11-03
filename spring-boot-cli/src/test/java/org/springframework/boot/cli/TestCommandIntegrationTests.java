@@ -96,7 +96,7 @@ public class TestCommandIntegrationTests {
 
 	@Test
 	public void integrationAutoConfigTest() throws Exception {
-		String output = this.cli.test("integration_auto_test.groovy", "reactor.groovy");
+		String output = this.cli.test("integration_auto_test.groovy", "jms.groovy");
 		assertThat(output).contains("OK (1 test)");
 	}
 

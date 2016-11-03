@@ -134,8 +134,7 @@
 		<neo4j-ogm.version>2.0.5</neo4j-ogm.version>
 		<postgresql.version>9.4.1212.jre7</postgresql.version>
 		<querydsl.version>4.1.4</querydsl.version>
-		<reactor.version>2.0.8.RELEASE</reactor.version>
-		<reactor-spring.version>2.0.7.RELEASE</reactor-spring.version>
+		<reactor.version>3.0.3.RELEASE</reactor.version>
 		<selenium.version>2.53.1</selenium.version>
 		<sendgrid.version>2.2.2</sendgrid.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
@@ -150,8 +149,7 @@
 		<spring-batch.version>3.0.7.RELEASE</spring-batch.version>
 		<spring-data-releasetrain.version>Ingalls-M1</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.21.0.RELEASE</spring-hateoas.version>
-		<spring-integration.version>4.3.5.BUILD-SNAPSHOT</spring-integration.version>
-		<spring-integration-java-dsl.version>1.2.0.RELEASE</spring-integration-java-dsl.version>
+		<spring-integration.version>5.0.0.BUILD-SNAPSHOT</spring-integration.version>
 		<spring-loaded.version>1.2.6.RELEASE</spring-loaded.version>
 		<spring-mobile.version>1.1.5.RELEASE</spring-mobile.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
@@ -864,58 +862,8 @@
 			</dependency>
 			<dependency>
 				<groupId>io.projectreactor</groupId>
-				<artifactId>reactor-bus</artifactId>
-				<version>${reactor.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.projectreactor</groupId>
 				<artifactId>reactor-core</artifactId>
 				<version>${reactor.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.projectreactor</groupId>
-				<artifactId>reactor-groovy</artifactId>
-				<version>${reactor.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.projectreactor</groupId>
-				<artifactId>reactor-groovy-extensions</artifactId>
-				<version>${reactor.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.projectreactor</groupId>
-				<artifactId>reactor-logback</artifactId>
-				<version>${reactor.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.projectreactor</groupId>
-				<artifactId>reactor-net</artifactId>
-				<version>${reactor.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.projectreactor</groupId>
-				<artifactId>reactor-stream</artifactId>
-				<version>${reactor.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.projectreactor.spring</groupId>
-				<artifactId>reactor-spring-context</artifactId>
-				<version>${reactor-spring.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.projectreactor.spring</groupId>
-				<artifactId>reactor-spring-core</artifactId>
-				<version>${reactor-spring.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.projectreactor.spring</groupId>
-				<artifactId>reactor-spring-messaging</artifactId>
-				<version>${reactor-spring.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.projectreactor.spring</groupId>
-				<artifactId>reactor-spring-webmvc</artifactId>
-				<version>${reactor-spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.searchbox</groupId>
@@ -2087,11 +2035,6 @@
 						<artifactId>commons-logging-api</artifactId>
 					</exclusion>
 				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.integration</groupId>
-				<artifactId>spring-integration-java-dsl</artifactId>
-				<version>${spring-integration-java-dsl.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.mobile</groupId>

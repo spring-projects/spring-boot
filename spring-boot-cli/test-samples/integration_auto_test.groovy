@@ -1,12 +1,14 @@
-@SpringBootTest(classes=ReactorApplication, webEnvironment=WebEnvironment.RANDOM_PORT)
-class RestTests {
+import org.springframework.jms.core.JmsTemplate
+
+@SpringBootTest(classes=JmsExample)
+class JmsTests {
 
 	@Autowired
-	EventBus eventBus
+	JmsTemplate jmsTemplate
 
 	@Test
 	void test() {
-		assertNotNull(eventBus)
+		assertNotNull(jmsTemplate)
 	}
 
 }

@@ -163,11 +163,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>io.projectreactor.spring</groupId>
-			<artifactId>reactor-spring-context</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>io.undertow</groupId>
 			<artifactId>undertow-servlet</artifactId>
 			<optional>true</optional>
