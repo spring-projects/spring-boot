@@ -64,6 +64,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -274,11 +275,20 @@ public class ManagementWebSecurityAutoConfiguration {
 				http.httpBasic().authenticationEntryPoint(entryPoint);
 				// No cookies for management endpoints by default
 				http.csrf().disable();
-				http.sessionManagement().sessionCreationPolicy(
-						this.management.getSecurity().getSessions());
+				http.sessionManagement()
+						.sessionCreationPolicy(asSpringSecuritySessionCreationPolicy(
+								this.management.getSecurity().getSessions()));
 				SpringBootWebSecurityConfiguration.configureHeaders(http.headers(),
 						this.security.getHeaders());
 			}
+		}
+
+		private SessionCreationPolicy asSpringSecuritySessionCreationPolicy(
+				Enum<?> value) {
+			if (value == null) {
+				return SessionCreationPolicy.STATELESS;
+			}
+			return SessionCreationPolicy.valueOf(value.name());
 		}
 
 		private RequestMatcher getRequestMatcher() {
