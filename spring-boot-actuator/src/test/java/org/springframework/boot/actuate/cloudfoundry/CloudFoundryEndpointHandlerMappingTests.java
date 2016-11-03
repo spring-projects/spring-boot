@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.cloudfoundry;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.AbstractEndpointHandlerMappingTests;
@@ -40,18 +40,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class CloudFoundryEndpointHandlerMappingTests extends AbstractEndpointHandlerMappingTests {
+public class CloudFoundryEndpointHandlerMappingTests
+		extends AbstractEndpointHandlerMappingTests {
 
 	@Test
 	public void getHandlerExecutionChainShouldHaveSecurityInterceptor() throws Exception {
+		CloudFoundrySecurityInterceptor securityInterceptor = Mockito
+				.mock(CloudFoundrySecurityInterceptor.class);
 		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
 		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
-				Arrays.asList(endpoint));
+				Collections.singleton(endpoint), null, securityInterceptor);
 		HandlerExecutionChain handlerExecutionChain = handlerMapping
 				.getHandlerExecutionChain(endpoint, new MockHttpServletRequest());
 		HandlerInterceptor[] interceptors = handlerExecutionChain.getInterceptors();
-		assertThat(interceptors).hasAtLeastOneElementOfType(
-				CloudFoundryEndpointHandlerMapping.SecurityInterceptor.class);
+		assertThat(interceptors).contains(securityInterceptor);
 	}
 
 	@Test
@@ -60,14 +62,14 @@ public class CloudFoundryEndpointHandlerMappingTests extends AbstractEndpointHan
 		TestMvcEndpoint testMvcEndpoint = new TestMvcEndpoint(new TestEndpoint("a"));
 		testMvcEndpoint.setPath("something-else");
 		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
-				Arrays.asList(testMvcEndpoint));
+				Collections.singleton(testMvcEndpoint), null, null);
 		assertThat(handlerMapping.getPath(testMvcEndpoint)).isEqualTo("/a");
 	}
 
 	@Test
 	public void doesNotRegisterHalJsonMvcEndpoint() throws Exception {
 		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
-				Collections.<NamedMvcEndpoint>singleton(new TestHalJsonMvcEndpoint()));
+				Collections.singleton(new TestHalJsonMvcEndpoint()), null, null);
 		assertThat(handlerMapping.getEndpoints()).hasSize(0);
 	}
 
@@ -75,7 +77,7 @@ public class CloudFoundryEndpointHandlerMappingTests extends AbstractEndpointHan
 	public void registersCloudFoundryDiscoveryEndpoint() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
 		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
-				Collections.<NamedMvcEndpoint>emptyList());
+				Collections.<NamedMvcEndpoint>emptySet(), null, null);
 		handlerMapping.setPrefix("/test");
 		handlerMapping.setApplicationContext(context);
 		handlerMapping.afterPropertiesSet();
@@ -119,6 +121,7 @@ public class CloudFoundryEndpointHandlerMappingTests extends AbstractEndpointHan
 
 			});
 		}
+
 	}
 
 }

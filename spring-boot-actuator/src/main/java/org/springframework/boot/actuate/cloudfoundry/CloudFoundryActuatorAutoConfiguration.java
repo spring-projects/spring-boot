@@ -28,9 +28,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.cloud.CloudPlatform;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to expose actuator endpoints for
@@ -48,13 +51,36 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 	@Bean
 	public CloudFoundryEndpointHandlerMapping cloudFoundryEndpointHandlerMapping(
-			MvcEndpoints mvcEndpoints) {
+			MvcEndpoints mvcEndpoints, RestTemplateBuilder restTemplateBuilder,
+			Environment environment) {
 		Set<NamedMvcEndpoint> endpoints = new LinkedHashSet<NamedMvcEndpoint>(
 				mvcEndpoints.getEndpoints(NamedMvcEndpoint.class));
+		HandlerInterceptor securityInterceptor = getSecurityInterceptor(
+				restTemplateBuilder, environment);
+		CorsConfiguration corsConfiguration = getCorsConfiguration();
 		CloudFoundryEndpointHandlerMapping mapping = new CloudFoundryEndpointHandlerMapping(
-				endpoints, getCorsConfiguration());
+				endpoints, corsConfiguration, securityInterceptor);
 		mapping.setPrefix("/cloudfoundryapplication");
 		return mapping;
+	}
+
+	private HandlerInterceptor getSecurityInterceptor(
+			RestTemplateBuilder restTemplateBuilder, Environment environment) {
+		CloudFoundrySecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(
+				restTemplateBuilder, environment);
+		TokenValidator tokenValidator = new TokenValidator(cloudfoundrySecurityService);
+		HandlerInterceptor securityInterceptor = new CloudFoundrySecurityInterceptor(
+				tokenValidator, cloudfoundrySecurityService,
+				environment.getProperty("vcap.application.application_id"));
+		return securityInterceptor;
+	}
+
+	private CloudFoundrySecurityService getCloudFoundrySecurityService(
+			RestTemplateBuilder restTemplateBuilder, Environment environment) {
+		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
+		return cloudControllerUrl == null ? null
+				: new CloudFoundrySecurityService(restTemplateBuilder,
+						cloudControllerUrl);
 	}
 
 	private CorsConfiguration getCorsConfiguration() {

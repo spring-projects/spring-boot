@@ -29,9 +29,11 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +48,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	private AnnotationConfigWebApplicationContext context;
 
 	@Before
-	public void setUp() {
+	public void setup() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
@@ -57,6 +59,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
+				WebClientAutoConfiguration.class,
 				EndpointWebMvcManagementContextConfiguration.class,
 				CloudFoundryActuatorAutoConfiguration.class);
 	}
@@ -70,13 +73,58 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	public void cloudFoundryPlatformActive() throws Exception {
+		CloudFoundryEndpointHandlerMapping handlerMapping = x();
+		assertThat(handlerMapping.getPrefix()).isEqualTo("/cloudfoundryapplication");
+	}
+
+	@Test
+	public void cloudFoundryPlatformActiveSetsApplicationId() throws Exception {
+		CloudFoundryEndpointHandlerMapping handlerMapping = x();
+		Object interceptor = ReflectionTestUtils.getField(handlerMapping,
+				"securityInterceptor");
+		String applicationId = (String) ReflectionTestUtils.getField(interceptor,
+				"applicationId");
+		assertThat(applicationId).isEqualTo("my-app-id");
+	}
+
+	@Test
+	public void cloudFoundryPlatformActiveSetsCloudControllerUrl() throws Exception {
+		CloudFoundryEndpointHandlerMapping handlerMapping = x();
+		Object interceptor = ReflectionTestUtils.getField(handlerMapping,
+				"securityInterceptor");
+		Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
+				"cloudFoundrySecurityService");
+		String cloudControllerUrl = (String) ReflectionTestUtils
+				.getField(interceptorSecurityService, "cloudControllerUrl");
+		assertThat(cloudControllerUrl).isEqualTo("http://my-cloud-controller.com");
+	}
+
+	@Test
+	public void cloudFoundryPlatformActiveAndCloudControllerUrlNotPresent()
+			throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context, "VCAP_APPLICATION:---",
-				"management.cloudfoundry.enabled:true");
+				"management.cloudfoundry.enabled:true",
+				"vcap.application.application_id:my-app-id");
 		this.context.refresh();
-		CloudFoundryEndpointHandlerMapping handlerMapping = this.context.getBean(
+		CloudFoundryEndpointHandlerMapping handlerMapping1 = this.context.getBean(
 				"cloudFoundryEndpointHandlerMapping",
 				CloudFoundryEndpointHandlerMapping.class);
-		assertThat(handlerMapping.getPrefix()).isEqualTo("/cloudfoundryapplication");
+		CloudFoundryEndpointHandlerMapping handlerMapping = handlerMapping1;
+		Object securityInterceptor = ReflectionTestUtils.getField(handlerMapping,
+				"securityInterceptor");
+		Object interceptorSecurityService = ReflectionTestUtils
+				.getField(securityInterceptor, "cloudFoundrySecurityService");
+		assertThat(interceptorSecurityService).isNull();
+	}
+
+	private CloudFoundryEndpointHandlerMapping x() {
+		EnvironmentTestUtils.addEnvironment(this.context, "VCAP_APPLICATION:---",
+				"management.cloudfoundry.enabled:true",
+				"vcap.application.application_id:my-app-id",
+				"vcap.application.cf_api:http://my-cloud-controller.com");
+		this.context.refresh();
+		return this.context.getBean("cloudFoundryEndpointHandlerMapping",
+				CloudFoundryEndpointHandlerMapping.class);
 	}
 
 	@Test
