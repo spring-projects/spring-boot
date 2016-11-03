@@ -365,6 +365,37 @@ public class MetricFilterAutoConfigurationTests {
 		context.close();
 	}
 
+	@Test
+	public void whenExceptionIsThrownResponseStatusIsUsedWhenResponseHasBeenCommitted()
+			throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(Config.class, MetricFilterAutoConfiguration.class);
+		context.refresh();
+		Filter filter = context.getBean(Filter.class);
+		final MockHttpServletRequest request = new MockHttpServletRequest("GET",
+				"/test/path");
+		final MockHttpServletResponse response = new MockHttpServletResponse();
+		FilterChain chain = mock(FilterChain.class);
+		willAnswer(new Answer<Object>() {
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				response.setStatus(200);
+				response.setCommitted(true);
+				throw new IOException();
+			}
+		}).given(chain).doFilter(request, response);
+		try {
+			filter.doFilter(request, response, chain);
+			fail();
+		}
+		catch (IOException ex) {
+			// Continue
+		}
+		verify(context.getBean(CounterService.class))
+				.increment(eq("status.200.test.path"));
+		context.close();
+	}
+
 	@Configuration
 	public static class Config {
 
