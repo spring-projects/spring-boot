@@ -54,7 +54,7 @@
 		<caffeine.version>2.3.4</caffeine.version>
 		<cassandra-driver.version>2.1.9</cassandra-driver.version>
 		<classmate.version>1.3.3</classmate.version>
-		<commons-beanutils.version>1.9.2</commons-beanutils.version>
+		<commons-beanutils.version>1.9.3</commons-beanutils.version>
 		<commons-collections.version>3.2.2</commons-collections.version>
 		<commons-codec.version>1.10</commons-codec.version>
 		<commons-dbcp.version>1.4</commons-dbcp.version>
