@@ -218,8 +218,8 @@ class NoSuchBeanDefinitionFailureAnalyzer
 			}
 			String name = cause.getBeanName();
 			ResolvableType resolvableType = cause.getResolvableType();
-			return ((name != null && hasName(candidate, name))
-					|| (resolvableType != null && hasType(candidate, extractBeanType(resolvableType))));
+			return ((name != null && hasName(candidate, name)) || (resolvableType != null
+					&& hasType(candidate, extractBeanType(resolvableType))));
 		}
 
 		private boolean hasName(MethodMetadata methodMetadata, String name) {
