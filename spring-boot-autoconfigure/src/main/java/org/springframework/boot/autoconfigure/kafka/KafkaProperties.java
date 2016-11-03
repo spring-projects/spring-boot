@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -53,43 +54,20 @@ public class KafkaProperties {
 
 	private final Template template = new Template();
 
+	private final Ssl ssl = new Ssl();
+
 	// Apache Kafka Common Properties
 
 	/**
-	 * A comma-delimited list of host:port pairs to use for establishing the initial
+	 * Comma-delimited list of host:port pairs to use for establishing the initial
 	 * connection to the Kafka cluster.
 	 */
-	private List<String> bootstrapServers = Collections.singletonList("localhost:9092");
+	private List<String> bootstrapServers = new ArrayList<String>(Collections.singletonList("localhost:9092"));
 
 	/**
-	 * An id to pass to the server when making requests; used for server-side logging.
+	 * Id to pass to the server when making requests; used for server-side logging.
 	 */
 	private String clientId;
-
-	/**
-	 * The password of the private key in the key store file.
-	 */
-	private String sslKeyPassword;
-
-	/**
-	 * The location of the key store file.
-	 */
-	private Resource sslKeystoreLocation;
-
-	/**
-	 * The store password for the key store file.
-	 */
-	private String sslKeystorePassword;
-
-	/**
-	 * The location of the trust store file.
-	 */
-	private Resource sslTruststoreLocation;
-
-	/**
-	 * The store password for the trust store file.
-	 */
-	private String sslTruststorePassword;
 
 	public Consumer getConsumer() {
 		return this.consumer;
@@ -101,6 +79,10 @@ public class KafkaProperties {
 
 	public Listener getListener() {
 		return this.listener;
+	}
+
+	public Ssl getSsl() {
+		return this.ssl;
 	}
 
 	public Template getTemplate() {
@@ -123,46 +105,6 @@ public class KafkaProperties {
 		this.clientId = clientId;
 	}
 
-	public String getSslKeyPassword() {
-		return this.sslKeyPassword;
-	}
-
-	public void setSslKeyPassword(String sslKeyPassword) {
-		this.sslKeyPassword = sslKeyPassword;
-	}
-
-	public Resource getSslKeystoreLocation() {
-		return this.sslKeystoreLocation;
-	}
-
-	public void setSslKeystoreLocation(Resource sslKeystoreLocation) {
-		this.sslKeystoreLocation = sslKeystoreLocation;
-	}
-
-	public String getSslKeystorePassword() {
-		return this.sslKeystorePassword;
-	}
-
-	public void setSslKeystorePassword(String sslKeystorePassword) {
-		this.sslKeystorePassword = sslKeystorePassword;
-	}
-
-	public Resource getSslTruststoreLocation() {
-		return this.sslTruststoreLocation;
-	}
-
-	public void setSslTruststoreLocation(Resource sslTruststoreLocation) {
-		this.sslTruststoreLocation = sslTruststoreLocation;
-	}
-
-	public String getSslTruststorePassword() {
-		return this.sslTruststorePassword;
-	}
-
-	public void setSslTruststorePassword(String sslTruststorePassword) {
-		this.sslTruststorePassword = sslTruststorePassword;
-	}
-
 	private Map<String, Object> buildCommonProperties() {
 		Map<String, Object> properties = new HashMap<String, Object>();
 		if (this.bootstrapServers != null) {
@@ -171,20 +113,20 @@ public class KafkaProperties {
 		if (this.clientId != null) {
 			properties.put(CommonClientConfigs.CLIENT_ID_CONFIG, this.clientId);
 		}
-		if (this.sslKeyPassword != null) {
-			properties.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, this.sslKeyPassword);
+		if (this.ssl.getKeyPassword() != null) {
+			properties.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, this.ssl.getKeyPassword());
 		}
-		if (this.sslKeystoreLocation != null) {
-			properties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, resourceToPath(this.sslKeystoreLocation));
+		if (this.ssl.getKeystoreLocation() != null) {
+			properties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, resourceToPath(this.ssl.getKeystoreLocation()));
 		}
-		if (this.sslKeystorePassword != null) {
-			properties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, this.sslKeystorePassword);
+		if (this.ssl.getKeystorePassword() != null) {
+			properties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, this.ssl.getKeystorePassword());
 		}
-		if (this.sslTruststoreLocation != null) {
-			properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, resourceToPath(this.sslTruststoreLocation));
+		if (this.ssl.getTruststoreLocation() != null) {
+			properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, resourceToPath(this.ssl.getTruststoreLocation()));
 		}
-		if (this.sslTruststorePassword != null) {
-			properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, this.sslTruststorePassword);
+		if (this.ssl.getTruststorePassword() != null) {
+			properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, this.ssl.getTruststorePassword());
 		}
 		return properties;
 	}
@@ -223,6 +165,8 @@ public class KafkaProperties {
 	}
 
 	public static class Consumer {
+
+		private final Ssl ssl = new Ssl();
 
 		/**
 		 * The frequency in milliseconds that the consumer offsets are auto-committed to
@@ -281,35 +225,14 @@ public class KafkaProperties {
 		private Class<?> keyDeserializer = StringDeserializer.class;
 
 		/**
-		 * The password of the private key in the key store file.
-		 */
-		private String sslKeyPassword;
-
-		/**
-		 * The location of the key store file.
-		 */
-		private Resource sslKeystoreLocation;
-
-		/**
-		 * The store password for the key store file.
-		 */
-		private String sslKeystorePassword;
-
-		/**
-		 * The location of the trust store file.
-		 */
-		private Resource sslTruststoreLocation;
-
-		/**
-		 * The store password for the trust store file.
-		 */
-		private String sslTruststorePassword;
-
-		/**
 		 * Deserializer class for value that implements the
 		 * org.apache.kafka.common.serialization.Deserializer interface.
 		 */
 		private Class<?> valueDeserializer = StringDeserializer.class;
+
+		public Ssl getSsl() {
+			return this.ssl;
+		}
 
 		public Long getAutoCommitIntervalMs() {
 			return this.autoCommitIntervalMs;
@@ -391,46 +314,6 @@ public class KafkaProperties {
 			this.keyDeserializer = keyDeserializer;
 		}
 
-		public String getSslKeyPassword() {
-			return this.sslKeyPassword;
-		}
-
-		public void setSslKeyPassword(String sslKeyPassword) {
-			this.sslKeyPassword = sslKeyPassword;
-		}
-
-		public Resource getSslKeystoreLocation() {
-			return this.sslKeystoreLocation;
-		}
-
-		public void setSslKeystoreLocation(Resource sslKeystoreLocation) {
-			this.sslKeystoreLocation = sslKeystoreLocation;
-		}
-
-		public String getSslKeystorePassword() {
-			return this.sslKeystorePassword;
-		}
-
-		public void setSslKeystorePassword(String sslKeystorePassword) {
-			this.sslKeystorePassword = sslKeystorePassword;
-		}
-
-		public Resource getSslTruststoreLocation() {
-			return this.sslTruststoreLocation;
-		}
-
-		public void setSslTruststoreLocation(Resource sslTruststoreLocation) {
-			this.sslTruststoreLocation = sslTruststoreLocation;
-		}
-
-		public String getSslTruststorePassword() {
-			return this.sslTruststorePassword;
-		}
-
-		public void setSslTruststorePassword(String sslTruststorePassword) {
-			this.sslTruststorePassword = sslTruststorePassword;
-		}
-
 		public Class<?> getValueDeserializer() {
 			return this.valueDeserializer;
 		}
@@ -471,20 +354,21 @@ public class KafkaProperties {
 			if (this.keyDeserializer != null) {
 				properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, this.keyDeserializer);
 			}
-			if (this.sslKeyPassword != null) {
-				properties.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, this.sslKeyPassword);
+			if (this.ssl.getKeyPassword() != null) {
+				properties.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, this.ssl.getKeyPassword());
 			}
-			if (this.sslKeystoreLocation != null) {
-				properties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, resourceToPath(this.sslKeystoreLocation));
+			if (this.ssl.getKeystoreLocation() != null) {
+				properties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, resourceToPath(this.ssl.getKeystoreLocation()));
 			}
-			if (this.sslKeystorePassword != null) {
-				properties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, this.sslKeystorePassword);
+			if (this.ssl.getKeystorePassword() != null) {
+				properties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, this.ssl.getKeystorePassword());
 			}
-			if (this.sslTruststoreLocation != null) {
-				properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, resourceToPath(this.sslTruststoreLocation));
+			if (this.ssl.getTruststoreLocation() != null) {
+				properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
+						resourceToPath(this.ssl.getTruststoreLocation()));
 			}
-			if (this.sslTruststorePassword != null) {
-				properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, this.sslTruststorePassword);
+			if (this.ssl.getTruststorePassword() != null) {
+				properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, this.ssl.getTruststorePassword());
 			}
 			if (this.valueDeserializer != null) {
 				properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, this.valueDeserializer);
@@ -495,6 +379,8 @@ public class KafkaProperties {
 	}
 
 	public static class Producer {
+
+		private final Ssl ssl = new Ssl();
 
 		/**
 		 * The number of acknowledgments the producer requires the leader to have
@@ -541,35 +427,14 @@ public class KafkaProperties {
 		private Integer retries;
 
 		/**
-		 * The password of the private key in the key store file.
-		 */
-		private String sslKeyPassword;
-
-		/**
-		 * The location of the key store file.
-		 */
-		private Resource sslKeystoreLocation;
-
-		/**
-		 * The store password for the key store file.
-		 */
-		private String sslKeystorePassword;
-
-		/**
-		 * The location of the trust store file.
-		 */
-		private Resource sslTruststoreLocation;
-
-		/**
-		 * The store password for the trust store file.
-		 */
-		private String sslTruststorePassword;
-
-		/**
 		 * Serializer class for value that implements the
 		 * org.apache.kafka.common.serialization.Serializer interface.
 		 */
 		private Class<?> valueSerializer = StringSerializer.class;
+
+		public Ssl getSsl() {
+			return this.ssl;
+		}
 
 		public String getAcks() {
 			return this.acks;
@@ -635,46 +500,6 @@ public class KafkaProperties {
 			this.retries = retries;
 		}
 
-		public String getSslKeyPassword() {
-			return this.sslKeyPassword;
-		}
-
-		public void setSslKeyPassword(String sslKeyPassword) {
-			this.sslKeyPassword = sslKeyPassword;
-		}
-
-		public Resource getSslKeystoreLocation() {
-			return this.sslKeystoreLocation;
-		}
-
-		public void setSslKeystoreLocation(Resource sslKeystoreLocation) {
-			this.sslKeystoreLocation = sslKeystoreLocation;
-		}
-
-		public String getSslKeystorePassword() {
-			return this.sslKeystorePassword;
-		}
-
-		public void setSslKeystorePassword(String sslKeystorePassword) {
-			this.sslKeystorePassword = sslKeystorePassword;
-		}
-
-		public Resource getSslTruststoreLocation() {
-			return this.sslTruststoreLocation;
-		}
-
-		public void setSslTruststoreLocation(Resource sslTruststoreLocation) {
-			this.sslTruststoreLocation = sslTruststoreLocation;
-		}
-
-		public String getSslTruststorePassword() {
-			return this.sslTruststorePassword;
-		}
-
-		public void setSslTruststorePassword(String sslTruststorePassword) {
-			this.sslTruststorePassword = sslTruststorePassword;
-		}
-
 		public Class<?> getValueSerializer() {
 			return this.valueSerializer;
 		}
@@ -709,20 +534,21 @@ public class KafkaProperties {
 			if (this.retries != null) {
 				properties.put(ProducerConfig.RETRIES_CONFIG, this.retries);
 			}
-			if (this.sslKeyPassword != null) {
-				properties.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, this.sslKeyPassword);
+			if (this.ssl.getKeyPassword() != null) {
+				properties.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, this.ssl.getKeyPassword());
 			}
-			if (this.sslKeystoreLocation != null) {
-				properties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, resourceToPath(this.sslKeystoreLocation));
+			if (this.ssl.getKeystoreLocation() != null) {
+				properties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, resourceToPath(this.ssl.getKeystoreLocation()));
 			}
-			if (this.sslKeystorePassword != null) {
-				properties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, this.sslKeystorePassword);
+			if (this.ssl.getKeystorePassword() != null) {
+				properties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, this.ssl.getKeystorePassword());
 			}
-			if (this.sslTruststoreLocation != null) {
-				properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, resourceToPath(this.sslTruststoreLocation));
+			if (this.ssl.getTruststoreLocation() != null) {
+				properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
+						resourceToPath(this.ssl.getTruststoreLocation()));
 			}
-			if (this.sslTruststorePassword != null) {
-				properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, this.sslTruststorePassword);
+			if (this.ssl.getTruststorePassword() != null) {
+				properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, this.ssl.getTruststorePassword());
 			}
 			if (this.valueSerializer != null) {
 				properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, this.valueSerializer);
@@ -814,6 +640,75 @@ public class KafkaProperties {
 
 		public void setAckTime(Long ackTime) {
 			this.ackTime = ackTime;
+		}
+
+	}
+
+	public static class Ssl {
+
+		/**
+		 * Password of the private key in the key store file.
+		 */
+		private String keyPassword;
+
+		/**
+		 * Location of the key store file.
+		 */
+		private Resource keystoreLocation;
+
+		/**
+		 * Store password for the key store file.
+		 */
+		private String keystorePassword;
+
+		/**
+		 * Location of the trust store file.
+		 */
+		private Resource truststoreLocation;
+
+		/**
+		 * Store password for the trust store file.
+		 */
+		private String truststorePassword;
+
+		public String getKeyPassword() {
+			return this.keyPassword;
+		}
+
+		public void setKeyPassword(String keyPassword) {
+			this.keyPassword = keyPassword;
+		}
+
+		public Resource getKeystoreLocation() {
+			return this.keystoreLocation;
+		}
+
+		public void setKeystoreLocation(Resource keystoreLocation) {
+			this.keystoreLocation = keystoreLocation;
+		}
+
+		public String getKeystorePassword() {
+			return this.keystorePassword;
+		}
+
+		public void setKeystorePassword(String keystorePassword) {
+			this.keystorePassword = keystorePassword;
+		}
+
+		public Resource getTruststoreLocation() {
+			return this.truststoreLocation;
+		}
+
+		public void setTruststoreLocation(Resource truststoreLocation) {
+			this.truststoreLocation = truststoreLocation;
+		}
+
+		public String getTruststorePassword() {
+			return this.truststorePassword;
+		}
+
+		public void setTruststorePassword(String truststorePassword) {
+			this.truststorePassword = truststorePassword;
 		}
 
 	}

@@ -36,7 +36,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link KafkaProperties} to use.
 	 * @param properties the properties
 	 */
-	public void setKafkaProperties(KafkaProperties properties) {
+	void setKafkaProperties(KafkaProperties properties) {
 		this.properties = properties;
 	}
 

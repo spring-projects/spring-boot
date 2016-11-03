@@ -27,21 +27,17 @@ import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.LongSerializer;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import org.springframework.beans.DirectFieldAccessor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
-import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,69 +46,65 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Gary Russell
  * @since 1.5
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = {
-	"spring.kafka.bootstrap-servers=foo:1234",
-	"spring.kafka.clientId=cid",
-	"spring.kafka.ssl-key-password=p1",
-	"spring.kafka.ssl-keystore-location=classpath:ksLoc",
-	"spring.kafka.ssl-keystore-password=p2",
-	"spring.kafka.ssl-truststore-location=classpath:tsLoc",
-	"spring.kafka.ssl-truststore-password=p3",
-
-	"spring.kafka.consumer.auto-commit-interval-ms=123",
-	"spring.kafka.consumer.auto-offset-reset=earliest",
-	"spring.kafka.consumer.client-id=ccid", // test override common
-	"spring.kafka.consumer.enable-auto-commit=false",
-	"spring.kafka.consumer.fetch-max-wait-ms=456",
-	"spring.kafka.consumer.fetch-min-bytes=789",
-	"spring.kafka.consumer.group-id=bar",
-	"spring.kafka.consumer.heartbeat-interval-ms=234",
-	"spring.kafka.consumer.key-deserializer = org.apache.kafka.common.serialization.LongDeserializer",
-	"spring.kafka.consumer.value-deserializer = org.apache.kafka.common.serialization.IntegerDeserializer",
-
-	"spring.kafka.producer.acks=all",
-	"spring.kafka.producer.batch-size=20",
-	"spring.kafka.producer.bootstrap-servers=bar:1234", // test override common
-	"spring.kafka.producer.buffer-memory=12345",
-	"spring.kafka.producer.compression-type=gzip",
-	"spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.LongSerializer",
-	"spring.kafka.producer.retries=2",
-	"spring.kafka.producer.ssl-key-password=p4",
-	"spring.kafka.producer.ssl-keystore-location=classpath:ksLocP",
-	"spring.kafka.producer.ssl-keystore-password=p5",
-	"spring.kafka.producer.ssl-truststore-location=classpath:tsLocP",
-	"spring.kafka.producer.ssl-truststore-password=p6",
-	"spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.IntegerSerializer",
-
-	"spring.kafka.template.default-topic=testTopic",
-
-	"spring.kafka.listener.ack-mode=MANUAL",
-	"spring.kafka.listener.ack-count=123",
-	"spring.kafka.listener.ack-time=456",
-	"spring.kafka.listener.concurrency=3",
-	"spring.kafka.listener.poll-timeout=2000"
-	})
 public class KafkaPropertiesTests {
 
-	@Autowired
-	private KafkaProperties props;
+	private AnnotationConfigApplicationContext context;
 
-	@Autowired
-	private ConsumerFactory<?, ?> consumerFactory;
+	@Before
+	public void load() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(KafkaAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(context,
+				"spring.kafka.bootstrap-servers=foo:1234",
+				"spring.kafka.clientId=cid",
+				"spring.kafka.ssl.key-password=p1",
+				"spring.kafka.ssl.keystore-location=classpath:ksLoc",
+				"spring.kafka.ssl.keystore-password=p2",
+				"spring.kafka.ssl.truststore-location=classpath:tsLoc",
+				"spring.kafka.ssl.truststore-password=p3",
 
-	@Autowired
-	private ProducerFactory<?, ?> producerFactory;
+				"spring.kafka.consumer.auto-commit-interval-ms=123",
+				"spring.kafka.consumer.auto-offset-reset=earliest",
+				"spring.kafka.consumer.client-id=ccid", // test override common
+				"spring.kafka.consumer.enable-auto-commit=false",
+				"spring.kafka.consumer.fetch-max-wait-ms=456",
+				"spring.kafka.consumer.fetch-min-bytes=789",
+				"spring.kafka.consumer.group-id=bar",
+				"spring.kafka.consumer.heartbeat-interval-ms=234",
+				"spring.kafka.consumer.key-deserializer = org.apache.kafka.common.serialization.LongDeserializer",
+				"spring.kafka.consumer.value-deserializer = org.apache.kafka.common.serialization.IntegerDeserializer",
 
-	@Autowired
-	private KafkaTemplate<?, ?> kafkaTemplate;
+				"spring.kafka.producer.acks=all",
+				"spring.kafka.producer.batch-size=20",
+				"spring.kafka.producer.bootstrap-servers=bar:1234", // test override common
+				"spring.kafka.producer.buffer-memory=12345",
+				"spring.kafka.producer.compression-type=gzip",
+				"spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.LongSerializer",
+				"spring.kafka.producer.retries=2",
+				"spring.kafka.producer.ssl.key-password=p4",
+				"spring.kafka.producer.ssl.keystore-location=classpath:ksLocP",
+				"spring.kafka.producer.ssl.keystore-password=p5",
+				"spring.kafka.producer.ssl.truststore-location=classpath:tsLocP",
+				"spring.kafka.producer.ssl.truststore-password=p6",
+				"spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.IntegerSerializer",
 
-	@Autowired
-	private KafkaListenerContainerFactory<?> kafkaListenerContainerFactory;
+				"spring.kafka.template.default-topic=testTopic",
+
+				"spring.kafka.listener.ack-mode=MANUAL",
+				"spring.kafka.listener.ack-count=123",
+				"spring.kafka.listener.ack-time=456",
+				"spring.kafka.listener.concurrency=3",
+				"spring.kafka.listener.poll-timeout=2000"
+				);
+		this.context.refresh();
+	}
 
 	@Test
 	public void testConsumerProps() {
-		Map<String, Object> consumerProps = this.props.buildConsumerProperties();
+		DefaultKafkaConsumerFactory<?, ?> consumerFactory = this.context.getBean(DefaultKafkaConsumerFactory.class);
+		@SuppressWarnings("unchecked")
+		Map<String, Object> consumerProps = (Map<String, Object>) new DirectFieldAccessor(consumerFactory)
+				.getPropertyValue("configs");
 		// common
 		assertThat(consumerProps.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG))
 			.isEqualTo(Arrays.asList(new String[] { "foo:1234" }));
@@ -139,7 +131,10 @@ public class KafkaPropertiesTests {
 
 	@Test
 	public void testProducerProps() {
-		Map<String, Object> producerProps = this.props.buildProducerProperties();
+		DefaultKafkaProducerFactory<?, ?> producerFactory = this.context.getBean(DefaultKafkaProducerFactory.class);
+		@SuppressWarnings("unchecked")
+		Map<String, Object> producerProps = (Map<String, Object>) new DirectFieldAccessor(producerFactory)
+				.getPropertyValue("configs");
 		// common
 		assertThat(producerProps.get(ProducerConfig.CLIENT_ID_CONFIG)).isEqualTo("cid");
 		// producer
@@ -163,26 +158,21 @@ public class KafkaPropertiesTests {
 
 	@Test
 	public void testInjected() {
-		Map<String, Object> consumerProps = this.props.buildConsumerProperties();
-		Map<String, Object> producerProps = this.props.buildProducerProperties();
-		assertThat(new DirectFieldAccessor(this.consumerFactory).getPropertyValue("configs")).isEqualTo(consumerProps);
-		assertThat(new DirectFieldAccessor(this.producerFactory).getPropertyValue("configs")).isEqualTo(producerProps);
-		assertThat(new DirectFieldAccessor(this.kafkaTemplate).getPropertyValue("producerFactory"))
-			.isEqualTo(this.producerFactory);
-		assertThat(this.kafkaTemplate.getDefaultTopic()).isEqualTo("testTopic");
-		DirectFieldAccessor factoryAccessor = new DirectFieldAccessor(this.kafkaListenerContainerFactory);
-		assertThat(factoryAccessor.getPropertyValue("consumerFactory")).isEqualTo(this.consumerFactory);
+		DefaultKafkaProducerFactory<?, ?> producerFactory = this.context.getBean(DefaultKafkaProducerFactory.class);
+		DefaultKafkaConsumerFactory<?, ?> consumerFactory = this.context.getBean(DefaultKafkaConsumerFactory.class);
+		KafkaTemplate<?, ?> kafkaTemplate = this.context.getBean(KafkaTemplate.class);
+		KafkaListenerContainerFactory<?> kafkaListenerContainerFactory = this.context
+				.getBean(KafkaListenerContainerFactory.class);
+		assertThat(new DirectFieldAccessor(kafkaTemplate).getPropertyValue("producerFactory"))
+			.isEqualTo(producerFactory);
+		assertThat(kafkaTemplate.getDefaultTopic()).isEqualTo("testTopic");
+		DirectFieldAccessor factoryAccessor = new DirectFieldAccessor(kafkaListenerContainerFactory);
+		assertThat(factoryAccessor.getPropertyValue("consumerFactory")).isEqualTo(consumerFactory);
 		assertThat(factoryAccessor.getPropertyValue("containerProperties.ackMode")).isEqualTo(AckMode.MANUAL);
 		assertThat(factoryAccessor.getPropertyValue("containerProperties.ackCount")).isEqualTo(123);
 		assertThat(factoryAccessor.getPropertyValue("containerProperties.ackTime")).isEqualTo(456L);
 		assertThat(factoryAccessor.getPropertyValue("concurrency")).isEqualTo(3);
 		assertThat(factoryAccessor.getPropertyValue("containerProperties.pollTimeout")).isEqualTo(2000L);
-	}
-
-	@Configuration
-	@Import(KafkaAutoConfiguration.class)
-	public static class Config {
-
 	}
 
 }
