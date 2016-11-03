@@ -39,12 +39,14 @@ public class CloudFoundryDiscoveryMvcEndpointTests {
 
 	private CloudFoundryDiscoveryMvcEndpoint endpoint;
 
+	private Set<NamedMvcEndpoint> endpoints;
+
 	@Before
 	public void setup() {
-		NamedMvcEndpoint testMvcEndpoint = new TestMvcEndpoint(new TestEndpoint("a"));
-		Set<NamedMvcEndpoint> endpoints = new LinkedHashSet<NamedMvcEndpoint>();
-		endpoints.add(testMvcEndpoint);
-		this.endpoint = new CloudFoundryDiscoveryMvcEndpoint(endpoints);
+		NamedMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
+		this.endpoints = new LinkedHashSet<NamedMvcEndpoint>();
+		this.endpoints.add(endpoint);
+		this.endpoint = new CloudFoundryDiscoveryMvcEndpoint(this.endpoints);
 	}
 
 	@Test
@@ -56,6 +58,7 @@ public class CloudFoundryDiscoveryMvcEndpointTests {
 	public void linksResponseWhenRequestUriHasNoTrailingSlash() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET",
 				"/cloudfoundryapplication");
+		AccessLevel.FULL.put(request);
 		Map<String, CloudFoundryDiscoveryMvcEndpoint.Link> links = this.endpoint
 				.links(request).get("_links");
 		assertThat(links.get("self").getHref())
@@ -68,12 +71,30 @@ public class CloudFoundryDiscoveryMvcEndpointTests {
 	public void linksResponseWhenRequestUriHasTrailingSlash() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET",
 				"/cloudfoundryapplication/");
+		AccessLevel.FULL.put(request);
 		Map<String, CloudFoundryDiscoveryMvcEndpoint.Link> links = this.endpoint
 				.links(request).get("_links");
 		assertThat(links.get("self").getHref())
 				.isEqualTo("http://localhost/cloudfoundryapplication");
 		assertThat(links.get("a").getHref())
 				.isEqualTo("http://localhost/cloudfoundryapplication/a");
+	}
+
+	@Test
+	public void linksResponseWhenRequestHasAccessLevelRestricted() throws Exception {
+		NamedMvcEndpoint testHealthMvcEndpoint = new TestMvcEndpoint(
+				new TestEndpoint("health"));
+		this.endpoints.add(testHealthMvcEndpoint);
+		MockHttpServletRequest request = new MockHttpServletRequest("GET",
+				"/cloudfoundryapplication/");
+		AccessLevel.RESTRICTED.put(request);
+		Map<String, CloudFoundryDiscoveryMvcEndpoint.Link> links = this.endpoint
+				.links(request).get("_links");
+		assertThat(links.get("self").getHref())
+				.isEqualTo("http://localhost/cloudfoundryapplication");
+		assertThat(links.get("health").getHref())
+				.isEqualTo("http://localhost/cloudfoundryapplication/health");
+		assertThat(links.get("a")).isNull();
 	}
 
 	private static class TestEndpoint extends AbstractEndpoint<Object> {

@@ -39,6 +39,8 @@ enum AccessLevel {
 	 */
 	FULL;
 
+	private static final String REQUEST_ATTRIBUTE = "cloudFoundryAccessLevel";
+
 	private final List<String> endpointPaths;
 
 	AccessLevel(String... endpointPaths) {
@@ -55,7 +57,11 @@ enum AccessLevel {
 	}
 
 	public void put(HttpServletRequest request) {
-		request.setAttribute("cloudFoundryAccessLevel", this);
+		request.setAttribute(REQUEST_ATTRIBUTE, this);
+	}
+
+	public static AccessLevel get(HttpServletRequest request) {
+		return (AccessLevel) request.getAttribute(REQUEST_ATTRIBUTE);
 	}
 
 }
