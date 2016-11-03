@@ -133,7 +133,7 @@
 		<narayana.version>5.3.5.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>2.0.5</neo4j-ogm.version>
-		<postgresql.version>9.4.1211.jre7</postgresql.version>
+		<postgresql.version>9.4.1212.jre7</postgresql.version>
 		<querydsl.version>4.1.4</querydsl.version>
 		<reactor.version>2.0.8.RELEASE</reactor.version>
 		<reactor-spring.version>2.0.7.RELEASE</reactor-spring.version>
