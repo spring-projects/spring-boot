@@ -5,11 +5,11 @@
 		<!-- Your own application should inherit from spring-boot-starter-parent -->
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-samples</artifactId>
-		<version>1.4.2.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-sample-actuator-no-security</artifactId>
 	<name>Spring Boot Actuator UI Sample</name>
-	<description>Spring Boot Actuator UI Sample</description>
+	<description>Spring Boot Actuator No Security Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
