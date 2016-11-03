@@ -815,23 +815,8 @@ Project`) will have the same effect.
 ====
 You can also start your application via the supported build plugins (i.e. Maven and
 Gradle) as long as forking is enabled since DevTools need an isolated application
-classloader to operate properly. Gradle does this by default and you can force the Maven
-plugin to fork the process as follows:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<fork>true</fork>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-----
+classloader to operate properly. Gradle and Maven do that by default when they detect
+DevTools on the classpath.
 
 ====
 
