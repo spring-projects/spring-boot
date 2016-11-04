@@ -26,7 +26,6 @@ import com.couchbase.client.java.util.features.Version;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
