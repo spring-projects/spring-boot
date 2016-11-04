@@ -289,6 +289,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	@Configuration
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			LocalDevToolsAutoConfiguration.class, ThymeleafAutoConfiguration.class })
+	@EnableConfigurationProperties(ServerProperties.class)
 	public static class ConfigWithMockLiveReload {
 
 		@Bean
@@ -301,6 +302,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	@Configuration
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			LocalDevToolsAutoConfiguration.class, ResourceProperties.class })
+	@EnableConfigurationProperties(ServerProperties.class)
 	public static class WebResourcesConfig {
 
 	}
