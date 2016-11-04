@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -31,11 +32,10 @@ import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.ProducerListener;
 
 /**
- * Auto-configuration for Spring for Apache Kafka.
+ * {@link EnableAutoConfiguration Auto-configuration} for Apache Kafka.
  *
  * @author Gary Russell
- * @since 1.5
- *
+ * @since 1.5.0
  */
 @Configuration
 @ConditionalOnClass(KafkaTemplate.class)
@@ -51,9 +51,11 @@ public class KafkaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(KafkaTemplate.class)
-	public KafkaTemplate<?, ?> kafkaTemplate(ProducerFactory<Object, Object> kafkaProducerFactory,
+	public KafkaTemplate<?, ?> kafkaTemplate(
+			ProducerFactory<Object, Object> kafkaProducerFactory,
 			ProducerListener<Object, Object> kafkaProducerListener) {
-		KafkaTemplate<Object, Object> kafkaTemplate = new KafkaTemplate<Object, Object>(kafkaProducerFactory);
+		KafkaTemplate<Object, Object> kafkaTemplate =
+				new KafkaTemplate<Object, Object>(kafkaProducerFactory);
 		kafkaTemplate.setProducerListener(kafkaProducerListener);
 		kafkaTemplate.setDefaultTopic(this.properties.getTemplate().getDefaultTopic());
 		return kafkaTemplate;
@@ -65,21 +67,18 @@ public class KafkaAutoConfiguration {
 		return new LoggingProducerListener<Object, Object>();
 	}
 
-	@Configuration
-	protected static class ConnectionConfig {
+	@Bean
+	@ConditionalOnMissingBean(ConsumerFactory.class)
+	public ConsumerFactory<?, ?> kafkaConsumerFactory() {
+		return new DefaultKafkaConsumerFactory<Object, Object>(
+				this.properties.buildConsumerProperties());
+	}
 
-		@Bean
-		@ConditionalOnMissingBean(ConsumerFactory.class)
-		public ConsumerFactory<?, ?> kafkaConsumerFactory(KafkaProperties properties) {
-			return new DefaultKafkaConsumerFactory<Object, Object>(properties.buildConsumerProperties());
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(ProducerFactory.class)
-		public ProducerFactory<?, ?> kafkaProducerFactory(KafkaProperties properties) {
-			return new DefaultKafkaProducerFactory<Object, Object>(properties.buildProducerProperties());
-		}
-
+	@Bean
+	@ConditionalOnMissingBean(ProducerFactory.class)
+	public ProducerFactory<?, ?> kafkaProducerFactory() {
+		return new DefaultKafkaProducerFactory<Object, Object>(
+				this.properties.buildProducerProperties());
 	}
 
 }

@@ -26,11 +26,10 @@ import org.springframework.kafka.config.KafkaListenerConfigUtils;
 import org.springframework.kafka.core.ConsumerFactory;
 
 /**
- * Adds {@link EnableKafka} if present on the classpath.
+ * Configuration for Kafka annotation-driven support.
  *
  * @author Gary Russell
- * @since 1.5
- *
+ * @since 1.5.0
  */
 @Configuration
 @ConditionalOnClass(EnableKafka.class)

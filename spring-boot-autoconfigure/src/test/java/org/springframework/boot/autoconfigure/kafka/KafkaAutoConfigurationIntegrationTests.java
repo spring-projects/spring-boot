@@ -35,18 +35,17 @@ import org.springframework.messaging.handler.annotation.Header;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for Kafka Auto-configuration.
+ * Integration tests for {@link KafkaAutoConfiguration}.
  *
  * @author Gary Russell
- * @since 1.5
- *
  */
 public class KafkaAutoConfigurationIntegrationTests {
 
 	private static final String TEST_TOPIC = "testTopic";
 
 	@ClassRule
-	public static final KafkaEmbedded kafkaEmbedded = new KafkaEmbedded(1, true, TEST_TOPIC);
+	public static final KafkaEmbedded kafkaEmbedded =
+			new KafkaEmbedded(1, true, TEST_TOPIC);
 
 	private AnnotationConfigApplicationContext context;
 
@@ -59,7 +58,8 @@ public class KafkaAutoConfigurationIntegrationTests {
 
 	@Test
 	public void testEndToEnd() throws Exception {
-		load(KafkaConfig.class, "spring.kafka.bootstrap-servers:" + kafkaEmbedded.getBrokersAsString(),
+		load(KafkaConfig.class,
+				"spring.kafka.bootstrap-servers:" + kafkaEmbedded.getBrokersAsString(),
 				"spring.kafka.consumer.group-id=testGroup",
 				"spring.kafka.consumer.auto-offset-reset=earliest");
 		@SuppressWarnings("unchecked")
@@ -103,7 +103,8 @@ public class KafkaAutoConfigurationIntegrationTests {
 		private volatile String key;
 
 		@KafkaListener(topics = TEST_TOPIC)
-		public void listen(String foo, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
+		public void listen(String foo,
+				@Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
 			this.received = foo;
 			this.key = key;
 			this.latch.countDown();

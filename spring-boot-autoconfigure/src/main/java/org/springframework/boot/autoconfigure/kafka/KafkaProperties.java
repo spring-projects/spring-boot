@@ -35,13 +35,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
 
 /**
- * Spring for Apache Kafka Auto-configuration properties.
- *
+ * Configuration properties for Spring for Apache Kafka.
+ * <p/>
  * Users should refer to kafka documentation for complete descriptions of these
  * properties.
  *
  * @author Gary Russell
- * @since 1.5
+ * @author Stephane Nicoll
+ * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "spring.kafka")
 public class KafkaProperties {
@@ -62,7 +63,8 @@ public class KafkaProperties {
 	 * Comma-delimited list of host:port pairs to use for establishing the initial
 	 * connection to the Kafka cluster.
 	 */
-	private List<String> bootstrapServers = new ArrayList<String>(Collections.singletonList("localhost:9092"));
+	private List<String> bootstrapServers = new ArrayList<String>(Collections.singletonList(
+			"localhost:9092"));
 
 	/**
 	 * Id to pass to the server when making requests; used for server-side logging.
@@ -117,25 +119,30 @@ public class KafkaProperties {
 			properties.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, this.ssl.getKeyPassword());
 		}
 		if (this.ssl.getKeystoreLocation() != null) {
-			properties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, resourceToPath(this.ssl.getKeystoreLocation()));
+			properties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG,
+					resourceToPath(this.ssl.getKeystoreLocation()));
 		}
 		if (this.ssl.getKeystorePassword() != null) {
-			properties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, this.ssl.getKeystorePassword());
+			properties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG,
+					this.ssl.getKeystorePassword());
 		}
 		if (this.ssl.getTruststoreLocation() != null) {
-			properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, resourceToPath(this.ssl.getTruststoreLocation()));
+			properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
+					resourceToPath(this.ssl.getTruststoreLocation()));
 		}
 		if (this.ssl.getTruststorePassword() != null) {
-			properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, this.ssl.getTruststorePassword());
+			properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG,
+					this.ssl.getTruststorePassword());
 		}
 		return properties;
 	}
 
 	/**
-	 * Use this method to create an initial map of consumer properties from the
-	 * boot properties. This allows you to add additional properties, if necessary,
-	 * and override the default kafkaConsumerFactory bean.
-	 * @return the properties.
+	 * Create an initial map of consumer properties from the state of this instance.
+	 * <p>This allows you to add additional properties, if necessary, and override the
+	 * default kafkaConsumerFactory bean.
+	 * @return the consumer properties initialized with the customizations defined on
+	 * this instance
 	 */
 	public Map<String, Object> buildConsumerProperties() {
 		Map<String, Object> props = buildCommonProperties();
@@ -144,10 +151,11 @@ public class KafkaProperties {
 	}
 
 	/**
-	 * Use this method to create an initial map of producer properties from the
-	 * boot properties. This allows you to add additional properties, if necessary,
-	 * and override the default kafkaProducerFactory bean.
-	 * @return the properties.
+	 * Create an initial map of producer properties from the state of this instance.
+	 * <p>This allows you to add additional properties, if necessary, and override the
+	 * default kafkaProducerFactory bean.
+	 * @return the producer properties initialized with the customizations defined on
+	 * this instance
 	 */
 	public Map<String, Object> buildProducerProperties() {
 		Map<String, Object> props = buildCommonProperties();
@@ -155,12 +163,13 @@ public class KafkaProperties {
 		return props;
 	}
 
-	public static String resourceToPath(Resource resource) {
+	private static String resourceToPath(Resource resource) {
 		try {
 			return resource.getFile().getAbsolutePath();
 		}
-		catch (IOException e) {
-			throw new IllegalStateException("Resource must be on a file system", e);
+		catch (IOException ex) {
+			throw new IllegalStateException(String.format(
+					"Resource '%s' must be on a file system", resource), ex);
 		}
 	}
 
@@ -172,7 +181,7 @@ public class KafkaProperties {
 		 * Frequency in milliseconds that the consumer offsets are auto-committed to
 		 * Kafka if 'enable.auto.commit' true.
 		 */
-		private Long autoCommitIntervalMs;
+		private Long autoCommitInterval;
 
 		/**
 		 * What to do when there is no initial offset in Kafka or if the current offset
@@ -197,16 +206,16 @@ public class KafkaProperties {
 		private Boolean enableAutoCommit;
 
 		/**
-		 * Maximum amount of time the server will block before answering the fetch
-		 * request if there isn't sufficient data to immediately satisfy the requirement
-		 * given by fetch.min.bytes.
+		 * Maximum amount of time in milliseconds the server will block before answering
+		 * the fetch request if there isn't sufficient data to immediately satisfy the
+		 * requirement given by "fetch.min.bytes".
 		 */
-		private Integer fetchMaxWaitMs;
+		private Integer fetchMaxWait;
 
 		/**
-		 * Minimum amount of data the server should return for a fetch request.
+		 * Minimum amount of data the server should return for a fetch request in bytes.
 		 */
-		private Integer fetchMinBytes;
+		private Integer fetchMinSize;
 
 		/**
 		 * Unique string that identifies the consumer group this consumer belongs to.
@@ -214,19 +223,17 @@ public class KafkaProperties {
 		private String groupId;
 
 		/**
-		 * Expected time between heartbeats to the consumer coordinator.
+		 * Expected time in milliseconds between heartbeats to the consumer coordinator.
 		 */
-		private Integer heartbeatIntervalMs;
+		private Integer heartbeatInterval;
 
 		/**
-		 * Deserializer class for key that implements the
-		 * org.apache.kafka.common.serialization.Deserializer interface.
+		 * Deserializer class for keys.
 		 */
 		private Class<?> keyDeserializer = StringDeserializer.class;
 
 		/**
-		 * Deserializer class for value that implements the
-		 * org.apache.kafka.common.serialization.Deserializer interface.
+		 * Deserializer class for values.
 		 */
 		private Class<?> valueDeserializer = StringDeserializer.class;
 
@@ -234,12 +241,12 @@ public class KafkaProperties {
 			return this.ssl;
 		}
 
-		public Long getAutoCommitIntervalMs() {
-			return this.autoCommitIntervalMs;
+		public Long getAutoCommitInterval() {
+			return this.autoCommitInterval;
 		}
 
-		public void setAutoCommitIntervalMs(Long autoCommitIntervalMs) {
-			this.autoCommitIntervalMs = autoCommitIntervalMs;
+		public void setAutoCommitInterval(Long autoCommitInterval) {
+			this.autoCommitInterval = autoCommitInterval;
 		}
 
 		public String getAutoOffsetReset() {
@@ -274,20 +281,20 @@ public class KafkaProperties {
 			this.enableAutoCommit = enableAutoCommit;
 		}
 
-		public Integer getFetchMaxWaitMs() {
-			return this.fetchMaxWaitMs;
+		public Integer getFetchMaxWait() {
+			return this.fetchMaxWait;
 		}
 
-		public void setFetchMaxWaitMs(Integer fetchMaxWaitMs) {
-			this.fetchMaxWaitMs = fetchMaxWaitMs;
+		public void setFetchMaxWait(Integer fetchMaxWait) {
+			this.fetchMaxWait = fetchMaxWait;
 		}
 
-		public Integer getFetchMinBytes() {
-			return this.fetchMinBytes;
+		public Integer getFetchMinSize() {
+			return this.fetchMinSize;
 		}
 
-		public void setFetchMinBytes(Integer fetchMinBytes) {
-			this.fetchMinBytes = fetchMinBytes;
+		public void setFetchMinSize(Integer fetchMinSize) {
+			this.fetchMinSize = fetchMinSize;
 		}
 
 		public String getGroupId() {
@@ -298,12 +305,12 @@ public class KafkaProperties {
 			this.groupId = groupId;
 		}
 
-		public Integer getHeartbeatIntervalMs() {
-			return this.heartbeatIntervalMs;
+		public Integer getHeartbeatInterval() {
+			return this.heartbeatInterval;
 		}
 
-		public void setHeartbeatIntervalMs(Integer heartbeatIntervalMs) {
-			this.heartbeatIntervalMs = heartbeatIntervalMs;
+		public void setHeartbeatInterval(Integer heartbeatInterval) {
+			this.heartbeatInterval = heartbeatInterval;
 		}
 
 		public Class<?> getKeyDeserializer() {
@@ -324,8 +331,8 @@ public class KafkaProperties {
 
 		public Map<String, Object> buildProperties() {
 			Map<String, Object> properties = new HashMap<String, Object>();
-			if (this.autoCommitIntervalMs != null) {
-				properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, this.autoCommitIntervalMs);
+			if (this.autoCommitInterval != null) {
+				properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, this.autoCommitInterval);
 			}
 			if (this.autoOffsetReset != null) {
 				properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, this.autoOffsetReset);
@@ -339,17 +346,17 @@ public class KafkaProperties {
 			if (this.enableAutoCommit != null) {
 				properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, this.enableAutoCommit);
 			}
-			if (this.fetchMaxWaitMs != null) {
-				properties.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, this.fetchMaxWaitMs);
+			if (this.fetchMaxWait != null) {
+				properties.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, this.fetchMaxWait);
 			}
-			if (this.fetchMinBytes != null) {
-				properties.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, this.fetchMinBytes);
+			if (this.fetchMinSize != null) {
+				properties.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, this.fetchMinSize);
 			}
 			if (this.groupId != null) {
 				properties.put(ConsumerConfig.GROUP_ID_CONFIG, this.groupId);
 			}
-			if (this.heartbeatIntervalMs != null) {
-				properties.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, this.heartbeatIntervalMs);
+			if (this.heartbeatInterval != null) {
+				properties.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, this.heartbeatInterval);
 			}
 			if (this.keyDeserializer != null) {
 				properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, this.keyDeserializer);
@@ -383,8 +390,8 @@ public class KafkaProperties {
 		private final Ssl ssl = new Ssl();
 
 		/**
-		 * Number of acknowledgments the producer requires the leader to have
-		 * received before considering a request complete.
+		 * Number of acknowledgments the producer requires the leader to have received
+		 * before considering a request complete.
 		 */
 		private String acks;
 
@@ -416,21 +423,19 @@ public class KafkaProperties {
 		private String compressionType;
 
 		/**
-		 * Serializer class for key that implements the
-		 * org.apache.kafka.common.serialization.Serializer interface.
+		 * Serializer class for keys.
 		 */
 		private Class<?> keySerializer = StringSerializer.class;
+
+		/**
+		 * Serializer class for values.
+		 */
+		private Class<?> valueSerializer = StringSerializer.class;
 
 		/**
 		 * When greater than zero, enables retrying of failed sends.
 		 */
 		private Integer retries;
-
-		/**
-		 * Serializer class for value that implements the
-		 * org.apache.kafka.common.serialization.Serializer interface.
-		 */
-		private Class<?> valueSerializer = StringSerializer.class;
 
 		public Ssl getSsl() {
 			return this.ssl;
@@ -492,20 +497,20 @@ public class KafkaProperties {
 			this.keySerializer = keySerializer;
 		}
 
-		public Integer getRetries() {
-			return this.retries;
-		}
-
-		public void setRetries(Integer retries) {
-			this.retries = retries;
-		}
-
 		public Class<?> getValueSerializer() {
 			return this.valueSerializer;
 		}
 
 		public void setValueSerializer(Class<?> valueSerializer) {
 			this.valueSerializer = valueSerializer;
+		}
+
+		public Integer getRetries() {
+			return this.retries;
+		}
+
+		public void setRetries(Integer retries) {
+			this.retries = retries;
 		}
 
 		public Map<String, Object> buildProperties() {
@@ -593,12 +598,14 @@ public class KafkaProperties {
 		private Long pollTimeout;
 
 		/**
-		 * Number of records between offset commits when ackMode is COUNT or COUNT_TIME.
+		 * Number of records between offset commits when ackMode is "COUNT" or
+		 * "COUNT_TIME".
 		 */
 		private Integer ackCount;
 
 		/**
-		 * Time in milliseconds between offset commits when ackMode is TIME or COUNT_TIME.
+		 * Time in milliseconds between offset commits when ackMode is "TIME" or
+		 * "COUNT_TIME".
 		 */
 		private Long ackTime;
 

@@ -22,11 +22,10 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.listener.config.ContainerProperties;
 
 /**
- * Default configurer for Kafka listener container factories.
+ * Configure {@link ConcurrentKafkaListenerContainerFactory} with sensible defaults.
  *
  * @author Gary Russell
- * @since 1.5
- *
+ * @since 1.5.0
  */
 public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 
@@ -43,8 +42,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	/**
 	 * Configure the specified Kafka listener container factory. The factory can be
 	 * further tuned and default settings can be overridden.
-	 * @param listenerContainerFactory the {@link SimpleKafkaListenerContainerFactory} instance to
-	 * configure
+	 * @param listenerContainerFactory the {@link ConcurrentKafkaListenerContainerFactory}
+	 * instance to configure
 	 * @param consumerFactory the {@link ConsumerFactory} to use
 	 */
 	public void configure(ConcurrentKafkaListenerContainerFactory<Object, Object> listenerContainerFactory,

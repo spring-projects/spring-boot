@@ -4452,27 +4452,34 @@ throw an `AmqpRejectAndDontRequeueException` to signal the message should be rej
 This is the mechanism used when retries are enabled and the maximum delivery attempts are
 reached.
 
+
+
 [[boot-features-kafka]]
 
 === Apache Kafka Support
 
-http://kafka.apache.org/[Apache Kafa] is supported by providing auto-configuration of the `spring-kafka` project.
+http://kafka.apache.org/[Apache Kafa] is supported by providing auto-configuration of the
+`spring-kafka` project.
 
-Kafka configuration is controlled by external configuration properties in `spring.kafka.*`. For example, you might
-declare the following section in `application.properties`:
+Kafka configuration is controlled by external configuration properties in
+`spring.kafka.*`. For example, you might declare the following section in
+`application.properties`:
 
 [source,properties,indent=0]
 ----
-spring.kafka.bootstrap-servers=localhost:9092
-spring.kafka.consumer.group-id=myGroup
+	spring.kafka.bootstrap-servers=localhost:9092
+	spring.kafka.consumer.group-id=myGroup
 ----
 
 See {sc-spring-boot-autoconfigure}/kafka/KafkaProperties.{sc-ext}[`KafkaProperties`]
 for more of the supported options.
 
+
+
 === Sending a Message
 
-Spring's `KafkaTemplate` is auto-configured and you can autowire them directly in your own beans:
+Spring's `KafkaTemplate` is auto-configured and you can autowire them directly in your own
+beans:
 
 [source,java,indent=0]
 ----
@@ -4491,7 +4498,17 @@ public class MyBean {
 }
 ----
 
+
+
 === Receiving a Message
+
+When the Apache Kafka infrastructure is present, any bean can be annotated with
+`@KafkaListener` to create a listener endpoint. If no `KafkaListenerContainerFactory`
+has been defined, a default one is configured automatically with keys defined in
+`spring.kafka.listener.*`.
+
+The following component creates a listener endpoint on the `someTopic` topic:
+
 
 [source,java,indent=0]
 ----
@@ -4506,30 +4523,38 @@ public class MyBean {
 	}
 ----
 
+
+
 [[kafka-extra-props]]
 === Additional Kafka Properties
 
-The properties supported by auto configuration are shown in <<common-application-properties>>.
-Note that these properties (hyphenated or camelCase) map directly to the Apache Kafka dotted properties, refer
-to the Apache Kafka documentation for details.
-The first few of these properties apply to both producers and consumers, but can be specified at the producer or
-consumer level if you wish to use different values for each.
-Apache Kafka designates properties with an importance: HIGH, MEDIUM and LOW.
-Spring Boot auto configuration supports all HIGH importance properties, some selected MEDIUM and LOW,
+The properties supported by auto configuration are shown in
+<<common-application-properties>>. Note that these properties (hyphenated or camelCase)
+map directly to the Apache Kafka dotted properties for the most part, refer to the Apache
+Kafka documentation for details.
+
+The first few of these properties apply to both producers and consumers, but can be
+specified at the producer or consumer level if you wish to use different values for each.
+Apache Kafka designates properties with an importance: HIGH, MEDIUM and LOW. Spring Boot
+auto configuration supports all HIGH importance properties, some selected MEDIUM and LOW,
 and any that do not have a default value.
-Only a subset of the properties supported by Kafka are available via the `KafkaProperties` class.
-If you wish to configure the producer or consumer with additional properties, you can override the producer factory
-and/or consumer factory bean, adding additional properties, for example:
+
+Only a subset of the properties supported by Kafka are available via the `KafkaProperties`
+class. If you wish to configure the producer or consumer with additional properties, you
+can override the producer factory and/or consumer factory bean, adding additional
+properties, for example:
 
 [source,java,indent=0]
 ----
-@Bean
-public ProducerFactory<?, ?> kafkaProducerFactory(KafkaProperties properties) {
-	Map<String, Object> producerProperties = properties.buildProducerProperties();
-	producerProperties.put("some.property", "some.value");
-	return new DefaultKafkaProducerFactory<Object, Object>(producerProperties);
-}
+	@Bean
+	public ProducerFactory<?, ?> kafkaProducerFactory(KafkaProperties properties) {
+		Map<String, Object> producerProperties = properties.buildProducerProperties();
+		producerProperties.put("some.property", "some.value");
+		return new DefaultKafkaProducerFactory<Object, Object>(producerProperties);
+	}
 ----
+
+
 
 [[boot-features-restclient]]
 == Calling REST services

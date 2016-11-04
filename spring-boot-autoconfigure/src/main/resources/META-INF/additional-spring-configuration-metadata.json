@@ -410,6 +410,76 @@
     ]
   },
   {
+    "name": "spring.kafka.consumer.auto-offset-reset",
+    "values": [
+      {
+        "value": "earliest",
+        "description": "Automatically reset the offset to the earliest offset."
+      },
+      {
+        "value": "latest",
+        "description": "Automatically reset the offset to the latest offset."
+      },
+      {
+        "value": "none",
+        "description": "Throw exception to the consumer if no previous offset is found for the consumer's group."
+      },
+      {
+        "value": "exception",
+        "description": "Throw exception to the consumer."
+      }
+    ],
+    "providers": [
+      {
+        "name": "any"
+      }
+    ]
+  },
+  {
+    "name": "spring.kafka.consumer.key-deserializer",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.apache.kafka.common.serialization.Deserializer"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.kafka.consumer.value-deserializer",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.apache.kafka.common.serialization.Deserializer"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.kafka.producer.key-serializer",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.apache.kafka.common.serialization.Serializer"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.kafka.producer.value-serializer",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.apache.kafka.common.serialization.Serializer"
+        }
+      }
+    ]
+  },
+  {
     "name": "spring.http.converters.preferred-json-mapper",
     "values": [
       {
