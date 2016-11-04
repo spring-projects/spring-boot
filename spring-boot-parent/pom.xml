@@ -666,6 +666,14 @@
 						<enabled>true</enabled>
 					</snapshots>
 				</repository>
+				<repository>
+					<id>rabbit-milestones</id>
+					<name>Rabbit Milestones</name>
+					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
 			</repositories>
 			<pluginRepositories>
 				<pluginRepository>
@@ -721,6 +729,14 @@
 					<url>http://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>rabbit-milestones</id>
+					<name>Rabbit Milestones</name>
+					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
+					<snapshots>
+						<enabled>false</enabled>
 					</snapshots>
 				</repository>
 			</repositories>
@@ -791,6 +807,14 @@
 					<url>http://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>rabbit-milestones</id>
+					<name>Rabbit Milestones</name>
+					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
+					<snapshots>
+						<enabled>false</enabled>
 					</snapshots>
 				</repository>
 			</repositories>
