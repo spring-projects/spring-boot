@@ -40,7 +40,6 @@ import static com.couchbase.client.java.query.Select.select;
    kriskrishna
  * @since 1.4.0
  */
-@Component
 public class CouchBaseHealthIndicator extends AbstractHealthIndicator {
 
 	private CouchbaseOperations couchbaseOperations;
