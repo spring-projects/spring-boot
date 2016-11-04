@@ -18,33 +18,52 @@ package org.springframework.boot.actuate.health;
 
 import java.util.List;
 
+import com.couchbase.client.java.query.N1qlQuery;
+import com.couchbase.client.java.query.N1qlQueryResult;
+import com.couchbase.client.java.query.Statement;
 import com.couchbase.client.java.util.features.Version;
 
+import org.springframework.boot.actuate.health.AbstractHealthIndicator;
+import org.springframework.boot.actuate.health.Health;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import static com.couchbase.client.java.query.Select.select;
+
 
 /**
  * {@link HealthIndicator} for Couchbase.
  *
  * @author Eddú Meléndez
+   kriskrishna
  * @since 1.4.0
  */
-public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
+@Component
+public class CouchBaseHealthIndicator extends AbstractHealthIndicator {
 
 	private CouchbaseOperations couchbaseOperations;
 
-	public CouchbaseHealthIndicator(CouchbaseOperations couchbaseOperations) {
+	public CouchBaseHealthIndicator(CouchbaseOperations couchbaseOperations) {
 		Assert.notNull(couchbaseOperations, "CouchbaseOperations must not be null");
 		this.couchbaseOperations = couchbaseOperations;
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		List<Version> versions = this.couchbaseOperations.getCouchbaseClusterInfo()
-				.getAllVersions();
-		builder.up().withDetail("versions",
-				StringUtils.collectionToCommaDelimitedString(versions));
+		try {
+			List<Version> versions = this.couchbaseOperations.getCouchbaseClusterInfo().getAllVersions();
+			Statement statement = select("*").from("system:keyspaces");
+			N1qlQuery q = N1qlQuery.simple(statement);
+			N1qlQueryResult results = this.couchbaseOperations.queryN1QL(q);
+			if (results.finalSuccess()) {
+				builder.up().withDetail("versions", StringUtils.collectionToCommaDelimitedString(versions));
+				return;
+			}
+		} catch (Exception ex) {
+			builder.down(ex);
+		}
 	}
 
 }
