@@ -110,7 +110,6 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	public void cloudFoundryPlatformActiveAndCloudControllerUrlNotPresent()
 			throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context, "VCAP_APPLICATION:---",
-				"management.cloudfoundry.enabled:true",
 				"vcap.application.application_id:my-app-id");
 		this.context.refresh();
 		CloudFoundryEndpointHandlerMapping handlerMapping1 = this.context.getBean(
@@ -126,7 +125,6 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 
 	private CloudFoundryEndpointHandlerMapping x() {
 		EnvironmentTestUtils.addEnvironment(this.context, "VCAP_APPLICATION:---",
-				"management.cloudfoundry.enabled:true",
 				"vcap.application.application_id:my-app-id",
 				"vcap.application.cf_api:http://my-cloud-controller.com");
 		this.context.refresh();

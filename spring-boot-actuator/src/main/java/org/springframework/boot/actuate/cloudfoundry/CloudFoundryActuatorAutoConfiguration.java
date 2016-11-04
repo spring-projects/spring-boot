@@ -45,7 +45,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
  * @since 1.5.0
  */
 @Configuration
-@ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled", matchIfMissing = true)
 @ConditionalOnBean(MvcEndpoints.class)
 @AutoConfigureAfter(EndpointWebMvcAutoConfiguration.class)
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
