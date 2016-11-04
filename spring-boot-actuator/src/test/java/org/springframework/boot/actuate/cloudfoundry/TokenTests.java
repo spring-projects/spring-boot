@@ -24,7 +24,6 @@ import org.springframework.boot.actuate.cloudfoundry.CloudFoundryAuthorizationEx
 import org.springframework.util.Base64Utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.actuate.cloudfoundry.AuthorizationExceptionMatcher.withReason;
 
 /**
  * Tests for {@link Token}.
@@ -38,7 +37,8 @@ public class TokenTests {
 
 	@Test
 	public void invalidJwtShouldThrowException() throws Exception {
-		this.thrown.expect(withReason(Reason.INVALID_TOKEN));
+		this.thrown
+				.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_TOKEN));
 		new Token("invalid-token");
 	}
 
@@ -46,7 +46,8 @@ public class TokenTests {
 	public void invalidJwtClaimsShouldThrowException() throws Exception {
 		String header = "{\"alg\": \"RS256\", \"kid\": \"key-id\", \"typ\": \"JWT\"}";
 		String claims = "invalid-claims";
-		this.thrown.expect(withReason(Reason.INVALID_TOKEN));
+		this.thrown
+				.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_TOKEN));
 		new Token(Base64Utils.encodeToString(header.getBytes()) + "."
 				+ Base64Utils.encodeToString(claims.getBytes()));
 	}
@@ -55,7 +56,8 @@ public class TokenTests {
 	public void invalidJwtHeaderShouldThrowException() throws Exception {
 		String header = "invalid-header";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\"}";
-		this.thrown.expect(withReason(Reason.INVALID_TOKEN));
+		this.thrown
+				.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_TOKEN));
 		new Token(Base64Utils.encodeToString(header.getBytes()) + "."
 				+ Base64Utils.encodeToString(claims.getBytes()));
 	}
@@ -64,7 +66,8 @@ public class TokenTests {
 	public void emptyJwtSignatureShouldThrowException() throws Exception {
 		String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0b3B0YWwu"
 				+ "Y29tIiwiZXhwIjoxNDI2NDIwODAwLCJhd2Vzb21lIjp0cnVlfQ.";
-		this.thrown.expect(withReason(Reason.INVALID_TOKEN));
+		this.thrown
+				.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_TOKEN));
 		new Token(token);
 	}
 
@@ -90,7 +93,8 @@ public class TokenTests {
 		String header = "{\"kid\": \"key-id\",  \"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\"}";
 		Token token = createToken(header, claims);
-		this.thrown.expect(withReason(Reason.INVALID_TOKEN));
+		this.thrown
+				.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_TOKEN));
 		token.getSignatureAlgorithm();
 	}
 
@@ -99,7 +103,8 @@ public class TokenTests {
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"key-id\", \"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647}";
 		Token token = createToken(header, claims);
-		this.thrown.expect(withReason(Reason.INVALID_TOKEN));
+		this.thrown
+				.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_TOKEN));
 		token.getIssuer();
 	}
 
@@ -108,7 +113,8 @@ public class TokenTests {
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"key-id\", \"typ\": \"JWT\"}";
 		String claims = "{\"iss\": \"http://localhost:8080/uaa/oauth/token\"" + "}";
 		Token token = createToken(header, claims);
-		this.thrown.expect(withReason(Reason.INVALID_TOKEN));
+		this.thrown
+				.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_TOKEN));
 		token.getExpiry();
 	}
 
