@@ -28,6 +28,7 @@ import org.springframework.util.StringUtils;
  * {@link HealthIndicator} for Couchbase.
  *
  * @author Eddú Meléndez
+ * @author kriskrishna
  * @since 1.4.0
  */
 public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
