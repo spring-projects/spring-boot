@@ -1,14 +1,12 @@
-import org.springframework.jms.core.JmsTemplate
-
-@SpringBootTest(classes=JmsExample)
-class JmsTests {
+@SpringBootTest(classes=App)
+class AppTests {
 
 	@Autowired
-	JmsTemplate jmsTemplate
+	MyService myService
 
 	@Test
 	void test() {
-		assertNotNull(jmsTemplate)
+		assertNotNull(myService)
 	}
 
 }
