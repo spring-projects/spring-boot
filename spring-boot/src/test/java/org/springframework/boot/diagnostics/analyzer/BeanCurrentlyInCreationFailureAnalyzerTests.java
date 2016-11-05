@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Tests for {@link BeanCurrentlyInCreationFailureAnalyzer}
+ * Tests for {@link BeanCurrentlyInCreationFailureAnalyzer}.
  *
  * @author Andy Wilkinson
  */
@@ -66,14 +66,6 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines.get(7)).startsWith(
 				"|  three defined in " + CyclicBeanMethodsConfiguration.class.getName());
 		assertThat(lines.get(8)).isEqualTo("└─────┘");
-		assertThat(analysis.getDescription()).startsWith(
-				"The dependencies of some of the beans in the application context form a cycle:");
-		assertThat(analysis.getDescription()).contains(
-				"one defined in " + CyclicBeanMethodsConfiguration.class.getName());
-		assertThat(analysis.getDescription()).contains(
-				"two defined in " + CyclicBeanMethodsConfiguration.class.getName());
-		assertThat(analysis.getDescription()).contains(
-				"three defined in " + CyclicBeanMethodsConfiguration.class.getName());
 	}
 
 	@Test
