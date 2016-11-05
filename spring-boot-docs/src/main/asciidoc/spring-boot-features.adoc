@@ -4464,11 +4464,11 @@ There are three main approaches to `RestTemplate` customization, depending on ho
 you want the customizations to apply.
 
 To make the scope of any customizations as narrow as possible, inject the auto-configured
-`RestTemplateBuilder` and then calls its methods as required. Each method call returns a
+`RestTemplateBuilder` and then call its methods as required. Each method call returns a
 new `RestTemplateBuilder` instance so the customizations will only affect this use of
 the builder.
 
-To make a application-wide, additive customization a `RestTemplateCustomizer` bean can be
+To make an application-wide, additive customization a `RestTemplateCustomizer` bean can be
 used. All such beans are automatically registered with the auto-configured
 `RestTemplateBuilder` and will be applied to any templates that are built with it.
 

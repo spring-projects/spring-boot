@@ -49,7 +49,7 @@ enum AccessLevel {
 
 	/**
 	 * Returns if the access level should allow access to the specified endpoint path.
-	 * @param endpointPath the endpoitn path
+	 * @param endpointPath the endpoint path
 	 * @return {@code true} if access is allowed
 	 */
 	public boolean isAccessAllowed(String endpointPath) {

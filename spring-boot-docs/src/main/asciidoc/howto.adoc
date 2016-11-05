@@ -3079,7 +3079,7 @@ Once the war is working we make it executable by adding a `main` method to our
 ====
 If you intend to start your application as a war or as an executable application, you
 need to share the customizations of the builder in a method that is both available to the
-`ServletInitializr` callback and the `main` method, something like:
+`SpringBootServletInitializer` callback and the `main` method, something like:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
