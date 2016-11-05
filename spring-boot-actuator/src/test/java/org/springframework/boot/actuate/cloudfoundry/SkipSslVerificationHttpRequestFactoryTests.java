@@ -45,7 +45,7 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void restCallToSelfSignedServershouldNotThrowSslException() throws Exception {
+	public void restCallToSelfSignedServerShouldNotThrowSslException() throws Exception {
 		String httpsUrl = getHttpsUrl();
 		SkipSslVerificationHttpRequestFactory requestFactory = new SkipSslVerificationHttpRequestFactory();
 		RestTemplate restTemplate = new RestTemplate(requestFactory);
