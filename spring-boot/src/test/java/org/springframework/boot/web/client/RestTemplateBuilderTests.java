@@ -278,6 +278,14 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
+	public void requestFactoryPackagePrivateClassShouldApply() throws Exception {
+		RestTemplate template = this.builder
+				.requestFactory(TestClientHttpRequestFactory.class).build();
+		assertThat(template.getRequestFactory())
+				.isInstanceOf(TestClientHttpRequestFactory.class);
+	}
+
+	@Test
 	public void requestFactoryWhenFactoryIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("RequestFactory must not be null");
@@ -547,6 +555,10 @@ public class RestTemplateBuilderTests {
 	}
 
 	public static class RestTemplateSubclass extends RestTemplate {
+
+	}
+
+	static class TestClientHttpRequestFactory extends SimpleClientHttpRequestFactory {
 
 	}
 
