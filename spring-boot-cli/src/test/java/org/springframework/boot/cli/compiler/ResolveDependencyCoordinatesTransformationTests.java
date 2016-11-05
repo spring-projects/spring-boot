@@ -43,6 +43,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
+import org.springframework.boot.cli.compiler.dependencies.SpringBootDependenciesDependencyManagement;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,6 +68,10 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 			ArtifactCoordinatesResolver.class);
 
 	private final DependencyResolutionContext resolutionContext = new DependencyResolutionContext() {
+
+		{
+			addDependencyManagement(new SpringBootDependenciesDependencyManagement());
+		}
 
 		@Override
 		public ArtifactCoordinatesResolver getArtifactCoordinatesResolver() {

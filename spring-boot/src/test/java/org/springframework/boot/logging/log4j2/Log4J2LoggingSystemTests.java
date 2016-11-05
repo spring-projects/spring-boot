@@ -38,6 +38,7 @@ import org.junit.Test;
 
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.testutil.Matched;
 import org.springframework.util.FileCopyUtils;
@@ -57,6 +58,7 @@ import static org.mockito.Mockito.verify;
  * @author Daniel Fullarton
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Ben Hale
  */
 public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
@@ -129,6 +131,28 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.debug("Hello");
 		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"))
 				.isEqualTo(1);
+	}
+
+	@Test
+	public void getLoggingConfigurations() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
+		List<LoggerConfiguration> configurations = this.loggingSystem
+				.getLoggerConfigurations();
+		assertThat(configurations).isNotEmpty();
+		assertThat(configurations.get(0).getName()).isEmpty();
+	}
+
+	@Test
+	public void getLoggingConfiguration() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
+		LoggerConfiguration configuration = this.loggingSystem
+				.getLoggerConfiguration(getClass().getName());
+		assertThat(configuration).isEqualTo(new LoggerConfiguration(getClass().getName(),
+				LogLevel.DEBUG, LogLevel.DEBUG));
 	}
 
 	@Test

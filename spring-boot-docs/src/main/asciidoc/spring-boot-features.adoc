@@ -1763,7 +1763,7 @@ version.
 NOTE: If you are using JBoss, you'll need to declare the `webjars-locator-jboss-vfs`
 dependency instead of the `webjars-locator`; otherwise all Webjars resolve as a `404`.
 
-To use cache bursting, the following configuration will configure a cache busting
+To use cache busting, the following configuration will configure a cache busting
 solution for all static resources, effectively adding a content hash in URLs, such as
 `<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`:
 
@@ -1774,16 +1774,9 @@ solution for all static resources, effectively adding a content hash in URLs, su
 ----
 
 NOTE: Links to resources are rewritten at runtime in template, thanks to a
-<<<<<<< HEAD
-`ResourceUrlEncodingFilter`, auto-configured for Thymeleaf and FreeMarker. You
-should manually declare this filter when using JSPs. Other template engines aren't
-automatically supported right now, but can be with custom template macros/helpers and the
-use of the
-=======
 `ResourceUrlEncodingFilter`, auto-configured for Thymeleaf and FreeMarker. You should
 manually declare this filter when using JSPs. Other template engines aren't automatically
 supported right now, but can be with custom template macros/helpers and the use of the
->>>>>>> 1.5.x
 {spring-javadoc}/web/servlet/resource/ResourceUrlProvider.{dc-ext}[`ResourceUrlProvider`].
 
 When loading resources dynamically with, for example, a JavaScript module loader, renaming
@@ -1827,11 +1820,7 @@ will automatically configure Spring MVC to use it.
 [[boot-features-spring-mvc-template-engines]]
 ==== Template engines
 As well as REST web services, you can also use Spring MVC to serve dynamic HTML content.
-<<<<<<< HEAD
-Spring MVC supports a variety of templating technologies including FreeMarker
-=======
 Spring MVC supports a variety of templating technologies including Thymeleaf, FreeMarker
->>>>>>> 1.5.x
 and JSPs. Many other templating engines also ship their own Spring MVC integrations.
 
 Spring Boot includes auto-configuration support for the following templating engines:
@@ -3387,9 +3376,6 @@ properties:
 [[boot-features-connecting-to-neo4j-embedded]]
 ==== Using the embedded mode
 
-NOTE: Neo4j's embedded mode is subject to a different licensing, make sure to review it
-before integrating the dependency in your application.
-
 If you add `org.neo4j:neo4j-ogm-embedded-driver` to the dependencies of your application,
 Spring Boot will automatically configure an in-process embedded instance of Neo4j that
 will not persist any data when your application shuts down. You can explicitly disable
@@ -4474,11 +4460,17 @@ configure a `RestTemplate`. For example, to add BASIC auth support you can use
 
 [[boot-features-restclient-customization]]
 === RestTemplate customization
-When a `RestTemplateBuilder` builds a `RestTemplate` it can be further customized using
-a `RestTemplateCustomizer`. Any `RestTemplateCustomizer` beans will be automatically
-added to the auto-configured `RestTemplateBuilder`. Furthermore, a new
-`RestTemplateBuilder` with additional customizers can be created by calling
-`additionalCustomizers(RestTemplateCustomizer...)`.
+There are three main approaches to `RestTemplate` customization, depending on how broadly
+you want the customizations to apply.
+
+To make the scope of any customizations as narrow as possible, inject the auto-configured
+`RestTemplateBuilder` and then call its methods as required. Each method call returns a
+new `RestTemplateBuilder` instance so the customizations will only affect this use of
+the builder.
+
+To make an application-wide, additive customization a `RestTemplateCustomizer` bean can be
+used. All such beans are automatically registered with the auto-configured
+`RestTemplateBuilder` and will be applied to any templates that are built with it.
 
 Here's an example of a customizer that configures the use of a proxy for all hosts except
 `192.168.0.5`:
@@ -4487,6 +4479,10 @@ Here's an example of a customizer that configures the use of a proxy for all hos
 ----
 include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[tag=customizer]
 ----
+
+Lastly, the most extreme (and rarely used) option is to create your own
+`RestTemplateBuilder` bean. This will switch off the auto-configuration of a
+`RestTemplateBuilder` and will prevent any `RestTemplateCustomizer` beans from being used.
 
 
 

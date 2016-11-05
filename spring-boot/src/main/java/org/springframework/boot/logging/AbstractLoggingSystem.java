@@ -16,6 +16,9 @@
 
 package org.springframework.boot.logging;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ClassUtils;
@@ -171,6 +174,36 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	protected final void applySystemProperties(Environment environment, LogFile logFile) {
 		new LoggingSystemProperties(environment).apply(logFile);
+	}
+
+	/**
+	 * Maintains a mapping between native levels and {@link LogLevel}.
+	 * @param <T> The native level type
+	 */
+	protected static class LogLevels<T> {
+
+		private final Map<LogLevel, T> systemToNative;
+
+		private final Map<T, LogLevel> nativeToSystem;
+
+		public LogLevels() {
+			this.systemToNative = new HashMap<LogLevel, T>();
+			this.nativeToSystem = new HashMap<T, LogLevel>();
+		}
+
+		public void map(LogLevel system, T nativeLevel) {
+			this.systemToNative.put(system, nativeLevel);
+			this.nativeToSystem.put(nativeLevel, system);
+		}
+
+		public LogLevel convertNativeToSystem(T level) {
+			return this.nativeToSystem.get(level);
+		}
+
+		public T convertSystemToNative(LogLevel level) {
+			return this.systemToNative.get(level);
+		}
+
 	}
 
 }

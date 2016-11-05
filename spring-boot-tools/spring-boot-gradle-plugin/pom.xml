@@ -35,12 +35,27 @@
 		</dependency>
 		<dependency>
 			<groupId>org.gradle</groupId>
+			<artifactId>gradle-base-services</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.gradle</groupId>
 			<artifactId>gradle-core</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.gradle</groupId>
-			<artifactId>gradle-base-services</artifactId>
+			<artifactId>gradle-language-java</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.gradle</groupId>
+			<artifactId>gradle-language-jvm</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.gradle</groupId>
+			<artifactId>gradle-platform-jvm</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

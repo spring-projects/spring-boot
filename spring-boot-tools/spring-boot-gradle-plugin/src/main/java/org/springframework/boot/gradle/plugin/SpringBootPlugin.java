@@ -22,9 +22,6 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.compile.JavaCompile;
-import org.gradle.util.GradleVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.gradle.agent.AgentPluginFeatures;
@@ -41,15 +38,8 @@ import org.springframework.boot.gradle.run.RunPluginFeatures;
  */
 public class SpringBootPlugin implements Plugin<Project> {
 
-	private static final Logger logger = LoggerFactory.getLogger(SpringBootPlugin.class);
-
 	@Override
 	public void apply(Project project) {
-		if (GradleVersion.current().compareTo(GradleVersion.version("2.8")) < 0) {
-			logger.warn("Spring Boot plugin's support for Gradle "
-					+ GradleVersion.current().getVersion()
-					+ " is deprecated. Please upgrade to Gradle 2.8 or later.");
-		}
 		project.getExtensions().create("springBoot", SpringBootPluginExtension.class,
 				project);
 		project.getPlugins().apply(JavaPlugin.class);
@@ -67,7 +57,6 @@ public class SpringBootPlugin implements Plugin<Project> {
 			compile.doFirst(new Action<Task>() {
 
 				@Override
-				@SuppressWarnings("deprecation")
 				public void execute(Task t) {
 					if (compile.getOptions().getEncoding() == null) {
 						compile.getOptions().setEncoding("UTF-8");

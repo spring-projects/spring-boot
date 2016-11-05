@@ -28,12 +28,8 @@ import org.springframework.boot.actuate.metrics.buffer.GaugeBuffers;
 import org.springframework.boot.actuate.metrics.export.Exporter;
 import org.springframework.boot.actuate.metrics.export.MetricCopyExporter;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
-import org.springframework.boot.actuate.metrics.repository.MetricRepository;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,12 +40,11 @@ import org.springframework.messaging.MessageChannel;
  * user-facing {@link GaugeService} and {@link CounterService} instances, and also back
  * end repositories to catch the data pumped into them.
  * <p>
- * An {@link InMemoryMetricRepository} is always created unless another
- * {@link MetricRepository} is already provided by the user. In general, even if metric
- * data needs to be stored and analysed remotely, it is recommended to use an in-memory
- * repository to buffer metric updates locally. The values can be exported (e.g. on a
- * periodic basis) using an {@link Exporter}, most implementations of which have
- * optimizations for sending data to remote repositories.
+ * In general, even if metric data needs to be stored and analysed remotely, it is
+ * recommended to use in-memory storage to buffer metric updates locally as is done by the
+ * default {@link CounterBuffers} and {@link GaugeBuffers}. The values can be exported
+ * (e.g. on a periodic basis) using an {@link Exporter}, most implementations of which
+ * have optimizations for sending data to remote repositories.
  * <p>
  * If Spring Messaging is on the classpath and a {@link MessageChannel} called
  * "metricsChannel" is also available, all metric update events are published additionally
@@ -113,20 +108,6 @@ public class MetricRepositoryAutoConfiguration {
 		public BufferGaugeService gaugeService(GaugeBuffers writer) {
 			return new BufferGaugeService(writer);
 		}
-	}
-
-	@Configuration
-	@ConditionalOnJava(value = JavaVersion.EIGHT, range = Range.OLDER_THAN)
-	@ConditionalOnMissingBean(name = "actuatorMetricRepository")
-	static class LegacyMetricRepositoryConfiguration {
-
-		@Bean
-		@ExportMetricReader
-		@ActuatorMetricWriter
-		public InMemoryMetricRepository actuatorMetricRepository() {
-			return new InMemoryMetricRepository();
-		}
-
 	}
 
 }

@@ -19,8 +19,10 @@ package org.springframework.boot.autoconfigure.web;
 import java.io.File;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,6 +74,7 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -671,6 +674,13 @@ public class ServerProperties
 		 */
 		private int acceptCount = 0;
 
+		/**
+		 * Comma-separated list of additional patterns that match jars to ignore for TLD
+		 * scanning. The special '?' and '*' characters can be used in the pattern to
+		 * match one and only one character and zero or more characters respectively.
+		 */
+		private List<String> additionalTldSkipPatterns = new ArrayList<String>();
+
 		public int getMaxThreads() {
 			return this.maxThreads;
 		}
@@ -779,6 +789,14 @@ public class ServerProperties
 			this.acceptCount = acceptCount;
 		}
 
+		public List<String> getAdditionalTldSkipPatterns() {
+			return this.additionalTldSkipPatterns;
+		}
+
+		public void setAdditionalTldSkipPatterns(List<String> additionalTldSkipPatterns) {
+			this.additionalTldSkipPatterns = additionalTldSkipPatterns;
+		}
+
 		void customizeTomcat(ServerProperties serverProperties,
 				TomcatEmbeddedServletContainerFactory factory) {
 			if (getBasedir() != null) {
@@ -818,6 +836,9 @@ public class ServerProperties
 			}
 			if (this.acceptCount > 0) {
 				customizeAcceptCount(factory);
+			}
+			if (!ObjectUtils.isEmpty(this.additionalTldSkipPatterns)) {
+				factory.getTldSkipPatterns().addAll(this.additionalTldSkipPatterns);
 			}
 		}
 
@@ -956,6 +977,7 @@ public class ServerProperties
 			valve.setPrefix(this.accesslog.getPrefix());
 			valve.setSuffix(this.accesslog.getSuffix());
 			valve.setRenameOnRotate(this.accesslog.isRenameOnRotate());
+			valve.setRotatable(this.accesslog.isRotate());
 			factory.addEngineValves(valve);
 		}
 
@@ -1001,6 +1023,11 @@ public class ServerProperties
 			private String suffix = ".log";
 
 			/**
+			 * Enable access log rotation.
+			 */
+			private boolean rotate = true;
+
+			/**
 			 * Defer inclusion of the date stamp in the file name until rotate time.
 			 */
 			private boolean renameOnRotate;
@@ -1043,6 +1070,14 @@ public class ServerProperties
 
 			public void setSuffix(String suffix) {
 				this.suffix = suffix;
+			}
+
+			public boolean isRotate() {
+				return this.rotate;
+			}
+
+			public void setRotate(boolean rotate) {
+				this.rotate = rotate;
 			}
 
 			public boolean isRenameOnRotate() {
@@ -1296,21 +1331,14 @@ public class ServerProperties
 			if (this.directBuffers != null) {
 				factory.setDirectBuffers(this.directBuffers);
 			}
-			if (this.accesslog.dir != null) {
-				factory.setAccessLogDirectory(this.accesslog.dir);
-			}
-			if (this.accesslog.pattern != null) {
-				factory.setAccessLogPattern(this.accesslog.pattern);
-			}
-			if (this.accesslog.prefix != null) {
-				factory.setAccessLogPrefix(this.accesslog.prefix);
-			}
-			if (this.accesslog.suffix != null) {
-				factory.setAccessLogSuffix(this.accesslog.suffix);
-			}
 			if (this.accesslog.enabled != null) {
 				factory.setAccessLogEnabled(this.accesslog.enabled);
 			}
+			factory.setAccessLogDirectory(this.accesslog.dir);
+			factory.setAccessLogPattern(this.accesslog.pattern);
+			factory.setAccessLogPrefix(this.accesslog.prefix);
+			factory.setAccessLogSuffix(this.accesslog.suffix);
+			factory.setAccessLogRotate(this.accesslog.rotate);
 			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
 			if (serverProperties.getMaxHttpHeaderSize() > 0) {
 				customizeMaxHttpHeaderSize(factory,
@@ -1393,6 +1421,11 @@ public class ServerProperties
 			 */
 			private File dir = new File("logs");
 
+			/**
+			 * Enable access log rotation.
+			 */
+			private boolean rotate = true;
+
 			public Boolean getEnabled() {
 				return this.enabled;
 			}
@@ -1433,6 +1466,13 @@ public class ServerProperties
 				this.dir = dir;
 			}
 
+			public boolean isRotate() {
+				return this.rotate;
+			}
+
+			public void setRotate(boolean rotate) {
+				this.rotate = rotate;
+			}
 		}
 
 	}

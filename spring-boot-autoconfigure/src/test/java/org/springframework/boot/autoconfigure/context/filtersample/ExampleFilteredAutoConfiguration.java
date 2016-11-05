@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-/**
- * Auto-configuration for Project Reactor.
- */
-package org.springframework.boot.autoconfigure.reactor;
+package org.springframework.boot.autoconfigure.context.filtersample;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class ExampleFilteredAutoConfiguration {
+
+	@Bean
+	public String anotherExample() {
+		return "fail";
+	}
+
+}

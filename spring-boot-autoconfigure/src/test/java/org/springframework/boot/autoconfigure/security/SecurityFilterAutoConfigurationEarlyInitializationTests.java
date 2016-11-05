@@ -146,7 +146,6 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
 		@RequestMapping("/")
 		public void convert() {
-			System.out.println("Hello");
 			this.conversionService.convert(new SourceType(), DestinationType.class);
 		}
 

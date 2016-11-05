@@ -189,17 +189,32 @@
 			</dependency>
 			<dependency>
 				<groupId>org.gradle</groupId>
-				<artifactId>gradle-core</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
 				<artifactId>gradle-base-services</artifactId>
 				<version>${gradle.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.gradle</groupId>
 				<artifactId>gradle-base-services-groovy</artifactId>
+				<version>${gradle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.gradle</groupId>
+				<artifactId>gradle-core</artifactId>
+				<version>${gradle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.gradle</groupId>
+				<artifactId>gradle-language-java</artifactId>
+				<version>${gradle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.gradle</groupId>
+				<artifactId>gradle-language-jvm</artifactId>
+				<version>${gradle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.gradle</groupId>
+				<artifactId>gradle-platform-jvm</artifactId>
 				<version>${gradle.version}</version>
 			</dependency>
 			<dependency>
@@ -651,6 +666,14 @@
 						<enabled>true</enabled>
 					</snapshots>
 				</repository>
+				<repository>
+					<id>rabbit-milestones</id>
+					<name>Rabbit Milestones</name>
+					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
 			</repositories>
 			<pluginRepositories>
 				<pluginRepository>
@@ -706,6 +729,14 @@
 					<url>http://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>rabbit-milestones</id>
+					<name>Rabbit Milestones</name>
+					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
+					<snapshots>
+						<enabled>false</enabled>
 					</snapshots>
 				</repository>
 			</repositories>
@@ -776,6 +807,14 @@
 					<url>http://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>rabbit-milestones</id>
+					<name>Rabbit Milestones</name>
+					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
+					<snapshots>
+						<enabled>false</enabled>
 					</snapshots>
 				</repository>
 			</repositories>

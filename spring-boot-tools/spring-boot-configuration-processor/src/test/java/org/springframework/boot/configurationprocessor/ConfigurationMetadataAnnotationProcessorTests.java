@@ -59,6 +59,7 @@ import org.springframework.boot.configurationsample.specific.BuilderPojo;
 import org.springframework.boot.configurationsample.specific.DeprecatedUnrelatedMethodPojo;
 import org.springframework.boot.configurationsample.specific.DoubleRegistrationProperties;
 import org.springframework.boot.configurationsample.specific.ExcludedTypesPojo;
+import org.springframework.boot.configurationsample.specific.GenericConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassAnnotatedGetterConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
@@ -389,6 +390,32 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Compilation failed");
 		compile(InvalidDoubleRegistrationProperties.class);
+	}
+
+	@Test
+	public void genericTypes() throws IOException {
+		ConfigurationMetadata metadata = compile(GenericConfig.class);
+		assertThat(metadata).has(Metadata.withGroup("generic").ofType(
+				"org.springframework.boot.configurationsample.specific.GenericConfig"));
+		assertThat(metadata).has(Metadata.withGroup("generic.foo").ofType(
+				"org.springframework.boot.configurationsample.specific.GenericConfig$Foo"));
+		assertThat(metadata).has(Metadata.withGroup("generic.foo.bar").ofType(
+				"org.springframework.boot.configurationsample.specific.GenericConfig$Bar"));
+		assertThat(metadata).has(Metadata.withGroup("generic.foo.bar.biz").ofType(
+				"org.springframework.boot.configurationsample.specific.GenericConfig$Bar$Biz"));
+		assertThat(metadata).has(Metadata.withProperty("generic.foo.name")
+				.ofType(String.class).fromSource(GenericConfig.Foo.class));
+		assertThat(metadata).has(Metadata.withProperty("generic.foo.string-to-bar")
+				.ofType("java.util.Map<java.lang.String,org.springframework.boot.configurationsample.specific.GenericConfig.Bar<java.lang.Integer>>")
+				.fromSource(GenericConfig.Foo.class));
+		assertThat(metadata).has(Metadata.withProperty("generic.foo.string-to-integer")
+				.ofType("java.util.Map<java.lang.String,java.lang.Integer>")
+				.fromSource(GenericConfig.Foo.class));
+		assertThat(metadata).has(Metadata.withProperty("generic.foo.bar.name")
+				.ofType("java.lang.String").fromSource(GenericConfig.Bar.class));
+		assertThat(metadata).has(Metadata.withProperty("generic.foo.bar.biz.name")
+				.ofType("java.lang.String").fromSource(GenericConfig.Bar.Biz.class));
+		assertThat(metadata.getItems()).hasSize(9);
 	}
 
 	@Test

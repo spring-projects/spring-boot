@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.boot.autoconfigure.security.SecurityPrerequisite;
@@ -28,8 +29,6 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -42,8 +41,6 @@ import org.springframework.util.StringUtils;
  */
 @ConfigurationProperties(prefix = "management", ignoreUnknownFields = true)
 public class ManagementServerProperties implements SecurityPrerequisite {
-
-	private static final String SECURITY_CHECK_CLASS = "org.springframework.security.config.http.SessionCreationPolicy";
 
 	/**
 	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
@@ -89,14 +86,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	 */
 	private boolean addApplicationContextHeader = true;
 
-	private final Security security = maybeCreateSecurity();
-
-	private Security maybeCreateSecurity() {
-		if (ClassUtils.isPresent(SECURITY_CHECK_CLASS, null)) {
-			return new Security();
-		}
-		return null;
-	}
+	private final Security security = new Security();
 
 	/**
 	 * Returns the management port or {@code null} if the
@@ -181,7 +171,8 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		private List<String> roles = Arrays.asList("ADMIN");
 
 		/**
-		 * Session creating policy to use (always, never, if_required, stateless).
+		 * Session creating policy for security use (always, never, if_required,
+		 * stateless).
 		 */
 		private SessionCreationPolicy sessions = SessionCreationPolicy.STATELESS;
 
@@ -208,6 +199,31 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
+
+	}
+
+	public enum SessionCreationPolicy {
+
+		/**
+		 * Always create an {@link HttpSession}.
+		 */
+		ALWAYS,
+
+		/**
+		 * Never create an {@link HttpSession}, but use any {@link HttpSession} that
+		 * already exists.
+		 */
+		NEVER,
+
+		/**
+		 * Only create an {@link HttpSession} if required.
+		 */
+		IF_REQUIRED,
+
+		/**
+		 * Never create an {@link HttpSession}.
+		 */
+		STATELESS
 
 	}
 

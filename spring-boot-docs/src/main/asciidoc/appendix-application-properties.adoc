@@ -198,7 +198,9 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.accesslog.pattern=common # Format pattern for access logs.
 	server.tomcat.accesslog.prefix=access_log # Log file name prefix.
 	server.tomcat.accesslog.rename-on-rotate=false # Defer inclusion of the date stamp in the file name until rotate time.
+	server.tomcat.accesslog.rotate=true # Enable access log rotation.
 	server.tomcat.accesslog.suffix=.log # Log file name suffix.
+	server.tomcat.additional-tld-skip-patterns= # Comma-separated list of additional patterns that match jars to ignore for TLD scanning.
 	server.tomcat.background-processor-delay=30 # Delay in seconds between the invocation of backgroundProcess methods.
 	server.tomcat.basedir= # Tomcat base directory. If not specified a temporary directory will be used.
 	server.tomcat.internal-proxies=10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
@@ -221,6 +223,7 @@ content into your application; rather pick only the properties that you need.
 	server.undertow.accesslog.enabled=false # Enable access log.
 	server.undertow.accesslog.pattern=common # Format pattern for access logs.
 	server.undertow.accesslog.prefix=access_log. # Log file name prefix.
+	server.undertow.accesslog.rotate=true # Enable access log rotation.
 	server.undertow.accesslog.suffix=log # Log file name suffix.
 	server.undertow.buffer-size= # Size of each buffer in bytes.
 	server.undertow.buffers-per-region= # Number of buffer per region.
@@ -842,12 +845,12 @@ content into your application; rather pick only the properties that you need.
 	spring.jms.listener.max-concurrency= # Maximum number of concurrent consumers.
 	spring.jms.pub-sub-domain=false # Specify if the default destination type is topic.
 	spring.jms.template.default-destination= # Default destination to use on send/receive operations that do not have a destination parameter.
-    spring.jms.template.delivery-delay= # Delivery delay to use for send calls in milliseconds.
-    spring.jms.template.delivery-mode= # Delivery mode. Enable QoS when set.
-    spring.jms.template.priority= # Priority of a message when sending. Enable QoS when set.
-    spring.jms.template.qos-enabled= # Enable explicit QoS when sending a message.
-    spring.jms.template.receive-timeout= # Timeout to use for receive calls in milliseconds.
-    spring.jms.template.time-to-live= # Time-to-live of a message when sending in milliseconds. Enable QoS when set.
+	spring.jms.template.delivery-delay= # Delivery delay to use for send calls in milliseconds.
+	spring.jms.template.delivery-mode= # Delivery mode. Enable QoS when set.
+	spring.jms.template.priority= # Priority of a message when sending. Enable QoS when set.
+	spring.jms.template.qos-enabled= # Enable explicit QoS when sending a message.
+	spring.jms.template.receive-timeout= # Timeout to use for receive calls in milliseconds.
+	spring.jms.template.time-to-live= # Time-to-live of a message when sending in milliseconds. Enable QoS when set.
 
 	# RABBIT ({sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[RabbitProperties])
 	spring.rabbitmq.addresses= # Comma-separated list of addresses to which the client should connect.
@@ -862,7 +865,7 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.listener.auto-startup=true # Start the container automatically on startup.
 	spring.rabbitmq.listener.concurrency= # Minimum number of consumers.
 	spring.rabbitmq.listener.default-requeue-rejected= # Whether or not to requeue delivery failures; default `true`.
-	spring.rabbitmq.idle-event-interval= # How often idle container events should be published in milliseconds.
+	spring.rabbitmq.listener.idle-event-interval= # How often idle container events should be published in milliseconds.
 	spring.rabbitmq.listener.max-concurrency= # Maximum number of consumers.
 	spring.rabbitmq.listener.prefetch= # Number of messages to be handled in a single request. It should be greater than or equal to the transaction size (if used).
 	spring.rabbitmq.listener.retry.enabled=false # Whether or not publishing retries are enabled.
@@ -943,6 +946,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.heapdump.enabled= # Enable the endpoint.
 	endpoints.heapdump.path= # Endpoint path.
 	endpoints.heapdump.sensitive= # Mark if the endpoint exposes sensitive information.
+	endpoints.hypermedia.enabled=false # Enable hypermedia support for endpoints.
 	endpoints.info.enabled= # Enable the endpoint.
 	endpoints.info.id= # Endpoint identifier.
 	endpoints.info.path= # Endpoint path.

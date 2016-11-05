@@ -48,6 +48,12 @@
     ]
   },
   {
+    "name": "endpoints.hypermedia.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable hypermedia support for endpoints.",
+    "defaultValue": false
+  },
+  {
     "name": "endpoints.info.path",
     "type": "java.lang.String",
     "description": "Endpoint URL path."

@@ -33,7 +33,6 @@ public class JvmUtilsTests {
 	@Test
 	public void getToolsJar() throws Exception {
 		URL jarUrl = JvmUtils.getToolsJarUrl();
-		// System.out.println(jarUrl);
 		assertThat(jarUrl.toString()).endsWith(".jar");
 		assertThat(new File(jarUrl.toURI()).exists()).isTrue();
 	}

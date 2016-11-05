@@ -72,7 +72,6 @@ org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfigura
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
-org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration,\

@@ -768,9 +768,10 @@ applied to other modules using your project. Gradle does not support `optional`
 dependencies out-of-the-box so you may want to have a look to the
 {propdeps-plugin}[`propdeps-plugin`] in the meantime.
 
-TIP: repackaged archives do not contain devtools by default. If you want to use certain
-remote devtools feature, you'll need to enable the `excludeDevtools` build property to
-include it. The property is supported with both the Maven and Gradle plugins.
+TIP: repackaged archives do not contain devtools by default. If you want to use
+<<using-boot-devtools-remote,certain remote devtools feature>>, you'll need to enable the
+`excludeDevtools` build property to include it. The property is supported with both the
+Maven and Gradle plugins.
 
 
 
@@ -814,23 +815,8 @@ Project`) will have the same effect.
 ====
 You can also start your application via the supported build plugins (i.e. Maven and
 Gradle) as long as forking is enabled since DevTools need an isolated application
-classloader to operate properly. Gradle does this by default and you can force the Maven
-plugin to fork the process as follows:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<fork>true</fork>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-----
+classloader to operate properly. Gradle and Maven do that by default when they detect
+DevTools on the classpath.
 
 ====
 
@@ -1020,7 +1006,24 @@ the following:
 === Remote applications
 The Spring Boot developer tools are not just limited to local development. You can also
 use several features when running applications remotely. Remote support is opt-in, to
-enable it you need to set a `spring.devtools.remote.secret` property. For example:
+enable it you need to make sure that `devtools` is included in the repackaged archive:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludeDevtools>false</excludeDevtools>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+Then you need to set a `spring.devtools.remote.secret` property, for example:
 
 [source,properties,indent=0]
 ----
