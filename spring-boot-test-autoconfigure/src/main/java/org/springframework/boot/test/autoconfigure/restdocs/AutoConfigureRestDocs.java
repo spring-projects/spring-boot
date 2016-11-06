@@ -39,10 +39,10 @@ import org.springframework.core.annotation.AliasFor;
  * @see RestDocsAutoConfiguration
  * @see RestDocsMockMvcConfigurationCustomizer
  */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
 @ImportAutoConfiguration
 @Import(RestDocumentationContextProviderRegistrar.class)
 @PropertyMapping("spring.test.restdocs")

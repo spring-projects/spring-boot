@@ -41,10 +41,10 @@ import org.springframework.test.web.servlet.MvcResult;
  * @see MockMvcAutoConfiguration
  * @see SpringBootMockMvcBuilderCustomizer
  */
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD })
 @ImportAutoConfiguration
 @PropertyMapping("spring.test.mockmvc")
 public @interface AutoConfigureMockMvc {

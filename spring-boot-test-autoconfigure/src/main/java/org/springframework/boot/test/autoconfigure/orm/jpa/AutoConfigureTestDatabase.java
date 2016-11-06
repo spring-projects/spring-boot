@@ -36,10 +36,10 @@ import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
  * @author Phillip Webb
  * @see TestDatabaseAutoConfiguration
  */
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD })
 @ImportAutoConfiguration
 @PropertyMapping("spring.test.database")
 public @interface AutoConfigureTestDatabase {

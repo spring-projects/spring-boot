@@ -36,10 +36,10 @@ import org.springframework.cache.support.NoOpCacheManager;
  * @author Phillip Webb
  * @since 1.4.0
  */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
 @ImportAutoConfiguration
 public @interface AutoConfigureCache {
 

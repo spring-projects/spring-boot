@@ -32,10 +32,10 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
  * @author Phillip Webb
  * @see TestEntityManagerAutoConfiguration
  */
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD })
 @ImportAutoConfiguration
 public @interface AutoConfigureTestEntityManager {
 
