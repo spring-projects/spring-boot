@@ -52,7 +52,7 @@ public class RestartApplicationListener
 				|| event instanceof ApplicationFailedEvent) {
 			Restarter.getInstance().finish();
 			if (event instanceof ApplicationFailedEvent) {
-				Restarter.getInstance().prepare(null);
+				Restarter.getInstance().remove(((ApplicationFailedEvent) event).getApplicationContext());
 			}
 		}
 	}
