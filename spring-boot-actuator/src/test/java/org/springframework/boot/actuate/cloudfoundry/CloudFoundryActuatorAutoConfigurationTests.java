@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.cloudfoundry;
 
+import java.util.Arrays;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,18 +77,20 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	public void cloudFoundryPlatformActive() throws Exception {
-		CloudFoundryEndpointHandlerMapping handlerMapping = x();
+		CloudFoundryEndpointHandlerMapping handlerMapping = getHandlerMapping();
 		assertThat(handlerMapping.getPrefix()).isEqualTo("/cloudfoundryapplication");
 		CorsConfiguration corsConfiguration = (CorsConfiguration) ReflectionTestUtils
 				.getField(handlerMapping, "corsConfiguration");
 		assertThat(corsConfiguration.getAllowedOrigins()).contains("*");
 		assertThat(corsConfiguration.getAllowedMethods()).contains(HttpMethod.GET.name(),
 				HttpMethod.POST.name());
+		assertThat(corsConfiguration.getAllowedHeaders()
+				.containsAll(Arrays.asList("Authorization", "X-Cf-App-Instance")));
 	}
 
 	@Test
 	public void cloudFoundryPlatformActiveSetsApplicationId() throws Exception {
-		CloudFoundryEndpointHandlerMapping handlerMapping = x();
+		CloudFoundryEndpointHandlerMapping handlerMapping = getHandlerMapping();
 		Object interceptor = ReflectionTestUtils.getField(handlerMapping,
 				"securityInterceptor");
 		String applicationId = (String) ReflectionTestUtils.getField(interceptor,
@@ -96,7 +100,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	public void cloudFoundryPlatformActiveSetsCloudControllerUrl() throws Exception {
-		CloudFoundryEndpointHandlerMapping handlerMapping = x();
+		CloudFoundryEndpointHandlerMapping handlerMapping = getHandlerMapping();
 		Object interceptor = ReflectionTestUtils.getField(handlerMapping,
 				"securityInterceptor");
 		Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
@@ -123,7 +127,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		assertThat(interceptorSecurityService).isNull();
 	}
 
-	private CloudFoundryEndpointHandlerMapping x() {
+	private CloudFoundryEndpointHandlerMapping getHandlerMapping() {
 		EnvironmentTestUtils.addEnvironment(this.context, "VCAP_APPLICATION:---",
 				"vcap.application.application_id:my-app-id",
 				"vcap.application.cf_api:http://my-cloud-controller.com");
