@@ -37,6 +37,10 @@ import org.springframework.boot.loader.jar.Handler;
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
 
+	static {
+		ClassLoader.registerAsParallelCapable();
+	}
+
 	/**
 	 * Create a new {@link LaunchedURLClassLoader} instance.
 	 * @param urls the URLs from which to load classes and resources
