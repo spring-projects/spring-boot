@@ -26,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.actuate.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -67,6 +68,16 @@ public class CloudFoundrySecurityInterceptorTests {
 		this.handlerMethod = new HandlerMethod(this.endpoint, "invoke");
 		this.request = new MockHttpServletRequest();
 		this.response = new MockHttpServletResponse();
+	}
+
+	@Test
+	public void preHandleWhenRequestIsPreFlightShouldReturnTrue() throws Exception {
+		this.request.setMethod("OPTIONS");
+		this.request.addHeader(HttpHeaders.ORIGIN, "http://example.com");
+		this.request.addHeader(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET");
+		boolean preHandle = this.interceptor.preHandle(this.request, this.response,
+				this.handlerMethod);
+		assertThat(preHandle).isTrue();
 	}
 
 	@Test
