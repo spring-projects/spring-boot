@@ -27,6 +27,7 @@ import java.util.Enumeration;
 import java.util.jar.JarFile;
 
 import org.springframework.boot.loader.jar.Handler;
+import org.springframework.lang.UsesJava7;
 
 /**
  * {@link ClassLoader} used by the {@link Launcher}.
@@ -38,7 +39,7 @@ import org.springframework.boot.loader.jar.Handler;
 public class LaunchedURLClassLoader extends URLClassLoader {
 
 	static {
-		ClassLoader.registerAsParallelCapable();
+		performParallelCapableRegistration();
 	}
 
 	/**
@@ -183,6 +184,16 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		Object jarFile = ((JarURLConnection) connection).getJarFile();
 		if (jarFile instanceof org.springframework.boot.loader.jar.JarFile) {
 			((org.springframework.boot.loader.jar.JarFile) jarFile).clearCache();
+		}
+	}
+
+	@UsesJava7
+	private static void performParallelCapableRegistration() {
+		try {
+			ClassLoader.registerAsParallelCapable();
+		}
+		catch (NoSuchMethodError ex) {
+			// Running on Java 6. Continue.
 		}
 	}
 
