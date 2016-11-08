@@ -28,6 +28,7 @@ import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.util.Base64Utils;
@@ -87,6 +88,9 @@ public class CloudFoundrySecurityInterceptorTests {
 		assertThat(preHandle).isFalse();
 		assertThat(this.response.getStatus())
 				.isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus().value());
+		assertThat(this.response.getContentAsString()).contains("security_error");
+		assertThat(this.response.getContentType())
+				.isEqualTo(MediaType.APPLICATION_JSON.toString());
 	}
 
 	@Test
