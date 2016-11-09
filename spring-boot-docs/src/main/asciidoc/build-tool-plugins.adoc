@@ -563,6 +563,9 @@ springBoot {
 }
 ----
 
+If there is only one custom `LayoutFactory` on the build classpath and
+it is listed in `META-INF/spring.factories` then it is unnecessary to
+explicitly set it in the `springBoot` configuration.
 
 [[build-tool-plugins-understanding-the-gradle-plugin]]
 === Understanding how the Gradle plugin works

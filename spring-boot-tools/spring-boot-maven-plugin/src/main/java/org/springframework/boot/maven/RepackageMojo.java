@@ -41,10 +41,10 @@ import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.shared.artifact.filter.collection.ScopeFilter;
 
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
-import org.springframework.boot.loader.tools.DefaultLayoutFactory;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.LayoutType;
+import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Repackager;
 
@@ -139,7 +139,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.0
 	 */
 	@Parameter
-	private LayoutFactory layoutFactory = new DefaultLayoutFactory();
+	private LayoutFactory layoutFactory = Layouts.getDefaultLayoutFactory();
 
 	/**
 	 * A list of the libraries that must be unpacked from fat jars in order to run.

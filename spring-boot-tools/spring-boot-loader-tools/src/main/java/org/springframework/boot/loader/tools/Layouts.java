@@ -21,8 +21,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * Common {@link Layout}s.
@@ -47,7 +50,22 @@ public final class Layouts {
 	 * @return a {@link Layout}
 	 */
 	public static Layout forFile(File file) {
-		return new DefaultLayoutFactory().getLayout(LayoutType.forFile(file));
+		return Layouts.getDefaultLayoutFactory().getLayout(LayoutType.forFile(file));
+	}
+
+	/**
+	 * Gets a default layout factory, trying first to find a unique one in spring
+	 * factories, and then falling back to {@link DefaultLayoutFactory} if there isn't
+	 * one.
+	 * @return the default layout factory
+	 */
+	public static LayoutFactory getDefaultLayoutFactory() {
+		List<LayoutFactory> factories = SpringFactoriesLoader
+				.loadFactories(LayoutFactory.class, null);
+		if (factories.size() == 1) {
+			return factories.get(0);
+		}
+		return new DefaultLayoutFactory();
 	}
 
 	/**

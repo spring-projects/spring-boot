@@ -49,8 +49,10 @@
 ---
 
   The layout is provided as an implementation of <<LayoutFactory>>
-  (from spring-boot-loader-tools) explicitly specified in the pom.
-
+  (from spring-boot-loader-tools) explicitly specified in the pom.  If
+  there is only one custom `LayoutFactory` on the plugin classpath and
+  it is listed in `META-INF/spring.factories` then it is unnecessary
+  to explicitly set it in the plugin configuration.
 
 
 

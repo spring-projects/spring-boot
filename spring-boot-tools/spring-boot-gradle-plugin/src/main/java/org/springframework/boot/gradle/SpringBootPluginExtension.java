@@ -26,10 +26,10 @@ import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 
 import org.springframework.boot.gradle.buildinfo.BuildInfo;
-import org.springframework.boot.loader.tools.DefaultLayoutFactory;
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.LayoutType;
+import org.springframework.boot.loader.tools.Layouts;
 
 /**
  * Gradle DSL Extension for 'Spring Boot'. Most of the time Spring Boot can guess the
@@ -96,7 +96,7 @@ public class SpringBootPluginExtension {
 	/**
 	 * The layout factory to use to convert a layout type into an actual layout.
 	 */
-	LayoutFactory layoutFactory = new DefaultLayoutFactory();
+	LayoutFactory layoutFactory = Layouts.getDefaultLayoutFactory();
 
 	/**
 	 * Libraries that must be unpacked from fat jars in order to run. Use Strings in the
