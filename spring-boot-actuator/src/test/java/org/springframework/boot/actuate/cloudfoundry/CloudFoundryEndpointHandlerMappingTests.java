@@ -22,11 +22,15 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
+import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.AbstractEndpointHandlerMappingTests;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.method.HandlerMethod;
@@ -88,6 +92,23 @@ public class CloudFoundryEndpointHandlerMappingTests
 				.isInstanceOf(CloudFoundryDiscoveryMvcEndpoint.class);
 	}
 
+	@Test
+	public void registersCloudFoundryHealthEndpoint() throws Exception {
+		StaticApplicationContext context = new StaticApplicationContext();
+		HealthEndpoint delegate = new HealthEndpoint(new OrderedHealthAggregator(),
+				Collections.<String, HealthIndicator>emptyMap());
+		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
+				Collections.singleton(new TestHealthMvcEndpoint(delegate)), null, null);
+		handlerMapping.setPrefix("/test");
+		handlerMapping.setApplicationContext(context);
+		handlerMapping.afterPropertiesSet();
+		HandlerExecutionChain handler = handlerMapping
+				.getHandler(new MockHttpServletRequest("GET", "/test/health"));
+		HandlerMethod handlerMethod = (HandlerMethod) handler.getHandler();
+		Object handlerMethodBean = handlerMethod.getBean();
+		assertThat(handlerMethodBean).isInstanceOf(CloudFoundryHealthMvcEndpoint.class);
+	}
+
 	private static class TestEndpoint extends AbstractEndpoint<Object> {
 
 		TestEndpoint(String id) {
@@ -120,6 +141,14 @@ public class CloudFoundryEndpointHandlerMappingTests
 				}
 
 			});
+		}
+
+	}
+
+	private static class TestHealthMvcEndpoint extends HealthMvcEndpoint {
+
+		TestHealthMvcEndpoint(HealthEndpoint delegate) {
+			super(delegate);
 		}
 
 	}

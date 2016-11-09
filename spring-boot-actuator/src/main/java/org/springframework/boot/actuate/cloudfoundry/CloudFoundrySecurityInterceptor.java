@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
+import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.method.HandlerMethod;
@@ -74,6 +75,9 @@ class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 		}
 		catch (CloudFoundryAuthorizationException ex) {
 			this.logger.error(ex);
+			response.setContentType(MediaType.APPLICATION_JSON.toString());
+			response.getWriter()
+					.write("{\"security_error\":\"" + ex.getMessage() + "\"}");
 			response.setStatus(ex.getStatusCode().value());
 			return false;
 		}
