@@ -73,6 +73,13 @@ public class DataSourceAutoConfiguration {
 		return new DataSourceInitializer();
 	}
 
+	@Bean
+	@Conditional(PooledDataSourceCondition.class)
+	@ConditionalOnProperty(prefix = "spring.datasource", name = "early-pool-creation", havingValue = "true", matchIfMissing = true)
+	public PooledDataSourceBeanPostProcessor tomcatJdbcPooledDataSourceBeanPostProcessor() {
+		return new PooledDataSourceBeanPostProcessor();
+	}
+
 	/**
 	 * Determines if the {@code dataSource} being used by Spring was created from
 	 * {@link EmbeddedDataSourceConfiguration}.

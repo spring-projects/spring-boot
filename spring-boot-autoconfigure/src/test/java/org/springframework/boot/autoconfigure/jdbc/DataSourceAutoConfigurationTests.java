@@ -35,6 +35,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.jdbc.DatabaseDriver;
@@ -123,6 +124,66 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
+	public void tomcatJdbcPoolCreatedByDefault() {
+		org.apache.tomcat.jdbc.pool.DataSource dataSource = autoConfigureDataSource(
+				org.apache.tomcat.jdbc.pool.DataSource.class);
+
+		DirectFieldAccessor dfa = new DirectFieldAccessor(dataSource);
+		assertThat(dfa.getPropertyValue("pool")).isNotNull();
+	}
+
+	@Test
+	public void earlyPoolCreationFalseDoesNotCreateTomcatJdbcPool() {
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.early-pool-creation=false");
+
+		org.apache.tomcat.jdbc.pool.DataSource dataSource = autoConfigureDataSource(
+				org.apache.tomcat.jdbc.pool.DataSource.class);
+
+		DirectFieldAccessor dfa = new DirectFieldAccessor(dataSource);
+		assertThat(dfa.getPropertyValue("pool")).isNull();
+	}
+
+	@Test
+	public void hikariJdbcPoolCreatedByDefault() {
+		HikariDataSource dataSource = autoConfigureDataSource(HikariDataSource.class,
+				"org.apache.tomcat");
+
+		DirectFieldAccessor dfa = new DirectFieldAccessor(dataSource);
+		assertThat(dfa.getPropertyValue("pool")).isNotNull();
+	}
+
+	@Test
+	public void earlyPoolCreationFalseDoesNotCreateHikariJdbcPool() {
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.early-pool-creation=false");
+
+		HikariDataSource dataSource = autoConfigureDataSource(HikariDataSource.class,
+				"org.apache.tomcat");
+
+		DirectFieldAccessor dfa = new DirectFieldAccessor(dataSource);
+		assertThat(dfa.getPropertyValue("pool")).isNull();
+	}
+
+	@Test
+	public void dbcp2JdbcPoolCreatedByDefault() {
+		BasicDataSource dataSource = autoConfigureDataSource(BasicDataSource.class,
+				"org.apache.tomcat", "com.zaxxer.hikari");
+
+		DirectFieldAccessor dfa = new DirectFieldAccessor(dataSource);
+		assertThat(dfa.getPropertyValue("connectionPool")).isNotNull();
+	}
+
+	@Test
+	public void earlyPoolCreationFalseDoesNotCreateDbcp2JdbcPool() {
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.early-pool-creation=false");
+
+		BasicDataSource dataSource = autoConfigureDataSource(BasicDataSource.class,
+				"org.apache.tomcat", "com.zaxxer.hikari");
+
+		DirectFieldAccessor dfa = new DirectFieldAccessor(dataSource);
+		assertThat(dfa.getPropertyValue("connectionPool")).isNull();
+	}
+
+	@Test
 	public void hikariIsFallback() throws Exception {
 		HikariDataSource dataSource = autoConfigureDataSource(HikariDataSource.class,
 				"org.apache.tomcat");
@@ -177,7 +238,8 @@ public class DataSourceAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
-				"spring.datasource.type:" + SimpleDriverDataSource.class.getName());
+				"spring.datasource.type:" + SimpleDriverDataSource.class.getName(),
+				"spring.datasource.early-pool-creation=false");
 		this.context.setClassLoader(
 				new HidePackagesClassLoader("org.apache.tomcat", "com.zaxxer.hikari",
 						"org.apache.commons.dbcp", "org.apache.commons.dbcp2"));
@@ -189,7 +251,8 @@ public class DataSourceAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
-				"spring.datasource.type:" + SimpleDriverDataSource.class.getName());
+				"spring.datasource.type:" + SimpleDriverDataSource.class.getName(),
+				"spring.datasource.early-pool-creation=false");
 		testExplicitType();
 	}
 
