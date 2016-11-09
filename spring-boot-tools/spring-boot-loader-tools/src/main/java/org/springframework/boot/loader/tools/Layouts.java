@@ -47,19 +47,7 @@ public final class Layouts {
 	 * @return a {@link Layout}
 	 */
 	public static Layout forFile(File file) {
-		if (file == null) {
-			throw new IllegalArgumentException("File must not be null");
-		}
-		if (file.getName().toLowerCase().endsWith(".jar")) {
-			return new Jar();
-		}
-		if (file.getName().toLowerCase().endsWith(".war")) {
-			return new War();
-		}
-		if (file.isDirectory() || file.getName().toLowerCase().endsWith(".zip")) {
-			return new Expanded();
-		}
-		throw new IllegalStateException("Unable to deduce layout for '" + file + "'");
+		return new DefaultLayoutFactory().getLayout(LayoutType.forFile(file));
 	}
 
 	/**

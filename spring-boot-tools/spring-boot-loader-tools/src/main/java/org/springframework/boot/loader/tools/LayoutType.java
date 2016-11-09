@@ -16,11 +16,7 @@
 
 package org.springframework.boot.loader.tools;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.core.io.support.SpringFactoriesLoader;
+import java.io.File;
 
 /**
  * Archive layout types.
@@ -32,70 +28,53 @@ public enum LayoutType {
 	/**
 	 * Jar Layout.
 	 */
-	JAR(new Layouts.Jar()),
+	JAR,
 
 	/**
 	 * War Layout.
 	 */
-	WAR(new Layouts.War()),
+	WAR,
 
 	/**
 	 * Zip Layout.
 	 */
-	ZIP(new Layouts.Expanded()),
+	ZIP,
 
 	/**
 	 * Dir Layout.
 	 */
-	DIR(new Layouts.Expanded()),
+	DIR,
 
 	/**
 	 * Module Layout.
 	 */
-	MODULE(new Layouts.Module()),
+	MODULE,
 
 	/**
 	 * No Layout.
 	 */
-	NONE(new Layouts.None());
+	NONE;
 
-	private static Map<String, Layout> customTypes;
 
-	private final Layout layout;
-
-	public Layout layout() {
-		return this.layout;
-	}
-
-	LayoutType(Layout layout) {
-		this.layout = layout;
-	}
-
-	public static Layout layout(String value) {
-		try {
-			return valueOf(value).layout();
+	/**
+	 * Return a layout type for the given source file.
+	 * @param file the source file
+	 * @return a {@link Layout}
+	 */
+	public static LayoutType forFile(File file) {
+		if (file == null) {
+			throw new IllegalArgumentException("File must not be null");
 		}
-		catch (IllegalArgumentException e) {
-			if (customTypes == null) {
-				customTypes = new HashMap<String, Layout>();
-				lookupCustomTypes();
-			}
-			Layout layout = customTypes.get(value);
-			if (layout == null) {
-				throw new IllegalArgumentException(
-						"Cannot resolve custom layout type: " + value);
-			}
-			return layout;
+		if (file.getName().toLowerCase().endsWith(".jar")) {
+			return JAR;
 		}
-	}
-
-	private static void lookupCustomTypes() {
-		ClassLoader classLoader = LayoutType.class.getClassLoader();
-		List<LayoutFactory> factories = SpringFactoriesLoader
-				.loadFactories(LayoutFactory.class, classLoader);
-		for (LayoutFactory factory : factories) {
-			customTypes.put(factory.getName(), factory.getLayout());
+		if (file.getName().toLowerCase().endsWith(".war")) {
+			return WAR;
 		}
+		if (file.isDirectory() || file.getName().toLowerCase().endsWith(".zip")) {
+			return ZIP;
+		}
+		throw new IllegalArgumentException("Unable to deduce layout for '" + file + "'");
 	}
 
 }

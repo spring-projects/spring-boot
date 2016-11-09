@@ -480,9 +480,12 @@ The following configuration options are available:
 |The name of the custom configuration.
 
 |`layout`
-|The type of archive, corresponding to how the dependencies are laid out inside
- (defaults to a guess based on the archive type). See
- <<build-tool-plugins-gradle-configuration-layouts,available layouts for more details>>.
+|The `LayoutType` of archive, corresponding to how the dependencies are laid out inside
+ (defaults to a guess based on the archive type).
+
+|`layoutFactory`
+|A factory for the actual `Layout` derived from the `LayoutType`. See 
+<<build-tool-plugins-gradle-configuration-layouts,available layouts for more details>>.
 
 |`requiresUnpack`
 |A list of dependencies (in the form "`groupId:artifactId`" that must be unpacked from
@@ -534,9 +537,9 @@ loader should be included or not. The following layouts are available:
 ==== Using a custom layout
 If you have custom requirements for how to arrange the dependencies and loader classes
 inside the repackaged jar, you can use a custom layout in addition to the built-in values.
-Any library which defines one or more `LayoutFactory` implementations and
-lists them in `META-INF/spring.factories` can be added to the build script dependencies
-and then the layout type becomes available in the `springBoot` configuration. For example
+Any library which defines one or more `LayoutFactory` implementations can be added to the 
+build script dependencies and then the layout type becomes available in the `springBoot` 
+configuration. For example
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -556,7 +559,7 @@ buildscript {
 }
 
 springBoot {
-	layout = 'CUSTOM'
+	layoutFactory = new com.example.CustomLayoutFactory()
 }
 ----
 

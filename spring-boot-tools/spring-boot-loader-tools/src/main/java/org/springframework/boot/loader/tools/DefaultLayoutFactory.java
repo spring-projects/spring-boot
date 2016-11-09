@@ -16,36 +16,29 @@
 
 package org.springframework.boot.loader.tools;
 
-import org.junit.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
+ * Default implementation of layout factory that looks up the enum value and maps it to a
+ * layout from {@link Layouts}.
+ *
  * @author Dave Syer
  *
  */
-public class LayoutTypeTests {
+public class DefaultLayoutFactory implements LayoutFactory {
 
-	private LayoutFactory factory = new DefaultLayoutFactory();
-
-	@Test
-	public void standardType() {
-		assertThat(this.factory.getLayout(LayoutType.DIR)).isNotNull();
-	}
-
-	@Test
-	public void customType() {
-		this.factory = new TestLayoutFactory();
-		assertThat(this.factory.getLayout(LayoutType.MODULE)).isNotNull();
-	}
-
-	public static class TestLayoutFactory implements LayoutFactory {
-
-		@Override
-		public Layout getLayout(LayoutType type) {
+	@Override
+	public Layout getLayout(LayoutType type) {
+		switch (type) {
+		case JAR:
 			return new Layouts.Jar();
+		case WAR:
+			return new Layouts.War();
+		case ZIP:
+			return new Layouts.Expanded();
+		case MODULE:
+			return new Layouts.Module();
+		default:
+			return new Layouts.None();
 		}
-
 	}
 
 }

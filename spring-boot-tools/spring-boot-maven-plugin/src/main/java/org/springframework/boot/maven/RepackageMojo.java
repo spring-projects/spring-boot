@@ -41,7 +41,9 @@ import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.shared.artifact.filter.collection.ScopeFilter;
 
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
+import org.springframework.boot.loader.tools.DefaultLayoutFactory;
 import org.springframework.boot.loader.tools.LaunchScript;
+import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.LayoutType;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Repackager;
@@ -130,7 +132,14 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.0
 	 */
 	@Parameter
-	private String layout;
+	private LayoutType layout;
+
+	/**
+	 * The type of the layout factory that converts layout type to an actual layout.
+	 * @since 1.0
+	 */
+	@Parameter
+	private LayoutFactory layoutFactory = new DefaultLayoutFactory();
 
 	/**
 	 * A list of the libraries that must be unpacked from fat jars in order to run.
@@ -225,9 +234,15 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private Repackager getRepackager(File source) {
 		Repackager repackager = new LoggingRepackager(source, getLog());
 		repackager.setMainClass(this.mainClass);
-		if (this.layout != null) {
-			getLog().info("Layout: " + this.layout);
-			repackager.setLayout(LayoutType.layout(this.layout));
+		if (this.layout == null) {
+			this.layout = LayoutType.forFile(source);
+		}
+		getLog().info("Layout: " + this.layout);
+		try {
+			repackager.setLayout(this.layoutFactory.getLayout(this.layout));
+		}
+		catch (Exception e) {
+			throw new IllegalStateException("Cannot create layout", e);
 		}
 		return repackager;
 	}

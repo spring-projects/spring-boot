@@ -7,7 +7,7 @@
  -----
 
   Spring Boot repackages the jar file for this project using a custom
-  layout defined in the additional jar file, provided as a dependency
+  layout factory defined in the additional jar file, provided as a dependency
   to the build plugin:
 
 ---
@@ -27,7 +27,7 @@
               <goal>repackage</goal>
             </goals>
             <configuration>
-              <layout>CUSTOM</layout>
+              <layoutFactory implementation="com.example.CustomLayoutFactory"/>
             </configuration>
           </execution>
         </executions>
@@ -49,8 +49,7 @@
 ---
 
   The layout is provided as an implementation of <<LayoutFactory>>
-  (from spring-boot-loader-tools) listed in
-  <<META-INF/spring-factories>> inside the <<custom-layout>> jar.
+  (from spring-boot-loader-tools) explicitly specified in the pom.
 
 
 

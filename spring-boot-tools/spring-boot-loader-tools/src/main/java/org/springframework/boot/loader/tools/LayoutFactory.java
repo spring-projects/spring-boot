@@ -24,8 +24,6 @@ package org.springframework.boot.loader.tools;
  */
 public interface LayoutFactory {
 
-	Layout getLayout();
-
-	String getName();
+	Layout getLayout(LayoutType type);
 
 }

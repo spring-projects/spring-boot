@@ -217,9 +217,7 @@ public class RepackageTask extends DefaultTask {
 			}
 			Repackager repackager = new LoggingRepackager(file);
 			setMainClass(repackager);
-			if (this.extension.convertLayout() != null) {
-				repackager.setLayout(this.extension.convertLayout());
-			}
+			repackager.setLayout(this.extension.convertLayout(file));
 			repackager.setBackupSource(this.extension.isBackupSource());
 			try {
 				LaunchScript launchScript = getLaunchScript();

@@ -26,7 +26,9 @@ import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 
 import org.springframework.boot.gradle.buildinfo.BuildInfo;
+import org.springframework.boot.loader.tools.DefaultLayoutFactory;
 import org.springframework.boot.loader.tools.Layout;
+import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.LayoutType;
 
 /**
@@ -89,7 +91,12 @@ public class SpringBootPluginExtension {
 	 * the MANIFEST.MF 'Main-Class' to be PropertiesLauncher. Gradle will coerce literal
 	 * String values to the correct type.
 	 */
-	String layout;
+	LayoutType layout;
+
+	/**
+	 * The layout factory to use to convert a layout type into an actual layout.
+	 */
+	LayoutFactory layoutFactory = new DefaultLayoutFactory();
 
 	/**
 	 * Libraries that must be unpacked from fat jars in order to run. Use Strings in the
@@ -143,10 +150,14 @@ public class SpringBootPluginExtension {
 
 	/**
 	 * Convenience method for use in a custom task.
+	 * @param file the file to use to guess the layout if necessary
 	 * @return the Layout to use or null if not explicitly set
 	 */
-	public Layout convertLayout() {
-		return (this.layout == null ? null : LayoutType.layout(this.layout));
+	public Layout convertLayout(File file) {
+		if (this.layout == null) {
+			this.layout = LayoutType.forFile(file);
+		}
+		return this.layoutFactory.getLayout(this.layout);
 	}
 
 	public String getMainClass() {
@@ -189,12 +200,20 @@ public class SpringBootPluginExtension {
 		this.backupSource = backupSource;
 	}
 
-	public String getLayout() {
+	public LayoutType getLayout() {
 		return this.layout;
 	}
 
-	public void setLayout(String layout) {
+	public void setLayout(LayoutType layout) {
 		this.layout = layout;
+	}
+
+	public LayoutFactory getLayoutFactory() {
+		return this.layoutFactory;
+	}
+
+	public void setLayoutFactory(LayoutFactory layoutFactory) {
+		this.layoutFactory = layoutFactory;
 	}
 
 	public Set<String> getRequiresUnpack() {
