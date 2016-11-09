@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
 /**
  * {@link HealthIndicator} for Couchbase.
  *
- * @authors Eddú Meléndez, kriskrishna
+ * @authors Eddú Meléndez, Kris Krishna
  * 
  * @since 1.4.0
  */
