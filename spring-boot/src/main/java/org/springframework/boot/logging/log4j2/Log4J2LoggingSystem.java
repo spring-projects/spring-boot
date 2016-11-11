@@ -176,7 +176,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 			LoggerContext ctx = getLoggerContext();
 			URL url = ResourceUtils.getURL(location);
 			ConfigurationSource source = getConfigurationSource(url);
-			ctx.start(ConfigurationFactory.getInstance().getConfiguration(source));
+			ctx.start(ConfigurationFactory.getInstance().getConfiguration(ctx, source));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(
