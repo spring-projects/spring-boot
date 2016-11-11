@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -75,12 +76,14 @@ import org.springframework.core.env.Environment;
  * @author Maciej Walkowiak
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Michael J. Simons
  * @since 1.1.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
 @Conditional(OnPropertyCondition.class)
+@Repeatable(ConditionalOnProperties.class)
 public @interface ConditionalOnProperty {
 
 	/**
