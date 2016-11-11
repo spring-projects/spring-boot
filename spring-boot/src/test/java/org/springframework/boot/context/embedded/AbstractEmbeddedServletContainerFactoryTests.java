@@ -424,6 +424,41 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				.contains("scheme=https");
 	}
 
+	@Test
+	public void serverHeaderIsDisabledByDefaultWhenUsingSsl() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
+		this.container.start();
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder()
+						.loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+				.build();
+		ClientHttpResponse response = getClientResponse(getLocalUrl("https", "/hello"),
+				HttpMethod.GET, new HttpComponentsClientHttpRequestFactory(httpClient));
+		assertThat(response.getHeaders().get("Server")).isNullOrEmpty();
+	}
+
+	@Test
+	public void serverHeaderCanBeCustomizedWhenUsingSsl() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setServerHeader("MyServer");
+		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
+		this.container.start();
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder()
+						.loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+				.build();
+		ClientHttpResponse response = getClientResponse(getLocalUrl("https", "/hello"),
+				HttpMethod.GET, new HttpComponentsClientHttpRequestFactory(httpClient));
+		assertThat(response.getHeaders().get("Server")).containsExactly("MyServer");
+	}
+
 	protected final void testBasicSslWithKeyStore(String keyStore) throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
