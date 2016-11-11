@@ -90,8 +90,8 @@ public class CloudFoundryActuatorAutoConfiguration {
 		corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
 		corsConfiguration.setAllowedMethods(
 				Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
-		corsConfiguration
-				.setAllowedHeaders(Arrays.asList("Authorization", "X-Cf-App-Instance"));
+		corsConfiguration.setAllowedHeaders(
+				Arrays.asList("Authorization", "X-Cf-App-Instance", "Content-Type"));
 		return corsConfiguration;
 	}
 
