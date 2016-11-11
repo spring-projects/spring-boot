@@ -82,10 +82,10 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		CorsConfiguration corsConfiguration = (CorsConfiguration) ReflectionTestUtils
 				.getField(handlerMapping, "corsConfiguration");
 		assertThat(corsConfiguration.getAllowedOrigins()).contains("*");
-		assertThat(corsConfiguration.getAllowedMethods()).contains(HttpMethod.GET.name(),
-				HttpMethod.POST.name());
-		assertThat(corsConfiguration.getAllowedHeaders()
-				.containsAll(Arrays.asList("Authorization", "X-Cf-App-Instance")));
+		assertThat(corsConfiguration.getAllowedMethods()).containsAll(
+				Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
+		assertThat(corsConfiguration.getAllowedHeaders()).containsAll(
+				Arrays.asList("Authorization", "X-Cf-App-Instance", "Content-Type"));
 	}
 
 	@Test
