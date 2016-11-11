@@ -692,6 +692,7 @@ public class JettyEmbeddedServletContainerFactory
 		public ServerConnector getConnector(Server server,
 				SslContextFactory sslContextFactory, int port) {
 			HttpConfiguration config = new HttpConfiguration();
+			config.setSendServerVersion(false);
 			config.addCustomizer(new SecureRequestCustomizer());
 			HttpConnectionFactory connectionFactory = new HttpConnectionFactory(config);
 			SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(
