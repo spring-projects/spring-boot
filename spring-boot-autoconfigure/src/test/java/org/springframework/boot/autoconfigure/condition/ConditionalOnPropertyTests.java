@@ -82,7 +82,7 @@ public class ConditionalOnPropertyTests {
 	public void notAllPropertiesAreDefinedWithExpectedValues() {
 		load(MultiplePropertiesWithExplicitValuesRequiredConfiguration.class, "property1=value1",
 				"property2=foo");
-		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
