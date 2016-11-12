@@ -431,6 +431,8 @@ content into your application; rather pick only the properties that you need.
 	security.filter-order=0 # Security filter chain order.
 	security.filter-dispatcher-types=ASYNC, FORWARD, INCLUDE, REQUEST # Security filter chain dispatcher types.
 	security.headers.cache=true # Enable cache control HTTP headers.
+	security.headers.content-security-policy= # Value for content security policy header.
+	security.headers.content-security-policy-mode=default # Content security policy mode (default, report-only).
 	security.headers.content-type=true # Enable "X-Content-Type-Options" header.
 	security.headers.frame=true # Enable "X-Frame-Options" header.
 	security.headers.hsts= # HTTP Strict Transport Security (HSTS) mode (none, domain, all).
