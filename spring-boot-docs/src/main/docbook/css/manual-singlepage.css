@@ -1,6 +1,51 @@
 @IMPORT url("manual.css");
 
-body {
-	background: url("../images/background.png") no-repeat center top;
+div.toc {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 25%;
+    height: 100%;
+    overflow-y: auto;
+    background: white;
+}
+
+div.book {
+    margin-left: 30%;
+    background: url("../images/background.png") no-repeat center top;
+}
+
+div.toc {
+    line-height: 1;
+}
+
+dd {
+    margin: 0;
+}
+
+dl, dt {
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 10px;
+}
+
+div.toc .part {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 5px 0 5px 0;
+    display: block;
+}
+
+div.toc .chapter, div.toc .appendix {
+    font-size: 15px;
+    font-weight: bold;
+    margin: 5px 0 5px 0;
+    display: block;
+}
+
+div.toc .section {
+    font-weight: normal;
+    font-size: 15px;
+    margin: 5px 0 0 0;
 }
 
