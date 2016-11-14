@@ -50,7 +50,27 @@ public final class Layouts {
 	 * @return a {@link Layout}
 	 */
 	public static Layout forFile(File file) {
-		return Layouts.getDefaultLayoutFactory().getLayout(LayoutType.forFile(file));
+		return forType(LayoutType.forFile(file));
+	}
+
+	/**
+	 * Return a layout for the given type.
+	 * @param type the layout type
+	 * @return a {@link Layout}
+	 */
+	public static Layout forType(LayoutType type) {
+		switch (type) {
+		case JAR:
+			return new Layouts.Jar();
+		case WAR:
+			return new Layouts.War();
+		case ZIP:
+			return new Layouts.Expanded();
+		case MODULE:
+			return new Layouts.Module();
+		default:
+			return new Layouts.None();
+		}
 	}
 
 	/**
@@ -65,7 +85,7 @@ public final class Layouts {
 		if (factories.size() == 1) {
 			return factories.get(0);
 		}
-		return new DefaultLayoutFactory();
+		return null;
 	}
 
 	/**

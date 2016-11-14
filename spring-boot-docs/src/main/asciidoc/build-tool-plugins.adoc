@@ -481,11 +481,11 @@ The following configuration options are available:
 
 |`layout`
 |The `LayoutType` of archive, corresponding to how the dependencies are laid out inside
- (defaults to a guess based on the archive type).
+ (defaults to a guess based on the archive type). See 
+<<build-tool-plugins-gradle-configuration-layouts,available layouts for more details>>.
 
 |`layoutFactory`
-|A factory for the actual `Layout` derived from the `LayoutType`. See 
-<<build-tool-plugins-gradle-configuration-layouts,available layouts for more details>>.
+|A factory for the actual `Layout` derived from the `LayoutType`. If the factory is provided then the layout is ignored.
 
 |`requiresUnpack`
 |A list of dependencies (in the form "`groupId:artifactId`" that must be unpacked from

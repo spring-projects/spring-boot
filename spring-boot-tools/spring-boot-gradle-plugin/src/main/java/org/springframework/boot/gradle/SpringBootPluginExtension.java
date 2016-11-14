@@ -154,10 +154,17 @@ public class SpringBootPluginExtension {
 	 * @return the Layout to use or null if not explicitly set
 	 */
 	public Layout convertLayout(File file) {
-		if (this.layout == null) {
-			this.layout = LayoutType.forFile(file);
+		Layout result;
+		if (this.layoutFactory != null) {
+			result = this.layoutFactory.getLayout();
 		}
-		return this.layoutFactory.getLayout(this.layout);
+		else if (this.layout == null) {
+			result = Layouts.forFile(file);
+		}
+		else {
+			result = Layouts.forType(this.layout);
+		}
+		return result;
 	}
 
 	public String getMainClass() {

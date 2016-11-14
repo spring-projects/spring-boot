@@ -42,6 +42,7 @@ import org.apache.maven.shared.artifact.filter.collection.ScopeFilter;
 
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
+import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.LayoutType;
 import org.springframework.boot.loader.tools.Layouts;
@@ -234,12 +235,19 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private Repackager getRepackager(File source) {
 		Repackager repackager = new LoggingRepackager(source, getLog());
 		repackager.setMainClass(this.mainClass);
-		if (this.layout == null) {
-			this.layout = LayoutType.forFile(source);
+		Layout forUse;
+		if (this.layoutFactory != null) {
+			forUse = this.layoutFactory.getLayout();
 		}
-		getLog().info("Layout: " + this.layout);
+		else if (this.layout == null) {
+			forUse = Layouts.forFile(source);
+		}
+		else {
+			forUse = Layouts.forType(this.layout);
+		}
+		getLog().info("Layout: " + forUse.getClass());
 		try {
-			repackager.setLayout(this.layoutFactory.getLayout(this.layout));
+			repackager.setLayout(forUse);
 		}
 		catch (Exception e) {
 			throw new IllegalStateException("Cannot create layout", e);
