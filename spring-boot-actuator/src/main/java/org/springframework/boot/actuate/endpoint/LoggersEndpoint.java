@@ -26,6 +26,7 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Endpoint} to expose a collection of {@link LoggerConfiguration}s.
@@ -60,13 +61,20 @@ public class LoggersEndpoint
 		Map<String, LoggerLevels> result = new LinkedHashMap<String, LoggerLevels>(
 				configurations.size());
 		for (LoggerConfiguration configuration : configurations) {
-			result.put(configuration.getName(), new LoggerLevels(configuration));
+			String name = configuration.getName();
+			if (!StringUtils.hasText(name)) {
+				name = "ROOT";
+			}
+			result.put(name, new LoggerLevels(configuration));
 		}
 		return result;
 	}
 
 	public LoggerLevels invoke(String name) {
 		Assert.notNull(name, "Name must not be null");
+		if (name.equalsIgnoreCase("root")) {
+			name = null;
+		}
 		LoggerConfiguration configuration = this.loggingSystem
 				.getLoggerConfiguration(name);
 		return (configuration == null ? null : new LoggerLevels(configuration));
@@ -74,6 +82,9 @@ public class LoggersEndpoint
 
 	public void setLogLevel(String name, LogLevel level) {
 		Assert.notNull(name, "Name must not be empty");
+		if (name.equalsIgnoreCase("root")) {
+			name = null;
+		}
 		this.loggingSystem.setLogLevel(name, level);
 	}
 

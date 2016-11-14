@@ -102,7 +102,7 @@ public class LoggersMvcEndpointTests {
 
 	@Test
 	public void getLoggerShouldReturnLogLevels() throws Exception {
-		given(this.loggingSystem.getLoggerConfiguration("ROOT"))
+		given(this.loggingSystem.getLoggerConfiguration(null))
 				.willReturn(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG));
 		this.mvc.perform(get("/loggers/ROOT")).andExpect(status().isOk())
 				.andExpect(content().string(equalTo(
@@ -125,7 +125,7 @@ public class LoggersMvcEndpointTests {
 	public void setLoggerShouldSetLogLevel() throws Exception {
 		this.mvc.perform(post("/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
 				.content("{\"configuredLevel\":\"DEBUG\"}")).andExpect(status().isOk());
-		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
+		verify(this.loggingSystem).setLogLevel(null, LogLevel.DEBUG);
 	}
 
 	@Test

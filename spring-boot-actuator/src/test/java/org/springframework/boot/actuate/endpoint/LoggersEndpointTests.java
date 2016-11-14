@@ -53,17 +53,29 @@ public class LoggersEndpointTests extends AbstractEndpointTests<LoggersEndpoint>
 		assertThat(levels.getEffectiveLevel()).isEqualTo("DEBUG");
 	}
 
+	@Test
+	public void invokeHandleEmptyLoggerName() {
+		given(getLoggingSystem().getLoggerConfigurations()).willReturn(Collections
+				.singletonList(new LoggerConfiguration("", null, LogLevel.INFO)));
+
+		LoggerLevels levels = getEndpointBean().invoke().get("ROOT");
+		assertThat(levels.getConfiguredLevel()).isNull();
+		assertThat(levels.getEffectiveLevel()).isEqualTo("INFO");
+	}
+
+	@Test
 	public void invokeWhenNameSpecifiedShouldReturnLevels() throws Exception {
-		given(getLoggingSystem().getLoggerConfiguration("ROOT"))
+		given(getLoggingSystem().getLoggerConfiguration(null))
 				.willReturn(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG));
 		LoggerLevels levels = getEndpointBean().invoke("ROOT");
 		assertThat(levels.getConfiguredLevel()).isNull();
 		assertThat(levels.getEffectiveLevel()).isEqualTo("DEBUG");
 	}
 
+	@Test
 	public void setLogLevelShouldSetLevelOnLoggingSystem() throws Exception {
 		getEndpointBean().setLogLevel("ROOT", LogLevel.DEBUG);
-		verify(getLoggingSystem()).setLogLevel("ROOT", LogLevel.DEBUG);
+		verify(getLoggingSystem()).setLogLevel(null, LogLevel.DEBUG);
 	}
 
 	private LoggingSystem getLoggingSystem() {
