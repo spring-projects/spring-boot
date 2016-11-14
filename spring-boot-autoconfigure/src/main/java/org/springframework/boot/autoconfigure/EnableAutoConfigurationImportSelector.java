@@ -85,6 +85,7 @@ public class EnableAutoConfigurationImportSelector
 					attributes);
 			configurations = removeDuplicates(configurations);
 			Set<String> exclusions = getExclusions(metadata, attributes);
+			checkExcludedClasses(configurations, exclusions);
 			configurations.removeAll(exclusions);
 			configurations = sort(configurations);
 			recordWithConditionEvaluationReport(configurations, exclusions);
@@ -155,6 +156,23 @@ public class EnableAutoConfigurationImportSelector
 	 */
 	protected Class<?> getSpringFactoriesLoaderFactoryClass() {
 		return EnableAutoConfiguration.class;
+	}
+
+	private void checkExcludedClasses(List<String> configurations,
+			Set<String> exclusions) {
+		StringBuilder message = new StringBuilder();
+		for (String exclusion : exclusions) {
+			if (ClassUtils.isPresent(exclusion, getClass().getClassLoader())
+					&& !configurations.contains(exclusion)) {
+				message.append("\t- ").append(exclusion).append("\n");
+			}
+		}
+		if (!message.toString().isEmpty()) {
+			throw new IllegalStateException(
+					"The following classes could not be excluded because they are not auto-configuration classes:\n"
+							+ message.toString());
+		}
+
 	}
 
 	/**
