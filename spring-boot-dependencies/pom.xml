@@ -133,7 +133,7 @@
 		<mysql.version>5.1.40</mysql.version>
 		<narayana.version>5.3.5.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
-		<neo4j-ogm.version>2.0.5</neo4j-ogm.version>
+		<neo4j-ogm.version>2.1.0-SNAPSHOT</neo4j-ogm.version>
 		<postgresql.version>9.4.1212.jre7</postgresql.version>
 		<querydsl.version>4.1.4</querydsl.version>
 		<reactor.version>2.0.8.RELEASE</reactor.version>
@@ -151,7 +151,7 @@
 		<spring-amqp.version>1.7.0.BUILD-SNAPSHOT</spring-amqp.version>
 		<spring-cloud-connectors.version>1.2.3.RELEASE</spring-cloud-connectors.version>
 		<spring-batch.version>3.0.7.RELEASE</spring-batch.version>
-		<spring-data-releasetrain.version>Ingalls-M1</spring-data-releasetrain.version>
+		<spring-data-releasetrain.version>Ingalls-BUILD-SNAPSHOT</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.21.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>4.3.5.RELEASE</spring-integration.version>
 		<spring-integration-java-dsl.version>1.2.0.RELEASE</spring-integration-java-dsl.version>
@@ -2590,6 +2590,13 @@
 					<id>spring-snapshots</id>
 					<name>Spring Snapshots</name>
 					<url>http://repo.spring.io/snapshot</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>neo4j-snapshots</id>
+					<url>http://m2.neo4j.org/content/repositories/snapshots</url>
 					<snapshots>
 						<enabled>true</enabled>
 					</snapshots>

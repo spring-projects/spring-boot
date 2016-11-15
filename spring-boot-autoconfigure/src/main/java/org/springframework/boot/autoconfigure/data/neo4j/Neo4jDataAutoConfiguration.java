@@ -18,23 +18,26 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 
 import java.util.List;
 
-import org.neo4j.ogm.session.Neo4jSession;
-import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.template.Neo4jOperations;
+import org.springframework.data.neo4j.template.Neo4jTemplate;
+import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
+import org.springframework.data.neo4j.web.support.OpenSessionInViewInterceptor;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data Neo4j.
@@ -45,58 +48,67 @@ import org.springframework.data.neo4j.template.Neo4jOperations;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@SuppressWarnings("deprecation")
 @Configuration
-@ConditionalOnClass({ Neo4jSession.class, Neo4jOperations.class })
-@ConditionalOnMissingBean(Neo4jOperations.class)
+@ConditionalOnClass(SessionFactory.class)
+@ConditionalOnMissingBean(SessionFactory.class)
 @EnableConfigurationProperties(Neo4jProperties.class)
+@SuppressWarnings("deprecation")
 public class Neo4jDataAutoConfiguration {
-
-	private final Neo4jProperties properties;
-
-	public Neo4jDataAutoConfiguration(Neo4jProperties properties) {
-		this.properties = properties;
-	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public org.neo4j.ogm.config.Configuration configuration() {
-		return this.properties.createConfiguration();
+	public org.neo4j.ogm.config.Configuration configuration(Neo4jProperties properties) {
+		return properties.createConfiguration();
+	}
+
+	@Bean
+	public SessionFactory sessionFactory(org.neo4j.ogm.config.Configuration configuration,
+			ApplicationContext applicationContext) {
+		return new SessionFactory(configuration, getPackagesToScan(applicationContext));
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(Neo4jOperations.class)
+	public Neo4jTemplate neo4jTemplate(SessionFactory sessionFactory) {
+		return new Neo4jTemplate(sessionFactory);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(PlatformTransactionManager.class)
+	public Neo4jTransactionManager transactionManager(SessionFactory sessionFactory) {
+		return new Neo4jTransactionManager(sessionFactory);
+	}
+
+	private String[] getPackagesToScan(ApplicationContext applicationContext) {
+		List<String> packages = EntityScanPackages.get(applicationContext)
+				.getPackageNames();
+		if (packages.isEmpty() && AutoConfigurationPackages.has(applicationContext)) {
+			packages = AutoConfigurationPackages.get(applicationContext);
+		}
+		return packages.toArray(new String[packages.size()]);
 	}
 
 	@Configuration
-	static class SpringBootNeo4jConfiguration extends Neo4jConfiguration {
+	@ConditionalOnWebApplication
+	@ConditionalOnClass({ WebMvcConfigurerAdapter.class,
+			OpenSessionInViewInterceptor.class })
+	@ConditionalOnMissingBean(OpenSessionInViewInterceptor.class)
+	@ConditionalOnProperty(prefix = "spring.data.neo4j", name = "open-in-view", havingValue = "true")
+	protected static class Neo4jWebConfiguration {
 
-		private final ApplicationContext applicationContext;
+		@Configuration
+		protected static class Neo4jWebMvcConfiguration extends WebMvcConfigurerAdapter {
 
-		private final org.neo4j.ogm.config.Configuration configuration;
-
-		SpringBootNeo4jConfiguration(ApplicationContext applicationContext,
-				org.neo4j.ogm.config.Configuration configuration) {
-			this.applicationContext = applicationContext;
-			this.configuration = configuration;
-		}
-
-		@Override
-		public SessionFactory getSessionFactory() {
-			return new SessionFactory(this.configuration, getPackagesToScan());
-		}
-
-		private String[] getPackagesToScan() {
-			List<String> packages = EntityScanPackages.get(this.applicationContext)
-					.getPackageNames();
-			if (packages.isEmpty()
-					&& AutoConfigurationPackages.has(this.applicationContext)) {
-				packages = AutoConfigurationPackages.get(this.applicationContext);
+			@Bean
+			public OpenSessionInViewInterceptor neo4jOpenSessionInViewInterceptor() {
+				return new OpenSessionInViewInterceptor();
 			}
-			return packages.toArray(new String[packages.size()]);
-		}
 
-		@Override
-		@Bean
-		@Scope(scopeName = "${spring.data.neo4j.session.scope:singleton}", proxyMode = ScopedProxyMode.TARGET_CLASS)
-		public Session getSession() throws Exception {
-			return super.getSession();
+			@Override
+			public void addInterceptors(InterceptorRegistry registry) {
+				registry.addWebRequestInterceptor(neo4jOpenSessionInViewInterceptor());
+			}
+
 		}
 
 	}

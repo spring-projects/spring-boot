@@ -85,16 +85,16 @@
     "defaultValue": true
   },
   {
+    "name": "spring.data.neo4j.open-in-view",
+    "type": "java.lang.Boolean",
+    "description": "Register OpenSessionInViewInterceptor. Binds a Neo4j Session to the thread for the entire processing of the request.",
+    "defaultValue": false
+  },
+  {
     "name": "spring.data.neo4j.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Neo4j repositories.",
     "defaultValue": true
-  },
-  {
-    "name": "spring.data.neo4j.session.scope",
-    "type": "java.lang.String",
-    "description": "Scope (lifetime) of the session.",
-    "defaultValue": "singleton"
   },
   {
     "name": "spring.data.redis.repositories.enabled",
