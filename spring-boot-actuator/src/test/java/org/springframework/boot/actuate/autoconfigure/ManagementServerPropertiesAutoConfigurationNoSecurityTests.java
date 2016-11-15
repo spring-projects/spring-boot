@@ -48,17 +48,16 @@ public class ManagementServerPropertiesAutoConfigurationNoSecurityTests {
 
 	@Test
 	public void securitySettingsIgnoredWithoutSpringSecurity() {
-		ManagementServerProperties properties =
-				load("management.security.enabled=false");
+		ManagementServerProperties properties = load("management.security.enabled=false");
 		assertThat(properties.getSecurity().isEnabled()).isFalse();
 	}
 
 	public ManagementServerProperties load(String... environment) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(ctx, environment);
-		ctx.register(ManagementServerPropertiesAutoConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, environment);
+		context.register(ManagementServerPropertiesAutoConfiguration.class);
+		context.refresh();
+		this.context = context;
 		return this.context.getBean(ManagementServerProperties.class);
 	}
 
