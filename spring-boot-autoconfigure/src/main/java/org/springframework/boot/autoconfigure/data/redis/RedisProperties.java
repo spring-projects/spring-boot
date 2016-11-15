@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  * @author Christoph Strobl
  * @author Eddú Meléndez
+ * @author Marco Aust
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
@@ -34,6 +35,11 @@ public class RedisProperties {
 	 * Database index used by the connection factory.
 	 */
 	private int database = 0;
+
+	/**
+	 * Redis url, which will overrule host, port and password if set.
+	 */
+	private String url;
 
 	/**
 	 * Redis server host.
@@ -68,6 +74,10 @@ public class RedisProperties {
 	public void setDatabase(int database) {
 		this.database = database;
 	}
+
+	public String getUrl() { return this.url; }
+
+	public void setUrl(String url) { this.url = url; }
 
 	public String getHost() {
 		return this.host;
