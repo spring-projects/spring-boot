@@ -25,6 +25,7 @@ import org.springframework.boot.configurationsample.NestedConfigurationProperty;
 /**
  * Demonstrate that only relevant generics are stored in the metadata.
  *
+ * @param <T> the type of the config
  * @author Stephane Nicoll
  */
 @ConfigurationProperties("generic")
@@ -43,11 +44,9 @@ public class GenericConfig<T> {
 		@NestedConfigurationProperty
 		private final Bar<String> bar = new Bar<String>();
 
-		private final Map<String, Bar<Integer>> stringToBar =
-				new HashMap<String, Bar<Integer>>();
+		private final Map<String, Bar<Integer>> stringToBar = new HashMap<String, Bar<Integer>>();
 
-		private final Map<String, Integer> stringToInteger =
-				new HashMap<String, Integer>();
+		private final Map<String, Integer> stringToInteger = new HashMap<String, Integer>();
 
 		public String getName() {
 			return this.name;
