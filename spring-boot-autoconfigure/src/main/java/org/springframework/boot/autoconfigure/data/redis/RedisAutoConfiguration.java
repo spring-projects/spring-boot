@@ -16,10 +16,14 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;
@@ -55,11 +59,14 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Marco Aust
  */
 @Configuration
 @ConditionalOnClass({ JedisConnection.class, RedisOperations.class, Jedis.class })
 @EnableConfigurationProperties(RedisProperties.class)
 public class RedisAutoConfiguration {
+
+	private static final Log logger = LogFactory.getLog(RedisAutoConfiguration.class);
 
 	/**
 	 * Redis connection configuration.
@@ -91,10 +98,31 @@ public class RedisAutoConfiguration {
 
 		protected final JedisConnectionFactory applyProperties(
 				JedisConnectionFactory factory) {
-			factory.setHostName(this.properties.getHost());
-			factory.setPort(this.properties.getPort());
-			if (this.properties.getPassword() != null) {
-				factory.setPassword(this.properties.getPassword());
+			if (StringUtils.hasText(this.properties.getUrl())) {
+				if (this.properties.getUrl().startsWith("rediss://")) {
+					factory.setUseSsl(true);
+				}
+				try {
+					URI redisURI = new URI(this.properties.getUrl());
+					factory.setHostName(redisURI.getHost());
+					factory.setPort(redisURI.getPort());
+					if (redisURI.getUserInfo() != null) {
+						factory.setPassword(redisURI.getUserInfo().split(":", 2)[1]);
+					}
+				}
+				catch (URISyntaxException e) {
+					logger.error("Incorrect spring.redis.url", e);
+				}
+			}
+			else {
+				factory.setHostName(this.properties.getHost());
+				factory.setPort(this.properties.getPort());
+				if (this.properties.getPassword() != null) {
+					factory.setPassword(this.properties.getPassword());
+				}
+			}
+			if (this.properties.isSsl()) {
+				factory.setUseSsl(true);
 			}
 			factory.setDatabase(this.properties.getDatabase());
 			if (this.properties.getTimeout() > 0) {
