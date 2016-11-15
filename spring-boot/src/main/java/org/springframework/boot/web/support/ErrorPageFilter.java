@@ -185,7 +185,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		request.getRequestDispatcher(path).forward(request, response);
 	}
 
-	private String getDescription(HttpServletRequest request) {
+	protected String getDescription(HttpServletRequest request) {
 		return "[" + request.getServletPath()
 				+ (request.getPathInfo() == null ? "" : request.getPathInfo()) + "]";
 	}
