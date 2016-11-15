@@ -75,9 +75,13 @@ public class RedisProperties {
 		this.database = database;
 	}
 
-	public String getUrl() { return this.url; }
+	public String getUrl() {
+		return this.url;
+	}
 
-	public void setUrl(String url) { this.url = url; }
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
 	public String getHost() {
 		return this.host;

@@ -106,10 +106,12 @@ public class RedisAutoConfiguration {
 					if (redisURI.getUserInfo() != null) {
 						factory.setPassword(redisURI.getUserInfo().split(":", 2)[1]);
 					}
-				} catch (URISyntaxException e) {
+				}
+				catch (URISyntaxException e) {
 					logger.error("Incorrect spring.redis.url", e);
 				}
-			} else {
+			}
+			else {
 				factory.setHostName(this.properties.getHost());
 				factory.setPort(this.properties.getPort());
 				if (this.properties.getPassword() != null) {

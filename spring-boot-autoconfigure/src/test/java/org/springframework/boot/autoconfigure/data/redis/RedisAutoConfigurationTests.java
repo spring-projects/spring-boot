@@ -77,7 +77,8 @@ public class RedisAutoConfigurationTests {
 
 	@Test
 	public void testOverrideURLRedisConfiguration() throws Exception {
-		load("spring.redis.host:foo", "spring.redis.password:xyz", "spring.redis.port:1000",
+		load("spring.redis.host:foo", "spring.redis.password:xyz",
+				"spring.redis.port:1000",
 				"spring.redis.url:redis://user:password@example:33");
 		assertThat(this.context.getBean(JedisConnectionFactory.class).getHostName())
 				.isEqualTo("example");
