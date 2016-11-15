@@ -41,7 +41,7 @@ public abstract class AbstractEndpointHandlerMappingTests {
 	public void pathNotMappedWhenGetPathReturnsNull() throws Exception {
 		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
 		TestActionEndpoint other = new TestActionEndpoint(new TestEndpoint("b"));
-		AbstractEndpointHandlerMapping mapping = new TestEndpointHandlerMapping(
+		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<MvcEndpoint>(
 				Arrays.asList(endpoint, other));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
@@ -89,9 +89,10 @@ public abstract class AbstractEndpointHandlerMappingTests {
 
 	}
 
-	private static class TestEndpointHandlerMapping extends AbstractEndpointHandlerMapping {
+	private static class TestEndpointHandlerMapping<E extends MvcEndpoint>
+			extends AbstractEndpointHandlerMapping<E> {
 
-		TestEndpointHandlerMapping(Collection<? extends MvcEndpoint> endpoints) {
+		TestEndpointHandlerMapping(Collection<E> endpoints) {
 			super(endpoints);
 		}
 
