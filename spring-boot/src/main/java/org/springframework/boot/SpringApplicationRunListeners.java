@@ -43,9 +43,9 @@ class SpringApplicationRunListeners {
 		this.listeners = new ArrayList<SpringApplicationRunListener>(listeners);
 	}
 
-	public void started() {
+	public void starting() {
 		for (SpringApplicationRunListener listener : this.listeners) {
-			listener.started();
+			listener.starting();
 		}
 	}
 

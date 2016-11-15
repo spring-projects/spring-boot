@@ -30,7 +30,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -129,9 +129,9 @@ public class ApplicationPidFileWriterTests {
 	public void withNoEnvironment() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
-		listener.setTriggerEventType(ApplicationStartedEvent.class);
+		listener.setTriggerEventType(ApplicationStartingEvent.class);
 		listener.onApplicationEvent(
-				new ApplicationStartedEvent(new SpringApplication(), new String[] {}));
+				new ApplicationStartingEvent(new SpringApplication(), new String[] {}));
 		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isNotEmpty();
 	}
 

@@ -24,7 +24,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -92,7 +92,7 @@ public class RestartApplicationListenerTests {
 		SpringApplication application = new SpringApplication();
 		ConfigurableApplicationContext context = mock(
 				ConfigurableApplicationContext.class);
-		listener.onApplicationEvent(new ApplicationStartedEvent(application, ARGS));
+		listener.onApplicationEvent(new ApplicationStartingEvent(application, ARGS));
 		assertThat(Restarter.getInstance()).isNotEqualTo(nullValue());
 		assertThat(Restarter.getInstance().isFinished()).isFalse();
 		listener.onApplicationEvent(

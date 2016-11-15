@@ -299,7 +299,7 @@ public class SpringApplication {
 		FailureAnalyzers analyzers = null;
 		configureHeadlessProperty();
 		SpringApplicationRunListeners listeners = getRunListeners(args);
-		listeners.started();
+		listeners.starting();
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(
 					args);
