@@ -95,7 +95,6 @@ class DefaultLogbackConfiguration {
 				"org.springframework.boot");
 		config.start(debugRemapAppender);
 		config.appender("DEBUG_LEVEL_REMAPPER", debugRemapAppender);
-		config.logger("", Level.ERROR);
 		config.logger("org.apache.catalina.startup.DigesterFactory", Level.ERROR);
 		config.logger("org.apache.catalina.util.LifecycleBase", Level.ERROR);
 		config.logger("org.apache.coyote.http11.Http11NioProtocol", Level.WARN);
