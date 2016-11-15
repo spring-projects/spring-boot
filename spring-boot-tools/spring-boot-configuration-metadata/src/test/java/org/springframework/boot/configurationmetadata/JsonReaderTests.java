@@ -16,11 +16,9 @@
 
 package org.springframework.boot.configurationmetadata;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import org.json.JSONException;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,20 +35,20 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 	private final JsonReader reader = new JsonReader();
 
 	@Test
-	public void emptyMetadata() throws IOException {
+	public void emptyMetadata() throws Exception {
 		RawConfigurationMetadata rawMetadata = readFor("empty");
 		assertThat(rawMetadata.getSources()).isEmpty();
 		assertThat(rawMetadata.getItems()).isEmpty();
 	}
 
 	@Test
-	public void invalidMetadata() throws IOException {
-		this.thrown.expect(JSONException.class);
+	public void invalidMetadata() throws Exception {
+		this.thrown.expect(IllegalStateException.class);
 		readFor("invalid");
 	}
 
 	@Test
-	public void emptyGroupName() throws IOException {
+	public void emptyGroupName() throws Exception {
 		RawConfigurationMetadata rawMetadata = readFor("empty-groups");
 		List<ConfigurationMetadataItem> items = rawMetadata.getItems();
 		assertThat(items).hasSize(2);
@@ -62,7 +60,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 	}
 
 	@Test
-	public void simpleMetadata() throws IOException {
+	public void simpleMetadata() throws Exception {
 		RawConfigurationMetadata rawMetadata = readFor("foo");
 		List<ConfigurationMetadataSource> sources = rawMetadata.getSources();
 		assertThat(sources).hasSize(2);
@@ -92,7 +90,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		assertThat(hint.getId()).isEqualTo("spring.foo.counter");
 		assertThat(hint.getValueHints()).hasSize(1);
 		ValueHint valueHint = hint.getValueHints().get(0);
-		assertThat(valueHint.getValue()).isEqualTo(42);
+		assertThat(valueHint.getValue()).isEqualTo(42L);
 		assertThat(valueHint.getDescription()).isEqualTo(
 				"Because that's the answer to any question, choose it. \nReally.");
 		assertThat(valueHint.getShortDescription())
@@ -106,7 +104,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 	}
 
 	@Test
-	public void metadataHints() throws IOException {
+	public void metadataHints() throws Exception {
 		RawConfigurationMetadata rawMetadata = readFor("bar");
 		List<ConfigurationMetadataHint> hints = rawMetadata.getHints();
 		assertThat(hints).hasSize(1);
@@ -133,7 +131,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 	}
 
 	@Test
-	public void rootMetadata() throws IOException {
+	public void rootMetadata() throws Exception {
 		RawConfigurationMetadata rawMetadata = readFor("root");
 		List<ConfigurationMetadataSource> sources = rawMetadata.getSources();
 		assertThat(sources).isEmpty();
@@ -144,7 +142,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 	}
 
 	@Test
-	public void deprecatedMetadata() throws IOException {
+	public void deprecatedMetadata() throws Exception {
 		RawConfigurationMetadata rawMetadata = readFor("deprecated");
 		List<ConfigurationMetadataItem> items = rawMetadata.getItems();
 		assertThat(items).hasSize(3);
@@ -171,8 +169,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		assertThat(item3.getDeprecation()).isEqualTo(null);
 	}
 
-	RawConfigurationMetadata readFor(String path) throws IOException {
+	private RawConfigurationMetadata readFor(String path) throws Exception {
 		return this.reader.read(getInputStreamFor(path), DEFAULT_CHARSET);
 	}
-
 }

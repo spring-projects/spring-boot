@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONException;
+import org.json.simple.parser.ParseException;
 
 /**
  * Load a {@link ConfigurationMetadataRepository} from the content of arbitrary
@@ -98,8 +98,7 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 		return result;
 	}
 
-	private SimpleConfigurationMetadataRepository add(InputStream in, Charset charset)
-			throws IOException {
+	private SimpleConfigurationMetadataRepository add(InputStream in, Charset charset) {
 		try {
 			RawConfigurationMetadata metadata = this.reader.read(in, charset);
 			return create(metadata);
@@ -108,7 +107,7 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 			throw new IllegalArgumentException(
 					"Failed to read configuration " + "metadata", ex);
 		}
-		catch (JSONException ex) {
+		catch (ParseException ex) {
 			throw new IllegalArgumentException(
 					"Invalid configuration " + "metadata document", ex);
 		}

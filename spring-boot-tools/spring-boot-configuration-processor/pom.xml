@@ -19,9 +19,13 @@
 	</properties>
 	<dependencies>
  		<!-- Compile (should stick to the bare minimum) -->
- 		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
 		</dependency>
 		<!-- Test -->
 		<dependency>
@@ -30,8 +34,14 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>

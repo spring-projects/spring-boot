@@ -18,7 +18,6 @@ package org.springframework.boot.configurationprocessor.metadata;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JsonMarshallerTests {
 
 	@Test
-	public void marshallAndUnmarshal() throws IOException {
+	public void marshallAndUnmarshal() throws Exception {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		metadata.add(ItemMetadata.newProperty("a", "b", StringBuffer.class.getName(),
 				InputStream.class.getName(), "sourceMethod", "desc", "x",
@@ -72,7 +71,7 @@ public class JsonMarshallerTests {
 				.fromSource(InputStream.class).withDescription("desc")
 				.withDefaultValue("x").withDeprecation("Deprecation comment", "b.c.d"));
 		assertThat(read).has(Metadata.withProperty("b.c.d"));
-		assertThat(read).has(Metadata.withProperty("c").withDefaultValue(123));
+		assertThat(read).has(Metadata.withProperty("c").withDefaultValue(123L));
 		assertThat(read).has(Metadata.withProperty("d").withDefaultValue(true));
 		assertThat(read).has(
 				Metadata.withProperty("e").withDefaultValue(new String[] { "y", "n" }));
@@ -81,9 +80,8 @@ public class JsonMarshallerTests {
 		assertThat(read).has(Metadata.withGroup("d"));
 		assertThat(read).has(Metadata.withHint("a.b"));
 		assertThat(read).has(
-				Metadata.withHint("c").withValue(0, 123, "hey").withValue(1, 456, null));
+				Metadata.withHint("c").withValue(0, 123L, "hey").withValue(1, 456L, null));
 		assertThat(read).has(Metadata.withHint("d").withProvider("first", "target", "foo")
 				.withProvider("second"));
 	}
-
 }
