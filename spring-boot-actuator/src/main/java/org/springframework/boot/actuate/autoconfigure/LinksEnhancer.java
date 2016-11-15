@@ -16,11 +16,14 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
+import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.util.StringUtils;
 
@@ -47,23 +50,31 @@ class LinksEnhancer {
 			resource.add(linkTo(LinksEnhancer.class).slash(this.rootPath + self)
 					.withSelfRel());
 		}
-		Set<String> added = new HashSet<String>();
+		Map<String, List<String>> added = new HashMap<String, List<String>>();
 		for (MvcEndpoint endpoint : this.endpoints.getEndpoints()) {
-			if (!endpoint.getPath().equals(self) && !added.contains(endpoint.getPath())) {
-				addEndpointLink(resource, endpoint);
+
+			String rel = getRel(endpoint);
+			List<String> pathsForRel = added.get(rel) == null ? new ArrayList<String>() : added.get(rel);
+
+			if (!endpoint.getPath().equals(self) && !pathsForRel.contains(endpoint.getPath())) {
+				addEndpointLink(resource, endpoint, rel);
+				pathsForRel.add(endpoint.getPath());
+				added.put(rel, pathsForRel);
 			}
-			added.add(endpoint.getPath());
 		}
 	}
 
-	private void addEndpointLink(ResourceSupport resource, MvcEndpoint endpoint) {
+	private String getRel(MvcEndpoint endpoint) {
+		String name = endpoint instanceof NamedMvcEndpoint ? ((NamedMvcEndpoint) endpoint).getName() : endpoint.getPath();
+		return (name.startsWith("/") ? name.substring(1) : name);
+	}
+
+	private void addEndpointLink(ResourceSupport resource, MvcEndpoint endpoint, String rel) {
 		Class<?> type = endpoint.getEndpointType();
 		type = (type == null ? Object.class : type);
-		String path = endpoint.getPath();
-		String rel = (path.startsWith("/") ? path.substring(1) : path);
 		if (StringUtils.hasText(rel)) {
-			String fullPath = this.rootPath + endpoint.getPath();
-			resource.add(linkTo(type).slash(fullPath).withRel(rel));
+			String href = this.rootPath + endpoint.getPath();
+			resource.add(linkTo(type).slash(href).withRel(rel));
 		}
 	}
 
