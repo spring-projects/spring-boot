@@ -67,6 +67,7 @@ import org.springframework.util.StringUtils;
 public class RedisAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(RedisAutoConfiguration.class);
+
 	/**
 	 * Redis connection configuration.
 	 */
