@@ -16,8 +16,11 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import com.codahale.metrics.MetricRegistry;
 import com.rabbitmq.client.Channel;
 
+import com.rabbitmq.client.MetricsCollector;
+import com.rabbitmq.client.impl.StandardMetricsCollector;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -27,6 +30,7 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -75,6 +79,7 @@ import org.springframework.retry.support.RetryTemplate;
  * @author Josh Long
  * @author Stephane Nicoll
  * @author Gary Russell
+ * @author Arnaud Cogoluègnes
  */
 @Configuration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
@@ -82,47 +87,81 @@ import org.springframework.retry.support.RetryTemplate;
 @Import(RabbitAnnotationDrivenConfiguration.class)
 public class RabbitAutoConfiguration {
 
+	private static RabbitConnectionFactoryBean configureRabbitConnectionFactoryBean(RabbitProperties config) {
+		RabbitConnectionFactoryBean factory = new RabbitConnectionFactoryBean();
+		if (config.determineHost() != null) {
+			factory.setHost(config.determineHost());
+		}
+		factory.setPort(config.determinePort());
+		if (config.determineUsername() != null) {
+			factory.setUsername(config.determineUsername());
+		}
+		if (config.determinePassword() != null) {
+			factory.setPassword(config.determinePassword());
+		}
+		if (config.determineVirtualHost() != null) {
+			factory.setVirtualHost(config.determineVirtualHost());
+		}
+		if (config.getRequestedHeartbeat() != null) {
+			factory.setRequestedHeartbeat(config.getRequestedHeartbeat());
+		}
+		RabbitProperties.Ssl ssl = config.getSsl();
+		if (ssl.isEnabled()) {
+			factory.setUseSSL(true);
+			if (ssl.getAlgorithm() != null) {
+				factory.setSslAlgorithm(ssl.getAlgorithm());
+			}
+			factory.setKeyStore(ssl.getKeyStore());
+			factory.setKeyStorePassphrase(ssl.getKeyStorePassword());
+			factory.setTrustStore(ssl.getTrustStore());
+			factory.setTrustStorePassphrase(ssl.getTrustStorePassword());
+		}
+		if (config.getConnectionTimeout() != null) {
+			factory.setConnectionTimeout(config.getConnectionTimeout());
+		}
+		return factory;
+	}
+
+	@Configuration
+	@ConditionalOnMissingBean(com.rabbitmq.client.ConnectionFactory.class)
+	@ConditionalOnClass({MetricsCollector.class, MetricRegistry.class})
+	@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "metrics", matchIfMissing = true)
+	protected static class RabbitNativeConnectionFactoryWithMetricsCreator {
+
+		@Autowired(required = false) MetricRegistry metricRegistry;
+
+		@Bean
+		public com.rabbitmq.client.ConnectionFactory rabbitNativeConnectionFactoryWithMetrics(RabbitProperties config)
+			throws Exception {
+			RabbitConnectionFactoryBean factory = configureRabbitConnectionFactoryBean(config);
+			factory.afterPropertiesSet();
+
+			com.rabbitmq.client.ConnectionFactory connectionFactory = factory.getObject();
+			if(metricRegistry != null) {
+				connectionFactory.setMetricsCollector(new StandardMetricsCollector(metricRegistry));
+			}
+			return connectionFactory;
+		}
+
+	}
+
+
 	@Configuration
 	@ConditionalOnMissingBean(ConnectionFactory.class)
 	protected static class RabbitConnectionFactoryCreator {
 
+		@Autowired(required = false) com.rabbitmq.client.ConnectionFactory rabbitNativeConnectionFactory;
+
 		@Bean
 		public CachingConnectionFactory rabbitConnectionFactory(RabbitProperties config)
 				throws Exception {
-			RabbitConnectionFactoryBean factory = new RabbitConnectionFactoryBean();
-			if (config.determineHost() != null) {
-				factory.setHost(config.determineHost());
+			com.rabbitmq.client.ConnectionFactory nativeConnectionFactory = rabbitNativeConnectionFactory;
+			if(nativeConnectionFactory == null) {
+				RabbitConnectionFactoryBean rabbitConnectionFactoryBean = configureRabbitConnectionFactoryBean(config);
+				rabbitConnectionFactoryBean.afterPropertiesSet();
+				nativeConnectionFactory = rabbitConnectionFactoryBean.getObject();
 			}
-			factory.setPort(config.determinePort());
-			if (config.determineUsername() != null) {
-				factory.setUsername(config.determineUsername());
-			}
-			if (config.determinePassword() != null) {
-				factory.setPassword(config.determinePassword());
-			}
-			if (config.determineVirtualHost() != null) {
-				factory.setVirtualHost(config.determineVirtualHost());
-			}
-			if (config.getRequestedHeartbeat() != null) {
-				factory.setRequestedHeartbeat(config.getRequestedHeartbeat());
-			}
-			RabbitProperties.Ssl ssl = config.getSsl();
-			if (ssl.isEnabled()) {
-				factory.setUseSSL(true);
-				if (ssl.getAlgorithm() != null) {
-					factory.setSslAlgorithm(ssl.getAlgorithm());
-				}
-				factory.setKeyStore(ssl.getKeyStore());
-				factory.setKeyStorePassphrase(ssl.getKeyStorePassword());
-				factory.setTrustStore(ssl.getTrustStore());
-				factory.setTrustStorePassphrase(ssl.getTrustStorePassword());
-			}
-			if (config.getConnectionTimeout() != null) {
-				factory.setConnectionTimeout(config.getConnectionTimeout());
-			}
-			factory.afterPropertiesSet();
-			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
-					factory.getObject());
+			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(nativeConnectionFactory);
 			connectionFactory.setAddresses(config.determineAddresses());
 			connectionFactory.setPublisherConfirms(config.isPublisherConfirms());
 			connectionFactory.setPublisherReturns(config.isPublisherReturns());
