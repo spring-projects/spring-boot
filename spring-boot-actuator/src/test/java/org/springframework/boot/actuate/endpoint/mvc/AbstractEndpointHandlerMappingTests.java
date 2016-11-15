@@ -42,7 +42,7 @@ public abstract class AbstractEndpointHandlerMappingTests {
 		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
 		TestActionEndpoint other = new TestActionEndpoint(new TestEndpoint("b"));
 		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<MvcEndpoint>(
-				Arrays.asList(endpoint, other));
+				Arrays.<MvcEndpoint>asList(endpoint, other));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
 		assertThat(mapping.getHandlerMethods()).hasSize(1);
