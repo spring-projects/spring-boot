@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -111,6 +112,11 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 			throw new IllegalStateException(
 					"Could not initialize Java logging from " + location, ex);
 		}
+	}
+
+	@Override
+	public Set<LogLevel> getSupportedLogLevels() {
+		return LEVELS.getSupported();
 	}
 
 	@Override

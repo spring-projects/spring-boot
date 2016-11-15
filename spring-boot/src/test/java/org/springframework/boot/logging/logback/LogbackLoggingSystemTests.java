@@ -18,6 +18,7 @@ package org.springframework.boot.logging.logback;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
@@ -160,6 +161,13 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext,
 				"classpath:logback-nonexistent.xml", null);
+	}
+
+	@Test
+	public void getSupportedLevels() {
+		assertThat(this.loggingSystem.getSupportedLogLevels())
+				.isEqualTo(EnumSet.of(LogLevel.TRACE, LogLevel.DEBUG, LogLevel.INFO,
+						LogLevel.WARN, LogLevel.ERROR, LogLevel.OFF));
 	}
 
 	@Test

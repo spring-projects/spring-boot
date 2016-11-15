@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -195,6 +196,11 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	@Override
 	protected void reinitialize(LoggingInitializationContext initializationContext) {
 		getLoggerContext().reconfigure();
+	}
+
+	@Override
+	public Set<LogLevel> getSupportedLogLevels() {
+		return LEVELS.getSupported();
 	}
 
 	@Override

@@ -17,9 +17,11 @@
 package org.springframework.boot.logging;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -92,6 +94,15 @@ public abstract class LoggingSystem {
 	 */
 	public Runnable getShutdownHandler() {
 		return null;
+	}
+
+	/**
+	 * Returns a set of the {@link LogLevel LogLevels} that are actually supported by the
+	 * logging system.
+	 * @return the supported levels
+	 */
+	public Set<LogLevel> getSupportedLogLevels() {
+		return EnumSet.allOf(LogLevel.class);
 	}
 
 	/**

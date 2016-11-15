@@ -22,6 +22,7 @@ import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
@@ -236,6 +237,11 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		LogLevel effectiveLevel = LEVELS
 				.convertNativeToSystem(logger.getEffectiveLevel());
 		return new LoggerConfiguration(logger.getName(), level, effectiveLevel);
+	}
+
+	@Override
+	public Set<LogLevel> getSupportedLogLevels() {
+		return LEVELS.getSupported();
 	}
 
 	@Override

@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -120,6 +121,12 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	public void testNonexistentConfigLocation() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, "classpath:log4j2-nonexistent.xml", null);
+	}
+
+	@Test
+	public void getSupportedLevels() {
+		assertThat(this.loggingSystem.getSupportedLogLevels())
+				.isEqualTo(EnumSet.allOf(LogLevel.class));
 	}
 
 	@Test
