@@ -787,7 +787,7 @@ content into your application; rather pick only the properties that you need.
 	spring.redis.cluster.max-redirects= # Maximum number of redirects to follow when executing commands across the cluster.
 	spring.redis.cluster.nodes= # Comma-separated list of "host:port" pairs to bootstrap from.
 	spring.redis.database=0 # Database index used by the connection factory.
-	spring.redis.url=redis://x:password@example.com:6379 # Connection URL, will override host, port and password (user will be ignored)
+	spring.redis.url=redis://x:password@example.com:6379 # Connection URL, will override host, port and password (user will be ignored), e.g. redis://user:password@localhost:6379
 	spring.redis.host=localhost # Redis server host.
 	spring.redis.password= # Login password of the redis server.
 	spring.redis.pool.max-active=8 # Max number of connections that can be allocated by the pool at a given time. Use a negative value for no limit.
