@@ -51,6 +51,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 public class MockMvcAutoConfiguration {
 
 	private final WebApplicationContext context;
+
 	private final WebMvcProperties webMvcProperties;
 
 	MockMvcAutoConfiguration(WebApplicationContext context,
