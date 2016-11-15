@@ -73,8 +73,8 @@ public class AuthorizationAuditListenerTests {
 	@Test
 	public void testDetailsAreIncludedInAuditEvent() throws Exception {
 		Object details = new Object();
-		UsernamePasswordAuthenticationToken authentication =
-				new UsernamePasswordAuthenticationToken("user", "password");
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+				"user", "password");
 		authentication.setDetails(details);
 		this.listener.onApplicationEvent(new AuthorizationFailureEvent(this,
 				Arrays.<ConfigAttribute>asList(new SecurityConfig("USER")),

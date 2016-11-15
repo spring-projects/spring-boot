@@ -98,7 +98,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 		MongoDataAutoConfiguration.class, RabbitAutoConfiguration.class,
 		RedisAutoConfiguration.class, SolrAutoConfiguration.class })
 @EnableConfigurationProperties({ HealthIndicatorProperties.class })
-@Import({ ElasticsearchHealthIndicatorConfiguration.ElasticsearchClientHealthIndicatorConfiguration.class,
+@Import({
+		ElasticsearchHealthIndicatorConfiguration.ElasticsearchClientHealthIndicatorConfiguration.class,
 		ElasticsearchHealthIndicatorConfiguration.ElasticsearchJestHealthIndicatorConfiguration.class })
 public class HealthIndicatorAutoConfiguration {
 

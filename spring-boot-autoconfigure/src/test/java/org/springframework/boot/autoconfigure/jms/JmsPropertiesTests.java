@@ -55,4 +55,25 @@ public class JmsPropertiesTests {
 		assertThat(properties.getListener().formatConcurrency()).isEqualTo("2-10");
 	}
 
+	@Test
+	public void setDeliveryModeEnablesQoS() {
+		JmsProperties properties = new JmsProperties();
+		properties.getTemplate().setDeliveryMode(JmsProperties.DeliveryMode.PERSISTENT);
+		assertThat(properties.getTemplate().determineQosEnabled()).isTrue();
+	}
+
+	@Test
+	public void setPriorityEnablesQoS() {
+		JmsProperties properties = new JmsProperties();
+		properties.getTemplate().setPriority(6);
+		assertThat(properties.getTemplate().determineQosEnabled()).isTrue();
+	}
+
+	@Test
+	public void setTimeToLiveEnablesQoS() {
+		JmsProperties properties = new JmsProperties();
+		properties.getTemplate().setTimeToLive(5000L);
+		assertThat(properties.getTemplate().determineQosEnabled()).isTrue();
+	}
+
 }

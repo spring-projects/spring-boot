@@ -21,6 +21,7 @@ import javax.ws.rs.Path;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Wrapper;
+import org.apache.tomcat.util.buf.UDecoder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.junit.ClassRule;
@@ -104,7 +105,8 @@ public class JerseyAutoConfigurationServletContainerTests {
 					jerseyServlet.setServlet(new ServletContainer());
 					jerseyServlet.setOverridable(false);
 					context.addChild(jerseyServlet);
-					context.addServletMapping("/*", servletName);
+					String pattern = UDecoder.URLDecode("/*", "UTF-8");
+					context.addServletMappingDecoded(pattern, servletName);
 				}
 
 			};

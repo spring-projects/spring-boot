@@ -182,7 +182,7 @@ the `spring-boot` plugin:
 			classpath("org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}")
 		}
 	}
-	apply plugin: 'spring-boot'
+	apply plugin: 'org.springframework.boot'
 ----
 
 If you are using a milestone or snapshot release you will also need to add appropriate
@@ -204,7 +204,7 @@ If you are using a milestone or snapshot release you will also need to add appro
 [[build-tool-plugins-gradle-dependency-management]]
 === Gradle dependency management
 The `spring-boot` plugin automatically applies the
-{dependency-management-plugin}/[Dependency Management Plugin] and configures in to import
+{dependency-management-plugin}/[Dependency Management Plugin] and configures it to import
 the `spring-boot-starter-parent` bom. This provides a similar dependency management
 experience to the one that is enjoyed by Maven users. For example, it allows you to omit
 version numbers when declaring dependencies that are managed in the bom. To make use of
@@ -373,10 +373,10 @@ want the other Boot features but not this one)
 
 |`classifier`
 |A file name segment (before the extension) to add to the archive, so that the original is
- preserved in its original location. Defaults to null in which case the archive is
+ preserved in its original location. Defaults to `null` in which case the archive is
  repackaged in place. The default is convenient for many purposes, but if you want to use
- the original jar as a dependency in another project, it's best to use an extension to
- define the executable archive.
+ the original jar as a dependency in another project you must use a classifier to define
+ the executable archive.
 
 |`withJarTask`
 |The name or value of the `Jar` task (defaults to all tasks of type `Jar`) which is used
@@ -400,7 +400,7 @@ want the other Boot features but not this one)
 
 |`excludeDevtools`
 |Boolean flag to indicate if the devtools jar should be excluded from the repackaged
-archives. Defaults to `false`.
+archives. Defaults to `true`.
 |===
 
 

@@ -200,8 +200,6 @@ public class SpringApplication {
 
 	private Banner banner;
 
-	private boolean printedCustomBannerViaDeprecatedMethod;
-
 	private ResourceLoader resourceLoader;
 
 	private BeanNameGenerator beanNameGenerator;
@@ -540,9 +538,6 @@ public class SpringApplication {
 		if (this.bannerMode == Banner.Mode.OFF) {
 			return null;
 		}
-		if (printBannerViaDeprecatedMethod(environment)) {
-			return null;
-		}
 		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
 				: new DefaultResourceLoader(getClassLoader());
 		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(
@@ -551,26 +546,6 @@ public class SpringApplication {
 			return bannerPrinter.print(environment, this.mainApplicationClass, logger);
 		}
 		return bannerPrinter.print(environment, this.mainApplicationClass, System.out);
-	}
-
-	private boolean printBannerViaDeprecatedMethod(Environment environment) {
-		this.printedCustomBannerViaDeprecatedMethod = true;
-		printBanner(environment);
-		return this.printedCustomBannerViaDeprecatedMethod;
-	}
-
-	/**
-	 * Print a custom banner message to the console, optionally extracting its location or
-	 * content from the Environment (banner.location and banner.charset). The defaults are
-	 * banner.location=classpath:banner.txt, banner.charset=UTF-8. If the banner file does
-	 * not exist or cannot be printed, a simple default is created.
-	 * @param environment the environment
-	 * @see #setBannerMode
-	 * @deprecated as of 1.4 in favor of @{@link #setBanner(Banner)}
-	 */
-	@Deprecated
-	protected void printBanner(Environment environment) {
-		this.printedCustomBannerViaDeprecatedMethod = false;
 	}
 
 	/**
@@ -594,7 +569,7 @@ public class SpringApplication {
 						ex);
 			}
 		}
-		return (ConfigurableApplicationContext) BeanUtils.instantiate(contextClass);
+		return (ConfigurableApplicationContext) BeanUtils.instantiateClass(contextClass);
 	}
 
 	/**

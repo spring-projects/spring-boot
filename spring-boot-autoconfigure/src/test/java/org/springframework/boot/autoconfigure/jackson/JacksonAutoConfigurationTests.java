@@ -368,7 +368,7 @@ public class JacksonAutoConfigurationTests {
 	public void customSerializationInclusion() {
 		this.context.register(JacksonAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jackson.serialization-inclusion:non_null");
+				"spring.jackson.default-property-inclusion:non_null");
 		this.context.refresh();
 		ObjectMapper objectMapper = this.context
 				.getBean(Jackson2ObjectMapperBuilder.class).build();

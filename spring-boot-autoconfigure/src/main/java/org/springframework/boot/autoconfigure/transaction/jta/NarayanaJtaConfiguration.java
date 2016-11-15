@@ -23,6 +23,7 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
+import org.jboss.tm.XAResourceRecoveryRegistry;
 
 import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -50,7 +51,7 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @ConditionalOnClass({ JtaTransactionManager.class,
-		com.arjuna.ats.jta.UserTransaction.class })
+		com.arjuna.ats.jta.UserTransaction.class, XAResourceRecoveryRegistry.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
 public class NarayanaJtaConfiguration {
 

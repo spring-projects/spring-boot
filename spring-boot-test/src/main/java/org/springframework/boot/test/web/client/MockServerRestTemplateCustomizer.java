@@ -94,7 +94,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	}
 
 	protected RequestExpectationManager createExpectationManager() {
-		return BeanUtils.instantiate(this.expectationManager);
+		return BeanUtils.instantiateClass(this.expectationManager);
 	}
 
 	public MockRestServiceServer getServer() {

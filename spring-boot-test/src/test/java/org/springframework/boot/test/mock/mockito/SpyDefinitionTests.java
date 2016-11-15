@@ -111,7 +111,7 @@ public class SpyDefinitionTests {
 				MockReset.BEFORE, true, null);
 		Object instance = new RealExampleService("hello");
 		instance = definition.createSpy(instance);
-		instance = definition.createSpy(instance);
+		definition.createSpy(instance);
 	}
 
 }

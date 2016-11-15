@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.util.StringUtils;
@@ -148,17 +147,6 @@ public class JpaProperties {
 
 		@NestedConfigurationProperty
 		private final Naming naming = new Naming();
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "spring.jpa.hibernate.naming.strategy")
-		public String getNamingStrategy() {
-			return getNaming().getStrategy();
-		}
-
-		@Deprecated
-		public void setNamingStrategy(String namingStrategy) {
-			getNaming().setStrategy(namingStrategy);
-		}
 
 		public String getDdlAuto() {
 			return this.ddlAuto;

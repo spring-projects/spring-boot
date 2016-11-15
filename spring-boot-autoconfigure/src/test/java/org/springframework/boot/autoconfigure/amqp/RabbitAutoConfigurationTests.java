@@ -261,8 +261,8 @@ public class RabbitAutoConfigurationTests {
 		load(TestConfiguration.class, "spring.rabbitmq.dynamic:false");
 		// There should NOT be an AmqpAdmin bean when dynamic is switch to false
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.thrown.expectMessage("No qualifying bean of type "
-				+ "[org.springframework.amqp.core.AmqpAdmin] is defined");
+		this.thrown.expectMessage("No qualifying bean of type");
+		this.thrown.expectMessage(AmqpAdmin.class.getName());
 		this.context.getBean(AmqpAdmin.class);
 	}
 
@@ -303,6 +303,7 @@ public class RabbitAutoConfigurationTests {
 				"spring.rabbitmq.listener.maxConcurrency:10",
 				"spring.rabbitmq.listener.prefetch:40",
 				"spring.rabbitmq.listener.defaultRequeueRejected:false",
+				"spring.rabbitmq.listener.idleEventInterval:5",
 				"spring.rabbitmq.listener.transactionSize:20");
 		SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
 				.getBean("rabbitListenerContainerFactory",
@@ -319,6 +320,7 @@ public class RabbitAutoConfigurationTests {
 				.isSameAs(this.context.getBean("myMessageConverter"));
 		assertThat(dfa.getPropertyValue("defaultRequeueRejected"))
 				.isEqualTo(Boolean.FALSE);
+		assertThat(dfa.getPropertyValue("idleEventInterval")).isEqualTo(5L);
 		Advice[] adviceChain = (Advice[]) dfa.getPropertyValue("adviceChain");
 		assertThat(adviceChain).isNotNull();
 		assertThat(adviceChain.length).isEqualTo(1);

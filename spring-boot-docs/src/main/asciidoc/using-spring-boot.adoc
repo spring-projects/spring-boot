@@ -257,7 +257,7 @@ endif::[]
 	}
 
 	apply plugin: 'java'
-	apply plugin: 'spring-boot'
+	apply plugin: 'org.springframework.boot'
 
 	repositories {
 ifeval::["{spring-boot-repo}" != "release"]
@@ -768,9 +768,10 @@ applied to other modules using your project. Gradle does not support `optional`
 dependencies out-of-the-box so you may want to have a look to the
 {propdeps-plugin}[`propdeps-plugin`] in the meantime.
 
-TIP: If you want to ensure that devtools is never included in a production build, you can
-use the `excludeDevtools` build property to completely remove the JAR. The property is
-supported with both the Maven and Gradle plugins.
+TIP: repackaged archives do not contain devtools by default. If you want to use
+<<using-boot-devtools-remote,certain remote devtools feature>>, you'll need to enable the
+`excludeDevtools` build property to include it. The property is supported with both the
+Maven and Gradle plugins.
 
 
 
@@ -814,23 +815,8 @@ Project`) will have the same effect.
 ====
 You can also start your application via the supported build plugins (i.e. Maven and
 Gradle) as long as forking is enabled since DevTools need an isolated application
-classloader to operate properly. Gradle does this by default and you can force the Maven
-plugin to fork the process as follows:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<fork>true</fork>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-----
+classloader to operate properly. Gradle and Maven do that by default when they detect
+DevTools on the classpath.
 
 ====
 
@@ -958,7 +944,7 @@ For example:
 
 [source,properties,indent=0]
 ----
-	restart.include.companycommonlibs=/mycorp-common-[\\w-]+\.jar
+	restart.exclude.companycommonlibs=/mycorp-common-[\\w-]+\.jar
 	restart.include.projectcommon=/mycorp-myproj-[\\w-]+\.jar
 ----
 
@@ -993,8 +979,9 @@ http://livereload.com/extensions/[livereload.com].
 If you don't want to start the LiveReload server when your application runs you can set
 the `spring.devtools.livereload.enabled` property to `false`.
 
-NOTE: You can only run one LiveReload server at a time, if you start multiple applications
-from your IDE only the first will have livereload support.
+NOTE: You can only run one LiveReload server at a time. Before starting your application,
+ensure that no other LiveReload servers are running. If you start multiple applications
+from your IDE, only the first will have LiveReload support.
 
 
 
@@ -1019,7 +1006,24 @@ the following:
 === Remote applications
 The Spring Boot developer tools are not just limited to local development. You can also
 use several features when running applications remotely. Remote support is opt-in, to
-enable it you need to set a `spring.devtools.remote.secret` property. For example:
+enable it you need to make sure that `devtools` is included in the repackaged archive:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludeDevtools>false</excludeDevtools>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+Then you need to set a `spring.devtools.remote.secret` property, for example:
 
 [source,properties,indent=0]
 ----

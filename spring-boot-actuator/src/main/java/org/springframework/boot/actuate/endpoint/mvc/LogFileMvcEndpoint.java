@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import java.io.File;
 import java.io.IOException;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,7 +47,7 @@ import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "endpoints.logfile")
-public class LogFileMvcEndpoint extends AbstractMvcEndpoint {
+public class LogFileMvcEndpoint extends AbstractNamedMvcEndpoint {
 
 	private static final Log logger = LogFactory.getLog(LogFileMvcEndpoint.class);
 
@@ -57,7 +58,7 @@ public class LogFileMvcEndpoint extends AbstractMvcEndpoint {
 	private File externalFile;
 
 	public LogFileMvcEndpoint() {
-		super("/logfile", true);
+		super("logfile", "/logfile", true);
 	}
 
 	public File getExternalFile() {
@@ -82,7 +83,8 @@ public class LogFileMvcEndpoint extends AbstractMvcEndpoint {
 			}
 			resource = null;
 		}
-		new Handler(resource).handleRequest(request, response);
+		Handler handler = new Handler(resource, request.getServletContext());
+		handler.handleRequest(request, response);
 	}
 
 	private Resource getLogFileResource() {
@@ -104,10 +106,11 @@ public class LogFileMvcEndpoint extends AbstractMvcEndpoint {
 
 		private final Resource resource;
 
-		Handler(Resource resource) {
+		Handler(Resource resource, ServletContext servletContext) {
 			this.resource = resource;
 			getLocations().add(resource);
 			try {
+				setServletContext(servletContext);
 				afterPropertiesSet();
 			}
 			catch (Exception ex) {
@@ -126,7 +129,7 @@ public class LogFileMvcEndpoint extends AbstractMvcEndpoint {
 		}
 
 		@Override
-		protected MediaType getMediaType(Resource resource) {
+		protected MediaType getMediaType(HttpServletRequest request, Resource resource) {
 			return MediaType.TEXT_PLAIN;
 		}
 

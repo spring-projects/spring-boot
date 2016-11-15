@@ -95,7 +95,7 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	private XADataSource createXaDataSourceInstance(String className) {
 		try {
 			Class<?> dataSourceClass = ClassUtils.forName(className, this.classLoader);
-			Object instance = BeanUtils.instantiate(dataSourceClass);
+			Object instance = BeanUtils.instantiateClass(dataSourceClass);
 			Assert.isInstanceOf(XADataSource.class, instance);
 			return (XADataSource) instance;
 		}

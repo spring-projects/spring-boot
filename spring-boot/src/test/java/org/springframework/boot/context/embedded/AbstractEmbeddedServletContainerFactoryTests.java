@@ -67,8 +67,11 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.jasper.EmbeddedServletOptions;
+import org.apache.jasper.servlet.JspServlet;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -98,6 +101,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
@@ -420,6 +424,41 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				.contains("scheme=https");
 	}
 
+	@Test
+	public void serverHeaderIsDisabledByDefaultWhenUsingSsl() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
+		this.container.start();
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder()
+						.loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+				.build();
+		ClientHttpResponse response = getClientResponse(getLocalUrl("https", "/hello"),
+				HttpMethod.GET, new HttpComponentsClientHttpRequestFactory(httpClient));
+		assertThat(response.getHeaders().get("Server")).isNullOrEmpty();
+	}
+
+	@Test
+	public void serverHeaderCanBeCustomizedWhenUsingSsl() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setServerHeader("MyServer");
+		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
+		this.container.start();
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder()
+						.loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+				.build();
+		ClientHttpResponse response = getClientResponse(getLocalUrl("https", "/hello"),
+				HttpMethod.GET, new HttpComponentsClientHttpRequestFactory(httpClient));
+		assertThat(response.getHeaders().get("Server")).containsExactly("MyServer");
+	}
+
 	protected final void testBasicSslWithKeyStore(String keyStore) throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
@@ -669,9 +708,6 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				.getEmbeddedServletContainer(sessionServletRegistration());
 		this.container.start();
 		String s3 = getResponse(getLocalUrl("/session"));
-		System.out.println(s1);
-		System.out.println(s2);
-		System.out.println(s3);
 		String message = "Session error s1=" + s1 + " s2=" + s2 + " s3=" + s3;
 		assertThat(s2.split(":")[0]).as(message).isEqualTo(s1.split(":")[1]);
 		assertThat(s3.split(":")[0]).as(message).isEqualTo(s2.split(":")[1]);
@@ -840,8 +876,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 					AbstractEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
-				catch (PortInUseException ex) {
-					assertThat(ex.getPort()).isEqualTo(port);
+				catch (RuntimeException ex) {
+					handleExceptionCausedByBlockedPort(ex, port);
 				}
 			}
 
@@ -864,8 +900,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 					AbstractEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
-				catch (PortInUseException ex) {
-					assertThat(ex.getPort()).isEqualTo(port);
+				catch (RuntimeException ex) {
+					handleExceptionCausedByBlockedPort(ex, port);
 				}
 			}
 
@@ -883,8 +919,34 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		assertThat(getCharset(Locale.ITALIAN)).isNull();
 	}
 
+	@Test
+	public void jspServletInitParameters() throws Exception {
+		Map<String, String> initParameters = new HashMap<String, String>();
+		initParameters.put("a", "alpha");
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.getJspServlet().setInitParameters(initParameters);
+		this.container = factory.getEmbeddedServletContainer();
+		Assume.assumeThat(getJspServlet(), notNullValue());
+		JspServlet jspServlet = getJspServlet();
+		assertThat(jspServlet.getInitParameter("a")).isEqualTo("alpha");
+	}
+
+	@Test
+	public void jspServletIsNotInDevelopmentModeByDefault() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory.getEmbeddedServletContainer();
+		Assume.assumeThat(getJspServlet(), notNullValue());
+		JspServlet jspServlet = getJspServlet();
+		EmbeddedServletOptions options = (EmbeddedServletOptions) ReflectionTestUtils
+				.getField(jspServlet, "options");
+		assertThat(options.getDevelopment()).isEqualTo(false);
+	}
+
 	protected abstract void addConnector(int port,
 			AbstractEmbeddedServletContainerFactory factory);
+
+	protected abstract void handleExceptionCausedByBlockedPort(RuntimeException ex,
+			int blockedPort);
 
 	private boolean doTestCompression(int contentSize, String[] mimeTypes,
 			String[] excludedUserAgents) throws Exception {
@@ -1029,7 +1091,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	protected abstract AbstractEmbeddedServletContainerFactory getFactory();
 
-	protected abstract Object getJspServlet();
+	protected abstract org.apache.jasper.servlet.JspServlet getJspServlet()
+			throws Exception;
 
 	protected ServletContextInitializer exampleServletRegistration() {
 		return new ServletRegistrationBean(new ExampleServlet(), "/hello");

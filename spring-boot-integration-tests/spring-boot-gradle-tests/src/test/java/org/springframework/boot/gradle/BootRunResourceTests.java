@@ -50,7 +50,7 @@ public class BootRunResourceTests {
 	public void resourcesDirectlyFromSource() {
 		project.newBuild().forTasks("clean", "bootRun")
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "-PaddResources=true")
-				.run();
+				.setStandardOutput(System.out).run();
 
 		assertThat(this.output.toString()).contains("src/main/resources/test.txt");
 	}
@@ -59,7 +59,7 @@ public class BootRunResourceTests {
 	public void resourcesFromBuildOutput() {
 		project.newBuild().forTasks("clean", "bootRun")
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "-PaddResources=false")
-				.run();
+				.setStandardOutput(System.out).run();
 		assertThat(this.output.toString()).contains("build/resources/main/test.txt");
 	}
 

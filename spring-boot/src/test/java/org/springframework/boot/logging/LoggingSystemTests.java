@@ -42,4 +42,28 @@ public class LoggingSystemTests {
 		assertThat(loggingSystem).isInstanceOf(NoOpLoggingSystem.class);
 	}
 
+	@Test(expected = UnsupportedOperationException.class)
+	public void getLoggerConfigurationIsUnsupported() {
+		new StubLoggingSystem().getLoggerConfiguration("test-logger-name");
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void listLoggerConfigurationsIsUnsupported() {
+		new StubLoggingSystem().getLoggerConfigurations();
+	}
+
+	private static final class StubLoggingSystem extends LoggingSystem {
+
+		@Override
+		public void beforeInitialize() {
+			// Stub implementation
+		}
+
+		@Override
+		public void setLogLevel(String loggerName, LogLevel level) {
+			// Stub implementation
+		}
+
+	}
+
 }

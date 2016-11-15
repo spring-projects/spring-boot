@@ -16,15 +16,11 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
-import org.springframework.boot.actuate.info.MapInfoContributor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -50,45 +46,14 @@ public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 		this.infoContributors = infoContributors;
 	}
 
-	/**
-	 * Constructor provided for backward compatibility.
-	 * @param info a map (which is added to the info)
-	 * @param infoContributors the info contributors to use
-	 * @deprecated as of 1.4 in favor of {@link #InfoEndpoint(List)}
-	 */
-	@Deprecated
-	public InfoEndpoint(Map<String, Object> info, InfoContributor... infoContributors) {
-		this(createContributors(info, infoContributors));
-	}
-
-	private static List<InfoContributor> createContributors(Map<String, Object> info,
-			InfoContributor[] infoContributors) {
-		List<InfoContributor> result = new ArrayList<InfoContributor>(
-				Arrays.asList(infoContributors));
-		result.add(0, new MapInfoContributor(info));
-		return result;
-	}
-
 	@Override
 	public Map<String, Object> invoke() {
 		Info.Builder builder = new Info.Builder();
 		for (InfoContributor contributor : this.infoContributors) {
 			contributor.contribute(builder);
 		}
-		builder.withDetails(getAdditionalInfo());
 		Info build = builder.build();
 		return build.getDetails();
-	}
-
-	/**
-	 * Return additional information to include in the output.
-	 * @return additional information
-	 * @deprecated as of 1.4 in favor of defining an additional {@link InfoContributor}
-	 * bean.
-	 */
-	@Deprecated
-	protected Map<String, Object> getAdditionalInfo() {
-		return Collections.emptyMap();
 	}
 
 }

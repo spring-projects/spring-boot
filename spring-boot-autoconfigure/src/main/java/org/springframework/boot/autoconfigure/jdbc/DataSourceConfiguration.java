@@ -75,27 +75,6 @@ abstract class DataSourceConfiguration {
 		}
 	}
 
-	@ConditionalOnClass(org.apache.commons.dbcp.BasicDataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp.BasicDataSource", matchIfMissing = true)
-	static class Dbcp extends DataSourceConfiguration {
-
-		@Bean
-		@ConfigurationProperties("spring.datasource.dbcp")
-		public org.apache.commons.dbcp.BasicDataSource dataSource(
-				DataSourceProperties properties) {
-			org.apache.commons.dbcp.BasicDataSource dataSource = createDataSource(
-					properties, org.apache.commons.dbcp.BasicDataSource.class);
-			DatabaseDriver databaseDriver = DatabaseDriver
-					.fromJdbcUrl(properties.determineUrl());
-			String validationQuery = databaseDriver.getValidationQuery();
-			if (validationQuery != null) {
-				dataSource.setTestOnBorrow(true);
-				dataSource.setValidationQuery(validationQuery);
-			}
-			return dataSource;
-		}
-	}
-
 	@ConditionalOnClass(org.apache.commons.dbcp2.BasicDataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp2.BasicDataSource", matchIfMissing = true)
 	static class Dbcp2 extends DataSourceConfiguration {

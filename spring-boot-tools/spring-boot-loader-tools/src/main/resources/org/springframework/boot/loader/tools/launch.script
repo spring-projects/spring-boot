@@ -52,6 +52,8 @@ configfile="$(basename "${jarfile%.*}.conf")"
 # Initialize PID/LOG locations if they weren't provided by the config file
 [[ -z "$PID_FOLDER" ]] && PID_FOLDER="{{pidFolder:/var/run}}"
 [[ -z "$LOG_FOLDER" ]] && LOG_FOLDER="{{logFolder:/var/log}}"
+! [[ "$PID_FOLDER" == /* ]] && PID_FOLDER="$(dirname "$jarfile")"/"$PID_FOLDER"
+! [[ "$LOG_FOLDER" == /* ]] && LOG_FOLDER="$(dirname "$jarfile")"/"$LOG_FOLDER"
 ! [[ -x "$PID_FOLDER" ]] && PID_FOLDER="/tmp"
 ! [[ -x "$LOG_FOLDER" ]] && LOG_FOLDER="/tmp"
 
@@ -110,6 +112,7 @@ fi
 # Build the pid and log filenames
 if [[ "$identity" == "$init_script" ]] || [[ "$identity" == "$APP_NAME" ]]; then
   PID_FOLDER="$PID_FOLDER/${identity}"
+  pid_subfolder=$PID_FOLDER
 fi
 pid_file="$PID_FOLDER/${identity}.pid"
 log_file="$LOG_FOLDER/$LOG_FILENAME"
@@ -144,9 +147,12 @@ start() {
 do_start() {
   working_dir=$(dirname "$jarfile")
   pushd "$working_dir" > /dev/null
-  mkdir "$PID_FOLDER" &> /dev/null
+  mkdir -p "$PID_FOLDER" &> /dev/null
   if [[ -n "$run_user" ]]; then
     checkPermissions || return $?
+    if [[ -z "$pid_subfolder" ]]; then
+      chown "$run_user" "$pid_subfolder"
+    fi
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
     if [ $USE_START_STOP_DAEMON = true ] && type start-stop-daemon > /dev/null 2>&1; then
@@ -176,6 +182,8 @@ do_start() {
 }
 
 stop() {
+  working_dir=$(dirname "$jarfile")
+  pushd "$working_dir" > /dev/null
   [[ -f $pid_file ]] || { echoYellow "Not running (pidfile not found)"; return 0; }
   pid=$(cat "$pid_file")
   isRunning "$pid" || { echoYellow "Not running (process ${pid}). Removing stale pid file."; rm -f "$pid_file"; return 0; }
@@ -198,6 +206,8 @@ restart() {
 }
 
 force_reload() {
+  working_dir=$(dirname "$jarfile")
+  pushd "$working_dir" > /dev/null
   [[ -f $pid_file ]] || { echoRed "Not running (pidfile not found)"; return 7; }
   pid=$(cat "$pid_file")
   rm -f "$pid_file"
@@ -207,6 +217,8 @@ force_reload() {
 }
 
 status() {
+  working_dir=$(dirname "$jarfile")
+  pushd "$working_dir" > /dev/null
   [[ -f "$pid_file" ]] || { echoRed "Not running"; return 3; }
   pid=$(cat "$pid_file")
   isRunning "$pid" || { echoRed "Not running (process ${pid} not found)"; return 1; }

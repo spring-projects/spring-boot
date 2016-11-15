@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-tools</artifactId>
-		<version>1.4.1.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-gradle-plugin</artifactId>
 	<name>Spring Boot Gradle Plugin</name>
@@ -35,12 +35,27 @@
 		</dependency>
 		<dependency>
 			<groupId>org.gradle</groupId>
+			<artifactId>gradle-base-services</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.gradle</groupId>
 			<artifactId>gradle-core</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.gradle</groupId>
-			<artifactId>gradle-base-services</artifactId>
+			<artifactId>gradle-language-java</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.gradle</groupId>
+			<artifactId>gradle-language-jvm</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.gradle</groupId>
+			<artifactId>gradle-platform-jvm</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

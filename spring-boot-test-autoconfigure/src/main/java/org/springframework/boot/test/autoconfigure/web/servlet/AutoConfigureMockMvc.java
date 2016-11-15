@@ -18,6 +18,7 @@ package org.springframework.boot.test.autoconfigure.web.servlet;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -40,9 +41,10 @@ import org.springframework.test.web.servlet.MvcResult;
  * @see MockMvcAutoConfiguration
  * @see SpringBootMockMvcBuilderCustomizer
  */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
 @ImportAutoConfiguration
 @PropertyMapping("spring.test.mockmvc")
 public @interface AutoConfigureMockMvc {
@@ -60,6 +62,12 @@ public @interface AutoConfigureMockMvc {
 	 */
 	@PropertyMapping(skip = SkipPropertyMapping.ON_DEFAULT_VALUE)
 	MockMvcPrint print() default MockMvcPrint.DEFAULT;
+
+	/**
+	 * If {@link MvcResult} information should be printed only if the test fails.
+	 * @return {@code true} if printing only occurs on failure
+	 */
+	boolean printOnlyOnFailure() default true;
 
 	/**
 	 * If a {@link WebClient} should be auto-configured when HtmlUnit is on the classpath.

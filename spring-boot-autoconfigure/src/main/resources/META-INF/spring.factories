@@ -58,7 +58,6 @@ org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.JndiConnectionFactoryAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration,\
-org.springframework.boot.autoconfigure.jms.hornetq.HornetQAutoConfiguration,\
 org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,\
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration,\
@@ -73,7 +72,6 @@ org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfigura
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
-org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration,\
@@ -85,7 +83,6 @@ org.springframework.boot.autoconfigure.social.FacebookAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.LinkedInAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.TwitterAutoConfiguration,\
 org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration,\
-org.springframework.boot.autoconfigure.velocity.VelocityAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration,\
@@ -114,5 +111,4 @@ org.springframework.boot.autoconfigure.freemarker.FreeMarkerTemplateAvailability
 org.springframework.boot.autoconfigure.mustache.MustacheTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafTemplateAvailabilityProvider,\
-org.springframework.boot.autoconfigure.velocity.VelocityTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.web.JspTemplateAvailabilityProvider

@@ -178,7 +178,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		return (accessTime - this.lastAccess) >= getDelegate().getTimeToLive();
 	}
 
-	private boolean exposeHealthDetails(Principal principal) {
+	protected boolean exposeHealthDetails(Principal principal) {
 		return isSecure(principal) || isUnrestricted();
 	}
 

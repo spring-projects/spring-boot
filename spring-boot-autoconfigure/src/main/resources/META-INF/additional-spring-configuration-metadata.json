@@ -109,6 +109,10 @@
     "defaultValue": true
   },
   {
+    "name": "spring.elasticsearch.jest.uris",
+    "defaultValue": ["http://localhost:9200"]
+  },
+  {
     "name": "spring.http.encoding.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable http encoding support.",

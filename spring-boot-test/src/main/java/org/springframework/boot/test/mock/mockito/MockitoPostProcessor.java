@@ -478,8 +478,11 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		}
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName)
+		public Object postProcessAfterInitialization(Object bean, String beanName)
 				throws BeansException {
+			if (bean instanceof FactoryBean) {
+				return bean;
+			}
 			return createSpyIfNecessary(bean, beanName);
 		}
 

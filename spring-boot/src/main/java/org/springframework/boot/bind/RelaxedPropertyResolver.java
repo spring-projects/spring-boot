@@ -87,22 +87,6 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 	}
 
 	@Override
-	@Deprecated
-	public <T> Class<T> getPropertyAsClass(String key, Class<T> targetType) {
-		RelaxedNames prefixes = new RelaxedNames(this.prefix);
-		RelaxedNames keys = new RelaxedNames(key);
-		for (String prefix : prefixes) {
-			for (String relaxedKey : keys) {
-				if (this.resolver.containsProperty(prefix + relaxedKey)) {
-					return this.resolver.getPropertyAsClass(prefix + relaxedKey,
-							targetType);
-				}
-			}
-		}
-		return null;
-	}
-
-	@Override
 	public boolean containsProperty(String key) {
 		RelaxedNames prefixes = new RelaxedNames(this.prefix);
 		RelaxedNames keys = new RelaxedNames(key);

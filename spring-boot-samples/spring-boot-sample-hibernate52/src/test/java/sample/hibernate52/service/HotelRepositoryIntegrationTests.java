@@ -24,8 +24,6 @@ import sample.hibernate52.domain.Hotel;
 import sample.hibernate52.domain.HotelSummary;
 import sample.hibernate52.domain.Rating;
 import sample.hibernate52.domain.RatingCount;
-import sample.hibernate52.service.CityRepository;
-import sample.hibernate52.service.HotelRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

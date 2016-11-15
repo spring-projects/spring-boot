@@ -126,18 +126,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 			ManagementServerProperties management, DocsMvcEndpoint endpoint) {
 		String path = management.getContextPath() + endpoint.getPath()
 				+ "/#spring_boot_actuator__{rel}";
-		if (serverAndManagementPortsAreTheSame(server, management)) {
-			path = server.getPath(path);
-		}
 		return new DefaultCurieProvider("boot", new UriTemplate(path));
-	}
-
-	private boolean serverAndManagementPortsAreTheSame(ServerProperties server,
-			ManagementServerProperties management) {
-		if (server.getPort() == null) {
-			return management.getPort() == null;
-		}
-		return server.getPort().equals(management.getPort()) && management.getPort() != 0;
 	}
 
 	@Configuration

@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ResourceServerProperties}.
  *
  * @author Dave Syer
+ * @author Vedran Pavic
  */
 public class ResourceServerPropertiesTests {
 
@@ -45,9 +46,17 @@ public class ResourceServerPropertiesTests {
 	}
 
 	@Test
-	public void tokenKeyDerived() throws Exception {
+	public void tokenKeyDerivedFromUserInfoUri() throws Exception {
 		this.properties.setUserInfoUri("http://example.com/userinfo");
-		assertThat(this.properties.getJwt().getKeyUri()).isNotNull();
+		assertThat(this.properties.getJwt().getKeyUri())
+				.isEqualTo("http://example.com/token_key");
+	}
+
+	@Test
+	public void tokenKeyDerivedFromTokenInfoUri() throws Exception {
+		this.properties.setTokenInfoUri("http://example.com/check_token");
+		assertThat(this.properties.getJwt().getKeyUri())
+				.isEqualTo("http://example.com/token_key");
 	}
 
 }

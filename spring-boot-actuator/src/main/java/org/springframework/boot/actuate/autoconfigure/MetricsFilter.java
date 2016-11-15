@@ -109,6 +109,9 @@ final class MetricsFilter extends OncePerRequestFilter {
 		}
 		finally {
 			if (!request.isAsyncStarted()) {
+				if (response.isCommitted()) {
+					status = getStatus(response);
+				}
 				stopWatch.stop();
 				request.removeAttribute(ATTRIBUTE_STOP_WATCH);
 				recordMetrics(request, path, status, stopWatch.getTotalTimeMillis());

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.4.1.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-starters/spring-boot-starter-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-samples</artifactId>
@@ -47,7 +47,6 @@
 		<module>spring-boot-sample-hateoas</module>
 		<module>spring-boot-sample-hibernate4</module>
 		<module>spring-boot-sample-hibernate52</module>
-		<module>spring-boot-sample-hornetq</module>
 		<module>spring-boot-sample-hypermedia</module>
 		<module>spring-boot-sample-hypermedia-gson</module>
 		<module>spring-boot-sample-hypermedia-jpa</module>
@@ -82,6 +81,7 @@
 		<module>spring-boot-sample-session-redis</module>
 		<module>spring-boot-sample-simple</module>
 		<module>spring-boot-sample-test</module>
+		<module>spring-boot-sample-test-nomockito</module>
 		<module>spring-boot-sample-testng</module>
 		<module>spring-boot-sample-tomcat</module>
 		<module>spring-boot-sample-tomcat-jsp</module>
@@ -93,7 +93,6 @@
 		<module>spring-boot-sample-traditional</module>
 		<module>spring-boot-sample-undertow</module>
 		<module>spring-boot-sample-undertow-ssl</module>
-		<module>spring-boot-sample-velocity</module>
 		<module>spring-boot-sample-war</module>
 		<module>spring-boot-sample-web-freemarker</module>
 		<module>spring-boot-sample-web-groovy-templates</module>
@@ -107,7 +106,6 @@
 		<module>spring-boot-sample-web-static</module>
 		<module>spring-boot-sample-web-thymeleaf3</module>
 		<module>spring-boot-sample-web-ui</module>
-		<module>spring-boot-sample-web-velocity</module>
 		<module>spring-boot-sample-websocket-jetty</module>
 		<module>spring-boot-sample-websocket-tomcat</module>
 		<module>spring-boot-sample-websocket-undertow</module>
@@ -151,6 +149,29 @@
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>enforce-rules</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<bannedDependencies>
+									<excludes>
+										<exclude>commons-logging:*:*</exclude>
+									</excludes>
+									<searchTransitive>true</searchTransitive>
+								</bannedDependencies>
+							</rules>
+							<fail>true</fail>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -162,6 +183,25 @@
 					<configuration>
 						<lifecycleMappingMetadata>
 							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-enforcer-plugin
+										</artifactId>
+										<versionRange>
+											[1.3.1,)
+										</versionRange>
+										<goals>
+											<goal>enforce</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>

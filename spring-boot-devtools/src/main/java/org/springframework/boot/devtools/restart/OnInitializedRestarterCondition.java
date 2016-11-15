@@ -24,7 +24,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * {@link Condition} that checks that a {@link Restarter} is available an initialized.
+ * {@link Condition} that checks that a {@link Restarter} is available and initialized.
  *
  * @author Phillip Webb
  * @see ConditionalOnInitializedRestarter
@@ -35,7 +35,7 @@ class OnInitializedRestarterCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		ConditionMessage.Builder message = ConditionMessage
-				.forCondition("Initializer Restarter Condition");
+				.forCondition("Initialized Restarter Condition");
 		Restarter restarter = getRestarter();
 		if (restarter == null) {
 			return ConditionOutcome.noMatch(message.because("unavailable"));

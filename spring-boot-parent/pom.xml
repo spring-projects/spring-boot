@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-dependencies</artifactId>
-		<version>1.4.1.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-dependencies</relativePath>
 	</parent>
 	<artifactId>spring-boot-parent</artifactId>
@@ -19,7 +19,7 @@
 	<properties>
 		<main.basedir>..</main.basedir>
 		<disable.checks>false</disable.checks>
-		<java.version>1.6</java.version>
+		<java.version>1.8</java.version>
 		<aether.version>1.0.2.v20150114</aether.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -48,11 +48,6 @@
 				<version>1.2.17</version>
 			</dependency>
 			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>18.0</version>
-			</dependency>
-			<dependency>
 				<groupId>com.squareup.okhttp</groupId>
 				<artifactId>okhttp</artifactId>
 				<version>2.7.5</version>
@@ -70,7 +65,7 @@
 			<dependency>
 				<groupId>io.spring.gradle</groupId>
 				<artifactId>dependency-management-plugin</artifactId>
-				<version>0.6.0.RELEASE</version>
+				<version>0.6.1.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>jline</groupId>
@@ -194,11 +189,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.gradle</groupId>
-				<artifactId>gradle-core</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
 				<artifactId>gradle-base-services</artifactId>
 				<version>${gradle.version}</version>
 			</dependency>
@@ -209,8 +199,33 @@
 			</dependency>
 			<dependency>
 				<groupId>org.gradle</groupId>
+				<artifactId>gradle-core</artifactId>
+				<version>${gradle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.gradle</groupId>
+				<artifactId>gradle-language-java</artifactId>
+				<version>${gradle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.gradle</groupId>
+				<artifactId>gradle-language-jvm</artifactId>
+				<version>${gradle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.gradle</groupId>
+				<artifactId>gradle-platform-jvm</artifactId>
+				<version>${gradle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.gradle</groupId>
 				<artifactId>gradle-plugins</artifactId>
 				<version>${gradle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-runtime</artifactId>
+				<version>1.0.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.zeroturnaround</groupId>
@@ -599,12 +614,10 @@
 					<skip>${disable.checks}</skip>
 					<signature>
 						<groupId>org.codehaus.mojo.signature</groupId>
-						<artifactId>java16</artifactId>
-						<version>1.1</version>
+						<artifactId>java18</artifactId>
+						<version>1.0</version>
 					</signature>
 					<annotations>
-						<annotation>org.springframework.lang.UsesJava8</annotation>
-						<annotation>org.springframework.lang.UsesJava7</annotation>
 						<annotation>org.springframework.boot.lang.UsesUnsafeJava</annotation>
 					</annotations>
 				</configuration>
@@ -651,6 +664,14 @@
 					<url>http://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>rabbit-milestones</id>
+					<name>Rabbit Milestones</name>
+					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
+					<snapshots>
+						<enabled>false</enabled>
 					</snapshots>
 				</repository>
 			</repositories>
@@ -708,6 +729,14 @@
 					<url>http://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>rabbit-milestones</id>
+					<name>Rabbit Milestones</name>
+					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
+					<snapshots>
+						<enabled>false</enabled>
 					</snapshots>
 				</repository>
 			</repositories>
@@ -778,6 +807,14 @@
 					<url>http://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>rabbit-milestones</id>
+					<name>Rabbit Milestones</name>
+					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
+					<snapshots>
+						<enabled>false</enabled>
 					</snapshots>
 				</repository>
 			</repositories>

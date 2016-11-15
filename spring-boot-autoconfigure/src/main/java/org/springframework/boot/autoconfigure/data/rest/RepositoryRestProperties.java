@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.data.rest;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
+import org.springframework.data.rest.core.mapping.RepositoryDetectionStrategy.RepositoryDetectionStrategies;
 import org.springframework.http.MediaType;
 
 /**
@@ -60,6 +61,11 @@ public class RepositoryRestProperties {
 	 * results.
 	 */
 	private String sortParamName;
+
+	/**
+	 * Strategy to use to determine which repositories get exposed.
+	 */
+	private RepositoryDetectionStrategies detectionStrategy = RepositoryDetectionStrategies.DEFAULT;
 
 	/**
 	 * Content type to use as a default when none is specified.
@@ -130,6 +136,14 @@ public class RepositoryRestProperties {
 		this.sortParamName = sortParamName;
 	}
 
+	public RepositoryDetectionStrategies getDetectionStrategy() {
+		return this.detectionStrategy;
+	}
+
+	public void setDetectionStrategy(RepositoryDetectionStrategies detectionStrategy) {
+		this.detectionStrategy = detectionStrategy;
+	}
+
 	public MediaType getDefaultMediaType() {
 		return this.defaultMediaType;
 	}
@@ -180,6 +194,9 @@ public class RepositoryRestProperties {
 		}
 		if (this.sortParamName != null) {
 			configuration.setSortParamName(this.sortParamName);
+		}
+		if (this.detectionStrategy != null) {
+			configuration.setRepositoryDetectionStrategy(this.detectionStrategy);
 		}
 		if (this.defaultMediaType != null) {
 			configuration.setDefaultMediaType(this.defaultMediaType);

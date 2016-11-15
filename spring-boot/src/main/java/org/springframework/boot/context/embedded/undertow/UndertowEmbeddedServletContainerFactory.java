@@ -110,8 +110,6 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private Integer bufferSize;
 
-	private Integer buffersPerRegion;
-
 	private Integer ioThreads;
 
 	private Integer workerThreads;
@@ -127,6 +125,8 @@ public class UndertowEmbeddedServletContainerFactory
 	private String accessLogSuffix;
 
 	private boolean accessLogEnabled = false;
+
+	private boolean accessLogRotate = true;
 
 	private boolean useForwardHeaders;
 
@@ -235,9 +235,6 @@ public class UndertowEmbeddedServletContainerFactory
 		Builder builder = Undertow.builder();
 		if (this.bufferSize != null) {
 			builder.setBufferSize(this.bufferSize);
-		}
-		if (this.buffersPerRegion != null) {
-			builder.setBuffersPerRegion(this.buffersPerRegion);
 		}
 		if (this.ioThreads != null) {
 			builder.setIoThreads(this.ioThreads);
@@ -416,7 +413,7 @@ public class UndertowEmbeddedServletContainerFactory
 					: "access_log.");
 			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
 					createWorker(), this.accessLogDirectory, prefix,
-					this.accessLogSuffix);
+					this.accessLogSuffix, this.accessLogRotate);
 			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
 					: "common";
 			return new AccessLogHandler(handler, accessLogReceiver, formatString,
@@ -544,8 +541,9 @@ public class UndertowEmbeddedServletContainerFactory
 		this.bufferSize = bufferSize;
 	}
 
+	@Deprecated
 	public void setBuffersPerRegion(Integer buffersPerRegion) {
-		this.buffersPerRegion = buffersPerRegion;
+
 	}
 
 	public void setIoThreads(Integer ioThreads) {
@@ -586,6 +584,10 @@ public class UndertowEmbeddedServletContainerFactory
 
 	public boolean isAccessLogEnabled() {
 		return this.accessLogEnabled;
+	}
+
+	public void setAccessLogRotate(boolean accessLogRotate) {
+		this.accessLogRotate = accessLogRotate;
 	}
 
 	protected final boolean isUseForwardHeaders() {

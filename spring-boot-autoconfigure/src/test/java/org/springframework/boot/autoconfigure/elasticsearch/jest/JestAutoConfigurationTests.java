@@ -73,7 +73,7 @@ public class JestAutoConfigurationTests {
 	@Test
 	public void customJestClient() {
 		load(CustomJestClient.class,
-				"spring.elasticsearch.jest.uris=http://localhost:9200");
+				"spring.elasticsearch.jest.uris[0]=http://localhost:9200");
 		assertThat(this.context.getBeansOfType(JestClient.class)).hasSize(1);
 	}
 

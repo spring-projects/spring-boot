@@ -132,7 +132,7 @@ public class PropertiesLauncher extends Launcher {
 	public PropertiesLauncher() {
 		try {
 			this.home = getHomeDirectory();
-			initializeProperties(this.home);
+			initializeProperties();
 			initializePaths();
 			this.parent = createArchive();
 		}
@@ -146,7 +146,7 @@ public class PropertiesLauncher extends Launcher {
 				.resolvePlaceholders(System.getProperty(HOME, "${user.dir}")));
 	}
 
-	private void initializeProperties(File home) throws Exception, IOException {
+	private void initializeProperties() throws Exception, IOException {
 		String config = "classpath:BOOT-INF/classes/"
 				+ SystemPropertyUtils.resolvePlaceholders(
 						SystemPropertyUtils.getProperty(CONFIG_NAME, "application"))
@@ -273,14 +273,10 @@ public class PropertiesLauncher extends Launcher {
 		}
 	}
 
-	private void initializePaths() throws IOException {
-		String path = SystemPropertyUtils.getProperty(PATH);
-		if (path == null) {
-			path = this.properties.getProperty(PATH);
-		}
+	private void initializePaths() throws Exception {
+		String path = getProperty(PATH);
 		if (path != null) {
-			this.paths = parsePathsProperty(
-					SystemPropertyUtils.resolvePlaceholders(path));
+			this.paths = parsePathsProperty(path);
 		}
 		log("Nested archive paths: " + this.paths);
 	}

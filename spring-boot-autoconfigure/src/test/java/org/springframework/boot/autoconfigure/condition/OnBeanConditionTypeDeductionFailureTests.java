@@ -49,20 +49,22 @@ public class OnBeanConditionTypeDeductionFailureTests {
 			fail("Context refresh was successful");
 		}
 		catch (Exception ex) {
-			Throwable beanTypeDeductionException = findBeanTypeDeductionException(ex);
+			Throwable beanTypeDeductionException = findNestedCause(ex,
+					BeanTypeDeductionException.class);
 			assertThat(beanTypeDeductionException)
 					.hasMessage("Failed to deduce bean type for "
 							+ OnMissingBeanConfiguration.class.getName()
 							+ ".objectMapper");
-			assertThat(beanTypeDeductionException)
-					.hasCauseInstanceOf(NoClassDefFoundError.class);
+			assertThat(findNestedCause(beanTypeDeductionException,
+					NoClassDefFoundError.class)).isNotNull();
+
 		}
 	}
 
-	private Throwable findBeanTypeDeductionException(Throwable ex) {
+	private Throwable findNestedCause(Throwable ex, Class<? extends Throwable> target) {
 		Throwable candidate = ex;
 		while (candidate != null) {
-			if (candidate instanceof BeanTypeDeductionException) {
+			if (target.isInstance(candidate)) {
 				return candidate;
 			}
 			candidate = candidate.getCause();

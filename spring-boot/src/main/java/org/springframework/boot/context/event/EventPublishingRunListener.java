@@ -28,9 +28,9 @@ import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * {@link SpringApplicationRunListener} to publish {@link SpringApplicationEvent}s.
- *
- * <p>Uses an internal {@link ApplicationEventMulticaster} for the events that are
- * fired before the context is actually refreshed.
+ * <p>
+ * Uses an internal {@link ApplicationEventMulticaster} for the events that are fired
+ * before the context is actually refreshed.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
@@ -59,8 +59,8 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 
 	@Override
 	public void started() {
-		this.initialMulticaster.multicastEvent(new ApplicationStartedEvent(
-				this.application, this.args));
+		this.initialMulticaster
+				.multicastEvent(new ApplicationStartedEvent(this.application, this.args));
 	}
 
 	@Override
@@ -82,8 +82,8 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 			}
 			context.addApplicationListener(listener);
 		}
-		this.initialMulticaster.multicastEvent(new ApplicationPreparedEvent(
-				this.application, this.args, context));
+		this.initialMulticaster.multicastEvent(
+				new ApplicationPreparedEvent(this.application, this.args, context));
 	}
 
 	@Override

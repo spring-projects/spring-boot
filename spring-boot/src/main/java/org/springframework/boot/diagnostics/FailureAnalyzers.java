@@ -135,18 +135,4 @@ public final class FailureAnalyzers {
 		return true;
 	}
 
-	/**
-	 * Analyze and report the specified {@code failure}.
-	 * @param failure the failure to analyze
-	 * @param classLoader the classloader to use
-	 * @param context the context to use
-	 * @return {@code true} if the failure was handled
-	 * @deprecated as of 1.4.1 in favor of {@link #analyzeAndReport(Throwable)}
-	 */
-	@Deprecated
-	public static boolean analyzeAndReport(Throwable failure, ClassLoader classLoader,
-			ConfigurableApplicationContext context) {
-		return new FailureAnalyzers(context, classLoader).analyzeAndReport(failure);
-	}
-
 }

@@ -13,6 +13,7 @@
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="Javadoc*" />
 	<suppress files="[\\/]autoconfigure[\\/]" checks="JavadocType" />
 	<suppress files="[\\/]autoconfigure[\\/]" checks="JavadocVariable" />
+	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocType" />
 	<suppress files="[\\/]spring-boot-samples[\\/]" checks="JavadocType" />
 	<suppress files="[\\/]spring-boot-deployment-tests[\\/]" checks="JavadocType" />
 	<suppress files="[\\/]spring-boot-integration-tests[\\/]" checks="JavadocType" />

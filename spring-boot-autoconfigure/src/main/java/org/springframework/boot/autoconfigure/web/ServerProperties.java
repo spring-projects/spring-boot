@@ -19,8 +19,10 @@ package org.springframework.boot.autoconfigure.web;
 import java.io.File;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,6 +74,7 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -87,6 +90,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Quinten De Swaef
  * @author Venil Noronha
+ * @author Aurélien Leboulanger
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties
@@ -657,6 +661,26 @@ public class ServerProperties
 		 */
 		private Charset uriEncoding;
 
+		/**
+		 * Maximum number of connections that the server will accept and process at any
+		 * given time. Once the limit has been reached, the operating system may still
+		 * accept connections based on the "acceptCount" property.
+		 */
+		private int maxConnections = 0;
+
+		/**
+		 * Maximum queue length for incoming connection requests when all possible request
+		 * processing threads are in use.
+		 */
+		private int acceptCount = 0;
+
+		/**
+		 * Comma-separated list of additional patterns that match jars to ignore for TLD
+		 * scanning. The special '?' and '*' characters can be used in the pattern to
+		 * match one and only one character and zero or more characters respectively.
+		 */
+		private List<String> additionalTldSkipPatterns = new ArrayList<String>();
+
 		public int getMaxThreads() {
 			return this.maxThreads;
 		}
@@ -671,29 +695,6 @@ public class ServerProperties
 
 		public void setMinSpareThreads(int minSpareThreads) {
 			this.minSpareThreads = minSpareThreads;
-		}
-
-		/**
-		 * Get the max http header size.
-		 * @return the max http header size.
-		 * @deprecated as of 1.4 in favor of
-		 * {@link ServerProperties#getMaxHttpHeaderSize()}
-		 */
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "server.max-http-header-size")
-		public int getMaxHttpHeaderSize() {
-			return this.maxHttpHeaderSize;
-		}
-
-		/**
-		 * Set the max http header size.
-		 * @param maxHttpHeaderSize the max http header size.
-		 * @deprecated as of 1.4 in favor of
-		 * {@link ServerProperties#setMaxHttpHeaderSize(int)}
-		 */
-		@Deprecated
-		public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
-			this.maxHttpHeaderSize = maxHttpHeaderSize;
 		}
 
 		public Accesslog getAccesslog() {
@@ -772,6 +773,30 @@ public class ServerProperties
 			this.uriEncoding = uriEncoding;
 		}
 
+		public int getMaxConnections() {
+			return this.maxConnections;
+		}
+
+		public void setMaxConnections(int maxConnections) {
+			this.maxConnections = maxConnections;
+		}
+
+		public int getAcceptCount() {
+			return this.acceptCount;
+		}
+
+		public void setAcceptCount(int acceptCount) {
+			this.acceptCount = acceptCount;
+		}
+
+		public List<String> getAdditionalTldSkipPatterns() {
+			return this.additionalTldSkipPatterns;
+		}
+
+		public void setAdditionalTldSkipPatterns(List<String> additionalTldSkipPatterns) {
+			this.additionalTldSkipPatterns = additionalTldSkipPatterns;
+		}
+
 		void customizeTomcat(ServerProperties serverProperties,
 				TomcatEmbeddedServletContainerFactory factory) {
 			if (getBasedir() != null) {
@@ -806,15 +831,55 @@ public class ServerProperties
 			if (this.redirectContextRoot != null) {
 				customizeRedirectContextRoot(factory, this.redirectContextRoot);
 			}
+			if (this.maxConnections > 0) {
+				customizeMaxConnections(factory);
+			}
+			if (this.acceptCount > 0) {
+				customizeAcceptCount(factory);
+			}
+			if (!ObjectUtils.isEmpty(this.additionalTldSkipPatterns)) {
+				factory.getTldSkipPatterns().addAll(this.additionalTldSkipPatterns);
+			}
+		}
+
+		private void customizeAcceptCount(TomcatEmbeddedServletContainerFactory factory) {
+			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+
+				@Override
+				public void customize(Connector connector) {
+					ProtocolHandler handler = connector.getProtocolHandler();
+					if (handler instanceof AbstractProtocol) {
+						AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
+						protocol.setBacklog(Tomcat.this.acceptCount);
+					}
+				}
+
+			});
+		}
+
+		private void customizeMaxConnections(
+				TomcatEmbeddedServletContainerFactory factory) {
+			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+
+				@Override
+				public void customize(Connector connector) {
+					ProtocolHandler handler = connector.getProtocolHandler();
+					if (handler instanceof AbstractProtocol) {
+						AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
+						protocol.setMaxConnections(Tomcat.this.maxConnections);
+					}
+				}
+
+			});
 		}
 
 		private void customizeConnectionTimeout(
 				TomcatEmbeddedServletContainerFactory factory, int connectionTimeout) {
 			for (Connector connector : factory.getAdditionalTomcatConnectors()) {
-				if (connector.getProtocolHandler() instanceof AbstractProtocol) {
-					AbstractProtocol<?> handler = (AbstractProtocol<?>) connector
-							.getProtocolHandler();
-					handler.setConnectionTimeout(connectionTimeout);
+				ProtocolHandler handler = connector.getProtocolHandler();
+				if (handler instanceof AbstractProtocol) {
+					AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
+					protocol.setConnectionTimeout(connectionTimeout);
 				}
 			}
 		}
@@ -912,6 +977,7 @@ public class ServerProperties
 			valve.setPrefix(this.accesslog.getPrefix());
 			valve.setSuffix(this.accesslog.getSuffix());
 			valve.setRenameOnRotate(this.accesslog.isRenameOnRotate());
+			valve.setRotatable(this.accesslog.isRotate());
 			factory.addEngineValves(valve);
 		}
 
@@ -957,6 +1023,11 @@ public class ServerProperties
 			private String suffix = ".log";
 
 			/**
+			 * Enable access log rotation.
+			 */
+			private boolean rotate = true;
+
+			/**
 			 * Defer inclusion of the date stamp in the file name until rotate time.
 			 */
 			private boolean renameOnRotate;
@@ -999,6 +1070,14 @@ public class ServerProperties
 
 			public void setSuffix(String suffix) {
 				this.suffix = suffix;
+			}
+
+			public boolean isRotate() {
+				return this.rotate;
+			}
+
+			public void setRotate(boolean rotate) {
+				this.rotate = rotate;
 			}
 
 			public boolean isRenameOnRotate() {
@@ -1068,6 +1147,7 @@ public class ServerProperties
 				JettyEmbeddedServletContainerFactory factory,
 				final int connectionTimeout) {
 			factory.addServerCustomizers(new JettyServerCustomizer() {
+
 				@Override
 				public void customize(Server server) {
 					for (org.eclipse.jetty.server.Connector connector : server
@@ -1078,6 +1158,7 @@ public class ServerProperties
 						}
 					}
 				}
+
 			});
 		}
 
@@ -1171,6 +1252,7 @@ public class ServerProperties
 		/**
 		 * Number of buffer per region.
 		 */
+		@Deprecated
 		private Integer buffersPerRegion;
 
 		/**
@@ -1198,6 +1280,7 @@ public class ServerProperties
 			this.bufferSize = bufferSize;
 		}
 
+		@DeprecatedConfigurationProperty(reason = "The property is not used by Undertow. See https://issues.jboss.org/browse/UNDERTOW-587 for details")
 		public Integer getBuffersPerRegion() {
 			return this.buffersPerRegion;
 		}
@@ -1239,9 +1322,6 @@ public class ServerProperties
 			if (this.bufferSize != null) {
 				factory.setBufferSize(this.bufferSize);
 			}
-			if (this.buffersPerRegion != null) {
-				factory.setBuffersPerRegion(this.buffersPerRegion);
-			}
 			if (this.ioThreads != null) {
 				factory.setIoThreads(this.ioThreads);
 			}
@@ -1251,21 +1331,14 @@ public class ServerProperties
 			if (this.directBuffers != null) {
 				factory.setDirectBuffers(this.directBuffers);
 			}
-			if (this.accesslog.dir != null) {
-				factory.setAccessLogDirectory(this.accesslog.dir);
-			}
-			if (this.accesslog.pattern != null) {
-				factory.setAccessLogPattern(this.accesslog.pattern);
-			}
-			if (this.accesslog.prefix != null) {
-				factory.setAccessLogPrefix(this.accesslog.prefix);
-			}
-			if (this.accesslog.suffix != null) {
-				factory.setAccessLogSuffix(this.accesslog.suffix);
-			}
 			if (this.accesslog.enabled != null) {
 				factory.setAccessLogEnabled(this.accesslog.enabled);
 			}
+			factory.setAccessLogDirectory(this.accesslog.dir);
+			factory.setAccessLogPattern(this.accesslog.pattern);
+			factory.setAccessLogPrefix(this.accesslog.prefix);
+			factory.setAccessLogSuffix(this.accesslog.suffix);
+			factory.setAccessLogRotate(this.accesslog.rotate);
 			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
 			if (serverProperties.getMaxHttpHeaderSize() > 0) {
 				customizeMaxHttpHeaderSize(factory,
@@ -1348,6 +1421,11 @@ public class ServerProperties
 			 */
 			private File dir = new File("logs");
 
+			/**
+			 * Enable access log rotation.
+			 */
+			private boolean rotate = true;
+
 			public Boolean getEnabled() {
 				return this.enabled;
 			}
@@ -1388,6 +1466,13 @@ public class ServerProperties
 				this.dir = dir;
 			}
 
+			public boolean isRotate() {
+				return this.rotate;
+			}
+
+			public void setRotate(boolean rotate) {
+				this.rotate = rotate;
+			}
 		}
 
 	}

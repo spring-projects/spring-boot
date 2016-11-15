@@ -34,7 +34,7 @@ import org.springframework.boot.loader.tools.Layouts;
  * two of them. E.g.
  *
  * <pre>
- *     apply plugin: "spring-boot"
+ *     apply plugin: 'org.springframework.boot'
  *     springBoot {
  *         mainClass = 'org.demo.Application'
  *         layout = 'ZIP'
@@ -99,7 +99,7 @@ public class SpringBootPluginExtension {
 	/**
 	 * Whether Spring Boot Devtools should be excluded from the fat jar.
 	 */
-	boolean excludeDevtools = false;
+	boolean excludeDevtools = true;
 
 	/**
 	 * Location of an agent jar to attach to the VM when running the application with

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.reader.PrefixMetricReader;
-import org.springframework.lang.UsesJava8;
 
 /**
  * {@link MetricReader} implementation using {@link CounterBuffers} and
@@ -35,7 +34,6 @@ import org.springframework.lang.UsesJava8;
  * @author Dave Syer
  * @since 1.3.0
  */
-@UsesJava8
 public class BufferMetricReader implements MetricReader, PrefixMetricReader {
 
 	private static final Predicate<String> ALL = Pattern.compile(".*").asPredicate();

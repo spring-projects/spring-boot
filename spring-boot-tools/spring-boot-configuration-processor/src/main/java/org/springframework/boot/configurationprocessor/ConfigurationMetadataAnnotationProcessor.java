@@ -161,9 +161,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private void processAnnotatedTypeElement(String prefix, TypeElement element) {
-		String type = this.typeUtils.getType(element);
+		String type = this.typeUtils.getQualifiedName(element);
 		this.metadataCollector.add(ItemMetadata.newGroup(prefix, type, type, null));
-		processTypeElement(prefix, element);
+		processTypeElement(prefix, element, null);
 	}
 
 	private void processExecutableElement(String prefix, ExecutableElement element) {
@@ -173,8 +173,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 					.asElement(element.getReturnType());
 			if (returns instanceof TypeElement) {
 				ItemMetadata group = ItemMetadata.newGroup(prefix,
-						this.typeUtils.getType(returns),
-						this.typeUtils.getType(element.getEnclosingElement()),
+						this.typeUtils.getQualifiedName(returns),
+						this.typeUtils.getQualifiedName(element.getEnclosingElement()),
 						element.toString());
 				if (this.metadataCollector.hasSimilarGroup(group)) {
 					this.processingEnv.getMessager().printMessage(Kind.ERROR,
@@ -184,19 +184,20 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				}
 				else {
 					this.metadataCollector.add(group);
-					processTypeElement(prefix, (TypeElement) returns);
+					processTypeElement(prefix, (TypeElement) returns, element);
 				}
 			}
 		}
 	}
 
-	private void processTypeElement(String prefix, TypeElement element) {
+	private void processTypeElement(String prefix, TypeElement element,
+			ExecutableElement source) {
 		TypeElementMembers members = new TypeElementMembers(this.processingEnv, element);
 		Map<String, Object> fieldValues = getFieldValues(element);
-		processSimpleTypes(prefix, element, members, fieldValues);
-		processSimpleLombokTypes(prefix, element, members, fieldValues);
-		processNestedTypes(prefix, element, members);
-		processNestedLombokTypes(prefix, element, members);
+		processSimpleTypes(prefix, element, source, members, fieldValues);
+		processSimpleLombokTypes(prefix, element, source, members, fieldValues);
+		processNestedTypes(prefix, element, source, members);
+		processNestedLombokTypes(prefix, element, source, members);
 	}
 
 	private Map<String, Object> getFieldValues(TypeElement element) {
@@ -209,7 +210,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private void processSimpleTypes(String prefix, TypeElement element,
-			TypeElementMembers members, Map<String, Object> fieldValues) {
+			ExecutableElement source, TypeElementMembers members,
+			Map<String, Object> fieldValues) {
 		for (Map.Entry<String, ExecutableElement> entry : members.getPublicGetters()
 				.entrySet()) {
 			String name = entry.getKey();
@@ -224,11 +226,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			boolean isCollection = this.typeUtils.isCollectionOrMap(returnType);
 			if (!isExcluded && !isNested && (setter != null || isCollection)) {
 				String dataType = this.typeUtils.getType(returnType);
-				String sourceType = this.typeUtils.getType(element);
+				String sourceType = this.typeUtils.getQualifiedName(element);
 				String description = this.typeUtils.getJavaDoc(field);
 				Object defaultValue = fieldValues.get(name);
 				boolean deprecated = isDeprecated(getter) || isDeprecated(setter)
-						|| isDeprecated(element);
+						|| isDeprecated(source);
 				this.metadataCollector.add(ItemMetadata.newProperty(prefix, name,
 						dataType, sourceType, null, description, defaultValue,
 						(deprecated ? getItemDeprecation(getter) : null)));
@@ -251,7 +253,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private void processSimpleLombokTypes(String prefix, TypeElement element,
-			TypeElementMembers members, Map<String, Object> fieldValues) {
+			ExecutableElement source, TypeElementMembers members,
+			Map<String, Object> fieldValues) {
 		for (Map.Entry<String, VariableElement> entry : members.getFields().entrySet()) {
 			String name = entry.getKey();
 			VariableElement field = entry.getValue();
@@ -267,10 +270,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			boolean hasSetter = hasLombokSetter(field, element);
 			if (!isExcluded && !isNested && (hasSetter || isCollection)) {
 				String dataType = this.typeUtils.getType(returnType);
-				String sourceType = this.typeUtils.getType(element);
+				String sourceType = this.typeUtils.getQualifiedName(element);
 				String description = this.typeUtils.getJavaDoc(field);
 				Object defaultValue = fieldValues.get(name);
-				boolean deprecated = isDeprecated(field) || isDeprecated(element);
+				boolean deprecated = isDeprecated(field) || isDeprecated(source);
 				this.metadataCollector.add(ItemMetadata.newProperty(prefix, name,
 						dataType, sourceType, null, description, defaultValue,
 						(deprecated ? new ItemDeprecation() : null)));
@@ -279,24 +282,25 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private void processNestedTypes(String prefix, TypeElement element,
-			TypeElementMembers members) {
+			ExecutableElement source, TypeElementMembers members) {
 		for (Map.Entry<String, ExecutableElement> entry : members.getPublicGetters()
 				.entrySet()) {
 			String name = entry.getKey();
 			ExecutableElement getter = entry.getValue();
 			VariableElement field = members.getFields().get(name);
-			processNestedType(prefix, element, name, getter, field,
+			processNestedType(prefix, element, source, name, getter, field,
 					getter.getReturnType());
 		}
 	}
 
 	private void processNestedLombokTypes(String prefix, TypeElement element,
-			TypeElementMembers members) {
+			ExecutableElement source, TypeElementMembers members) {
 		for (Map.Entry<String, VariableElement> entry : members.getFields().entrySet()) {
 			String name = entry.getKey();
 			VariableElement field = entry.getValue();
 			if (isLombokField(field, element)) {
-				processNestedType(prefix, element, name, null, field, field.asType());
+				processNestedType(prefix, element, source, name, null, field,
+						field.asType());
 			}
 		}
 	}
@@ -314,8 +318,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 						|| hasAnnotation(element, LOMBOK_DATA_ANNOTATION));
 	}
 
-	private void processNestedType(String prefix, TypeElement element, String name,
-			ExecutableElement getter, VariableElement field, TypeMirror returnType) {
+	private void processNestedType(String prefix, TypeElement element,
+			ExecutableElement source, String name, ExecutableElement getter,
+			VariableElement field, TypeMirror returnType) {
 		Element returnElement = this.processingEnv.getTypeUtils().asElement(returnType);
 		boolean isNested = isNested(returnElement, field, element);
 		AnnotationMirror annotation = getAnnotation(getter,
@@ -324,10 +329,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				&& annotation == null && isNested) {
 			String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, name);
 			this.metadataCollector.add(ItemMetadata.newGroup(nestedPrefix,
-					this.typeUtils.getType(returnElement),
-					this.typeUtils.getType(element),
+					this.typeUtils.getQualifiedName(returnElement),
+					this.typeUtils.getQualifiedName(element),
 					(getter == null ? null : getter.toString())));
-			processTypeElement(nestedPrefix, (TypeElement) returnElement);
+			processTypeElement(nestedPrefix, (TypeElement) returnElement, source);
 		}
 	}
 
@@ -341,6 +346,17 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private boolean isDeprecated(Element element) {
+		if (isElementDeprecated(element)) {
+			return true;
+		}
+		if (element != null && (element instanceof VariableElement
+				|| element instanceof ExecutableElement)) {
+			return isElementDeprecated(element.getEnclosingElement());
+		}
+		return false;
+	}
+
+	private boolean isElementDeprecated(Element element) {
 		return hasAnnotation(element, "java.lang.Deprecated")
 				|| hasAnnotation(element, deprecatedConfigurationPropertyAnnotation());
 	}

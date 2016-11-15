@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.client;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -317,7 +318,19 @@ public class RestTemplateBuilder {
 	public RestTemplateBuilder requestFactory(
 			Class<? extends ClientHttpRequestFactory> requestFactory) {
 		Assert.notNull(requestFactory, "RequestFactory must not be null");
-		return requestFactory(BeanUtils.instantiate(requestFactory));
+		return requestFactory(createRequestFactory(requestFactory));
+	}
+
+	private ClientHttpRequestFactory createRequestFactory(
+			Class<? extends ClientHttpRequestFactory> requestFactory) {
+		try {
+			Constructor<?> constructor = requestFactory.getDeclaredConstructor();
+			constructor.setAccessible(true);
+			return (ClientHttpRequestFactory) constructor.newInstance();
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	/**
@@ -500,7 +513,7 @@ public class RestTemplateBuilder {
 	 */
 
 	public <T extends RestTemplate> T build(Class<T> restTemplateClass) {
-		return configure(BeanUtils.instantiate(restTemplateClass));
+		return configure(BeanUtils.instantiateClass(restTemplateClass));
 	}
 
 	/**
@@ -580,7 +593,8 @@ public class RestTemplateBuilder {
 			if (ClassUtils.isPresent(candidate.getKey(), classLoader)) {
 				Class<?> factoryClass = ClassUtils.resolveClassName(candidate.getValue(),
 						classLoader);
-				return (ClientHttpRequestFactory) BeanUtils.instantiate(factoryClass);
+				return (ClientHttpRequestFactory) BeanUtils
+						.instantiateClass(factoryClass);
 			}
 		}
 		return new SimpleClientHttpRequestFactory();

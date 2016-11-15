@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
-import org.springframework.data.neo4j.repository.config.Neo4jRepositoryConfigurationExtension;
+import org.springframework.data.neo4j.repository.config.GraphRepositoryConfigurationExtension;
 import org.springframework.data.neo4j.repository.support.GraphRepositoryFactoryBean;
 
 /**
@@ -52,10 +52,11 @@ import org.springframework.data.neo4j.repository.support.GraphRepositoryFactoryB
  * @since 1.4.0
  * @see EnableNeo4jRepositories
  */
+@SuppressWarnings("deprecation")
 @Configuration
 @ConditionalOnClass({ Neo4jSession.class, GraphRepository.class })
 @ConditionalOnMissingBean({ GraphRepositoryFactoryBean.class,
-		Neo4jRepositoryConfigurationExtension.class })
+		GraphRepositoryConfigurationExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.neo4j.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import(Neo4jRepositoriesAutoConfigureRegistrar.class)
 @AutoConfigureAfter(Neo4jDataAutoConfiguration.class)

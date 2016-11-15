@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -88,8 +89,25 @@ public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 		return types;
 	}
 
-	public Set<? extends MvcEndpoint> getEndpoints() {
+	public Set<MvcEndpoint> getEndpoints() {
 		return this.endpoints;
+	}
+
+	/**
+	 * Return the endpoints of the specified type.
+	 * @param <E> the Class type of the endpoints to be returned
+	 * @param type the endpoint type
+	 * @return the endpoints
+	 */
+	@SuppressWarnings("unchecked")
+	public <E extends MvcEndpoint> Set<E> getEndpoints(Class<E> type) {
+		Set<E> result = new HashSet<E>(this.endpoints.size());
+		for (MvcEndpoint candidate : this.endpoints) {
+			if (type.isInstance(candidate)) {
+				result.add((E) candidate);
+			}
+		}
+		return Collections.unmodifiableSet(result);
 	}
 
 	private boolean isGenericEndpoint(Class<?> type) {

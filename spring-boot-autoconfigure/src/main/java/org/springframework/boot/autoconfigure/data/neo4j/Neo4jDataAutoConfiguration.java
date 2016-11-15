@@ -45,6 +45,7 @@ import org.springframework.data.neo4j.template.Neo4jOperations;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
+@SuppressWarnings("deprecation")
 @Configuration
 @ConditionalOnClass({ Neo4jSession.class, Neo4jOperations.class })
 @ConditionalOnMissingBean(Neo4jOperations.class)

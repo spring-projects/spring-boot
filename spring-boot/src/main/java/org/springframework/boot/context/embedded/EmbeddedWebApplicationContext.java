@@ -362,7 +362,6 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			Set<String> scopes = new LinkedHashSet<String>();
 			scopes.add(WebApplicationContext.SCOPE_REQUEST);
 			scopes.add(WebApplicationContext.SCOPE_SESSION);
-			scopes.add(WebApplicationContext.SCOPE_GLOBAL_SESSION);
 			SCOPES = Collections.unmodifiableSet(scopes);
 		}
 

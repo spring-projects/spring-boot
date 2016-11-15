@@ -182,6 +182,7 @@ public class EndpointWebMvcAutoConfiguration
 		childContext.setParent(this.applicationContext);
 		childContext.setNamespace("management");
 		childContext.setId(this.applicationContext.getId() + ":management");
+		childContext.setClassLoader(this.applicationContext.getClassLoader());
 		childContext.register(EndpointWebMvcChildContextConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				EmbeddedServletContainerAutoConfiguration.class,

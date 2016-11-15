@@ -67,7 +67,8 @@ public class SpringPhysicalNamingStrategy implements PhysicalNamingStrategy {
 		}
 		StringBuilder text = new StringBuilder(name.getText().replace('.', '_'));
 		for (int i = 1; i < text.length() - 1; i++) {
-			if (isUnderscoreRequired(text.charAt(i - 1), text.charAt(i), text.charAt(i + 1))) {
+			if (isUnderscoreRequired(text.charAt(i - 1), text.charAt(i),
+					text.charAt(i + 1))) {
 				text.insert(i++, '_');
 			}
 		}

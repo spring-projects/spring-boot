@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.metrics.buffer;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.boot.actuate.metrics.CounterService;
-import org.springframework.lang.UsesJava8;
 
 /**
  * Fast implementation of {@link CounterService} using {@link CounterBuffers}.
@@ -27,7 +26,6 @@ import org.springframework.lang.UsesJava8;
  * @author Dave Syer
  * @since 1.3.0
  */
-@UsesJava8
 public class BufferCounterService implements CounterService {
 
 	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<String, String>();

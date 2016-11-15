@@ -43,8 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { SampleSecureApplication.class,
-		TestConfiguration.class })
+@SpringBootTest(classes = { SampleSecureApplication.class, TestConfiguration.class })
 public class SampleSecureApplicationTests {
 
 	@Autowired

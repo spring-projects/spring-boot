@@ -34,6 +34,7 @@ import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.ServletContainer;
+import org.apache.jasper.servlet.JspServlet;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -41,6 +42,7 @@ import org.springframework.boot.context.embedded.AbstractEmbeddedServletContaine
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 import org.springframework.boot.context.embedded.ExampleServlet;
 import org.springframework.boot.context.embedded.MimeMappings.Mapping;
+import org.springframework.boot.context.embedded.PortInUseException;
 import org.springframework.boot.web.servlet.ErrorPage;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.http.HttpStatus;
@@ -249,7 +251,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 	}
 
 	@Override
-	protected Object getJspServlet() {
+	protected JspServlet getJspServlet() {
 		return null; // Undertow does not support JSPs
 	}
 
@@ -289,6 +291,13 @@ public class UndertowEmbeddedServletContainerFactoryTests
 				.getField(this.container, "manager")).getDeployment().getDeploymentInfo();
 		String charsetName = info.getLocaleCharsetMapping().get(locale.toString());
 		return (charsetName != null) ? Charset.forName(charsetName) : null;
+	}
+
+	@Override
+	protected void handleExceptionCausedByBlockedPort(RuntimeException ex,
+			int blockedPort) {
+		assertThat(ex).isInstanceOf(PortInUseException.class);
+		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
 	}
 
 }

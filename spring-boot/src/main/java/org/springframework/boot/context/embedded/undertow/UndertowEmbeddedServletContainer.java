@@ -95,63 +95,6 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * @param builder the builder
 	 * @param manager the deployment manager
 	 * @param contextPath the root context path
-	 * @param port the port to listen on (not used)
-	 * @param autoStart if the server should be started
-	 * @param compression compression configuration
-	 * @deprecated as of 1.4 in favor of
-	 * {@link #UndertowEmbeddedServletContainer(Undertow.Builder, DeploymentManager, String, boolean, Compression)}
-	 */
-	@Deprecated
-	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
-			String contextPath, int port, boolean autoStart, Compression compression) {
-		this(builder, manager, contextPath, false, autoStart, compression);
-	}
-
-	/**
-	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
-	 * @param builder the builder
-	 * @param manager the deployment manager
-	 * @param contextPath the root context path
-	 * @param port the port to listen on (not used)
-	 * @param useForwardHeaders if x-forward headers should be used
-	 * @param autoStart if the server should be started
-	 * @param compression compression configuration
-	 * @deprecated as of 1.4 in favor of
-	 * {@link #UndertowEmbeddedServletContainer(Undertow.Builder, DeploymentManager, String, boolean, boolean, Compression)}
-	 */
-	@Deprecated
-	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
-			String contextPath, int port, boolean useForwardHeaders, boolean autoStart,
-			Compression compression) {
-		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression);
-	}
-
-	/**
-	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
-	 * @param builder the builder
-	 * @param manager the deployment manager
-	 * @param contextPath the root context path
-	 * @param port the port to listen on (not used)
-	 * @param useForwardHeaders if x-forward headers should be used
-	 * @param autoStart if the server should be started
-	 * @param compression compression configuration
-	 * @param serverHeader string to be used in HTTP header
-	 * @deprecated as of 1.4 in favor of
-	 * {@link #UndertowEmbeddedServletContainer(Undertow.Builder, DeploymentManager, String, boolean, boolean, Compression, String)}
-	 */
-	@Deprecated
-	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
-			String contextPath, int port, boolean useForwardHeaders, boolean autoStart,
-			Compression compression, String serverHeader) {
-		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression,
-				serverHeader);
-	}
-
-	/**
-	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
-	 * @param builder the builder
-	 * @param manager the deployment manager
-	 * @param contextPath the root context path
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
 	 */

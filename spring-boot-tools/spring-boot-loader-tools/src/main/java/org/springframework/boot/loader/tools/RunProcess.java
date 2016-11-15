@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
@@ -41,13 +42,31 @@ public class RunProcess {
 
 	private static final long JUST_ENDED_LIMIT = 500;
 
+	private File workingDirectory;
+
 	private final String[] command;
 
 	private volatile Process process;
 
 	private volatile long endTime;
 
+	/**
+	 * Creates new {@link RunProcess} instance for the specified command.
+	 * @param command the program to execute and it's arguments
+	 */
 	public RunProcess(String... command) {
+		this(null, command);
+	}
+
+	/**
+	 * Creates new {@link RunProcess} instance for the specified working directory and
+	 * command.
+	 * @param workingDirectory the working directory of the child process or {@code null}
+	 * to run in the working directory of the current Java process
+	 * @param command the program to execute and it's arguments
+	 */
+	public RunProcess(File workingDirectory, String... command) {
+		this.workingDirectory = workingDirectory;
 		this.command = command;
 	}
 
@@ -58,6 +77,7 @@ public class RunProcess {
 	protected int run(boolean waitForProcess, Collection<String> args)
 			throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(this.command);
+		builder.directory(this.workingDirectory);
 		builder.command().addAll(args);
 		builder.redirectErrorStream(true);
 		boolean inheritedIO = inheritIO(builder);

@@ -18,7 +18,6 @@ package sample.hibernate52.service;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import sample.hibernate52.domain.City;
-import sample.hibernate52.service.CityRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -44,6 +44,7 @@ import static org.mockito.Mockito.mock;
  * @author Michael Hunger
  * @author Vince Bickers
  */
+@SuppressWarnings("deprecation")
 public class Neo4jDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 
 /**
  * {@link BasicDataSource} used for testing.

@@ -18,6 +18,7 @@ package org.springframework.boot.logging;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.util.ClassUtils;
@@ -29,6 +30,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Ben Hale
  */
 public abstract class LoggingSystem {
 
@@ -97,7 +99,29 @@ public abstract class LoggingSystem {
 	 * @param loggerName the name of the logger to set
 	 * @param level the log level
 	 */
-	public abstract void setLogLevel(String loggerName, LogLevel level);
+	public void setLogLevel(String loggerName, LogLevel level) {
+		throw new UnsupportedOperationException("Unable to set log level");
+	}
+
+	/**
+	 * Returns a collection of the current configuration for all a {@link LoggingSystem}'s
+	 * loggers.
+	 * @return the current configurations
+	 * @since 1.5.0
+	 */
+	public List<LoggerConfiguration> getLoggerConfigurations() {
+		throw new UnsupportedOperationException("Unable to get logger configurations");
+	}
+
+	/**
+	 * Returns the current configuration for a {@link LoggingSystem}'s logger.
+	 * @param loggerName the name of the logger
+	 * @return the current configuration
+	 * @since 1.5.0
+	 */
+	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+		throw new UnsupportedOperationException("Unable to get logger configuration");
+	}
 
 	/**
 	 * Detect and return the logging system in use. Supports Logback and Java Logging.
@@ -144,6 +168,16 @@ public abstract class LoggingSystem {
 		@Override
 		public void setLogLevel(String loggerName, LogLevel level) {
 
+		}
+
+		@Override
+		public List<LoggerConfiguration> getLoggerConfigurations() {
+			return Collections.emptyList();
+		}
+
+		@Override
+		public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+			return null;
 		}
 
 	}

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,27 +68,35 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 	@JsonInclude(Include.NON_EMPTY)
 	public static class Report {
 
-		private MultiValueMap<String, MessageAndCondition> positiveMatches;
+		private final MultiValueMap<String, MessageAndCondition> positiveMatches;
 
-		private MultiValueMap<String, MessageAndCondition> negativeMatches;
+		private final Map<String, MessageAndConditions> negativeMatches;
 
-		private List<String> exclusions;
+		private final List<String> exclusions;
 
-		private Report parent;
+		private final Report parent;
 
 		public Report(ConditionEvaluationReport report) {
 			this.positiveMatches = new LinkedMultiValueMap<String, MessageAndCondition>();
-			this.negativeMatches = new LinkedMultiValueMap<String, MessageAndCondition>();
+			this.negativeMatches = new LinkedHashMap<String, MessageAndConditions>();
 			this.exclusions = report.getExclusions();
 			for (Map.Entry<String, ConditionAndOutcomes> entry : report
 					.getConditionAndOutcomesBySource().entrySet()) {
-				add(entry.getValue().isFullMatch() ? this.positiveMatches
-						: this.negativeMatches, entry.getKey(), entry.getValue());
+				if (entry.getValue().isFullMatch()) {
+					add(this.positiveMatches, entry.getKey(), entry.getValue());
+				}
+				else {
+					add(this.negativeMatches, entry.getKey(), entry.getValue());
+				}
+			}
+			boolean hasParent = report.getParent() != null;
+			this.parent = (hasParent ? new Report(report.getParent()) : null);
+		}
 
-			}
-			if (report.getParent() != null) {
-				this.parent = new Report(report.getParent());
-			}
+		private void add(Map<String, MessageAndConditions> map, String source,
+				ConditionAndOutcomes conditionAndOutcomes) {
+			String name = ClassUtils.getShortName(source);
+			map.put(name, new MessageAndConditions(conditionAndOutcomes));
 		}
 
 		private void add(MultiValueMap<String, MessageAndCondition> map, String source,
@@ -101,7 +111,7 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 			return this.positiveMatches;
 		}
 
-		public Map<String, List<MessageAndCondition>> getNegativeMatches() {
+		public Map<String, MessageAndConditions> getNegativeMatches() {
 			return this.negativeMatches;
 		}
 
@@ -111,6 +121,34 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 
 		public Report getParent() {
 			return this.parent;
+		}
+
+	}
+
+	/**
+	 * Adapts {@link ConditionAndOutcomes} to a JSON friendly structure.
+	 */
+	@JsonPropertyOrder({ "notMatched", "matched" })
+	public static class MessageAndConditions {
+
+		private final List<MessageAndCondition> notMatched = new ArrayList<MessageAndCondition>();
+
+		private final List<MessageAndCondition> matched = new ArrayList<MessageAndCondition>();
+
+		public MessageAndConditions(ConditionAndOutcomes conditionAndOutcomes) {
+			for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
+				List<MessageAndCondition> target = conditionAndOutcome.getOutcome()
+						.isMatch() ? this.matched : this.notMatched;
+				target.add(new MessageAndCondition(conditionAndOutcome));
+			}
+		}
+
+		public List<MessageAndCondition> getNotMatched() {
+			return this.notMatched;
+		}
+
+		public List<MessageAndCondition> getMatched() {
+			return this.matched;
 		}
 
 	}
@@ -146,4 +184,5 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 		}
 
 	}
+
 }
