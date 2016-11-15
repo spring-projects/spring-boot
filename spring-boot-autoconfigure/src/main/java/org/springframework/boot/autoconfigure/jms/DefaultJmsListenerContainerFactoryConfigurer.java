@@ -87,11 +87,14 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		factory.setConnectionFactory(connectionFactory);
 		factory.setPubSubDomain(this.jmsProperties.isPubSubDomain());
-		if (this.transactionManager != null) {
-			factory.setTransactionManager(this.transactionManager);
-		}
-		else {
-			factory.setSessionTransacted(true);
+		if (this.jmsProperties.getSessionTransacted() == null) {
+			if (this.transactionManager != null) {
+				factory.setTransactionManager(this.transactionManager);
+			} else {
+				factory.setSessionTransacted(true);
+			}
+		} else {
+			factory.setSessionTransacted(this.jmsProperties.getSessionTransacted());
 		}
 		if (this.destinationResolver != null) {
 			factory.setDestinationResolver(this.destinationResolver);

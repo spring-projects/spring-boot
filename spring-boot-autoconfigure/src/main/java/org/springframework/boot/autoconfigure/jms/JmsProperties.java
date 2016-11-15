@@ -39,6 +39,11 @@ public class JmsProperties {
 	 */
 	private String jndiName;
 
+	/**
+	 * Set the transaction mode that is used when creating a JMS {@link javax.jms.Session}.
+	 */
+	private Boolean sessionTransacted;
+
 	private final Listener listener = new Listener();
 
 	public boolean isPubSubDomain() {
@@ -55,6 +60,14 @@ public class JmsProperties {
 
 	public void setJndiName(String jndiName) {
 		this.jndiName = jndiName;
+	}
+
+	public Boolean getSessionTransacted() {
+		return this.sessionTransacted;
+	}
+
+	public void setSessionTransacted(Boolean sessionTransacted) {
+		this.sessionTransacted = sessionTransacted;
 	}
 
 	public Listener getListener() {
