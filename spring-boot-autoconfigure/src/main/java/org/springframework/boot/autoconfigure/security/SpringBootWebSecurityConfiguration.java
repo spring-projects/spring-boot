@@ -108,6 +108,15 @@ public class SpringBootWebSecurityConfiguration {
 		if (!headers.isContentType()) {
 			configurer.contentTypeOptions().disable();
 		}
+		if (StringUtils.hasText(headers.getContentSecurityPolicy())) {
+			if (headers.getContentSecurityPolicyMode() == Headers.ContentSecurityPolicyMode.DEFAULT) {
+				configurer.contentSecurityPolicy(headers.getContentSecurityPolicy());
+			}
+			else {
+				assert headers.getContentSecurityPolicyMode() == Headers.ContentSecurityPolicyMode.REPORT_ONLY;
+				configurer.contentSecurityPolicy(headers.getContentSecurityPolicy()).reportOnly();
+			}
+		}
 		if (!headers.isXss()) {
 			configurer.xssProtection().disable();
 		}
