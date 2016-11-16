@@ -55,7 +55,8 @@ public class LinksEnhancerTests {
 	public void useNameAsRelIfAvailable() throws Exception {
 		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
 		endpoint.setPath("something-else");
-		LinksEnhancer enhancer = getLinksEnhancer(Collections.singletonList((MvcEndpoint) endpoint));
+		LinksEnhancer enhancer = getLinksEnhancer(
+				Collections.singletonList((MvcEndpoint) endpoint));
 		ResourceSupport support = new ResourceSupport();
 		enhancer.addEndpointLinks(support, "");
 		assertThat(support.getLink("a").getHref()).contains("/something-else");
@@ -86,20 +87,13 @@ public class LinksEnhancerTests {
 		endpoint.setPath("endpoint");
 		TestMvcEndpoint otherEndpoint = new TestMvcEndpoint(new TestEndpoint("a"));
 		otherEndpoint.setPath("other-endpoint");
-		LinksEnhancer enhancer = getLinksEnhancer(Arrays.asList((MvcEndpoint) endpoint, otherEndpoint));
+		LinksEnhancer enhancer = getLinksEnhancer(
+				Arrays.asList((MvcEndpoint) endpoint, otherEndpoint));
 		ResourceSupport support = new ResourceSupport();
 		enhancer.addEndpointLinks(support, "");
 		assertThat(support.getLinks()).haveExactly(1, getCondition("a", "endpoint"));
-		assertThat(support.getLinks()).haveExactly(1, getCondition("a", "other-endpoint"));
-	}
-
-	private Condition<Link> getCondition(final String rel, final String href) {
-		return new Condition<Link>() {
-			@Override
-			public boolean matches(Link link) {
-				return link.getRel().equals(rel) && link.getHref().equals("http://localhost/" + href);
-			}
-		};
+		assertThat(support.getLinks()).haveExactly(1,
+				getCondition("a", "other-endpoint"));
 	}
 
 	private LinksEnhancer getLinksEnhancer(List<MvcEndpoint> endpoints) throws Exception {
@@ -112,6 +106,18 @@ public class LinksEnhancerTests {
 		mvcEndpoints.setApplicationContext(context);
 		mvcEndpoints.afterPropertiesSet();
 		return new LinksEnhancer("", mvcEndpoints);
+	}
+
+	private Condition<Link> getCondition(final String rel, final String href) {
+		return new Condition<Link>() {
+
+			@Override
+			public boolean matches(Link link) {
+				return link.getRel().equals(rel)
+						&& link.getHref().equals("http://localhost/" + href);
+			}
+
+		};
 	}
 
 	private static class TestEndpoint extends AbstractEndpoint<Object> {
@@ -140,6 +146,7 @@ public class LinksEnhancerTests {
 		NoNameTestMvcEndpoint(String path, boolean sensitive) {
 			super(path, sensitive);
 		}
+
 	}
 
 }

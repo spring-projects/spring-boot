@@ -16,15 +16,14 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -33,6 +32,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
  * Adds endpoint links to {@link ResourceSupport}.
  *
  * @author Dave Syer
+ * @author Madhura Bhave
  */
 class LinksEnhancer {
 
@@ -50,26 +50,29 @@ class LinksEnhancer {
 			resource.add(linkTo(LinksEnhancer.class).slash(this.rootPath + self)
 					.withSelfRel());
 		}
-		Map<String, List<String>> added = new HashMap<String, List<String>>();
+		MultiValueMap<String, String> added = new LinkedMultiValueMap<String, String>();
 		for (MvcEndpoint endpoint : this.endpoints.getEndpoints()) {
-
-			String rel = getRel(endpoint);
-			List<String> pathsForRel = added.get(rel) == null ? new ArrayList<String>() : added.get(rel);
-
-			if (!endpoint.getPath().equals(self) && !pathsForRel.contains(endpoint.getPath())) {
-				addEndpointLink(resource, endpoint, rel);
-				pathsForRel.add(endpoint.getPath());
-				added.put(rel, pathsForRel);
+			if (!endpoint.getPath().equals(self)) {
+				String rel = getRel(endpoint);
+				List<String> paths = added.get(rel);
+				if (paths == null || !paths.contains(endpoint.getPath())) {
+					addEndpointLink(resource, endpoint, rel);
+					added.add(rel, endpoint.getPath());
+				}
 			}
 		}
 	}
 
 	private String getRel(MvcEndpoint endpoint) {
-		String name = endpoint instanceof NamedMvcEndpoint ? ((NamedMvcEndpoint) endpoint).getName() : endpoint.getPath();
-		return (name.startsWith("/") ? name.substring(1) : name);
+		if (endpoint instanceof NamedMvcEndpoint) {
+			return ((NamedMvcEndpoint) endpoint).getName();
+		}
+		String path = endpoint.getPath();
+		return (path.startsWith("/") ? path.substring(1) : path);
 	}
 
-	private void addEndpointLink(ResourceSupport resource, MvcEndpoint endpoint, String rel) {
+	private void addEndpointLink(ResourceSupport resource, MvcEndpoint endpoint,
+			String rel) {
 		Class<?> type = endpoint.getEndpointType();
 		type = (type == null ? Object.class : type);
 		if (StringUtils.hasText(rel)) {
