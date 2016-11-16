@@ -89,7 +89,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Current working directory to use for the application. If not specified, basedir
-	 * will be used NOTE: the use of working directory means that processes will be
+	 * will be used. NOTE: the use of working directory means that processes will be
 	 * started by forking a new JVM.
 	 * @since 1.5
 	 */
