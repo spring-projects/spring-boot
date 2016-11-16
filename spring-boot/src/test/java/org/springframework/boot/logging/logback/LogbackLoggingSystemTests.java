@@ -43,6 +43,7 @@ import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.testutil.Matched;
 import org.springframework.mock.env.MockEnvironment;
@@ -190,7 +191,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 				.getLoggerConfigurations();
 		assertThat(configurations).isNotEmpty();
 		assertThat(configurations.get(0).getName())
-				.isEqualTo(org.slf4j.Logger.ROOT_LOGGER_NAME);
+				.isEqualTo(LoggingSystem.ROOT_LOGGER_NAME);
 	}
 
 	@Test

@@ -40,6 +40,7 @@ import org.junit.Test;
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.testutil.Matched;
 import org.springframework.util.FileCopyUtils;
@@ -148,7 +149,8 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		List<LoggerConfiguration> configurations = this.loggingSystem
 				.getLoggerConfigurations();
 		assertThat(configurations).isNotEmpty();
-		assertThat(configurations.get(0).getName()).isEmpty();
+		assertThat(configurations.get(0).getName())
+				.isEqualTo(LoggingSystem.ROOT_LOGGER_NAME);
 	}
 
 	@Test

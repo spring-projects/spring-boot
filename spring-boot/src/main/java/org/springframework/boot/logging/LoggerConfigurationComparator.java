@@ -25,9 +25,8 @@ import org.springframework.util.Assert;
  * Sorts the "root" logger as the first logger and then lexically by name after that.
  *
  * @author Ben Hale
- * @since 1.5.0
  */
-public class LoggerConfigurationComparator implements Comparator<LoggerConfiguration> {
+class LoggerConfigurationComparator implements Comparator<LoggerConfiguration> {
 
 	private final String rootLoggerName;
 
@@ -35,7 +34,7 @@ public class LoggerConfigurationComparator implements Comparator<LoggerConfigura
 	 * Create a new {@link LoggerConfigurationComparator} instance.
 	 * @param rootLoggerName the name of the "root" logger
 	 */
-	public LoggerConfigurationComparator(String rootLoggerName) {
+	LoggerConfigurationComparator(String rootLoggerName) {
 		Assert.notNull(rootLoggerName, "RootLoggerName must not be null");
 		this.rootLoggerName = rootLoggerName;
 	}

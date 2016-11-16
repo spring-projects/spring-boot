@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -34,6 +35,9 @@ import org.springframework.util.SystemPropertyUtils;
  * @author Dave Syer
  */
 public abstract class AbstractLoggingSystem extends LoggingSystem {
+
+	protected static final Comparator<LoggerConfiguration> CONFIGURATION_COMPARATOR = new LoggerConfigurationComparator(
+			ROOT_LOGGER_NAME);
 
 	private final ClassLoader classLoader;
 

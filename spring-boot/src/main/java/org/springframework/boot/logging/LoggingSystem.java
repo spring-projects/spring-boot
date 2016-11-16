@@ -47,6 +47,13 @@ public abstract class LoggingSystem {
 	 */
 	public static final String NONE = "none";
 
+	/**
+	 * The name used to for the root logger. LoggingSystem implementations should ensure
+	 * that this is the name used to represent the root logger, regardless of the
+	 * underlying implementation.
+	 */
+	public static final String ROOT_LOGGER_NAME = "ROOT";
+
 	private static final Map<String, String> SYSTEMS;
 
 	static {
@@ -107,7 +114,8 @@ public abstract class LoggingSystem {
 
 	/**
 	 * Sets the logging level for a given logger.
-	 * @param loggerName the name of the logger to set
+	 * @param loggerName the name of the logger to set ({@code null} can be used for the
+	 * root logger).
 	 * @param level the log level
 	 */
 	public void setLogLevel(String loggerName, LogLevel level) {
