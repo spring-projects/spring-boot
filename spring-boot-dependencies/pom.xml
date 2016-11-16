@@ -74,6 +74,7 @@
 		<elasticsearch.version>2.4.1</elasticsearch.version>
 		<gemfire.version>8.2.0</gemfire.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
+		<geode.version>1.0.0-incubating</geode.version>
 		<gradle.version>2.9</gradle.version>
 		<groovy.version>2.4.7</groovy.version>
 		<gson.version>2.7</gson.version>
@@ -147,6 +148,7 @@
 		<spring-amqp.version>2.0.0.BUILD-SNAPSHOT</spring-amqp.version>
 		<spring-cloud-connectors.version>1.2.3.RELEASE</spring-cloud-connectors.version>
 		<spring-batch.version>3.0.7.RELEASE</spring-batch.version>
+		<spring-data-geode.version>1.0.0.INCUBATING-RELEASE</spring-data-geode.version>
 		<spring-data-releasetrain.version>Ingalls-M1</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.21.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>5.0.0.BUILD-SNAPSHOT</spring-integration.version>
@@ -1185,6 +1187,17 @@
 				<version>${commons-pool2.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apach.geode</groupId>
+				<artifactId>geode-core</artifactId>
+				<version>${geode.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.shiro</groupId>
+						<artifactId>shiro-core</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.derby</groupId>
 				<artifactId>derby</artifactId>
 				<version>${derby.version}</version>
@@ -1993,6 +2006,11 @@
 						<groupId>log4j</groupId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-geode</artifactId>
+				<version>${spring-data-geode.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.data</groupId>

@@ -3442,17 +3442,227 @@ technologies, refer to their http://projects.spring.io/spring-data-neo4j/[refere
 documentation].
 
 
+[[boot-features-geode]]
+=== Geode
+http://geode.incubator.apache.org/[Apache Geode] is an In-Memory Data Grid (IMDG),
+key-value store, with elastic compute and data management features, capable of
+linear scale out in a shared nothing architecture for real-time,
+low-latency/high-throughput data access.
 
-[[boot-features-gemfire]]
-=== Gemfire
-https://github.com/spring-projects/spring-data-gemfire[Spring Data Gemfire] provides
-convenient Spring-friendly tools for accessing the
-http://pivotal.io/big-data/pivotal-gemfire#details[Pivotal Gemfire] data management
-platform. There is a `spring-boot-starter-data-gemfire` '`Starter`' for collecting the
-dependencies in a convenient way. There is currently no auto-configuration support for
-Gemfire, but you can enable Spring Data Repositories with a
-https://github.com/spring-projects/spring-data-gemfire/blob/master/src/main/java/org/springframework/data/gemfire/repository/config/EnableGemfireRepositories.java[single annotation (`@EnableGemfireRepositories`)].
+https://github.com/spring-projects/spring-data-gemfire[Spring Data Geode] uses the
+powerful and consistent Spring programming model to provide a convenient and highly
+familiar framework for accessing the
+http://geode.incubator.apache.org/[Apache Geode] data management platform.
 
+Spring Boot provides a convenient '`Starter`' (`spring-boot-starter-data-geode`)
+for collecting the necessary dependencies to easily build Spring-powered, Apache Geode
+applications.  In addition, there is also support for enabling Spring Data Geode
+http://docs.spring.io/spring-data-gemfire/docs/current/reference/html/#gemfire-repositories[Repositories]
+using Spring Boot auto-configuration.
+
+
+[[boot-features-connecting-to-geode]]
+==== Connecting to Apache Geode using Spring Data Geode
+
+To use Spring Boot's auto-configuration support for Spring Data Geode's Repository
+infrastructure extension, not only do you need Spring Data Geode and Apache Geode
+on your classpath, in addition to your application-defined Repositories, but you
+also need to define a Geode cache instance.  There are 2 options for defining a
+Geode cache depending on the Geode topology choice used in your application's
+architecture.
+
+First, you might choose to embed a Geode cache in your application, participating
+as a http://geode.docs.pivotal.io/docs/topologies_and_comm/p2p_configuration/chapter_overview.html[peer member]
+in the Geode cluster. To do so, you must define a peer cache instance using
+Spring Data Geode's `CacheFactoryBean`...
+
+[source,java,indent=0]
+----
+@Configuration
+class PeerCacheConfiguration {
+
+	Properties geodeProperties() {
+		Properties geodeProperties = new Properties();
+
+		geodeProperties.setProperty("name", "PeerExample");
+		geodeProperties.setProperty("mcast-port", "0");
+		geodeProperties.setProperty("log-level", "config");
+
+		return geodeProperties;
+	}
+
+	@Bean
+	CacheFactoryBean geodeCache() {
+		CacheFactoryBean geodeCache = new CacheFactoryBean();
+
+		geodeCache.setClose(true);
+		geodeCache.setProperties(geodeProperties());
+
+		return geodeCache;
+	}
+}
+----
+
+You might also choose to use Geode's
+http://geode.docs.pivotal.io/docs/topologies_and_comm/cs_configuration/chapter_overview.html[client/server topology]
+to connect to a cluster of Geode Servers running elsewhere.  If so, you must
+configure your application as a Geode cache client using Spring Data Geode's
+`ClientCacheFactoryBean`...
+
+[source,java,indent=0]
+----
+@Configuration
+class ClientCacheConfiguration {
+
+	Properties geodeProperties() {
+		Properties geodeProperties = new Properties();
+
+		geodeProperties.setProperty("name", "ClientExample");
+		geodeProperties.setProperty("log-level", "config");
+
+		return geodeProperties;
+	}
+
+	@Bean
+	ClientCacheFactoryBean geodeCache() {
+		ClientCacheFactoryBean geodeCache = new ClientCacheFactoryBean();
+
+		geodeCache.setClose(true);
+		geodeCache.setProperties(geodeProperties());
+
+		return geodeCache;
+	}
+
+	@Bean
+	PoolFactoryBean geodePool() {
+		PoolFactoryBean geodePool = new PoolFactoryBean();
+
+		geodePool.setPingInterval(5000); // 5 seconds
+		geodePool.setReadTimeout(15000); // 15 seconds
+		geodePool.setRetryAttempts(1);
+		geodePool.setSubscriptionEnabled(true);
+		geodePool.setServers(new ConnectionEndpoint("localhost", 40404));
+
+		return geodePool;
+	}
+}
+----
+
+The Geode `Pool` is a pool of connections needed by a cache client to
+communicate with the Geode servers in the cluster during Region
+data access operations.
+
+[[boot-features-spring-data-geode-repositories]]
+==== Spring Data Geode Repositories
+
+Regardless of the Geode topology used, either 'peer-to-peer' (P2P) or 'client/server',
+you need to define Regions that will store your application data.
+
+Using a peer cache, you have a choice of different
+http://geode.docs.pivotal.io/docs/developing/region_options/region_types.html[Region types]
+corresponding to different data management policies and consistency options. You can choose
+from `LOCAL`, `REPLICATE` and `PARTITION`.
+
+On the client, a developer can choose from one of several
+http://geode.incubator.apache.org/releases/latest/javadoc/com/gemstone/gemfire/cache/client/ClientRegionShortcut.html[ClientRegionShortcuts].
+
+When using Spring Data Geode, the developer only need define an appropriate SDG
+`FactoryBean` based on the Region's type.  For instance, in a peer cache application,
+a developer could define either a `ReplicatedRegionFactoryBean` or
+`PartitionedRegionFactoryBean`.  As a cache client application, the developer just
+defines a `ClientRegionFactoryBean` with an appropriate `ClientRegionShortcut`.
+
+Along with the Region, or Regions that hold the application data, a developer defines
+application domain object/persistent entity types and annotates them with
+Spring Data Geode's `@Region` annotation...
+
+[source,java,indent=0]
+----
+@Region("Customers")
+public class Customer {
+
+ @Id private Long id;
+
+ String firstName;
+ String lastName;
+
+ ...
+
+}
+----
+
+Then, you define the corresponding Spring Data (Geode) Repository...
+
+[source,java,indent=0]
+----
+public interface CustomerRepository extends GemfireRepository<Customer, Long> {
+
+ Customer save(Customer);
+
+ Customer findById(Long id);
+
+ List<Customer> findByLastNameLike(String lastName);
+
+}
+----
+
+Providing the `CustomerRepository` and persistent entity type, `Customer`, are found
+on the application's classpath, Spring Boot will create and conveniently auto-configure
+your application Repositories with Spring Data Geode.
+
+Do not forget to define the corresponding Region(s) in the Spring application context.
+For example, in a peer cache application...
+
+[source,java,indent=0]
+----
+class PeerCacheConfiguration {
+
+    ...
+
+	@Bean(name = "Customers")
+	PartitionedRegionFactoryBean<Long, Customer> customersRegion(GemFireCache geodeCache) {
+
+		PartitionedRegionFactoryBean<Long, Customer> customersRegion =
+			new PartitionedRegionFactoryBean<Long, Customer>();
+
+		customersRegion.setCache(geodeCache);
+		customersRegion.setClose(false);
+		customersRegion.setPersistent(false);
+
+		return customersRegion;
+	}
+}
+----
+
+Or, in a client cache application...
+
+[source,java,indent=0]
+----
+class ClientCacheConfiguration {
+
+    ...
+
+	@Bean(name = "Customers")
+	ClientRegionFactoryBean<Long, Customer> customersRegion(GemFireCache geodeCache) {
+
+		ClientRegionFactoryBean<Long, Customer> customersRegion  =
+			new ClientRegionFactoryBean<Long, Customer>();
+
+		customersRegion.setCache(geodeCache);
+		customersRegion.setClose(false);
+		customersRegion.setShortcut(ClientRegionShortcut.CACHING_PROXY);
+
+		return customersRegion;
+	}
+}
+----
+
+Make sure both the client and server cache Region names match.
+
+For more information, refer to the
+http://docs.spring.io/spring-data-gemfire/docs/current/reference/html/[Spring Data GemFire Reference Guide]
+along with the
+http://geode.incubator.apache.org/releases/latest/javadoc/com/gemstone/gemfire/cache/client/ClientRegionShortcut.html[Apache Geode User Guide].
 
 
 [[boot-features-solr]]
