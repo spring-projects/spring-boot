@@ -95,7 +95,6 @@ public class LoggersMvcEndpointTests {
 				.singletonList(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG)));
 		String expected = "{\"levels\":[\"OFF\",\"FATAL\",\"ERROR\",\"WARN\",\"INFO\",\"DEBUG\",\"TRACE\"],"
 				+ "\"loggers\":{\"ROOT\":{\"configuredLevel\":null,\"effectiveLevel\":\"DEBUG\"}}}";
-		System.out.println(expected);
 		this.mvc.perform(get("/loggers")).andExpect(status().isOk())
 				.andExpect(content().json(expected));
 	}
