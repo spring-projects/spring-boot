@@ -30,7 +30,7 @@ import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -161,7 +161,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		LOG_LEVEL_LOGGERS.add(LogLevel.DEBUG, "org.hibernate.SQL");
 	}
 
-	private static Class<?>[] EVENT_TYPES = { ApplicationStartedEvent.class,
+	private static Class<?>[] EVENT_TYPES = { ApplicationStartingEvent.class,
 			ApplicationEnvironmentPreparedEvent.class, ApplicationPreparedEvent.class,
 			ContextClosedEvent.class };
 
@@ -201,8 +201,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationStartedEvent) {
-			onApplicationStartedEvent((ApplicationStartedEvent) event);
+		if (event instanceof ApplicationStartingEvent) {
+			onApplicationStartingEvent((ApplicationStartingEvent) event);
 		}
 		else if (event instanceof ApplicationEnvironmentPreparedEvent) {
 			onApplicationEnvironmentPreparedEvent(
@@ -220,7 +220,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		}
 	}
 
-	private void onApplicationStartedEvent(ApplicationStartedEvent event) {
+	private void onApplicationStartingEvent(ApplicationStartingEvent event) {
 		this.loggingSystem = LoggingSystem
 				.get(event.getSpringApplication().getClassLoader());
 		this.loggingSystem.beforeInitialize();
@@ -350,7 +350,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private void setLogLevel(LoggingSystem system, Environment environment, String name,
 			String level) {
 		try {
-			if (name.equalsIgnoreCase("root")) {
+			if (name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME)) {
 				name = null;
 			}
 			level = environment.resolvePlaceholders(level);

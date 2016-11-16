@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Collections;
+import java.util.EnumSet;
 
 import org.junit.After;
 import org.junit.Before;
@@ -80,18 +81,23 @@ public class LoggersMvcEndpointTests {
 				.alwaysDo(MockMvcResultHandlers.print()).build();
 	}
 
+	@Before
 	@After
-	public void reset() {
+	public void resetMocks() {
 		Mockito.reset(this.loggingSystem);
+		given(this.loggingSystem.getSupportedLogLevels())
+				.willReturn(EnumSet.allOf(LogLevel.class));
 	}
 
 	@Test
 	public void getLoggerShouldReturnAllLoggerConfigurations() throws Exception {
 		given(this.loggingSystem.getLoggerConfigurations()).willReturn(Collections
 				.singletonList(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG)));
+		String expected = "{\"levels\":[\"OFF\",\"FATAL\",\"ERROR\",\"WARN\",\"INFO\",\"DEBUG\",\"TRACE\"],"
+				+ "\"loggers\":{\"ROOT\":{\"configuredLevel\":null,\"effectiveLevel\":\"DEBUG\"}}}";
+		System.out.println(expected);
 		this.mvc.perform(get("/loggers")).andExpect(status().isOk())
-				.andExpect(content().string(equalTo("{\"ROOT\":{\"configuredLevel\":"
-						+ "null,\"effectiveLevel\":\"DEBUG\"}}")));
+				.andExpect(content().json(expected));
 	}
 
 	@Test

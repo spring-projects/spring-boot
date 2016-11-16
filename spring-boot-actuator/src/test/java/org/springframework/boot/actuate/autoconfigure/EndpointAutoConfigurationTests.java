@@ -130,7 +130,9 @@ public class EndpointAutoConfigurationTests {
 	public void loggersEndpointHasLoggers() throws Exception {
 		load(CustomLoggingConfig.class, EndpointAutoConfiguration.class);
 		LoggersEndpoint endpoint = this.context.getBean(LoggersEndpoint.class);
-		Map<String, LoggerLevels> loggers = endpoint.invoke();
+		Map<String, Object> result = endpoint.invoke();
+		Map<String, LoggerLevels> loggers = (Map<String, LoggerLevels>) result
+				.get("loggers");
 		assertThat(loggers.size()).isGreaterThan(0);
 	}
 

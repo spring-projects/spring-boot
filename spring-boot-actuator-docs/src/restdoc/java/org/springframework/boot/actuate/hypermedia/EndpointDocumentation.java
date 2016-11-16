@@ -58,6 +58,7 @@ import org.springframework.util.StringUtils;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -106,6 +107,23 @@ public class EndpointDocumentation {
 						.header(HttpHeaders.RANGE, "bytes=0-1024"))
 				.andExpect(status().isPartialContent())
 				.andDo(document("partial-logfile"));
+	}
+
+	@Test
+	public void singleLogger() throws Exception {
+		this.mockMvc
+				.perform(get("/loggers/org.springframework.boot")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andDo(document("single-logger"));
+	}
+
+	@Test
+	public void setLogger() throws Exception {
+		this.mockMvc
+				.perform(post("/loggers/org.springframework.boot")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("{\"configuredLevel\": \"DEBUG\"}"))
+				.andExpect(status().isOk()).andDo(document("set-logger"));
 	}
 
 	@Test

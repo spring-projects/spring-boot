@@ -22,6 +22,7 @@ import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
@@ -40,7 +41,6 @@ import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
-import org.springframework.boot.logging.LoggerConfigurationComparator;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.Slf4JLoggingSystem;
@@ -57,9 +57,6 @@ import org.springframework.util.StringUtils;
  * @author Ben Hale
  */
 public class LogbackLoggingSystem extends Slf4JLoggingSystem {
-
-	private static final LoggerConfigurationComparator COMPARATOR = new LoggerConfigurationComparator(
-			Logger.ROOT_LOGGER_NAME);
 
 	private static final String CONFIGURATION_FILE_PROPERTY = "logback.configurationFile";
 
@@ -218,7 +215,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		for (ch.qos.logback.classic.Logger logger : getLoggerContext().getLoggerList()) {
 			result.add(getLoggerConfiguration(logger));
 		}
-		Collections.sort(result, COMPARATOR);
+		Collections.sort(result, CONFIGURATION_COMPARATOR);
 		return result;
 	}
 
@@ -235,7 +232,16 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		LogLevel level = LEVELS.convertNativeToSystem(logger.getLevel());
 		LogLevel effectiveLevel = LEVELS
 				.convertNativeToSystem(logger.getEffectiveLevel());
-		return new LoggerConfiguration(logger.getName(), level, effectiveLevel);
+		String name = logger.getName();
+		if (!StringUtils.hasLength(name) || Logger.ROOT_LOGGER_NAME.equals(name)) {
+			name = ROOT_LOGGER_NAME;
+		}
+		return new LoggerConfiguration(name, level, effectiveLevel);
+	}
+
+	@Override
+	public Set<LogLevel> getSupportedLogLevels() {
+		return LEVELS.getSupported();
 	}
 
 	@Override
@@ -253,7 +259,9 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	private ch.qos.logback.classic.Logger getLogger(String name) {
 		LoggerContext factory = getLoggerContext();
-		name = (StringUtils.isEmpty(name) ? Logger.ROOT_LOGGER_NAME : name);
+		if (StringUtils.isEmpty(name) || ROOT_LOGGER_NAME.equals(name)) {
+			name = Logger.ROOT_LOGGER_NAME;
+		}
 		return factory.getLogger(name);
 
 	}
