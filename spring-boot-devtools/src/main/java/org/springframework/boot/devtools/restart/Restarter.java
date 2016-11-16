@@ -52,7 +52,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -316,11 +315,9 @@ public class Restarter {
 		this.logger.debug("Stopping application");
 		this.stopLock.lock();
 		try {
-			if (!CollectionUtils.isEmpty(this.rootContexts)) {
-				for (ConfigurableApplicationContext rootContext : this.rootContexts) {
-					rootContext.close();
-				}
-				this.rootContexts.clear();
+			for (ConfigurableApplicationContext context : this.rootContexts) {
+				context.close();
+				this.rootContexts.remove(context);
 			}
 			cleanupCaches();
 			if (this.forceReferenceCleanup) {
