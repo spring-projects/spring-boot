@@ -3883,7 +3883,7 @@ abstraction expects. No further customization is applied on it.
 EhCache 2.x is used if a file named `ehcache.xml` can be found at the root of the
 classpath. If EhCache 2.x, the `EhCacheCacheManager` provided by the
 `spring-boot-starter-cache` '`Starter`' and such file is present it is used to bootstrap
-the cache manager. An alternate configuration file can be provide a well using:
+the cache manager. An alternate configuration file can be provided as well using:
 
 [source,properties,indent=0]
 ----

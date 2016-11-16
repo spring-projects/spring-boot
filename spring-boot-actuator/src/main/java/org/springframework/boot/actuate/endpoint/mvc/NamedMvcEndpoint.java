@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 /**
- * A {@link MvcEndpoint} that also includes a logical name. Unlike {@link #getPath()
+ * An {@link MvcEndpoint} that also includes a logical name. Unlike {@link #getPath()
  * endpoints paths}, it should not be possible for a user to change the endpoint name.
  * Names provide a consistent way to reference an endpoint, for example they may be used
  * as the {@literal 'rel'} attribute in a HAL response.
