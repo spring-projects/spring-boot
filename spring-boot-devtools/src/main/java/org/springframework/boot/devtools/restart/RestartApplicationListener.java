@@ -45,15 +45,14 @@ public class RestartApplicationListener
 			onApplicationStartingEvent((ApplicationStartingEvent) event);
 		}
 		if (event instanceof ApplicationPreparedEvent) {
-			Restarter.getInstance()
-					.prepare(((ApplicationPreparedEvent) event).getApplicationContext());
+			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
 		}
 		if (event instanceof ApplicationReadyEvent
 				|| event instanceof ApplicationFailedEvent) {
 			Restarter.getInstance().finish();
-			if (event instanceof ApplicationFailedEvent) {
-				Restarter.getInstance().prepare(null);
-			}
+		}
+		if (event instanceof ApplicationFailedEvent) {
+			onApplicationFailedEvent((ApplicationFailedEvent) event);
 		}
 	}
 
@@ -70,6 +69,14 @@ public class RestartApplicationListener
 		else {
 			Restarter.disable();
 		}
+	}
+
+	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
+		Restarter.getInstance().prepare(event.getApplicationContext());
+	}
+
+	private void onApplicationFailedEvent(ApplicationFailedEvent event) {
+		Restarter.getInstance().remove(event.getApplicationContext());
 	}
 
 	@Override
