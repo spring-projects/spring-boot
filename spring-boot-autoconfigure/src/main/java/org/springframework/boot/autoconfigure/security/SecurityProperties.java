@@ -175,15 +175,17 @@ public class SecurityProperties implements SecurityPrerequisite {
 		}
 
 		public enum ContentSecurityPolicyMode {
+
 			/**
-			 * Use the {@code Content-Security-Policy} header.
+			 * Use the 'Content-Security-Policy' header.
 			 */
 			DEFAULT,
 
 			/**
-			 * Use the {@code Content-Security-Policy-Report-Only} header.
+			 * Use the 'Content-Security-Policy-Report-Only' header.
 			 */
 			REPORT_ONLY
+
 		}
 
 		/**
@@ -212,7 +214,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 		private String contentSecurityPolicy;
 
 		/**
-		 * Whether to use the "Content-Security-Policy" or "Content-Security-Policy-Report-Only" header.
+		 * Security policy mode.
 		 */
 		private ContentSecurityPolicyMode contentSecurityPolicyMode = ContentSecurityPolicyMode.DEFAULT;
 
@@ -265,7 +267,8 @@ public class SecurityProperties implements SecurityPrerequisite {
 			return this.contentSecurityPolicyMode;
 		}
 
-		public void setContentSecurityPolicyMode(ContentSecurityPolicyMode contentSecurityPolicyMode) {
+		public void setContentSecurityPolicyMode(
+				ContentSecurityPolicyMode contentSecurityPolicyMode) {
 			this.contentSecurityPolicyMode = contentSecurityPolicyMode;
 		}
 

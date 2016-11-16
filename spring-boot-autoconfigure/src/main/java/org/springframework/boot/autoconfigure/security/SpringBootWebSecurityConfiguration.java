@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers;
+import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers.ContentSecurityPolicyMode;
 import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -109,12 +110,13 @@ public class SpringBootWebSecurityConfiguration {
 			configurer.contentTypeOptions().disable();
 		}
 		if (StringUtils.hasText(headers.getContentSecurityPolicy())) {
-			if (headers.getContentSecurityPolicyMode() == Headers.ContentSecurityPolicyMode.DEFAULT) {
-				configurer.contentSecurityPolicy(headers.getContentSecurityPolicy());
+			String policyDirectives = headers.getContentSecurityPolicy();
+			ContentSecurityPolicyMode mode = headers.getContentSecurityPolicyMode();
+			if (mode == ContentSecurityPolicyMode.DEFAULT) {
+				configurer.contentSecurityPolicy(policyDirectives);
 			}
 			else {
-				assert headers.getContentSecurityPolicyMode() == Headers.ContentSecurityPolicyMode.REPORT_ONLY;
-				configurer.contentSecurityPolicy(headers.getContentSecurityPolicy()).reportOnly();
+				configurer.contentSecurityPolicy(policyDirectives).reportOnly();
 			}
 		}
 		if (!headers.isXss()) {

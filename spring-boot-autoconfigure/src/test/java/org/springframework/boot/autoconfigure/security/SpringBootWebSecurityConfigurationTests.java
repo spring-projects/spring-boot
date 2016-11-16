@@ -214,7 +214,8 @@ public class SpringBootWebSecurityConfigurationTests {
 						is(notNullValue())))
 				.andExpect(MockMvcResultMatchers.header().string("X-Frame-Options",
 						is(notNullValue())))
-				.andExpect(MockMvcResultMatchers.header().doesNotExist("Content-Security-Policy"));
+				.andExpect(MockMvcResultMatchers.header()
+						.doesNotExist("Content-Security-Policy"));
 	}
 
 	@Test
@@ -250,9 +251,10 @@ public class SpringBootWebSecurityConfigurationTests {
 						.getBean("springSecurityFilterChain", Filter.class))
 				.build();
 		mockMvc.perform(MockMvcRequestBuilders.get("/"))
-				.andExpect(MockMvcResultMatchers.header().string("Content-Security-Policy",
-						is("default-src 'self';")))
-				.andExpect(MockMvcResultMatchers.header().doesNotExist("Content-Security-Policy-Report-Only"));
+				.andExpect(MockMvcResultMatchers.header()
+						.string("Content-Security-Policy", is("default-src 'self';")))
+				.andExpect(MockMvcResultMatchers.header()
+						.doesNotExist("Content-Security-Policy-Report-Only"));
 	}
 
 	@Test
@@ -266,9 +268,10 @@ public class SpringBootWebSecurityConfigurationTests {
 						.getBean("springSecurityFilterChain", Filter.class))
 				.build();
 		mockMvc.perform(MockMvcRequestBuilders.get("/"))
-				.andExpect(MockMvcResultMatchers.header().string("Content-Security-Policy-Report-Only",
-						is("default-src 'self';")))
-				.andExpect(MockMvcResultMatchers.header().doesNotExist("Content-Security-Policy"));
+				.andExpect(MockMvcResultMatchers.header().string(
+						"Content-Security-Policy-Report-Only", is("default-src 'self';")))
+				.andExpect(MockMvcResultMatchers.header()
+						.doesNotExist("Content-Security-Policy"));
 	}
 
 	@Configuration
