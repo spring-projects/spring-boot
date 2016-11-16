@@ -52,7 +52,7 @@ public class RunProcess {
 
 	/**
 	 * Creates new {@link RunProcess} instance for the specified command.
-	 * @param command the program to execute and it's arguments
+	 * @param command the program to execute and its arguments
 	 */
 	public RunProcess(String... command) {
 		this(null, command);
@@ -63,7 +63,7 @@ public class RunProcess {
 	 * command.
 	 * @param workingDirectory the working directory of the child process or {@code null}
 	 * to run in the working directory of the current Java process
-	 * @param command the program to execute and it's arguments
+	 * @param command the program to execute and its arguments
 	 */
 	public RunProcess(File workingDirectory, String... command) {
 		this.workingDirectory = workingDirectory;

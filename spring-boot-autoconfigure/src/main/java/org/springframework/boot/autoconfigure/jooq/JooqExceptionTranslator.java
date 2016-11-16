@@ -30,7 +30,7 @@ import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
 
 /**
- * Transforms {@link java.sql.SQLException} into a Spring-specific @{link
+ * Transforms {@link java.sql.SQLException} into a Spring-specific {@link
  * DataAccessException}.
  *
  * @author Lukas Eder

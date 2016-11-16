@@ -769,7 +769,7 @@ dependencies out-of-the-box so you may want to have a look to the
 {propdeps-plugin}[`propdeps-plugin`] in the meantime.
 
 TIP: repackaged archives do not contain devtools by default. If you want to use
-<<using-boot-devtools-remote,certain remote devtools feature>>, you'll need to enable the
+<<using-boot-devtools-remote,certain remote devtools feature>>, you'll need to disable the
 `excludeDevtools` build property to include it. The property is supported with both the
 Maven and Gradle plugins.
 
