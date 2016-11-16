@@ -108,6 +108,10 @@ authenticated).
 |Displays arbitrary application info.
 |false
 
+|`loggers`
+|Shows and modifies the configuration of loggers in the application.
+|true
+
 |`liquibase`
 |Shows any Liquibase database migrations that have been applied.
 |true
@@ -942,6 +946,39 @@ registered with the shell.
 
 For more information please refer to the http://www.crashub.org/[CRaSH reference
 documentation].
+
+
+
+[[production-ready-loggers]]
+== Loggers
+Spring Boot Actuator includes the ability to view and configure the log levels of your
+application at runtime.  You can view either the entire list or an individual logger's
+configuration which is made up of both the explictily configured logging level as well as
+the effective logging level given to it by the logging framework.  These levels can be:
+
+* `TRACE`
+* `DEBUG`
+* `INFO`
+* `WARN`
+* `ERROR`
+* `FATAL`
+* `OFF`
+* `null`
+
+with `null` indicating that there is no explict configuration.
+
+
+
+[[production-ready-logger-configuration]]
+=== Configure a Logger
+In order to configure a given logger, you `POST` a partial entity to the resource's URI:
+
+[source,json,indent=0]
+----
+	{
+		"configuredLevel": "DEBUG"
+	}
+----
 
 
 
