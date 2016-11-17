@@ -49,6 +49,7 @@ import org.springframework.boot.devtools.restart.classloader.RestartClassLoader;
 import org.springframework.boot.logging.DeferredLog;
 import org.springframework.cglib.core.ClassNameReader;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
@@ -418,6 +419,10 @@ public class Restarter {
 	void prepare(ConfigurableApplicationContext applicationContext) {
 		if (applicationContext != null && applicationContext.getParent() != null) {
 			return;
+		}
+		if (applicationContext instanceof GenericApplicationContext) {
+			((GenericApplicationContext) applicationContext).setResourceLoader(
+					new ClassLoaderFilesResourcePatternResolver(this.classLoaderFiles));
 		}
 		this.rootContexts.add(applicationContext);
 	}

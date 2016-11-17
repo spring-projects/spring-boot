@@ -28,11 +28,11 @@ import java.net.URLStreamHandler;
  *
  * @author Phillip Webb
  */
-class ClassLoaderFileURLStreamHandler extends URLStreamHandler {
+public class ClassLoaderFileURLStreamHandler extends URLStreamHandler {
 
 	private ClassLoaderFile file;
 
-	ClassLoaderFileURLStreamHandler(ClassLoaderFile file) {
+	public ClassLoaderFileURLStreamHandler(ClassLoaderFile file) {
 		this.file = file;
 	}
 
