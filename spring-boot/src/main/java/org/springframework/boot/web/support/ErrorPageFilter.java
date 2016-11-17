@@ -185,7 +185,14 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		request.getRequestDispatcher(path).forward(request, response);
 	}
 
-	private String getDescription(HttpServletRequest request) {
+	/**
+	 * Return the description for the given request. By default this method will return a
+	 * description based on the request {@code servletPath} and {@code pathInfo}.
+	 * @param request the source request
+	 * @return the description
+	 * @since 1.5.0
+	 */
+	protected String getDescription(HttpServletRequest request) {
 		return "[" + request.getServletPath()
 				+ (request.getPathInfo() == null ? "" : request.getPathInfo()) + "]";
 	}

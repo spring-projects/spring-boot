@@ -213,7 +213,9 @@ public class SpringBootWebSecurityConfigurationTests {
 				.andExpect(MockMvcResultMatchers.header().string("Cache-Control",
 						is(notNullValue())))
 				.andExpect(MockMvcResultMatchers.header().string("X-Frame-Options",
-						is(notNullValue())));
+						is(notNullValue())))
+				.andExpect(MockMvcResultMatchers.header()
+						.doesNotExist("Content-Security-Policy"));
 	}
 
 	@Test
@@ -237,6 +239,39 @@ public class SpringBootWebSecurityConfigurationTests {
 				.andExpect(MockMvcResultMatchers.header().doesNotExist("Cache-Control"))
 				.andExpect(
 						MockMvcResultMatchers.header().doesNotExist("X-Frame-Options"));
+	}
+
+	@Test
+	public void contentSecurityPolicyConfiguration() throws Exception {
+		this.context = SpringApplication.run(VanillaWebConfiguration.class,
+				"--security.headers.content-security-policy=default-src 'self';");
+		MockMvc mockMvc = MockMvcBuilders
+				.webAppContextSetup((WebApplicationContext) this.context)
+				.addFilters((FilterChainProxy) this.context
+						.getBean("springSecurityFilterChain", Filter.class))
+				.build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/"))
+				.andExpect(MockMvcResultMatchers.header()
+						.string("Content-Security-Policy", is("default-src 'self';")))
+				.andExpect(MockMvcResultMatchers.header()
+						.doesNotExist("Content-Security-Policy-Report-Only"));
+	}
+
+	@Test
+	public void contentSecurityPolicyReportOnlyConfiguration() throws Exception {
+		this.context = SpringApplication.run(VanillaWebConfiguration.class,
+				"--security.headers.content-security-policy=default-src 'self';",
+				"--security.headers.content-security-policy-mode=report-only");
+		MockMvc mockMvc = MockMvcBuilders
+				.webAppContextSetup((WebApplicationContext) this.context)
+				.addFilters((FilterChainProxy) this.context
+						.getBean("springSecurityFilterChain", Filter.class))
+				.build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/"))
+				.andExpect(MockMvcResultMatchers.header().string(
+						"Content-Security-Policy-Report-Only", is("default-src 'self';")))
+				.andExpect(MockMvcResultMatchers.header()
+						.doesNotExist("Content-Security-Policy"));
 	}
 
 	@Configuration

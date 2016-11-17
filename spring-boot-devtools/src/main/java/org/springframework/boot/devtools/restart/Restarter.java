@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.Lock;
@@ -116,7 +117,7 @@ public class Restarter {
 
 	private boolean finished = false;
 
-	private volatile ConfigurableApplicationContext rootContext;
+	private final List<ConfigurableApplicationContext> rootContexts = new CopyOnWriteArrayList<ConfigurableApplicationContext>();
 
 	/**
 	 * Internal constructor to create a new {@link Restarter} instance.
@@ -314,9 +315,9 @@ public class Restarter {
 		this.logger.debug("Stopping application");
 		this.stopLock.lock();
 		try {
-			if (this.rootContext != null) {
-				this.rootContext.close();
-				this.rootContext = null;
+			for (ConfigurableApplicationContext context : this.rootContexts) {
+				context.close();
+				this.rootContexts.remove(context);
 			}
 			cleanupCaches();
 			if (this.forceReferenceCleanup) {
@@ -418,7 +419,13 @@ public class Restarter {
 		if (applicationContext != null && applicationContext.getParent() != null) {
 			return;
 		}
-		this.rootContext = applicationContext;
+		this.rootContexts.add(applicationContext);
+	}
+
+	void remove(ConfigurableApplicationContext applicationContext) {
+		if (applicationContext != null) {
+			this.rootContexts.remove(applicationContext);
+		}
 	}
 
 	private LeakSafeThread getLeakSafeThread() {

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.cloud.CloudPlatform;
@@ -32,6 +33,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConditionalOnCloudPlatformTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+	@After
+	public void cleanUp() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
 
 	@Test
 	public void outcomeWhenCloudfoundryPlatformNotPresentShouldNotMatch()
