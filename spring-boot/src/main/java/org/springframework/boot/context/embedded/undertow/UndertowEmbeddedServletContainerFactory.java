@@ -129,6 +129,7 @@ public class UndertowEmbeddedServletContainerFactory
 	private boolean accessLogRotate = true;
 
 	private boolean useForwardHeaders;
+	private long gracefulShutdownTimeout = 30000;
 
 	/**
 	 * Create a new {@link UndertowEmbeddedServletContainerFactory} instance.
@@ -529,7 +530,7 @@ public class UndertowEmbeddedServletContainerFactory
 	protected UndertowEmbeddedServletContainer getUndertowEmbeddedServletContainer(
 			Builder builder, DeploymentManager manager, int port) {
 		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				isUseForwardHeaders(), port >= 0, getCompression(), getServerHeader());
+				isUseForwardHeaders(), port >= 0, getCompression(), getServerHeader(), getGracefulShutdownTimeout());
 	}
 
 	@Override
@@ -596,11 +597,19 @@ public class UndertowEmbeddedServletContainerFactory
 
 	/**
 	 * Set if x-forward-* headers should be processed.
-	 * @param useForwardHeaders if x-forward headers should be used
+		 * @param useForwardHeaders if x-forward headers should be used
 	 * @since 1.3.0
 	 */
 	public void setUseForwardHeaders(boolean useForwardHeaders) {
 		this.useForwardHeaders = useForwardHeaders;
+	}
+
+	public void setGracefulShutdownTimeout(long gracefulShutdownTimeout) {
+		this.gracefulShutdownTimeout = gracefulShutdownTimeout;
+	}
+
+	public Long getGracefulShutdownTimeout() {
+		return this.gracefulShutdownTimeout;
 	}
 
 	/**
