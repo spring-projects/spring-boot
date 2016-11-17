@@ -139,7 +139,7 @@ public class DevToolsIntegrationTests {
 
 	private int awaitServerPort() throws Exception {
 		long end = System.currentTimeMillis() + 20000;
-		while (!this.serverPortFile.exists()) {
+		while (this.serverPortFile.length() == 0) {
 			if (System.currentTimeMillis() > end) {
 				throw new IllegalStateException(
 						"server.port file was not written within 20 seconds");
