@@ -43,6 +43,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :spring-amqp-javadoc: http://docs.spring.io/spring-amqp/docs/current/api/org/springframework/amqp
 :spring-data-javadoc: http://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa
 :spring-data-commons-javadoc: http://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data
+:spring-data-geode-reference: http://docs.spring.io/spring-data-gemfire/docs/current/reference/html
 :spring-data-mongo-javadoc: http://docs.spring.io/spring-data/mongodb/docs/current/api/org/springframework/data/mongodb
 :spring-data-rest-javadoc: http://docs.spring.io/spring-data/rest/docs/current/api/org/springframework/data/rest
 :gradle-userguide: http://www.gradle.org/docs/current/userguide
@@ -51,6 +52,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :code-examples: ../java/org/springframework/boot
 :gradle-user-guide: https://docs.gradle.org/2.14.1/userguide
 :gradle-dsl: https://docs.gradle.org/2.14.1/dsl
+:apache-geode-user-docs: http://geode.docs.pivotal.io/
 // ======================================================================================
 
 include::documentation-overview.adoc[]

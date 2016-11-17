@@ -22,6 +22,7 @@ package org.springframework.boot.autoconfigure.cache;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author John Blum
  * @since 1.3.0
  */
 public enum CacheType {
@@ -67,6 +68,11 @@ public enum CacheType {
 	CAFFEINE,
 
 	/**
+	 * Apache Geode backed caching.
+	 */
+	GEODE,
+
+	/**
 	 * Simple in-memory caching.
 	 */
 	SIMPLE,
@@ -74,6 +80,6 @@ public enum CacheType {
 	/**
 	 * No caching.
 	 */
-	NONE;
+	NONE
 
 }

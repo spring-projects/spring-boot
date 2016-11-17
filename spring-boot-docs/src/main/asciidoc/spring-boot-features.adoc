@@ -3737,7 +3737,7 @@ will replace the default.
 [[boot-features-caching]]
 == Caching
 The Spring Framework provides support for transparently adding caching to an application.
-At its core, the abstraction applies caching to methods, reducing thus the number of
+At its core, the abstraction applies caching to methods, thus reducing the number of
 executions based on the information available in the cache. The caching logic is applied
 transparently, without any interference to the invoker.
 
@@ -3765,7 +3765,7 @@ relevant annotation to its method:
 ----
 
 NOTE: You can either use the standard JSR-107 (JCache) annotations or Spring's own
-caching annotations transparently. We strongly advise you however to not mix and match
+caching annotations transparently. However, we strongly advise you to not mix and match
 them.
 
 TIP: It is also possible to {spring-reference}/#cache-annotations-put[update] or
@@ -3801,6 +3801,7 @@ providers (in this order):
 * <<boot-features-caching-provider-couchbase,Couchbase>>
 * <<boot-features-caching-provider-redis,Redis>>
 * <<boot-features-caching-provider-caffeine,Caffeine>>
+* <<boot-features-caching-provider-geode,Geode>>
 * <<boot-features-caching-provider-simple,Simple>>
 
 TIP: It is also possible to _force_ the cache provider to use via the `spring.cache.type`
@@ -4021,6 +4022,81 @@ going to be associated to _all_ caches managed by the cache manager, it must be 
 as `CacheLoader<Object, Object>`. Any other generic type will be ignored by the
 auto-configuration.
 
+
+[[boot-features-caching-provider-geode]]
+==== Geode
+When _Apache Geode_ is present and a Geode `Cache` or `ClientCache` bean has been
+properly configured, Spring Boot will auto-configure the `GemfireCacheManager`.
+
+By default, any configured Geode `Region` will function as a Spring cache. The only
+requirement is that the name of the cache identified in a caching annotation match
+the name of a configured Geode `Region`.  However, it is possible to identify specific
+`Regions` by name using the `spring.cache.cache-names` property that will purposefully
+function as Spring caches on startup.
+
+NOTE: Unlike some other stores, specifying the `spring.cache.cache-names` does not
+create the Geode `Region` in which application data will be cached.  You must explicitly
+configure and create the `Region` yourself using either Geode's native configuration
+meta-data or _Spring Data Geode_.
+
+To enable caching in your application with Geode as the provider, it is as simple as
+adding the _Spring Data Geode_ dependency to your application classpath and creating
+either a Geode peer `Cache` bean or `ClientCache` bean along with the `Regions` that
+will function as Spring caches in your application.
+
+[source,java,indent=0]
+----
+@Configuration
+public class PeerCacheGeodeConfiguration {
+
+  @Bean
+  public CacheFactoryBean gemfireCache() {
+    CacheFactoryBean gemfireCache = new CacheFactoryBean();
+    gemfireCache.setClose(true);
+    return gemfireCache;
+  }
+
+  @Bean
+  public PartitionedRegionFactoryBean computePiDecimal() {
+    PartitionedRegionFactoryBean regionFactory = new PartitionedRegionFactoryBean();
+    regionFactory.setCache(gemfireCache());
+    regionFactory.setClose(false);
+    return regionFactory;
+  }
+}
+----
+
+Or, if you are using Geode's client/server topology...
+
+[source,java,indent=0]
+----
+@Configuration
+public class ClientCacheGeodeConfiguration {
+
+  @Bean
+  public ClientCacheFactoryBean gemfireCache() {
+    ClientCacheFactoryBean gemfireCache = new ClientCacheFactoryBean();
+    gemfireCache.setClose(true);
+    gemfireCache.setServers(new ConnectionEndpoint("host", 40404));
+    return gemfireCache;
+  }
+
+  @Bean
+  public ClientRegionFactoryBean computePiDecimal() {
+    ClientRegionFactoryBean regionFactory = new ClientRegionFactoryBean();
+    regionFactory.setCache(gemfireCache());
+    regionFactory.setClose(false);
+    regionFactory.setShortcut(ClientRegionShortcut.PROXY);
+    return regionFactory;
+  }
+}
+----
+
+Refer to _Spring Data Geode's_ {spring-data-geode-reference}[Reference Guide] on how to
+configure _Apache Geode_ caches and `Regions` as well as for additional options on
+{spring-data-geode-reference}/#apis:spring-cache-abstraction[configuring] _Apache Geode_
+as a caching provider.  To learn more about _Apache Geode_ refer to the
+{apache-geode-user-docs}[user documentation].
 
 
 [[boot-features-caching-provider-simple]]

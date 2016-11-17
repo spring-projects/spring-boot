@@ -10,6 +10,7 @@ abstraction is supported by many caching libraries, including:
 * `Couchbase`
 * `Redis`
 * `Caffeine`
+* `Geode`
 * Simple provider based on `ConcurrentHashMap`
 * Generic provider based on `org.springframework.Cache` bean definition(s)
 
@@ -63,6 +64,8 @@ used to configure the underlying `CacheManager`. Note that EhCache 3 uses a diff
 format and doesn't default to `ehcache.xml` anymore. Check
 http://www.ehcache.org/documentation/3.0/xml.html[the documentation] for more details.
 
+Run sample cache application using EhCache with `$mvn -P ehcache spring-boot:run`
+
 
 
 === Hazelcast
@@ -70,6 +73,8 @@ Both `com.hazelcast:hazelcast` and `com.hazelcast:hazelcast-spring` should be ad
 the project to enable support for Hazelcast.  Since there is a default `hazelcast.xml`
 configuration file at the root of the classpath, it is used to automatically configure
 the underlying `HazelcastInstance`.
+
+Run sample cache application using Hazelcast with `$mvn -P hazelcast spring-boot:run`
 
 
 
@@ -80,11 +85,15 @@ so if you don't specify anything it will bootstrap on a hardcoded default. You c
 the `spring.cache.infinispan.config` property to use the provided `infinispan.xml`
 configuration instead.
 
+Run sample cache application using Infinispan with `$mvn -P infinispan spring-boot:run`
+
 
 
 === Couchbase
 Add the `java-client` and `couchbase-spring-cache` dependencies and make sure that you
 have setup at least a `spring.couchbase.bootstrap-hosts` property.
+
+Start a Couchbase server, then run the sample cache application using Couchbase with `$mvn -P couchbase spring-boot:run`
 
 
 
@@ -92,9 +101,23 @@ have setup at least a `spring.couchbase.bootstrap-hosts` property.
 Add the `spring-boot-starter-data-redis` and make sure it is configured properly (by default,
 a redis instance with the default settings is expected on your local box).
 
+Start a Redis server, then run the sample cache application using Redis with `$mvn -P redis spring-boot:run`
+
 
 
 === Caffeine
 Simply add the `com.github.ben-manes.caffeine:caffeine` dependency to enable support
 for Caffeine. You can customize how caches are created in different ways, see
 `application.properties` for an example and the documentation for more details.
+
+Run sample cache application using Caffeine with `$mvn -P caffeine spring-boot:run`
+
+
+
+=== Geode
+Add the `spring-boot-starter-data-gemfire` dependency and make sure your Geode instance
+is configured properly. This involves creating an instance of either a Geode peer `Cache`
+or `ClientCache` depending on your topology preference and additionally creating
+and configuring Regions that will serve as the caches for your application.
+
+Run sample cache application using Geode with `$mvn -P geode spring-boot:run`

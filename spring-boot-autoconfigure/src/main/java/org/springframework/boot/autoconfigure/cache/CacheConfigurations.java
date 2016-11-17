@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author John Blum
  */
 final class CacheConfigurations {
 
@@ -42,6 +43,7 @@ final class CacheConfigurations {
 		mappings.put(CacheType.COUCHBASE, CouchbaseCacheConfiguration.class);
 		mappings.put(CacheType.REDIS, RedisCacheConfiguration.class);
 		mappings.put(CacheType.CAFFEINE, CaffeineCacheConfiguration.class);
+		mappings.put(CacheType.GEODE, GeodeCacheConfiguration.class);
 		mappings.put(CacheType.SIMPLE, SimpleCacheConfiguration.class);
 		mappings.put(CacheType.NONE, NoOpCacheConfiguration.class);
 		MAPPINGS = Collections.unmodifiableMap(mappings);
