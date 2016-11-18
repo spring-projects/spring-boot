@@ -146,8 +146,8 @@ public class DevToolsIntegrationTests {
 			}
 			Thread.sleep(100);
 		}
-		int port = Integer
-				.valueOf(FileCopyUtils.copyToString(new FileReader(this.serverPortFile)));
+		FileReader portReader = new FileReader(this.serverPortFile);
+		int port = Integer.valueOf(FileCopyUtils.copyToString(portReader));
 		this.serverPortFile.delete();
 		return port;
 	}
@@ -187,5 +187,7 @@ public class DevToolsIntegrationTests {
 			}
 			builder.make().saveIn(this.classesDirectory);
 		}
+
 	}
+
 }
