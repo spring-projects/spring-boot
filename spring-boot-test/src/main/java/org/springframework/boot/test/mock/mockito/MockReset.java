@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.mockito.MockSettings;
 import org.mockito.Mockito;
-import org.mockito.internal.util.MockUtil;
 import org.mockito.listeners.InvocationListener;
 import org.mockito.listeners.MethodInvocationReport;
 import org.mockito.mock.MockCreationSettings;
@@ -105,9 +104,8 @@ public enum MockReset {
 	static MockReset get(Object mock) {
 		MockReset reset = MockReset.NONE;
 		if (ClassUtils.isPresent("org.mockito.internal.util.MockUtil", null)) {
-			MockUtil mockUtil = new MockUtil();
-			if (mockUtil.isMock(mock)) {
-				MockCreationSettings settings = mockUtil.getMockSettings(mock);
+			if (Mockito.mockingDetails(mock).isMock()) {
+				MockCreationSettings settings = SpringBootMockUtil.getMockSettings(mock);
 				List listeners = settings.getInvocationListeners();
 				for (Object listener : listeners) {
 					if (listener instanceof ResetInvocationListener) {

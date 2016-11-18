@@ -22,13 +22,13 @@ import org.junit.runner.RunWith;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link FilteredClassPathRunner}
+ * Tests for {@link ModifiedClassPathRunner} excluding entries from the class path.
  *
  * @author Andy Wilkinson
  */
-@RunWith(FilteredClassPathRunner.class)
+@RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("hibernate-validator-*.jar")
-public class FilteredClassPathRunnerTests {
+public class ModifiedClassPathRunnerExclusionsTests {
 
 	private static final String EXCLUDED_RESOURCE = "META-INF/services/"
 			+ "javax.validation.spi.ValidationProvider";

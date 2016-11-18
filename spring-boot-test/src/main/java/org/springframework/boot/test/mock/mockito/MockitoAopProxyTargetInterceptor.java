@@ -16,19 +16,14 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import org.aopalliance.aop.Advice;
 import org.aopalliance.intercept.Interceptor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.mockito.internal.InternalMockHandler;
 import org.mockito.internal.matchers.LocalizedMatcher;
 import org.mockito.internal.progress.ArgumentMatcherStorage;
-import org.mockito.internal.progress.MockingProgress;
-import org.mockito.internal.stubbing.InvocationContainer;
-import org.mockito.internal.util.MockUtil;
 import org.mockito.internal.verification.MockAwareVerificationMode;
 import org.mockito.verification.VerificationMode;
 
@@ -38,7 +33,6 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * AOP {@link Interceptor} that attempts to make AOP proxy beans work with Mockito. Works
@@ -58,7 +52,7 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 	MockitoAopProxyTargetInterceptor(Object source, Object target) throws Exception {
 		this.source = source;
 		this.target = target;
-		this.verification = new Verification(target);
+		this.verification = new Verification();
 	}
 
 	@Override
@@ -94,21 +88,10 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 
 		private final Object monitor = new Object();
 
-		private final MockingProgress progress;
-
-		Verification(Object target) {
-			MockUtil mockUtil = new MockUtil();
-			InternalMockHandler<?> handler = mockUtil.getMockHandler(target);
-			InvocationContainer container = handler.getInvocationContainer();
-			Field field = ReflectionUtils.findField(container.getClass(),
-					"mockingProgress");
-			ReflectionUtils.makeAccessible(field);
-			this.progress = (MockingProgress) ReflectionUtils.getField(field, container);
-		}
-
 		public boolean isVerifying() {
 			synchronized (this.monitor) {
-				VerificationMode mode = this.progress.pullVerificationMode();
+				VerificationMode mode = SpringBootMockUtil.mockingProgress()
+						.pullVerificationMode();
 				if (mode != null) {
 					resetVerificationStarted(mode);
 					return true;
@@ -119,7 +102,8 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 
 		public void replaceVerifyMock(Object source, Object target) {
 			synchronized (this.monitor) {
-				VerificationMode mode = this.progress.pullVerificationMode();
+				VerificationMode mode = SpringBootMockUtil.mockingProgress()
+						.pullVerificationMode();
 				if (mode != null) {
 					if (mode instanceof MockAwareVerificationMode) {
 						MockAwareVerificationMode mockAwareMode = (MockAwareVerificationMode) mode;
@@ -133,12 +117,11 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 		}
 
 		private void resetVerificationStarted(VerificationMode mode) {
-			ArgumentMatcherStorage storage = this.progress.getArgumentMatcherStorage();
+			ArgumentMatcherStorage storage = SpringBootMockUtil.mockingProgress()
+					.getArgumentMatcherStorage();
 			List<LocalizedMatcher> matchers = storage.pullLocalizedMatchers();
-			this.progress.verificationStarted(mode);
-			for (LocalizedMatcher matcher : matchers) {
-				storage.reportMatcher(matcher);
-			}
+			SpringBootMockUtil.mockingProgress().verificationStarted(mode);
+			SpringBootMockUtil.reportMatchers(storage, matchers);
 		}
 
 	}

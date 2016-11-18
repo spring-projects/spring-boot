@@ -28,6 +28,22 @@ import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
+import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.impl.DefaultServiceLocator;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.resolution.DependencyRequest;
+import org.eclipse.aether.resolution.DependencyResult;
+import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
+import org.eclipse.aether.spi.connector.transport.TransporterFactory;
+import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
@@ -38,16 +54,17 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 
 /**
- * A custom {@link BlockJUnit4ClassRunner} that runs tests using a filtered class path.
- * Entries are excluded from the class path using {@link ClassPathExclusions} on the test
- * class. A class loader is created with the customized class path and is used both to
- * load the test class and as the thread context class loader while the test is being run.
+ * A custom {@link BlockJUnit4ClassRunner} that runs tests using a modified class path.
+ * Entries are excluded from the class path using {@link ClassPathExclusions} and
+ * overridden using {@link ClassPathOverrides} on the test class. A class loader is
+ * created with the customized class path and is used both to load the test class and as
+ * the thread context class loader while the test is being run.
  *
  * @author Andy Wilkinson
  */
-public class FilteredClassPathRunner extends BlockJUnit4ClassRunner {
+public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 
-	public FilteredClassPathRunner(Class<?> testClass) throws InitializationError {
+	public ModifiedClassPathRunner(Class<?> testClass) throws InitializationError {
 		super(testClass);
 	}
 
@@ -64,7 +81,7 @@ public class FilteredClassPathRunner extends BlockJUnit4ClassRunner {
 
 	private URLClassLoader createTestClassLoader(Class<?> testClass) throws Exception {
 		URLClassLoader classLoader = (URLClassLoader) this.getClass().getClassLoader();
-		return new FilteredClassLoader(filterUrls(extractUrls(classLoader), testClass),
+		return new FilteredClassLoader(processUrls(extractUrls(classLoader), testClass),
 				classLoader.getParent(), classLoader);
 	}
 
@@ -104,15 +121,61 @@ public class FilteredClassPathRunner extends BlockJUnit4ClassRunner {
 		}
 	}
 
-	private URL[] filterUrls(URL[] urls, Class<?> testClass) throws Exception {
+	private URL[] processUrls(URL[] urls, Class<?> testClass) throws Exception {
 		ClassPathEntryFilter filter = new ClassPathEntryFilter(testClass);
-		List<URL> filteredUrls = new ArrayList<URL>();
+		List<URL> processedUrls = new ArrayList<URL>();
+		processedUrls.addAll(getAdditionalUrls(testClass));
 		for (URL url : urls) {
 			if (!filter.isExcluded(url)) {
-				filteredUrls.add(url);
+				processedUrls.add(url);
 			}
 		}
-		return filteredUrls.toArray(new URL[filteredUrls.size()]);
+		return processedUrls.toArray(new URL[processedUrls.size()]);
+	}
+
+	private List<URL> getAdditionalUrls(Class<?> testClass) throws Exception {
+		ClassPathOverrides overrides = AnnotationUtils.findAnnotation(testClass,
+				ClassPathOverrides.class);
+		if (overrides == null) {
+			return Collections.emptyList();
+		}
+		return resolveCoordinates(overrides.value());
+	}
+
+	private List<URL> resolveCoordinates(String[] coordinates) throws Exception {
+		DefaultServiceLocator serviceLocator = MavenRepositorySystemUtils
+				.newServiceLocator();
+		serviceLocator.addService(RepositoryConnectorFactory.class,
+				BasicRepositoryConnectorFactory.class);
+		serviceLocator.addService(TransporterFactory.class, HttpTransporterFactory.class);
+		RepositorySystem repositorySystem = serviceLocator
+				.getService(RepositorySystem.class);
+		DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
+		LocalRepository localRepository = new LocalRepository(
+				System.getProperty("user.home") + "/.m2/repository");
+		session.setLocalRepositoryManager(
+				repositorySystem.newLocalRepositoryManager(session, localRepository));
+		CollectRequest collectRequest = new CollectRequest(null,
+				Arrays.asList(new RemoteRepository.Builder("central", "default",
+						"http://central.maven.org/maven2").build()));
+
+		collectRequest.setDependencies(createDependencies(coordinates));
+		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
+		DependencyResult result = repositorySystem.resolveDependencies(session,
+				dependencyRequest);
+		List<URL> resolvedArtifacts = new ArrayList<URL>();
+		for (ArtifactResult artifact : result.getArtifactResults()) {
+			resolvedArtifacts.add(artifact.getArtifact().getFile().toURI().toURL());
+		}
+		return resolvedArtifacts;
+	}
+
+	private List<Dependency> createDependencies(String[] allCoordinates) {
+		List<Dependency> dependencies = new ArrayList<Dependency>();
+		for (String coordinates : allCoordinates) {
+			dependencies.add(new Dependency(new DefaultArtifact(coordinates), null));
+		}
+		return dependencies;
 	}
 
 	/**
