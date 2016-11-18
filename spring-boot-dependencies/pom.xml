@@ -126,6 +126,7 @@
 		<logback.version>1.1.7</logback.version>
 		<lombok.version>1.16.10</lombok.version>
 		<mariadb.version>1.4.6</mariadb.version>
+		<mssql-jdbc.version>6.1.0.jre8</mssql-jdbc.version>
 		<mockito.version>1.10.19</mockito.version>
 		<mongodb.version>3.2.2</mongodb.version>
 		<mysql.version>5.1.40</mysql.version>
@@ -732,6 +733,11 @@
 				<groupId>com.jayway.jsonpath</groupId>
 				<artifactId>json-path-assert</artifactId>
 				<version>${json-path.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.microsoft.sqlserver</groupId>
+				<artifactId>mssql-jdbc</artifactId>
+				<version>${mssql-jdbc.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.querydsl</groupId>

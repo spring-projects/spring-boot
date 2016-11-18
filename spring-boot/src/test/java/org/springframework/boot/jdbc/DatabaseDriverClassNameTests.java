@@ -42,9 +42,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DatabaseDriverClassNameTests {
 
 	private static final EnumSet<DatabaseDriver> excludedDrivers = EnumSet.of(
-			DatabaseDriver.UNKNOWN, DatabaseDriver.ORACLE, DatabaseDriver.SQLSERVER,
-			DatabaseDriver.DB2, DatabaseDriver.DB2_AS400, DatabaseDriver.INFORMIX,
-			DatabaseDriver.TERADATA);
+			DatabaseDriver.UNKNOWN, DatabaseDriver.ORACLE, DatabaseDriver.DB2,
+			DatabaseDriver.DB2_AS400, DatabaseDriver.INFORMIX, DatabaseDriver.TERADATA);
 
 	private final String className;
 
