@@ -36,7 +36,7 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Andy Wilkinson
  */
-class SpringBootMockUtil {
+final class SpringBootMockUtil {
 
 	private static final MockUtilAdapter adapter;
 
@@ -48,6 +48,10 @@ class SpringBootMockUtil {
 		else {
 			adapter = new Mockito1MockUtilAdapter();
 		}
+	}
+
+	private SpringBootMockUtil() {
+
 	}
 
 	static MockCreationSettings<?> getMockSettings(Object mock) {
