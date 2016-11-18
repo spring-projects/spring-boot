@@ -213,7 +213,8 @@ public class RepackageTask extends DefaultTask {
 				copy(file, outputFile);
 				file = outputFile;
 			}
-			Repackager repackager = new Repackager(file);
+			Repackager repackager = new Repackager(file,
+					this.extension.getLayoutFactory());
 			repackager.addMainClassTimeoutWarningListener(
 					new LoggingMainClassTimeoutWarningListener());
 			setMainClass(repackager);

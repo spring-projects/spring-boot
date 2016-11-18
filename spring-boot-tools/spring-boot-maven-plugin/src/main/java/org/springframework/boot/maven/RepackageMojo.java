@@ -40,6 +40,7 @@ import org.apache.maven.shared.artifact.filter.collection.ScopeFilter;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.boot.loader.tools.Layout;
+import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Repackager;
@@ -128,6 +129,15 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter
 	private LayoutType layout;
+
+	/**
+	 * The layout factory that will be used to create the executable archive if no
+	 * explicit layout is set. Alternative layouts implementations can be provided by 3rd
+	 * parties.
+	 * @since 1.5
+	 */
+	@Parameter
+	private LayoutFactory layoutFactory;
 
 	/**
 	 * A list of the libraries that must be unpacked from fat jars in order to run.
@@ -220,7 +230,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private Repackager getRepackager(File source) {
-		Repackager repackager = new Repackager(source);
+		Repackager repackager = new Repackager(source, this.layoutFactory);
 		repackager.addMainClassTimeoutWarningListener(
 				new LoggingMainClassTimeoutWarningListener());
 		repackager.setMainClass(this.mainClass);

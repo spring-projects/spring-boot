@@ -30,7 +30,10 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.tools.JarWriter.EntryTransformer;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.lang.UsesJava8;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Utility class that can be used to repackage an archive so that it can be executed using
@@ -66,12 +69,18 @@ public class Repackager {
 
 	private Layout layout;
 
+	private LayoutFactory layoutFactory;
+
 	public Repackager(File source) {
+		this(source, null);
+	}
+
+	public Repackager(File source, LayoutFactory layoutFactory) {
 		if (source == null || !source.exists() || !source.isFile()) {
 			throw new IllegalArgumentException("Source must refer to an existing file");
 		}
 		this.source = source.getAbsoluteFile();
-		this.layout = Layouts.forFile(source);
+		this.layoutFactory = layoutFactory;
 	}
 
 	/**
@@ -114,6 +123,15 @@ public class Repackager {
 	}
 
 	/**
+	 * Sets the layout factory for the jar. The factory can be used when no specific
+	 * layout is specific.
+	 * @param layoutFactory the layoutFactory to set
+	 */
+	public void setLayoutFactory(LayoutFactory layoutFactory) {
+		this.layoutFactory = layoutFactory;
+	}
+
+	/**
 	 * Repackage the source file so that it can be run using '{@literal java -jar}'.
 	 * @param libraries the libraries required to run the archive
 	 * @throws IOException if the file cannot be repackaged
@@ -150,6 +168,9 @@ public class Repackager {
 		if (libraries == null) {
 			throw new IllegalArgumentException("Libraries must not be null");
 		}
+		if (this.layout == null) {
+			this.layout = getLayoutFactory().getLayout(this.source);
+		}
 		if (alreadyRepackaged()) {
 			return;
 		}
@@ -175,6 +196,19 @@ public class Repackager {
 				deleteFile(workingSource);
 			}
 		}
+	}
+
+	private LayoutFactory getLayoutFactory() {
+		if (this.layoutFactory != null) {
+			return this.layoutFactory;
+		}
+		List<LayoutFactory> factories = SpringFactoriesLoader
+				.loadFactories(LayoutFactory.class, null);
+		if (factories.isEmpty()) {
+			return new DefaultLayoutFactory();
+		}
+		Assert.state(factories.size() == 1, "No unique LayoutFactory found");
+		return factories.get(0);
 	}
 
 	/**
@@ -219,21 +253,7 @@ public class Repackager {
 				}
 
 			});
-			writer.writeManifest(buildManifest(sourceJar));
-			Set<String> seen = new HashSet<String>();
-			writeNestedLibraries(unpackLibraries, seen, writer);
-			if (this.layout instanceof RepackagingLayout) {
-				writer.writeEntries(sourceJar,
-						new RenamingEntryTransformer(((RepackagingLayout) this.layout)
-								.getRepackagedClassesLocation()));
-			}
-			else {
-				writer.writeEntries(sourceJar);
-			}
-			writeNestedLibraries(standardLibraries, seen, writer);
-			if (this.layout.isExecutable()) {
-				writer.writeLoaderClasses();
-			}
+			repackage(sourceJar, writer, unpackLibraries, standardLibraries);
 		}
 		finally {
 			try {
@@ -243,6 +263,23 @@ public class Repackager {
 				// Ignore
 			}
 		}
+	}
+
+	private void repackage(JarFile sourceJar, JarWriter writer,
+			final List<Library> unpackLibraries, final List<Library> standardLibraries)
+					throws IOException {
+		writer.writeManifest(buildManifest(sourceJar));
+		Set<String> seen = new HashSet<String>();
+		writeNestedLibraries(unpackLibraries, seen, writer);
+		if (this.layout instanceof RepackagingLayout) {
+			writer.writeEntries(sourceJar, new RenamingEntryTransformer(
+					((RepackagingLayout) this.layout).getRepackagedClassesLocation()));
+		}
+		else {
+			writer.writeEntries(sourceJar);
+		}
+		writeNestedLibraries(standardLibraries, seen, writer);
+		writeLoaderClasses(writer);
 	}
 
 	private void writeNestedLibraries(List<Library> libraries, Set<String> alreadySeen,
@@ -257,6 +294,15 @@ public class Repackager {
 				}
 				writer.writeNestedLibrary(destination, library);
 			}
+		}
+	}
+
+	private void writeLoaderClasses(JarWriter writer) throws IOException {
+		if (this.layout instanceof CustomLoaderLayout) {
+			((CustomLoaderLayout) this.layout).writeLoadedClasses(writer);
+		}
+		else if (this.layout.isExecutable()) {
+			writer.writeLoaderClasses();
 		}
 	}
 
@@ -316,8 +362,10 @@ public class Repackager {
 				(this.layout instanceof RepackagingLayout)
 						? ((RepackagingLayout) this.layout).getRepackagedClassesLocation()
 						: this.layout.getClassesLocation());
-		manifest.getMainAttributes().putValue(BOOT_LIB_ATTRIBUTE,
-				this.layout.getLibraryDestination("", LibraryScope.COMPILE));
+		String lib = this.layout.getLibraryDestination("", LibraryScope.COMPILE);
+		if (StringUtils.hasLength(lib)) {
+			manifest.getMainAttributes().putValue(BOOT_LIB_ATTRIBUTE, lib);
+		}
 		return manifest;
 	}
 

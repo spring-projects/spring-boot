@@ -51,7 +51,7 @@ import org.springframework.lang.UsesJava7;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class JarWriter {
+public class JarWriter implements LoaderClassesWriter {
 
 	private static final String NESTED_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
 
@@ -158,6 +158,7 @@ public class JarWriter {
 	 * @param inputStream The stream from which the entry's data can be read
 	 * @throws IOException if the write fails
 	 */
+	@Override
 	public void writeEntry(String entryName, InputStream inputStream) throws IOException {
 		JarEntry entry = new JarEntry(entryName);
 		writeEntry(entry, new InputStreamEntryWriter(inputStream, true));
@@ -207,8 +208,20 @@ public class JarWriter {
 	 * Write the required spring-boot-loader classes to the JAR.
 	 * @throws IOException if the classes cannot be written
 	 */
+	@Override
 	public void writeLoaderClasses() throws IOException {
-		URL loaderJar = getClass().getClassLoader().getResource(NESTED_LOADER_JAR);
+		writeLoaderClasses(NESTED_LOADER_JAR);
+	}
+
+	/**
+	 * Write the required spring-boot-loader classes to the JAR.
+	 * @param loaderJarResourceName the name of the resource containing the loader classes
+	 * to be written
+	 * @throws IOException if the classes cannot be written
+	 */
+	@Override
+	public void writeLoaderClasses(String loaderJarResourceName) throws IOException {
+		URL loaderJar = getClass().getClassLoader().getResource(loaderJarResourceName);
 		JarInputStream inputStream = new JarInputStream(
 				new BufferedInputStream(loaderJar.openStream()));
 		JarEntry entry;
