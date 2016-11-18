@@ -867,6 +867,21 @@
 				<version>${reactor.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>io.projectreactor.addons</groupId>
+				<artifactId>reactor-adapter</artifactId>
+				<version>${reactor.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.projectreactor.addons</groupId>
+				<artifactId>reactor-logback</artifactId>
+				<version>${reactor.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.projectreactor.addons</groupId>
+				<artifactId>reactor-test</artifactId>
+				<version>${reactor.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>io.searchbox</groupId>
 				<artifactId>jest</artifactId>
 				<version>${jest.version}</version>
