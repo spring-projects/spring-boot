@@ -257,6 +257,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.squareup.okhttp</groupId>
 			<artifactId>okhttp</artifactId>
 			<scope>test</scope>
