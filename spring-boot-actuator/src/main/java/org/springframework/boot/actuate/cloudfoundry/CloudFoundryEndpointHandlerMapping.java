@@ -112,9 +112,9 @@ class CloudFoundryEndpointHandlerMapping
 
 	/**
 	 * {@link HandlerInterceptor} that processes the response for CORS.
-	 *
 	 */
 	class CorsInterceptor extends HandlerInterceptorAdapter {
+
 		private final CorsConfiguration config;
 
 		CorsInterceptor(CorsConfiguration config) {

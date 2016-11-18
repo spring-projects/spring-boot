@@ -41,6 +41,8 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link CloudFoundryEndpointHandlerMapping}.
@@ -56,7 +58,7 @@ public class CloudFoundryEndpointHandlerMappingTests
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
 				Collections.singleton(endpoint), corsConfiguration, null);
-		CorsProcessor corsProcessor = Mockito.mock(CorsProcessor.class);
+		CorsProcessor corsProcessor = mock(CorsProcessor.class);
 		handlerMapping.setCorsProcessor(corsProcessor);
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		HandlerExecutionChain handlerExecutionChain = handlerMapping
@@ -65,8 +67,7 @@ public class CloudFoundryEndpointHandlerMappingTests
 		CloudFoundryEndpointHandlerMapping.CorsInterceptor corsInterceptor = (CloudFoundryEndpointHandlerMapping.CorsInterceptor) interceptors[0];
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		corsInterceptor.preHandle(request, response, new Object());
-		Mockito.verify(corsProcessor).processRequest(corsConfiguration, request,
-				response);
+		verify(corsProcessor).processRequest(corsConfiguration, request, response);
 	}
 
 	@Test
