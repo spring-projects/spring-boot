@@ -14,34 +14,41 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.builder;
+package org.springframework.boot.test.mock.mockito;
 
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.test.rule.OutputCapture;
-import org.springframework.boot.testutil.ClassPathExclusions;
+import org.springframework.boot.testutil.ClassPathOverrides;
 import org.springframework.boot.testutil.ModifiedClassPathRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringApplicationBuilderExample}.
+ * Tests for compatibility with Mockito 2.1
  *
  * @author Andy Wilkinson
  */
 @RunWith(ModifiedClassPathRunner.class)
-@ClassPathExclusions("spring-web-*.jar")
-public class SpringApplicationBuilderExampleTests {
-
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+@ClassPathOverrides("org.mockito:mockito-core:2.1.0")
+public class Mockito21Tests {
 
 	@Test
-	public void contextHierarchyWithDisabledBanner() {
-		new SpringApplicationBuilderExample().hierarchyWithDisabledBanner(new String[0]);
-		assertThat(this.outputCapture.toString()).doesNotContain(":: Spring Boot ::");
+	public void resetMocksTestExecutionListenerTestsWithMockito2() {
+		runTests(ResetMocksTestExecutionListenerTests.class);
+	}
+
+	@Test
+	public void spyBeanWithAopProxyTestsWithMockito2() {
+		runTests(SpyBeanWithAopProxyTests.class);
+	}
+
+	private void runTests(Class<?> testClass) {
+		Result result = new JUnitCore().run(testClass);
+		assertThat(result.getFailureCount()).isEqualTo(0);
+		assertThat(result.getRunCount()).isGreaterThan(0);
 	}
 
 }

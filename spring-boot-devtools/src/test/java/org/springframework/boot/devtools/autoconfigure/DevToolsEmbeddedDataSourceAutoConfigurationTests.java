@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.testutil.ClassPathExclusions;
-import org.springframework.boot.testutil.FilteredClassPathRunner;
+import org.springframework.boot.testutil.ModifiedClassPathRunner;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.mockito.Mockito.times;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
-@RunWith(FilteredClassPathRunner.class)
+@RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("tomcat-jdbc-*.jar")
 public class DevToolsEmbeddedDataSourceAutoConfigurationTests
 		extends AbstractDevToolsDataSourceAutoConfigurationTests {

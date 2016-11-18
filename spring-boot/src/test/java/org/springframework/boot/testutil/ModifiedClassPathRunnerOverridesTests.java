@@ -14,34 +14,35 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.builder;
+package org.springframework.boot.testutil;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.test.rule.OutputCapture;
-import org.springframework.boot.testutil.ClassPathExclusions;
-import org.springframework.boot.testutil.ModifiedClassPathRunner;
+import org.springframework.context.ApplicationContext;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringApplicationBuilderExample}.
+ * Tests for {@link ModifiedClassPathRunner} overriding entries on the class path.
  *
  * @author Andy Wilkinson
  */
 @RunWith(ModifiedClassPathRunner.class)
-@ClassPathExclusions("spring-web-*.jar")
-public class SpringApplicationBuilderExampleTests {
-
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+@ClassPathOverrides("org.springframework:spring-context:4.1.0.RELEASE")
+public class ModifiedClassPathRunnerOverridesTests {
 
 	@Test
-	public void contextHierarchyWithDisabledBanner() {
-		new SpringApplicationBuilderExample().hierarchyWithDisabledBanner(new String[0]);
-		assertThat(this.outputCapture.toString()).doesNotContain(":: Spring Boot ::");
+	public void classesAreLoadedFromOverride() {
+		assertThat(ApplicationContext.class.getProtectionDomain().getCodeSource()
+				.getLocation().toString()).endsWith("spring-context-4.1.0.RELEASE.jar");
+	}
+
+	@Test
+	public void classesAreLoadedFromTransitiveDependencyOfOverride() {
+		assertThat(StringUtils.class.getProtectionDomain().getCodeSource().getLocation()
+				.toString()).endsWith("spring-core-4.1.0.RELEASE.jar");
 	}
 
 }

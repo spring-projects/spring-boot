@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.testutil.ClassPathExclusions;
-import org.springframework.boot.testutil.FilteredClassPathRunner;
+import org.springframework.boot.testutil.ModifiedClassPathRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@RunWith(FilteredClassPathRunner.class)
+@RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("spring-security-*.jar")
 public class ManagementServerPropertiesAutoConfigurationNoSecurityTests {
 

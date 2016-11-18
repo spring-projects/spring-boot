@@ -20,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Answers;
-import org.mockito.internal.util.MockUtil;
 import org.mockito.mock.MockCreationSettings;
 
 import org.springframework.boot.test.mock.mockito.example.ExampleService;
@@ -79,7 +78,7 @@ public class SpyDefinitionTests {
 		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
 				MockReset.BEFORE, true, null);
 		RealExampleService spy = definition.createSpy(new RealExampleService("hello"));
-		MockCreationSettings<?> settings = new MockUtil().getMockSettings(spy);
+		MockCreationSettings<?> settings = SpringBootMockUtil.getMockSettings(spy);
 		assertThat(spy).isInstanceOf(ExampleService.class);
 		assertThat(settings.getMockName().toString()).isEqualTo("name");
 		assertThat(settings.getDefaultAnswer())
