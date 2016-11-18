@@ -139,6 +139,7 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.accesslog.prefix", "foo");
 		map.put("server.tomcat.accesslog.rotate", "false");
 		map.put("server.tomcat.accesslog.rename-on-rotate", "true");
+		map.put("server.tomcat.accesslog.request-attributes-enabled", "true");
 		map.put("server.tomcat.accesslog.suffix", "-bar.log");
 		map.put("server.tomcat.protocol_header", "X-Forwarded-Protocol");
 		map.put("server.tomcat.remote_ip_header", "Remote-Ip");
@@ -150,6 +151,7 @@ public class ServerPropertiesTests {
 		assertThat(tomcat.getAccesslog().getPrefix()).isEqualTo("foo");
 		assertThat(tomcat.getAccesslog().isRotate()).isFalse();
 		assertThat(tomcat.getAccesslog().isRenameOnRotate()).isTrue();
+		assertThat(tomcat.getAccesslog().isRequestAttributesEnabled()).isTrue();
 		assertThat(tomcat.getAccesslog().getSuffix()).isEqualTo("-bar.log");
 		assertThat(tomcat.getRemoteIpHeader()).isEqualTo("Remote-Ip");
 		assertThat(tomcat.getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
