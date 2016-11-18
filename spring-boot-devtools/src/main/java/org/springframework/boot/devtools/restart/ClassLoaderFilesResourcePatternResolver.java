@@ -21,12 +21,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
@@ -48,9 +44,8 @@ import org.springframework.util.AntPathMatcher;
  */
 final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternResolver {
 
-	private static final Set<String> LOCATION_PATTERN_PREFIXES = Collections
-			.unmodifiableSet(new HashSet<String>(
-					Arrays.asList(CLASSPATH_ALL_URL_PREFIX, CLASSPATH_URL_PREFIX)));
+	private static final String[] LOCATION_PATTERN_PREFIXES = { CLASSPATH_ALL_URL_PREFIX,
+			CLASSPATH_URL_PREFIX };
 
 	private final ResourcePatternResolver delegate = new PathMatchingResourcePatternResolver();
 
@@ -63,17 +58,17 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	}
 
 	@Override
-	public Resource getResource(String location) {
-		Resource candidate = this.delegate.getResource(location);
-		if (isExcludedResource(candidate)) {
-			return new DeletedClassLoaderFileResource(location);
-		}
-		return candidate;
+	public ClassLoader getClassLoader() {
+		return this.delegate.getClassLoader();
 	}
 
 	@Override
-	public ClassLoader getClassLoader() {
-		return this.delegate.getClassLoader();
+	public Resource getResource(String location) {
+		Resource candidate = this.delegate.getResource(location);
+		if (isDeleted(candidate)) {
+			return new DeletedClassLoaderFileResource(location);
+		}
+		return candidate;
 	}
 
 	@Override
@@ -81,21 +76,12 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 		List<Resource> resources = new ArrayList<Resource>();
 		Resource[] candidates = this.delegate.getResources(locationPattern);
 		for (Resource candidate : candidates) {
-			if (!isExcludedResource(candidate)) {
+			if (!isDeleted(candidate)) {
 				resources.add(candidate);
 			}
 		}
 		resources.addAll(getAdditionalResources(locationPattern));
 		return resources.toArray(new Resource[resources.size()]);
-	}
-
-	private String trimLocationPattern(String locationPattern) {
-		for (String prefix : LOCATION_PATTERN_PREFIXES) {
-			if (locationPattern.startsWith(prefix)) {
-				return locationPattern.substring(prefix.length());
-			}
-		}
-		return locationPattern;
 	}
 
 	private List<Resource> getAdditionalResources(String locationPattern)
@@ -104,23 +90,37 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 		String trimmedLocationPattern = trimLocationPattern(locationPattern);
 		for (SourceFolder sourceFolder : this.classLoaderFiles.getSourceFolders()) {
 			for (Entry<String, ClassLoaderFile> entry : sourceFolder.getFilesEntrySet()) {
-				if (entry.getValue().getKind() == Kind.ADDED && this.antPathMatcher
-						.match(trimmedLocationPattern, entry.getKey())) {
-					additionalResources.add(new UrlResource(new URL("reloaded", null, -1,
-							"/" + entry.getKey(),
-							new ClassLoaderFileURLStreamHandler(entry.getValue()))));
+				String name = entry.getKey();
+				ClassLoaderFile file = entry.getValue();
+				if (file.getKind() == Kind.ADDED
+						&& this.antPathMatcher.match(trimmedLocationPattern, name)) {
+					URL url = new URL("reloaded", null, -1, "/" + name,
+							new ClassLoaderFileURLStreamHandler(file));
+					UrlResource resource = new UrlResource(url);
+					additionalResources.add(resource);
 				}
 			}
 		}
 		return additionalResources;
 	}
 
-	private boolean isExcludedResource(Resource resource) {
+	private String trimLocationPattern(String pattern) {
+		for (String prefix : LOCATION_PATTERN_PREFIXES) {
+			if (pattern.startsWith(prefix)) {
+				return pattern.substring(prefix.length());
+			}
+		}
+		return pattern;
+	}
+
+	private boolean isDeleted(Resource resource) {
 		for (SourceFolder sourceFolder : this.classLoaderFiles.getSourceFolders()) {
 			for (Entry<String, ClassLoaderFile> entry : sourceFolder.getFilesEntrySet()) {
 				try {
-					if (entry.getValue().getKind() == Kind.DELETED && resource.exists()
-							&& resource.getURI().toString().endsWith(entry.getKey())) {
+					String name = entry.getKey();
+					ClassLoaderFile file = entry.getValue();
+					if (file.getKind() == Kind.DELETED && resource.exists()
+							&& resource.getURI().toString().endsWith(name)) {
 						return true;
 					}
 				}
@@ -136,8 +136,6 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	/**
 	 * A {@link Resource} that represents a {@link ClassLoaderFile} that has been
 	 * {@link Kind#DELETED deleted}.
-	 *
-	 * @author Andy Wilkinson
 	 */
 	private final class DeletedClassLoaderFileResource extends AbstractResource {
 
@@ -161,5 +159,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 		public InputStream getInputStream() throws IOException {
 			throw new IOException(this.name + " has been deleted");
 		}
+
 	}
+
 }

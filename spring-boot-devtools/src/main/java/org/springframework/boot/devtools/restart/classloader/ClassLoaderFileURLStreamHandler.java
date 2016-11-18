@@ -27,6 +27,7 @@ import java.net.URLStreamHandler;
  * {@link URLStreamHandler} for the contents of a {@link ClassLoaderFile}.
  *
  * @author Phillip Webb
+ * @since 1.5.0
  */
 public class ClassLoaderFileURLStreamHandler extends URLStreamHandler {
 

@@ -964,8 +964,8 @@ public class ServerProperties
 			private boolean renameOnRotate;
 
 			/**
-			 * Set request attributes for IP address, Hostname, protocol and port used
-			 * for the request.
+			 * Set request attributes for IP address, Hostname, protocol and port used for
+			 * the request.
 			 */
 			private boolean requestAttributesEnabled;
 
