@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.AbstractEndpointHandlerMapping;
@@ -34,6 +35,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
  * {@link HandlerMapping} to map {@link Endpoint}s to Cloud Foundry specific URLs.
@@ -45,10 +47,13 @@ class CloudFoundryEndpointHandlerMapping
 
 	private final HandlerInterceptor securityInterceptor;
 
+	private final CorsConfiguration corsConfiguration;
+
 	CloudFoundryEndpointHandlerMapping(Set<? extends NamedMvcEndpoint> endpoints,
 			CorsConfiguration corsConfiguration, HandlerInterceptor securityInterceptor) {
 		super(endpoints, corsConfiguration);
 		this.securityInterceptor = securityInterceptor;
+		this.corsConfiguration = corsConfiguration;
 	}
 
 	@Override
@@ -97,11 +102,31 @@ class CloudFoundryEndpointHandlerMapping
 
 	private HandlerInterceptor[] addSecurityInterceptor(HandlerInterceptor[] existing) {
 		List<HandlerInterceptor> interceptors = new ArrayList<HandlerInterceptor>();
+		interceptors.add(new CorsInterceptor(this.corsConfiguration));
 		interceptors.add(this.securityInterceptor);
 		if (existing != null) {
 			interceptors.addAll(Arrays.asList(existing));
 		}
 		return interceptors.toArray(new HandlerInterceptor[interceptors.size()]);
+	}
+
+	/**
+	 * {@link HandlerInterceptor} that processes the response for CORS.
+	 *
+	 */
+	class CorsInterceptor extends HandlerInterceptorAdapter {
+		private final CorsConfiguration config;
+
+		CorsInterceptor(CorsConfiguration config) {
+			this.config = config;
+		}
+
+		@Override
+		public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+				Object handler) throws Exception {
+			return getCorsProcessor().processRequest(this.config, request, response);
+		}
+
 	}
 
 }

@@ -33,6 +33,9 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsProcessor;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -48,6 +51,25 @@ public class CloudFoundryEndpointHandlerMappingTests
 		extends AbstractEndpointHandlerMappingTests {
 
 	@Test
+	public void corsInterceptorShouldBeFirstAndCallCorsProcessor() throws Exception {
+		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
+		CorsConfiguration corsConfiguration = new CorsConfiguration();
+		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
+				Collections.singleton(endpoint), corsConfiguration, null);
+		CorsProcessor corsProcessor = Mockito.mock(CorsProcessor.class);
+		handlerMapping.setCorsProcessor(corsProcessor);
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		HandlerExecutionChain handlerExecutionChain = handlerMapping
+				.getHandlerExecutionChain(endpoint, request);
+		HandlerInterceptor[] interceptors = handlerExecutionChain.getInterceptors();
+		CloudFoundryEndpointHandlerMapping.CorsInterceptor corsInterceptor = (CloudFoundryEndpointHandlerMapping.CorsInterceptor) interceptors[0];
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		corsInterceptor.preHandle(request, response, new Object());
+		Mockito.verify(corsProcessor).processRequest(corsConfiguration, request,
+				response);
+	}
+
+	@Test
 	public void getHandlerExecutionChainShouldHaveSecurityInterceptor() throws Exception {
 		CloudFoundrySecurityInterceptor securityInterceptor = Mockito
 				.mock(CloudFoundrySecurityInterceptor.class);
@@ -57,7 +79,7 @@ public class CloudFoundryEndpointHandlerMappingTests
 		HandlerExecutionChain handlerExecutionChain = handlerMapping
 				.getHandlerExecutionChain(endpoint, new MockHttpServletRequest());
 		HandlerInterceptor[] interceptors = handlerExecutionChain.getInterceptors();
-		assertThat(interceptors).contains(securityInterceptor);
+		assertThat(interceptors[1]).isEqualTo(securityInterceptor);
 	}
 
 	@Test
