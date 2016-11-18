@@ -912,6 +912,8 @@ public class ServerProperties
 			valve.setPrefix(this.accesslog.getPrefix());
 			valve.setSuffix(this.accesslog.getSuffix());
 			valve.setRenameOnRotate(this.accesslog.isRenameOnRotate());
+			valve.setRequestAttributesEnabled(
+					this.accesslog.isRequestAttributesEnabled());
 			factory.addEngineValves(valve);
 		}
 
@@ -961,6 +963,12 @@ public class ServerProperties
 			 */
 			private boolean renameOnRotate;
 
+			/**
+			 * Set request attributes for IP address, Hostname, protocol and port used
+			 * for the request.
+			 */
+			private boolean requestAttributesEnabled;
+
 			public boolean isEnabled() {
 				return this.enabled;
 			}
@@ -1007,6 +1015,14 @@ public class ServerProperties
 
 			public void setRenameOnRotate(boolean renameOnRotate) {
 				this.renameOnRotate = renameOnRotate;
+			}
+
+			public boolean isRequestAttributesEnabled() {
+				return this.requestAttributesEnabled;
+			}
+
+			public void setRequestAttributesEnabled(boolean requestAttributesEnabled) {
+				this.requestAttributesEnabled = requestAttributesEnabled;
 			}
 
 		}
