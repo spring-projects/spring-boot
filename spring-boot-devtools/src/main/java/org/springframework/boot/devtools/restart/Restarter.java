@@ -421,8 +421,7 @@ public class Restarter {
 			return;
 		}
 		if (applicationContext instanceof GenericApplicationContext) {
-			((GenericApplicationContext) applicationContext).setResourceLoader(
-					new ClassLoaderFilesResourcePatternResolver(this.classLoaderFiles));
+			prepare((GenericApplicationContext) applicationContext);
 		}
 		this.rootContexts.add(applicationContext);
 	}
@@ -431,6 +430,11 @@ public class Restarter {
 		if (applicationContext != null) {
 			this.rootContexts.remove(applicationContext);
 		}
+	}
+
+	private void prepare(GenericApplicationContext applicationContext) {
+		applicationContext.setResourceLoader(
+				new ClassLoaderFilesResourcePatternResolver(this.classLoaderFiles));
 	}
 
 	private LeakSafeThread getLeakSafeThread() {

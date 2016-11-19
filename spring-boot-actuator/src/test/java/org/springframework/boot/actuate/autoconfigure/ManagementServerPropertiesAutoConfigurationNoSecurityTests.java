@@ -20,9 +20,9 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.boot.junit.runner.classpath.ClassPathExclusions;
+import org.springframework.boot.junit.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.boot.testutil.ClassPathExclusions;
-import org.springframework.boot.testutil.ModifiedClassPathRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;

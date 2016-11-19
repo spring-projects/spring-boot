@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testutil;
+package org.springframework.boot.junit.runner.classpath;
 
 import java.io.File;
 import java.lang.annotation.Annotation;

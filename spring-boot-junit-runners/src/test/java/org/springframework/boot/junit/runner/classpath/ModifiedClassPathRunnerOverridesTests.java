@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testutil;
+package org.springframework.boot.junit.runner.classpath;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
