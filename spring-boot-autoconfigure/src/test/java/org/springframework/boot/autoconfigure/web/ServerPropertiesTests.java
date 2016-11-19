@@ -112,6 +112,14 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void testConnectionTimeout() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.connection-timeout", "60000");
+		bindProperties(map);
+		assertThat(this.properties.getConnectionTimeout()).isEqualTo(60000);
+	}
+
+	@Test
 	public void testServletPathAsMapping() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
 		binder.bind(new MutablePropertyValues(
