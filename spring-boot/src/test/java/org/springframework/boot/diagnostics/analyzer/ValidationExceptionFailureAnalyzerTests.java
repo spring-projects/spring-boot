@@ -22,8 +22,8 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.diagnostics.FailureAnalysis;
-import org.springframework.boot.testutil.ClassPathExclusions;
-import org.springframework.boot.testutil.ModifiedClassPathRunner;
+import org.springframework.boot.junit.runner.classpath.ClassPathExclusions;
+import org.springframework.boot.junit.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
