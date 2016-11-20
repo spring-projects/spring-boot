@@ -99,6 +99,9 @@ public class RedisAutoConfiguration {
 		protected final JedisConnectionFactory applyProperties(
 				JedisConnectionFactory factory) {
 			if (StringUtils.hasText(this.properties.getUrl())) {
+				if (this.properties.getUrl().startsWith("rediss://")) {
+					factory.setUseSsl(true);
+				}
 				try {
 					URI redisURI = new URI(this.properties.getUrl());
 					factory.setHostName(redisURI.getHost());
@@ -117,6 +120,9 @@ public class RedisAutoConfiguration {
 				if (this.properties.getPassword() != null) {
 					factory.setPassword(this.properties.getPassword());
 				}
+			}
+			if (this.properties.isSsl()) {
+				factory.setUseSsl(true);
 			}
 			factory.setDatabase(this.properties.getDatabase());
 			if (this.properties.getTimeout() > 0) {

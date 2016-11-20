@@ -57,6 +57,11 @@ public class RedisProperties {
 	private int port = 6379;
 
 	/**
+	 * Enable SSL.
+	 */
+	private boolean ssl;
+
+	/**
 	 * Connection timeout in milliseconds.
 	 */
 	private int timeout;
@@ -105,6 +110,14 @@ public class RedisProperties {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public boolean isSsl() {
+		return this.ssl;
+	}
+
+	public void setSsl(boolean ssl) {
+		this.ssl = ssl;
 	}
 
 	public void setTimeout(int timeout) {
