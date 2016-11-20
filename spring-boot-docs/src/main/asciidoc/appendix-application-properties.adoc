@@ -961,6 +961,10 @@ content into your application; rather pick only the properties that you need.
 	endpoints.actuator.enabled=true # Enable the endpoint.
 	endpoints.actuator.path= # Endpoint URL path.
 	endpoints.actuator.sensitive=false # Enable security on the endpoint.
+	endpoints.auditevents.enabled= # Enable the endpoint.
+	endpoints.auditevents.id= # Endpoint identifier.
+	endpoints.auditevents.path= # Endpoint path.
+	endpoints.auditevents.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.autoconfig.enabled= # Enable the endpoint.
 	endpoints.autoconfig.id= # Endpoint identifier.
 	endpoints.autoconfig.path= # Endpoint path.

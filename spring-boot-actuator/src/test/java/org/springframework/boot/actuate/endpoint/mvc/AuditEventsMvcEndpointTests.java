@@ -16,21 +16,20 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
+import org.springframework.boot.actuate.audit.AuditEvent;
+import org.springframework.boot.actuate.audit.AuditEventRepository;
+import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.InfoEndpoint;
-import org.springframework.boot.actuate.info.Info;
-import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -38,27 +37,25 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for {@link InfoEndpoint} with {@link MockMvc}.
+ * Tests for {@link AuditEventsMvcEndpoint}.
  *
- * @author Meang Akira Tanaka
- * @author Stephane Nicoll
+ * @author Vedran Pavic
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource(properties = { "info.app.name=MyService" })
-public class InfoMvcEndpointTests {
+@RunWith(SpringRunner.class)
+public class AuditEventsMvcEndpointTests {
 
 	@Autowired
 	private WebApplicationContext context;
@@ -67,56 +64,60 @@ public class InfoMvcEndpointTests {
 
 	@Before
 	public void setUp() {
-		this.context.getBean(InfoEndpoint.class).setEnabled(true);
+		this.context.getBean(AuditEventsMvcEndpoint.class).setEnabled(true);
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 	}
 
 	@Test
-	public void home() throws Exception {
-		this.mvc.perform(get("/info")).andExpect(status().isOk())
-				.andExpect(content().string(containsString(
-						"\"beanName1\":{\"key11\":\"value11\",\"key12\":\"value12\"}")))
-				.andExpect(content().string(containsString(
-						"\"beanName2\":{\"key21\":\"value21\",\"key22\":\"value22\"}")));
+	public void invokeWhenDisabledShouldReturnNotFoundStatus() throws Exception {
+		this.context.getBean(AuditEventsMvcEndpoint.class).setEnabled(false);
+		this.mvc.perform(get("/auditevents").param("after", "2016-11-01T10:00:00+0000"))
+				.andExpect(status().isNotFound());
 	}
 
-	@Import({ JacksonAutoConfiguration.class, AuditAutoConfiguration.class,
+	@Test
+	public void invokeFilterByDateAfter() throws Exception {
+		this.mvc.perform(get("/auditevents").param("after", "2016-11-01T13:00:00+0000"))
+				.andExpect(status().isOk()).andExpect(content().string("[]"));
+	}
+
+	@Test
+	public void invokeFilterByPrincipalAndDateAfter() throws Exception {
+		this.mvc.perform(get("/auditevents").param("principal", "user")
+				.param("after", "2016-11-01T10:00:00+0000"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString(
+						"\"principal\":\"user\",\"type\":\"login\"")))
+				.andExpect(content().string(not(containsString("admin"))));
+	}
+
+	@Test
+	public void invokeFilterByPrincipalAndDateAfterAndType() throws Exception {
+		this.mvc.perform(get("/auditevents").param("principal", "admin")
+				.param("after", "2016-11-01T10:00:00+0000")
+				.param("type", "logout")).andExpect(status().isOk())
+				.andExpect(content().string(containsString(
+						"\"principal\":\"admin\",\"type\":\"logout\"")))
+				.andExpect(content().string(not(containsString("login"))));
+	}
+
+	@Import({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
 			EndpointWebMvcAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class })
 	@Configuration
-	public static class TestConfiguration {
+	protected static class TestConfiguration {
 
 		@Bean
-		public InfoEndpoint endpoint() {
-			return new InfoEndpoint(Arrays.asList(beanName1(), beanName2()));
-		}
-
-		@Bean
-		public InfoContributor beanName1() {
-			return new InfoContributor() {
-
-				@Override
-				public void contribute(Info.Builder builder) {
-					Map<String, Object> content = new LinkedHashMap<String, Object>();
-					content.put("key11", "value11");
-					content.put("key12", "value12");
-					builder.withDetail("beanName1", content);
-				}
-			};
-		}
-
-		@Bean
-		public InfoContributor beanName2() {
-			return new InfoContributor() {
-				@Override
-				public void contribute(Info.Builder builder) {
-					Map<String, Object> content = new LinkedHashMap<String, Object>();
-					content.put("key21", "value21");
-					content.put("key22", "value22");
-					builder.withDetail("beanName2", content);
-				}
-			};
+		public AuditEventRepository auditEventsRepository() {
+			AuditEventRepository repository = new InMemoryAuditEventRepository(3);
+			repository.add(new AuditEvent(Date.from(Instant.parse(
+					"2016-11-01T11:00:00Z")), "admin", "login", Collections.emptyMap()));
+			repository.add(new AuditEvent(Date.from(Instant.parse(
+					"2016-11-01T12:00:00Z")), "admin", "logout", Collections.emptyMap()));
+			repository.add(new AuditEvent(Date.from(Instant.parse(
+					"2016-11-01T12:00:00Z")), "user", "login", Collections.emptyMap()));
+			return repository;
 		}
 
 	}

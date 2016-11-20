@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
@@ -100,7 +101,7 @@ public class JolokiaMvcEndpointIntegrationTests {
 	@Configuration
 	@EnableConfigurationProperties
 	@EnableWebMvc
-	@Import({ JacksonAutoConfiguration.class,
+	@Import({ JacksonAutoConfiguration.class, AuditAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
 			EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class })
