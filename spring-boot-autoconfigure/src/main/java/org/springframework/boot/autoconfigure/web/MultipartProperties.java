@@ -39,7 +39,7 @@ import org.springframework.util.StringUtils;
  * <p>
  * These properties are ultimately passed through {@link MultipartConfigFactory} which
  * means you may specify the values using {@literal long} values or using more readable
- * {@literal String} variants that accept {@literal Kb} or {@literal Mb} suffixes.
+ * {@literal String} variants that accept {@literal KB} or {@literal MB} suffixes.
  *
  * @author Josh Long
  * @author Toshiaki Maki
@@ -62,13 +62,13 @@ public class MultipartProperties {
 	 * Max file size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or
 	 * Kilobyte size.
 	 */
-	private String maxFileSize = "1Mb";
+	private String maxFileSize = "1MB";
 
 	/**
 	 * Max request size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte
 	 * or Kilobyte size.
 	 */
-	private String maxRequestSize = "10Mb";
+	private String maxRequestSize = "10MB";
 
 	/**
 	 * Threshold after which files will be written to disk. Values can use the suffixed
