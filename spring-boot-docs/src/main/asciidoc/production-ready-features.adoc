@@ -73,6 +73,10 @@ The following technology agnostic endpoints are available:
 HATEOAS to be on the classpath.
 |true
 
+|`auditevents`
+|Exposes audit events information for the current application.
+|true
+
 |`autoconfig`
 |Displays an auto-configuration report showing all auto-configuration candidates and the
  reason why they '`were`' or '`were not`' applied.

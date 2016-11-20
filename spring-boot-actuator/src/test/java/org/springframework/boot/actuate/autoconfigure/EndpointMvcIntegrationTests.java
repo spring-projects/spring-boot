@@ -101,7 +101,7 @@ public class EndpointMvcIntegrationTests {
 	@MinimalWebConfiguration
 	@Import({ ManagementServerPropertiesAutoConfiguration.class,
 			JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class })
+			EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class })
 	@RestController
 	protected static class Application {
 

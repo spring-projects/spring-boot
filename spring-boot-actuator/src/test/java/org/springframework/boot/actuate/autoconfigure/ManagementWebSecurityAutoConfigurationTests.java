@@ -91,7 +91,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
 		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
@@ -203,7 +203,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				WebMvcAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class);
 		this.context.refresh();
 
 		Filter filter = this.context.getBean("springSecurityFilterChain", Filter.class);
@@ -265,7 +265,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class,
 			FallbackWebSecurityAutoConfiguration.class })
 	static class WebConfiguration {
 
