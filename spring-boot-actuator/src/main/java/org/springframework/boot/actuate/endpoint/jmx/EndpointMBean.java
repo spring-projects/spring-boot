@@ -16,10 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
-import java.util.List;
-import java.util.Map;
-
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
@@ -33,17 +29,12 @@ import org.springframework.util.ClassUtils;
  *
  * @author Christian Dupuis
  * @author Andy Wilkinson
+ * @author Vedran Pavic
  */
 @ManagedResource
-public class EndpointMBean {
+public class EndpointMBean extends EndpointMBeanSupport {
 
 	private final Endpoint<?> endpoint;
-
-	private final ObjectMapper mapper;
-
-	private final JavaType listObject;
-
-	private final JavaType mapStringObject;
 
 	/**
 	 * Create a new {@link EndpointMBean} instance.
@@ -53,15 +44,10 @@ public class EndpointMBean {
 	 */
 	public EndpointMBean(String beanName, Endpoint<?> endpoint,
 			ObjectMapper objectMapper) {
+		super(objectMapper);
 		Assert.notNull(beanName, "BeanName must not be null");
 		Assert.notNull(endpoint, "Endpoint must not be null");
-		Assert.notNull(objectMapper, "ObjectMapper must not be null");
 		this.endpoint = endpoint;
-		this.mapper = objectMapper;
-		this.listObject = objectMapper.getTypeFactory()
-				.constructParametricType(List.class, Object.class);
-		this.mapStringObject = objectMapper.getTypeFactory()
-				.constructParametricType(Map.class, String.class, Object.class);
 	}
 
 	@ManagedAttribute(description = "Returns the class of the underlying endpoint")
@@ -76,19 +62,6 @@ public class EndpointMBean {
 
 	public Endpoint<?> getEndpoint() {
 		return this.endpoint;
-	}
-
-	protected Object convert(Object result) {
-		if (result == null) {
-			return null;
-		}
-		if (result instanceof String) {
-			return result;
-		}
-		if (result.getClass().isArray() || result instanceof List) {
-			return this.mapper.convertValue(result, this.listObject);
-		}
-		return this.mapper.convertValue(result, this.mapStringObject);
 	}
 
 }
