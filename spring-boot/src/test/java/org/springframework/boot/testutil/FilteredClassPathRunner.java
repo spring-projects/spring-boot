@@ -62,6 +62,19 @@ public class FilteredClassPathRunner extends BlockJUnit4ClassRunner {
 		}
 	}
 
+	@Override
+	protected Object createTest() throws Exception {
+		FilteredTestClass testClass = (FilteredTestClass) getTestClass();
+		return testClass.doWithFilteredContextClassLoader(
+				new FilteredTestClass.FilteredTcclAction<Object, Exception>() {
+
+					@Override
+					public Object perform() throws Exception {
+						return FilteredClassPathRunner.super.createTest();
+					}
+				});
+	}
+
 	private URLClassLoader createTestClassLoader(Class<?> testClass) throws Exception {
 		URLClassLoader classLoader = (URLClassLoader) this.getClass().getClassLoader();
 		return new FilteredClassLoader(filterUrls(extractUrls(classLoader), testClass),
@@ -183,38 +196,58 @@ public class FilteredClassPathRunner extends BlockJUnit4ClassRunner {
 			List<FrameworkMethod> wrapped = new ArrayList<FrameworkMethod>(
 					methods.size());
 			for (FrameworkMethod frameworkMethod : methods) {
-				wrapped.add(new FilteredFrameworkMethod(this.classLoader,
-						frameworkMethod.getMethod()));
+				wrapped.add(new FilteredFrameworkMethod(frameworkMethod.getMethod()));
 			}
 			return wrapped;
 		}
 
-	}
-
-	/**
-	 * Filtered version of JUnit's {@link FrameworkMethod}.
-	 */
-	private static final class FilteredFrameworkMethod extends FrameworkMethod {
-
-		private final ClassLoader classLoader;
-
-		private FilteredFrameworkMethod(ClassLoader classLoader, Method method) {
-			super(method);
-			this.classLoader = classLoader;
-		}
-
-		@Override
-		public Object invokeExplosively(Object target, Object... params)
-				throws Throwable {
+		private <T, E extends Throwable> T doWithFilteredContextClassLoader(
+				FilteredTcclAction<T, E> action) throws E {
 			ClassLoader originalClassLoader = Thread.currentThread()
 					.getContextClassLoader();
 			Thread.currentThread().setContextClassLoader(this.classLoader);
 			try {
-				return super.invokeExplosively(target, params);
+				return action.perform();
 			}
 			finally {
 				Thread.currentThread().setContextClassLoader(originalClassLoader);
 			}
+		}
+
+		/**
+		 * An action to be performed with the {@link FilteredClassLoader} set as the
+		 * thread context class loader.
+		 */
+		private interface FilteredTcclAction<T, E extends Throwable> {
+
+			T perform() throws E;
+
+		}
+
+		/**
+		 * Filtered version of JUnit's {@link FrameworkMethod}.
+		 */
+		private final class FilteredFrameworkMethod extends FrameworkMethod {
+
+			private FilteredFrameworkMethod(Method method) {
+				super(method);
+			}
+
+			@Override
+			public Object invokeExplosively(final Object target, final Object... params)
+					throws Throwable {
+				return doWithFilteredContextClassLoader(
+						new FilteredTcclAction<Object, Throwable>() {
+
+							@Override
+							public Object perform() throws Throwable {
+								return FilteredFrameworkMethod.super.invokeExplosively(
+										target, params);
+							}
+
+						});
+			}
+
 		}
 
 	}
