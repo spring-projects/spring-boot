@@ -22,14 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.jar.JarFile;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -46,6 +43,7 @@ import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Repackager;
+import org.springframework.boot.loader.tools.Repackager.MainClassTimeoutWarningListener;
 
 /**
  * Repackages existing JAR and WAR archives so that they can be executed from the command
@@ -58,8 +56,6 @@ import org.springframework.boot.loader.tools.Repackager;
  */
 @Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class RepackageMojo extends AbstractDependencyFilterMojo {
-
-	private static final long FIND_WARNING_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
 
 	/**
 	 * The Maven project.
@@ -224,7 +220,9 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private Repackager getRepackager(File source) {
-		Repackager repackager = new LoggingRepackager(source, getLog());
+		Repackager repackager = new Repackager(source);
+		repackager.addMainClassTimeoutWarningListener(
+				new LoggingMainClassTimeoutWarningListener());
 		repackager.setMainClass(this.mainClass);
 		if (this.layout != null) {
 			getLog().info("Layout: " + this.layout);
@@ -356,30 +354,15 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	}
 
-	private static class LoggingRepackager extends Repackager {
-
-		private final Log log;
-
-		LoggingRepackager(File source, Log log) {
-			super(source);
-			this.log = log;
-		}
+	private class LoggingMainClassTimeoutWarningListener
+			implements MainClassTimeoutWarningListener {
 
 		@Override
-		protected String findMainMethod(JarFile source) throws IOException {
-			long startTime = System.currentTimeMillis();
-			try {
-				return super.findMainMethod(source);
-			}
-			finally {
-				long duration = System.currentTimeMillis() - startTime;
-				if (duration > FIND_WARNING_TIMEOUT) {
-					this.log.warn("Searching for the main-class is taking some time, "
-							+ "consider using the mainClass configuration "
-							+ "parameter");
-				}
-			}
+		public void handleTimeoutWarning(long duration, String mainMethod) {
+			getLog().warn("Searching for the main-class is taking some time, "
+					+ "consider using the mainClass configuration " + "parameter");
 		}
 
 	}
+
 }

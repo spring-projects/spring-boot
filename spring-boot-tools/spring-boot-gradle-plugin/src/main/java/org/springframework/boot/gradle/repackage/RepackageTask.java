@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
@@ -35,6 +34,7 @@ import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.boot.loader.tools.Repackager;
+import org.springframework.boot.loader.tools.Repackager.MainClassTimeoutWarningListener;
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -45,8 +45,6 @@ import org.springframework.util.FileCopyUtils;
  * @author Andy Wilkinson
  */
 public class RepackageTask extends DefaultTask {
-
-	private static final long FIND_WARNING_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
 
 	private String customConfiguration;
 
@@ -215,7 +213,9 @@ public class RepackageTask extends DefaultTask {
 				copy(file, outputFile);
 				file = outputFile;
 			}
-			Repackager repackager = new LoggingRepackager(file);
+			Repackager repackager = new Repackager(file);
+			repackager.addMainClassTimeoutWarningListener(
+					new LoggingMainClassTimeoutWarningListener());
 			setMainClass(repackager);
 			if (this.extension.convertLayout() != null) {
 				repackager.setLayout(this.extension.convertLayout());
@@ -305,26 +305,13 @@ public class RepackageTask extends DefaultTask {
 	/**
 	 * {@link Repackager} that also logs when searching takes too long.
 	 */
-	private class LoggingRepackager extends Repackager {
-
-		LoggingRepackager(File source) {
-			super(source);
-		}
+	private class LoggingMainClassTimeoutWarningListener
+			implements MainClassTimeoutWarningListener {
 
 		@Override
-		protected String findMainMethod(java.util.jar.JarFile source) throws IOException {
-			long startTime = System.currentTimeMillis();
-			try {
-				return super.findMainMethod(source);
-			}
-			finally {
-				long duration = System.currentTimeMillis() - startTime;
-				if (duration > FIND_WARNING_TIMEOUT) {
-					getLogger().warn("Searching for the main-class is taking "
-							+ "some time, consider using setting "
-							+ "'springBoot.mainClass'");
-				}
-			}
+		public void handleTimeoutWarning(long duration, String mainMethod) {
+			getLogger().warn("Searching for the main-class is taking "
+					+ "some time, consider using setting " + "'springBoot.mainClass'");
 		}
 
 	}

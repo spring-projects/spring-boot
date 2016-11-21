@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -53,6 +54,10 @@ public class Repackager {
 
 	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
 
+	private static final long FIND_WARNING_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
+
+	private List<MainClassTimeoutWarningListener> mainClassTimeoutListeners = new ArrayList<MainClassTimeoutWarningListener>();
+
 	private String mainClass;
 
 	private boolean backupSource = true;
@@ -67,6 +72,16 @@ public class Repackager {
 		}
 		this.source = source.getAbsoluteFile();
 		this.layout = Layouts.forFile(source);
+	}
+
+	/**
+	 * Add a listener that will be triggered to dispaly a warning if searching for the
+	 * main class takes too long.
+	 * @param listener the listener to add
+	 */
+	public void addMainClassTimeoutWarningListener(
+			MainClassTimeoutWarningListener listener) {
+		this.mainClassTimeoutListeners.add(listener);
 	}
 
 	/**
@@ -281,7 +296,7 @@ public class Repackager {
 			startClass = manifest.getMainAttributes().getValue(MAIN_CLASS_ATTRIBUTE);
 		}
 		if (startClass == null) {
-			startClass = findMainMethod(source);
+			startClass = findMainMethodWithTimeoutWarning(source);
 		}
 		String launcherClassName = this.layout.getLauncherClassName();
 		if (launcherClassName != null) {
@@ -306,6 +321,18 @@ public class Repackager {
 		return manifest;
 	}
 
+	private String findMainMethodWithTimeoutWarning(JarFile source) throws IOException {
+		long startTime = System.currentTimeMillis();
+		String mainMethod = findMainMethod(source);
+		long duration = System.currentTimeMillis() - startTime;
+		if (duration > FIND_WARNING_TIMEOUT) {
+			for (MainClassTimeoutWarningListener listener : this.mainClassTimeoutListeners) {
+				listener.handleTimeoutWarning(duration, mainMethod);
+			}
+		}
+		return mainMethod;
+	}
+
 	protected String findMainMethod(JarFile source) throws IOException {
 		return MainClassFinder.findSingleMainClass(source,
 				this.layout.getClassesLocation());
@@ -322,6 +349,21 @@ public class Repackager {
 		if (!file.delete()) {
 			throw new IllegalStateException("Unable to delete '" + file + "'");
 		}
+	}
+
+	/**
+	 * Callback interface used to present a warning when finding the main class takes too
+	 * long.
+	 */
+	public interface MainClassTimeoutWarningListener {
+
+		/**
+		 * Handle a timeout warning.
+		 * @param duration the amount of time it took to find the main method
+		 * @param mainMethod the main method that was actually found
+		 */
+		void handleTimeoutWarning(long duration, String mainMethod);
+
 	}
 
 	/**
