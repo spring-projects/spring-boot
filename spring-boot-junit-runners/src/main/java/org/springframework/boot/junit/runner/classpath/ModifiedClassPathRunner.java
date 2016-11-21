@@ -72,7 +72,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 	protected TestClass createTestClass(Class<?> testClass) {
 		try {
 			ClassLoader classLoader = createTestClassLoader(testClass);
-			return new FilteredTestClass(classLoader, testClass.getName());
+			return new ModifiedClassPathTestClass(classLoader, testClass.getName());
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
@@ -81,9 +81,9 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 
 	@Override
 	protected Object createTest() throws Exception {
-		FilteredTestClass testClass = (FilteredTestClass) getTestClass();
-		return testClass.doWithFilteredContextClassLoader(
-				new FilteredTestClass.FilteredTcclAction<Object, Exception>() {
+		ModifiedClassPathTestClass testClass = (ModifiedClassPathTestClass) getTestClass();
+		return testClass.doWithModifiedClassPathThreadContextClassLoader(
+				new ModifiedClassPathTestClass.ModifiedClassPathTcclAction<Object, Exception>() {
 
 					@Override
 					public Object perform() throws Exception {
@@ -94,8 +94,9 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 
 	private URLClassLoader createTestClassLoader(Class<?> testClass) throws Exception {
 		URLClassLoader classLoader = (URLClassLoader) this.getClass().getClassLoader();
-		return new FilteredClassLoader(processUrls(extractUrls(classLoader), testClass),
-				classLoader.getParent(), classLoader);
+		return new ModifiedClassPathClassLoader(
+				processUrls(extractUrls(classLoader), testClass), classLoader.getParent(),
+				classLoader);
 	}
 
 	private URL[] extractUrls(URLClassLoader classLoader) throws Exception {
@@ -222,13 +223,13 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 	}
 
 	/**
-	 * Filtered version of JUnit's {@link TestClass}.
+	 * Custom {@link TestClass} that uses a modified class path.
 	 */
-	private static final class FilteredTestClass extends TestClass {
+	private static final class ModifiedClassPathTestClass extends TestClass {
 
 		private final ClassLoader classLoader;
 
-		FilteredTestClass(ClassLoader classLoader, String testClassName)
+		ModifiedClassPathTestClass(ClassLoader classLoader, String testClassName)
 				throws ClassNotFoundException {
 			super(classLoader.loadClass(testClassName));
 			this.classLoader = classLoader;
@@ -259,13 +260,14 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 			List<FrameworkMethod> wrapped = new ArrayList<FrameworkMethod>(
 					methods.size());
 			for (FrameworkMethod frameworkMethod : methods) {
-				wrapped.add(new FilteredFrameworkMethod(frameworkMethod.getMethod()));
+				wrapped.add(new ModifiedClassPathFrameworkMethod(
+						frameworkMethod.getMethod()));
 			}
 			return wrapped;
 		}
 
-		private <T, E extends Throwable> T doWithFilteredContextClassLoader(
-				FilteredTcclAction<T, E> action) throws E {
+		private <T, E extends Throwable> T doWithModifiedClassPathThreadContextClassLoader(
+				ModifiedClassPathTcclAction<T, E> action) throws E {
 			ClassLoader originalClassLoader = Thread.currentThread()
 					.getContextClassLoader();
 			Thread.currentThread().setContextClassLoader(this.classLoader);
@@ -278,33 +280,34 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 		}
 
 		/**
-		 * An action to be performed with the {@link FilteredClassLoader} set as the
-		 * thread context class loader.
+		 * An action to be performed with the {@link ModifiedClassPathClassLoader} set as
+		 * the thread context class loader.
 		 */
-		private interface FilteredTcclAction<T, E extends Throwable> {
+		private interface ModifiedClassPathTcclAction<T, E extends Throwable> {
 
 			T perform() throws E;
 
 		}
 
 		/**
-		 * Filtered version of JUnit's {@link FrameworkMethod}.
+		 * Custom {@link FrameworkMethod} that runs methods with
+		 * {@link ModifiedClassPathClassLoader} as the thread context class loader.
 		 */
-		private final class FilteredFrameworkMethod extends FrameworkMethod {
+		private final class ModifiedClassPathFrameworkMethod extends FrameworkMethod {
 
-			private FilteredFrameworkMethod(Method method) {
+			private ModifiedClassPathFrameworkMethod(Method method) {
 				super(method);
 			}
 
 			@Override
 			public Object invokeExplosively(final Object target, final Object... params)
 					throws Throwable {
-				return doWithFilteredContextClassLoader(
-						new FilteredTcclAction<Object, Throwable>() {
+				return doWithModifiedClassPathThreadContextClassLoader(
+						new ModifiedClassPathTcclAction<Object, Throwable>() {
 
 							@Override
 							public Object perform() throws Throwable {
-								return FilteredFrameworkMethod.super.invokeExplosively(
+								return ModifiedClassPathFrameworkMethod.super.invokeExplosively(
 										target, params);
 							}
 
@@ -315,11 +318,15 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 
 	}
 
-	private static final class FilteredClassLoader extends URLClassLoader {
+	/**
+	 * Custom {@link URLClassLoader} that modifies the class path.
+	 */
+	private static final class ModifiedClassPathClassLoader extends URLClassLoader {
 
 		private final ClassLoader junitLoader;
 
-		FilteredClassLoader(URL[] urls, ClassLoader parent, ClassLoader junitLoader) {
+		ModifiedClassPathClassLoader(URL[] urls, ClassLoader parent,
+				ClassLoader junitLoader) {
 			super(urls, parent);
 			this.junitLoader = junitLoader;
 		}
