@@ -67,6 +67,7 @@ public class HypermediaAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnMissingBean(LinkDiscoverers.class)
+	@ConditionalOnClass(ObjectMapper.class)
 	@EnableHypermediaSupport(type = HypermediaType.HAL)
 	protected static class HypermediaConfiguration {
 
