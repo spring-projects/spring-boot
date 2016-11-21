@@ -38,7 +38,7 @@ public class DevToolsPropertiesTests {
 				arrayContaining("META-INF/maven/**", "META-INF/resources/**",
 						"resources/**", "static/**", "public/**", "templates/**",
 						"**/*Test.class", "**/*Tests.class", "git.properties", "foo/**",
-						"bar/**"));
+						"bar/**", "META-INF/build-info.properties"));
 	}
 
 	@Test
