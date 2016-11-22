@@ -47,7 +47,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
- *
+ * @author Madhura Bhave
  */
 public class EnableAutoConfigurationImportSelectorTests {
 
@@ -173,30 +173,31 @@ public class EnableAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void nonAutoConfigurationClassExclusionsShouldThrowException() throws Exception {
-		this.expected.expect(IllegalStateException.class);
+	public void nonAutoConfigurationClassExclusionsShouldThrowException()
+			throws Exception {
 		configureExclusions(new String[] { TestConfiguration.class.getName() },
 				new String[0], new String[0]);
+		this.expected.expect(IllegalStateException.class);
 		this.importSelector.selectImports(this.annotationMetadata);
 	}
 
 	@Test
 	public void nonAutoConfigurationClassNameExclusionsWhenPresentOnClassPathShouldThrowException()
 			throws Exception {
-		this.expected.expect(IllegalStateException.class);
 		configureExclusions(new String[0],
-				new String[] { "org.springframework.boot.autoconfigure.EnableAutoConfigurationImportSelectorTests.TestConfiguration" },
+				new String[] {
+						"org.springframework.boot.autoconfigure.EnableAutoConfigurationImportSelectorTests.TestConfiguration" },
 				new String[0]);
+		this.expected.expect(IllegalStateException.class);
 		this.importSelector.selectImports(this.annotationMetadata);
 	}
 
 	@Test
-	public void  nonAutoConfigurationPropertyExclusionsWhenPresentOnClassPathShouldThrowException()
+	public void nonAutoConfigurationPropertyExclusionsWhenPresentOnClassPathShouldThrowException()
 			throws Exception {
+		configureExclusions(new String[0], new String[0], new String[] {
+				"org.springframework.boot.autoconfigure.EnableAutoConfigurationImportSelectorTests.TestConfiguration" });
 		this.expected.expect(IllegalStateException.class);
-		configureExclusions(new String[0],
-				new String[0],
-				new String[] { "org.springframework.boot.autoconfigure.EnableAutoConfigurationImportSelectorTests.TestConfiguration" });
 		this.importSelector.selectImports(this.annotationMetadata);
 	}
 

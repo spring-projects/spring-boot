@@ -57,6 +57,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Madhura Bhave
  * @since 1.3.0
  * @see EnableAutoConfiguration
  */
@@ -164,13 +165,14 @@ public class EnableAutoConfigurationImportSelector
 		for (String exclusion : exclusions) {
 			if (ClassUtils.isPresent(exclusion, getClass().getClassLoader())
 					&& !configurations.contains(exclusion)) {
-				message.append("\t- ").append(exclusion).append("\n");
+				message.append("\t- ").append(exclusion).append(String.format("%n"));
 			}
 		}
 		if (!message.toString().isEmpty()) {
-			throw new IllegalStateException(
-					"The following classes could not be excluded because they are not auto-configuration classes:\n"
-							+ message.toString());
+			throw new IllegalStateException(String.format(
+					"The following classes could not be excluded because they are"
+							+ " not auto-configuration classes:%n%s",
+					message.toString()));
 		}
 
 	}
