@@ -44,8 +44,8 @@ public class KafkaAutoConfigurationIntegrationTests {
 	private static final String TEST_TOPIC = "testTopic";
 
 	@ClassRule
-	public static final KafkaEmbedded kafkaEmbedded =
-			new KafkaEmbedded(1, true, TEST_TOPIC);
+	public static final KafkaEmbedded kafkaEmbedded = new KafkaEmbedded(1, true,
+			TEST_TOPIC);
 
 	private AnnotationConfigApplicationContext context;
 
@@ -63,7 +63,8 @@ public class KafkaAutoConfigurationIntegrationTests {
 				"spring.kafka.consumer.group-id=testGroup",
 				"spring.kafka.consumer.auto-offset-reset=earliest");
 		@SuppressWarnings("unchecked")
-		KafkaTemplate<String, String> template = this.context.getBean(KafkaTemplate.class);
+		KafkaTemplate<String, String> template = this.context
+				.getBean(KafkaTemplate.class);
 		template.send(TEST_TOPIC, "foo", "bar");
 		Listener listener = this.context.getBean(Listener.class);
 		assertThat(listener.latch.await(10, TimeUnit.SECONDS)).isTrue();
