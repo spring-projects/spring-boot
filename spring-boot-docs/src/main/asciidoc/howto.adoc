@@ -2712,7 +2712,7 @@ etc.)  so you can't use the same application out of the box in a Servlet 2.5 con
 It *is* however possible to run a Spring Boot application on an older container with some
 special tools. If you include `org.springframework.boot:spring-boot-legacy` as a
 dependency (https://github.com/scratches/spring-boot-legacy[maintained separately] to the
-core of Spring Boot and currently available at 1.0.0.RELEASE), all you should need to do
+core of Spring Boot and currently available at 1.0.2.RELEASE), all you should need to do
 is create a `web.xml` and declare a context listener to create the application context and
 your filters and servlets. The context listener is a special purpose one for Spring Boot,
 but the rest of it is normal for a Spring application in Servlet 2.5. Example:
