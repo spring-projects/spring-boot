@@ -1,5 +1,5 @@
-# CentOS 5.11 from 22/03/2016
-FROM centos@sha256:7f8a808416f712da6931ac65e4308fede7fe86bcf15364b6f63af88840fe6131
+# CentOS 5.11 from 30/08/2016
+FROM centos@sha256:f5ac6bb54c5042387c79c83fca93eff7b721da54ab995fd64a20b23f6785465d
 RUN yum install -y wget && \
     yum install -y system-config-services && \
     yum install -y curl && \
