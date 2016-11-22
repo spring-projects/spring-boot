@@ -5270,6 +5270,11 @@ and/or a `WebDriver` bean. Here is an example that uses HtmlUnit:
 	}
 ----
 
+NOTE: By default Spring Boot will put `WebDriver` beans in a special "`scope`" to ensure
+that the driver is quit after each test, and that a new instance is injected. If you don't
+want this behavor you can add `@Scope("singleton")` to your `WebDriver` `@Bean`
+definition.
+
 A list of the auto-configuration that is enabled by `@WebMvcTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
