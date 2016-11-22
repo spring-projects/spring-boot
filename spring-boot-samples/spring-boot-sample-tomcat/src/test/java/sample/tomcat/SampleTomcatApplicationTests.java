@@ -20,13 +20,18 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.ProtocolHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -52,6 +57,9 @@ public class SampleTomcatApplicationTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
+	@Autowired
+	private ApplicationContext applicationContext;
+
 	@Test
 	public void testHome() throws Exception {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
@@ -76,6 +84,17 @@ public class SampleTomcatApplicationTests {
 		finally {
 			inflater.close();
 		}
+	}
+
+	@Test
+	public void testTimeout() throws Exception {
+		EmbeddedWebApplicationContext context = (EmbeddedWebApplicationContext) this.applicationContext;
+		TomcatEmbeddedServletContainer embeddedServletContainer = (TomcatEmbeddedServletContainer) context
+				.getEmbeddedServletContainer();
+		ProtocolHandler protocolHandler = embeddedServletContainer.getTomcat()
+				.getConnector().getProtocolHandler();
+		int timeout = ((AbstractProtocol<?>) protocolHandler).getConnectionTimeout();
+		assertThat(timeout).isEqualTo(5000);
 	}
 
 }
