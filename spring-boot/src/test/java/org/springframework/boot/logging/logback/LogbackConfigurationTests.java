@@ -24,6 +24,7 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
+import ch.qos.logback.core.FileAppender;
 import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.joran.spi.JoranException;
 import org.junit.Test;
@@ -50,6 +51,20 @@ public class LogbackConfigurationTests {
 		Encoder<?> encoder = ((ConsoleAppender<?>) appender).getEncoder();
 		assertThat(encoder).isInstanceOf(PatternLayoutEncoder.class);
 		assertThat(((PatternLayoutEncoder) encoder).getPattern()).isEqualTo("foo");
+	}
+
+	@Test
+	public void filePatternCanBeOverridden() throws JoranException {
+		JoranConfigurator configurator = new JoranConfigurator();
+		LoggerContext context = new LoggerContext();
+		configurator.setContext(context);
+		configurator
+				.doConfigure(new File("src/test/resources/custom-file-log-pattern.xml"));
+		Appender<ILoggingEvent> appender = context.getLogger("ROOT").getAppender("FILE");
+		assertThat(appender).isInstanceOf(FileAppender.class);
+		Encoder<?> encoder = ((FileAppender<?>) appender).getEncoder();
+		assertThat(encoder).isInstanceOf(PatternLayoutEncoder.class);
+		assertThat(((PatternLayoutEncoder) encoder).getPattern()).isEqualTo("bar");
 	}
 
 }
