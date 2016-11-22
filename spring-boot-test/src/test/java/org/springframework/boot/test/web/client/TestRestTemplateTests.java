@@ -34,6 +34,7 @@ import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.MethodCallback;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
@@ -157,25 +158,32 @@ public class TestRestTemplateTests {
 
 	@Test
 	public void withBasicAuthReplacesBasicAuthInterceptorWhenAlreadyPresent() {
-		TestRestTemplate originalTemplate = new TestRestTemplate("foo", "bar");
-		TestRestTemplate basicAuthTemplate = originalTemplate.withBasicAuth("user",
-				"password");
-		assertThat(basicAuthTemplate.getRestTemplate().getMessageConverters())
+		TestRestTemplate original = new TestRestTemplate("foo", "bar");
+		TestRestTemplate basicAuth = original.withBasicAuth("user", "password");
+		assertThat(basicAuth.getRestTemplate().getMessageConverters())
 				.containsExactlyElementsOf(
-						originalTemplate.getRestTemplate().getMessageConverters());
-		assertThat(basicAuthTemplate.getRestTemplate().getRequestFactory())
+						original.getRestTemplate().getMessageConverters());
+		assertThat(basicAuth.getRestTemplate().getRequestFactory())
 				.isInstanceOf(InterceptingClientHttpRequestFactory.class);
 		assertThat(ReflectionTestUtils.getField(
-				basicAuthTemplate.getRestTemplate().getRequestFactory(),
-				"requestFactory"))
+				basicAuth.getRestTemplate().getRequestFactory(), "requestFactory"))
 						.isInstanceOf(CustomHttpComponentsClientHttpRequestFactory.class);
-		assertThat(basicAuthTemplate.getRestTemplate().getUriTemplateHandler())
-				.isSameAs(originalTemplate.getRestTemplate().getUriTemplateHandler());
-		assertThat(basicAuthTemplate.getRestTemplate().getInterceptors())
-				.containsExactlyElementsOf(
-						originalTemplate.getRestTemplate().getInterceptors());
-		assertBasicAuthorizationInterceptorCredentials(basicAuthTemplate, "user",
+		assertThat(basicAuth.getRestTemplate().getUriTemplateHandler())
+				.isSameAs(original.getRestTemplate().getUriTemplateHandler());
+		assertThat(basicAuth.getRestTemplate().getInterceptors())
+				.containsExactlyElementsOf(original.getRestTemplate().getInterceptors());
+		assertBasicAuthorizationInterceptorCredentials(basicAuth, "user", "password");
+	}
+
+	@Test
+	public void withBasicAuthDoesNotResetErrorHandler() throws Exception {
+		TestRestTemplate originalTemplate = new TestRestTemplate("foo", "bar");
+		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
+		originalTemplate.getRestTemplate().setErrorHandler(errorHandler);
+		TestRestTemplate basicAuthTemplate = originalTemplate.withBasicAuth("user",
 				"password");
+		assertThat(basicAuthTemplate.getRestTemplate().getErrorHandler())
+				.isSameAs(errorHandler);
 	}
 
 	private void assertBasicAuthorizationInterceptorCredentials(
