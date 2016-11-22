@@ -617,8 +617,15 @@ for Gradle and to `${project.name}` for Maven.
 |`logFolder`
 |The default value for `LOG_FOLDER`. Only valid for an `init.d` service.
 
+|`logFilename`
+|The default value for `LOG_FILENAME`. Only valid for an `init.d` service.
+
 |`pidFolder`
 |The default value for `PID_FOLDER`. Only valid for an `init.d` service.
+
+|`pidFilename`
+|The default value for the name of the pid file in `PID_FOLDER`. Only valid for an
+ `init.d` service.
 
 |`useStartStopDaemon`
 |If the `start-stop-daemon` command, when it's available, should be used to control the
