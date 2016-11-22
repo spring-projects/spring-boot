@@ -46,11 +46,13 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * instance to configure
 	 * @param consumerFactory the {@link ConsumerFactory} to use
 	 */
-	public void configure(ConcurrentKafkaListenerContainerFactory<Object, Object> listenerContainerFactory,
+	public void configure(
+			ConcurrentKafkaListenerContainerFactory<Object, Object> listenerContainerFactory,
 			ConsumerFactory<Object, Object> consumerFactory) {
 		listenerContainerFactory.setConsumerFactory(consumerFactory);
 		Listener container = this.properties.getListener();
-		ContainerProperties containerProperties = listenerContainerFactory.getContainerProperties();
+		ContainerProperties containerProperties = listenerContainerFactory
+				.getContainerProperties();
 		if (container.getAckMode() != null) {
 			containerProperties.setAckMode(container.getAckMode());
 		}

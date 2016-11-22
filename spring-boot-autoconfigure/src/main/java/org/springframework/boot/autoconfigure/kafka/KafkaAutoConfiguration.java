@@ -54,8 +54,8 @@ public class KafkaAutoConfiguration {
 	public KafkaTemplate<?, ?> kafkaTemplate(
 			ProducerFactory<Object, Object> kafkaProducerFactory,
 			ProducerListener<Object, Object> kafkaProducerListener) {
-		KafkaTemplate<Object, Object> kafkaTemplate =
-				new KafkaTemplate<Object, Object>(kafkaProducerFactory);
+		KafkaTemplate<Object, Object> kafkaTemplate = new KafkaTemplate<Object, Object>(
+				kafkaProducerFactory);
 		kafkaTemplate.setProducerListener(kafkaProducerListener);
 		kafkaTemplate.setDefaultTopic(this.properties.getTemplate().getDefaultTopic());
 		return kafkaTemplate;
