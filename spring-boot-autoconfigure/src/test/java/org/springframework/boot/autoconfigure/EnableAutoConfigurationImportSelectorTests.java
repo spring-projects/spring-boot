@@ -185,8 +185,8 @@ public class EnableAutoConfigurationImportSelectorTests {
 	public void nonAutoConfigurationClassNameExclusionsWhenPresentOnClassPathShouldThrowException()
 			throws Exception {
 		configureExclusions(new String[0],
-				new String[] {
-						"org.springframework.boot.autoconfigure.EnableAutoConfigurationImportSelectorTests.TestConfiguration" },
+				new String[] { "org.springframework.boot.autoconfigure."
+						+ "EnableAutoConfigurationImportSelectorTests.TestConfiguration" },
 				new String[0]);
 		this.expected.expect(IllegalStateException.class);
 		this.importSelector.selectImports(this.annotationMetadata);
@@ -195,8 +195,9 @@ public class EnableAutoConfigurationImportSelectorTests {
 	@Test
 	public void nonAutoConfigurationPropertyExclusionsWhenPresentOnClassPathShouldThrowException()
 			throws Exception {
-		configureExclusions(new String[0], new String[0], new String[] {
-				"org.springframework.boot.autoconfigure.EnableAutoConfigurationImportSelectorTests.TestConfiguration" });
+		configureExclusions(new String[0], new String[0],
+				new String[] { "org.springframework.boot.autoconfigure."
+						+ "EnableAutoConfigurationImportSelectorTests.TestConfiguration" });
 		this.expected.expect(IllegalStateException.class);
 		this.importSelector.selectImports(this.annotationMetadata);
 	}

@@ -172,8 +172,7 @@ public class KafkaProperties {
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(
-					String.format("Resource '%s' must be on a file system", resource),
-					ex);
+					"Resource '" + resource + "' must be on a file system", ex);
 		}
 	}
 
