@@ -37,7 +37,6 @@ import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.actuate.endpoint.LiquibaseEndpoint;
 import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
-import org.springframework.boot.actuate.endpoint.LoggersEndpoint.LoggerLevels;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
@@ -131,9 +130,7 @@ public class EndpointAutoConfigurationTests {
 		load(CustomLoggingConfig.class, EndpointAutoConfiguration.class);
 		LoggersEndpoint endpoint = this.context.getBean(LoggersEndpoint.class);
 		Map<String, Object> result = endpoint.invoke();
-		Map<String, LoggerLevels> loggers = (Map<String, LoggerLevels>) result
-				.get("loggers");
-		assertThat(loggers.size()).isGreaterThan(0);
+		assertThat((Map<?, ?>) result.get("loggers")).size().isGreaterThan(0);
 	}
 
 	@Test
