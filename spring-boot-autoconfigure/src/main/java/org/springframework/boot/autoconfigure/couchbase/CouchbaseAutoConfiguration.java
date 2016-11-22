@@ -44,7 +44,7 @@ import org.springframework.data.couchbase.config.CouchbaseConfigurer;
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass({ CouchbaseBucket.class, Cluster.class })
+@ConditionalOnClass({ CouchbaseBucket.class, Cluster.class, CouchbaseConfigurer.class })
 @Conditional(CouchbaseAutoConfiguration.CouchbaseCondition.class)
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class CouchbaseAutoConfiguration {
