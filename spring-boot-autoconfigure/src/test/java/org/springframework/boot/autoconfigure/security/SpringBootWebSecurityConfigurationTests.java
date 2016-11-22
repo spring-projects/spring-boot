@@ -244,7 +244,8 @@ public class SpringBootWebSecurityConfigurationTests {
 	@Test
 	public void contentSecurityPolicyConfiguration() throws Exception {
 		this.context = SpringApplication.run(VanillaWebConfiguration.class,
-				"--security.headers.content-security-policy=default-src 'self';");
+				"--security.headers.content-security-policy=default-src 'self';",
+				"--server.port=0");
 		MockMvc mockMvc = MockMvcBuilders
 				.webAppContextSetup((WebApplicationContext) this.context)
 				.addFilters((FilterChainProxy) this.context
@@ -261,7 +262,8 @@ public class SpringBootWebSecurityConfigurationTests {
 	public void contentSecurityPolicyReportOnlyConfiguration() throws Exception {
 		this.context = SpringApplication.run(VanillaWebConfiguration.class,
 				"--security.headers.content-security-policy=default-src 'self';",
-				"--security.headers.content-security-policy-mode=report-only");
+				"--security.headers.content-security-policy-mode=report-only",
+				"--server.port=0");
 		MockMvc mockMvc = MockMvcBuilders
 				.webAppContextSetup((WebApplicationContext) this.context)
 				.addFilters((FilterChainProxy) this.context
