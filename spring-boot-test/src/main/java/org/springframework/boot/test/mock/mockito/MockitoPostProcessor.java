@@ -184,14 +184,15 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			BeanDefinitionRegistry registry, MockDefinition definition, Field field) {
 		RootBeanDefinition beanDefinition = createBeanDefinition(definition);
 		String beanName = getBeanName(beanFactory, registry, definition, beanDefinition);
+		String transformedBeanName = BeanFactoryUtils.transformedBeanName(beanName);
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1,
 				beanName);
-		if (registry.containsBeanDefinition(beanName)) {
-			registry.removeBeanDefinition(beanName);
+		if (registry.containsBeanDefinition(transformedBeanName)) {
+			registry.removeBeanDefinition(transformedBeanName);
 		}
-		registry.registerBeanDefinition(beanName, beanDefinition);
+		registry.registerBeanDefinition(transformedBeanName, beanDefinition);
 		Object mock = createMock(definition, beanName);
-		beanFactory.registerSingleton(beanName, mock);
+		beanFactory.registerSingleton(transformedBeanName, mock);
 		this.mockitoBeans.add(mock);
 		this.beanNameRegistry.put(definition, beanName);
 		if (field != null) {

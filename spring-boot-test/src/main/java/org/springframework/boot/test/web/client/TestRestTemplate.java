@@ -984,14 +984,16 @@ public class TestRestTemplate {
 	 */
 	public TestRestTemplate withBasicAuth(String username, String password) {
 		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setErrorHandler(getRestTemplate().getErrorHandler());
 		restTemplate.setMessageConverters(getRestTemplate().getMessageConverters());
 		restTemplate.setInterceptors(
 				removeBasicAuthInterceptorIfPresent(getRestTemplate().getInterceptors()));
 		restTemplate.setRequestFactory(getRestTemplate().getRequestFactory());
 		restTemplate.setUriTemplateHandler(getRestTemplate().getUriTemplateHandler());
-		return new TestRestTemplate(restTemplate, username, password,
-				this.httpClientOptions);
+		TestRestTemplate testRestTemplate = new TestRestTemplate(restTemplate, username,
+				password, this.httpClientOptions);
+		testRestTemplate.getRestTemplate()
+				.setErrorHandler(getRestTemplate().getErrorHandler());
+		return testRestTemplate;
 	}
 
 	private List<ClientHttpRequestInterceptor> removeBasicAuthInterceptorIfPresent(

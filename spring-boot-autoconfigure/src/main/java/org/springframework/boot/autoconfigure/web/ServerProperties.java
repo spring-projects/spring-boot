@@ -874,14 +874,20 @@ public class ServerProperties
 		}
 
 		private void customizeConnectionTimeout(
-				TomcatEmbeddedServletContainerFactory factory, int connectionTimeout) {
-			for (Connector connector : factory.getAdditionalTomcatConnectors()) {
-				ProtocolHandler handler = connector.getProtocolHandler();
-				if (handler instanceof AbstractProtocol) {
-					AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
-					protocol.setConnectionTimeout(connectionTimeout);
+				TomcatEmbeddedServletContainerFactory factory,
+				final int connectionTimeout) {
+			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+
+				@Override
+				public void customize(Connector connector) {
+					ProtocolHandler handler = connector.getProtocolHandler();
+					if (handler instanceof AbstractProtocol) {
+						AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
+						protocol.setConnectionTimeout(connectionTimeout);
+					}
 				}
-			}
+
+			});
 		}
 
 		private void customizeRemoteIpValve(ServerProperties properties,
