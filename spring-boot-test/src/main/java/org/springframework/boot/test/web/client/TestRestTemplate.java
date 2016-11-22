@@ -54,6 +54,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -74,7 +75,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * {@link org.springframework.boot.test.context.SpringBootTest @SpringBootTest}
  * annotation, a {@link TestRestTemplate} is automatically available and can be
  * {@code @Autowired} into you test. If you need customizations (for example to adding
- * additional message converters) use a {@link RestTemplateBuilder} {@code @Bean}.
+ * additional message converters or setting custom error handler) use a {@link RestTemplateBuilder} {@code @Bean}.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -129,8 +130,16 @@ public class TestRestTemplate {
 					new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
 		}
 		addAuthentication(restTemplate, username, password);
-		restTemplate.setErrorHandler(new NoOpResponseErrorHandler());
+		setupErrorHandler(restTemplate);
 		this.restTemplate = restTemplate;
+	}
+
+	private static void setupErrorHandler(RestTemplate restTemplate) {
+		ResponseErrorHandler currentErrorHandler = restTemplate.getErrorHandler();
+		restTemplate.setErrorHandler(
+				currentErrorHandler == null || currentErrorHandler.getClass().equals(DefaultResponseErrorHandler.class)
+						? new NoOpResponseErrorHandler()
+						: currentErrorHandler);
 	}
 
 	private static RestTemplate buildRestTemplate(
@@ -1080,7 +1089,10 @@ public class TestRestTemplate {
 
 	}
 
-	private static class NoOpResponseErrorHandler extends DefaultResponseErrorHandler {
+	/**
+	 * Class used to not throwing exceptions on server-side errors.
+	 */
+	static class NoOpResponseErrorHandler extends DefaultResponseErrorHandler {
 
 		@Override
 		public void handleError(ClientHttpResponse response) throws IOException {
