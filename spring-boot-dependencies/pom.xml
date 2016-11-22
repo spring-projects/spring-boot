@@ -134,7 +134,7 @@
 		<mysql.version>5.1.40</mysql.version>
 		<narayana.version>5.3.5.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
-		<neo4j-ogm.version>2.1.0-SNAPSHOT</neo4j-ogm.version>
+		<neo4j-ogm.version>2.1.0-M01</neo4j-ogm.version>
 		<postgresql.version>9.4.1212.jre7</postgresql.version>
 		<querydsl.version>4.1.4</querydsl.version>
 		<reactor.version>2.0.8.RELEASE</reactor.version>
@@ -2607,13 +2607,6 @@
 					<id>spring-snapshots</id>
 					<name>Spring Snapshots</name>
 					<url>http://repo.spring.io/snapshot</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</repository>
-				<repository>
-					<id>neo4j-snapshots</id>
-					<url>http://m2.neo4j.org/content/repositories/snapshots</url>
 					<snapshots>
 						<enabled>true</enabled>
 					</snapshots>
