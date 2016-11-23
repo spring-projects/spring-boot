@@ -20,6 +20,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.session.data.redis.RedisFlushMode;
+import org.springframework.session.hazelcast.HazelcastFlushMode;
 
 /**
  * Configuration properties for Spring Session.
@@ -92,12 +93,25 @@ public class SessionProperties {
 		 */
 		private String mapName = "spring:session:sessions";
 
+		/**
+		 * Flush mode for the Hazelcast sessions.
+		 */
+		private HazelcastFlushMode flushMode = HazelcastFlushMode.ON_SAVE;
+
 		public String getMapName() {
 			return this.mapName;
 		}
 
 		public void setMapName(String mapName) {
 			this.mapName = mapName;
+		}
+
+		public HazelcastFlushMode getFlushMode() {
+			return this.flushMode;
+		}
+
+		public void setFlushMode(HazelcastFlushMode flushMode) {
+			this.flushMode = flushMode;
 		}
 
 	}
