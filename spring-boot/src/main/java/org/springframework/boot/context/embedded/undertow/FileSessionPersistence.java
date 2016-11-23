@@ -30,6 +30,8 @@ import java.util.Map;
 import io.undertow.servlet.UndertowServletLogger;
 import io.undertow.servlet.api.SessionPersistenceManager;
 
+import org.springframework.core.ConfigurableObjectInputStream;
+
 /**
  * {@link SessionPersistenceManager} that stores session information in a file.
  *
@@ -82,7 +84,7 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 		try {
 			File file = getSessionFile(deploymentName);
 			if (file.exists()) {
-				return load(file);
+				return load(file, classLoader);
 			}
 		}
 		catch (Exception ex) {
@@ -91,9 +93,10 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 		return null;
 	}
 
-	private Map<String, PersistentSession> load(File file)
+	private Map<String, PersistentSession> load(File file, ClassLoader classLoader)
 			throws IOException, ClassNotFoundException {
-		ObjectInputStream stream = new ObjectInputStream(new FileInputStream(file));
+		ObjectInputStream stream = new ConfigurableObjectInputStream(
+				new FileInputStream(file), classLoader);
 		try {
 			return load(stream);
 		}
