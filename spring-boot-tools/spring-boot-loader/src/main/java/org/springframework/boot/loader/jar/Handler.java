@@ -197,6 +197,30 @@ public class Handler extends URLStreamHandler {
 	}
 
 	@Override
+	protected int hashCode(URL u) {
+		int result = 0;
+		String protocol = u.getProtocol();
+		if (protocol != null) {
+			result += protocol.hashCode();
+		}
+		String file = u.getFile();
+		int separatorIndex = file.indexOf(SEPARATOR);
+		if (separatorIndex == -1) {
+			return result + file.hashCode();
+		}
+		String fileWithoutEntry = file.substring(0, separatorIndex);
+		try {
+			result += new URL(fileWithoutEntry).hashCode();
+		}
+		catch (MalformedURLException ex) {
+			result += fileWithoutEntry.hashCode();
+		}
+		String entry = canonicalize(file.substring(separatorIndex + 2));
+		result += entry.hashCode();
+		return result;
+	}
+
+	@Override
 	protected boolean sameFile(URL u1, URL u2) {
 		if (!u1.getProtocol().equals("jar") || !u2.getProtocol().equals("jar")) {
 			return false;
@@ -209,7 +233,11 @@ public class Handler extends URLStreamHandler {
 		String nested1 = u1.getFile().substring(separator1 + SEPARATOR.length());
 		String nested2 = u2.getFile().substring(separator2 + SEPARATOR.length());
 		if (!nested1.equals(nested2)) {
-			return false;
+			String canonical1 = canonicalize(nested1);
+			String canonical2 = canonicalize(nested2);
+			if (!canonical1.equals(canonical2)) {
+				return false;
+			}
 		}
 		String root1 = u1.getFile().substring(0, separator1);
 		String root2 = u2.getFile().substring(0, separator2);
@@ -220,6 +248,10 @@ public class Handler extends URLStreamHandler {
 			// Continue
 		}
 		return super.sameFile(u1, u2);
+	}
+
+	private String canonicalize(String path) {
+		return path.replace(SEPARATOR, "/");
 	}
 
 	public JarFile getRootJarFileFromUrl(URL url) throws IOException {
