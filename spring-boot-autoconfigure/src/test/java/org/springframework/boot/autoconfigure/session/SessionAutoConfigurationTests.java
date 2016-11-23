@@ -19,9 +19,6 @@ package org.springframework.boot.autoconfigure.session;
 import java.util.Arrays;
 import java.util.Collections;
 
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IMap;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -37,13 +34,8 @@ import org.springframework.session.ExpiringSession;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
-import org.springframework.session.hazelcast.HazelcastSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link SessionAutoConfiguration}.
@@ -105,24 +97,7 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	}
 
 	@Test
-	public void hazelcastSessionStore() {
-		load(Collections.<Class<?>>singletonList(HazelcastConfiguration.class),
-				"spring.session.store-type=hazelcast");
-		validateSessionRepository(HazelcastSessionRepository.class);
-	}
-
-	@Test
-	public void hazelcastSessionStoreWithCustomizations() {
-		load(Collections.<Class<?>>singletonList(HazelcastSpecificMap.class),
-				"spring.session.store-type=hazelcast",
-				"spring.session.hazelcast.map-name=foo:bar:biz");
-		validateSessionRepository(HazelcastSessionRepository.class);
-		HazelcastInstance hazelcastInstance = this.context
-				.getBean(HazelcastInstance.class);
-		verify(hazelcastInstance, times(1)).getMap("foo:bar:biz");
-	}
-
-	@Test
+	@SuppressWarnings("unchecked")
 	public void mongoSessionStore() {
 		load(Arrays.asList(EmbeddedMongoAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class),
@@ -131,6 +106,7 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void mongoSessionStoreWithCustomizations() {
 		load(Arrays.asList(EmbeddedMongoAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class),
@@ -157,30 +133,6 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		public SessionRepository<?> mySessionRepository() {
 			return new MapSessionRepository(
 					Collections.<String, ExpiringSession>emptyMap());
-		}
-
-	}
-
-	@Configuration
-	static class HazelcastConfiguration {
-
-		@Bean
-		public HazelcastInstance hazelcastInstance() {
-			return Hazelcast.newHazelcastInstance();
-		}
-
-	}
-
-	@Configuration
-	static class HazelcastSpecificMap {
-
-		@Bean
-		@SuppressWarnings("unchecked")
-		public HazelcastInstance hazelcastInstance() {
-			IMap<Object, Object> map = mock(IMap.class);
-			HazelcastInstance mock = mock(HazelcastInstance.class);
-			given(mock.getMap("foo:bar:biz")).willReturn(map);
-			return mock;
 		}
 
 	}
