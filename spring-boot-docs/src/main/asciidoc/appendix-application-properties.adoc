@@ -375,6 +375,7 @@ content into your application; rather pick only the properties that you need.
 	spring.resources.static-locations=classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/ # Locations of static resources.
 
 	# SPRING SESSION ({sc-spring-boot-autoconfigure}/session/SessionProperties.{sc-ext}[SessionProperties])
+	spring.session.hazelcast.flush-mode= # Flush mode for the Hazelcast sessions.
 	spring.session.hazelcast.map-name=spring:session:sessions # Name of the map used to store sessions.
 	spring.session.jdbc.initializer.enabled= # Create the required session tables on startup if necessary. Enabled automatically if the default table name is set or a custom schema is configured.
 	spring.session.jdbc.schema=classpath:org/springframework/session/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
