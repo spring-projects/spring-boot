@@ -47,9 +47,9 @@ public abstract class AbstractSessionAutoConfigurationTests {
 
 	protected <T extends SessionRepository<?>> T validateSessionRepository(
 			Class<T> type) {
-		SessionRepository<?> cacheManager = this.context.getBean(SessionRepository.class);
-		assertThat(cacheManager).as("Wrong session repository type").isInstanceOf(type);
-		return type.cast(cacheManager);
+		SessionRepository<?> repository = this.context.getBean(SessionRepository.class);
+		assertThat(repository).as("Wrong session repository type").isInstanceOf(type);
+		return type.cast(repository);
 	}
 
 	protected Integer getSessionTimeout(SessionRepository<?> sessionRepository) {
