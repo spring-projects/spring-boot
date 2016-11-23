@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.orm.jpa;
+package org.springframework.boot.test.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
@@ -39,26 +39,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Greg Potter
  */
 @RunWith(SpringRunner.class)
-@DataJpaTest
+@JdbcTest
 @AutoConfigureTestDatabase
 public class AutoConfigureTestDatabaseWithMultipleDatasourcesIntegrationTests {
 
 	@Autowired
-	private TestEntityManager entities;
-
-	@Autowired
-	private ExampleRepository repository;
-
-	@Autowired
 	private DataSource dataSource;
-
-	@Test
-	public void testRepository() throws Exception {
-		this.entities.persist(new ExampleEntity("boot", "124"));
-		this.entities.flush();
-		ExampleEntity found = this.repository.findByReference("124");
-		assertThat(found.getName()).isEqualTo("boot");
-	}
 
 	@Test
 	public void replacesDefinedDataSourceWithExplicit() throws Exception {

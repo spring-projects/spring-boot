@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.orm.jpa;
+package org.springframework.boot.test.autoconfigure.jdbc;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -33,8 +33,8 @@ import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
  * Annotation that can be applied to a test class to configure a test database to use
  * instead of any application defined or auto-configured {@link DataSource}.
  *
- * @author Stephane Nicoll
- * @deprecated since 1.5 in favour of {@link org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase}
+ * @author Phillip Webb
+ * @see TestDatabaseAutoConfiguration
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
@@ -42,7 +42,6 @@ import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 @Inherited
 @ImportAutoConfiguration
 @PropertyMapping("spring.test.database")
-@Deprecated
 public @interface AutoConfigureTestDatabase {
 
 	/**
@@ -61,7 +60,6 @@ public @interface AutoConfigureTestDatabase {
 	/**
 	 * What the test database can replace.
 	 */
-	@Deprecated
 	enum Replace {
 
 		/**

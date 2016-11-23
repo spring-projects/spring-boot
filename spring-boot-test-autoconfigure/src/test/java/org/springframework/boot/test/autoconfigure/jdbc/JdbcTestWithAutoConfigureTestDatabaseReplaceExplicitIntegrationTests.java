@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.orm.jpa;
+package org.springframework.boot.test.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
@@ -33,33 +33,18 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link DataJpaTest}.
+ * Integration tests for {@link JdbcTest}.
  *
- * @author Phillip Webb
+ * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@DataJpaTest
+@JdbcTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQL)
-@Deprecated
-public class DataJpaTestWithAutoConfigureTestDatabaseReplaceExplicitIntegrationTests {
-
-	@Autowired
-	private TestEntityManager entities;
-
-	@Autowired
-	private ExampleRepository repository;
+public class JdbcTestWithAutoConfigureTestDatabaseReplaceExplicitIntegrationTests {
 
 	@Autowired
 	private DataSource dataSource;
-
-	@Test
-	public void testRepository() throws Exception {
-		this.entities.persist(new ExampleEntity("spring", "123"));
-		this.entities.persist(new ExampleEntity("boot", "124"));
-		this.entities.flush();
-		ExampleEntity found = this.repository.findByReference("124");
-		assertThat(found.getName()).isEqualTo("boot");
-	}
 
 	@Test
 	public void replacesDefinedDataSourceWithExplicit() throws Exception {
