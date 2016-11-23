@@ -33,6 +33,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link CassandraAutoConfiguration}
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
 public class CassandraAutoConfigurationTests {
 
@@ -47,8 +48,7 @@ public class CassandraAutoConfigurationTests {
 
 	@Test
 	public void createClusterWithDefault() {
-		this.context = doLoad();
-		this.context.refresh();
+		load();
 		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
 		Cluster cluster = this.context.getBean(Cluster.class);
 		assertThat(cluster.getClusterName()).startsWith("cluster");
@@ -56,8 +56,7 @@ public class CassandraAutoConfigurationTests {
 
 	@Test
 	public void createClusterWithOverrides() {
-		this.context = doLoad("spring.data.cassandra.cluster-name=testcluster");
-		this.context.refresh();
+		load("spring.data.cassandra.cluster-name=testcluster");
 		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
 		Cluster cluster = this.context.getBean(Cluster.class);
 		assertThat(cluster.getClusterName()).isEqualTo("testcluster");
@@ -65,30 +64,27 @@ public class CassandraAutoConfigurationTests {
 
 	@Test
 	public void createCustomizeCluster() {
-		this.context = doLoad(ClusterConfig.class);
-		this.context.refresh();
+		load(ClusterConfig.class);
 		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
 		assertThat(this.context.getBeanNamesForType(ClusterCustomizer.class).length).isEqualTo(1);
 	}
 
-	private AnnotationConfigApplicationContext doLoad() {
-		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		applicationContext.register(PropertyPlaceholderAutoConfiguration.class,
+	private void load(String... environment) {
+		load(null, environment);
+	}
+
+	private void load(Class<?> config, String... environment) {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		if (config != null) {
+			ctx.register(config);
+		}
+		ctx.register(PropertyPlaceholderAutoConfiguration.class,
 				CassandraAutoConfiguration.class);
-		return applicationContext;
+		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		ctx.refresh();
+		this.context = ctx;
 	}
 
-	private AnnotationConfigApplicationContext doLoad(Class<?> clazz) {
-		AnnotationConfigApplicationContext applicationContext = doLoad();
-		applicationContext.register(clazz);
-		return applicationContext;
-	}
-
-	private AnnotationConfigApplicationContext doLoad(String... environment) {
-		AnnotationConfigApplicationContext applicationContext = doLoad();
-		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
-		return applicationContext;
-	}
 
 	@Configuration
 	static class ClusterConfig {

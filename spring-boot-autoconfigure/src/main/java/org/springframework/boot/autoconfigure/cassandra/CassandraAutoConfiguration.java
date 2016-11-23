@@ -49,12 +49,12 @@ public class CassandraAutoConfiguration {
 
 	private final CassandraProperties properties;
 
-	private final List<ClusterCustomizer> customizers;
+	private final List<ClusterCustomizer> clusterCustomizers;
 
 	public CassandraAutoConfiguration(CassandraProperties properties,
-			ObjectProvider<List<ClusterCustomizer>> customizers) {
+			ObjectProvider<List<ClusterCustomizer>> clusterCustomizersProvider) {
 		this.properties = properties;
-		this.customizers = customizers.getIfAvailable();
+		this.clusterCustomizers = clusterCustomizersProvider.getIfAvailable();
 	}
 
 	@Bean
@@ -96,8 +96,8 @@ public class CassandraAutoConfiguration {
 	}
 
 	private void customize(Cluster cluster) {
-		if (this.customizers != null) {
-			for (ClusterCustomizer customizer : this.customizers) {
+		if (this.clusterCustomizers != null) {
+			for (ClusterCustomizer customizer : this.clusterCustomizers) {
 				customizer.customize(cluster);
 			}
 		}

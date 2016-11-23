@@ -19,16 +19,17 @@ package org.springframework.boot.autoconfigure.cassandra;
 import com.datastax.driver.core.Cluster;
 
 /**
- * Callback interface that can be used to customize a {@link Cluster}.
+ * Callback interface that can be implemented by beans wishing to customize the
+ * {@link Cluster} before it is fully initialized, in particular to tune its
+ * configuration.
  *
  * @author Eddú Meléndez
  * @since 1.5.0
- * @see CassandraAutoConfiguration
  */
 public interface ClusterCustomizer {
 
 	/**
-	 * Customize the cluster.
+	 * Customize the {@link Cluster}.
 	 * @param cluster the cluster to customize
 	 */
 	void customize(Cluster cluster);
