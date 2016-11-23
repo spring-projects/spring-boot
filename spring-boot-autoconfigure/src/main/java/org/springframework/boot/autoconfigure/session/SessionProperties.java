@@ -94,7 +94,7 @@ public class SessionProperties {
 		private String mapName = "spring:session:sessions";
 
 		/**
-		 * Flush mode for the Hazelcast sessions.
+		 * Sessions flush mode.
 		 */
 		private HazelcastFlushMode flushMode = HazelcastFlushMode.ON_SAVE;
 
@@ -208,7 +208,7 @@ public class SessionProperties {
 		private String namespace = "";
 
 		/**
-		 * Flush mode for the Redis sessions.
+		 * Sessions flush mode.
 		 */
 		private RedisFlushMode flushMode = RedisFlushMode.ON_SAVE;
 
