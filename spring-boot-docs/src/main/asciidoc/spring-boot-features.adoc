@@ -4616,6 +4616,34 @@ Lastly, the most extreme (and rarely used) option is to create your own
 
 
 
+[[boot-features-validation]]
+== Validation
+The method validation feature supported by Bean Validation 1.1 is automatically enabled
+as long as a JSR-303 implementation (e.g. Hibernate validator) is on the classpath. This
+allows bean methods to be annotated with `javax.validation` constraints on their
+parameters and/or on their return value. Target classes with such annotated methods need
+to be annotated with the `@Validated` annotation at the type level for their methods to
+be searched for inline constraint annotations.
+
+For instance, the following service triggers the validation of the first argument, making
+sure its size is between 8 and 10
+
+[source,java,indent=0]
+----
+	@Service
+	@Validated
+	public class MyBean {
+
+		public Archive findByCodeAndAuthor(@Size(min = 8, max = 10) String code,
+				Author author) {
+			...
+		}
+
+	}
+----
+
+
+
 [[boot-features-email]]
 == Sending email
 The Spring Framework provides an easy abstraction for sending email using the
