@@ -24,6 +24,11 @@ import org.junit.Test;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,7 +54,30 @@ public class TestDatabaseAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(DataSource.class)).isEmpty();
 	}
 
+	@Test
+	public void replaceWithUniqueDatabase() {
+		load(ExistingDataSourceConfiguration.class);
+		DataSource datasource = this.context.getBean(DataSource.class);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
+		jdbcTemplate.execute("create table example (id int, name varchar);");
+
+		ConfigurableApplicationContext anotherContext = doLoad(
+				ExistingDataSourceConfiguration.class);
+		try {
+			DataSource anotherDatasource = anotherContext.getBean(DataSource.class);
+			JdbcTemplate anotherJdbcTemplate = new JdbcTemplate(anotherDatasource);
+			anotherJdbcTemplate.execute("create table example (id int, name varchar);");
+		}
+		finally {
+			anotherContext.close();
+		}
+	}
+
 	public void load(Class<?> config, String... environment) {
+		this.context = doLoad(config, environment);
+	}
+
+	public ConfigurableApplicationContext doLoad(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		if (config != null) {
 			ctx.register(config);
@@ -57,7 +85,19 @@ public class TestDatabaseAutoConfigurationTests {
 		ctx.register(TestDatabaseAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(ctx, environment);
 		ctx.refresh();
-		this.context = ctx;
+		return ctx;
+	}
+
+	@Configuration
+	static class ExistingDataSourceConfiguration {
+
+		@Bean
+		public DataSource dataSource() {
+			EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
+					.setType(EmbeddedDatabaseType.HSQL);
+			return builder.build();
+		}
+
 	}
 
 }
