@@ -177,6 +177,9 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 		catch (ClassNotFoundException ex) {
 			return Collections.emptySet();
 		}
+		catch (NoClassDefFoundError ex) {
+			return Collections.emptySet();
+		}
 	}
 
 	private void collectBeanNamesForType(Set<String> result,
