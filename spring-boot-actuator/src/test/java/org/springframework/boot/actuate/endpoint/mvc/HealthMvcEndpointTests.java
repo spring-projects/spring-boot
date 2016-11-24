@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.http.HttpStatus;
@@ -262,6 +263,47 @@ public class HealthMvcEndpointTests {
 		@SuppressWarnings("unchecked")
 		Health health = ((ResponseEntity<Health>) result).getBody();
 		assertThat(health.getStatus() == Status.DOWN).isTrue();
+	}
+
+	@Test
+	public void detailIsHiddenWhenAllEndpointsAreSensitive() {
+		EnvironmentTestUtils.addEnvironment(this.environment, "endpoints.sensitive:true");
+		this.mvc = new HealthMvcEndpoint(this.endpoint, false);
+		this.mvc.setEnvironment(this.environment);
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(null);
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isNull();
+	}
+
+	@Test
+	public void detailIsHiddenWhenHealthEndpointIsSensitive() {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"endpoints.health.sensitive:true");
+		this.mvc = new HealthMvcEndpoint(this.endpoint, false);
+		this.mvc.setEnvironment(this.environment);
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(null);
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isNull();
+	}
+
+	@Test
+	public void detailIsHiddenWhenOnlyHealthEndpointIsSensitive() {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"endpoints.health.sensitive:true", "endpoints.sensitive:false");
+		this.mvc = new HealthMvcEndpoint(this.endpoint, false);
+		this.mvc.setEnvironment(this.environment);
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(null);
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isNull();
 	}
 
 }

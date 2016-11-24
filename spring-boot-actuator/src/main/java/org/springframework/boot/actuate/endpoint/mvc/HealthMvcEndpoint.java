@@ -59,7 +59,9 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 
 	private Map<String, HttpStatus> statusMapping = new HashMap<String, HttpStatus>();
 
-	private RelaxedPropertyResolver propertyResolver;
+	private RelaxedPropertyResolver healthPropertyResolver;
+
+	private RelaxedPropertyResolver endpointPropertyResolver;
 
 	private RelaxedPropertyResolver roleResolver;
 
@@ -84,8 +86,10 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 
 	@Override
 	public void setEnvironment(Environment environment) {
-		this.propertyResolver = new RelaxedPropertyResolver(environment,
+		this.healthPropertyResolver = new RelaxedPropertyResolver(environment,
 				"endpoints.health.");
+		this.endpointPropertyResolver = new RelaxedPropertyResolver(environment,
+				"endpoints.");
 		this.roleResolver = new RelaxedPropertyResolver(environment,
 				"management.security.");
 	}
@@ -209,7 +213,12 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 	}
 
 	private boolean isUnrestricted() {
-		Boolean sensitive = this.propertyResolver.getProperty("sensitive", Boolean.class);
+		Boolean sensitive = this.healthPropertyResolver.getProperty("sensitive",
+				Boolean.class);
+		if (sensitive == null) {
+			sensitive = this.endpointPropertyResolver.getProperty("sensitive",
+					Boolean.class);
+		}
 		return !this.secure && !Boolean.TRUE.equals(sensitive);
 	}
 
