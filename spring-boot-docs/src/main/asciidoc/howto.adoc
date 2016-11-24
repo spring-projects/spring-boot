@@ -2104,6 +2104,39 @@ so you can see how to set things up.
 
 
 
+[[howto-messaging]]
+== Messaging
+
+
+
+[[howto-jms-disable-transaction]]
+=== Disable transacted JMS session
+If your JMS broker does not support transacted session, you will have to disable the
+support of transactions altogether. If you create your own `JmsListenerContainerFactory`
+there is nothing to do since it won't be transacted by default. If you want to use
+the `DefaultJmsListenerContainerFactoryConfigurer` to reuse Spring Boot's default, you
+can disable transacted session as follows:
+
+[source,java,indent=0]
+----
+	@Bean
+	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
+			ConnectionFactory connectionFactory,
+			DefaultJmsListenerContainerFactoryConfigurer configurer) {
+		DefaultJmsListenerContainerFactory listenerFactory =
+				new DefaultJmsListenerContainerFactory();
+		configurer.configure(listenerFactory, connectionFactory);
+		listenerFactory.setTransactionManager(null);
+		listenerFactory.setSessionTransacted(false);
+		return listenerFactory;
+	}
+----
+
+This overrides the default factory and this should be applied to any other factory that
+your application defines, if any.
+
+
+
 [[howto-batch-applications]]
 == Batch applications
 
