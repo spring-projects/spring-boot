@@ -167,7 +167,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * Skip the execution.
 	 * @since 1.3.2
 	 */
-	@Parameter(defaultValue = "false")
+	@Parameter(property = "skip", defaultValue = "false")
 	private boolean skip;
 
 	@Override
