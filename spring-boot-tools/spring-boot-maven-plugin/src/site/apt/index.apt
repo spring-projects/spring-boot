@@ -54,6 +54,8 @@ Spring Boot Maven Plugin
 
   * {{{./examples/it-random-port.html}Random port for integration tests}}
 
+  * {{{./examples/it-skip.html}Skip integration tests}}
+
   * {{{./examples/run-profiles.html}Specify active profiles}}
 
   * {{{./examples/build-info.html}Generate build information}}
