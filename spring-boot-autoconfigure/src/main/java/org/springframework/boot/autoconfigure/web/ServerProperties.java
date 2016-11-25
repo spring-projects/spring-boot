@@ -362,12 +362,18 @@ public class ServerProperties
 		this.maxHttpHeaderSize = maxHttpHeaderSize;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(reason = "Use dedicated property for each container.")
 	public int getMaxHttpPostSize() {
 		return this.maxHttpPostSize;
 	}
 
+	@Deprecated
 	public void setMaxHttpPostSize(int maxHttpPostSize) {
 		this.maxHttpPostSize = maxHttpPostSize;
+		this.jetty.setMaxHttpPostSize(maxHttpPostSize);
+		this.tomcat.setMaxHttpPostSize(maxHttpPostSize);
+		this.undertow.setMaxHttpPostSize(maxHttpPostSize);
 	}
 
 	protected final boolean getOrDeduceUseForwardHeaders() {
@@ -646,6 +652,11 @@ public class ServerProperties
 		private int minSpareThreads = 0; // Minimum spare threads in protocol handler
 
 		/**
+		 * Maximum size in bytes of the HTTP post content.
+		 */
+		private int maxHttpPostSize = 0; // bytes
+
+		/**
 		 * Maximum size in bytes of the HTTP message header.
 		 */
 		private int maxHttpHeaderSize = 0; // bytes
@@ -695,6 +706,14 @@ public class ServerProperties
 
 		public void setMinSpareThreads(int minSpareThreads) {
 			this.minSpareThreads = minSpareThreads;
+		}
+
+		public int getMaxHttpPostSize() {
+			return this.maxHttpPostSize;
+		}
+
+		public void setMaxHttpPostSize(int maxHttpPostSize) {
+			this.maxHttpPostSize = maxHttpPostSize;
 		}
 
 		public Accesslog getAccesslog() {
@@ -815,8 +834,8 @@ public class ServerProperties
 			if (maxHttpHeaderSize > 0) {
 				customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize);
 			}
-			if (serverProperties.getMaxHttpPostSize() > 0) {
-				customizeMaxHttpPostSize(factory, serverProperties.getMaxHttpPostSize());
+			if (this.maxHttpPostSize > 0) {
+				customizeMaxHttpPostSize(factory, this.maxHttpPostSize);
 			}
 			if (this.accesslog.enabled) {
 				customizeAccessLog(factory);
@@ -1117,6 +1136,11 @@ public class ServerProperties
 	public static class Jetty {
 
 		/**
+		 * Maximum size in bytes of the HTTP post or put content.
+		 */
+		private int maxHttpPostSize = 0; // bytes
+
+		/**
 		 * Number of acceptor threads to use.
 		 */
 		private Integer acceptors;
@@ -1125,6 +1149,14 @@ public class ServerProperties
 		 * Number of selector threads to use.
 		 */
 		private Integer selectors;
+
+		public int getMaxHttpPostSize() {
+			return this.maxHttpPostSize;
+		}
+
+		public void setMaxHttpPostSize(int maxHttpPostSize) {
+			this.maxHttpPostSize = maxHttpPostSize;
+		}
 
 		public Integer getAcceptors() {
 			return this.acceptors;
@@ -1155,8 +1187,8 @@ public class ServerProperties
 				customizeMaxHttpHeaderSize(factory,
 						serverProperties.getMaxHttpHeaderSize());
 			}
-			if (serverProperties.getMaxHttpPostSize() > 0) {
-				customizeMaxHttpPostSize(factory, serverProperties.getMaxHttpPostSize());
+			if (this.maxHttpPostSize > 0) {
+				customizeMaxHttpPostSize(factory, this.maxHttpPostSize);
 			}
 
 			if (serverProperties.getConnectionTimeout() != null) {
@@ -1267,6 +1299,11 @@ public class ServerProperties
 	public static class Undertow {
 
 		/**
+		 * Maximum size in bytes of the HTTP post content.
+		 */
+		private long maxHttpPostSize = 0; // bytes
+
+		/**
 		 * Size of each buffer in bytes.
 		 */
 		private Integer bufferSize;
@@ -1293,6 +1330,14 @@ public class ServerProperties
 		private Boolean directBuffers;
 
 		private final Accesslog accesslog = new Accesslog();
+
+		public long getMaxHttpPostSize() {
+			return this.maxHttpPostSize;
+		}
+
+		public void setMaxHttpPostSize(long maxHttpPostSize) {
+			this.maxHttpPostSize = maxHttpPostSize;
+		}
 
 		public Integer getBufferSize() {
 			return this.bufferSize;
@@ -1366,8 +1411,8 @@ public class ServerProperties
 				customizeMaxHttpHeaderSize(factory,
 						serverProperties.getMaxHttpHeaderSize());
 			}
-			if (serverProperties.getMaxHttpPostSize() > 0) {
-				customizeMaxHttpPostSize(factory, serverProperties.getMaxHttpPostSize());
+			if (this.maxHttpPostSize > 0) {
+				customizeMaxHttpPostSize(factory, this.maxHttpPostSize);
 			}
 
 			if (serverProperties.getConnectionTimeout() != null) {
@@ -1404,13 +1449,13 @@ public class ServerProperties
 
 		private void customizeMaxHttpPostSize(
 				UndertowEmbeddedServletContainerFactory factory,
-				final int maxHttpPostSize) {
+				final long maxHttpPostSize) {
 			factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
 
 				@Override
 				public void customize(Builder builder) {
 					builder.setServerOption(UndertowOptions.MAX_ENTITY_SIZE,
-							(long) maxHttpPostSize);
+							maxHttpPostSize);
 				}
 
 			});

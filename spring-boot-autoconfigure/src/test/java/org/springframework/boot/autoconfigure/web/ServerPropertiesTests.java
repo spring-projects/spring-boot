@@ -310,7 +310,9 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.maxHttpPostSize", "9999");
 		bindProperties(map);
-		assertThat(this.properties.getMaxHttpPostSize()).isEqualTo(9999);
+		assertThat(this.properties.getJetty().getMaxHttpPostSize()).isEqualTo(9999);
+		assertThat(this.properties.getTomcat().getMaxHttpPostSize()).isEqualTo(9999);
+		assertThat(this.properties.getUndertow().getMaxHttpPostSize()).isEqualTo(9999);
 	}
 
 	@Test
@@ -474,6 +476,35 @@ public class ServerPropertiesTests {
 				.getEmbeddedServletContainer();
 		assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
 				.getProtocolHandler()).getMaxConnections()).isEqualTo(5);
+	}
+
+	@Test
+	public void customTomcatMaxHttpPostSize() {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.max-http-post-size", "10000");
+		bindProperties(map);
+
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(container);
+		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
+				.getEmbeddedServletContainer();
+		assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize())
+				.isEqualTo(10000);
+	}
+
+	@Test
+	@Deprecated
+	public void customTomcatMaxHttpPostSizeWithDeprecatedProperty() {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.max-http-post-size", "2000");
+		bindProperties(map);
+
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(container);
+		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
+				.getEmbeddedServletContainer();
+		assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize())
+				.isEqualTo(2000);
 	}
 
 	@Test
