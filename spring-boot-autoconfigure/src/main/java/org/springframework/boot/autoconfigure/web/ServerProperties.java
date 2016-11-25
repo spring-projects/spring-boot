@@ -146,11 +146,6 @@ public class ServerProperties
 	private int maxHttpHeaderSize = 0; // bytes
 
 	/**
-	 * Maximum size in bytes of the HTTP post content.
-	 */
-	private int maxHttpPostSize = 0; // bytes
-
-	/**
 	 * Time in milliseconds that connectors will wait for another HTTP request before
 	 * closing the connection. When not set, the connector's container-specific default
 	 * will be used. Use a value of -1 to indicate no (i.e. infinite) timeout.
@@ -360,20 +355,6 @@ public class ServerProperties
 
 	public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
 		this.maxHttpHeaderSize = maxHttpHeaderSize;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "Use dedicated property for each container.")
-	public int getMaxHttpPostSize() {
-		return this.maxHttpPostSize;
-	}
-
-	@Deprecated
-	public void setMaxHttpPostSize(int maxHttpPostSize) {
-		this.maxHttpPostSize = maxHttpPostSize;
-		this.jetty.setMaxHttpPostSize(maxHttpPostSize);
-		this.tomcat.setMaxHttpPostSize(maxHttpPostSize);
-		this.undertow.setMaxHttpPostSize(maxHttpPostSize);
 	}
 
 	protected final boolean getOrDeduceUseForwardHeaders() {
