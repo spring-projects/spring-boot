@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -390,7 +391,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			}
 			// Any pre-existing active profiles set via property sources (e.g. System
 			// properties) take precedence over those added in config files.
-			Set<Profile> activeProfiles = getProfilesForValue(
+			Set<Profile> activeProfiles = getProfilesForString(
 					this.environment.getProperty(ACTIVE_PROFILES_PROPERTY));
 			maybeActivateProfiles(activeProfiles);
 			return activeProfiles;
@@ -417,7 +418,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 					unprocessedActiveProfiles.add(profile);
 				}
 			}
-			// Reverse them so the order is the same as from getProfilesForValue()
+			// Reverse them so the order is the same as from getProfilesForString()
 			// (last one wins when properties are eventually resolved)
 			Collections.reverse(unprocessedActiveProfiles);
 			return unprocessedActiveProfiles;
@@ -506,12 +507,25 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		}
 
 		private void handleProfileProperties(PropertySource<?> propertySource) {
-			Set<Profile> activeProfiles = getProfilesForValue(
-					propertySource.getProperty(ACTIVE_PROFILES_PROPERTY));
+			Set<Profile> activeProfiles = getProfilesForProperty(propertySource,
+					ACTIVE_PROFILES_PROPERTY);
 			maybeActivateProfiles(activeProfiles);
-			Set<Profile> includeProfiles = getProfilesForValue(
-					propertySource.getProperty(INCLUDE_PROFILES_PROPERTY));
+			Set<Profile> includeProfiles = getProfilesForProperty(propertySource,
+					INCLUDE_PROFILES_PROPERTY);
 			addProfiles(includeProfiles);
+		}
+
+		private Set<String> propertyAsSet(PropertySource<?> propertySource,
+				String baseName) {
+			Set<String> properties = new HashSet<>();
+			int i = 0;
+			String nextProperty = (String) propertySource.getProperty(baseName + "[0]");
+			while (nextProperty != null) {
+				properties.add(nextProperty);
+				nextProperty = (String) propertySource
+						.getProperty(baseName + "[" + ++i + "]");
+			}
+			return properties;
 		}
 
 		private void maybeActivateProfiles(Set<Profile> profiles) {
@@ -540,14 +554,30 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			}
 		}
 
-		private Set<Profile> getProfilesForValue(Object property) {
-			String value = (property == null ? null : property.toString());
-			Set<String> profileNames = asResolvedSet(value, null);
-			Set<Profile> profiles = new LinkedHashSet<Profile>();
-			for (String profileName : profileNames) {
-				profiles.add(new Profile(profileName));
+		private Set<Profile> getProfilesForProperty(PropertySource<?> propertySource,
+				String propertyName) {
+			Set<Profile> parsedProperties;
+			if (propertySource.getProperty(propertyName) != null) {
+				parsedProperties = getProfilesForString(
+						propertySource.getProperty(propertyName).toString());
 			}
-			return profiles;
+			else {
+				parsedProperties = getProfilesForSet(propertyAsSet(propertySource, propertyName));
+			}
+			return parsedProperties;
+		}
+
+		private Set<Profile> getProfilesForString(String property) {
+			Set<String> profileNames = asResolvedSet(property, null);
+			return getProfilesForSet(profileNames);
+		}
+
+		private Set<Profile> getProfilesForSet(Set<String> properties) {
+			Set<Profile> parsedProperties = new LinkedHashSet<Profile>();
+			for (String profileName : properties) {
+				parsedProperties.add(new Profile(profileName));
+			}
+			return parsedProperties;
 		}
 
 		private void addProfiles(Set<Profile> profiles) {
