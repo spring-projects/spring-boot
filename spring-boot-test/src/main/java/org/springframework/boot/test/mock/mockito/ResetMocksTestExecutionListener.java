@@ -65,7 +65,7 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 		for (String name : names) {
 			BeanDefinition definition = beanFactory.getBeanDefinition(name);
 			if (definition.isSingleton() && instantiatedSingletons.contains(name)) {
-				Object bean = beanFactory.getBean(name);
+				Object bean = beanFactory.getSingleton(name);
 				if (reset.equals(MockReset.get(bean))) {
 					Mockito.reset(bean);
 				}
