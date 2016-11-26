@@ -47,6 +47,7 @@ import org.springframework.boot.configurationsample.method.EmptyTypeMethodConfig
 import org.springframework.boot.configurationsample.method.InvalidMethodConfig;
 import org.springframework.boot.configurationsample.method.MethodAndClassConfig;
 import org.springframework.boot.configurationsample.method.SimpleMethodConfig;
+import org.springframework.boot.configurationsample.simple.ClassWithNestedProperties;
 import org.springframework.boot.configurationsample.simple.DeprecatedSingleProperty;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
 import org.springframework.boot.configurationsample.simple.NotAnnotated;
@@ -765,6 +766,17 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		finally {
 			writer.close();
 		}
+	}
+
+	@Test
+	public void nestedClassChildProperties() throws Exception {
+		ConfigurationMetadata metadata = compile(ClassWithNestedProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("nestedChildProps")
+				.fromSource(ClassWithNestedProperties.NestedChildClass.class));
+		assertThat(metadata).has(Metadata.withProperty("nestedChildProps.child-class-property", Integer.class)
+				.fromSource(ClassWithNestedProperties.NestedChildClass.class).withDefaultValue(20));
+		assertThat(metadata).has(Metadata.withProperty("nestedChildProps.parent-class-property", Integer.class)
+				.fromSource(ClassWithNestedProperties.NestedChildClass.class).withDefaultValue(10));
 	}
 
 	private static class AdditionalMetadata {
