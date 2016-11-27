@@ -1168,6 +1168,12 @@ content into your application; rather pick only the properties that you need.
 	endpoints.prometheus.enabled= # Enable the metrics endpoint.
 	endpoints.prometheus.web.enabled= # Expose the metrics endpoint as a Web endpoint.
 
+	# SESSIONS ENDPOINT ({sc-spring-boot-actuator}/session/SessionsEndpoint.{sc-ext}[SessionsEndpoint])
+	endpoints.sessions.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
+	endpoints.sessions.enabled= # Enable the sessions endpoint.
+	endpoints.sessions.jmx.enabled= # Expose the sessions endpoint as a JMX MBean.
+	endpoints.sessions.web.enabled= # Expose the sessions endpoint as a Web endpoint.
+
 	# SHUTDOWN ENDPOINT ({sc-spring-boot-actuator}/context/ShutdownEndpoint.{sc-ext}[ShutdownEndpoint])
 	endpoints.shutdown.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.shutdown.enabled=false # Enable the shutdown endpoint.
