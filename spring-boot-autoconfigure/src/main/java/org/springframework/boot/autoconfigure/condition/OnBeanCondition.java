@@ -126,7 +126,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 	private List<String> getMatchingBeans(ConditionContext context,
 			BeanSearchSpec beans) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		if (beans.getStrategy() == SearchStrategy.PARENTS) {
+		if (beans.getStrategy() == SearchStrategy.ANCESTORS) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
 			Assert.isInstanceOf(ConfigurableListableBeanFactory.class, parent,
 					"Unable to use SearchStrategy.PARENTS");
