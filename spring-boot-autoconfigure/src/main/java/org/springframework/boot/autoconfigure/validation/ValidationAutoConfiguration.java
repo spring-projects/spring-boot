@@ -16,13 +16,22 @@
 
 package org.springframework.boot.autoconfigure.validation;
 
+import javax.validation.Validation;
 import javax.validation.Validator;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 /**
@@ -37,9 +46,29 @@ public class ValidationAutoConfiguration {
 
 	@Bean
 	@ConditionalOnResource(resources = "META-INF/services/javax.validation.spi.ValidationProvider")
+	@Conditional(OnValidatorAvailableCondition.class)
 	@ConditionalOnMissingBean
 	public MethodValidationPostProcessor methodValidationPostProcessor() {
 		return new MethodValidationPostProcessor();
+	}
+
+	@Order(Ordered.LOWEST_PRECEDENCE)
+	static class OnValidatorAvailableCondition extends SpringBootCondition {
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage.forCondition(
+					getClass().getName());
+			try {
+				Validation.buildDefaultValidatorFactory().getValidator();
+				return ConditionOutcome.match(message.available("JSR-303 provider"));
+			}
+			catch (Exception ex) {
+				return ConditionOutcome.noMatch(message.notAvailable("JSR-303 provider"));
+			}
+		}
+
 	}
 
 }
