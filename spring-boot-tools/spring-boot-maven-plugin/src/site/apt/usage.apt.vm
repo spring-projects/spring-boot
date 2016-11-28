@@ -57,6 +57,8 @@ Usage
   including any <<<provided>>> dependencies that are defined in the project. If some of these dependencies
   need to be excluded, you can use one of the exclude options,
   see {{{./examples/exclude-dependency.html}Exclude a dependency}} for more details.
+  Please note that the <<<outputFileNameMapping>>> feature of the <<<maven-war-plugin>>>
+  is currently not supported.
 
   The original (i.e. non executable) artifact is renamed to <<<.original>>> by default but it is also
   possible to keep the original artifact using a custom classifier.
