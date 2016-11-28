@@ -275,6 +275,23 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
+	public void grandparentIsConsideredWhenUsingAncestorsStrategy() {
+		this.context.register(ExampleBeanConfiguration.class);
+		this.context.refresh();
+		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
+		parent.setParent(this.context);
+		parent.refresh();
+		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
+		child.setParent(parent);
+		child.register(ExampleBeanConfiguration.class,
+				OnBeanInAncestorsConfiguration.class);
+		child.refresh();
+		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(1);
+		child.close();
+		parent.close();
+	}
+
+	@Test
 	public void currentContextIsIgnoredWhenUsingParentsStrategy() {
 		this.context.refresh();
 		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
@@ -285,11 +302,34 @@ public class ConditionalOnMissingBeanTests {
 		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(2);
 	}
 
+	@Test
+	public void currentContextIsIgnoredWhenUsingAncestorsStrategy() {
+		this.context.refresh();
+		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
+		child.register(ExampleBeanConfiguration.class,
+				OnBeanInAncestorsConfiguration.class);
+		child.setParent(this.context);
+		child.refresh();
+		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(2);
+	}
+
 	@Configuration
 	protected static class OnBeanInParentsConfiguration {
 
+		@SuppressWarnings("deprecation")
 		@Bean
 		@ConditionalOnMissingBean(search = SearchStrategy.PARENTS)
+		public ExampleBean exampleBean2() {
+			return new ExampleBean("test");
+		}
+
+	}
+
+	@Configuration
+	protected static class OnBeanInAncestorsConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(search = SearchStrategy.ANCESTORS)
 		public ExampleBean exampleBean2() {
 			return new ExampleBean("test");
 		}

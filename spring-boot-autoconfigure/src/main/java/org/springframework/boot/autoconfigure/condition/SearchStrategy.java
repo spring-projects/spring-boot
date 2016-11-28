@@ -30,8 +30,15 @@ public enum SearchStrategy {
 
 	/**
 	 * Search all parents and ancestors, but not the current context.
+	 *
+	 * @deprecated since 1.5 in favor of {@link SearchStrategy#ANCESTORS}
 	 */
-	PARENTS,
+	@Deprecated PARENTS,
+
+	/**
+	 * Search all ancestors, but not the current context.
+	 */
+	ANCESTORS,
 
 	/**
 	 * Search the entire hierarchy.
