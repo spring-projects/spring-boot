@@ -188,13 +188,6 @@
 	</prerequisites>
 	<dependencyManagement>
 		<dependencies>
-			<!-- To be removed once Spring AMQP depends RabbitMQ Java Client 4.0 -->
-			<dependency>
-				<groupId>com.rabbitmq</groupId>
-				<artifactId>amqp-client</artifactId>
-				<version>4.0.0.RC1</version>
-			</dependency>
-
 			<!-- Spring Boot -->
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
@@ -2535,15 +2528,6 @@
 					<snapshots>
 						<enabled>false</enabled>
 					</snapshots>
-				</repository>
-				<!-- To be removed once Spring AMQP depends RabbitMQ Java Client 4.0 -->
-				<repository>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-					<id>bintray-rabbitmq-maven-milestones</id>
-					<name>bintray</name>
-					<url>http://dl.bintray.com/rabbitmq/maven-milestones</url>
 				</repository>
 			</repositories>
 		</profile>

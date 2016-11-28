@@ -21,6 +21,7 @@ import com.rabbitmq.client.Channel;
 
 import com.rabbitmq.client.MetricsCollector;
 import com.rabbitmq.client.impl.StandardMetricsCollector;
+
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -74,6 +75,8 @@ import org.springframework.retry.support.RetryTemplate;
  * {@literal localhost}.</li>
  * <li>{@literal spring.rabbitmq.virtualHost} is used to specify the (optional) virtual
  * host to which the client should connect.</li>
+ * <li>{@literal spring.rabbitmq.metrics} is used to enable metrics collection, default is
+ * true. RabbitMQ Java Client metrics needs Dropwizard Metrics to be on the classpath to work.</li>
  * </ul>
  * @author Greg Turnquist
  * @author Josh Long
@@ -128,18 +131,18 @@ public class RabbitAutoConfiguration {
 	@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "metrics", matchIfMissing = true)
 	protected static class RabbitNativeConnectionFactoryWithMetricsCreator {
 
-		@Autowired(required = false) MetricRegistry metricRegistry;
+		@Autowired(required = false)
+		private MetricRegistry metricRegistry;
 
 		@Bean
 		public com.rabbitmq.client.ConnectionFactory rabbitNativeConnectionFactoryWithMetrics(RabbitProperties config)
 			throws Exception {
 			RabbitConnectionFactoryBean factory = configureRabbitConnectionFactoryBean(config);
-			factory.afterPropertiesSet();
-
-			com.rabbitmq.client.ConnectionFactory connectionFactory = factory.getObject();
-			if(metricRegistry != null) {
-				connectionFactory.setMetricsCollector(new StandardMetricsCollector(metricRegistry));
+			if (this.metricRegistry != null) {
+				factory.setMetricsCollector(new StandardMetricsCollector(this.metricRegistry));
 			}
+			factory.afterPropertiesSet();
+			com.rabbitmq.client.ConnectionFactory connectionFactory = factory.getObject();
 			return connectionFactory;
 		}
 
@@ -150,13 +153,14 @@ public class RabbitAutoConfiguration {
 	@ConditionalOnMissingBean(ConnectionFactory.class)
 	protected static class RabbitConnectionFactoryCreator {
 
-		@Autowired(required = false) com.rabbitmq.client.ConnectionFactory rabbitNativeConnectionFactory;
+		@Autowired(required = false)
+		private com.rabbitmq.client.ConnectionFactory rabbitNativeConnectionFactory;
 
 		@Bean
 		public CachingConnectionFactory rabbitConnectionFactory(RabbitProperties config)
 				throws Exception {
-			com.rabbitmq.client.ConnectionFactory nativeConnectionFactory = rabbitNativeConnectionFactory;
-			if(nativeConnectionFactory == null) {
+			com.rabbitmq.client.ConnectionFactory nativeConnectionFactory = this.rabbitNativeConnectionFactory;
+			if (nativeConnectionFactory == null) {
 				RabbitConnectionFactoryBean rabbitConnectionFactoryBean = configureRabbitConnectionFactoryBean(config);
 				rabbitConnectionFactoryBean.afterPropertiesSet();
 				nativeConnectionFactory = rabbitConnectionFactoryBean.getObject();

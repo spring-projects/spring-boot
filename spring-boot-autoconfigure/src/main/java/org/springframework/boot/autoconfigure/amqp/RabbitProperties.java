@@ -282,7 +282,7 @@ public class RabbitProperties {
 	}
 
 	public boolean isMetrics() {
-		return metrics;
+		return this.metrics;
 	}
 
 	public void setMetrics(boolean metrics) {
