@@ -487,7 +487,6 @@ public class ServerPropertiesTests {
 		map.put("server.undertow.accesslog.dir", "test-logs");
 		map.put("server.undertow.accesslog.rotate", "false");
 		bindProperties(map);
-
 		UndertowEmbeddedServletContainerFactory container = spy(
 				new UndertowEmbeddedServletContainerFactory());
 		this.properties.getUndertow().customizeUndertow(this.properties, container);
