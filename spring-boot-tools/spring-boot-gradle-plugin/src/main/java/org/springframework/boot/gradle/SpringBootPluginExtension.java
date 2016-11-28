@@ -21,11 +21,14 @@ import java.util.Map;
 import java.util.Set;
 
 import groovy.lang.Closure;
+
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 
 import org.springframework.boot.gradle.buildinfo.BuildInfo;
 import org.springframework.boot.loader.tools.Layout;
+import org.springframework.boot.loader.tools.LayoutFactory;
+import org.springframework.boot.loader.tools.LayoutType;
 import org.springframework.boot.loader.tools.Layouts;
 
 /**
@@ -91,6 +94,11 @@ public class SpringBootPluginExtension {
 	LayoutType layout;
 
 	/**
+	 * The layout factory to use to convert a layout type into an actual layout.
+	 */
+	LayoutFactory layoutFactory = Layouts.getDefaultLayoutFactory();
+
+	/**
 	 * Libraries that must be unpacked from fat jars in order to run. Use Strings in the
 	 * form {@literal groupId:artifactId}.
 	 */
@@ -142,10 +150,21 @@ public class SpringBootPluginExtension {
 
 	/**
 	 * Convenience method for use in a custom task.
+	 * @param file the file to use to guess the layout if necessary
 	 * @return the Layout to use or null if not explicitly set
 	 */
-	public Layout convertLayout() {
-		return (this.layout == null ? null : this.layout.layout);
+	public Layout convertLayout(File file) {
+		Layout result;
+		if (this.layoutFactory != null) {
+			result = this.layoutFactory.getLayout();
+		}
+		else if (this.layout == null) {
+			result = Layouts.forFile(file);
+		}
+		else {
+			result = Layouts.forType(this.layout);
+		}
+		return result;
 	}
 
 	public String getMainClass() {
@@ -194,6 +213,14 @@ public class SpringBootPluginExtension {
 
 	public void setLayout(LayoutType layout) {
 		this.layout = layout;
+	}
+
+	public LayoutFactory getLayoutFactory() {
+		return this.layoutFactory;
+	}
+
+	public void setLayoutFactory(LayoutFactory layoutFactory) {
+		this.layoutFactory = layoutFactory;
 	}
 
 	public Set<String> getRequiresUnpack() {
@@ -274,31 +301,6 @@ public class SpringBootPluginExtension {
 			taskConfigurer.setDelegate(bootBuildInfo);
 			taskConfigurer.call();
 		}
-	}
-
-	/**
-	 * Layout Types.
-	 */
-	enum LayoutType {
-
-		JAR(new Layouts.Jar()),
-
-		WAR(new Layouts.War()),
-
-		ZIP(new Layouts.Expanded()),
-
-		DIR(new Layouts.Expanded()),
-
-		MODULE(new Layouts.Module()),
-
-		NONE(new Layouts.None());
-
-		Layout layout;
-
-		LayoutType(Layout layout) {
-			this.layout = layout;
-		}
-
 	}
 
 }

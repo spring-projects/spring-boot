@@ -43,6 +43,8 @@ import org.apache.maven.shared.artifact.filter.collection.ScopeFilter;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.boot.loader.tools.Layout;
+import org.springframework.boot.loader.tools.LayoutFactory;
+import org.springframework.boot.loader.tools.LayoutType;
 import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Repackager;
@@ -132,6 +134,13 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter
 	private LayoutType layout;
+
+	/**
+	 * The type of the layout factory that converts layout type to an actual layout.
+	 * @since 1.0
+	 */
+	@Parameter
+	private LayoutFactory layoutFactory = Layouts.getDefaultLayoutFactory();
 
 	/**
 	 * A list of the libraries that must be unpacked from fat jars in order to run.
@@ -226,9 +235,22 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private Repackager getRepackager(File source) {
 		Repackager repackager = new LoggingRepackager(source, getLog());
 		repackager.setMainClass(this.mainClass);
-		if (this.layout != null) {
-			getLog().info("Layout: " + this.layout);
-			repackager.setLayout(this.layout.layout());
+		Layout forUse;
+		if (this.layoutFactory != null) {
+			forUse = this.layoutFactory.getLayout();
+		}
+		else if (this.layout == null) {
+			forUse = Layouts.forFile(source);
+		}
+		else {
+			forUse = Layouts.forType(this.layout);
+		}
+		getLog().info("Layout: " + forUse.getClass());
+		try {
+			repackager.setLayout(forUse);
+		}
+		catch (Exception e) {
+			throw new IllegalStateException("Cannot create layout", e);
 		}
 		return repackager;
 	}
@@ -307,53 +329,6 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			this.project.getArtifact().setFile(repackaged);
 			getLog().info("Replacing main artifact " + source + " to " + repackaged);
 		}
-	}
-
-	/**
-	 * Archive layout types.
-	 */
-	public enum LayoutType {
-
-		/**
-		 * Jar Layout.
-		 */
-		JAR(new Layouts.Jar()),
-
-		/**
-		 * War Layout.
-		 */
-		WAR(new Layouts.War()),
-
-		/**
-		 * Zip Layout.
-		 */
-		ZIP(new Layouts.Expanded()),
-
-		/**
-		 * Dir Layout.
-		 */
-		DIR(new Layouts.Expanded()),
-
-		/**
-		 * Module Layout.
-		 */
-		MODULE(new Layouts.Module()),
-
-		/**
-		 * No Layout.
-		 */
-		NONE(new Layouts.None());
-
-		private final Layout layout;
-
-		public Layout layout() {
-			return this.layout;
-		}
-
-		LayoutType(Layout layout) {
-			this.layout = layout;
-		}
-
 	}
 
 	private static class LoggingRepackager extends Repackager {

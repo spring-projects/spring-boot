@@ -21,8 +21,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * Common {@link Layout}s.
@@ -33,6 +36,11 @@ import java.util.Set;
  */
 public final class Layouts {
 
+	/**
+	 * Default value for {@link Layout#getLoaderJarPath()}.
+	 */
+	public static final String DEFAULT_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
+
 	private Layouts() {
 	}
 
@@ -42,19 +50,42 @@ public final class Layouts {
 	 * @return a {@link Layout}
 	 */
 	public static Layout forFile(File file) {
-		if (file == null) {
-			throw new IllegalArgumentException("File must not be null");
+		return forType(LayoutType.forFile(file));
+	}
+
+	/**
+	 * Return a layout for the given type.
+	 * @param type the layout type
+	 * @return a {@link Layout}
+	 */
+	public static Layout forType(LayoutType type) {
+		switch (type) {
+		case JAR:
+			return new Layouts.Jar();
+		case WAR:
+			return new Layouts.War();
+		case ZIP:
+			return new Layouts.Expanded();
+		case MODULE:
+			return new Layouts.Module();
+		default:
+			return new Layouts.None();
 		}
-		if (file.getName().toLowerCase().endsWith(".jar")) {
-			return new Jar();
+	}
+
+	/**
+	 * Gets a default layout factory, trying first to find a unique one in spring
+	 * factories, and then falling back to {@link DefaultLayoutFactory} if there isn't
+	 * one.
+	 * @return the default layout factory
+	 */
+	public static LayoutFactory getDefaultLayoutFactory() {
+		List<LayoutFactory> factories = SpringFactoriesLoader
+				.loadFactories(LayoutFactory.class, null);
+		if (factories.size() == 1) {
+			return factories.get(0);
 		}
-		if (file.getName().toLowerCase().endsWith(".war")) {
-			return new War();
-		}
-		if (file.isDirectory() || file.getName().toLowerCase().endsWith(".zip")) {
-			return new Expanded();
-		}
-		throw new IllegalStateException("Unable to deduce layout for '" + file + "'");
+		return null;
 	}
 
 	/**
@@ -87,6 +118,11 @@ public final class Layouts {
 			return true;
 		}
 
+		@Override
+		public String getLoaderJarPath() {
+			return DEFAULT_LOADER_JAR;
+		}
+
 	}
 
 	/**
@@ -114,6 +150,11 @@ public final class Layouts {
 		@Override
 		public boolean isExecutable() {
 			return false;
+		}
+
+		@Override
+		public String getLoaderJarPath() {
+			return DEFAULT_LOADER_JAR;
 		}
 
 	}
@@ -154,6 +195,11 @@ public final class Layouts {
 			return true;
 		}
 
+		@Override
+		public String getLoaderJarPath() {
+			return DEFAULT_LOADER_JAR;
+		}
+
 	}
 
 	/**
@@ -186,6 +232,11 @@ public final class Layouts {
 		@Override
 		public boolean isExecutable() {
 			return false;
+		}
+
+		@Override
+		public String getLoaderJarPath() {
+			return DEFAULT_LOADER_JAR;
 		}
 
 	}
