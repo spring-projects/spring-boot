@@ -70,8 +70,9 @@ public class SessionAutoConfigurationHazelcastTests
 				"spring.session.hazelcast.flush-mode=immediate");
 		HazelcastSessionRepository repository = validateSessionRepository(
 				HazelcastSessionRepository.class);
-		assertThat(new DirectFieldAccessor(repository).getPropertyValue(
-				"hazelcastFlushMode")).isEqualTo(HazelcastFlushMode.IMMEDIATE);
+		assertThat(new DirectFieldAccessor(repository)
+				.getPropertyValue("hazelcastFlushMode"))
+						.isEqualTo(HazelcastFlushMode.IMMEDIATE);
 	}
 
 	@Configuration

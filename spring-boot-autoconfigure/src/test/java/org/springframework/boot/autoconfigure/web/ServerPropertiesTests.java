@@ -435,10 +435,8 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.port-header", "x-my-forward-port");
 		map.put("server.tomcat.protocol-header-https-value", "On");
 		bindProperties(map);
-
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
-
 		assertThat(container.getEngineValves()).hasSize(1);
 		Valve valve = container.getEngineValves().iterator().next();
 		assertThat(valve).isInstanceOf(RemoteIpValve.class);
@@ -455,7 +453,6 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.accept-count", "10");
 		bindProperties(map);
-
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
@@ -469,7 +466,6 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.max-connections", "5");
 		bindProperties(map);
-
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
@@ -483,7 +479,6 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.max-http-post-size", "10000");
 		bindProperties(map);
-
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
@@ -498,7 +493,6 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.max-http-post-size", "2000");
 		bindProperties(map);
-
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container

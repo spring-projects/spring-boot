@@ -66,7 +66,8 @@ public class CassandraAutoConfigurationTests {
 	public void createCustomizeCluster() {
 		load(ClusterConfig.class);
 		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
-		assertThat(this.context.getBeanNamesForType(ClusterCustomizer.class).length).isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(ClusterCustomizer.class).length)
+				.isEqualTo(1);
 	}
 
 	private void load(String... environment) {
@@ -84,7 +85,6 @@ public class CassandraAutoConfigurationTests {
 		ctx.refresh();
 		this.context = ctx;
 	}
-
 
 	@Configuration
 	static class ClusterConfig {

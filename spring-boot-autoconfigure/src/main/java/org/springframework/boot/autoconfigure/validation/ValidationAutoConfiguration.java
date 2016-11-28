@@ -58,8 +58,8 @@ public class ValidationAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage.forCondition(
-					getClass().getName());
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition(getClass().getName());
 			try {
 				Validation.buildDefaultValidatorFactory().getValidator();
 				return ConditionOutcome.match(message.available("JSR-303 provider"));
