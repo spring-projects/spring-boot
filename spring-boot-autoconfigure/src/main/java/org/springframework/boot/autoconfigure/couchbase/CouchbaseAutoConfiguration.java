@@ -49,8 +49,7 @@ import org.springframework.context.annotation.Primary;
 public class CouchbaseAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnMissingBean(value = CouchbaseConfiguration.class,
-			type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
+	@ConditionalOnMissingBean(value = CouchbaseConfiguration.class, type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
 	public static class CouchbaseConfiguration {
 
 		private final CouchbaseProperties properties;
@@ -124,8 +123,9 @@ public class CouchbaseAutoConfiguration {
 	 * Determine if Couchbase should be configured. This happens if either the
 	 * user-configuration defines a {@code CouchbaseConfigurer} or if at least the
 	 * "bootstrapHosts" property is specified.
-	 * <p>The reason why we check for the presence of {@code CouchbaseConfigurer} is
-	 * that it might use {@link CouchbaseProperties} for its internal customization.
+	 * <p>
+	 * The reason why we check for the presence of {@code CouchbaseConfigurer} is that it
+	 * might use {@link CouchbaseProperties} for its internal customization.
 	 */
 	static class CouchbaseCondition extends AnyNestedCondition {
 

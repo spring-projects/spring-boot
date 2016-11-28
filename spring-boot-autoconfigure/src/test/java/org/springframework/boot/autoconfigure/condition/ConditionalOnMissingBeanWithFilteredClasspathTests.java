@@ -53,7 +53,6 @@ public class ConditionalOnMissingBeanWithFilteredClasspathTests {
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
-
 	@Configuration
 	static class OnBeanTypeConfiguration {
 
@@ -66,6 +65,7 @@ public class ConditionalOnMissingBeanWithFilteredClasspathTests {
 	}
 
 	static class TestCacheManager extends CaffeineCacheManager {
+
 	}
 
 }

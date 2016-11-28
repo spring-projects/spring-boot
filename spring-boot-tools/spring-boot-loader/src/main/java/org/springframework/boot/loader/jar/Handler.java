@@ -198,24 +198,23 @@ public class Handler extends URLStreamHandler {
 
 	@Override
 	protected int hashCode(URL u) {
-		int result = 0;
-		String protocol = u.getProtocol();
-		if (protocol != null) {
-			result += protocol.hashCode();
-		}
-		String file = u.getFile();
+		return hashCode(u.getProtocol(), u.getFile());
+	}
+
+	private int hashCode(String protocol, String file) {
+		int result = (protocol == null ? 0 : protocol.hashCode());
 		int separatorIndex = file.indexOf(SEPARATOR);
 		if (separatorIndex == -1) {
 			return result + file.hashCode();
 		}
-		String fileWithoutEntry = file.substring(0, separatorIndex);
+		String source = file.substring(0, separatorIndex);
+		String entry = canonicalize(file.substring(separatorIndex + 2));
 		try {
-			result += new URL(fileWithoutEntry).hashCode();
+			result += new URL(source).hashCode();
 		}
 		catch (MalformedURLException ex) {
-			result += fileWithoutEntry.hashCode();
+			result += source.hashCode();
 		}
-		String entry = canonicalize(file.substring(separatorIndex + 2));
 		result += entry.hashCode();
 		return result;
 	}
