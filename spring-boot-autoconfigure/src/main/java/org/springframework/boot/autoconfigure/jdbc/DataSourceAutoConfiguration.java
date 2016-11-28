@@ -103,6 +103,7 @@ public class DataSourceAutoConfiguration {
 	@Import({ DataSourceConfiguration.Tomcat.class, DataSourceConfiguration.Hikari.class,
 			DataSourceConfiguration.Dbcp.class, DataSourceConfiguration.Dbcp2.class,
 			DataSourceConfiguration.Generic.class })
+	@SuppressWarnings("deprecation")
 	protected static class PooledDataSourceConfiguration {
 
 	}
