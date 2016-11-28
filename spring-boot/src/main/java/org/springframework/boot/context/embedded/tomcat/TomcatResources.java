@@ -17,23 +17,14 @@
 package org.springframework.boot.context.embedded.tomcat;
 
 import java.io.File;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import javax.naming.directory.DirContext;
-import javax.servlet.ServletContext;
-
 import org.apache.catalina.Context;
 import org.apache.catalina.WebResourceRoot.ResourceSetType;
-import org.apache.catalina.core.StandardContext;
-
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 
 /**
- * Abstraction to add resources that works with both Tomcat 8 and 7.
+ * Abstraction to add resources that works with Tomcat 8.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -95,69 +86,7 @@ abstract class TomcatResources {
 	 * @return a {@link TomcatResources} instance.
 	 */
 	public static TomcatResources get(Context context) {
-		if (ClassUtils.isPresent("org.apache.catalina.deploy.ErrorPage", null)) {
-			return new Tomcat7Resources(context);
-		}
 		return new Tomcat8Resources(context);
-	}
-
-	/**
-	 * {@link TomcatResources} for Tomcat 7.
-	 */
-	private static class Tomcat7Resources extends TomcatResources {
-
-		private final Method addResourceJarUrlMethod;
-
-		Tomcat7Resources(Context context) {
-			super(context);
-			this.addResourceJarUrlMethod = ReflectionUtils.findMethod(context.getClass(),
-					"addResourceJarUrl", URL.class);
-		}
-
-		@Override
-		protected void addJar(String jar) {
-			URL url = getJarUrl(jar);
-			if (url != null) {
-				try {
-					this.addResourceJarUrlMethod.invoke(getContext(), url);
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException(ex);
-				}
-			}
-		}
-
-		private URL getJarUrl(String jar) {
-			try {
-				return new URL(jar);
-			}
-			catch (MalformedURLException ex) {
-				// Ignore
-				return null;
-			}
-		}
-
-		@Override
-		protected void addDir(String dir, URL url) {
-			if (getContext() instanceof ServletContext) {
-				try {
-					Class<?> fileDirContextClass = Class
-							.forName("org.apache.naming.resources.FileDirContext");
-					Method setDocBaseMethod = ReflectionUtils
-							.findMethod(fileDirContextClass, "setDocBase", String.class);
-					Object fileDirContext = fileDirContextClass.newInstance();
-					setDocBaseMethod.invoke(fileDirContext, dir);
-					Method addResourcesDirContextMethod = ReflectionUtils.findMethod(
-							StandardContext.class, "addResourcesDirContext",
-							DirContext.class);
-					addResourcesDirContextMethod.invoke(getContext(), fileDirContext);
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException("Tomcat 7 reflection failed", ex);
-				}
-			}
-		}
-
 	}
 
 	/**
