@@ -65,7 +65,8 @@ public class ValidationAutoConfigurationTests {
 		load(SampleConfiguration.class);
 		assertThat(this.context.getBean(MethodValidationPostProcessor.class))
 				.isSameAs(this.context.getBean("testMethodValidationPostProcessor"));
-		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class))
+				.hasSize(1);
 	}
 
 	public void load(Class<?> config) {
@@ -84,6 +85,7 @@ public class ValidationAutoConfigurationTests {
 		public void doSomething(@Size(min = 3, max = 10) String name) {
 
 		}
+
 	}
 
 	@Configuration

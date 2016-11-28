@@ -60,7 +60,6 @@ public class TestDatabaseAutoConfigurationTests {
 		DataSource datasource = this.context.getBean(DataSource.class);
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
 		jdbcTemplate.execute("create table example (id int, name varchar);");
-
 		ConfigurableApplicationContext anotherContext = doLoad(
 				ExistingDataSourceConfiguration.class);
 		try {

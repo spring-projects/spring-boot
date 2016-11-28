@@ -627,7 +627,6 @@
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka-test</artifactId>
-			<version>${spring-kafka.version}</version>
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>

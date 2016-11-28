@@ -97,7 +97,6 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void mongoSessionStore() {
 		load(Arrays.asList(EmbeddedMongoAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class),
@@ -106,7 +105,6 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void mongoSessionStoreWithCustomizations() {
 		load(Arrays.asList(EmbeddedMongoAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class),

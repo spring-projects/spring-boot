@@ -28,8 +28,8 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {{@link ValidationAutoConfiguration} when Hibernate validator is present
- * but no EL implementation is available.
+ * Test for {@link ValidationAutoConfiguration} when Hibernate validator is present but no
+ * EL implementation is available.
  *
  * @author Stephane Nicoll
  */
