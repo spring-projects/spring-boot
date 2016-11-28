@@ -2097,6 +2097,12 @@ all the endpoints:
 	}
 ----
 
+WARNING: Jersey's support for scanning executable archives is rather limited. For example,
+it cannot scan for endpoints in a package found in `WEB-INF/classes` when running an
+executable war file. To avoid this limitation, the `packages` method should not be used
+and endpoints should be registered individually using the `register` method as shown
+above.
+
 You can also register an arbitrary number of beans implementing `ResourceConfigCustomizer`
 for more advanced customizations.
 
