@@ -219,7 +219,7 @@ public class JarFileArchive implements Archive {
 
 		@Override
 		public String getName() {
-			return this.jarEntry.getName().toString();
+			return this.jarEntry.getName();
 		}
 
 	}
