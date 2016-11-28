@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Multiple returns for a single POST request</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    </head>
+    <body>
+        <p>
+            Demo to retrieve multiple return values for one request with asynchronous tasks and long polling.
+        </p>
+
+        <input type="button" value="Send request with multiple returns" onclick="startRequest();"/>
+        <div id="requestStatus"></div>
+
+        <script type="text/javascript" th:inline="javascript">
+            /*<![CDATA[*/
+            function startRequest() {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/start", true);
+
+                xhr.onreadystatechange = function() {
+                    if(xhr.readyState === 4 && xhr.status === 200) {
+                        console.log("Start long polling.");
+                        document.getElementById('requestStatus').innerHTML = xhr.responseText;
+                        getStatus();
+                    }
+                }
+                xhr.send();
+            }
+
+            function getStatus() {
+                var xhr = new XMLHttpRequest();
+                
+                xhr.open("GET", "/status", true);
+                
+                xhr.onreadystatechange = function() {
+                    if(xhr.readyState == 4 && xhr.status == 200) {
+                        document.getElementById('requestStatus').innerHTML = xhr.responseText;
+                        if (xhr.responseText !== "DONE") {
+                            poll();
+                        } else {
+                            console.log("Stop polling");
+                        }
+                    }
+                }
+                xhr.send();
+            }
+            
+            function poll() {
+                setTimeout(getStatus, 1000);
+            }
+            /*]]>*/
+        </script>
+    </body>
+</html>
