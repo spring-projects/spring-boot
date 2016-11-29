@@ -128,6 +128,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Before
 	public void defaultContextPath() {
 		management.setContextPath("");
+		management.getSecurity().setEnabled(false);
 		server.setContextPath("");
 	}
 
@@ -147,6 +148,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onSamePort() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.applicationContext,
+				"management.security.enabled:false");
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				BaseConfiguration.class, ServerPortConfig.class,
 				EndpointWebMvcAutoConfiguration.class);
@@ -318,7 +321,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 	public void specificPortsViaProperties() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
 				"server.port:" + ports.get().server,
-				"management.port:" + ports.get().management);
+				"management.port:" + ports.get().management,
+				"management.security.enabled:false");
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ErrorMvcAutoConfiguration.class);
@@ -352,7 +356,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Test
 	public void contextPath() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"management.contextPath:/test");
+				"management.contextPath:/test", "management.security.enabled:false");
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				ServerPortConfig.class, PropertyPlaceholderAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
@@ -884,6 +888,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		public ManagementServerProperties managementServerProperties() {
 			ManagementServerProperties properties = new ManagementServerProperties();
 			properties.setPort(0);
+			properties.getSecurity().setEnabled(false);
 			return properties;
 		}
 
