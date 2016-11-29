@@ -2326,7 +2326,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<version>3.0.0</version>
+					<version>2.6</version>
 					<configuration>
 						<recompressZippedFiles>false</recompressZippedFiles>
 					</configuration>
