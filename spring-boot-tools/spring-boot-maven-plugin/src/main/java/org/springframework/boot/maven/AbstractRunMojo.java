@@ -52,6 +52,8 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  */
 public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
+	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
+
 	private static final String SPRING_LOADED_AGENT_CLASS_NAME = "org.springsource.loaded.agent.SpringLoadedAgent";
 
 	/**
@@ -374,7 +376,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		String mainClass = this.mainClass;
 		if (mainClass == null) {
 			try {
-				mainClass = MainClassFinder.findSingleMainClass(this.classesDirectory);
+				mainClass = MainClassFinder.findSingleMainClass(this.classesDirectory,
+						SPRING_BOOT_APPLICATION_CLASS_NAME);
 			}
 			catch (IOException ex) {
 				throw new MojoExecutionException(ex.getMessage(), ex);
