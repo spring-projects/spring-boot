@@ -41,6 +41,8 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  */
 public class FindMainClassTask extends DefaultTask {
 
+	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
+
 	@Input
 	private SourceSetOutput mainClassSourceSetOutput;
 
@@ -105,7 +107,8 @@ public class FindMainClassTask extends DefaultTask {
 						+ this.mainClassSourceSetOutput.getClassesDir());
 				try {
 					mainClass = MainClassFinder.findSingleMainClass(
-							this.mainClassSourceSetOutput.getClassesDir());
+							this.mainClassSourceSetOutput.getClassesDir(),
+							SPRING_BOOT_APPLICATION_CLASS_NAME);
 					project.getLogger().info("Computed main class: " + mainClass);
 				}
 				catch (IOException ex) {
