@@ -535,8 +535,8 @@ loader should be included or not. The following layouts are available:
 
 
 
-+[[build-tool-plugins-gradle-configuration-custom-repackager]]
-+==== Using a custom layout
+[[build-tool-plugins-gradle-configuration-custom-repackager]]
+==== Using a custom layout
 If you have custom requirements for how to arrange the dependencies and loader classes
 inside the repackaged jar, you can use a custom layout. Any library which defines one
 or more `LayoutFactory` implementations can be added to the build script dependencies
@@ -558,7 +558,7 @@ buildscript {
 springBoot {
     layoutFactory = new com.example.CustomLayoutFactory()
 }
-+----
+----
 
 NOTE: If there is only one custom `LayoutFactory` on the build classpath and it is
 listed in `META-INF/spring.factories` then it is unnecessary to explicitly set it in the
