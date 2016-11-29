@@ -18,9 +18,13 @@ package org.springframework.boot.loader.tools;
 
 /**
  * Strategy interface used to determine the layout for a particular type of archive.
+ * Layouts may additionally implement {@link CustomLoaderLayout} if they wish to write
+ * custom loader classes.
  *
  * @author Phillip Webb
  * @see Layouts
+ * @see RepackagingLayout
+ * @see CustomLoaderLayout
  */
 public interface Layout {
 
