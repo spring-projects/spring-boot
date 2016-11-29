@@ -39,6 +39,7 @@ import org.springframework.boot.loader.archive.Archive.EntryFilter;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
 import org.springframework.boot.loader.util.SystemPropertyUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Launcher} for archives with user-configured classpath and main class via a
@@ -529,18 +530,11 @@ public class PropertiesLauncher extends Launcher {
 		Matcher matcher = WORD_SEPARATOR.matcher(string);
 		int pos = 0;
 		while (matcher.find()) {
-			builder.append(capitalize(string.subSequence(pos, matcher.end()).toString()));
+			builder.append(StringUtils.capitalize(string.subSequence(pos, matcher.end()).toString()));
 			pos = matcher.end();
 		}
-		builder.append(capitalize(string.subSequence(pos, string.length()).toString()));
+		builder.append(StringUtils.capitalize(string.subSequence(pos, string.length()).toString()));
 		return builder.toString();
-	}
-
-	private static Object capitalize(String str) {
-		StringBuilder sb = new StringBuilder(str.length());
-		sb.append(Character.toUpperCase(str.charAt(0)));
-		sb.append(str.substring(1));
-		return sb.toString();
 	}
 
 	private void log(String message) {
