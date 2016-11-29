@@ -31,6 +31,9 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import javax.tools.Diagnostic;
+
+import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesParser;
 
 /**
  * Provides access to relevant {@link TypeElement} members.
@@ -53,10 +56,16 @@ class TypeElementMembers {
 
 	private final Map<String, List<ExecutableElement>> publicSetters = new LinkedHashMap<String, List<ExecutableElement>>();
 
-	TypeElementMembers(ProcessingEnvironment env, TypeElement element) {
+	private final Map<String, Object> fieldValues = new LinkedHashMap<String, Object>();
+
+	private final FieldValuesParser fieldValuesParser;
+
+	TypeElementMembers(ProcessingEnvironment env, FieldValuesParser fieldValuesParser, TypeElement element) {
 		this.env = env;
 		this.typeUtils = new TypeUtils(this.env);
+		this.fieldValuesParser = fieldValuesParser;
 		process(element);
+		processFieldValues(element);
 	}
 
 	private void process(TypeElement element) {
@@ -163,6 +172,28 @@ class TypeElementMembers {
 			}
 		}
 		return null;
+	}
+
+	private void processFieldValues(TypeElement element) {
+		try {
+			this.fieldValues.putAll(this.fieldValuesParser.getFieldValues(element));
+		}
+		catch (Exception ex) {
+			logWarning("Could not get values for type :" + element.getSimpleName().toString());
+		}
+
+		Element superType = this.env.getTypeUtils().asElement(element.getSuperclass());
+		if (superType != null && superType instanceof TypeElement && !Object.class.getName().equals(superType.toString())) {
+			processFieldValues((TypeElement) superType);
+		}
+	}
+
+	private void logWarning(String message) {
+		this.env.getMessager().printMessage(Diagnostic.Kind.WARNING, message);
+	}
+
+	public Map<String, Object> getFieldValues() {
+		return Collections.unmodifiableMap(this.fieldValues);
 	}
 
 }

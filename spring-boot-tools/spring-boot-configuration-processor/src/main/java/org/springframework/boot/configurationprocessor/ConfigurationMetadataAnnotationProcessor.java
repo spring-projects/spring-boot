@@ -20,7 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -192,21 +191,12 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private void processTypeElement(String prefix, TypeElement element,
 			ExecutableElement source) {
-		TypeElementMembers members = new TypeElementMembers(this.processingEnv, element);
-		Map<String, Object> fieldValues = getFieldValues(element);
+		TypeElementMembers members = new TypeElementMembers(this.processingEnv, this.fieldValuesParser, element);
+		Map<String, Object> fieldValues = members.getFieldValues();
 		processSimpleTypes(prefix, element, source, members, fieldValues);
 		processSimpleLombokTypes(prefix, element, source, members, fieldValues);
 		processNestedTypes(prefix, element, source, members);
 		processNestedLombokTypes(prefix, element, source, members);
-	}
-
-	private Map<String, Object> getFieldValues(TypeElement element) {
-		try {
-			return this.fieldValuesParser.getFieldValues(element);
-		}
-		catch (Exception ex) {
-			return Collections.emptyMap();
-		}
 	}
 
 	private void processSimpleTypes(String prefix, TypeElement element,
