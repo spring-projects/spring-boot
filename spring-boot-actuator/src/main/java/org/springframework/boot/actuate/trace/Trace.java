@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
 
 package org.springframework.boot.actuate.trace;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import org.springframework.util.Assert;
+
 import java.util.Date;
 import java.util.Map;
-
-import org.springframework.util.Assert;
 
 /**
  * A value object representing a trace event: at a particular time with a simple (map)
@@ -27,22 +30,41 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  */
+@JsonInclude(Include.NON_NULL)
 public final class Trace {
 
-	private final Date timestamp;
+	private final String id;
+	private final Date started;
+	private Date ended;
 
 	private final Map<String, Object> info;
 
-	public Trace(Date timestamp, Map<String, Object> info) {
+	public Trace(String id, Date started, Map<String, Object> info) {
 		super();
-		Assert.notNull(timestamp, "Timestamp must not be null");
+		Assert.notNull(id, "Id must not be null");
+		Assert.notNull(started, "Timestamp must not be null");
 		Assert.notNull(info, "Info must not be null");
-		this.timestamp = timestamp;
+		this.id = id;
+		this.started = started;
 		this.info = info;
 	}
 
-	public Date getTimestamp() {
-		return this.timestamp;
+	public String getId() {
+		return id;
+	}
+
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
+	public Date getStarted() {
+		return this.started;
+	}
+
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
+	public Date getEnded() {
+		return ended;
+	}
+
+	void setEnded(Date ended) {
+		this.ended = ended;
 	}
 
 	public Map<String, Object> getInfo() {

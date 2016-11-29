@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.util.Collections;
+import java.util.UUID;
 
 import org.junit.Test;
 
@@ -43,6 +44,7 @@ public class TraceEndpointTests extends AbstractEndpointTests<TraceEndpoint> {
 	@Test
 	public void invoke() throws Exception {
 		Trace trace = getEndpointBean().invoke().get(0);
+		assertThat(trace.getId()).isEqualTo("trace-id");
 		assertThat(trace.getInfo().get("a")).isEqualTo("b");
 	}
 
@@ -53,7 +55,7 @@ public class TraceEndpointTests extends AbstractEndpointTests<TraceEndpoint> {
 		@Bean
 		public TraceEndpoint endpoint() {
 			TraceRepository repository = new InMemoryTraceRepository();
-			repository.add(Collections.<String, Object>singletonMap("a", "b"));
+			repository.add("trace-id", Collections.<String, Object>singletonMap("a", "b"));
 			return new TraceEndpoint(repository);
 		}
 	}
