@@ -50,6 +50,16 @@ public class HornetQProperties {
 	 */
 	private int port = 5445;
 
+	/**
+	 * User for a secured connection.
+	 */
+	private String user;
+
+	/**
+	 * Password for a secured connection.
+	 */
+	private String password;
+
 	private final Embedded embedded = new Embedded();
 
 	public HornetQMode getMode() {
@@ -78,6 +88,22 @@ public class HornetQProperties {
 
 	public Embedded getEmbedded() {
 		return this.embedded;
+	}
+
+	public String getUser() {
+		return this.user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getPassword() {
+		return this.password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	/**
@@ -188,6 +214,7 @@ public class HornetQProperties {
 		/**
 		 * Creates the minimal transport parameters for an embedded transport
 		 * configuration.
+		 *
 		 * @return the transport parameters
 		 * @see TransportConstants#SERVER_ID_PROP_NAME
 		 */
