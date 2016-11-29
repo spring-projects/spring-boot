@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Integration tests for {@link JdbcTest}.
  *
- * @author Phillip Webb
+ * @author Phillip Webb
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
