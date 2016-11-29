@@ -76,6 +76,7 @@ public class DataJpaTestWithAutoConfigureTestDatabaseReplaceExplicitIntegrationT
 		@Bean
 		public DataSource dataSource() {
 			EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
+					.generateUniqueName(true)
 					.setType(EmbeddedDatabaseType.H2);
 			return builder.build();
 		}
