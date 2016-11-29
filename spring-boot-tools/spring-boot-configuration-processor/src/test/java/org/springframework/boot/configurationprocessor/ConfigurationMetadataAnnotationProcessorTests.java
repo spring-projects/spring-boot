@@ -353,6 +353,17 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
+	public void nestedClassChildProperties() throws Exception {
+		ConfigurationMetadata metadata = compile(ClassWithNestedProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("nestedChildProps")
+				.fromSource(ClassWithNestedProperties.NestedChildClass.class));
+		assertThat(metadata).has(Metadata.withProperty("nestedChildProps.child-class-property", Integer.class)
+				.fromSource(ClassWithNestedProperties.NestedChildClass.class).withDefaultValue(20));
+		assertThat(metadata).has(Metadata.withProperty("nestedChildProps.parent-class-property", Integer.class)
+				.fromSource(ClassWithNestedProperties.NestedChildClass.class).withDefaultValue(10));
+	}
+
+	@Test
 	public void builderPojo() throws IOException {
 		ConfigurationMetadata metadata = compile(BuilderPojo.class);
 		assertThat(metadata).has(Metadata.withProperty("builder.name"));
@@ -766,17 +777,6 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		finally {
 			writer.close();
 		}
-	}
-
-	@Test
-	public void nestedClassChildProperties() throws Exception {
-		ConfigurationMetadata metadata = compile(ClassWithNestedProperties.class);
-		assertThat(metadata).has(Metadata.withGroup("nestedChildProps")
-				.fromSource(ClassWithNestedProperties.NestedChildClass.class));
-		assertThat(metadata).has(Metadata.withProperty("nestedChildProps.child-class-property", Integer.class)
-				.fromSource(ClassWithNestedProperties.NestedChildClass.class).withDefaultValue(20));
-		assertThat(metadata).has(Metadata.withProperty("nestedChildProps.parent-class-property", Integer.class)
-				.fromSource(ClassWithNestedProperties.NestedChildClass.class).withDefaultValue(10));
 	}
 
 	private static class AdditionalMetadata {

@@ -31,7 +31,6 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
-import javax.tools.Diagnostic;
 
 import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesParser;
 
@@ -65,7 +64,6 @@ class TypeElementMembers {
 		this.typeUtils = new TypeUtils(this.env);
 		this.fieldValuesParser = fieldValuesParser;
 		process(element);
-		processFieldValues(element);
 	}
 
 	private void process(TypeElement element) {
@@ -77,6 +75,19 @@ class TypeElementMembers {
 				.fieldsIn(element.getEnclosedElements())) {
 			processField(field);
 		}
+		try {
+			Map<String, Object> fieldValues = this.fieldValuesParser
+					.getFieldValues(element);
+			for (Map.Entry<String, Object> entry : fieldValues.entrySet()) {
+				if (!this.fieldValues.containsKey(entry.getKey())) {
+					this.fieldValues.put(entry.getKey(), entry.getValue());
+				}
+			}
+		}
+		catch (Exception ex) {
+			// continue
+		}
+
 		Element superType = this.env.getTypeUtils().asElement(element.getSuperclass());
 		if (superType != null && superType instanceof TypeElement
 				&& !OBJECT_CLASS_NAME.equals(superType.toString())) {
@@ -172,24 +183,6 @@ class TypeElementMembers {
 			}
 		}
 		return null;
-	}
-
-	private void processFieldValues(TypeElement element) {
-		try {
-			this.fieldValues.putAll(this.fieldValuesParser.getFieldValues(element));
-		}
-		catch (Exception ex) {
-			logWarning("Could not get values for type :" + element.getSimpleName().toString());
-		}
-
-		Element superType = this.env.getTypeUtils().asElement(element.getSuperclass());
-		if (superType != null && superType instanceof TypeElement && !Object.class.getName().equals(superType.toString())) {
-			processFieldValues((TypeElement) superType);
-		}
-	}
-
-	private void logWarning(String message) {
-		this.env.getMessager().printMessage(Diagnostic.Kind.WARNING, message);
 	}
 
 	public Map<String, Object> getFieldValues() {
