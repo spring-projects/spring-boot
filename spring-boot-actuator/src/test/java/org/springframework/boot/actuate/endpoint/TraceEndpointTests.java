@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.util.Collections;
-import java.util.UUID;
 
 import org.junit.Test;
 

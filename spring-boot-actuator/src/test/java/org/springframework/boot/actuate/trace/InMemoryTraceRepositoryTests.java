@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.trace;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import org.junit.Test;
 

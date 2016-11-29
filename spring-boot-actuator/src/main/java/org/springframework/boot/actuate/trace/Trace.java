@@ -63,7 +63,7 @@ public final class Trace {
 		return ended;
 	}
 
-	void setEnded(Date ended) {
+	protected void setEnded(Date ended) {
 		this.ended = ended;
 	}
 
