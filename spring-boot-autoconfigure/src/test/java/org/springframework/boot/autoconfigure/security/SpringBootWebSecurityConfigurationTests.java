@@ -21,7 +21,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.List;
 
 import javax.servlet.Filter;
 
@@ -82,13 +81,6 @@ public class SpringBootWebSecurityConfigurationTests {
 		if (this.context != null) {
 			this.context.close();
 		}
-	}
-
-	@Test
-	public void testDefaultIgnores() {
-		List<String> ignored = SpringBootWebSecurityConfiguration
-				.getIgnored(new SecurityProperties());
-		assertThat(ignored).contains("/css/**");
 	}
 
 	@Test
