@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.orm.jpa;
+package org.springframework.boot.test.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
@@ -22,34 +22,30 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link AutoConfigureTestDatabase} when there is no database.
+ * Integration tests for {@link JdbcTest}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@AutoConfigureTestDatabase
-public class AutoConfigureTestDatabaseWithNoDatabaseIntegrationTests {
+@JdbcTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.AUTO_CONFIGURED)
+public class JdbcTestWithAutoConfigureTestDatabaseReplaceAutoConfiguredWithoutOverrideIntegrationTests {
 
 	@Autowired
-	private ApplicationContext context;
+	private DataSource dataSource;
 
 	@Test
-	public void testContextLoads() throws Exception {
-		// gh-6897
-		assertThat(this.context).isNotNull();
-		assertThat(this.context.getBeanNamesForType(DataSource.class)).isNotEmpty();
-	}
-
-	@TestConfiguration
-	static class Config {
-
+	public void usesDefaultEmbeddedDatabase() throws Exception {
+		String product = this.dataSource.getConnection().getMetaData()
+				.getDatabaseProductName();
+		// @AutoConfigureTestDatabase would use H2 but HSQL is manually defined
+		assertThat(product).startsWith("HSQL");
 	}
 
 }

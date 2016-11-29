@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.orm.jpa;
+package org.springframework.boot.test.autoconfigure.jdbc;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -28,23 +28,21 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
- * for a typical JPA test. Can be used when a test focuses <strong>only</strong> on JPA
- * components.
+ * for a typical jdbc test. Can be used when a test focuses <strong>only</strong> on
+ * jdbc-based components.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
- * configuration relevant to JPA tests.
+ * configuration relevant to jdbc tests.
  * <p>
- * By default, tests annotated with {@code @DataJpaTest} will use an embedded in-memory
+ * By default, tests annotated with {@code @JdbcTest} will use an embedded in-memory
  * database (replacing any explicit or usually auto-configured DataSource). The
  * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} annotation can be used to
  * override these settings.
@@ -54,10 +52,9 @@ import org.springframework.transaction.annotation.Transactional;
  * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} rather than this
  * annotation.
  *
- * @author Phillip Webb
- * @see AutoConfigureDataJpa
+ * @author Stephane Nicoll
+ * @see AutoConfigureJdbc
  * @see AutoConfigureTestDatabase
- * @see AutoConfigureTestEntityManager
  * @see AutoConfigureCache
  */
 @Target(ElementType.TYPE)
@@ -66,21 +63,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Inherited
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
 @OverrideAutoConfiguration(enabled = false)
-@TypeExcludeFilters(DataJpaTypeExcludeFilter.class)
+@TypeExcludeFilters(JdbcTypeExcludeFilter.class)
 @Transactional
 @AutoConfigureCache
-@AutoConfigureDataJpa
+@AutoConfigureJdbc
 @AutoConfigureTestDatabase
-@AutoConfigureTestEntityManager
 @ImportAutoConfiguration
-public @interface DataJpaTest {
-
-	/**
-	 * If SQL output should be logged.
-	 * @return if SQL is logged
-	 */
-	@PropertyMapping("spring.jpa.show-sql")
-	boolean showSql() default true;
+public @interface JdbcTest {
 
 	/**
 	 * Determines if default filtering should be used with
@@ -97,13 +86,13 @@ public @interface DataJpaTest {
 	 * application context.
 	 * @return include filters to apply
 	 */
-	Filter[] includeFilters() default {};
+	ComponentScan.Filter[] includeFilters() default {};
 
 	/**
 	 * A set of exclude filters which can be used to filter beans that would otherwise be
 	 * added to the application context.
 	 * @return exclude filters to apply
 	 */
-	Filter[] excludeFilters() default {};
+	ComponentScan.Filter[] excludeFilters() default {};
 
 }

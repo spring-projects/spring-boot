@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.orm.jpa;
+package org.springframework.boot.test.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
