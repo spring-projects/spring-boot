@@ -484,6 +484,11 @@ The following configuration options are available:
  (defaults to a guess based on the archive type). See
  <<build-tool-plugins-gradle-configuration-layouts,available layouts for more details>>.
 
+|'layoutFactory`
+|A layout factory that can be used if a custom layout is required. Alternative layouts
+can be provided by 3rd parties. Layout factories are only used when `layout` is not
+specified.
+
 |`requiresUnpack`
 |A list of dependencies (in the form "`groupId:artifactId`" that must be unpacked from
  fat jars in order to run. Items are still packaged into the fat jar, but they will be
@@ -527,6 +532,38 @@ loader should be included or not. The following layouts are available:
 |Bundle all dependencies and project resources.
 |No
 |===
+
+
+
++[[build-tool-plugins-gradle-configuration-custom-repackager]]
++==== Using a custom layout
+If you have custom requirements for how to arrange the dependencies and loader classes
+inside the repackaged jar, you can use a custom layout. Any library which defines one
+or more `LayoutFactory` implementations can be added to the build script dependencies
+and then the layout factory becomes available in the `springBoot` configuration.
+For example:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}")
+		classpath("com.example:custom-layout:1.0.0")
+	}
+}
+
+springBoot {
+    layoutFactory = new com.example.CustomLayoutFactory()
+}
++----
+
+NOTE: If there is only one custom `LayoutFactory` on the build classpath and it is
+listed in `META-INF/spring.factories` then it is unnecessary to explicitly set it in the
+`springBoot` configuration. Layout factories are only used when no explicit `layout` is
+specified.
 
 
 

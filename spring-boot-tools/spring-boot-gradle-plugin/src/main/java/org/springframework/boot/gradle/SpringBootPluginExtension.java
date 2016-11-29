@@ -26,6 +26,7 @@ import org.gradle.api.plugins.JavaPlugin;
 
 import org.springframework.boot.gradle.buildinfo.BuildInfo;
 import org.springframework.boot.loader.tools.Layout;
+import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Layouts;
 
 /**
@@ -89,6 +90,12 @@ public class SpringBootPluginExtension {
 	 * String values to the correct type.
 	 */
 	LayoutType layout;
+
+	/**
+	 * The layout factory that will be used when no explicit layout is specified.
+	 * Alternative layouts can be provided by 3rd parties.
+	 */
+	LayoutFactory layoutFactory;
 
 	/**
 	 * Libraries that must be unpacked from fat jars in order to run. Use Strings in the
@@ -194,6 +201,14 @@ public class SpringBootPluginExtension {
 
 	public void setLayout(LayoutType layout) {
 		this.layout = layout;
+	}
+
+	public LayoutFactory getLayoutFactory() {
+		return this.layoutFactory;
+	}
+
+	public void setLayoutFactory(LayoutFactory layoutFactory) {
+		this.layoutFactory = layoutFactory;
 	}
 
 	public Set<String> getRequiresUnpack() {
