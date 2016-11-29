@@ -34,31 +34,17 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<classifier>exec</classifier>
-				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>exec</id>
-						<phase>package</phase>
+						<id>lib</id>
 						<goals>
 							<goal>jar</goal>
 						</goals>
 						<configuration>
-							<classifier>exec</classifier>
-						</configuration>
-					</execution>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<!-- Need this to ensure application.yml is excluded -->
-							<forceCreation>true</forceCreation>
+							<classifier>lib</classifier>
 							<excludes>
 								<exclude>application.yml</exclude>
 							</excludes>
