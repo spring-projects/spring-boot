@@ -28,7 +28,7 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 
 /**
- * {@link TypeExcludeFilter} for {@link JdbcTest @Jdbctest}.
+ * {@link TypeExcludeFilter} for {@link JdbcTest @JdbcTest}.
  *
  * @author Stephane Nicoll
  */
