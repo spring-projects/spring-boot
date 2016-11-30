@@ -127,7 +127,7 @@
 		<mariadb.version>1.4.6</mariadb.version>
 		<mssql-jdbc.version>6.1.0.jre8</mssql-jdbc.version>
 		<mockito.version>1.10.19</mockito.version>
-		<mongodb.version>3.2.2</mongodb.version>
+		<mongodb.version>3.4.0</mongodb.version>
 		<mysql.version>5.1.40</mysql.version>
 		<narayana.version>5.3.5.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
@@ -1794,7 +1794,22 @@
 			</dependency>
 			<dependency>
 				<groupId>org.mongodb</groupId>
+				<artifactId>bson</artifactId>
+				<version>${mongodb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mongodb</groupId>
 				<artifactId>mongodb-driver</artifactId>
+				<version>${mongodb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mongodb</groupId>
+				<artifactId>mongodb-driver-async</artifactId>
+				<version>${mongodb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mongodb</groupId>
+				<artifactId>mongodb-driver-core</artifactId>
 				<version>${mongodb.version}</version>
 			</dependency>
 			<dependency>
