@@ -18,6 +18,7 @@ package org.springframework.boot.test.context;
 
 import kotlin.Metadata;
 import org.junit.Test;
+import org.spockframework.runtime.model.SpecMetadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,6 +36,13 @@ public class ImportsContextCustomizerTests {
 						SecondKotlinAnnotatedTestClass.class));
 	}
 
+	@Test
+	public void customizersForTestClassesWithDifferentSpockMetadataAreEqual() {
+		assertThat(new ImportsContextCustomizer(FirstSpockAnnotatedTestClass.class))
+				.isEqualTo(new ImportsContextCustomizer(
+						SecondSpockAnnotatedTestClass.class));
+	}
+
 	@Metadata(d2 = "foo")
 	static class FirstKotlinAnnotatedTestClass {
 
@@ -42,6 +50,16 @@ public class ImportsContextCustomizerTests {
 
 	@Metadata(d2 = "bar")
 	static class SecondKotlinAnnotatedTestClass {
+
+	}
+
+	@SpecMetadata(filename = "foo", line = 10)
+	static class FirstSpockAnnotatedTestClass {
+
+	}
+
+	@SpecMetadata(filename = "bar", line = 10)
+	static class SecondSpockAnnotatedTestClass {
 
 	}
 
