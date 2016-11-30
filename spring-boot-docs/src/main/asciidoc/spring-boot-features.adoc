@@ -3401,8 +3401,10 @@ persistence for the embedded mode:
 [[boot-features-neo4j-ogm-session]]
 ==== Neo4jSession
 
-By default, the lifetime of the session is scope to the application. If you are running a
-web application you can change it to scope or request easily:
+By default, the lifetime of the session is scoped to the application. If you are running a
+web application, you can change it so that the session is bound to the thread for the
+entire processing of the request (i.e. the "Open Session in View" pattern):
+
 
 ----
 	spring.data.neo4j.open-in-view=true
