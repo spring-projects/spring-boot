@@ -72,7 +72,6 @@
 		<flyway.version>3.2.1</flyway.version>
 		<freemarker.version>2.3.25-incubating</freemarker.version>
 		<elasticsearch.version>2.4.1</elasticsearch.version>
-		<gemfire.version>8.2.0</gemfire.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
 		<gradle.version>2.9</gradle.version>
 		<groovy.version>2.4.7</groovy.version>
@@ -325,11 +324,6 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
-				<version>2.0.0.BUILD-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-data-gemfire</artifactId>
 				<version>2.0.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -674,11 +668,6 @@
 				<groupId>com.fasterxml.jackson.module</groupId>
 				<artifactId>jackson-module-parameter-names</artifactId>
 				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.gemstone.gemfire</groupId>
-				<artifactId>gemfire</artifactId>
-				<version>${gemfire.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.github.ben-manes.caffeine</groupId>
