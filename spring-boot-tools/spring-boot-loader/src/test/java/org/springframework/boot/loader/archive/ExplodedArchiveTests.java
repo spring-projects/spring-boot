@@ -190,7 +190,7 @@ public class ExplodedArchiveTests {
 	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {
 		Map<String, Archive.Entry> entries = new HashMap<String, Archive.Entry>();
 		for (Archive.Entry entry : archive) {
-			entries.put(entry.getName().toString(), entry);
+			entries.put(entry.getName(), entry);
 		}
 		return entries;
 	}
