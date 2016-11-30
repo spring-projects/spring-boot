@@ -3405,7 +3405,7 @@ By default, the lifetime of the session is scope to the application. If you are 
 web application you can change it to scope or request easily:
 
 ----
-	spring.data.neo4j.session.scope=session
+	spring.data.neo4j.open-in-view=true
 ----
 
 

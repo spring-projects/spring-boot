@@ -369,25 +369,6 @@
     ]
   },
   {
-    "name": "spring.data.neo4j.session.scope",
-    "values": [
-      {
-        "value": "singleton"
-      },
-      {
-        "value": "session"
-      },
-      {
-        "value": "request"
-      }
-    ],
-    "providers": [
-      {
-        "name": "any"
-      }
-    ]
-  },
-  {
     "name": "spring.datasource.driver-class-name",
     "providers": [
       {
