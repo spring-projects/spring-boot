@@ -86,7 +86,7 @@ public class Repackager {
 	}
 
 	/**
-	 * Add a listener that will be triggered to dispaly a warning if searching for the
+	 * Add a listener that will be triggered to display a warning if searching for the
 	 * main class takes too long.
 	 * @param listener the listener to add
 	 */

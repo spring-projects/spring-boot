@@ -186,8 +186,8 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 
 	private List<Dependency> createDependencies(String[] allCoordinates) {
 		List<Dependency> dependencies = new ArrayList<Dependency>();
-		for (String coordinates : allCoordinates) {
-			dependencies.add(new Dependency(new DefaultArtifact(coordinates), null));
+		for (String coordinate : allCoordinates) {
+			dependencies.add(new Dependency(new DefaultArtifact(coordinate), null));
 		}
 		return dependencies;
 	}

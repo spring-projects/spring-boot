@@ -46,7 +46,7 @@ public class HttpMessageConvertersAutoConfigurationWithoutJacksonTests {
 	}
 
 	@Test
-	public void autoConfigurationWorksWithSpringHateosButWithoutJackson()
+	public void autoConfigurationWorksWithSpringHateoasButWithoutJackson()
 			throws Exception {
 		this.context.register(HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
