@@ -214,7 +214,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 		private String contentSecurityPolicy;
 
 		/**
-		 * Security policy mode.
+		 * Content security policy mode.
 		 */
 		private ContentSecurityPolicyMode contentSecurityPolicyMode = ContentSecurityPolicyMode.DEFAULT;
 

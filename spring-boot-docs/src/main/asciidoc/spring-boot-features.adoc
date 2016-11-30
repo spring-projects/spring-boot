@@ -1356,7 +1356,7 @@ current directory.
 relative to the current directory.
 |===
 
-Log files will rotate when they reach 10 Mb and as with console output, `ERROR`, `WARN`
+Log files will rotate when they reach 10 MB and as with console output, `ERROR`, `WARN`
 and `INFO` level messages are logged by default.
 
 NOTE: The logging system is initialized early in the application lifecycle and as such
@@ -4466,7 +4466,7 @@ reached.
 
 [[boot-features-kafka]]
 === Apache Kafka Support
-http://kafka.apache.org/[Apache Kafa] is supported by providing auto-configuration of the
+http://kafka.apache.org/[Apache Kafka] is supported by providing auto-configuration of the
 `spring-kafka` project.
 
 Kafka configuration is controlled by external configuration properties in
@@ -5308,7 +5308,7 @@ and/or a `WebDriver` bean. Here is an example that uses HtmlUnit:
 
 NOTE: By default Spring Boot will put `WebDriver` beans in a special "`scope`" to ensure
 that the driver is quit after each test, and that a new instance is injected. If you don't
-want this behavor you can add `@Scope("singleton")` to your `WebDriver` `@Bean`
+want this behavior you can add `@Scope("singleton")` to your `WebDriver` `@Bean`
 definition.
 
 A list of the auto-configuration that is enabled by `@WebMvcTest` can be
