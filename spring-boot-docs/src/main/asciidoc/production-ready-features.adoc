@@ -883,8 +883,9 @@ The remote shell can be extended in a number of interesting ways.
 
 [[production-ready-remote-commands]]
 ==== Remote shell commands
-You can write additional shell commands using Groovy or Java (see the CRaSH documentation
-for details). By default Spring Boot will search for commands in the following locations:
+You can write additional shell commands using Groovy (see the CRaSH documentation for details).
+Due to limitations in CRaSH's Java compiler, commands written in Java are not supported.
+By default Spring Boot will search for commands in the following locations:
 
 * `+classpath*:/commands/**+`
 * `+classpath*:/crash/commands/**+`
