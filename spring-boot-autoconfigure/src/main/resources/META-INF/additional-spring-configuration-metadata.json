@@ -369,12 +369,34 @@
     ]
   },
   {
+    "name": "spring.datasource.data",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "java.util.List<org.springframework.core.io.Resource>"
+        }
+      }
+    ]
+  },
+  {
     "name": "spring.datasource.driver-class-name",
     "providers": [
       {
         "name": "class-reference",
         "parameters": {
           "target": "java.sql.Driver"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.datasource.schema",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "java.util.List<org.springframework.core.io.Resource>"
         }
       }
     ]

@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -106,9 +107,9 @@ public class DataSourceProperties
 	private String platform = "all";
 
 	/**
-	 * Schema (DDL) script resource reference.
+	 * Schema (DDL) script resource references.
 	 */
-	private String schema;
+	private List<String> schema;
 
 	/**
 	 * User of the database to execute DDL scripts (if different).
@@ -121,9 +122,9 @@ public class DataSourceProperties
 	private String schemaPassword;
 
 	/**
-	 * Data (DML) script resource reference.
+	 * Data (DML) script resource references.
 	 */
-	private String data;
+	private List<String> data;
 
 	/**
 	 * User of the database to execute DML scripts.
@@ -388,11 +389,11 @@ public class DataSourceProperties
 		this.platform = platform;
 	}
 
-	public String getSchema() {
+	public List<String> getSchema() {
 		return this.schema;
 	}
 
-	public void setSchema(String schema) {
+	public void setSchema(List<String> schema) {
 		this.schema = schema;
 	}
 
@@ -412,12 +413,12 @@ public class DataSourceProperties
 		this.schemaPassword = schemaPassword;
 	}
 
-	public String getData() {
+	public List<String> getData() {
 		return this.data;
 	}
 
-	public void setData(String script) {
-		this.data = script;
+	public void setData(List<String> data) {
+		this.data = data;
 	}
 
 	public String getDataUsername() {
