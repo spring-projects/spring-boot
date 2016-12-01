@@ -30,6 +30,9 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.devtools.settings.DevToolsSettings;
 import org.springframework.util.StringUtils;
 
@@ -41,6 +44,8 @@ import org.springframework.util.StringUtils;
  */
 final class ChangeableUrls implements Iterable<URL> {
 
+	private static final Log logger = LogFactory.getLog(ChangeableUrls.class);
+
 	private final List<URL> urls;
 
 	private ChangeableUrls(URL... urls) {
@@ -51,6 +56,9 @@ final class ChangeableUrls implements Iterable<URL> {
 					&& !settings.isRestartExclude(url)) {
 				reloadableUrls.add(url);
 			}
+		}
+		if (logger.isDebugEnabled()) {
+			logger.debug("Matching URLs for reloading : " + reloadableUrls);
 		}
 		this.urls = Collections.unmodifiableList(reloadableUrls);
 	}
