@@ -229,7 +229,7 @@ key.
 
 Application events are sent in the following order, as your application runs:
 
-. An `ApplicationStartedEvent` is sent at the start of a run, but before any
+. An `ApplicationStartingEvent` is sent at the start of a run, but before any
   processing except the registration of listeners and initializers.
 . An `ApplicationEnvironmentPreparedEvent` is sent when the `Environment` to be used in
   the context is known, but before the context is created.
