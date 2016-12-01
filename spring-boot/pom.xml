@@ -248,7 +248,7 @@
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-junit-runners</artifactId>
+			<artifactId>spring-boot-test-support</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
