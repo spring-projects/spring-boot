@@ -8,9 +8,9 @@
 		<version>1.5.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
-	<artifactId>spring-boot-junit-runners</artifactId>
-	<name>Spring Boot JUnit Runners</name>
-	<description>Spring Boot JUnit Runners</description>
+	<artifactId>spring-boot-test-support</artifactId>
+	<name>Spring Boot Testing Support</name>
+	<description>Spring Boot Testing Support</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
