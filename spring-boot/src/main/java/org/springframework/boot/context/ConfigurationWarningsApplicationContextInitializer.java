@@ -183,9 +183,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 
 		private void addPackages(Set<String> packages, String[] values) {
 			if (values != null) {
-				for (String value : values) {
-					packages.add(value);
-				}
+				Collections.addAll(packages, values);
 			}
 		}
 
