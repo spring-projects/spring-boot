@@ -1192,7 +1192,7 @@
 											<lowercase />
 										</stringutil>
 										<var name="github-tag" value="v${project.version}" />
-										<propertyregex property="github-tag" override="true" input="${github-tag}" regexp=".*SNAPSHOT" replace="master" />
+										<propertyregex property="github-tag" override="true" input="${github-tag}" regexp=".*SNAPSHOT" replace="1.5.x" />
 									</target>
 								</configuration>
 							</execution>
