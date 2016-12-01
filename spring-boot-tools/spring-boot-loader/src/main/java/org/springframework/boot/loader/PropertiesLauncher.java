@@ -536,11 +536,8 @@ public class PropertiesLauncher extends Launcher {
 		return builder.toString();
 	}
 
-	private static Object capitalize(String str) {
-		StringBuilder sb = new StringBuilder(str.length());
-		sb.append(Character.toUpperCase(str.charAt(0)));
-		sb.append(str.substring(1));
-		return sb.toString();
+	private static String capitalize(String str) {
+		return Character.toUpperCase(str.charAt(0)) + str.substring(1);
 	}
 
 	private void log(String message) {
