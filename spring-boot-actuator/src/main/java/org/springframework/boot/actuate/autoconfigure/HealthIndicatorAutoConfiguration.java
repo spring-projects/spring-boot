@@ -52,8 +52,8 @@ import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfigurati
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
@@ -91,7 +91,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @Configuration
 @AutoConfigureBefore({ EndpointAutoConfiguration.class })
 @AutoConfigureAfter({ CassandraAutoConfiguration.class,
-		CassandraDataAutoConfiguration.class, CouchbaseAutoConfiguration.class,
+		CassandraDataAutoConfiguration.class, CouchbaseDataAutoConfiguration.class,
 		DataSourceAutoConfiguration.class, ElasticsearchAutoConfiguration.class,
 		JestAutoConfiguration.class, JmsAutoConfiguration.class,
 		MailSenderAutoConfiguration.class, MongoAutoConfiguration.class,
