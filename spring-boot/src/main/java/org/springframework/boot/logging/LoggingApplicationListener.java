@@ -98,23 +98,25 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 * The name of the Spring property that contains the directory where log files are
 	 * written.
 	 */
+	@Deprecated
 	public static final String PATH_PROPERTY = LogFile.PATH_PROPERTY;
 
 	/**
 	 * The name of the Spring property that contains the name of the log file. Names can
 	 * be an exact location or relative to the current directory.
 	 */
+	@Deprecated
 	public static final String FILE_PROPERTY = LogFile.FILE_PROPERTY;
 
 	/**
 	 * The name of the System property that contains the process ID.
 	 */
-	public static final String PID_KEY = LoggingSystemProperties.PID_KEY;
+	public static final String PID_KEY = "PID";
 
 	/**
 	 * The name of the System property that contains the exception conversion word.
 	 */
-	public static final String EXCEPTION_CONVERSION_WORD = LoggingSystemProperties.EXCEPTION_CONVERSION_WORD;
+	public static final String EXCEPTION_CONVERSION_WORD = "LOG_EXCEPTION_CONVERSION_WORD";
 
 	/**
 	 * The name of the System property that contains the log file.
@@ -129,17 +131,17 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	/**
 	 * The name of the System property that contains the console log pattern.
 	 */
-	public static final String CONSOLE_LOG_PATTERN = LoggingSystemProperties.CONSOLE_LOG_PATTERN;
+	public static final String CONSOLE_LOG_PATTERN = "CONSOLE_LOG_PATTERN";
 
 	/**
 	 * The name of the System property that contains the file log pattern.
 	 */
-	public static final String FILE_LOG_PATTERN = LoggingSystemProperties.FILE_LOG_PATTERN;
+	public static final String FILE_LOG_PATTERN = "FILE_LOG_PATTERN";
 
 	/**
 	 * The name of the System property that contains the log level pattern.
 	 */
-	public static final String LOG_LEVEL_PATTERN = LoggingSystemProperties.LOG_LEVEL_PATTERN;
+	public static final String LOG_LEVEL_PATTERN = "LOG_LEVEL_PATTERN";
 
 	/**
 	 * The name of the {@link LoggingSystem} bean.
