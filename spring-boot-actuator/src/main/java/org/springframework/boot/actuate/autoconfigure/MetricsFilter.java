@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.FilterChain;
@@ -67,7 +66,7 @@ final class MetricsFilter extends OncePerRequestFilter {
 
 	static {
 		Set<PatternReplacer> replacements = new LinkedHashSet<PatternReplacer>();
-		replacements.add(new PatternReplacer("[{}]", 0, "-"));
+		replacements.add(new PatternReplacer("\\{(.+?)(?::.+)?\\}", 0, "-$1-"));
 		replacements.add(new PatternReplacer("**", Pattern.LITERAL, "-star-star-"));
 		replacements.add(new PatternReplacer("*", Pattern.LITERAL, "-star-"));
 		replacements.add(new PatternReplacer("/-", Pattern.LITERAL, "/"));
@@ -140,13 +139,13 @@ final class MetricsFilter extends OncePerRequestFilter {
 
 	private void recordMetrics(HttpServletRequest request, String path, int status,
 			long time) {
-		String suffix = getFinalStatus(request, path, status);
+		String suffix = determineMetricNameSuffix(request, path, status);
 		submitMetrics(MetricsFilterSubmission.MERGED, request, status, time, suffix);
 		submitMetrics(MetricsFilterSubmission.PER_HTTP_METHOD, request, status, time,
 				suffix);
 	}
 
-	private String getFinalStatus(HttpServletRequest request, String path, int status) {
+	private String determineMetricNameSuffix(HttpServletRequest request, String path, int status) {
 		Object bestMatchingPattern = request
 				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 		if (bestMatchingPattern != null) {
@@ -242,8 +241,7 @@ final class MetricsFilter extends OncePerRequestFilter {
 		}
 
 		public String apply(String input) {
-			return this.pattern.matcher(input)
-					.replaceAll(Matcher.quoteReplacement(this.replacement));
+			return this.pattern.matcher(input).replaceAll(this.replacement);
 		}
 
 	}
