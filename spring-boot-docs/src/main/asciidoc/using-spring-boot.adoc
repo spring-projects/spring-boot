@@ -214,8 +214,6 @@ Maven, there is no "`super parent`" to import to share some configuration.
 
 [source,groovy,indent=0,subs="attributes"]
 ----
-	apply plugin: 'java'
-
 	repositories {
 ifeval::["{spring-boot-repo}" != "release"]
 		maven { url "http://repo.spring.io/snapshot" }
@@ -240,32 +238,33 @@ managed by Spring Boot:
 
 [source,groovy,indent=0,subs="attributes"]
 ----
+ifeval::["{spring-boot-repo}" == "release"]
+	plugins {
+		id 'org.springframework.boot' version '{spring-boot-version}'
+		id 'java'
+	}
+endif::[]
+ifeval::["{spring-boot-repo}" != "release"]
 	buildscript {
 		repositories {
-ifeval::["{spring-boot-repo}" != "release"]
-			maven { url "http://repo.spring.io/snapshot" }
-			maven { url "http://repo.spring.io/milestone" }
-endif::[]
-ifeval::["{spring-boot-repo}" == "release"]
 			jcenter()
-endif::[]
+			maven { url 'http://repo.spring.io/snapshot' }
+			maven { url 'http://repo.spring.io/milestone' }
 		}
-
 		dependencies {
-			classpath("org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}")
+			classpath 'org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}'
 		}
 	}
 
 	apply plugin: 'java'
 	apply plugin: 'org.springframework.boot'
+endif::[]
 
 	repositories {
-ifeval::["{spring-boot-repo}" != "release"]
-		maven { url "http://repo.spring.io/snapshot" }
-		maven { url "http://repo.spring.io/milestone" }
-endif::[]
-ifeval::["{spring-boot-repo}" == "release"]
 		jcenter()
+ifeval::["{spring-boot-repo}" != "release"]
+		maven { url 'http://repo.spring.io/snapshot' }
+		maven { url 'http://repo.spring.io/milestone' }
 endif::[]
 	}
 

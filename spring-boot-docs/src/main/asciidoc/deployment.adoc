@@ -387,8 +387,6 @@ With Gradle, the equivalent configuration would be:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	apply plugin: 'org.springframework.boot'
-
 	springBoot {
 		executable = true
 	}

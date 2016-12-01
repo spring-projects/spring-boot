@@ -172,32 +172,33 @@ dependency management provided by `spring-boot-dependencies`.
 
 [[build-tool-plugins-including-the-gradle-plugin]]
 === Including the plugin
+ifeval::["{spring-boot-repo}" == "release"]
+To use the Spring Boot Gradle Plugin configure it using the `plugins` block:
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	plugins {
+		id 'org.springframework.boot' version '{spring-boot-version}'
+	}
+----
+endif::[]
+ifeval::["{spring-boot-repo}" != "release"]
 To use the Spring Boot Gradle Plugin simply include a `buildscript` dependency and apply
 the `spring-boot` plugin:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 	buildscript {
+		repositories {
+			maven { url 'http://repo.spring.io/snapshot' }
+			maven { url 'http://repo.spring.io/milestone' }
+		}
 		dependencies {
-			classpath("org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}")
+			classpath 'org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}''
 		}
 	}
 	apply plugin: 'org.springframework.boot'
 ----
-
-If you are using a milestone or snapshot release you will also need to add appropriate
-`repositories` reference:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-	buildscript {
-		repositories {
-			maven.url "http://repo.spring.io/snapshot"
-			maven.url "http://repo.spring.io/milestone"
-		}
-		// ...
-	}
-----
+endif::[]
 
 
 
