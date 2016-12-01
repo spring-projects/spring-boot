@@ -26,7 +26,9 @@ import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -54,8 +56,12 @@ import static org.junit.Assert.fail;
  * Tests for {@link DataSourceInitializer}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class DataSourceInitializerTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -269,6 +275,37 @@ public class DataSourceInitializerTests {
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from FOO", Integer.class))
 				.isEqualTo(1);
+	}
+
+	@Test
+	public void testDataSourceInitializedWithInvalidSchemaResource() {
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:true",
+				"spring.datasource.schema:classpath:does/not/exist.sql");
+
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("does/not/exist.sql");
+		this.thrown.expectMessage("spring.datasource.schema");
+		this.context.refresh();
+	}
+
+	@Test
+	public void testDataSourceInitializedWithInvalidDataResource() {
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:true",
+				"spring.datasource.schema:"
+						+ ClassUtils.addResourcePathToPackagePath(getClass(),
+						"schema.sql"),
+				"spring.datasource.data:classpath:does/not/exist.sql");
+
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("does/not/exist.sql");
+		this.thrown.expectMessage("spring.datasource.data");
+		this.context.refresh();
 	}
 
 	@Configuration

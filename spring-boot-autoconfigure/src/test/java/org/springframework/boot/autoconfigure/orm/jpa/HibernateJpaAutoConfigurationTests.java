@@ -27,7 +27,9 @@ import javax.transaction.UserTransaction;
 
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
@@ -50,6 +52,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HibernateJpaAutoConfigurationTests
 		extends AbstractJpaAutoConfigurationTests {
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	@After
 	public void cleanup() {
 		HibernateVersion.setRunning(null);
@@ -67,9 +72,10 @@ public class HibernateJpaAutoConfigurationTests
 				// Missing:
 				"spring.datasource.schema:classpath:/ddl.sql");
 		setupTestConfiguration();
+		this.thrown.expectMessage("ddl.sql");
+		this.thrown.expectMessage("spring.datasource.schema");
 		this.context.refresh();
-		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class))
-				.queryForObject("SELECT COUNT(*) from CITY", Integer.class)).isEqualTo(1);
+
 	}
 
 	// This can't succeed because the data SQL is executed immediately after the schema
