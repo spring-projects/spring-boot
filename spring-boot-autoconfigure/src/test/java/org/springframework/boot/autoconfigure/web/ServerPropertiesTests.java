@@ -31,6 +31,7 @@ import javax.servlet.SessionTrackingMode;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
+import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.junit.Before;
@@ -138,6 +139,48 @@ public class ServerPropertiesTests {
 		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 		assertThat(this.properties.getServletMapping()).isEqualTo("/foo/*");
 		assertThat(this.properties.getServletPrefix()).isEqualTo("/foo");
+	}
+
+	@Test
+	public void tomcatAccessLogIsDisabledByDefault() {
+		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(tomcatContainer);
+		assertThat(tomcatContainer.getEngineValves()).isEmpty();
+	}
+
+	@Test
+	public void tomcatAccessLogCanBeEnabled() {
+		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.accesslog.enabled", "true");
+		bindProperties(map);
+		this.properties.customize(tomcatContainer);
+		assertThat(tomcatContainer.getEngineValves()).hasSize(1);
+		assertThat(tomcatContainer.getEngineValves()).first()
+				.isInstanceOf(AccessLogValve.class);
+	}
+
+	@Test
+	public void tomcatAccessLogIsBufferedByDefault() {
+		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.accesslog.enabled", "true");
+		bindProperties(map);
+		this.properties.customize(tomcatContainer);
+		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next())
+				.isBuffered()).isTrue();
+	}
+
+	@Test
+	public void tomcatAccessLogBufferingCanBeDisabled() {
+		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.accesslog.enabled", "true");
+		map.put("server.tomcat.accesslog.buffered", "false");
+		bindProperties(map);
+		this.properties.customize(tomcatContainer);
+		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next())
+				.isBuffered()).isFalse();
 	}
 
 	@Test
