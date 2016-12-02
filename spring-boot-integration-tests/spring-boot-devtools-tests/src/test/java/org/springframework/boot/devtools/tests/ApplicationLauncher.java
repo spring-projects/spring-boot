@@ -23,6 +23,6 @@ package org.springframework.boot.devtools.tests;
  */
 public interface ApplicationLauncher {
 
-	LaunchedApplication launchApplication(JavaLauncher javaLauncher) throws Exception;
+	LaunchedApplication launchApplication(JvmLauncher javaLauncher) throws Exception;
 
 }

@@ -57,7 +57,7 @@ public class DevToolsIntegrationTests {
 	private final ApplicationLauncher applicationLauncher;
 
 	@Rule
-	public JavaLauncher javaLauncher = new JavaLauncher();
+	public JvmLauncher javaLauncher = new JvmLauncher();
 
 	@Parameters(name = "{0}")
 	public static Object[] parameters() {
@@ -106,7 +106,6 @@ public class DevToolsIntegrationTests {
 		controller("com.example.ControllerOne").build();
 		assertThat(template.getForEntity("http://localhost:" + awaitServerPort() + "/one",
 				String.class).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-
 	}
 
 	@Test
@@ -138,11 +137,14 @@ public class DevToolsIntegrationTests {
 	}
 
 	private int awaitServerPort() throws Exception {
-		long end = System.currentTimeMillis() + 20000;
+		long end = System.currentTimeMillis() + 30000;
 		while (this.serverPortFile.length() == 0) {
 			if (System.currentTimeMillis() > end) {
-				throw new IllegalStateException(
-						"server.port file was not written within 20 seconds");
+				throw new IllegalStateException(String.format(
+						"server.port file was not written within 30 seconds. "
+								+ "Application output:%n%s",
+						FileCopyUtils.copyToString(new FileReader(
+								this.launchedApplication.getStandardOut()))));
 			}
 			Thread.sleep(100);
 		}
