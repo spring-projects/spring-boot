@@ -11,8 +11,8 @@
 
 ### BEGIN INIT INFO
 # Provides:          {{initInfoProvides:spring-boot-application}}
-# Required-Start:    $remote_fs $syslog $network
-# Required-Stop:     $remote_fs $syslog $network
+# Required-Start:    {{initInfoRequiredStart:$remote_fs $syslog $network}}
+# Required-Stop:     {{initInfoRequiredStop:$remote_fs $syslog $network}}
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: {{initInfoShortDescription:Spring Boot Application}}
