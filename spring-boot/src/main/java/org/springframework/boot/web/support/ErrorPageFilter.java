@@ -38,7 +38,6 @@ import org.springframework.boot.web.servlet.ErrorPageRegistrar;
 import org.springframework.boot.web.servlet.ErrorPageRegistry;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.NestedServletException;
 
@@ -56,7 +55,6 @@ import org.springframework.web.util.NestedServletException;
  * @author Andy Wilkinson
  * @since 1.4.0
  */
-@Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 

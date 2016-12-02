@@ -30,7 +30,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 
 /**
  * A registry for all {@link MvcEndpoint} beans, and a factory for a set of generic ones
@@ -39,7 +38,6 @@ import org.springframework.stereotype.Component;
  *
  * @author Dave Syer
  */
-@Component
 public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 
 	private ApplicationContext applicationContext;
