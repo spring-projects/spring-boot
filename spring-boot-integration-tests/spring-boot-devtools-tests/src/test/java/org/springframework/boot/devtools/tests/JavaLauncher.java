@@ -27,7 +27,9 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 /**
- * @author awilkinson
+ * {@link TestRule} launching a Java application.
+ *
+ * @author Andy Wilkinson
  */
 public class JavaLauncher implements TestRule {
 
@@ -35,7 +37,7 @@ public class JavaLauncher implements TestRule {
 
 	@Override
 	public Statement apply(Statement base, Description description) {
-		this.outputDirectory = new File("target/output/" + "/"
+		this.outputDirectory = new File("target/output/"
 				+ description.getMethodName().replaceAll("[^A-Za-z]+", ""));
 		this.outputDirectory.mkdirs();
 		return base;

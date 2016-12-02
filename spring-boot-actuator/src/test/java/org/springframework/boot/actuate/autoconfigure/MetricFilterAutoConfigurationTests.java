@@ -145,7 +145,7 @@ public class MetricFilterAutoConfigurationTests {
 	}
 
 	@Test
-	public void recordsHttpInteractionsWithWilcardMapping() throws Exception {
+	public void recordsHttpInteractionsWithWildcardMapping() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				Config.class, MetricFilterAutoConfiguration.class);
 		Filter filter = context.getBean(Filter.class);

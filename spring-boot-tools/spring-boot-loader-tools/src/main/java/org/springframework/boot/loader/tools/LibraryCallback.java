@@ -27,7 +27,7 @@ import java.io.IOException;
 public interface LibraryCallback {
 
 	/**
-	 * Callback to for a single library backed by a {@link File}.
+	 * Callback for a single library backed by a {@link File}.
 	 * @param library the library
 	 * @throws IOException if the operation fails
 	 */
