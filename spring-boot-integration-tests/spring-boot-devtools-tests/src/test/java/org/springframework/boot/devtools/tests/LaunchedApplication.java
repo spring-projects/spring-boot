@@ -27,10 +27,13 @@ class LaunchedApplication {
 
 	private final File classesDirectory;
 
+	private final File standardOut;
+
 	private final Process[] processes;
 
-	LaunchedApplication(File classesDirectory, Process... processes) {
+	LaunchedApplication(File classesDirectory, File standardOut, Process... processes) {
 		this.classesDirectory = classesDirectory;
+		this.standardOut = standardOut;
 		this.processes = processes;
 	}
 
@@ -38,6 +41,10 @@ class LaunchedApplication {
 		for (Process process : this.processes) {
 			process.destroy();
 		}
+	}
+
+	File getStandardOut() {
+		return this.standardOut;
 	}
 
 	File getClassesDirectory() {

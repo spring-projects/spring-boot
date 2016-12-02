@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.boot.devtools.tests.JvmLauncher.LaunchedJvm;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 
@@ -31,11 +32,12 @@ import org.springframework.util.StringUtils;
 public class LocalApplicationLauncher implements ApplicationLauncher {
 
 	@Override
-	public LaunchedApplication launchApplication(JavaLauncher javaLauncher)
+	public LaunchedApplication launchApplication(JvmLauncher jvmLauncher)
 			throws Exception {
-		Process process = javaLauncher.launch("local", createApplicationClassPath(),
+		LaunchedJvm jvm = jvmLauncher.launch("local", createApplicationClassPath(),
 				"com.example.DevToolsTestApplication", "--server.port=0");
-		return new LaunchedApplication(new File("target/app"), process);
+		return new LaunchedApplication(new File("target/app"), jvm.getStandardOut(),
+				jvm.getProcess());
 	}
 
 	protected String createApplicationClassPath() throws Exception {

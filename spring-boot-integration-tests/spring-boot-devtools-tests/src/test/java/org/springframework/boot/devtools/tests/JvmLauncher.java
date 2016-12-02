@@ -27,9 +27,12 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 /**
- * @author awilkinson
+ * JUnit {@link TestRule} that launched a JVM and redirects its output to a test
+ * method-specific location.
+ *
+ * @author Andy Wilkinson
  */
-public class JavaLauncher implements TestRule {
+class JvmLauncher implements TestRule {
 
 	private File outputDirectory;
 
@@ -41,13 +44,36 @@ public class JavaLauncher implements TestRule {
 		return base;
 	}
 
-	Process launch(String name, String classpath, String... args) throws IOException {
+	LaunchedJvm launch(String name, String classpath, String... args) throws IOException {
 		List<String> command = new ArrayList<String>(Arrays
 				.asList(System.getProperty("java.home") + "/bin/java", "-cp", classpath));
 		command.addAll(Arrays.asList(args));
-		return new ProcessBuilder(command.toArray(new String[command.size()]))
+		File standardOut = new File(this.outputDirectory, name + ".out");
+		Process process = new ProcessBuilder(command.toArray(new String[command.size()]))
 				.redirectError(new File(this.outputDirectory, name + ".err"))
-				.redirectOutput(new File(this.outputDirectory, name + ".out")).start();
+				.redirectOutput(standardOut).start();
+		return new LaunchedJvm(process, standardOut);
+	}
+
+	static class LaunchedJvm {
+
+		private final Process process;
+
+		private final File standardOut;
+
+		LaunchedJvm(Process process, File standardOut) {
+			this.process = process;
+			this.standardOut = standardOut;
+		}
+
+		Process getProcess() {
+			return this.process;
+		}
+
+		File getStandardOut() {
+			return this.standardOut;
+		}
+
 	}
 
 }
