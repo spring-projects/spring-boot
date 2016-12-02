@@ -38,7 +38,7 @@ class JvmLauncher implements TestRule {
 
 	@Override
 	public Statement apply(Statement base, Description description) {
-		this.outputDirectory = new File("target/output/" + "/"
+		this.outputDirectory = new File("target/output/"
 				+ description.getMethodName().replaceAll("[^A-Za-z]+", ""));
 		this.outputDirectory.mkdirs();
 		return base;
