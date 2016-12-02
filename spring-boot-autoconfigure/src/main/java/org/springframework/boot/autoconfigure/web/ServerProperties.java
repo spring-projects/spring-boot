@@ -1005,6 +1005,7 @@ public class ServerProperties
 			valve.setRequestAttributesEnabled(
 					this.accesslog.isRequestAttributesEnabled());
 			valve.setRotatable(this.accesslog.isRotate());
+			valve.setBuffered(this.accesslog.isBuffered());
 			factory.addEngineValves(valve);
 		}
 
@@ -1064,6 +1065,11 @@ public class ServerProperties
 			 * the request.
 			 */
 			private boolean requestAttributesEnabled;
+
+			/**
+			 * Buffer output such that it is only flushed periodically.
+			 */
+			private boolean buffered = true;
 
 			public boolean isEnabled() {
 				return this.enabled;
@@ -1127,6 +1133,14 @@ public class ServerProperties
 
 			public void setRequestAttributesEnabled(boolean requestAttributesEnabled) {
 				this.requestAttributesEnabled = requestAttributesEnabled;
+			}
+
+			public boolean isBuffered() {
+				return this.buffered;
+			}
+
+			public void setBuffered(boolean buffered) {
+				this.buffered = buffered;
 			}
 
 		}
