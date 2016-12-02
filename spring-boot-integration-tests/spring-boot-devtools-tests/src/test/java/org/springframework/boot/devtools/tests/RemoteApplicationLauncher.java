@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.devtools.RemoteSpringApplication;
+import org.springframework.boot.devtools.tests.JvmLauncher.LaunchedJvm;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.SocketUtils;
 import org.springframework.util.StringUtils;
@@ -34,18 +35,19 @@ import org.springframework.util.StringUtils;
 abstract class RemoteApplicationLauncher implements ApplicationLauncher {
 
 	@Override
-	public LaunchedApplication launchApplication(JavaLauncher javaLauncher)
+	public LaunchedApplication launchApplication(JvmLauncher javaLauncher)
 			throws Exception {
 		int port = SocketUtils.findAvailableTcpPort();
-		Process application = javaLauncher.launch("app", createApplicationClassPath(),
-				"com.example.DevToolsTestApplication", "--server.port=" + port,
-				"--spring.devtools.remote.secret=secret");
-		Process remoteSpringApplication = javaLauncher.launch("remote-spring-application",
-				createRemoteSpringApplicationClassPath(),
+		LaunchedJvm applicationJvm = javaLauncher.launch("app",
+				createApplicationClassPath(), "com.example.DevToolsTestApplication",
+				"--server.port=" + port, "--spring.devtools.remote.secret=secret");
+		LaunchedJvm remoteSpringApplicationJvm = javaLauncher.launch(
+				"remote-spring-application", createRemoteSpringApplicationClassPath(),
 				RemoteSpringApplication.class.getName(),
 				"--spring.devtools.remote.secret=secret", "http://localhost:" + port);
-		return new LaunchedApplication(new File("target/remote"), application,
-				remoteSpringApplication);
+		return new LaunchedApplication(new File("target/remote"),
+				applicationJvm.getStandardOut(), applicationJvm.getProcess(),
+				remoteSpringApplicationJvm.getProcess());
 	}
 
 	protected abstract String createApplicationClassPath() throws Exception;
