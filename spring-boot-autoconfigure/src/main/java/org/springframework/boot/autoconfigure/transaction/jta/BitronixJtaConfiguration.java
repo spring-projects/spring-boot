@@ -28,7 +28,9 @@ import bitronix.tm.jndi.BitronixContext;
 import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 import org.springframework.boot.jta.XADataSourceWrapper;
 import org.springframework.boot.jta.bitronix.BitronixDependentBeanFactoryPostProcessor;
@@ -46,17 +48,21 @@ import org.springframework.util.StringUtils;
  * @author Josh Long
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  * @since 1.2.0
  */
 @Configuration
+@EnableConfigurationProperties({JtaProperties.class, TransactionProperties.class})
 @ConditionalOnClass({ JtaTransactionManager.class, BitronixContext.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
 class BitronixJtaConfiguration {
 
 	private final JtaProperties jtaProperties;
+	private final TransactionProperties transactionProperties;
 
-	BitronixJtaConfiguration(JtaProperties jtaProperties) {
+	BitronixJtaConfiguration(JtaProperties jtaProperties, TransactionProperties transactionProperties) {
 		this.jtaProperties = jtaProperties;
+		this.transactionProperties = transactionProperties;
 	}
 
 	@Bean
@@ -105,7 +111,9 @@ class BitronixJtaConfiguration {
 	@Bean
 	public JtaTransactionManager transactionManager(
 			TransactionManager transactionManager) {
-		return new JtaTransactionManager(transactionManager);
+		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(transactionManager);
+		this.transactionProperties.applyTo(jtaTransactionManager);
+		return jtaTransactionManager;
 	}
 
 	@ConditionalOnClass(Message.class)

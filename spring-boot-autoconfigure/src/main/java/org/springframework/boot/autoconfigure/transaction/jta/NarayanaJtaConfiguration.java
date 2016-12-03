@@ -28,6 +28,8 @@ import org.jboss.tm.XAResourceRecoveryRegistry;
 import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 import org.springframework.boot.jta.XADataSourceWrapper;
 import org.springframework.boot.jta.narayana.NarayanaBeanFactoryPostProcessor;
@@ -47,18 +49,22 @@ import org.springframework.util.StringUtils;
  * JTA Configuration for <a href="http://narayana.io/">Narayana</a>.
  *
  * @author Gytis Trikleris
+ * @author Kazuki Shimizu
  * @since 1.4.0
  */
 @Configuration
 @ConditionalOnClass({ JtaTransactionManager.class,
 		com.arjuna.ats.jta.UserTransaction.class, XAResourceRecoveryRegistry.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
+@EnableConfigurationProperties({JtaProperties.class, TransactionProperties.class})
 public class NarayanaJtaConfiguration {
 
 	private final JtaProperties jtaProperties;
+	private final TransactionProperties transactionProperties;
 
-	public NarayanaJtaConfiguration(JtaProperties jtaProperties) {
+	public NarayanaJtaConfiguration(JtaProperties jtaProperties, TransactionProperties transactionProperties) {
 		this.jtaProperties = jtaProperties;
+		this.transactionProperties = transactionProperties;
 	}
 
 	@Bean
@@ -116,7 +122,9 @@ public class NarayanaJtaConfiguration {
 	@Bean
 	public JtaTransactionManager transactionManager(UserTransaction userTransaction,
 			TransactionManager transactionManager) {
-		return new JtaTransactionManager(userTransaction, transactionManager);
+		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(userTransaction, transactionManager);
+		this.transactionProperties.applyTo(jtaTransactionManager);
+		return jtaTransactionManager;
 	}
 
 	@Bean

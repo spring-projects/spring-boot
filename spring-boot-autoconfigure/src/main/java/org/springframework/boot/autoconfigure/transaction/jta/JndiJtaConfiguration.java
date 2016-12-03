@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.transaction.jta;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -30,6 +32,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Kazuki Shimizu
  * @since 1.2.0
  */
 @Configuration
@@ -38,11 +41,20 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 		"java:comp/TransactionManager", "java:appserver/TransactionManager",
 		"java:pm/TransactionManager", "java:/TransactionManager" })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
+@EnableConfigurationProperties(TransactionProperties.class)
 class JndiJtaConfiguration {
+
+	private final TransactionProperties transactionProperties;
+
+	JndiJtaConfiguration(TransactionProperties transactionProperties) {
+		this.transactionProperties = transactionProperties;
+	}
 
 	@Bean
 	public JtaTransactionManager transactionManager() {
-		return new JtaTransactionManagerFactoryBean().getObject();
+		JtaTransactionManager transactionManager = new JtaTransactionManagerFactoryBean().getObject();
+		this.transactionProperties.applyTo(transactionManager);
+		return transactionManager;
 	}
 
 }
