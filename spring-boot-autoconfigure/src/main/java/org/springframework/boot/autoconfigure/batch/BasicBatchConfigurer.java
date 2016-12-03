@@ -30,6 +30,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
+import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -40,12 +41,15 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  */
 public class BasicBatchConfigurer implements BatchConfigurer {
 
 	private static final Log logger = LogFactory.getLog(BasicBatchConfigurer.class);
 
 	private final BatchProperties properties;
+
+	private final TransactionProperties transactionProperties;
 
 	private final DataSource dataSource;
 
@@ -62,21 +66,24 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	/**
 	 * Create a new {@link BasicBatchConfigurer} instance.
 	 * @param properties the batch properties
+	 * @param transactionProperties the transaction properties
 	 * @param dataSource the underlying data source
 	 */
-	protected BasicBatchConfigurer(BatchProperties properties, DataSource dataSource) {
-		this(properties, dataSource, null);
+	protected BasicBatchConfigurer(BatchProperties properties, TransactionProperties transactionProperties, DataSource dataSource) {
+		this(properties, transactionProperties, dataSource, null);
 	}
 
 	/**
 	 * Create a new {@link BasicBatchConfigurer} instance.
 	 * @param properties the batch properties
+	 * @param transactionProperties the transaction properties
 	 * @param dataSource the underlying data source
 	 * @param entityManagerFactory the entity manager factory (or {@code null})
 	 */
-	protected BasicBatchConfigurer(BatchProperties properties, DataSource dataSource,
+	protected BasicBatchConfigurer(BatchProperties properties, TransactionProperties transactionProperties, DataSource dataSource,
 			EntityManagerFactory entityManagerFactory) {
 		this.properties = properties;
+		this.transactionProperties = transactionProperties;
 		this.entityManagerFactory = entityManagerFactory;
 		this.dataSource = dataSource;
 	}
@@ -150,10 +157,15 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	}
 
 	protected PlatformTransactionManager createTransactionManager() {
+		PlatformTransactionManager txManager;
 		if (this.entityManagerFactory != null) {
-			return new JpaTransactionManager(this.entityManagerFactory);
+			txManager = new JpaTransactionManager(this.entityManagerFactory);
 		}
-		return new DataSourceTransactionManager(this.dataSource);
+		else {
+			txManager = new DataSourceTransactionManager(this.dataSource);
+		}
+		this.transactionProperties.applyTo(txManager);
+		return txManager;
 	}
 
 }

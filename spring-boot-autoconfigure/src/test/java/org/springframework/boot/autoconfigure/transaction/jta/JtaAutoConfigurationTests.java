@@ -245,6 +245,32 @@ public class JtaAutoConfigurationTests {
 		assertThat(dataSource.getMaxPoolSize()).isEqualTo(10);
 	}
 
+	@Test
+	public void atomikosCustomizeJtaTransactionManagerUsingProperties() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.transaction.default-timeout:30",
+				"spring.transaction.rollback-on-commit-failure:true");
+		this.context.register(AtomikosJtaConfiguration.class);
+		this.context.refresh();
+		JtaTransactionManager transactionManager = this.context.getBean(JtaTransactionManager.class);
+		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
+		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
+	}
+
+	@Test
+	public void bitronixCustomizeJtaTransactionManagerUsingProperties() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.transaction.default-timeout:30",
+				"spring.transaction.rollback-on-commit-failure:true");
+		this.context.register(BitronixJtaConfiguration.class);
+		this.context.refresh();
+		JtaTransactionManager transactionManager = this.context.getBean(JtaTransactionManager.class);
+		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
+		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
+	}
+
 	@Configuration
 	@EnableConfigurationProperties(JtaProperties.class)
 	public static class JtaPropertiesConfiguration {
