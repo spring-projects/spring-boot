@@ -22,18 +22,27 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
+import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.AbstractEndpointHandlerMappingTests;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsProcessor;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link CloudFoundryEndpointHandlerMapping}.
@@ -42,6 +51,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class CloudFoundryEndpointHandlerMappingTests
 		extends AbstractEndpointHandlerMappingTests {
+
+	@Test
+	public void corsInterceptorShouldBeFirstAndCallCorsProcessor() throws Exception {
+		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
+		CorsConfiguration corsConfiguration = new CorsConfiguration();
+		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
+				Collections.singleton(endpoint), corsConfiguration, null);
+		CorsProcessor corsProcessor = mock(CorsProcessor.class);
+		handlerMapping.setCorsProcessor(corsProcessor);
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		HandlerExecutionChain handlerExecutionChain = handlerMapping
+				.getHandlerExecutionChain(endpoint, request);
+		HandlerInterceptor[] interceptors = handlerExecutionChain.getInterceptors();
+		CloudFoundryEndpointHandlerMapping.CorsInterceptor corsInterceptor = (CloudFoundryEndpointHandlerMapping.CorsInterceptor) interceptors[0];
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		corsInterceptor.preHandle(request, response, new Object());
+		verify(corsProcessor).processRequest(corsConfiguration, request, response);
+	}
 
 	@Test
 	public void getHandlerExecutionChainShouldHaveSecurityInterceptor() throws Exception {
@@ -53,7 +80,7 @@ public class CloudFoundryEndpointHandlerMappingTests
 		HandlerExecutionChain handlerExecutionChain = handlerMapping
 				.getHandlerExecutionChain(endpoint, new MockHttpServletRequest());
 		HandlerInterceptor[] interceptors = handlerExecutionChain.getInterceptors();
-		assertThat(interceptors).contains(securityInterceptor);
+		assertThat(interceptors[1]).isEqualTo(securityInterceptor);
 	}
 
 	@Test
@@ -88,6 +115,23 @@ public class CloudFoundryEndpointHandlerMappingTests
 				.isInstanceOf(CloudFoundryDiscoveryMvcEndpoint.class);
 	}
 
+	@Test
+	public void registersCloudFoundryHealthEndpoint() throws Exception {
+		StaticApplicationContext context = new StaticApplicationContext();
+		HealthEndpoint delegate = new HealthEndpoint(new OrderedHealthAggregator(),
+				Collections.<String, HealthIndicator>emptyMap());
+		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
+				Collections.singleton(new TestHealthMvcEndpoint(delegate)), null, null);
+		handlerMapping.setPrefix("/test");
+		handlerMapping.setApplicationContext(context);
+		handlerMapping.afterPropertiesSet();
+		HandlerExecutionChain handler = handlerMapping
+				.getHandler(new MockHttpServletRequest("GET", "/test/health"));
+		HandlerMethod handlerMethod = (HandlerMethod) handler.getHandler();
+		Object handlerMethodBean = handlerMethod.getBean();
+		assertThat(handlerMethodBean).isInstanceOf(CloudFoundryHealthMvcEndpoint.class);
+	}
+
 	private static class TestEndpoint extends AbstractEndpoint<Object> {
 
 		TestEndpoint(String id) {
@@ -120,6 +164,14 @@ public class CloudFoundryEndpointHandlerMappingTests
 				}
 
 			});
+		}
+
+	}
+
+	private static class TestHealthMvcEndpoint extends HealthMvcEndpoint {
+
+		TestHealthMvcEndpoint(HealthEndpoint delegate) {
+			super(delegate);
 		}
 
 	}

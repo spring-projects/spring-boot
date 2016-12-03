@@ -577,7 +577,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void welcomePageMappingDoesNotHandleRequestThatDoNotAcceptTextHtml()
+	public void welcomePageMappingDoesNotHandleRequestsThatDoNotAcceptTextHtml()
 			throws Exception {
 		load("spring.resources.static-locations:classpath:/welcome-page/");
 		assertThat(this.context.getBeansOfType(WelcomePageHandlerMapping.class))

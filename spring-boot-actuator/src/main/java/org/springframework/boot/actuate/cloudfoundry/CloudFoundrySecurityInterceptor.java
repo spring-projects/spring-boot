@@ -24,7 +24,9 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
+import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -55,6 +57,9 @@ class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
 			Object o) throws Exception {
+		if (CorsUtils.isPreFlightRequest(request)) {
+			return true;
+		}
 		try {
 			if (!StringUtils.hasText(this.applicationId)) {
 				throw new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
@@ -70,6 +75,9 @@ class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 		}
 		catch (CloudFoundryAuthorizationException ex) {
 			this.logger.error(ex);
+			response.setContentType(MediaType.APPLICATION_JSON.toString());
+			response.getWriter()
+					.write("{\"security_error\":\"" + ex.getMessage() + "\"}");
 			response.setStatus(ex.getStatusCode().value());
 			return false;
 		}

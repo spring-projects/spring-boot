@@ -38,7 +38,6 @@ import org.springframework.boot.web.servlet.ErrorPageRegistrar;
 import org.springframework.boot.web.servlet.ErrorPageRegistry;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.NestedServletException;
 
@@ -56,7 +55,6 @@ import org.springframework.web.util.NestedServletException;
  * @author Andy Wilkinson
  * @since 1.4.0
  */
-@Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
@@ -185,7 +183,14 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		request.getRequestDispatcher(path).forward(request, response);
 	}
 
-	private String getDescription(HttpServletRequest request) {
+	/**
+	 * Return the description for the given request. By default this method will return a
+	 * description based on the request {@code servletPath} and {@code pathInfo}.
+	 * @param request the source request
+	 * @return the description
+	 * @since 1.5.0
+	 */
+	protected String getDescription(HttpServletRequest request) {
 		return "[" + request.getServletPath()
 				+ (request.getPathInfo() == null ? "" : request.getPathInfo()) + "]";
 	}

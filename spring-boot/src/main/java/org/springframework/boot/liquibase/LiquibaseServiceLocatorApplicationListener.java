@@ -21,7 +21,7 @@ import liquibase.servicelocator.ServiceLocator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.util.ClassUtils;
 
@@ -33,13 +33,13 @@ import org.springframework.util.ClassUtils;
  * @author Dave Syer
  */
 public class LiquibaseServiceLocatorApplicationListener
-		implements ApplicationListener<ApplicationStartedEvent> {
+		implements ApplicationListener<ApplicationStartingEvent> {
 
 	private static final Log logger = LogFactory
 			.getLog(LiquibaseServiceLocatorApplicationListener.class);
 
 	@Override
-	public void onApplicationEvent(ApplicationStartedEvent event) {
+	public void onApplicationEvent(ApplicationStartingEvent event) {
 		if (ClassUtils.isPresent("liquibase.servicelocator.ServiceLocator", null)) {
 			new LiquibasePresent().replaceServiceLocator();
 		}

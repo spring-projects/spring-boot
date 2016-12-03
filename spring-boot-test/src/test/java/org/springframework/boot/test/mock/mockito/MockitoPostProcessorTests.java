@@ -19,7 +19,7 @@ package org.springframework.boot.test.mock.mockito;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.internal.util.MockUtil;
+import org.mockito.Mockito;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -80,7 +80,8 @@ public class MockitoPostProcessorTests {
 		context.registerBeanDefinition("beanToBeMocked", factoryBeanDefinition);
 		context.register(MockedFactoryBean.class);
 		context.refresh();
-		assertThat(new MockUtil().isMock(context.getBean("beanToBeMocked"))).isTrue();
+		assertThat(Mockito.mockingDetails(context.getBean("beanToBeMocked")).isMock())
+				.isTrue();
 	}
 
 	@Configuration

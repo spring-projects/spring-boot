@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -141,9 +142,7 @@ public class RestartServer {
 		ClassLoader classLoader = this.classLoader;
 		while (classLoader != null) {
 			if (classLoader instanceof URLClassLoader) {
-				for (URL url : ((URLClassLoader) classLoader).getURLs()) {
-					urls.add(url);
-				}
+				Collections.addAll(urls, ((URLClassLoader) classLoader).getURLs());
 			}
 			classLoader = classLoader.getParent();
 		}

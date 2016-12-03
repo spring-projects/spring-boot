@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -30,7 +31,6 @@ import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
-import org.springframework.boot.logging.LoggerConfigurationComparator;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.util.Assert;
@@ -47,9 +47,6 @@ import org.springframework.util.StringUtils;
  * @author Ben Hale
  */
 public class JavaLoggingSystem extends AbstractLoggingSystem {
-
-	private static final LoggerConfigurationComparator COMPARATOR = new LoggerConfigurationComparator(
-			"");
 
 	private static final LogLevels<Level> LEVELS = new LogLevels<Level>();
 
@@ -114,10 +111,17 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
+	public Set<LogLevel> getSupportedLogLevels() {
+		return LEVELS.getSupported();
+	}
+
+	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
 		Assert.notNull(level, "Level must not be null");
-		String name = (StringUtils.hasText(loggerName) ? loggerName : "");
-		Logger logger = Logger.getLogger(name);
+		if (loggerName == null || ROOT_LOGGER_NAME.equals(loggerName)) {
+			loggerName = "";
+		}
+		Logger logger = Logger.getLogger(loggerName);
 		if (logger != null) {
 			logger.setLevel(LEVELS.convertSystemToNative(level));
 		}
@@ -130,7 +134,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		while (names.hasMoreElements()) {
 			result.add(getLoggerConfiguration(names.nextElement()));
 		}
-		Collections.sort(result, COMPARATOR);
+		Collections.sort(result, CONFIGURATION_COMPARATOR);
 		return Collections.unmodifiableList(result);
 	}
 
@@ -142,7 +146,9 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		}
 		LogLevel level = LEVELS.convertNativeToSystem(logger.getLevel());
 		LogLevel effectiveLevel = LEVELS.convertNativeToSystem(getEffectiveLevel(logger));
-		return new LoggerConfiguration(logger.getName(), level, effectiveLevel);
+		String name = (StringUtils.hasLength(logger.getName()) ? logger.getName()
+				: ROOT_LOGGER_NAME);
+		return new LoggerConfiguration(name, level, effectiveLevel);
 	}
 
 	private Level getEffectiveLevel(Logger root) {

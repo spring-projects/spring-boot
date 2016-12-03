@@ -26,7 +26,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.actuate.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.util.Base64Utils;
@@ -70,12 +72,25 @@ public class CloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
+	public void preHandleWhenRequestIsPreFlightShouldReturnTrue() throws Exception {
+		this.request.setMethod("OPTIONS");
+		this.request.addHeader(HttpHeaders.ORIGIN, "http://example.com");
+		this.request.addHeader(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET");
+		boolean preHandle = this.interceptor.preHandle(this.request, this.response,
+				this.handlerMethod);
+		assertThat(preHandle).isTrue();
+	}
+
+	@Test
 	public void preHandleWhenTokenIsMissingShouldReturnFalse() throws Exception {
 		boolean preHandle = this.interceptor.preHandle(this.request, this.response,
 				this.handlerMethod);
 		assertThat(preHandle).isFalse();
 		assertThat(this.response.getStatus())
 				.isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus().value());
+		assertThat(this.response.getContentAsString()).contains("security_error");
+		assertThat(this.response.getContentType())
+				.isEqualTo(MediaType.APPLICATION_JSON.toString());
 	}
 
 	@Test

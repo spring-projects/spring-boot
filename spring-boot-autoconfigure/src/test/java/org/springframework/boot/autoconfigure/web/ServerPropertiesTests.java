@@ -31,6 +31,7 @@ import javax.servlet.SessionTrackingMode;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
+import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.junit.Before;
@@ -113,6 +114,14 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void testConnectionTimeout() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.connection-timeout", "60000");
+		bindProperties(map);
+		assertThat(this.properties.getConnectionTimeout()).isEqualTo(60000);
+	}
+
+	@Test
 	public void testServletPathAsMapping() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
 		binder.bind(new MutablePropertyValues(
@@ -133,12 +142,55 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void tomcatAccessLogIsDisabledByDefault() {
+		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(tomcatContainer);
+		assertThat(tomcatContainer.getEngineValves()).isEmpty();
+	}
+
+	@Test
+	public void tomcatAccessLogCanBeEnabled() {
+		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.accesslog.enabled", "true");
+		bindProperties(map);
+		this.properties.customize(tomcatContainer);
+		assertThat(tomcatContainer.getEngineValves()).hasSize(1);
+		assertThat(tomcatContainer.getEngineValves()).first()
+				.isInstanceOf(AccessLogValve.class);
+	}
+
+	@Test
+	public void tomcatAccessLogIsBufferedByDefault() {
+		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.accesslog.enabled", "true");
+		bindProperties(map);
+		this.properties.customize(tomcatContainer);
+		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next())
+				.isBuffered()).isTrue();
+	}
+
+	@Test
+	public void tomcatAccessLogBufferingCanBeDisabled() {
+		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.accesslog.enabled", "true");
+		map.put("server.tomcat.accesslog.buffered", "false");
+		bindProperties(map);
+		this.properties.customize(tomcatContainer);
+		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next())
+				.isBuffered()).isFalse();
+	}
+
+	@Test
 	public void testTomcatBinding() throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.accesslog.pattern", "%h %t '%r' %s %b");
 		map.put("server.tomcat.accesslog.prefix", "foo");
 		map.put("server.tomcat.accesslog.rotate", "false");
 		map.put("server.tomcat.accesslog.rename-on-rotate", "true");
+		map.put("server.tomcat.accesslog.request-attributes-enabled", "true");
 		map.put("server.tomcat.accesslog.suffix", "-bar.log");
 		map.put("server.tomcat.protocol_header", "X-Forwarded-Protocol");
 		map.put("server.tomcat.remote_ip_header", "Remote-Ip");
@@ -150,6 +202,7 @@ public class ServerPropertiesTests {
 		assertThat(tomcat.getAccesslog().getPrefix()).isEqualTo("foo");
 		assertThat(tomcat.getAccesslog().isRotate()).isFalse();
 		assertThat(tomcat.getAccesslog().isRenameOnRotate()).isTrue();
+		assertThat(tomcat.getAccesslog().isRequestAttributesEnabled()).isTrue();
 		assertThat(tomcat.getAccesslog().getSuffix()).isEqualTo("-bar.log");
 		assertThat(tomcat.getRemoteIpHeader()).isEqualTo("Remote-Ip");
 		assertThat(tomcat.getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
@@ -296,14 +349,6 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
-	public void testCustomizePostSize() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("server.maxHttpPostSize", "9999");
-		bindProperties(map);
-		assertThat(this.properties.getMaxHttpPostSize()).isEqualTo(9999);
-	}
-
-	@Test
 	public void testCustomizeJettyAcceptors() throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.jetty.acceptors", "10");
@@ -423,10 +468,8 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.port-header", "x-my-forward-port");
 		map.put("server.tomcat.protocol-header-https-value", "On");
 		bindProperties(map);
-
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
-
 		assertThat(container.getEngineValves()).hasSize(1);
 		Valve valve = container.getEngineValves().iterator().next();
 		assertThat(valve).isInstanceOf(RemoteIpValve.class);
@@ -443,7 +486,6 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.accept-count", "10");
 		bindProperties(map);
-
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
@@ -457,13 +499,25 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.max-connections", "5");
 		bindProperties(map);
-
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
 				.getEmbeddedServletContainer();
 		assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
 				.getProtocolHandler()).getMaxConnections()).isEqualTo(5);
+	}
+
+	@Test
+	public void customTomcatMaxHttpPostSize() {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.max-http-post-size", "10000");
+		bindProperties(map);
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(container);
+		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
+				.getEmbeddedServletContainer();
+		assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize())
+				.isEqualTo(10000);
 	}
 
 	@Test
@@ -476,7 +530,6 @@ public class ServerPropertiesTests {
 		map.put("server.undertow.accesslog.dir", "test-logs");
 		map.put("server.undertow.accesslog.rotate", "false");
 		bindProperties(map);
-
 		UndertowEmbeddedServletContainerFactory container = spy(
 				new UndertowEmbeddedServletContainerFactory());
 		this.properties.getUndertow().customizeUndertow(this.properties, container);

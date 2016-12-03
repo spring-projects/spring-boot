@@ -27,24 +27,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
-import org.springframework.data.neo4j.repository.config.GraphRepositoryConfigurationExtension;
-import org.springframework.data.neo4j.repository.support.GraphRepositoryFactoryBean;
+import org.springframework.data.neo4j.repository.config.Neo4jRepositoryConfigurationExtension;
+import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryBean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Neo4j
  * Repositories.
  * <p>
- * Activates when there is no bean of type
- * {@link org.springframework.data.neo4j.repository.support.GraphRepositoryFactoryBean}
- * configured in the context, the Spring Data Neo4j
- * {@link org.springframework.data.neo4j.repository.GraphRepository} type is on the
- * classpath, the Neo4j client driver API is on the classpath, and there is no other
- * configured {@link org.springframework.data.neo4j.repository.GraphRepository}.
+ * Activates when there is no bean of type {@link Neo4jRepositoryFactoryBean} configured
+ * in the context, the Spring Data Neo4j {@link GraphRepository} type is on the classpath,
+ * the Neo4j client driver API is on the classpath, and there is no other configured
+ * {@link GraphRepository}.
  * <p>
  * Once in effect, the auto-configuration is the equivalent of enabling Neo4j repositories
- * using the
- * {@link org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories}
- * annotation.
+ * using the {@link EnableNeo4jRepositories} annotation.
  *
  * @author Dave Syer
  * @author Oliver Gierke
@@ -52,11 +48,10 @@ import org.springframework.data.neo4j.repository.support.GraphRepositoryFactoryB
  * @since 1.4.0
  * @see EnableNeo4jRepositories
  */
-@SuppressWarnings("deprecation")
 @Configuration
 @ConditionalOnClass({ Neo4jSession.class, GraphRepository.class })
-@ConditionalOnMissingBean({ GraphRepositoryFactoryBean.class,
-		GraphRepositoryConfigurationExtension.class })
+@ConditionalOnMissingBean({ Neo4jRepositoryFactoryBean.class,
+		Neo4jRepositoryConfigurationExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.neo4j.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import(Neo4jRepositoriesAutoConfigureRegistrar.class)
 @AutoConfigureAfter(Neo4jDataAutoConfiguration.class)

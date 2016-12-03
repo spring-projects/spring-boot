@@ -37,7 +37,7 @@ public interface SpringApplicationRunListener {
 	 * Called immediately when the run method has first started. Can be used for very
 	 * early initialization.
 	 */
-	void started();
+	void starting();
 
 	/**
 	 * Called once the environment has been prepared, but before the

@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties.Security;
 import org.springframework.boot.actuate.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
@@ -51,6 +50,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
@@ -143,9 +143,8 @@ public class EndpointWebMvcManagementContextConfiguration {
 	@ConditionalOnBean(HealthEndpoint.class)
 	@ConditionalOnEnabledEndpoint("health")
 	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
-		Security security = this.managementServerProperties.getSecurity();
-		boolean secure = (security != null && security.isEnabled());
-		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate, secure);
+		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate,
+				isHealthSecure());
 		if (this.healthMvcEndpointProperties.getMapping() != null) {
 			healthMvcEndpoint
 					.addStatusMapping(this.healthMvcEndpointProperties.getMapping());
@@ -179,6 +178,17 @@ public class EndpointWebMvcManagementContextConfiguration {
 	@ConditionalOnEnabledEndpoint(value = "shutdown", enabledByDefault = false)
 	public ShutdownMvcEndpoint shutdownMvcEndpoint(ShutdownEndpoint delegate) {
 		return new ShutdownMvcEndpoint(delegate);
+	}
+
+	private boolean isHealthSecure() {
+		return isSpringSecurityAvailable()
+				&& this.managementServerProperties.getSecurity().isEnabled();
+	}
+
+	private boolean isSpringSecurityAvailable() {
+		return ClassUtils.isPresent(
+				"org.springframework.security.config.annotation.web.WebSecurityConfigurer",
+				getClass().getClassLoader());
 	}
 
 	private static class LogFileCondition extends SpringBootCondition {

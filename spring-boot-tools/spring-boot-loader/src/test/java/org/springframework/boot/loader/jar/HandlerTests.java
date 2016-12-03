@@ -119,6 +119,23 @@ public class HandlerTests {
 				new URL("jar:file:/the/path/to/the/first.jar!/content.txt"))).isTrue();
 	}
 
+	@Test
+	public void sameFileReturnsTrueForUrlsThatReferenceSameFileViaNestedArchiveAndFromRootOfJar()
+			throws MalformedURLException {
+		assertThat(this.handler.sameFile(
+				new URL("jar:file:/test.jar!/BOOT-INF/classes!/foo.txt"),
+				new URL("jar:file:/test.jar!/BOOT-INF/classes/foo.txt"))).isTrue();
+	}
+
+	@Test
+	public void hashcodesAreEqualForUrlsThatReferenceSameFileViaNestedArchiveAndFromRootOfJar()
+			throws MalformedURLException {
+		assertThat(this.handler
+				.hashCode(new URL("jar:file:/test.jar!/BOOT-INF/classes!/foo.txt")))
+						.isEqualTo(this.handler.hashCode(
+								new URL("jar:file:/test.jar!/BOOT-INF/classes/foo.txt")));
+	}
+
 	private URL createUrl(String file) throws MalformedURLException {
 		return new URL("jar", null, -1, file, this.handler);
 	}

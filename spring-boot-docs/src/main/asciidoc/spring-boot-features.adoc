@@ -229,7 +229,7 @@ key.
 
 Application events are sent in the following order, as your application runs:
 
-. An `ApplicationStartedEvent` is sent at the start of a run, but before any
+. An `ApplicationStartingEvent` is sent at the start of a run, but before any
   processing except the registration of listeners and initializers.
 . An `ApplicationEnvironmentPreparedEvent` is sent when the `Environment` to be used in
   the context is known, but before the context is created.
@@ -1173,7 +1173,9 @@ For example, when an application with following properties is run using the swit
 	my.property: fromyamlfile
 	---
 	spring.profiles: prod
-	spring.profiles.include: proddb,prodmq
+	spring.profiles.include:
+	  - proddb
+	  - prodmq
 ----
 
 NOTE: Remember that the `spring.profiles` property can be defined in a YAML document
@@ -1354,7 +1356,7 @@ current directory.
 relative to the current directory.
 |===
 
-Log files will rotate when they reach 10 Mb and as with console output, `ERROR`, `WARN`
+Log files will rotate when they reach 10 MB and as with console output, `ERROR`, `WARN`
 and `INFO` level messages are logged by default.
 
 NOTE: The logging system is initialized early in the application lifecycle and as such
@@ -2094,6 +2096,12 @@ all the endpoints:
 
 	}
 ----
+
+WARNING: Jersey's support for scanning executable archives is rather limited. For example,
+it cannot scan for endpoints in a package found in `WEB-INF/classes` when running an
+executable war file. To avoid this limitation, the `packages` method should not be used
+and endpoints should be registered individually using the `register` method as shown
+above.
 
 You can also register an arbitrary number of beans implementing `ResourceConfigCustomizer`
 for more advanced customizations.
@@ -3391,11 +3399,13 @@ persistence for the embedded mode:
 [[boot-features-neo4j-ogm-session]]
 ==== Neo4jSession
 
-By default, the lifetime of the session is scope to the application. If you are running a
-web application you can change it to scope or request easily:
+By default, the lifetime of the session is scoped to the application. If you are running a
+web application, you can change it so that the session is bound to the thread for the
+entire processing of the request (i.e. the "Open Session in View" pattern):
+
 
 ----
-	spring.data.neo4j.session.scope=session
+	spring.data.neo4j.open-in-view=true
 ----
 
 
@@ -3883,7 +3893,7 @@ abstraction expects. No further customization is applied on it.
 EhCache 2.x is used if a file named `ehcache.xml` can be found at the root of the
 classpath. If EhCache 2.x, the `EhCacheCacheManager` provided by the
 `spring-boot-starter-cache` '`Starter`' and such file is present it is used to bootstrap
-the cache manager. An alternate configuration file can be provide a well using:
+the cache manager. An alternate configuration file can be provided as well using:
 
 [source,properties,indent=0]
 ----
@@ -4052,7 +4062,7 @@ receive messages asynchronously. Spring AMQP provides a similar feature set for 
 '`Advanced Message Queuing Protocol`' and Spring Boot also provides auto-configuration
 options for `RabbitTemplate` and RabbitMQ. There is also support for STOMP messaging
 natively in Spring WebSocket and Spring Boot has support for that through starters and a
-small amount of auto-configuration.
+small amount of auto-configuration. Spring Boot also has support for Apache Kafka.
 
 
 
@@ -4343,6 +4353,8 @@ used to declare a corresponding queue on the RabbitMQ instance if necessary.
 You can enable retries on the `AmqpTemplate` to retry operations, for example in the event
 the broker connection is lost. Retries are disabled by default.
 
+
+
 [[boot-features-using-amqp-receiving]]
 ==== Receiving a message
 When the Rabbit infrastructure is present, any bean can be annotated with
@@ -4424,6 +4436,104 @@ reached.
 
 
 
+[[boot-features-kafka]]
+=== Apache Kafka Support
+http://kafka.apache.org/[Apache Kafka] is supported by providing auto-configuration of the
+`spring-kafka` project.
+
+Kafka configuration is controlled by external configuration properties in
+`spring.kafka.*`. For example, you might declare the following section in
+`application.properties`:
+
+[source,properties,indent=0]
+----
+	spring.kafka.bootstrap-servers=localhost:9092
+	spring.kafka.consumer.group-id=myGroup
+----
+
+See {sc-spring-boot-autoconfigure}/kafka/KafkaProperties.{sc-ext}[`KafkaProperties`]
+for more of the supported options.
+
+
+
+[[boot-features-kafka-sending-a-message]]
+=== Sending a Message
+Spring's `KafkaTemplate` is auto-configured and you can autowire them directly in your own
+beans:
+
+[source,java,indent=0]
+----
+@Component
+public class MyBean {
+
+	private final KafkaTemplate kafkaTemplate;
+
+	@Autowired
+	public MyBean(KafkaTemplate kafkaTemplate) {
+		this.kafkaTemplate = kafkaTemplate;
+	}
+
+	// ...
+
+}
+----
+
+
+
+[[boot-features-kafka-receiving-a-message]]
+=== Receiving a Message
+When the Apache Kafka infrastructure is present, any bean can be annotated with
+`@KafkaListener` to create a listener endpoint. If no `KafkaListenerContainerFactory`
+has been defined, a default one is configured automatically with keys defined in
+`spring.kafka.listener.*`.
+
+The following component creates a listener endpoint on the `someTopic` topic:
+
+[source,java,indent=0]
+----
+	@Component
+	public class MyBean {
+
+		@KafkaListener(topics = "someTopic")
+		public void processMessage(String content) {
+			// ...
+		}
+
+	}
+----
+
+
+
+[[boot-features-kafka-extra-props]]
+=== Additional Kafka Properties
+The properties supported by auto configuration are shown in
+<<common-application-properties>>. Note that these properties (hyphenated or camelCase)
+map directly to the Apache Kafka dotted properties for the most part, refer to the Apache
+Kafka documentation for details.
+
+The first few of these properties apply to both producers and consumers, but can be
+specified at the producer or consumer level if you wish to use different values for each.
+Apache Kafka designates properties with an importance: HIGH, MEDIUM and LOW. Spring Boot
+auto configuration supports all HIGH importance properties, some selected MEDIUM and LOW,
+and any that do not have a default value.
+
+Only a subset of the properties supported by Kafka are available via the `KafkaProperties`
+class. If you wish to configure the producer or consumer with additional properties, you
+can override the producer factory and/or consumer factory bean, adding additional
+properties, for example:
+
+[source,java,indent=0]
+----
+	@Bean
+	public ProducerFactory<?, ?> kafkaProducerFactory(KafkaProperties properties) {
+		Map<String, Object> producerProperties = properties.buildProducerProperties();
+		producerProperties.put("some.property", "some.value");
+		return new DefaultKafkaProducerFactory<Object, Object>(producerProperties);
+	}
+----
+
+
+
 [[boot-features-restclient]]
 == Calling REST services
 If you need to call remote REST services from your application, you can use Spring
@@ -4483,6 +4593,34 @@ include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[t
 Lastly, the most extreme (and rarely used) option is to create your own
 `RestTemplateBuilder` bean. This will switch off the auto-configuration of a
 `RestTemplateBuilder` and will prevent any `RestTemplateCustomizer` beans from being used.
+
+
+
+[[boot-features-validation]]
+== Validation
+The method validation feature supported by Bean Validation 1.1 is automatically enabled
+as long as a JSR-303 implementation (e.g. Hibernate validator) is on the classpath. This
+allows bean methods to be annotated with `javax.validation` constraints on their
+parameters and/or on their return value. Target classes with such annotated methods need
+to be annotated with the `@Validated` annotation at the type level for their methods to
+be searched for inline constraint annotations.
+
+For instance, the following service triggers the validation of the first argument, making
+sure its size is between 8 and 10
+
+[source,java,indent=0]
+----
+	@Service
+	@Validated
+	public class MyBean {
+
+		public Archive findByCodeAndAuthor(@Size(min = 8, max = 10) String code,
+				Author author) {
+			...
+		}
+
+	}
+----
 
 
 
@@ -5140,6 +5278,11 @@ and/or a `WebDriver` bean. Here is an example that uses HtmlUnit:
 	}
 ----
 
+NOTE: By default Spring Boot will put `WebDriver` beans in a special "`scope`" to ensure
+that the driver is quit after each test, and that a new instance is injected. If you don't
+want this behavior you can add `@Scope("singleton")` to your `WebDriver` `@Bean`
+definition.
+
 A list of the auto-configuration that is enabled by `@WebMvcTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
@@ -5153,7 +5296,7 @@ Data JPA repositories. Regular `@Component` beans will not be loaded into the
 `ApplicationContext`.
 
 Data JPA tests are transactional and rollback at the end of each test by default,
-see the {spring-reference}#testcontext-tx-enabling-transactions [relevant section] in the
+see the {spring-reference}#testcontext-tx-enabling-transactions[relevant section] in the
 Spring Reference Documentation for more details. If that's not what you want, you can
 disable transaction management for a test or for the whole class as follows:
 
@@ -5227,6 +5370,42 @@ database you can use the `@AutoConfigureTestDatabase` annotation:
 ----
 
 A list of the auto-configuration that is enabled by `@DataJpaTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+
+
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-jdbc-test]]
+==== Auto-configured JDBC tests
+`@JdbcTest` is similar to `@DataJpaTest` but for pure jdbc-related tests. By default it
+will also configure an in-memory embedded database and a `JdbcTemplate`. Regular
+`@Component` beans will not be loaded into the `ApplicationContext`.
+
+JDBC tests are transactional and rollback at the end of each test by default,
+see the {spring-reference}#testcontext-tx-enabling-transactions[relevant section] in the
+Spring Reference Documentation for more details. If that's not what you want, you can
+disable transaction management for a test or for the whole class as follows:
+
+[source,java,indent=0]
+----
+	import org.junit.Test;
+	import org.junit.runner.RunWith;
+	import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+	import org.springframework.transaction.annotation.Propagation;
+	import org.springframework.transaction.annotation.Transactional;
+
+	@RunWith(SpringRunner.class)
+	@JdbcTest
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public class ExampleNonTransactionalTests {
+
+	}
+----
+
+If you prefer your test to run against a real database, you can use the
+`@AutoConfigureTestDatabase` annotation the same way as for `DataJpaTest`.
+
+A list of the auto-configuration that is enabled by `@JdbcTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 

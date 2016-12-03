@@ -29,9 +29,11 @@ import org.springframework.core.env.Environment;
  * state too much at this early stage since it might be modified later in the lifecycle.
  *
  * @author Dave Syer
+ * @deprecated since 1.5.0 in favor of {@link ApplicationStartingEvent}
  */
+@Deprecated
 @SuppressWarnings("serial")
-public class ApplicationStartedEvent extends SpringApplicationEvent {
+public class ApplicationStartedEvent extends ApplicationStartingEvent {
 
 	/**
 	 * Create a new {@link ApplicationStartedEvent} instance.

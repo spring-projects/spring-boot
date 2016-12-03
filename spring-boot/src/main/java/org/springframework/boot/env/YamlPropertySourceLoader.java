@@ -78,7 +78,7 @@ public class YamlPropertySourceLoader implements PropertySourceLoader {
 				setMatchDefault(false);
 				setDocumentMatchers(new SpringProfileDocumentMatcher(profile));
 			}
-			setResources(new Resource[] { resource });
+			setResources(resource);
 		}
 
 		@Override

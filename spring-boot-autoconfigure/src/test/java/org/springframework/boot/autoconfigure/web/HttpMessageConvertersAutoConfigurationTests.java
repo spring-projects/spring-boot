@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -220,10 +219,6 @@ public class HttpMessageConvertersAutoConfigurationTests {
 				RepositoryRestMvcConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
-
-		Map<String, MappingJackson2HttpMessageConverter> beansOfType = this.context
-				.getBeansOfType(MappingJackson2HttpMessageConverter.class);
-		System.out.println(beansOfType);
 		BeanDefinition beanDefinition = this.context
 				.getBeanDefinition("mappingJackson2HttpMessageConverter");
 		assertThat(beanDefinition.getFactoryBeanName()).isEqualTo(

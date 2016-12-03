@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -56,16 +56,18 @@ public class LoggingApplicationListenerIntegrationTests {
 	@Test
 	public void loggingPerformedDuringChildApplicationStartIsNotLost() {
 		new SpringApplicationBuilder(Config.class).web(false).child(Config.class)
-				.web(false).listeners(new ApplicationListener<ApplicationStartedEvent>() {
+				.web(false)
+				.listeners(new ApplicationListener<ApplicationStartingEvent>() {
 
 					private final Logger logger = LoggerFactory.getLogger(getClass());
 
 					@Override
-					public void onApplicationEvent(ApplicationStartedEvent event) {
-						this.logger.info("Child application started");
+					public void onApplicationEvent(ApplicationStartingEvent event) {
+						this.logger.info("Child application starting");
 					}
+
 				}).run();
-		assertThat(this.outputCapture.toString()).contains("Child application started");
+		assertThat(this.outputCapture.toString()).contains("Child application starting");
 	}
 
 	@Component
