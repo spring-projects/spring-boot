@@ -22,6 +22,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.util.Assert;
@@ -39,6 +44,7 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  * @see AuditEventRepository
  */
+@JsonInclude(Include.NON_EMPTY)
 public class AuditEvent implements Serializable {
 
 	private final Date timestamp;
@@ -106,6 +112,7 @@ public class AuditEvent implements Serializable {
 	 * Returns the date/time that the even was logged.
 	 * @return the time stamp
 	 */
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
 	public Date getTimestamp() {
 		return this.timestamp;
 	}
@@ -130,6 +137,7 @@ public class AuditEvent implements Serializable {
 	 * Returns the event data.
 	 * @return the event data
 	 */
+	@JsonAnyGetter
 	public Map<String, Object> getData() {
 		return this.data;
 	}

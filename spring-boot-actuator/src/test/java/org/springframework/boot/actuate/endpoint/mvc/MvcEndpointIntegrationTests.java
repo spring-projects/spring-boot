@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
@@ -223,7 +224,7 @@ public class MvcEndpointIntegrationTests {
 
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
 	static class DefaultConfiguration {
@@ -234,7 +235,8 @@ public class MvcEndpointIntegrationTests {
 			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
+			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			AuditAutoConfiguration.class })
 	static class SpringHateoasConfiguration {
 
 	}
@@ -242,7 +244,7 @@ public class MvcEndpointIntegrationTests {
 	@ImportAutoConfiguration({ HypermediaAutoConfiguration.class,
 			RepositoryRestMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
 	static class SpringDataRestConfiguration {
