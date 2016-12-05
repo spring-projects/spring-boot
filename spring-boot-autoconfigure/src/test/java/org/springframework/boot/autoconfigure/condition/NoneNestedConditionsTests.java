@@ -21,8 +21,11 @@ import org.junit.Test;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -92,6 +95,20 @@ public class NoneNestedConditionsTests {
 		@ConditionalOnProperty("b")
 		static class HasPropertyB {
 
+		}
+
+		@Conditional(NonSpringBootCondition.class)
+		static class SubClassC {
+
+		}
+
+	}
+
+	static class NonSpringBootCondition implements Condition {
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			return false;
 		}
 
 	}

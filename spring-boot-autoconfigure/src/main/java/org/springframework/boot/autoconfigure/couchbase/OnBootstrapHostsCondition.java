@@ -28,6 +28,8 @@ import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.bind.RelaxedNames;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySources;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.validation.DataBinder;
 
@@ -41,20 +43,19 @@ class OnBootstrapHostsCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		ConfigurableEnvironment environment = (ConfigurableEnvironment) context
-				.getEnvironment();
-		PropertyResolver resolver = new PropertyResolver(environment, "spring.couchbase");
+		Environment environment = context.getEnvironment();
+		PropertyResolver resolver = new PropertyResolver(
+				((ConfigurableEnvironment) environment).getPropertySources(),
+				"spring.couchbase");
 		Map.Entry<String, Object> entry = resolver.resolveProperty("bootstrap-hosts");
 		if (entry != null) {
-			return ConditionOutcome.match(
-					ConditionMessage.forCondition(OnBootstrapHostsCondition.class.getName())
-							.found("property").items("spring.couchbase.bootstrap-hosts"));
+			return ConditionOutcome.match(ConditionMessage
+					.forCondition(OnBootstrapHostsCondition.class.getName())
+					.found("property").items("spring.couchbase.bootstrap-hosts"));
 		}
-		else {
-			return ConditionOutcome.noMatch(
-					ConditionMessage.forCondition(OnBootstrapHostsCondition.class.getName())
-							.didNotFind("property").items("spring.couchbase.bootstrap-hosts"));
-		}
+		return ConditionOutcome.noMatch(ConditionMessage
+				.forCondition(OnBootstrapHostsCondition.class.getName())
+				.didNotFind("property").items("spring.couchbase.bootstrap-hosts"));
 	}
 
 	private static class PropertyResolver {
@@ -63,12 +64,11 @@ class OnBootstrapHostsCondition extends SpringBootCondition {
 
 		private final Map<String, Object> content;
 
-		PropertyResolver(ConfigurableEnvironment environment, String prefix) {
+		PropertyResolver(PropertySources propertySources, String prefix) {
 			this.prefix = prefix;
 			this.content = new HashMap<String, Object>();
 			DataBinder binder = new RelaxedDataBinder(this.content, this.prefix);
-			binder.bind(new PropertySourcesPropertyValues(
-					environment.getPropertySources()));
+			binder.bind(new PropertySourcesPropertyValues(propertySources));
 		}
 
 		Map.Entry<String, Object> resolveProperty(String name) {
@@ -89,5 +89,3 @@ class OnBootstrapHostsCondition extends SpringBootCondition {
 	}
 
 }
-
-
