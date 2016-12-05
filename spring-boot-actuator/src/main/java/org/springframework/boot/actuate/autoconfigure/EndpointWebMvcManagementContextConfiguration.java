@@ -16,10 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
@@ -67,17 +68,28 @@ import org.springframework.web.cors.CorsConfiguration;
 		EndpointCorsProperties.class })
 public class EndpointWebMvcManagementContextConfiguration {
 
-	@Autowired
-	private HealthMvcEndpointProperties healthMvcEndpointProperties;
+	private final HealthMvcEndpointProperties healthMvcEndpointProperties;
 
-	@Autowired
-	private ManagementServerProperties managementServerProperties;
+	private final ManagementServerProperties managementServerProperties;
 
-	@Autowired
-	private EndpointCorsProperties corsProperties;
+	private final EndpointCorsProperties corsProperties;
 
-	@Autowired(required = false)
-	private List<EndpointHandlerMappingCustomizer> mappingCustomizers;
+	private final List<EndpointHandlerMappingCustomizer> mappingCustomizers;
+
+	public EndpointWebMvcManagementContextConfiguration(
+			HealthMvcEndpointProperties healthMvcEndpointProperties,
+			ManagementServerProperties managementServerProperties,
+			EndpointCorsProperties corsProperties,
+			ObjectProvider<List<EndpointHandlerMappingCustomizer>> mappingCustomizersProvider) {
+		this.healthMvcEndpointProperties = healthMvcEndpointProperties;
+		this.managementServerProperties = managementServerProperties;
+		this.corsProperties = corsProperties;
+		List<EndpointHandlerMappingCustomizer> providedCustomizers = mappingCustomizersProvider
+				.getIfAvailable();
+		this.mappingCustomizers = providedCustomizers == null
+				? Collections.<EndpointHandlerMappingCustomizer>emptyList()
+				: providedCustomizers;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -87,10 +99,8 @@ public class EndpointWebMvcManagementContextConfiguration {
 		EndpointHandlerMapping mapping = new EndpointHandlerMapping(endpoints,
 				corsConfiguration);
 		mapping.setPrefix(this.managementServerProperties.getContextPath());
-		if (this.mappingCustomizers != null) {
-			for (EndpointHandlerMappingCustomizer customizer : this.mappingCustomizers) {
-				customizer.customize(mapping);
-			}
+		for (EndpointHandlerMappingCustomizer customizer : this.mappingCustomizers) {
+			customizer.customize(mapping);
 		}
 		return mapping;
 	}
