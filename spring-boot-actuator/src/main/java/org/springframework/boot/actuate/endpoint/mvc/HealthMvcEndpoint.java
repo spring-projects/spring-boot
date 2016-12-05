@@ -194,7 +194,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 			Authentication authentication = (Authentication) principal;
 			List<String> roles = Arrays.asList(StringUtils
 					.trimArrayElements(StringUtils.commaDelimitedListToStringArray(
-							this.roleResolver.getProperty("roles", "ROLE_ADMIN"))));
+							this.roleResolver.getProperty("roles", "ROLE_ACTUATOR"))));
 			for (GrantedAuthority authority : authentication.getAuthorities()) {
 				String name = authority.getAuthority();
 				for (String role : roles) {

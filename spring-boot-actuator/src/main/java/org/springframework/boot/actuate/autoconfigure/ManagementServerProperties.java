@@ -168,7 +168,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		/**
 		 * Comma-separated list of roles that can access the management endpoint.
 		 */
-		private List<String> roles = Arrays.asList("ADMIN");
+		private List<String> roles = Arrays.asList("ACTUATOR");
 
 		/**
 		 * Session creating policy for security use (always, never, if_required,

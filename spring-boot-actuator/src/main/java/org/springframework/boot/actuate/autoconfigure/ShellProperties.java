@@ -524,7 +524,7 @@ public class ShellProperties {
 		/**
 		 * Comma-separated list of required roles to login to the CRaSH console.
 		 */
-		private String[] roles = new String[] { "ADMIN" };
+		private String[] roles = new String[] { "ACTUATOR" };
 
 		@Override
 		protected void applyToCrshShellConfig(Properties config) {

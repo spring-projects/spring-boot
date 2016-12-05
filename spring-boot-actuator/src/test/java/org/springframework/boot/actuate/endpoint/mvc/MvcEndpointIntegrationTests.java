@@ -68,7 +68,7 @@ public class MvcEndpointIntegrationTests {
 	@Test
 	public void defaultJsonResponseIsNotIndented() throws Exception {
 		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_ADMIN"));
+				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		MockMvc mockMvc = createSecureMockMvc();
@@ -103,7 +103,7 @@ public class MvcEndpointIntegrationTests {
 	@Test
 	public void jsonExtensionProvided() throws Exception {
 		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_ADMIN"));
+				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		MockMvc mockMvc = createSecureMockMvc();
@@ -151,7 +151,7 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void sensitiveEndpointsAreSecureWithNonAdminRoleWithCustomContextPath()
+	public void sensitiveEndpointsAreSecureWithNonActuatorRoleWithCustomContextPath()
 			throws Exception {
 		TestSecurityContextHolder.getContext().setAuthentication(
 				new TestingAuthenticationToken("user", "N/A", "ROLE_USER"));
@@ -164,10 +164,10 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void sensitiveEndpointsAreSecureWithAdminRoleWithCustomContextPath()
+	public void sensitiveEndpointsAreSecureWithActuatorRoleWithCustomContextPath()
 			throws Exception {
 		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_ADMIN"));
+				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -199,7 +199,7 @@ public class MvcEndpointIntegrationTests {
 
 	private void assertIndentedJsonResponse(Class<?> configuration) throws Exception {
 		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_ADMIN"));
+				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(configuration);
 		EnvironmentTestUtils.addEnvironment(this.context,
