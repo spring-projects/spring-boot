@@ -30,7 +30,6 @@ import org.springframework.beans.factory.config.YamlProcessor.DocumentMatcher;
 import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
 import org.springframework.boot.bind.PropertySourcesPropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertiesPropertySource;
@@ -195,7 +194,6 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	/**
 	 * Class for binding {@code spring.profiles} property.
 	 */
-	@ConfigurationProperties("spring")
 	static class SpringProperties {
 
 		private List<String> profiles = new ArrayList<String>();
