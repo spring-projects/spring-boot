@@ -73,7 +73,6 @@ public class OnBootstrapHostsConditionTests {
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
-
 	private void load(Class<?> config, String... environment) {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);

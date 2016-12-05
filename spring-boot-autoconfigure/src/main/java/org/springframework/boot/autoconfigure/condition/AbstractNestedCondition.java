@@ -195,7 +195,7 @@ abstract class AbstractNestedCondition extends SpringBootCondition
 						metadata);
 			}
 			return new ConditionOutcome(condition.matches(this.context, metadata),
-					(ConditionMessage) null);
+					ConditionMessage.empty());
 		}
 
 		public ConditionOutcome getUltimateOutcome() {
