@@ -16,8 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.sql.SQLException;
+
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
+import com.zaxxer.hikari.HikariDataSource;
 import org.junit.After;
 import org.junit.Test;
 
@@ -28,7 +31,10 @@ import org.springframework.boot.actuate.metrics.buffer.BufferGaugeService;
 import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.reader.PrefixMetricReader;
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -81,6 +87,27 @@ public class MetricRepositoryAutoConfigurationTests {
 		@SuppressWarnings("unchecked")
 		Gauge<Double> gauge = (Gauge<Double>) registry.getMetrics().get("gauge.foo");
 		assertThat(gauge.getValue()).isEqualTo(new Double(2.7));
+	}
+
+	@Test
+	public void hikariDropwizardMetricsRegistered() throws SQLException {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(DataSourceAutoConfiguration.class,
+				MetricsDropwizardAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.type:" + HikariDataSource.class.getName(),
+				"spring.datasource.hikari.pool-name: hikariDropwizardMetricsRegistered");
+		this.context.refresh();
+
+		MetricRegistry metricRegistry = this.context.getBean(MetricRegistry.class);
+		HikariDataSource dataSource = this.context.getBean(HikariDataSource.class);
+		assertThat(dataSource.getMetricRegistry()).isEqualTo(metricRegistry);
+		// Metrics are not registered until connections are created
+		dataSource.getConnection().close();
+		assertThat(metricRegistry.getMetrics())
+				.containsKey("hikariDropwizardMetricsRegistered.pool.TotalConnections");
 	}
 
 	@Test
