@@ -90,24 +90,24 @@ public class ApplyExcludeRules implements Action<Configuration> {
 				"No exclusions rules applied for non-managed dependency " + dependency);
 	}
 
-	private void addExcludeRule(ModuleDependency dependency, Exclusion exclusion) {
-		this.logger
-				.info("Adding managed exclusion rule " + exclusion + " to " + dependency);
-		DefaultExcludeRule rule = new DefaultExcludeRule(exclusion.getGroupId(),
-				exclusion.getArtifactId());
-		dependency.getExcludeRules().add(rule);
-	}
+    private void addExcludeRule(ModuleDependency dependency, Exclusion exclusion) {
+        this.logger
+                .info("Adding managed exclusion rule " + exclusion + " to " + dependency);
+        DefaultExcludeRule rule = new DefaultExcludeRule(exclusion.getGroupId(),
+                exclusion.getArtifactId());
+        dependency.exclude(rule.getExcludeArgs());
+    }
 
-	private void addImplicitExcludeRules(ModuleDependency dependency) {
-		if (isStarter(dependency)) {
-			this.logger.info(
-					"Adding implicit managed exclusion rules to starter " + dependency);
-			dependency.getExcludeRules()
-					.add(new DefaultExcludeRule("commons-logging", "commons-logging"));
-			dependency.getExcludeRules().add(
-					new DefaultExcludeRule("commons-logging", "commons-logging-api"));
-		}
-	}
+    private void addImplicitExcludeRules(ModuleDependency dependency) {
+        if (isStarter(dependency)) {
+            this.logger.info(
+                    "Adding implicit managed exclusion rules to starter " + dependency);
+            dependency.exclude(new DefaultExcludeRule("commons-logging", "commons-logging")
+                    .getExcludeArgs());
+            dependency.exclude(new DefaultExcludeRule("commons-logging", "commons-logging-api")
+                    .getExcludeArgs());
+        }
+    }
 
 	private boolean isStarter(ModuleDependency dependency) {
 		return (dependency.getGroup() != null
