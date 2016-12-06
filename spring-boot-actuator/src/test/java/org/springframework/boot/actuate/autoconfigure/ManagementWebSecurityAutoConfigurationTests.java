@@ -120,7 +120,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(
 				user.getAuthorities());
 		assertThat(authorities).containsAll(AuthorityUtils
-				.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ADMIN"));
+				.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ACTUATOR"));
 	}
 
 	private UserDetails getUser() {

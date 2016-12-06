@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource(properties = "endpoints.hypermedia.enabled: true")
+@TestPropertySource(properties = {"endpoints.hypermedia.enabled: true", "management.security.enabled: false"})
 public class SampleHypermediaGsonApplicationTests {
 
 	@Autowired

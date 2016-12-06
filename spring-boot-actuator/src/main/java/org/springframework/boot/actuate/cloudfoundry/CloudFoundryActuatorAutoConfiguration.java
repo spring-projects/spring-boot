@@ -28,12 +28,15 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.security.IgnoredRequestCustomizer;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -93,6 +96,22 @@ public class CloudFoundryActuatorAutoConfiguration {
 		corsConfiguration.setAllowedHeaders(
 				Arrays.asList("Authorization", "X-Cf-App-Instance", "Content-Type"));
 		return corsConfiguration;
+	}
+
+	@Bean
+	public IgnoredRequestCustomizer cloudFoundryIgnoredRequestCustomizer() {
+		return new CloudFoundryIgnoredRequestCustomizer();
+	}
+
+	private class CloudFoundryIgnoredRequestCustomizer
+			implements IgnoredRequestCustomizer {
+
+		@Override
+		public void customize(WebSecurity.IgnoredRequestConfigurer configurer) {
+			configurer.requestMatchers(
+					new AntPathRequestMatcher("/cloudfoundryapplication/**"));
+		}
+
 	}
 
 }
