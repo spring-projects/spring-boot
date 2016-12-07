@@ -46,6 +46,12 @@ class ExpressionTree extends ReflectionWrapper {
 	private final Method arrayValueMethod = findMethod(this.newArrayTreeType,
 			"getInitializers");
 
+	private final Class<?> fieldAccessType = findClass(
+			"com.sun.tools.javac.tree.JCTree$JCFieldAccess");
+
+	private final Method fieldNameMethod = findMethod(this.fieldAccessType,
+			"getIdentifier");
+
 	ExpressionTree(Object instance) {
 		super(instance);
 	}
@@ -83,6 +89,13 @@ class ExpressionTree extends ReflectionWrapper {
 				result.add(new ExpressionTree(element));
 			}
 			return result;
+		}
+		return null;
+	}
+
+	public String getFieldName() throws Exception {
+		if (this.fieldAccessType.isAssignableFrom(getInstance().getClass())) {
+			return this.fieldNameMethod.invoke(getInstance()).toString();
 		}
 		return null;
 	}

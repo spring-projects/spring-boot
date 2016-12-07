@@ -107,4 +107,10 @@ public class FieldValues {
 
 	private FieldValues[] unknownArray = new FieldValues[] { new FieldValues() };
 
+	private enum EnumClass {
+		ENUM_INSTANCE
+	}
+
+	private EnumClass enumInstance = EnumClass.ENUM_INSTANCE;
+
 }
