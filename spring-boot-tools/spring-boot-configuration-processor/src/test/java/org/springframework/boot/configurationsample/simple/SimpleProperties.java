@@ -54,6 +54,13 @@ public class SimpleProperties {
 	// There is only a getter on this "simple" property --> ignored
 	private Integer size;
 
+	public enum Speed {
+		VERY_SLOW,
+		TURBO
+	}
+
+	private Speed speed = Speed.VERY_SLOW;
+
 	public String getTheName() {
 		return this.theName;
 	}
@@ -90,6 +97,14 @@ public class SimpleProperties {
 
 	public Integer getSize() {
 		return this.size;
+	}
+
+	public Speed getSpeed() {
+		return this.speed;
+	}
+
+	public void setSpeed(Speed speed) {
+		this.speed = speed;
 	}
 
 }
