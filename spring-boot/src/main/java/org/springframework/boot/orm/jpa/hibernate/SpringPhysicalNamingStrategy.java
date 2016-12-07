@@ -27,6 +27,7 @@ import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
  * conventions.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 1.4.0
  */
 public class SpringPhysicalNamingStrategy implements PhysicalNamingStrategy {
@@ -34,45 +35,59 @@ public class SpringPhysicalNamingStrategy implements PhysicalNamingStrategy {
 	@Override
 	public Identifier toPhysicalCatalogName(Identifier name,
 			JdbcEnvironment jdbcEnvironment) {
-		return apply(name);
+		return apply(name, jdbcEnvironment);
 	}
 
 	@Override
 	public Identifier toPhysicalSchemaName(Identifier name,
 			JdbcEnvironment jdbcEnvironment) {
-		return apply(name);
+		return apply(name, jdbcEnvironment);
 	}
 
 	@Override
 	public Identifier toPhysicalTableName(Identifier name,
 			JdbcEnvironment jdbcEnvironment) {
-		return apply(name);
+		return apply(name, jdbcEnvironment);
 	}
 
 	@Override
 	public Identifier toPhysicalSequenceName(Identifier name,
 			JdbcEnvironment jdbcEnvironment) {
-		return apply(name);
+		return apply(name, jdbcEnvironment);
 	}
 
 	@Override
 	public Identifier toPhysicalColumnName(Identifier name,
 			JdbcEnvironment jdbcEnvironment) {
-		return apply(name);
+		return apply(name, jdbcEnvironment);
 	}
 
-	private Identifier apply(Identifier name) {
+	private Identifier apply(Identifier name, JdbcEnvironment jdbcEnvironment) {
 		if (name == null) {
 			return null;
 		}
-		StringBuilder text = new StringBuilder(name.getText().replace('.', '_'));
-		for (int i = 1; i < text.length() - 1; i++) {
-			if (isUnderscoreRequired(text.charAt(i - 1), text.charAt(i),
-					text.charAt(i + 1))) {
-				text.insert(i++, '_');
+		StringBuilder builder = new StringBuilder(name.getText().replace('.', '_'));
+		for (int i = 1; i < builder.length() - 1; i++) {
+			if (isUnderscoreRequired(builder.charAt(i - 1), builder.charAt(i),
+					builder.charAt(i + 1))) {
+				builder.insert(i++, '_');
 			}
 		}
-		return new Identifier(text.toString().toLowerCase(Locale.ROOT), name.isQuoted());
+
+		String text = builder.toString();
+		String finalText = isCaseInsensitive(jdbcEnvironment) ? text.toLowerCase(Locale.ROOT)
+				: text;
+		return new Identifier(finalText, name.isQuoted());
+	}
+
+	/**
+	 * Specify whether the database is case sensitive.
+	 * @param jdbcEnvironment The JDBC environment which can be used to determine case
+	 * @return true if the database is case insensitive
+	 * sensitivity
+	 */
+	protected boolean isCaseInsensitive(JdbcEnvironment jdbcEnvironment) {
+		return true;
 	}
 
 	private boolean isUnderscoreRequired(char before, char current, char after) {
