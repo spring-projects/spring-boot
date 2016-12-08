@@ -29,35 +29,36 @@ import org.springframework.boot.loader.archive.JarFileArchive;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WarLauncher}.
+ * Tests for {@link JarLauncher}.
  *
  * @author Andy Wilkinson
  */
-public class WarLauncherTests extends AbstractExecutableArchiveLauncherTests {
+public class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 
 	@Test
-	public void explodedWarHasOnlyWebInfClassesAndContentsOfWebInfLibOnClasspath()
+	public void explodedJarHasOnlyBootInfClassesAndContentsOfBootInfLibOnClasspath()
 			throws Exception {
-		File explodedRoot = explode(createJarArchive("archive.war", "WEB-INF"));
-		WarLauncher launcher = new WarLauncher(new ExplodedArchive(explodedRoot, true));
+		File explodedRoot = explode(createJarArchive("archive.jar", "BOOT-INF"));
+		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
 		List<Archive> archives = launcher.getClassPathArchives();
 		assertThat(archives).hasSize(2);
 		assertThat(getUrls(archives)).containsOnly(
-				new File(explodedRoot, "WEB-INF/classes").toURI().toURL(),
+				new File(explodedRoot, "BOOT-INF/classes").toURI().toURL(),
 				new URL("jar:"
-						+ new File(explodedRoot, "WEB-INF/lib/foo.jar").toURI().toURL()
+						+ new File(explodedRoot, "BOOT-INF/lib/foo.jar").toURI().toURL()
 						+ "!/"));
 	}
 
 	@Test
-	public void archivedWarHasOnlyWebInfClassesAndContentsOWebInfLibOnClasspath()
+	public void archivedJarHasOnlyBootInfClassesAndContentsOfBootInfLibOnClasspath()
 			throws Exception {
-		File jarRoot = createJarArchive("archive.war", "WEB-INF");
-		WarLauncher launcher = new WarLauncher(new JarFileArchive(jarRoot));
+		File jarRoot = createJarArchive("archive.jar", "BOOT-INF");
+		JarLauncher launcher = new JarLauncher(new JarFileArchive(jarRoot));
 		List<Archive> archives = launcher.getClassPathArchives();
 		assertThat(archives).hasSize(2);
 		assertThat(getUrls(archives)).containsOnly(
-				new URL("jar:" + jarRoot.toURI().toURL() + "!/WEB-INF/classes!/"),
-				new URL("jar:" + jarRoot.toURI().toURL() + "!/WEB-INF/lib/foo.jar!/"));
+				new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/classes!/"),
+				new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/lib/foo.jar!/"));
 	}
+
 }
