@@ -194,6 +194,7 @@ content into your application; rather pick only the properties that you need.
 	server.ssl.trust-store-provider= # Provider for the trust store.
 	server.ssl.trust-store-type= # Type of the trust store.
 	server.tomcat.accept-count= # Maximum queue length for incoming connection requests when all possible request processing threads are in use.
+	server.tomcat.accesslog.buffered=true # Buffer output such that it is only flushed periodically.
 	server.tomcat.accesslog.directory=logs # Directory in which log files are created. Can be relative to the tomcat base dir or absolute.
 	server.tomcat.accesslog.enabled=false # Enable access log.
 	server.tomcat.accesslog.pattern=common # Format pattern for access logs.
