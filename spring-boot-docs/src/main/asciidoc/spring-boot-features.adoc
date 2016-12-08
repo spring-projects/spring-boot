@@ -5440,6 +5440,60 @@ A list of the auto-configuration that is enabled by `@JdbcTest` can be
 
 
 
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-mongo-test]]
+==== Auto-configured Data MongoDB tests
+`@DataMongoTest` is similar to `@DataJpaTest` but for Spring Data MongoDB tests. 
+By default it will configure an in-memory Mongod if `de.flapdoodle.embed:de.flapdoodle.embed.mongo` 
+is available, configure a `MongoTemplate`, scan for `@Document` classes and 
+configure Spring Data MongoDB repositories. Regular `@Component` beans will not 
+be loaded into the `ApplicationContext`:
+
+[source,java,indent=0]
+----
+	import org.junit.runner.RunWith;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+	import org.springframework.data.mongodb.core.MongoTemplate;
+	import org.springframework.test.context.junit4.SpringRunner;
+
+	@RunWith(SpringRunner.class)
+	@DataMongoTest
+	public class ExampleDataMongoTests {
+		@Autowired
+		private MongoTemplate mongoTemplate;
+
+		// ...Your autowired Mongo repositories
+	}
+----
+
+If you prefer your test to run against a real Mongo instance, you can use the 
+`@AutoConfigureEmbeddedTestMongod` annotation as follows:
+
+[source,java,indent=0]
+----
+	import org.junit.runner.RunWith;
+	import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureEmbeddedTestMongod;
+    import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+	import org.springframework.data.mongodb.core.MongoTemplate;
+	import org.springframework.test.context.junit4.SpringRunner;
+
+	@RunWith(SpringRunner.class)
+	@DataMongoTest
+	@AutoConfigureEmbeddedTestMongod(enabled = false)
+	public class ExampleDataMongoTests {
+		@Autowired
+		private MongoTemplate mongoTemplate;
+
+		// ...Your autowired Mongo repositories
+	}
+----
+
+A list of the auto-configuration that is enabled by `@DataMongoTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+
+
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-client]]
 ==== Auto-configured REST clients
 The `@RestClientTest` annotation can be used if you want to test REST clients. By default
