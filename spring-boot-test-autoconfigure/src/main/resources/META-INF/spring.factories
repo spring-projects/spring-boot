@@ -102,3 +102,9 @@ org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionLi
 # AutoConfigureEmbeddedTestMongod auto-configuration imports
 org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureEmbeddedTestMongod=\
 org.springframework.boot.test.autoconfigure.data.mongo.EmbeddedTestMongodAutoConfiguration
+
+# AutoConfigureDataMongo auto-configuration imports
+org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo=\
+org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration
