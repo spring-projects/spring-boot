@@ -95,7 +95,7 @@ public class EndpointDocumentation {
 
 	@Test
 	public void logfile() throws Exception {
-		this.mockMvc.perform(get("/logfile").accept(MediaType.TEXT_PLAIN))
+		this.mockMvc.perform(get("/application/logfile").accept(MediaType.TEXT_PLAIN))
 				.andExpect(status().isOk()).andDo(document("logfile"));
 	}
 
@@ -104,7 +104,7 @@ public class EndpointDocumentation {
 		FileCopyUtils.copy(getClass().getResourceAsStream("log.txt"),
 				new FileOutputStream(LOG_FILE));
 		this.mockMvc
-				.perform(get("/logfile").accept(MediaType.TEXT_PLAIN)
+				.perform(get("/application/logfile").accept(MediaType.TEXT_PLAIN)
 						.header(HttpHeaders.RANGE, "bytes=0-1024"))
 				.andExpect(status().isPartialContent())
 				.andDo(document("partial-logfile"));
@@ -139,7 +139,7 @@ public class EndpointDocumentation {
 			if (!SKIPPED.contains(endpointPath)) {
 				String output = endpointPath.substring(1);
 				output = output.length() > 0 ? output : "./";
-				this.mockMvc.perform(get(endpointPath).accept(MediaType.APPLICATION_JSON))
+				this.mockMvc.perform(get("/application" + endpointPath).accept(MediaType.APPLICATION_JSON))
 						.andExpect(status().isOk()).andDo(document(output))
 						.andDo(new ResultHandler() {
 

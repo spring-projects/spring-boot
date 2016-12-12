@@ -72,7 +72,7 @@ public class InfoMvcEndpointTests {
 
 	@Test
 	public void home() throws Exception {
-		this.mvc.perform(get("/info")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/info")).andExpect(status().isOk())
 				.andExpect(content().string(containsString(
 						"\"beanName1\":{\"key11\":\"value11\",\"key12\":\"value12\"}")))
 				.andExpect(content().string(containsString(

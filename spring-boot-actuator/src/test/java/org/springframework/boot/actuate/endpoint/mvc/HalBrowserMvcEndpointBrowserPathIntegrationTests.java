@@ -61,16 +61,16 @@ public class HalBrowserMvcEndpointBrowserPathIntegrationTests {
 
 	@Test
 	public void requestWithTrailingSlashIsRedirectedToBrowserHtml() throws Exception {
-		this.mockMvc.perform(get("/actuator/").accept(MediaType.TEXT_HTML))
+		this.mockMvc.perform(get("/application/actuator/").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isFound()).andExpect(header().string(
-						HttpHeaders.LOCATION, "http://localhost/actuator/browser.html"));
+						HttpHeaders.LOCATION, "http://localhost/application/actuator/browser.html"));
 	}
 
 	@Test
 	public void requestWithoutTrailingSlashIsRedirectedToBrowserHtml() throws Exception {
-		this.mockMvc.perform(get("/actuator").accept(MediaType.TEXT_HTML))
+		this.mockMvc.perform(get("/application/actuator").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isFound()).andExpect(header().string("location",
-						"http://localhost/actuator/browser.html"));
+						"http://localhost/application/actuator/browser.html"));
 	}
 
 	@MinimalActuatorHypermediaApplication
