@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.IgnoredRequestCustomizer;
@@ -98,18 +99,27 @@ public class CloudFoundryActuatorAutoConfiguration {
 		return corsConfiguration;
 	}
 
-	@Bean
-	public IgnoredRequestCustomizer cloudFoundryIgnoredRequestCustomizer() {
-		return new CloudFoundryIgnoredRequestCustomizer();
-	}
+	/**
+	 * Nested configuration for ignored requests if Spring Security is present.
+	 *
+	 */
+	@ConditionalOnClass(WebSecurity.class)
+	static class CloudFoundryIgnoredRequestConfiguration {
 
-	private class CloudFoundryIgnoredRequestCustomizer
-			implements IgnoredRequestCustomizer {
+		@Bean
+		public IgnoredRequestCustomizer cloudFoundryIgnoredRequestCustomizer() {
+			return new CloudFoundryIgnoredRequestCustomizer();
+		}
 
-		@Override
-		public void customize(WebSecurity.IgnoredRequestConfigurer configurer) {
-			configurer.requestMatchers(
-					new AntPathRequestMatcher("/cloudfoundryapplication/**"));
+		private static class CloudFoundryIgnoredRequestCustomizer
+				implements IgnoredRequestCustomizer {
+
+			@Override
+			public void customize(WebSecurity.IgnoredRequestConfigurer configurer) {
+				configurer.requestMatchers(
+						new AntPathRequestMatcher("/cloudfoundryapplication/**"));
+			}
+
 		}
 
 	}
