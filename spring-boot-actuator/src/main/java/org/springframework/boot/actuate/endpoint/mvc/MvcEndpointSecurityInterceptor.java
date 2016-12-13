@@ -59,17 +59,25 @@ public class MvcEndpointSecurityInterceptor extends HandlerInterceptorAdapter {
 				return true;
 			}
 		}
-		setFailureResponseStatus(request, response);
+		sendFailureResponse(request, response);
 		return false;
 	}
 
-	private void setFailureResponseStatus(HttpServletRequest request,
-			HttpServletResponse response) {
+	private void sendFailureResponse(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
 		if (request.getUserPrincipal() != null) {
-			response.setStatus(HttpStatus.FORBIDDEN.value());
+			StringBuilder message = new StringBuilder();
+			for (String role : this.roles) {
+				message.append(role).append(" ");
+			}
+			response.sendError(HttpStatus.FORBIDDEN.value(),
+					"Access is denied. User must have one of the these roles: "
+							+ message.toString().trim());
 		}
 		else {
-			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			response.sendError(HttpStatus.UNAUTHORIZED.value(),
+					"Full authentication is required to access this resource. "
+							+ "Consider adding Spring Security or set management.security.enabled to false.");
 		}
 	}
 
