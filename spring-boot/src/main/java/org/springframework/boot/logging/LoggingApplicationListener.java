@@ -319,7 +319,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private boolean isDefaultAzureLoggingConfig(String candidate) {
-		return candidate.startsWith("-Djava.util.logging.config.file=");
+		return candidate.startsWith("-Djava.util.logging.config.file=") || candidate.equals("-Dnop");
 	}
 
 	private void initializeFinalLoggingLevels(ConfigurableEnvironment environment,
