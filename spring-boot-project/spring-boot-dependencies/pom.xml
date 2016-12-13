@@ -182,6 +182,7 @@
 		<statsd-client.version>3.1.0</statsd-client.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
 		<saaj-impl.version>1.5.0</saaj-impl.version>
+		<testng.version>6.10</testng.version>
 		<thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity.version>3.0.4.RELEASE</thymeleaf-extras-springsecurity.version>
 		<thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
@@ -2964,6 +2965,11 @@
 				<groupId>org.synchronoss.cloud</groupId>
 				<artifactId>nio-multipart-parser</artifactId>
 				<version>${nio-multipart-parser.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.testng</groupId>
+				<artifactId>testng</artifactId>
+				<version>${testng.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.thymeleaf</groupId>

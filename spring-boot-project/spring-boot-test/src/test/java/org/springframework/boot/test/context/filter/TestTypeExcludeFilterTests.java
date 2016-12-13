@@ -98,6 +98,13 @@ public class TestTypeExcludeFilterTests {
 				this.metadataReaderFactory)).isFalse();
 	}
 
+	@Test
+	public void matchesNestedConfigurationClassWithoutTestngAnnotation()
+			throws Exception {
+		assertThat(this.filter.match(getMetadataReader(AbstractTestNG.Config.class),
+				this.metadataReaderFactory)).isTrue();
+	}
+
 	private MetadataReader getMetadataReader(Class<?> source) throws IOException {
 		return this.metadataReaderFactory.getMetadataReader(source.getName());
 	}
