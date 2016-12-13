@@ -19,7 +19,9 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 import java.util.List;
 
 import org.neo4j.ogm.session.SessionFactory;
+import org.neo4j.ogm.session.event.EventListener;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -63,8 +65,18 @@ public class Neo4jDataAutoConfiguration {
 
 	@Bean
 	public SessionFactory sessionFactory(org.neo4j.ogm.config.Configuration configuration,
-			ApplicationContext applicationContext) {
-		return new SessionFactory(configuration, getPackagesToScan(applicationContext));
+			ApplicationContext applicationContext,
+			ObjectProvider<List<EventListener>> eventListenersProvider) {
+		SessionFactory sessionFactory = new SessionFactory(configuration,
+				getPackagesToScan(applicationContext));
+		List<EventListener> providedEventListeners = eventListenersProvider
+				.getIfAvailable();
+		if (providedEventListeners != null) {
+			for (EventListener eventListener : providedEventListeners) {
+				sessionFactory.register(eventListener);
+			}
+		}
+		return sessionFactory;
 	}
 
 	@Bean
