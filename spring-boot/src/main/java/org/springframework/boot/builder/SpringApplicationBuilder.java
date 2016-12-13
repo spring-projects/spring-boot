@@ -46,12 +46,12 @@ import org.springframework.core.io.ResourceLoader;
  * new SpringApplicationBuilder(ParentConfig.class).child(ChildConfig.class).run(args);
  * </pre>
  *
- * Another common use case is setting default arguments, e.g. active Spring profiles, to
- * set up the environment for an application:
+ * Another common use case is setting active profiles and default properties to set up the
+ * environment for an application:
  *
  * <pre class="code">
  * new SpringApplicationBuilder(Application.class).profiles(&quot;server&quot;)
- * 		.defaultArgs(&quot;--transport=local&quot;).run(args);
+ * 		.properties(&quot;transport=local&quot;).run(args);
  * </pre>
  *
  * <p>
