@@ -29,13 +29,6 @@ public enum SearchStrategy {
 	CURRENT,
 
 	/**
-	 * Search all parents and ancestors, but not the current context.
-	 *
-	 * @deprecated since 1.5 in favor of {@link SearchStrategy#ANCESTORS}
-	 */
-	@Deprecated PARENTS,
-
-	/**
 	 * Search all ancestors, but not the current context.
 	 */
 	ANCESTORS,

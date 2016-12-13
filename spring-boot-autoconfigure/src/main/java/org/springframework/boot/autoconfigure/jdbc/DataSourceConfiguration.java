@@ -83,32 +83,6 @@ abstract class DataSourceConfiguration {
 
 	/**
 	 * DBCP DataSource configuration.
-	 * @deprecated as of Spring Boot 1.5 in favor of DBCP2
-	 */
-	@ConditionalOnClass(org.apache.commons.dbcp.BasicDataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp.BasicDataSource", matchIfMissing = true)
-	@Deprecated
-	static class Dbcp extends DataSourceConfiguration {
-
-		@Bean
-		@ConfigurationProperties("spring.datasource.dbcp")
-		public org.apache.commons.dbcp.BasicDataSource dataSource(
-				DataSourceProperties properties) {
-			org.apache.commons.dbcp.BasicDataSource dataSource = createDataSource(
-					properties, org.apache.commons.dbcp.BasicDataSource.class);
-			DatabaseDriver databaseDriver = DatabaseDriver
-					.fromJdbcUrl(properties.determineUrl());
-			String validationQuery = databaseDriver.getValidationQuery();
-			if (validationQuery != null) {
-				dataSource.setTestOnBorrow(true);
-				dataSource.setValidationQuery(validationQuery);
-			}
-			return dataSource;
-		}
-	}
-
-	/**
-	 * DBCP DataSource configuration.
 	 */
 	@ConditionalOnClass(org.apache.commons.dbcp2.BasicDataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp2.BasicDataSource", matchIfMissing = true)

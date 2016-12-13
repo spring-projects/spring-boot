@@ -471,14 +471,11 @@ public class EmbeddedWebApplicationContextTests {
 		ConfigurableListableBeanFactory factory = this.context.getBeanFactory();
 		factory.registerScope(WebApplicationContext.SCOPE_REQUEST, scope);
 		factory.registerScope(WebApplicationContext.SCOPE_SESSION, scope);
-		factory.registerScope(WebApplicationContext.SCOPE_GLOBAL_SESSION, scope);
 		addEmbeddedServletContainerFactoryBean();
 		this.context.refresh();
 		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_REQUEST))
 				.isSameAs(scope);
 		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_SESSION))
-				.isSameAs(scope);
-		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_GLOBAL_SESSION))
 				.isSameAs(scope);
 	}
 

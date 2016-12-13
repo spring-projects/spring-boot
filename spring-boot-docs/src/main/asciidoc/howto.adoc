@@ -2737,7 +2737,10 @@ Often if you have an executable and a non-executable jar as build products, the 
 version will have additional configuration files that are not needed in a library jar.
 E.g. the `application.yml` configuration file might excluded from the non-executable JAR.
 
-Here's how to do that in Maven:
+The `maven-jar-plugin` used to expose a `forceCreation` attribute that allows you to
+create the jar _again_ once the `repackage` goal has ran. Arguably, this was a bit fragile
+anyway since it was relying on the order of plugin executions. In Maven, the executable
+jar must be the main artifact and you can add a classified jar for the library:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -2746,31 +2749,18 @@ Here's how to do that in Maven:
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<classifier>exec</classifier>
-				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>exec</id>
+						<id>lib</id>
 						<phase>package</phase>
 						<goals>
 							<goal>jar</goal>
 						</goals>
 						<configuration>
-							<classifier>exec</classifier>
-						</configuration>
-					</execution>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<!-- Need this to ensure application.yml is excluded -->
-							<forceCreation>true</forceCreation>
+							<classifier>lib</classifier>
 							<excludes>
 								<exclude>application.yml</exclude>
 							</excludes>

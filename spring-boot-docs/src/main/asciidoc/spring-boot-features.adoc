@@ -2705,10 +2705,8 @@ Here's the algorithm for choosing a specific implementation:
 * We prefer the Tomcat pooling `DataSource` for its performance and concurrency, so if
   that is available we always choose it.
 * Otherwise, if HikariCP is available we will use it.
-* If neither the Tomcat pooling datasource nor HikariCP are available and if Commons DBCP
-  is available we will use it, but we don't recommend it in production and its support
-  is deprecated.
-* Lastly, if Commons DBCP2 is available we will use it.
+* If neither the Tomcat pooling datasource nor HikariCP are available and if Commons
+  DBCP2 is available we will use it.
 
 If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa`
 '`starters`' you will automatically get a dependency to `tomcat-jdbc`.
@@ -3813,7 +3811,6 @@ providers (in this order):
 * <<boot-features-caching-provider-couchbase,Couchbase>>
 * <<boot-features-caching-provider-redis,Redis>>
 * <<boot-features-caching-provider-caffeine,Caffeine>>
-* <<boot-features-caching-provider-guava,Guava>> (deprecated)
 * <<boot-features-caching-provider-simple,Simple>>
 
 TIP: It is also possible to _force_ the cache provider to use via the `spring.cache.type`
@@ -4009,10 +4006,10 @@ recommend to keep this setting enabled if you create your own `RedisCacheManager
 
 [[boot-features-caching-provider-caffeine]]
 ==== Caffeine
-Caffeine is a Java 8 rewrite of Guava’s cache and will supersede the Guava support in
-Spring Boot 2.0. If Caffeine is present, a `CaffeineCacheManager` (provided by the
-`spring-boot-starter-cache` '`Starter`') is auto-configured. Caches can be created on
-startup using the `spring.cache.cache-names` property and customized by one of the
+Caffeine is a Java 8 rewrite of Guava’s cache that supersede the Guava support. If
+Caffeine is present, a `CaffeineCacheManager` (provided by the
+`spring-boot-starter-cache` '`Starter`') is auto-configured. Caches can be created
+on startup using the `spring.cache.cache-names` property and customized by one of the
 following (in this order):
 
 1. A cache spec defined by `spring.cache.caffeine.spec`
@@ -4032,33 +4029,6 @@ Besides, if a `com.github.benmanes.caffeine.cache.CacheLoader` bean is defined, 
 automatically associated to the `CaffeineCacheManager`. Since the `CacheLoader` is
 going to be associated to _all_ caches managed by the cache manager, it must be defined
 as `CacheLoader<Object, Object>`. Any other generic type will be ignored by the
-auto-configuration.
-
-
-
-[[boot-features-caching-provider-guava]]
-==== Guava (deprecated)
-If Guava is present, a `GuavaCacheManager` is auto-configured. Caches can be created
-on startup using the `spring.cache.cache-names` property and customized by one of the
-following (in this order):
-
-1. A cache spec defined by `spring.cache.guava.spec`
-2. A `com.google.common.cache.CacheBuilderSpec` bean is defined
-3. A `com.google.common.cache.CacheBuilder` bean is defined
-
-For instance, the following configuration creates a `foo` and `bar` caches with a maximum
-size of 500 and a _time to live_ of 10 minutes
-
-[source,properties,indent=0]
-----
-    spring.cache.cache-names=foo,bar
-	spring.cache.guava.spec=maximumSize=500,expireAfterAccess=600s
-----
-
-Besides, if a `com.google.common.cache.CacheLoader` bean is defined, it is automatically
-associated to the `GuavaCacheManager`. Since the `CacheLoader` is going to be associated
-to _all_ caches managed by the cache manager, it must be defined as
-`CacheLoader<Object, Object>`. Any other generic type will be ignored by the
 auto-configuration.
 
 

@@ -102,7 +102,7 @@ public class PropertiesConfigurationFactory<T>
 	@SuppressWarnings("unchecked")
 	public PropertiesConfigurationFactory(Class<?> type) {
 		Assert.notNull(type);
-		this.target = (T) BeanUtils.instantiate(type);
+		this.target = (T) BeanUtils.instantiateClass(type);
 	}
 
 	/**

@@ -38,7 +38,6 @@ import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.writer.DefaultCounterService;
-import org.springframework.lang.UsesJava8;
 import org.springframework.util.StopWatch;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +48,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(Theories.class)
-@UsesJava8
 public class DefaultCounterServiceSpeedTests {
 
 	@DataPoints

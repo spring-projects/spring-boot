@@ -31,7 +31,6 @@ import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.tools.JarWriter.EntryTransformer;
 import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.lang.UsesJava8;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -445,49 +444,19 @@ public class Repackager {
 			}
 			renamedEntry.setCompressedSize(entry.getCompressedSize());
 			renamedEntry.setCrc(entry.getCrc());
-			setCreationTimeIfPossible(entry, renamedEntry);
+			if (entry.getCreationTime() != null) {
+				renamedEntry.setCreationTime(entry.getCreationTime());
+			}
 			if (entry.getExtra() != null) {
 				renamedEntry.setExtra(entry.getExtra());
 			}
-			setLastAccessTimeIfPossible(entry, renamedEntry);
-			setLastModifiedTimeIfPossible(entry, renamedEntry);
+			if (entry.getLastAccessTime() != null) {
+				renamedEntry.setLastAccessTime(entry.getLastAccessTime());
+			}
+			if (entry.getLastModifiedTime() != null) {
+				renamedEntry.setLastModifiedTime(entry.getLastModifiedTime());
+			}
 			return renamedEntry;
-		}
-
-		@UsesJava8
-		private void setCreationTimeIfPossible(JarEntry source, JarEntry target) {
-			try {
-				if (source.getCreationTime() != null) {
-					target.setCreationTime(source.getCreationTime());
-				}
-			}
-			catch (NoSuchMethodError ex) {
-				// Not running on Java 8. Continue.
-			}
-		}
-
-		@UsesJava8
-		private void setLastAccessTimeIfPossible(JarEntry source, JarEntry target) {
-			try {
-				if (source.getLastAccessTime() != null) {
-					target.setLastAccessTime(source.getLastAccessTime());
-				}
-			}
-			catch (NoSuchMethodError ex) {
-				// Not running on Java 8. Continue.
-			}
-		}
-
-		@UsesJava8
-		private void setLastModifiedTimeIfPossible(JarEntry source, JarEntry target) {
-			try {
-				if (source.getLastModifiedTime() != null) {
-					target.setLastModifiedTime(source.getLastModifiedTime());
-				}
-			}
-			catch (NoSuchMethodError ex) {
-				// Not running on Java 8. Continue.
-			}
 		}
 
 	}

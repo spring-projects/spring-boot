@@ -104,7 +104,7 @@ public class CassandraAutoConfiguration {
 	}
 
 	public static <T> T instantiate(Class<T> type) {
-		return BeanUtils.instantiate(type);
+		return BeanUtils.instantiateClass(type);
 	}
 
 	private QueryOptions getQueryOptions() {

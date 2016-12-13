@@ -36,7 +36,6 @@ import com.couchbase.client.spring.cache.CouchbaseCache;
 import com.couchbase.client.spring.cache.CouchbaseCacheManager;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
-import com.google.common.cache.CacheBuilder;
 import com.hazelcast.cache.HazelcastCachingProvider;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
@@ -66,8 +65,6 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.cache.guava.GuavaCache;
-import org.springframework.cache.guava.GuavaCacheManager;
 import org.springframework.cache.interceptor.CacheOperationInvocationContext;
 import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.jcache.JCacheCacheManager;
@@ -633,46 +630,6 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void guavaCacheExplicitWithCaches() {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=guava",
-				"spring.cache.cacheNames=foo");
-		GuavaCacheManager cacheManager = validateCacheManager(GuavaCacheManager.class);
-		Cache foo = cacheManager.getCache("foo");
-		foo.get("1");
-		// See next tests: no spec given so stats should be disabled
-		assertThat(((GuavaCache) foo).getNativeCache().stats().missCount()).isEqualTo(0L);
-	}
-
-	@Test
-	public void guavaCacheWithCustomizers() {
-		testCustomizers(DefaultCacheAndCustomizersConfiguration.class, "guava",
-				"allCacheManagerCustomizer", "guavaCacheManagerCustomizer");
-	}
-
-	@Test
-	public void guavaCacheExplicitWithSpec() {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=guava",
-				"spring.cache.guava.spec=recordStats", "spring.cache.cacheNames[0]=foo",
-				"spring.cache.cacheNames[1]=bar");
-		validateGuavaCacheWithStats();
-	}
-
-	@Test
-	public void guavaCacheExplicitWithCacheBuilder() {
-		load(GuavaCacheBuilderConfiguration.class, "spring.cache.type=guava",
-				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		validateGuavaCacheWithStats();
-	}
-
-	private void validateGuavaCacheWithStats() {
-		GuavaCacheManager cacheManager = validateCacheManager(GuavaCacheManager.class);
-		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
-		Cache foo = cacheManager.getCache("foo");
-		foo.get("1");
-		assertThat(((GuavaCache) foo).getNativeCache().stats().missCount()).isEqualTo(1L);
-	}
-
-	@Test
 	public void caffeineCacheWithExplicitCaches() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=caffeine",
 				"spring.cache.cacheNames=foo");
@@ -997,17 +954,6 @@ public class CacheAutoConfigurationTests {
 
 	@Configuration
 	@EnableCaching
-	static class GuavaCacheBuilderConfiguration {
-
-		@Bean
-		CacheBuilder<Object, Object> cacheBuilder() {
-			return CacheBuilder.newBuilder().recordStats();
-		}
-
-	}
-
-	@Configuration
-	@EnableCaching
 	static class CaffeineCacheBuilderConfiguration {
 
 		@Bean
@@ -1076,12 +1022,6 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public CacheManagerCustomizer<SpringEmbeddedCacheManager> infinispanCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<SpringEmbeddedCacheManager>() {
-			};
-		}
-
-		@Bean
-		public CacheManagerCustomizer<GuavaCacheManager> guavaCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<GuavaCacheManager>() {
 			};
 		}
 

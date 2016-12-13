@@ -52,12 +52,6 @@ public class ReproIntegrationTests {
 	}
 
 	@Test
-	public void shellDependencies() throws Exception {
-		this.cli.run("crsh.groovy");
-		assertThat(this.cli.getHttpOutput()).contains("{\"message\":\"Hello World\"}");
-	}
-
-	@Test
 	public void dataJpaDependencies() throws Exception {
 		this.cli.run("data-jpa.groovy");
 		assertThat(this.cli.getOutput()).contains("Hello World");
@@ -67,7 +61,7 @@ public class ReproIntegrationTests {
 	public void jarFileExtensionNeeded() throws Exception {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("is not a JAR file");
-		this.cli.jar("secure.groovy", "crsh.groovy");
+		this.cli.jar("secure.groovy", "data-jpa.groovy");
 	}
 
 }

@@ -63,46 +63,6 @@ public class ConditionalOnSingleCandidateTests {
 	}
 
 	@Test
-	public void singleCandidateInParentsOneCandidateInCurrent() {
-		load();
-		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.register(FooConfiguration.class,
-				OnBeanSingleCandidateInParentsConfiguration.class);
-		child.setParent(this.context);
-		child.refresh();
-		assertThat(child.containsBean("baz")).isFalse();
-		child.close();
-	}
-
-	@Test
-	public void singleCandidateInParentsOneCandidateInParent() {
-		load(FooConfiguration.class);
-		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.register(OnBeanSingleCandidateInParentsConfiguration.class);
-		child.setParent(this.context);
-		child.refresh();
-		assertThat(child.containsBean("baz")).isTrue();
-		assertThat(child.getBean("baz")).isEqualTo("foo");
-		child.close();
-	}
-
-	@Test
-	public void singleCandidateInParentsOneCandidateInGrandparent() {
-		load(FooConfiguration.class);
-		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
-		parent.setParent(this.context);
-		parent.refresh();
-		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
-		child.register(OnBeanSingleCandidateInParentsConfiguration.class);
-		child.setParent(parent);
-		child.refresh();
-		assertThat(child.containsBean("baz")).isTrue();
-		assertThat(child.getBean("baz")).isEqualTo("foo");
-		child.close();
-		parent.close();
-	}
-
-	@Test
 	public void singleCandidateInAncestorsOneCandidateInCurrent() {
 		load();
 		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
@@ -208,18 +168,6 @@ public class ConditionalOnSingleCandidateTests {
 	@Configuration
 	@ConditionalOnSingleCandidate(String.class)
 	protected static class OnBeanSingleCandidateConfiguration {
-
-		@Bean
-		public String baz(String s) {
-			return s;
-		}
-
-	}
-
-	@SuppressWarnings("deprecation")
-	@Configuration
-	@ConditionalOnSingleCandidate(value = String.class, search = SearchStrategy.PARENTS)
-	protected static class OnBeanSingleCandidateInParentsConfiguration {
 
 		@Bean
 		public String baz(String s) {

@@ -119,14 +119,6 @@ public class RelaxedPropertyResolverTests {
 	}
 
 	@Test
-	@Deprecated
-	public void getPropertyAsClass() throws Exception {
-		assertThat(this.resolver.getPropertyAsClass("my-class", String.class))
-				.isEqualTo(String.class);
-		assertThat(this.resolver.getPropertyAsClass("my-missing", String.class)).isNull();
-	}
-
-	@Test
 	public void containsProperty() throws Exception {
 		assertThat(this.resolver.containsProperty("my-string")).isTrue();
 		assertThat(this.resolver.containsProperty("myString")).isTrue();
