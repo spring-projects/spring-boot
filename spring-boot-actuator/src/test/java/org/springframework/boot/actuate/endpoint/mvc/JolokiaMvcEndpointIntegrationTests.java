@@ -53,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = "management.security.enabled=false")
 public class JolokiaMvcEndpointIntegrationTests {
 
 	@Autowired
