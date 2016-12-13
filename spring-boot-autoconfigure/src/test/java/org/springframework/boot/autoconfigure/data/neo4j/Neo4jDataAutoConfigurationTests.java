@@ -20,7 +20,11 @@ import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Test;
 import org.neo4j.ogm.drivers.http.driver.HttpDriver;
+import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
+import org.neo4j.ogm.session.event.Event;
+import org.neo4j.ogm.session.event.EventListener;
+import org.neo4j.ogm.session.event.PersistenceEvent;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
@@ -37,7 +41,9 @@ import org.springframework.data.neo4j.web.support.OpenSessionInViewInterceptor;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link Neo4jDataAutoConfiguration}. Tests can't use the embedded driver as we
@@ -117,6 +123,17 @@ public class Neo4jDataAutoConfigurationTests {
 				.hasSize(1);
 	}
 
+	@Test
+	public void eventListenersAreAutoRegistered() {
+		load(EventListenerConfiguration.class);
+		Session session = this.context.getBean(SessionFactory.class).openSession();
+		session.notifyListeners(new PersistenceEvent(null, Event.TYPE.PRE_SAVE));
+		verify(this.context.getBean("eventListenerOne", EventListener.class))
+				.onPreSave(any(Event.class));
+		verify(this.context.getBean("eventListenerTwo", EventListener.class))
+				.onPreSave(any(Event.class));
+	}
+
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(ctx, environment);
@@ -165,6 +182,21 @@ public class Neo4jDataAutoConfigurationTests {
 		@Bean
 		public Neo4jOperations myNeo4jOperations() {
 			return mock(Neo4jOperations.class);
+		}
+
+	}
+
+	@Configuration
+	static class EventListenerConfiguration {
+
+		@Bean
+		public EventListener eventListenerOne() {
+			return mock(EventListener.class);
+		}
+
+		@Bean
+		public EventListener eventListenerTwo() {
+			return mock(EventListener.class);
 		}
 
 	}
