@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.jolokia.http.AgentServlet;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -44,8 +45,9 @@ import org.springframework.web.util.UrlPathHelper;
  */
 @ConfigurationProperties(prefix = "endpoints.jolokia", ignoreUnknownFields = false)
 @HypermediaDisabled
-public class JolokiaMvcEndpoint extends AbstractMvcEndpoint
-		implements InitializingBean, ApplicationContextAware, ServletContextAware {
+public class JolokiaMvcEndpoint extends AbstractMvcEndpoint implements InitializingBean,
+		ApplicationContextAware, ServletContextAware, DisposableBean {
+
 	private final ServletWrappingController controller = new ServletWrappingController();
 
 	public JolokiaMvcEndpoint() {
@@ -72,6 +74,11 @@ public class JolokiaMvcEndpoint extends AbstractMvcEndpoint
 	public final void setApplicationContext(ApplicationContext context)
 			throws BeansException {
 		this.controller.setApplicationContext(context);
+	}
+
+	@Override
+	public void destroy() {
+		this.controller.destroy();
 	}
 
 	@RequestMapping("/**")
