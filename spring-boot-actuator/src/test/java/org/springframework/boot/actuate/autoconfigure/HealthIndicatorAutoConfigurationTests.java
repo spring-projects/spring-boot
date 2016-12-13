@@ -458,6 +458,21 @@ public class HealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
+	public void notCassandraHealthIndicator() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.health.diskspace.enabled:false",
+				"management.health.cassandra.enabled:false");
+		this.context.register(CassandraConfiguration.class,
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertThat(beans).hasSize(1);
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(ApplicationHealthIndicator.class);
+	}
+
+	@Test
 	public void couchbaseHealthIndicator() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.diskspace.enabled:false");
@@ -469,6 +484,21 @@ public class HealthIndicatorAutoConfigurationTests {
 		assertThat(beans.size()).isEqualTo(1);
 		assertThat(beans.values().iterator().next().getClass())
 				.isEqualTo(CouchbaseHealthIndicator.class);
+	}
+
+	@Test
+	public void notCouchbaseHealthIndicator() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.health.diskspace.enabled:false",
+				"management.health.couchbase.enabled:false");
+		this.context.register(CouchbaseConfiguration.class,
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertThat(beans.size()).isEqualTo(1);
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(ApplicationHealthIndicator.class);
 	}
 
 	@Configuration
