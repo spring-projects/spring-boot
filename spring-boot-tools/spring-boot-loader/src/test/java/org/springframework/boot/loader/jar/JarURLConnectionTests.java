@@ -126,6 +126,16 @@ public class JarURLConnectionTests {
 	}
 
 	@Test
+	public void connectionToEntryUsingRelativeUrlForRelativeEntryFromNestedJarFile()
+	throws Exception {
+		URL url = new URL("jar:file:" + getRelativePath() + "!/nested.jar!/./3.dat");
+		JarFile nested = this.jarFile
+			.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
+		assertThat(JarURLConnection.get(url, nested).getInputStream())
+			.hasSameContentAs(new ByteArrayInputStream(new byte[] { 3 }));
+	}
+
+	@Test
 	public void connectionToEntryInNestedJarFromUrlThatUsesExistingUrlAsContext()
 			throws Exception {
 		URL url = new URL(new URL("jar", null, -1,
