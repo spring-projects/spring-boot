@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 
 import ch.qos.logback.classic.Level;
@@ -23,17 +24,22 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
+import ch.qos.logback.core.Context;
+import ch.qos.logback.core.joran.util.PropertySetter;
+import ch.qos.logback.core.joran.util.beans.BeanDescriptionCache;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import ch.qos.logback.core.util.OptionHelper;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
+import org.springframework.util.ClassUtils;
 
 /**
  * Default logback configuration used by Spring Boot. Uses {@link LogbackConfigurator} to
@@ -135,14 +141,22 @@ class DefaultLogbackConfiguration {
 
 		appender.setFile(logFile);
 
+		BeanDescriptionCache beanDescriptionCache = createBeanDescriptionCache(config.getContext());
+
 		FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
-		rollingPolicy.setFileNamePattern(logFile + ".%i");
+
+		PropertySetter rollingPolicySetter = new PropertySetter(beanDescriptionCache, rollingPolicy);
+		rollingPolicySetter.setProperty("fileNamePattern", logFile + ".%i");
+
 		appender.setRollingPolicy(rollingPolicy);
 		rollingPolicy.setParent(appender);
 		config.start(rollingPolicy);
 
 		SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>();
-		triggeringPolicy.setMaxFileSize("10MB");
+
+		PropertySetter triggeringPolicySetter = new PropertySetter(beanDescriptionCache, triggeringPolicy);
+		triggeringPolicySetter.setProperty("maxFileSize", "10MB");
+
 		appender.setTriggeringPolicy(triggeringPolicy);
 		config.start(triggeringPolicy);
 
@@ -150,4 +164,15 @@ class DefaultLogbackConfiguration {
 		return appender;
 	}
 
+	private BeanDescriptionCache createBeanDescriptionCache(Object param) {
+		Constructor<BeanDescriptionCache> constructor = ClassUtils.getConstructorIfAvailable(BeanDescriptionCache.class, Context.class);
+
+		if (constructor == null) {
+			//Before the logback version 1.1.8
+			constructor = ClassUtils.getConstructorIfAvailable(BeanDescriptionCache.class);
+			return BeanUtils.instantiateClass(constructor);
+		}
+
+		return BeanUtils.instantiateClass(constructor, param);
+	}
 }
