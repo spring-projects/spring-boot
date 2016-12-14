@@ -315,11 +315,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private boolean ignoreLogConfig(String logConfig) {
 		return !StringUtils.hasLength(logConfig)
-				|| isDefaultAzureLoggingConfig(logConfig);
+				|| isDefaultTomcatLoggingConfig(logConfig);
 	}
 
-	private boolean isDefaultAzureLoggingConfig(String candidate) {
-		return candidate.startsWith("-Djava.util.logging.config.file=") || candidate.equals("-Dnop");
+	private boolean isDefaultTomcatLoggingConfig(String candidate) {
+		return candidate.startsWith("-D");
 	}
 
 	private void initializeFinalLoggingLevels(ConfigurableEnvironment environment,
