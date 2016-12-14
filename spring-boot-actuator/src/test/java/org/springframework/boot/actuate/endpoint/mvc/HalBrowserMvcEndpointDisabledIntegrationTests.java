@@ -98,7 +98,7 @@ public class HalBrowserMvcEndpointDisabledIntegrationTests {
 
 		public static void main(String[] args) {
 			SpringApplication.run(SpringBootHypermediaApplication.class,
-					new String[] { "--endpoints.hypermedia.enabled=false" });
+					"--endpoints.hypermedia.enabled=false");
 		}
 
 	}

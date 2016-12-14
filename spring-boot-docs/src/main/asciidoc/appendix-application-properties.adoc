@@ -1064,8 +1064,10 @@ content into your application; rather pick only the properties that you need.
 	management.ssl.trust-store-provider= # Provider for the trust store. Requires a custom management.port.
 	management.ssl.trust-store-type= # Type of the trust store. Requires a custom management.port.
 
-	# HEALTH INDICATORS (previously health.*)
+	# HEALTH INDICATORS
 	management.health.db.enabled=true # Enable database health check.
+	management.health.cassandra.enabled=true # Enable cassandra health check.
+	management.health.couchbase.enabled=true # Enable couchbase health check.
 	management.health.defaults.enabled=true # Enable default health indicators.
 	management.health.diskspace.enabled=true # Enable disk space health check.
 	management.health.diskspace.path= # Path used to compute the available disk space.
