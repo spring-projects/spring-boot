@@ -85,7 +85,7 @@ public class DevToolsIntegrationTests {
 	@Test
 	public void addARequestMappingToAnExistingController() throws Exception {
 		TestRestTemplate template = new TestRestTemplate();
-		String urlBase = "http://localhost:" + awaitServerPort() + "/";
+		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(template.getForObject(urlBase + "/one", String.class))
 				.isEqualTo("one");
 		assertThat(template.getForEntity(urlBase + "/two", String.class).getStatusCode())
@@ -111,7 +111,7 @@ public class DevToolsIntegrationTests {
 	@Test
 	public void createAController() throws Exception {
 		TestRestTemplate template = new TestRestTemplate();
-		String urlBase = "http://localhost:" + awaitServerPort() + "/";
+		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(template.getForObject(urlBase + "/one", String.class))
 				.isEqualTo("one");
 		assertThat(template.getForEntity(urlBase + "/two", String.class).getStatusCode())
