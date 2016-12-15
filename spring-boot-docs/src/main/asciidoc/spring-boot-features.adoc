@@ -2897,15 +2897,6 @@ http://spring.io and read the http://projects.spring.io/spring-data-jpa/[Spring 
 and  http://hibernate.org/orm/documentation/[Hibernate] reference documentation.
 
 
-[NOTE]
-====
-By default, Spring Boot uses Hibernate 5.0.x. However it's also possible to use 4.3.x
-or 5.2.x if you wish. Please refer to the
-{github-code}/spring-boot-samples/spring-boot-sample-hibernate4[Hibernate 4] and
-{github-code}/spring-boot-samples/spring-boot-sample-hibernate52[Hibernate 5.2] samples
-to see how to do so.
-====
-
 
 [[boot-features-entity-classes]]
 ==== Entity Classes
