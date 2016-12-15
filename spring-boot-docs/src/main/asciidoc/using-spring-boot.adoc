@@ -776,10 +776,13 @@ supported with both the Maven and Gradle plugins.
 [[using-boot-devtools-property-defaults]]
 === Property defaults
 Several of the libraries supported by Spring Boot use caches to improve performance. For
-example, Thymeleaf will cache templates to save repeatedly parsing XML source files.
+example, <<spring-boot-features#boot-features-spring-mvc-template-engines,template engines>>
+will cache compiled templates to avoid repeatedly parsing template files.
+Also, Spring MVC can add HTTP caching headers to responses when serving static resources.
+
 Whilst caching is very beneficial in production, it can be counter productive during
-development. If you make a change to a template file in your IDE, you'll likely want to
-immediately see the result.
+development, preventing you from seeing the changes you just made in your application. 
+For this reason, spring-boot-devtools will disable those caching options by default.
 
 Cache options are usually configured by settings in your `application.properties` file.
 For example, Thymeleaf offers the `spring.thymeleaf.cache` property. Rather than needing
