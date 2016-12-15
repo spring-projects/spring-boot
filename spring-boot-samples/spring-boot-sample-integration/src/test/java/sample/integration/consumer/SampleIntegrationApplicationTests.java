@@ -16,27 +16,25 @@
 
 package sample.integration.consumer;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.ResourcePatternUtils;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.FileSystemUtils;
+import org.springframework.util.StreamUtils;
+import sample.integration.producer.ProducerApplication;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import sample.integration.SampleIntegrationApplication;
-import sample.integration.producer.ProducerApplication;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.ResourcePatternUtils;
-import org.springframework.util.FileSystemUtils;
-import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,21 +44,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class SampleIntegrationApplicationTests {
 
-	private static ConfigurableApplicationContext context;
-
-	@BeforeClass
-	public static void start() throws Exception {
-		context = SpringApplication.run(SampleIntegrationApplication.class);
-	}
-
-	@AfterClass
-	public static void stop() {
-		if (context != null) {
-			context.close();
-		}
-	}
+	@Autowired
+	private ProducerApplication producerApplication;
 
 	@Before
 	public void deleteOutput() {
@@ -69,7 +58,7 @@ public class SampleIntegrationApplicationTests {
 
 	@Test
 	public void testVanillaExchange() throws Exception {
-		SpringApplication.run(ProducerApplication.class, "World");
+		this.producerApplication.run("World");
 		String output = getOutput();
 		assertThat(output).contains("Hello World");
 	}
