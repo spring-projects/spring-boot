@@ -122,7 +122,7 @@
 		<junit.version>4.12</junit.version>
 		<liquibase.version>3.5.3</liquibase.version>
 		<log4j2.version>2.7</log4j2.version>
-		<logback.version>1.1.7</logback.version>
+		<logback.version>1.1.8</logback.version>
 		<lombok.version>1.16.10</lombok.version>
 		<mariadb.version>1.4.6</mariadb.version>
 		<mssql-jdbc.version>6.1.0.jre8</mssql-jdbc.version>

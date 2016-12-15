@@ -26,6 +26,7 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
+import ch.qos.logback.core.util.FileSize;
 import ch.qos.logback.core.util.OptionHelper;
 
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -137,7 +138,7 @@ class DefaultLogbackConfiguration {
 		config.start(rollingPolicy);
 
 		SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>();
-		triggeringPolicy.setMaxFileSize("10MB");
+		triggeringPolicy.setMaxFileSize(FileSize.valueOf("10MB"));
 		appender.setTriggeringPolicy(triggeringPolicy);
 		config.start(triggeringPolicy);
 
