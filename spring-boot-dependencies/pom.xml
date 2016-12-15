@@ -98,6 +98,7 @@
 		<javax-jms.version>2.0.1</javax-jms.version>
 		<javax-mail.version>1.5.6</javax-mail.version>
 		<javax-transaction.version>1.2</javax-transaction.version>
+		<javax-validation.version>1.1.0.Final</javax-validation.version>
 		<jaxen.version>1.1.6</jaxen.version>
 		<jaybird.version>2.2.11</jaybird.version>
 		<jboss-logging.version>3.3.0.Final</jboss-logging.version>
@@ -123,7 +124,7 @@
 		<liquibase.version>3.5.3</liquibase.version>
 		<log4j2.version>2.7</log4j2.version>
 		<logback.version>1.1.8</logback.version>
-		<lombok.version>1.16.10</lombok.version>
+		<lombok.version>1.16.12</lombok.version>
 		<mariadb.version>1.4.6</mariadb.version>
 		<mssql-jdbc.version>6.1.0.jre8</mssql-jdbc.version>
 		<mockito.version>1.10.19</mockito.version>
@@ -936,6 +937,11 @@
 				<groupId>javax.transaction</groupId>
 				<artifactId>javax.transaction-api</artifactId>
 				<version>${javax-transaction.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.validation</groupId>
+				<artifactId>validation-api</artifactId>
+				<version>${javax-validation.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>jaxen</groupId>
