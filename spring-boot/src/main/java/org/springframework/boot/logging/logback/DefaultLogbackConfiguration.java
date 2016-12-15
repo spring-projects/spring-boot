@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
+import ch.qos.logback.core.util.FileSize;
 import ch.qos.logback.core.util.OptionHelper;
 
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -141,7 +142,7 @@ class DefaultLogbackConfiguration {
 		config.start(rollingPolicy);
 
 		SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>();
-		triggeringPolicy.setMaxFileSize("10MB");
+		triggeringPolicy.setMaxFileSize(FileSize.valueOf("10MB"));
 		appender.setTriggeringPolicy(triggeringPolicy);
 		config.start(triggeringPolicy);
 
