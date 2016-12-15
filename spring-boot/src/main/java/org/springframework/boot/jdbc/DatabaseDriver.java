@@ -16,6 +16,10 @@
 
 package org.springframework.boot.jdbc;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -108,6 +112,11 @@ public enum DatabaseDriver {
 			"SELECT 1 FROM RDB$DATABASE") {
 
 		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Collections.singleton("firebirdsql");
+		}
+
+		@Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName)
 					|| productName.toLowerCase().startsWith("firebird");
@@ -135,6 +144,11 @@ public enum DatabaseDriver {
 			"SELECT 1 FROM SYSIBM.SYSDUMMY1") {
 
 		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Collections.singleton("as400");
+		}
+
+		@Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName)
 					|| productName.toLowerCase().contains("as/400");
@@ -150,7 +164,13 @@ public enum DatabaseDriver {
 	 * Informix.
 	 */
 	INFORMIX("informix", "Informix Dynamic Server", "com.informix.jdbc.IfxDriver", null,
-			"select count(*) from systables");
+			"select count(*) from systables")  {
+
+		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Arrays.asList("informix-sqli", "informix-direct");
+		}
+	};
 
 	private final String id;
 
@@ -192,6 +212,10 @@ public enum DatabaseDriver {
 		return this.productName != null && this.productName.equalsIgnoreCase(productName);
 	}
 
+	protected Collection<String> getUrlPrefixes() {
+		return Collections.singleton(this.name().toLowerCase());
+	}
+
 	/**
 	 * Return the driver class name.
 	 * @return the class name or {@code null}
@@ -226,9 +250,11 @@ public enum DatabaseDriver {
 			Assert.isTrue(url.startsWith("jdbc"), "URL must start with 'jdbc'");
 			String urlWithoutPrefix = url.substring("jdbc".length()).toLowerCase();
 			for (DatabaseDriver driver : values()) {
-				String prefix = ":" + driver.name().toLowerCase() + ":";
-				if (driver != UNKNOWN && urlWithoutPrefix.startsWith(prefix)) {
-					return driver;
+				for (String urlPrefix : driver.getUrlPrefixes()) {
+					String prefix = ":" + urlPrefix + ":";
+					if (driver != UNKNOWN && urlWithoutPrefix.startsWith(prefix)) {
+						return driver;
+					}
 				}
 			}
 		}
