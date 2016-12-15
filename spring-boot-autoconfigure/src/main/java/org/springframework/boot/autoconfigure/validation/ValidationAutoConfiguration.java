@@ -45,7 +45,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 public class ValidationAutoConfiguration {
 
 	@Bean
-	@ConditionalOnResource(resources = "META-INF/services/javax.validation.spi.ValidationProvider")
+	@ConditionalOnResource(resources = "classpath:META-INF/services/javax.validation.spi.ValidationProvider")
 	@Conditional(OnValidatorAvailableCondition.class)
 	@ConditionalOnMissingBean
 	public MethodValidationPostProcessor methodValidationPostProcessor() {
