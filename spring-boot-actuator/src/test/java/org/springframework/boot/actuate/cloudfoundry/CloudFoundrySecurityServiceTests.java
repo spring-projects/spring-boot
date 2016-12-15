@@ -28,7 +28,9 @@ import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
@@ -63,8 +65,31 @@ public class CloudFoundrySecurityServiceTests {
 	public void setup() throws Exception {
 		MockServerRestTemplateCustomizer mockServerCustomizer = new MockServerRestTemplateCustomizer();
 		RestTemplateBuilder builder = new RestTemplateBuilder(mockServerCustomizer);
-		this.securityService = new CloudFoundrySecurityService(builder, CLOUD_CONTROLLER);
+		this.securityService = new CloudFoundrySecurityService(builder, CLOUD_CONTROLLER,
+				false);
 		this.server = mockServerCustomizer.getServer();
+	}
+
+	@Test
+	public void skipSslValidationWhenTrue() throws Exception {
+		RestTemplateBuilder builder = new RestTemplateBuilder();
+		this.securityService = new CloudFoundrySecurityService(builder, CLOUD_CONTROLLER,
+				true);
+		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils
+				.getField(this.securityService, "restTemplate");
+		assertThat(restTemplate.getRequestFactory())
+				.isInstanceOf(SkipSslVerificationHttpRequestFactory.class);
+	}
+
+	@Test
+	public void doNotskipSslValidationWhenFalse() throws Exception {
+		RestTemplateBuilder builder = new RestTemplateBuilder();
+		this.securityService = new CloudFoundrySecurityService(builder, CLOUD_CONTROLLER,
+				false);
+		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils
+				.getField(this.securityService, "restTemplate");
+		assertThat(restTemplate.getRequestFactory())
+				.isNotInstanceOf(SkipSslVerificationHttpRequestFactory.class);
 	}
 
 	@Test
