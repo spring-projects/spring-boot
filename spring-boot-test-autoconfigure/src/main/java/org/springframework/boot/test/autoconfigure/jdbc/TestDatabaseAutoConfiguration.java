@@ -31,22 +31,16 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionMessage;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.util.Assert;
@@ -56,16 +50,12 @@ import org.springframework.util.ObjectUtils;
  * Auto-configuration for a test database.
  *
  * @author Phillip Webb
- * @author Eddú Meléndez
  * @since 1.4.0
  * @see AutoConfigureTestDatabase
  */
 @Configuration
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 public class TestDatabaseAutoConfiguration {
-
-	private static final String SPRING_TEST_DATABASE_PREFIX = "spring.test.database.";
-	private static final String REPLACE_PROPERTY = "replace";
 
 	private final Environment environment;
 
@@ -74,53 +64,16 @@ public class TestDatabaseAutoConfiguration {
 	}
 
 	@Bean
-	@Conditional(TestDatabaseReplaceAutoConfiguredCondition.class)
+	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "AUTO_CONFIGURED")
 	@ConditionalOnMissingBean
 	public DataSource dataSource() {
 		return new EmbeddedDataSourceFactory(this.environment).getEmbeddedDatabase();
 	}
 
 	@Bean
-	@Conditional(TestDatabaseReplaceAnyCondition.class)
+	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "ANY", matchIfMissing = true)
 	public static EmbeddedDataSourceBeanFactoryPostProcessor embeddedDataSourceBeanFactoryPostProcessor() {
 		return new EmbeddedDataSourceBeanFactoryPostProcessor();
-	}
-
-	static class TestDatabaseReplaceAutoConfiguredCondition extends SpringBootCondition {
-
-		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata
-				metadata) {
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(context.getEnvironment(), SPRING_TEST_DATABASE_PREFIX);
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("Test Database Replace Property");
-			if (resolver.containsProperty(REPLACE_PROPERTY) && "NONE".equals(resolver.getProperty(REPLACE_PROPERTY))) {
-				return ConditionOutcome.noMatch(message.didNotFind("NONE").atAll());
-			}
-			else if (resolver.containsProperty(REPLACE_PROPERTY) && "AUTO_CONFIGURED".equals(resolver.getProperty(REPLACE_PROPERTY))) {
-				return ConditionOutcome.match(message.found("AUTO_CONFIGURED").atAll());
-			}
-			return ConditionOutcome.noMatch(message.didNotFind("spring.test.database.replace").atAll());
-		}
-
-	}
-
-	static class TestDatabaseReplaceAnyCondition extends SpringBootCondition {
-
-		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(context.getEnvironment(), SPRING_TEST_DATABASE_PREFIX);
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("Test Database Replace Property");
-			if (resolver.containsProperty(REPLACE_PROPERTY) && "NONE".equals(resolver.getProperty(REPLACE_PROPERTY))) {
-				return ConditionOutcome.noMatch(message.didNotFind("NONE").atAll());
-			}
-			else if (!resolver.containsProperty(REPLACE_PROPERTY) || "ANY".equals(resolver.getProperty(REPLACE_PROPERTY))) {
-				return ConditionOutcome.match(message.found("ANY").atAll());
-			}
-			return ConditionOutcome.noMatch(message.didNotFind("spring.test.database.replace").atAll());
-		}
-
 	}
 
 	@Order(Ordered.LOWEST_PRECEDENCE)
