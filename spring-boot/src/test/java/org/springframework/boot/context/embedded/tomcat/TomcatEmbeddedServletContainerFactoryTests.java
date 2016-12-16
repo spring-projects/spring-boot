@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -246,14 +246,18 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		factory.setUriEncoding(Charset.forName("US-ASCII"));
 		Tomcat tomcat = getTomcat(factory);
-		assertThat(tomcat.getConnector().getURIEncoding()).isEqualTo("US-ASCII");
+		Connector connector = ((TomcatEmbeddedServletContainer) this.container)
+				.getServiceConnectors().get(tomcat.getService())[0];
+		assertThat(connector.getURIEncoding()).isEqualTo("US-ASCII");
 	}
 
 	@Test
 	public void defaultUriEncoding() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		Tomcat tomcat = getTomcat(factory);
-		assertThat(tomcat.getConnector().getURIEncoding()).isEqualTo("UTF-8");
+		Connector connector = ((TomcatEmbeddedServletContainer) this.container)
+				.getServiceConnectors().get(tomcat.getService())[0];
+		assertThat(connector.getURIEncoding()).isEqualTo("UTF-8");
 	}
 
 	@Test
@@ -262,13 +266,12 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		ssl.setKeyStore("test.jks");
 		ssl.setKeyStorePassword("secret");
 		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
-
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSsl(ssl);
 
 		Tomcat tomcat = getTomcat(factory);
-		Connector connector = tomcat.getConnector();
-
+		Connector connector = ((TomcatEmbeddedServletContainer) this.container)
+				.getServiceConnectors().get(tomcat.getService())[0];
 		SSLHostConfig[] sslHostConfigs = connector.getProtocolHandler()
 				.findSslHostConfigs();
 		assertThat(sslHostConfigs[0].getCiphers()).isEqualTo("ALPHA:BRAVO:CHARLIE");
@@ -308,9 +311,8 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		this.container = factory
 				.getEmbeddedServletContainer(sessionServletRegistration());
 		Tomcat tomcat = ((TomcatEmbeddedServletContainer) this.container).getTomcat();
-		Connector connector = tomcat.getConnector();
-
 		this.container.start();
+		Connector connector = tomcat.getConnector();
 		SSLHostConfig sslHostConfig = connector.getProtocolHandler()
 				.findSslHostConfigs()[0];
 		assertThat(sslHostConfig.getSslProtocol()).isEqualTo("TLS");
