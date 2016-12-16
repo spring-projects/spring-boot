@@ -71,6 +71,11 @@ public class KafkaProperties {
 	 */
 	private String clientId;
 
+	/**
+	 * Additional properties used to configure the client.
+	 */
+	private Map<String, String> properties = new HashMap<String, String>();
+
 	public Consumer getConsumer() {
 		return this.consumer;
 	}
@@ -107,6 +112,14 @@ public class KafkaProperties {
 		this.clientId = clientId;
 	}
 
+	public Map<String, String> getProperties() {
+		return this.properties;
+	}
+
+	public void setProperties(Map<String, String> properties) {
+		this.properties = properties;
+	}
+
 	private Map<String, Object> buildCommonProperties() {
 		Map<String, Object> properties = new HashMap<String, Object>();
 		if (this.bootstrapServers != null) {
@@ -134,6 +147,9 @@ public class KafkaProperties {
 		if (this.ssl.getTruststorePassword() != null) {
 			properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG,
 					this.ssl.getTruststorePassword());
+		}
+		if (this.properties != null && this.properties.size() > 0) {
+			properties.putAll(this.properties);
 		}
 		return properties;
 	}
@@ -240,6 +256,11 @@ public class KafkaProperties {
 		 */
 		private Class<?> valueDeserializer = StringDeserializer.class;
 
+		/**
+		 * Maximum number of records returned in a single call to poll().
+		 */
+		private Integer maxPollRecords;
+
 		public Ssl getSsl() {
 			return this.ssl;
 		}
@@ -332,6 +353,14 @@ public class KafkaProperties {
 			this.valueDeserializer = valueDeserializer;
 		}
 
+		public Integer getMaxPollRecords() {
+			return this.maxPollRecords;
+		}
+
+		public void setMaxPollRecords(Integer maxPollRecords) {
+			this.maxPollRecords = maxPollRecords;
+		}
+
 		public Map<String, Object> buildProperties() {
 			Map<String, Object> properties = new HashMap<String, Object>();
 			if (this.autoCommitInterval != null) {
@@ -394,6 +423,9 @@ public class KafkaProperties {
 			if (this.valueDeserializer != null) {
 				properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
 						this.valueDeserializer);
+			}
+			if (this.maxPollRecords != null) {
+				properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, this.maxPollRecords);
 			}
 			return properties;
 		}

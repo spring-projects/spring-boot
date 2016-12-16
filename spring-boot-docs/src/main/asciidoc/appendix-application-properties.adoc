@@ -878,6 +878,7 @@ content into your application; rather pick only the properties that you need.
 	spring.kafka.consumer.group-id= # Unique string that identifies the consumer group this consumer belongs to.
 	spring.kafka.consumer.heartbeat-interval= # Expected time in milliseconds between heartbeats to the consumer coordinator.
 	spring.kafka.consumer.key-deserializer= # Deserializer class for keys.
+	spring.kafka.consumer.max-poll-messages= # Maximum number of records returned in a single call to poll().
 	spring.kafka.consumer.value-deserializer= # Deserializer class for values.
 	spring.kafka.listener.ack-count= # Number of records between offset commits when ackMode is "COUNT" or "COUNT_TIME".
 	spring.kafka.listener.ack-mode= # Listener AckMode; see the spring-kafka documentation.
@@ -893,6 +894,7 @@ content into your application; rather pick only the properties that you need.
 	spring.kafka.producer.key-serializer= # Serializer class for keys.
 	spring.kafka.producer.retries= # When greater than zero, enables retrying of failed sends.
 	spring.kafka.producer.value-serializer= # Serializer class for values.
+	spring.kafka.properties.*= # Additional properties used to configure the client.
 	spring.kafka.ssl.key-password= # Password of the private key in the key store file.
 	spring.kafka.ssl.keystore-location= # Location of the key store file.
 	spring.kafka.ssl.keystore-password= # Store password for the key store file.
