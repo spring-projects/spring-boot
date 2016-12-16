@@ -35,6 +35,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -58,6 +59,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Christian Dupuis
  * @author Andy Wilkinson
+ * @author Vedran Pavic
  */
 public class EndpointMBeanExporter extends MBeanExporter
 		implements SmartLifecycle, ApplicationContextAware {
@@ -190,6 +192,9 @@ public class EndpointMBeanExporter extends MBeanExporter
 	protected EndpointMBean getEndpointMBean(String beanName, Endpoint<?> endpoint) {
 		if (endpoint instanceof ShutdownEndpoint) {
 			return new ShutdownEndpointMBean(beanName, endpoint, this.objectMapper);
+		}
+		if (endpoint instanceof LoggersEndpoint) {
+			return new LoggersEndpointMBean(beanName, endpoint, this.objectMapper);
 		}
 		return new DataEndpointMBean(beanName, endpoint, this.objectMapper);
 	}
