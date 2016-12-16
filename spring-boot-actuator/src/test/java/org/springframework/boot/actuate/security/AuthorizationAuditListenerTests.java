@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.security;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +27,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
+import org.springframework.security.access.event.AbstractAuthorizationEvent;
 import org.springframework.security.access.event.AuthenticationCredentialsNotFoundEvent;
 import org.springframework.security.access.event.AuthorizationFailureEvent;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -53,26 +54,22 @@ public class AuthorizationAuditListenerTests {
 
 	@Test
 	public void testAuthenticationCredentialsNotFound() {
-		this.listener.onApplicationEvent(new AuthenticationCredentialsNotFoundEvent(this,
-				Arrays.<ConfigAttribute>asList(new SecurityConfig("USER")),
-				new AuthenticationCredentialsNotFoundException("Bad user")));
-		ArgumentCaptor<AuditApplicationEvent> eventArgumentCaptor = ArgumentCaptor
-				.forClass(AuditApplicationEvent.class);
-		verify(this.publisher).publishEvent(eventArgumentCaptor.capture());
-		assertThat(eventArgumentCaptor.getValue().getAuditEvent().getType())
+		AuditApplicationEvent event = handleAuthorizationEvent(
+				new AuthenticationCredentialsNotFoundEvent(this,
+						Collections.<ConfigAttribute>singletonList(new SecurityConfig("USER")),
+						new AuthenticationCredentialsNotFoundException("Bad user")));
+		assertThat(event.getAuditEvent().getType())
 				.isEqualTo(AuthenticationAuditListener.AUTHENTICATION_FAILURE);
 	}
 
 	@Test
 	public void testAuthorizationFailure() {
-		this.listener.onApplicationEvent(new AuthorizationFailureEvent(this,
-				Arrays.<ConfigAttribute>asList(new SecurityConfig("USER")),
-				new UsernamePasswordAuthenticationToken("user", "password"),
-				new AccessDeniedException("Bad user")));
-		ArgumentCaptor<AuditApplicationEvent> eventArgumentCaptor = ArgumentCaptor
-				.forClass(AuditApplicationEvent.class);
-		verify(this.publisher).publishEvent(eventArgumentCaptor.capture());
-		assertThat(eventArgumentCaptor.getValue().getAuditEvent().getType())
+		AuditApplicationEvent event = handleAuthorizationEvent(
+				new AuthorizationFailureEvent(this,
+						Collections.<ConfigAttribute>singletonList(new SecurityConfig("USER")),
+						new UsernamePasswordAuthenticationToken("user", "password"),
+						new AccessDeniedException("Bad user")));
+		assertThat(event.getAuditEvent().getType())
 				.isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);
 	}
 
@@ -82,16 +79,22 @@ public class AuthorizationAuditListenerTests {
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 				"user", "password");
 		authentication.setDetails(details);
-		this.listener.onApplicationEvent(new AuthorizationFailureEvent(this,
-				Arrays.<ConfigAttribute>asList(new SecurityConfig("USER")),
-				authentication, new AccessDeniedException("Bad user")));
-		ArgumentCaptor<AuditApplicationEvent> eventArgumentCaptor = ArgumentCaptor
-				.forClass(AuditApplicationEvent.class);
-		verify(this.publisher).publishEvent(eventArgumentCaptor.capture());
-		AuditApplicationEvent event = eventArgumentCaptor.getValue();
+		AuditApplicationEvent event = handleAuthorizationEvent(
+				new AuthorizationFailureEvent(this,
+						Collections.<ConfigAttribute>singletonList(new SecurityConfig("USER")),
+						authentication, new AccessDeniedException("Bad user")));
 		assertThat(event.getAuditEvent().getType())
 				.isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);
 		assertThat(event.getAuditEvent().getData()).containsEntry("details", details);
+	}
+
+	private AuditApplicationEvent handleAuthorizationEvent(
+			AbstractAuthorizationEvent event) {
+		ArgumentCaptor<AuditApplicationEvent> eventCaptor = ArgumentCaptor
+				.forClass(AuditApplicationEvent.class);
+		this.listener.onApplicationEvent(event);
+		verify(this.publisher).publishEvent(eventCaptor.capture());
+		return eventCaptor.getValue();
 	}
 
 }
