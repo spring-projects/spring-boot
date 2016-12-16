@@ -63,6 +63,7 @@ public class KafkaAutoConfigurationTests {
 		load("spring.kafka.bootstrap-servers=foo:1234",
 				"spring.kafka.properties.foo=bar",
 				"spring.kafka.properties.baz=qux",
+				"spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
 				"spring.kafka.ssl.key-password=p1",
 				"spring.kafka.ssl.keystore-location=classpath:ksLoc",
 				"spring.kafka.ssl.keystore-password=p2",
@@ -116,6 +117,7 @@ public class KafkaAutoConfigurationTests {
 				.isEqualTo(42);
 		assertThat(configs.get("foo")).isEqualTo("bar");
 		assertThat(configs.get("baz")).isEqualTo("qux");
+		assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
 	}
 
 	@Test
