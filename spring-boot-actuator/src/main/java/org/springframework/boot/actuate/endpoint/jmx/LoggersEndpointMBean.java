@@ -24,6 +24,8 @@ import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
+import org.springframework.jmx.export.annotation.ManagedResource;
+import org.springframework.util.Assert;
 
 /**
  * Adapter to expose {@link LoggersEndpoint} as an {@link MvcEndpoint}.
@@ -31,6 +33,7 @@ import org.springframework.jmx.export.annotation.ManagedOperation;
  * @author Vedran Pavic
  * @since 1.5.0
  */
+@ManagedResource
 public class LoggersEndpointMBean extends EndpointMBean {
 
 	public LoggersEndpointMBean(String beanName, Endpoint<?> endpoint,
@@ -38,19 +41,21 @@ public class LoggersEndpointMBean extends EndpointMBean {
 		super(beanName, endpoint, objectMapper);
 	}
 
-	@ManagedAttribute(description = "Get levels for all known loggers")
+	@ManagedAttribute(description = "Get log levels for all known loggers")
 	public Object getLoggers() {
 		return convert(getEndpoint().invoke());
 	}
 
-	@ManagedOperation(description = "Get level for a given logger")
+	@ManagedOperation(description = "Get log level for a given logger")
 	public Object getLogger(String loggerName) {
 		return convert(getEndpoint().invoke(loggerName));
 	}
 
 	@ManagedOperation(description = "Set log level for a given logger")
 	public void setLogLevel(String loggerName, String logLevel) {
-		getEndpoint().setLogLevel(loggerName, LogLevel.valueOf(logLevel));
+		Assert.notNull(logLevel, "LogLevel must not be null");
+		LogLevel level = LogLevel.valueOf(logLevel.toUpperCase());
+		getEndpoint().setLogLevel(loggerName, level);
 	}
 
 	@Override
