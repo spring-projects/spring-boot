@@ -4615,21 +4615,10 @@ auto configuration supports all HIGH importance properties, some selected MEDIUM
 and any that do not have a default value.
 
 Only a subset of the properties supported by Kafka are available via the `KafkaProperties`
-class. If you wish to configure the producer or consumer with additional properties, you
-can override the producer factory and/or consumer factory bean, adding additional
-properties, for example:
+class. If you wish to configure the producer or consumer with additional properties that
+are not directly supported, use the following:
 
-[source,java,indent=0]
-----
-	@Bean
-	public ProducerFactory<?, ?> kafkaProducerFactory(KafkaProperties properties) {
-		Map<String, Object> producerProperties = properties.buildProducerProperties();
-		producerProperties.put("some.property", "some.value");
-		return new DefaultKafkaProducerFactory<Object, Object>(producerProperties);
-	}
-----
-
-
+`spring.kafka.properties.foo=bar`
 
 [[boot-features-restclient]]
 == Calling REST services

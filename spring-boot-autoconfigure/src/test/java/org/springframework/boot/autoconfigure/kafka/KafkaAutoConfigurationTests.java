@@ -61,12 +61,15 @@ public class KafkaAutoConfigurationTests {
 	@Test
 	public void consumerProperties() {
 		load("spring.kafka.bootstrap-servers=foo:1234",
+				"spring.kafka.properties.foo=bar",
+				"spring.kafka.properties.baz=qux",
 				"spring.kafka.ssl.key-password=p1",
 				"spring.kafka.ssl.keystore-location=classpath:ksLoc",
 				"spring.kafka.ssl.keystore-password=p2",
 				"spring.kafka.ssl.truststore-location=classpath:tsLoc",
 				"spring.kafka.ssl.truststore-password=p3",
 				"spring.kafka.consumer.auto-commit-interval=123",
+				"spring.kafka.consumer.max-poll-records=42",
 				"spring.kafka.consumer.auto-offset-reset=earliest",
 				"spring.kafka.consumer.client-id=ccid", // test override common
 				"spring.kafka.consumer.enable-auto-commit=false",
@@ -109,6 +112,10 @@ public class KafkaAutoConfigurationTests {
 				.isEqualTo(LongDeserializer.class);
 		assertThat(configs.get(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG))
 				.isEqualTo(IntegerDeserializer.class);
+		assertThat(configs.get(ConsumerConfig.MAX_POLL_RECORDS_CONFIG))
+				.isEqualTo(42);
+		assertThat(configs.get("foo")).isEqualTo("bar");
+		assertThat(configs.get("baz")).isEqualTo("qux");
 	}
 
 	@Test
