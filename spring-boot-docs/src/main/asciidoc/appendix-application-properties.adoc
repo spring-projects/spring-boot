@@ -1133,4 +1133,11 @@ content into your application; rather pick only the properties that you need.
 	spring.devtools.remote.secret= # A shared secret required to establish a connection (required to enable remote support).
 	spring.devtools.remote.secret-header-name=X-AUTH-TOKEN # HTTP header used to transfer the shared secret.
 
+
+	# ----------------------------------------
+	# TESTING PROPERTIES
+	# ----------------------------------------
+
+	spring.test.database.replace=any # Type of existing DataSource to replace.
+
 ----
