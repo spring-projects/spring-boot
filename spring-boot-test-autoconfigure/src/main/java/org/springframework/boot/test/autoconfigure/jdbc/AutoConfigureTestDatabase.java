@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
+import org.springframework.boot.test.autoconfigure.properties.SkipPropertyMapping;
 
 /**
  * Annotation that can be applied to a test class to configure a test database to use
@@ -48,6 +49,7 @@ public @interface AutoConfigureTestDatabase {
 	 * Determines what type of existing DataSource beans can be replaced.
 	 * @return the type of existing DataSource to replace
 	 */
+	@PropertyMapping(skip = SkipPropertyMapping.ON_DEFAULT_VALUE)
 	Replace replace() default Replace.ANY;
 
 	/**
