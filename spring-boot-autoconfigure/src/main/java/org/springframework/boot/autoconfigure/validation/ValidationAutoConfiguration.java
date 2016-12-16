@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.validation;
 
 import javax.validation.Validation;
-import javax.validation.Validator;
+import javax.validation.executable.ExecutableValidator;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -41,7 +41,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  * @author Stephane Nicoll
  * @since 1.5.0
  */
-@ConditionalOnClass({ Validator.class })
+@ConditionalOnClass(ExecutableValidator.class)
 public class ValidationAutoConfiguration {
 
 	@Bean
