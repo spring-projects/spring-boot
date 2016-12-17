@@ -19,7 +19,10 @@ package org.springframework.boot.logging.java;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
 
 import org.apache.commons.logging.impl.Jdk14Logger;
 import org.junit.After;
@@ -29,6 +32,8 @@ import org.junit.Test;
 
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggerConfiguration;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -40,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Ben Hale
  */
 public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 
@@ -72,6 +78,11 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	@After
 	public void clearLocale() {
 		Locale.setDefault(this.defaultLocale);
+	}
+
+	@After
+	public void resetLogger() {
+		this.logger.getLogger().setLevel(Level.OFF);
 	}
 
 	@Test
@@ -140,6 +151,13 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	public void getSupportedLevels() {
+		assertThat(this.loggingSystem.getSupportedLogLevels())
+				.isEqualTo(EnumSet.of(LogLevel.TRACE, LogLevel.DEBUG, LogLevel.INFO,
+						LogLevel.WARN, LogLevel.ERROR, LogLevel.OFF));
+	}
+
+	@Test
 	public void setLevel() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
@@ -148,6 +166,28 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.debug("Hello");
 		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"))
 				.isEqualTo(1);
+	}
+
+	@Test
+	public void getLoggingConfigurations() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
+		List<LoggerConfiguration> configurations = this.loggingSystem
+				.getLoggerConfigurations();
+		assertThat(configurations).isNotEmpty();
+		assertThat(configurations.get(0).getName()).isEqualTo(LoggingSystem.ROOT_LOGGER_NAME);
+	}
+
+	@Test
+	public void getLoggingConfiguration() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
+		LoggerConfiguration configuration = this.loggingSystem
+				.getLoggerConfiguration(getClass().getName());
+		assertThat(configuration).isEqualTo(new LoggerConfiguration(getClass().getName(),
+				LogLevel.DEBUG, LogLevel.DEBUG));
 	}
 
 }

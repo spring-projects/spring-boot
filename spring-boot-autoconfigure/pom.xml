@@ -106,11 +106,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>io.projectreactor.spring</groupId>
-			<artifactId>reactor-spring-context</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>io.searchbox</groupId>
 			<artifactId>jest</artifactId>
 			<optional>true</optional>
@@ -146,29 +141,48 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-broker</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>geronimo-jms_1.1_spec</artifactId>
+					<groupId>org.apache.geronimo.specs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-pool</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>geronimo-jms_1.1_spec</artifactId>
+					<groupId>org.apache.geronimo.specs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>artemis-jms-client</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>geronimo-jms_2.0_spec</artifactId>
+					<groupId>org.apache.geronimo.specs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>artemis-jms-server</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>geronimo-jms_2.0_spec</artifactId>
+					<groupId>org.apache.geronimo.specs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -266,16 +280,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.hornetq</groupId>
-			<artifactId>hornetq-jms-client</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.hornetq</groupId>
-			<artifactId>hornetq-jms-server</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-jcache</artifactId>
 			<optional>true</optional>
@@ -283,6 +287,11 @@
 		<dependency>
 			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-spring4-embedded</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss</groupId>
+			<artifactId>jboss-transaction-spi</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -478,6 +487,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-spring-service-connector</artifactId>
 			<optional>true</optional>
@@ -564,7 +578,7 @@
 		</dependency>
 		<dependency>
 			<groupId>javax.jms</groupId>
-			<artifactId>jms-api</artifactId>
+			<artifactId>javax.jms-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -611,6 +625,22 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-test-support</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-test</artifactId>
 			<scope>test</scope>
@@ -629,6 +659,11 @@
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-jms</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

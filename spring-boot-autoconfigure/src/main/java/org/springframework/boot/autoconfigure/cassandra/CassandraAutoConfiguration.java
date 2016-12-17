@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.cassandra;
 
+import java.util.List;
+
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.SocketOptions;
@@ -24,6 +26,7 @@ import com.datastax.driver.core.policies.ReconnectionPolicy;
 import com.datastax.driver.core.policies.RetryPolicy;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -46,8 +49,12 @@ public class CassandraAutoConfiguration {
 
 	private final CassandraProperties properties;
 
-	public CassandraAutoConfiguration(CassandraProperties properties) {
+	private final List<ClusterCustomizer> clusterCustomizers;
+
+	public CassandraAutoConfiguration(CassandraProperties properties,
+			ObjectProvider<List<ClusterCustomizer>> clusterCustomizersProvider) {
 		this.properties = properties;
+		this.clusterCustomizers = clusterCustomizersProvider.getIfAvailable();
 	}
 
 	@Bean
@@ -82,11 +89,22 @@ public class CassandraAutoConfiguration {
 		}
 		String points = properties.getContactPoints();
 		builder.addContactPoints(StringUtils.commaDelimitedListToStringArray(points));
-		return builder.build();
+
+		Cluster cluster = builder.build();
+		customize(cluster);
+		return cluster;
+	}
+
+	private void customize(Cluster cluster) {
+		if (this.clusterCustomizers != null) {
+			for (ClusterCustomizer customizer : this.clusterCustomizers) {
+				customizer.customize(cluster);
+			}
+		}
 	}
 
 	public static <T> T instantiate(Class<T> type) {
-		return BeanUtils.instantiate(type);
+		return BeanUtils.instantiateClass(type);
 	}
 
 	private QueryOptions getQueryOptions() {

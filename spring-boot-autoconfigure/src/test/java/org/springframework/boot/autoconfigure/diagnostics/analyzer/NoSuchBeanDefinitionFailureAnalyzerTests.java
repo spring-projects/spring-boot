@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigure.diagnostics.analyzer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -74,6 +76,30 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 		FailureAnalysis analysis = analyzeFailure(
 				createFailure(StringPropertyTypeConfiguration.class));
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0,
+				String.class);
+		assertBeanMethodDisabled(analysis,
+				"did not find property 'spring.string.enabled'",
+				TestPropertyAutoConfiguration.class, "string");
+		assertActionMissingType(analysis, String.class);
+	}
+
+	@Test
+	public void failureAnalysisForMissingCollectionType() throws Exception {
+		FailureAnalysis analysis = analyzeFailure(
+				createFailure(StringCollectionConfiguration.class));
+		assertDescriptionConstructorMissingType(analysis, StringCollectionHandler.class,
+				0, String.class);
+		assertBeanMethodDisabled(analysis,
+				"did not find property 'spring.string.enabled'",
+				TestPropertyAutoConfiguration.class, "string");
+		assertActionMissingType(analysis, String.class);
+	}
+
+	@Test
+	public void failureAnalysisForMissingMapType() throws Exception {
+		FailureAnalysis analysis = analyzeFailure(
+				createFailure(StringMapConfiguration.class));
+		assertDescriptionConstructorMissingType(analysis, StringMapHandler.class, 0,
 				String.class);
 		assertBeanMethodDisabled(analysis,
 				"did not find property 'spring.string.enabled'",
@@ -184,15 +210,15 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	private void assertBeanMethodDisabled(FailureAnalysis analysis, String description,
 			Class<?> target, String methodName) {
 		String expected = String.format("Bean method '%s' in '%s' not loaded because",
-				methodName, ClassUtils.getShortName(target), description);
+				methodName, ClassUtils.getShortName(target));
 		assertThat(analysis.getDescription()).contains(expected);
 		assertThat(analysis.getDescription()).contains(description);
 	}
 
 	private void assertClassDisabled(FailureAnalysis analysis, String description,
 			String methodName) {
-		String expected = String.format("Bean method '%s' not loaded because", methodName,
-				description);
+		String expected = String.format("Bean method '%s' not loaded because",
+				methodName);
 		assertThat(analysis.getDescription()).contains(expected);
 		assertThat(analysis.getDescription()).contains(description);
 	}
@@ -237,6 +263,20 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	@ImportAutoConfiguration(TestPropertyAutoConfiguration.class)
 	@Import(StringHandler.class)
 	protected static class StringPropertyTypeConfiguration {
+
+	}
+
+	@Configuration
+	@ImportAutoConfiguration(TestPropertyAutoConfiguration.class)
+	@Import(StringCollectionHandler.class)
+	protected static class StringCollectionConfiguration {
+
+	}
+
+	@Configuration
+	@ImportAutoConfiguration(TestPropertyAutoConfiguration.class)
+	@Import(StringMapHandler.class)
+	protected static class StringMapConfiguration {
 
 	}
 
@@ -326,6 +366,20 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 		public StringNameHandler(BeanFactory beanFactory) {
 			beanFactory.getBean("test-string");
+		}
+
+	}
+
+	protected static class StringCollectionHandler {
+
+		public StringCollectionHandler(Collection<String> collection) {
+		}
+
+	}
+
+	protected static class StringMapHandler {
+
+		public StringMapHandler(Map<String, String> map) {
 		}
 
 	}

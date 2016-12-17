@@ -29,6 +29,8 @@ import java.net.URLEncoder;
 import java.net.URLStreamHandler;
 import java.security.Permission;
 
+import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
+
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
  *
@@ -160,11 +162,14 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		if (this.jarFile == null) {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}
-		if (this.jarEntryName.isEmpty()) {
+		if (this.jarEntryName.isEmpty()
+				&& this.jarFile.getType() == JarFile.JarFileType.DIRECT) {
 			throw new IOException("no entry name specified");
 		}
 		connect();
-		InputStream inputStream = this.jarFile.getInputStream(this.jarEntry);
+		InputStream inputStream = (this.jarEntryName.isEmpty()
+				? this.jarFile.getData().getInputStream(ResourceAccess.ONCE)
+				: this.jarFile.getInputStream(this.jarEntry));
 		if (inputStream == null) {
 			throwFileNotFound(this.jarEntryName, this.jarFile);
 		}

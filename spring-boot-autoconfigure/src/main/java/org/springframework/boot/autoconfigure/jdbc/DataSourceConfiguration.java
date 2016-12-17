@@ -42,6 +42,9 @@ abstract class DataSourceConfiguration {
 		return (T) properties.initializeDataSourceBuilder().type(type).build();
 	}
 
+	/**
+	 * Tomcat Pool DataSource configuration.
+	 */
 	@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.tomcat.jdbc.pool.DataSource", matchIfMissing = true)
 	static class Tomcat extends DataSourceConfiguration {
@@ -64,6 +67,9 @@ abstract class DataSourceConfiguration {
 
 	}
 
+	/**
+	 * Hikari DataSource configuration.
+	 */
 	@ConditionalOnClass(HikariDataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "com.zaxxer.hikari.HikariDataSource", matchIfMissing = true)
 	static class Hikari extends DataSourceConfiguration {
@@ -75,27 +81,9 @@ abstract class DataSourceConfiguration {
 		}
 	}
 
-	@ConditionalOnClass(org.apache.commons.dbcp.BasicDataSource.class)
-	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp.BasicDataSource", matchIfMissing = true)
-	static class Dbcp extends DataSourceConfiguration {
-
-		@Bean
-		@ConfigurationProperties("spring.datasource.dbcp")
-		public org.apache.commons.dbcp.BasicDataSource dataSource(
-				DataSourceProperties properties) {
-			org.apache.commons.dbcp.BasicDataSource dataSource = createDataSource(
-					properties, org.apache.commons.dbcp.BasicDataSource.class);
-			DatabaseDriver databaseDriver = DatabaseDriver
-					.fromJdbcUrl(properties.determineUrl());
-			String validationQuery = databaseDriver.getValidationQuery();
-			if (validationQuery != null) {
-				dataSource.setTestOnBorrow(true);
-				dataSource.setValidationQuery(validationQuery);
-			}
-			return dataSource;
-		}
-	}
-
+	/**
+	 * DBCP DataSource configuration.
+	 */
 	@ConditionalOnClass(org.apache.commons.dbcp2.BasicDataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp2.BasicDataSource", matchIfMissing = true)
 	static class Dbcp2 extends DataSourceConfiguration {
@@ -109,6 +97,9 @@ abstract class DataSourceConfiguration {
 		}
 	}
 
+	/**
+	 * Generic DataSource configuration.
+	 */
 	@ConditionalOnMissingBean(DataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type")
 	static class Generic {

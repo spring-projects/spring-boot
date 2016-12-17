@@ -21,7 +21,7 @@ import javax.management.MBeanServer;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -66,13 +66,16 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationJmxConfiguration
 			implements EnvironmentAware, BeanFactoryAware {
 
+		private final IntegrationManagementConfigurer configurer;
+
 		private BeanFactory beanFactory;
 
 		private RelaxedPropertyResolver propertyResolver;
 
-		@Autowired(required = false)
-		@Qualifier(IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME)
-		private IntegrationManagementConfigurer configurer;
+		protected IntegrationJmxConfiguration(
+				@Qualifier(IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME) ObjectProvider<IntegrationManagementConfigurer> configurerProvider) {
+			this.configurer = configurerProvider.getIfAvailable();
+		}
 
 		@Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {

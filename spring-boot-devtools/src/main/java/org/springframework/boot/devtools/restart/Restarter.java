@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.Lock;
@@ -48,6 +49,7 @@ import org.springframework.boot.devtools.restart.classloader.RestartClassLoader;
 import org.springframework.boot.logging.DeferredLog;
 import org.springframework.cglib.core.ClassNameReader;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
@@ -116,7 +118,7 @@ public class Restarter {
 
 	private boolean finished = false;
 
-	private volatile ConfigurableApplicationContext rootContext;
+	private final List<ConfigurableApplicationContext> rootContexts = new CopyOnWriteArrayList<ConfigurableApplicationContext>();
 
 	/**
 	 * Internal constructor to create a new {@link Restarter} instance.
@@ -314,9 +316,9 @@ public class Restarter {
 		this.logger.debug("Stopping application");
 		this.stopLock.lock();
 		try {
-			if (this.rootContext != null) {
-				this.rootContext.close();
-				this.rootContext = null;
+			for (ConfigurableApplicationContext context : this.rootContexts) {
+				context.close();
+				this.rootContexts.remove(context);
 			}
 			cleanupCaches();
 			if (this.forceReferenceCleanup) {
@@ -418,7 +420,21 @@ public class Restarter {
 		if (applicationContext != null && applicationContext.getParent() != null) {
 			return;
 		}
-		this.rootContext = applicationContext;
+		if (applicationContext instanceof GenericApplicationContext) {
+			prepare((GenericApplicationContext) applicationContext);
+		}
+		this.rootContexts.add(applicationContext);
+	}
+
+	void remove(ConfigurableApplicationContext applicationContext) {
+		if (applicationContext != null) {
+			this.rootContexts.remove(applicationContext);
+		}
+	}
+
+	private void prepare(GenericApplicationContext applicationContext) {
+		applicationContext.setResourceLoader(
+				new ClassLoaderFilesResourcePatternResolver(this.classLoaderFiles));
 	}
 
 	private LeakSafeThread getLeakSafeThread() {

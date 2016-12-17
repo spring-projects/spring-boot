@@ -109,4 +109,7 @@ do as they were designed before this was clarified.
 | LDAP
 | https://github.com/eddumelendez/ldap-spring-boot
 
+| http://restfb.com/[RestFB] Messenger
+| https://github.com/marsbits/restfbmessenger
+
 |===

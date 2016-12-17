@@ -49,29 +49,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>pl.project13.maven</groupId>
-				<artifactId>git-commit-id-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>include-git-properties</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>revision</goal>
-						</goals>
-						<configuration>
-							<dotGitDirectory>${main.basedir}/.git</dotGitDirectory>
-							<verbose>true</verbose>
-							<gitDescribe>
-								<skip>true</skip>
-							</gitDescribe>
-						</configuration>
-					</execution>
-				</executions>
-				<configuration>
-					<failOnNoGitDirectory>false</failOnNoGitDirectory>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>

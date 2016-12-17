@@ -49,6 +49,7 @@ import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCusto
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.LoggersMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.ShutdownMvcEndpoint;
@@ -71,6 +72,7 @@ import org.springframework.boot.context.embedded.ServerPortInfoApplicationContex
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.testutil.Matched;
 import org.springframework.context.ApplicationContext;
@@ -108,6 +110,7 @@ import static org.mockito.Mockito.mock;
  * @author Greg Turnquist
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Ben Hale
  */
 public class EndpointWebMvcAutoConfigurationTests {
 
@@ -125,6 +128,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Before
 	public void defaultContextPath() {
 		management.setContextPath("");
+		management.getSecurity().setEnabled(false);
 		server.setContextPath("");
 	}
 
@@ -144,6 +148,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onSamePort() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.applicationContext,
+				"management.security.enabled:false");
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				BaseConfiguration.class, ServerPortConfig.class,
 				EndpointWebMvcAutoConfiguration.class);
@@ -315,7 +321,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 	public void specificPortsViaProperties() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
 				"server.port:" + ports.get().server,
-				"management.port:" + ports.get().management);
+				"management.port:" + ports.get().management,
+				"management.security.enabled:false");
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ErrorMvcAutoConfiguration.class);
@@ -349,7 +356,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Test
 	public void contextPath() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"management.contextPath:/test");
+				"management.contextPath:/test", "management.security.enabled:false");
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				ServerPortConfig.class, PropertyPlaceholderAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
@@ -429,12 +436,13 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void endpointsDefaultConfiguration() throws Exception {
-		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
-				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
+		this.applicationContext.register(LoggingConfig.class, RootConfig.class,
+				BaseConfiguration.class, ServerPortConfig.class,
+				EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
-		// /health, /metrics, /env, /actuator, /heapdump (/shutdown is disabled by
-		// default)
-		assertThat(this.applicationContext.getBeansOfType(MvcEndpoint.class)).hasSize(5);
+		// /health, /metrics, /loggers, /env, /actuator, /heapdump (/shutdown is disabled
+		// by default)
+		assertThat(this.applicationContext.getBeansOfType(MvcEndpoint.class)).hasSize(6);
 	}
 
 	@Test
@@ -455,6 +463,16 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Test
 	public void environmentEndpointEnabledOverride() throws Exception {
 		endpointEnabledOverride("env", EnvironmentMvcEndpoint.class);
+	}
+
+	@Test
+	public void loggersEndpointDisabled() throws Exception {
+		endpointDisabled("loggers", LoggersMvcEndpoint.class);
+	}
+
+	@Test
+	public void loggersEndpointEnabledOverride() throws Exception {
+		endpointEnabledOverride("loggers", LoggersMvcEndpoint.class);
 	}
 
 	@Test
@@ -625,8 +643,9 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	private void endpointEnabledOverride(String name, Class<? extends MvcEndpoint> type)
 			throws Exception {
-		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
-				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
+		this.applicationContext.register(LoggingConfig.class, RootConfig.class,
+				BaseConfiguration.class, ServerPortConfig.class,
+				EndpointWebMvcAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
 				"endpoints.enabled:false",
 				String.format("endpoints_%s_enabled:true", name));
@@ -741,6 +760,16 @@ public class EndpointWebMvcAutoConfigurationTests {
 	}
 
 	@Configuration
+	public static class LoggingConfig {
+
+		@Bean
+		public LoggingSystem loggingSystem() {
+			return LoggingSystem.get(getClass().getClassLoader());
+		}
+
+	}
+
+	@Configuration
 	public static class ServerPortConfig {
 
 		private int count = 0;
@@ -821,7 +850,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 				@Override
 				public void customize(EndpointHandlerMapping mapping) {
-					mapping.setInterceptors(new Object[] { interceptor() });
+					mapping.setInterceptors(interceptor());
 				}
 
 			};
@@ -859,6 +888,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		public ManagementServerProperties managementServerProperties() {
 			ManagementServerProperties properties = new ManagementServerProperties();
 			properties.setPort(0);
+			properties.getSecurity().setEnabled(false);
 			return properties;
 		}
 

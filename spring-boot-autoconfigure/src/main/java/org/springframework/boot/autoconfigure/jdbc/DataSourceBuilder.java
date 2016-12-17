@@ -44,7 +44,6 @@ public class DataSourceBuilder {
 	private static final String[] DATA_SOURCE_TYPE_NAMES = new String[] {
 			"org.apache.tomcat.jdbc.pool.DataSource",
 			"com.zaxxer.hikari.HikariDataSource",
-			"org.apache.commons.dbcp.BasicDataSource",
 			"org.apache.commons.dbcp2.BasicDataSource" };
 
 	private Class<? extends DataSource> type;
@@ -67,7 +66,7 @@ public class DataSourceBuilder {
 
 	public DataSource build() {
 		Class<? extends DataSource> type = getType();
-		DataSource result = BeanUtils.instantiate(type);
+		DataSource result = BeanUtils.instantiateClass(type);
 		maybeGetDriverClassName();
 		bind(result);
 		return result;

@@ -45,13 +45,13 @@ public class ConditionMessageTests {
 	}
 
 	@Test
-	public void toStringWhenHasMessageShouldReturnMessage() throws Exception {
+	public void toStringWhenEmptyShouldReturnEmptyString() throws Exception {
 		ConditionMessage message = ConditionMessage.empty();
 		assertThat(message.toString()).isEqualTo("");
 	}
 
 	@Test
-	public void toStringWhenEmptyShouldReturnEmptyString() throws Exception {
+	public void toStringWhenHasMessageShouldReturnMessage() throws Exception {
 		ConditionMessage message = ConditionMessage.of("Test");
 		assertThat(message.toString()).isEqualTo("Test");
 	}
@@ -132,7 +132,7 @@ public class ConditionMessageTests {
 	}
 
 	@Test
-	public void foundWhenSingleElementShouldUsingSingular() throws Exception {
+	public void foundWhenSingleElementShouldUseSingular() throws Exception {
 		ConditionMessage message = ConditionMessage.forCondition(Test.class)
 				.found("bean", "beans").items("a");
 		assertThat(message.toString()).isEqualTo("@Test found bean a");
@@ -160,7 +160,7 @@ public class ConditionMessageTests {
 	}
 
 	@Test
-	public void didNotFindWhenSingleElementShouldUsingSingular() throws Exception {
+	public void didNotFindWhenSingleElementShouldUseSingular() throws Exception {
 		ConditionMessage message = ConditionMessage.forCondition(Test.class)
 				.didNotFind("class", "classes").items("a");
 		assertThat(message.toString()).isEqualTo("@Test did not find class a");

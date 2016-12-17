@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.maven;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.ConnectException;
@@ -87,9 +88,9 @@ public class StartMojo extends AbstractRunMojo {
 	private final Object lock = new Object();
 
 	@Override
-	protected void runWithForkedJvm(List<String> args)
+	protected void runWithForkedJvm(File workingDirectory, List<String> args)
 			throws MojoExecutionException, MojoFailureException {
-		RunProcess runProcess = runProcess(args);
+		RunProcess runProcess = runProcess(workingDirectory, args);
 		try {
 			waitForSpringApplication();
 		}
@@ -103,9 +104,11 @@ public class StartMojo extends AbstractRunMojo {
 		}
 	}
 
-	private RunProcess runProcess(List<String> args) throws MojoExecutionException {
+	private RunProcess runProcess(File workingDirectory, List<String> args)
+			throws MojoExecutionException {
 		try {
-			RunProcess runProcess = new RunProcess(new JavaExecutable().toString());
+			RunProcess runProcess = new RunProcess(workingDirectory,
+					new JavaExecutable().toString());
 			runProcess.run(false, args.toArray(new String[args.size()]));
 			return runProcess;
 		}

@@ -57,7 +57,6 @@ public class SpringBootPlugin implements Plugin<Project> {
 			compile.doFirst(new Action<Task>() {
 
 				@Override
-				@SuppressWarnings("deprecation")
 				public void execute(Task t) {
 					if (compile.getOptions().getEncoding() == null) {
 						compile.getOptions().setEncoding("UTF-8");

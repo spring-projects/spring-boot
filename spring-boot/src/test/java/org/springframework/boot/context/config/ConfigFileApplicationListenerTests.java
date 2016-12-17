@@ -537,6 +537,14 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void yamlSetsMultiProfilesWhenListProvided() throws Exception {
+		this.initializer.setSearchNames("testsetmultiprofileslist");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getActiveProfiles()).containsExactly("dev",
+				"healthcheck");
+	}
+
+	@Test
 	public void yamlSetsMultiProfilesWithWhitespace() throws Exception {
 		this.initializer.setSearchNames("testsetmultiprofileswhitespace");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
@@ -826,8 +834,7 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(environment.containsProperty("customprofile")).isTrue();
 		assertThat(environment.containsProperty("customprofile-specific")).isTrue();
 		assertThat(environment.containsProperty("customprofile-customdefault")).isTrue();
-		assertThat(environment.acceptsProfiles("customdefault"))
-				.isTrue();
+		assertThat(environment.acceptsProfiles("customdefault")).isTrue();
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(

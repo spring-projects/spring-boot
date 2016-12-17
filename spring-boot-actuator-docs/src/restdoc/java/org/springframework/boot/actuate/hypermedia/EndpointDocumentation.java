@@ -58,13 +58,15 @@ import org.springframework.util.StringUtils;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = SpringBootHypermediaApplication.class, loader = SpringBootContextLoader.class)
 @WebAppConfiguration
 @TestPropertySource(properties = { "spring.jackson.serialization.indent_output=true",
-		"endpoints.health.sensitive=true", "endpoints.actuator.enabled=false" })
+		"endpoints.health.sensitive=true", "endpoints.actuator.enabled=false",
+		"management.security.enabled=false" })
 @DirtiesContext
 @AutoConfigureRestDocs(EndpointDocumentation.RESTDOCS_OUTPUT_DIR)
 @AutoConfigureMockMvc(print = MockMvcPrint.NONE)
@@ -106,6 +108,23 @@ public class EndpointDocumentation {
 						.header(HttpHeaders.RANGE, "bytes=0-1024"))
 				.andExpect(status().isPartialContent())
 				.andDo(document("partial-logfile"));
+	}
+
+	@Test
+	public void singleLogger() throws Exception {
+		this.mockMvc
+				.perform(get("/loggers/org.springframework.boot")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andDo(document("single-logger"));
+	}
+
+	@Test
+	public void setLogger() throws Exception {
+		this.mockMvc
+				.perform(post("/loggers/org.springframework.boot")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("{\"configuredLevel\": \"DEBUG\"}"))
+				.andExpect(status().isOk()).andDo(document("set-logger"));
 	}
 
 	@Test

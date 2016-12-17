@@ -108,7 +108,8 @@ public class ProjectInfoAutoConfiguration {
 			ConditionMessage.Builder message = ConditionMessage
 					.forCondition("GitResource");
 			if (loader.getResource(location).exists()) {
-				return ConditionOutcome.match(message.found("git info at").items(location));
+				return ConditionOutcome
+						.match(message.found("git info at").items(location));
 			}
 			return ConditionOutcome
 					.noMatch(message.didNotFind("git info at").items(location));

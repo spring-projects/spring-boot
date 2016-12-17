@@ -24,7 +24,6 @@ import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -80,11 +79,6 @@ public class SpringBootTestContextBootstrapperIntegrationTests {
 	}
 
 	static class ExampleBean {
-
-	}
-
-	@Component
-	static class ExampleTestComponent {
 
 	}
 

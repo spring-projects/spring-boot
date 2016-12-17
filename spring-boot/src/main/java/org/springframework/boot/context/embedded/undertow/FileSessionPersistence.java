@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,13 @@ import java.util.Map;
 import io.undertow.servlet.UndertowServletLogger;
 import io.undertow.servlet.api.SessionPersistenceManager;
 
+import org.springframework.core.ConfigurableObjectInputStream;
+
 /**
  * {@link SessionPersistenceManager} that stores session information in a file.
  *
  * @author Phillip Webb
+ * @author Peter Leibiger
  * @since 1.3.0
  */
 public class FileSessionPersistence implements SessionPersistenceManager {
@@ -82,7 +85,7 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 		try {
 			File file = getSessionFile(deploymentName);
 			if (file.exists()) {
-				return load(file);
+				return load(file, classLoader);
 			}
 		}
 		catch (Exception ex) {
@@ -91,9 +94,10 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 		return null;
 	}
 
-	private Map<String, PersistentSession> load(File file)
+	private Map<String, PersistentSession> load(File file, ClassLoader classLoader)
 			throws IOException, ClassNotFoundException {
-		ObjectInputStream stream = new ObjectInputStream(new FileInputStream(file));
+		ObjectInputStream stream = new ConfigurableObjectInputStream(
+				new FileInputStream(file), classLoader);
 		try {
 			return load(stream);
 		}

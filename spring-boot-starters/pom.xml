@@ -31,7 +31,6 @@
 		<module>spring-boot-starter-data-cassandra</module>
 		<module>spring-boot-starter-data-couchbase</module>
 		<module>spring-boot-starter-data-elasticsearch</module>
-		<module>spring-boot-starter-data-gemfire</module>
 		<module>spring-boot-starter-data-jpa</module>
 		<module>spring-boot-starter-data-mongodb</module>
 		<module>spring-boot-starter-data-neo4j</module>
@@ -41,7 +40,6 @@
 		<module>spring-boot-starter-freemarker</module>
 		<module>spring-boot-starter-groovy-templates</module>
 		<module>spring-boot-starter-hateoas</module>
-		<module>spring-boot-starter-hornetq</module>
 		<module>spring-boot-starter-integration</module>
 		<module>spring-boot-starter-jdbc</module>
 		<module>spring-boot-starter-jersey</module>
@@ -61,7 +59,6 @@
 		<module>spring-boot-starter-social-facebook</module>
 		<module>spring-boot-starter-social-twitter</module>
 		<module>spring-boot-starter-social-linkedin</module>
-		<module>spring-boot-starter-remote-shell</module>
 		<module>spring-boot-starter-test</module>
 		<module>spring-boot-starter-thymeleaf</module>
 		<module>spring-boot-starter-tomcat</module>

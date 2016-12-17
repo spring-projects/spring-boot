@@ -27,7 +27,6 @@ import org.junit.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
-import org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -49,54 +48,14 @@ public class JpaPropertiesTests {
 
 	@After
 	public void close() {
-		HibernateVersion.setRunning(null);
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void hibernate4NoCustomNamingStrategy() throws Exception {
-		JpaProperties properties = load(HibernateVersion.V4);
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties(mockStandaloneDataSource());
-		assertThat(hibernateProperties).contains(entry("hibernate.ejb.naming_strategy",
-				SpringNamingStrategy.class.getName()));
-		assertThat(hibernateProperties).doesNotContainKeys(
-				"hibernate.implicit_naming_strategy",
-				"hibernate.physical_naming_strategy");
-	}
-
-	@Test
-	public void hibernate4CustomNamingStrategy() throws Exception {
-		JpaProperties properties = load(HibernateVersion.V4,
-				"spring.jpa.hibernate.naming.strategy:"
-						+ "org.hibernate.cfg.EJB3NamingStrategy");
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties(mockStandaloneDataSource());
-		assertThat(hibernateProperties).contains(entry("hibernate.ejb.naming_strategy",
-				"org.hibernate.cfg.EJB3NamingStrategy"));
-		assertThat(hibernateProperties).doesNotContainKeys(
-				"hibernate.implicit_naming_strategy",
-				"hibernate.physical_naming_strategy");
-	}
-
-	@Test
-	public void hibernate4CustomNamingStrategyViaJpaProperties() throws Exception {
-		JpaProperties properties = load(HibernateVersion.V4,
-				"spring.jpa.properties.hibernate.ejb.naming_strategy:"
-						+ "org.hibernate.cfg.EJB3NamingStrategy");
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties(mockStandaloneDataSource());
-		String actual = hibernateProperties.get("hibernate.ejb.naming_strategy");
-		// You can't override this one from spring.jpa.properties because it has an
-		// opinionated default
-		assertThat(actual).isNotEqualTo("org.hibernate.cfg.EJB3NamingStrategy");
-	}
-
-	@Test
-	public void hibernate5NoCustomNamingStrategy() throws Exception {
-		JpaProperties properties = load(HibernateVersion.V5);
+	public void noCustomNamingStrategy() throws Exception {
+		JpaProperties properties = load();
 		Map<String, String> hibernateProperties = properties
 				.getHibernateProperties(mockStandaloneDataSource());
 		assertThat(hibernateProperties)
@@ -111,7 +70,7 @@ public class JpaPropertiesTests {
 
 	@Test
 	public void hibernate5CustomNamingStrategies() throws Exception {
-		JpaProperties properties = load(HibernateVersion.V5,
+		JpaProperties properties = load(
 				"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
 				"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical");
 		Map<String, String> hibernateProperties = properties
@@ -125,7 +84,7 @@ public class JpaPropertiesTests {
 
 	@Test
 	public void hibernate5CustomNamingStrategiesViaJpaProperties() throws Exception {
-		JpaProperties properties = load(HibernateVersion.V5,
+		JpaProperties properties = load(
 				"spring.jpa.properties.hibernate.implicit_naming_strategy:com.example.Implicit",
 				"spring.jpa.properties.hibernate.physical_naming_strategy:com.example.Physical");
 		Map<String, String> hibernateProperties = properties
@@ -139,17 +98,8 @@ public class JpaPropertiesTests {
 	}
 
 	@Test
-	public void useNewIdGeneratorMappingsDefaultHibernate4() throws Exception {
-		JpaProperties properties = load(HibernateVersion.V4);
-		Map<String, String> hibernateProperties = properties
-				.getHibernateProperties(mockStandaloneDataSource());
-		assertThat(hibernateProperties)
-				.doesNotContainKey(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS);
-	}
-
-	@Test
-	public void useNewIdGeneratorMappingsDefaultHibernate5() throws Exception {
-		JpaProperties properties = load(HibernateVersion.V5);
+	public void useNewIdGeneratorMappingsDefault() throws Exception {
+		JpaProperties properties = load();
 		Map<String, String> hibernateProperties = properties
 				.getHibernateProperties(mockStandaloneDataSource());
 		assertThat(hibernateProperties)
@@ -158,7 +108,7 @@ public class JpaPropertiesTests {
 
 	@Test
 	public void useNewIdGeneratorMappingsTrue() throws Exception {
-		JpaProperties properties = load(HibernateVersion.V5,
+		JpaProperties properties = load(
 				"spring.jpa.hibernate.use-new-id-generator-mappings:true");
 		Map<String, String> hibernateProperties = properties
 				.getHibernateProperties(mockStandaloneDataSource());
@@ -173,8 +123,7 @@ public class JpaPropertiesTests {
 		return ds;
 	}
 
-	private JpaProperties load(HibernateVersion hibernateVersion, String... environment) {
-		HibernateVersion.setRunning(hibernateVersion);
+	private JpaProperties load(String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(ctx, environment);
 		ctx.register(TestConfiguration.class);

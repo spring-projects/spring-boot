@@ -220,29 +220,6 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
-	public void placeholderResolutionWithCustomLocation() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"fooValue=bar");
-		this.context.register(CustomConfigurationLocation.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(CustomConfigurationLocation.class).getFoo())
-				.isEqualTo("bar");
-	}
-
-	@Test
-	public void placeholderResolutionWithUnmergedCustomLocation() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"fooValue:bar");
-		this.context.register(UnmergedCustomConfigurationLocation.class);
-		this.context.refresh();
-		assertThat(
-				this.context.getBean(UnmergedCustomConfigurationLocation.class).getFoo())
-						.isEqualTo("${fooValue}");
-	}
-
-	@Test
 	public void configurationPropertiesWithFactoryBean() throws Exception {
 		ConfigurationPropertiesWithFactoryBean.factoryBeanInit = false;
 		this.context = new AnnotationConfigApplicationContext() {
@@ -622,38 +599,6 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		@Bean
 		public static PropertySourcesPlaceholderConfigurer configurer() {
 			return new PropertySourcesPlaceholderConfigurer();
-		}
-
-	}
-
-	@EnableConfigurationProperties
-	@ConfigurationProperties(locations = "custom-location.yml")
-	public static class CustomConfigurationLocation {
-
-		private String foo;
-
-		public String getFoo() {
-			return this.foo;
-		}
-
-		public void setFoo(String foo) {
-			this.foo = foo;
-		}
-
-	}
-
-	@EnableConfigurationProperties
-	@ConfigurationProperties(locations = "custom-location.yml", merge = false)
-	public static class UnmergedCustomConfigurationLocation {
-
-		private String foo;
-
-		public String getFoo() {
-			return this.foo;
-		}
-
-		public void setFoo(String foo) {
-			this.foo = foo;
 		}
 
 	}

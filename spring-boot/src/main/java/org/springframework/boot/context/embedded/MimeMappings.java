@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,6 +67,7 @@ public final class MimeMappings implements Iterable<Mapping> {
 		mappings.add("dtd", "application/xml-dtd");
 		mappings.add("dv", "video/x-dv");
 		mappings.add("dvi", "application/x-dvi");
+		mappings.add("eot", "application/vnd.ms-fontobject");
 		mappings.add("eps", "application/postscript");
 		mappings.add("etx", "text/x-setext");
 		mappings.add("exe", "application/octet-stream");
@@ -133,6 +134,7 @@ public final class MimeMappings implements Iterable<Mapping> {
 		mappings.add("ogv", "video/ogg");
 		mappings.add("oga", "audio/ogg");
 		mappings.add("ogg", "audio/ogg");
+		mappings.add("otf", "application/x-font-opentype");
 		mappings.add("spx", "audio/ogg");
 		mappings.add("flac", "audio/flac");
 		mappings.add("anx", "application/annodex");
@@ -164,6 +166,7 @@ public final class MimeMappings implements Iterable<Mapping> {
 		mappings.add("roff", "text/troff");
 		mappings.add("rtf", "application/rtf");
 		mappings.add("rtx", "text/richtext");
+		mappings.add("sfnt", "application/font-sfnt");
 		mappings.add("sh", "application/x-sh");
 		mappings.add("shar", "application/x-shar");
 		mappings.add("sit", "application/x-stuffit");
@@ -184,6 +187,7 @@ public final class MimeMappings implements Iterable<Mapping> {
 		mappings.add("tiff", "image/tiff");
 		mappings.add("tr", "text/troff");
 		mappings.add("tsv", "text/tab-separated-values");
+		mappings.add("ttf", "application/x-font-ttf");
 		mappings.add("txt", "text/plain");
 		mappings.add("ulw", "audio/basic");
 		mappings.add("ustar", "application/x-ustar");
@@ -206,6 +210,8 @@ public final class MimeMappings implements Iterable<Mapping> {
 		mappings.add("wmls", "text/vnd.wap.wmlsc");
 		mappings.add("wmlscriptc", "application/vnd.wap.wmlscriptc");
 		mappings.add("wmv", "video/x-ms-wmv");
+		mappings.add("woff", "application/font-woff");
+		mappings.add("woff2", "application/font-woff2");
 		mappings.add("wrl", "model/vrml");
 		mappings.add("wspolicy", "application/wspolicy+xml");
 		mappings.add("z", "application/x-compress");

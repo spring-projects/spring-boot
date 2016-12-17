@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
+import ch.qos.logback.core.util.FileSize;
 import ch.qos.logback.core.util.OptionHelper;
 
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -95,18 +96,13 @@ class DefaultLogbackConfiguration {
 				"org.springframework.boot");
 		config.start(debugRemapAppender);
 		config.appender("DEBUG_LEVEL_REMAPPER", debugRemapAppender);
-		config.logger("", Level.ERROR);
 		config.logger("org.apache.catalina.startup.DigesterFactory", Level.ERROR);
 		config.logger("org.apache.catalina.util.LifecycleBase", Level.ERROR);
 		config.logger("org.apache.coyote.http11.Http11NioProtocol", Level.WARN);
 		config.logger("org.apache.sshd.common.util.SecurityUtils", Level.WARN);
 		config.logger("org.apache.tomcat.util.net.NioSelectorPool", Level.WARN);
-		config.logger("org.crsh.plugin", Level.WARN);
-		config.logger("org.crsh.ssh", Level.WARN);
 		config.logger("org.eclipse.jetty.util.component.AbstractLifeCycle", Level.ERROR);
 		config.logger("org.hibernate.validator.internal.util.Version", Level.WARN);
-		config.logger("org.springframework.boot.actuate.autoconfigure."
-				+ "CrshAutoConfiguration", Level.WARN);
 		config.logger("org.springframework.boot.actuate.endpoint.jmx", null, false,
 				debugRemapAppender);
 		config.logger("org.thymeleaf", null, false, debugRemapAppender);
@@ -142,7 +138,7 @@ class DefaultLogbackConfiguration {
 		config.start(rollingPolicy);
 
 		SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>();
-		triggeringPolicy.setMaxFileSize("10MB");
+		triggeringPolicy.setMaxFileSize(FileSize.valueOf("10MB"));
 		appender.setTriggeringPolicy(triggeringPolicy);
 		config.start(triggeringPolicy);
 

@@ -127,13 +127,13 @@ public class OAuth2ResourceServerConfiguration {
 			}
 			if (StringUtils.hasText(resolver.getProperty("user-info-uri"))) {
 				return ConditionOutcome
-						.match(message.foundExactly("user-info-url property"));
+						.match(message.foundExactly("user-info-uri property"));
 			}
 			if (ClassUtils.isPresent(AUTHORIZATION_ANNOTATION, null)) {
 				if (AuthorizationServerEndpointsConfigurationBeanCondition
 						.matches(context)) {
-					return ConditionOutcome
-							.match(message.found("class").items(AUTHORIZATION_ANNOTATION));
+					return ConditionOutcome.match(
+							message.found("class").items(AUTHORIZATION_ANNOTATION));
 				}
 			}
 			return ConditionOutcome.noMatch(

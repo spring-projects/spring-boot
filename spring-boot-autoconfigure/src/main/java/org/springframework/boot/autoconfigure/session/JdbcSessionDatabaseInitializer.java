@@ -16,18 +16,10 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.springframework.boot.autoconfigure.AbstractDatabaseInitializer;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.jdbc.support.JdbcUtils;
-import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.util.Assert;
 
 /**
@@ -36,64 +28,25 @@ import org.springframework.util.Assert;
  * @author Vedran Pavic
  * @since 1.4.0
  */
-public class JdbcSessionDatabaseInitializer {
+public class JdbcSessionDatabaseInitializer extends AbstractDatabaseInitializer {
 
-	private static Map<String, String> ALIASES;
+	private final SessionProperties.Jdbc properties;
 
-	static {
-		Map<String, String> aliases = new HashMap<String, String>();
-		aliases.put("apache derby", "derby");
-		aliases.put("hsql database engine", "hsqldb");
-		aliases.put("microsoft sql server", "sqlserver");
-		ALIASES = Collections.unmodifiableMap(aliases);
-	}
-
-	private SessionProperties properties;
-
-	private DataSource dataSource;
-
-	private ResourceLoader resourceLoader;
-
-	public JdbcSessionDatabaseInitializer(SessionProperties properties,
-			DataSource dataSource, ResourceLoader resourceLoader) {
+	public JdbcSessionDatabaseInitializer(DataSource dataSource,
+			ResourceLoader resourceLoader, SessionProperties properties) {
+		super(dataSource, resourceLoader);
 		Assert.notNull(properties, "SessionProperties must not be null");
-		Assert.notNull(dataSource, "DataSource must not be null");
-		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
-		this.properties = properties;
-		this.dataSource = dataSource;
-		this.resourceLoader = resourceLoader;
+		this.properties = properties.getJdbc();
 	}
 
-	@PostConstruct
-	protected void initialize() {
-		if (this.properties.getJdbc().getInitializer().isEnabled()) {
-			ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-			String schemaLocation = this.properties.getJdbc().getSchema();
-			schemaLocation = schemaLocation.replace("@@platform@@", getPlatform());
-			populator.addScript(this.resourceLoader.getResource(schemaLocation));
-			populator.setContinueOnError(true);
-			DatabasePopulatorUtils.execute(populator, this.dataSource);
-		}
+	@Override
+	protected boolean isEnabled() {
+		return this.properties.getInitializer().isEnabled();
 	}
 
-	private String getPlatform() {
-		String databaseName = getDatabaseName();
-		if (ALIASES.containsKey(databaseName)) {
-			return ALIASES.get(databaseName);
-		}
-		return databaseName;
-	}
-
-	private String getDatabaseName() {
-		try {
-			String databaseProductName = JdbcUtils
-					.extractDatabaseMetaData(this.dataSource, "getDatabaseProductName")
-					.toString();
-			return JdbcUtils.commonDatabaseName(databaseProductName).toLowerCase();
-		}
-		catch (MetaDataAccessException ex) {
-			throw new IllegalStateException("Unable to detect database type", ex);
-		}
+	@Override
+	protected String getSchemaLocation() {
+		return this.properties.getSchema();
 	}
 
 }

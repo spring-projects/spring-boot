@@ -44,7 +44,7 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -302,6 +302,7 @@ public class SpringApplicationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void eventsOrder() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
@@ -316,7 +317,9 @@ public class SpringApplicationTests {
 		application.addListeners(new ApplicationRunningEventListener());
 		this.context = application.run();
 		assertThat(events).hasSize(5);
-		assertThat(events.get(0)).isInstanceOf(ApplicationStartedEvent.class);
+		assertThat(events.get(0)).isInstanceOf(
+				org.springframework.boot.context.event.ApplicationStartedEvent.class);
+		assertThat(events.get(0)).isInstanceOf(ApplicationStartingEvent.class);
 		assertThat(events.get(1)).isInstanceOf(ApplicationEnvironmentPreparedEvent.class);
 		assertThat(events.get(2)).isInstanceOf(ApplicationPreparedEvent.class);
 		assertThat(events.get(3)).isInstanceOf(ContextRefreshedEvent.class);

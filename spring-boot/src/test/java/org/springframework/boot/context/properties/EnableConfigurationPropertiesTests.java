@@ -279,61 +279,6 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void testBindingDirectlyToFile() {
-		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(ResourceBindingProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(ResourceBindingProperties.class).name)
-				.isEqualTo("foo");
-	}
-
-	@Test
-	public void testBindingDirectlyToFileResolvedFromEnvironment() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"binding.location=classpath:other.yml");
-		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(ResourceBindingProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(ResourceBindingProperties.class).name)
-				.isEqualTo("other");
-	}
-
-	@Test
-	public void testBindingDirectlyToFileWithDefaultsWhenProfileNotFound() {
-		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
-		this.context.getEnvironment().addActiveProfile("nonexistent");
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(ResourceBindingProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(ResourceBindingProperties.class).name)
-				.isEqualTo("foo");
-	}
-
-	@Test
-	public void testBindingDirectlyToFileWithExplicitSpringProfile() {
-		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
-		this.context.getEnvironment().addActiveProfile("super");
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(ResourceBindingProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(ResourceBindingProperties.class).name)
-				.isEqualTo("bar");
-	}
-
-	@Test
-	public void testBindingDirectlyToFileWithTwoExplicitSpringProfiles() {
-		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
-		this.context.getEnvironment().setActiveProfiles("super", "other");
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(ResourceBindingProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(ResourceBindingProperties.class).name)
-				.isEqualTo("spam");
-	}
-
-	@Test
 	public void testBindingWithTwoBeans() {
 		this.context.register(MoreConfiguration.class, TestConfiguration.class);
 		this.context.refresh();
@@ -415,14 +360,13 @@ public class EnableConfigurationPropertiesTests {
 
 	@Test
 	public void testBindingWithMapKeyWithPeriod() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"mymap.key1.key2:value12", "mymap.key3:value3");
 		this.context.register(ResourceBindingPropertiesWithMap.class);
 		this.context.refresh();
-
 		ResourceBindingPropertiesWithMap bean = this.context
 				.getBean(ResourceBindingPropertiesWithMap.class);
 		assertThat(bean.mymap.get("key3")).isEqualTo("value3");
-		// this should not fail!!!
-		// mymap looks to contain - {key1=, key3=value3}
 		assertThat(bean.mymap.get("key1.key2")).isEqualTo("value12");
 	}
 
@@ -772,20 +716,8 @@ public class EnableConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(locations = "${binding.location:classpath:name.yml}")
-	protected static class ResourceBindingProperties {
-
-		private String name;
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		// No getter - you should be able to bind to a write-only bean
-	}
-
 	@EnableConfigurationProperties
-	@ConfigurationProperties(locations = "${binding.location:classpath:map.yml}")
+	@ConfigurationProperties
 	protected static class ResourceBindingPropertiesWithMap {
 
 		private Map<String, String> mymap;

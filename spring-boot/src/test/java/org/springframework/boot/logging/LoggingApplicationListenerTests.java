@@ -18,6 +18,7 @@ package org.springframework.boot.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
@@ -38,7 +39,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.event.ContextClosedEvent;
@@ -57,6 +58,7 @@ import static org.hamcrest.Matchers.not;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Ben Hale
  */
 public class LoggingApplicationListenerTests {
 
@@ -84,7 +86,7 @@ public class LoggingApplicationListenerTests {
 		LogManager.getLogManager().readConfiguration(
 				JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
 		this.initializer.onApplicationEvent(
-				new ApplicationStartedEvent(new SpringApplication(), NO_ARGS));
+				new ApplicationStartingEvent(new SpringApplication(), NO_ARGS));
 		new File("target/foo.log").delete();
 		new File(tmpDir() + "/spring.log").delete();
 	}
@@ -340,7 +342,7 @@ public class LoggingApplicationListenerTests {
 	public void parseArgsDoesntReplace() throws Exception {
 		this.initializer.setSpringBootLogging(LogLevel.ERROR);
 		this.initializer.setParseArgs(false);
-		this.initializer.onApplicationEvent(new ApplicationStartedEvent(
+		this.initializer.onApplicationEvent(new ApplicationStartingEvent(
 				this.springApplication, new String[] { "--debug" }));
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -385,7 +387,7 @@ public class LoggingApplicationListenerTests {
 		System.setProperty(LoggingSystem.class.getName(),
 				TestShutdownHandlerLoggingSystem.class.getName());
 		listener.onApplicationEvent(
-				new ApplicationStartedEvent(new SpringApplication(), NO_ARGS));
+				new ApplicationStartingEvent(new SpringApplication(), NO_ARGS));
 		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		assertThat(listener.shutdownHook).isNull();
 	}
@@ -398,7 +400,7 @@ public class LoggingApplicationListenerTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.register_shutdown_hook=true");
 		listener.onApplicationEvent(
-				new ApplicationStartedEvent(new SpringApplication(), NO_ARGS));
+				new ApplicationStartingEvent(new SpringApplication(), NO_ARGS));
 		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		assertThat(listener.shutdownHook).isNotNull();
 		listener.shutdownHook.start();
@@ -411,7 +413,7 @@ public class LoggingApplicationListenerTests {
 		System.setProperty(LoggingSystem.SYSTEM_PROPERTY,
 				TestCleanupLoggingSystem.class.getName());
 		this.initializer.onApplicationEvent(
-				new ApplicationStartedEvent(this.springApplication, new String[0]));
+				new ApplicationStartingEvent(this.springApplication, new String[0]));
 		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils
 				.getField(this.initializer, "loggingSystem");
 		assertThat(loggingSystem.cleanedUp).isFalse();
@@ -424,7 +426,7 @@ public class LoggingApplicationListenerTests {
 		System.setProperty(LoggingSystem.SYSTEM_PROPERTY,
 				TestCleanupLoggingSystem.class.getName());
 		this.initializer.onApplicationEvent(
-				new ApplicationStartedEvent(this.springApplication, new String[0]));
+				new ApplicationStartingEvent(this.springApplication, new String[0]));
 		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils
 				.getField(this.initializer, "loggingSystem");
 		assertThat(loggingSystem.cleanedUp).isFalse();
@@ -470,7 +472,7 @@ public class LoggingApplicationListenerTests {
 		System.setProperty(LoggingSystem.SYSTEM_PROPERTY,
 				TestCleanupLoggingSystem.class.getName());
 		this.initializer.onApplicationEvent(
-				new ApplicationStartedEvent(this.springApplication, new String[0]));
+				new ApplicationStartingEvent(this.springApplication, new String[0]));
 		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils
 				.getField(this.initializer, "loggingSystem");
 		assertThat(loggingSystem.cleanedUp).isFalse();
@@ -518,7 +520,16 @@ public class LoggingApplicationListenerTests {
 
 		@Override
 		public void setLogLevel(String loggerName, LogLevel level) {
+		}
 
+		@Override
+		public List<LoggerConfiguration> getLoggerConfigurations() {
+			return null;
+		}
+
+		@Override
+		public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+			return null;
 		}
 
 		@Override
@@ -552,17 +563,24 @@ public class LoggingApplicationListenerTests {
 		private boolean cleanedUp = false;
 
 		public TestCleanupLoggingSystem(ClassLoader classLoader) {
-
 		}
 
 		@Override
 		public void beforeInitialize() {
-
 		}
 
 		@Override
 		public void setLogLevel(String loggerName, LogLevel level) {
+		}
 
+		@Override
+		public List<LoggerConfiguration> getLoggerConfigurations() {
+			return null;
+		}
+
+		@Override
+		public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+			return null;
 		}
 
 		@Override

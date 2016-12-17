@@ -258,7 +258,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void grandparentIsConsideredWhenUsingParentsStrategy() {
+	public void grandparentIsConsideredWhenUsingAncestorsStrategy() {
 		this.context.register(ExampleBeanConfiguration.class);
 		this.context.refresh();
 		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
@@ -267,7 +267,7 @@ public class ConditionalOnMissingBeanTests {
 		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
 		child.setParent(parent);
 		child.register(ExampleBeanConfiguration.class,
-				OnBeanInParentsConfiguration.class);
+				OnBeanInAncestorsConfiguration.class);
 		child.refresh();
 		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(1);
 		child.close();
@@ -275,21 +275,21 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void currentContextIsIgnoredWhenUsingParentsStrategy() {
+	public void currentContextIsIgnoredWhenUsingAncestorsStrategy() {
 		this.context.refresh();
 		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
 		child.register(ExampleBeanConfiguration.class,
-				OnBeanInParentsConfiguration.class);
+				OnBeanInAncestorsConfiguration.class);
 		child.setParent(this.context);
 		child.refresh();
 		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(2);
 	}
 
 	@Configuration
-	protected static class OnBeanInParentsConfiguration {
+	protected static class OnBeanInAncestorsConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(search = SearchStrategy.PARENTS)
+		@ConditionalOnMissingBean(search = SearchStrategy.ANCESTORS)
 		public ExampleBean exampleBean2() {
 			return new ExampleBean("test");
 		}

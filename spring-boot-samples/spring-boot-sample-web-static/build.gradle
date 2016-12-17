@@ -19,7 +19,7 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse-wtp'
 apply plugin: 'idea'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 apply plugin: 'war'
 
 war {

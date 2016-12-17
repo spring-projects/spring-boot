@@ -18,7 +18,9 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.sql.DataSource;
 
@@ -56,6 +58,11 @@ public class DataSourceProperties
 	 * Name of the datasource.
 	 */
 	private String name = "testdb";
+
+	/**
+	 * Generate a random datasource name.
+	 */
+	private boolean generateUniqueName;
 
 	/**
 	 * Fully qualified name of the connection pool implementation to use. By default, it
@@ -100,9 +107,9 @@ public class DataSourceProperties
 	private String platform = "all";
 
 	/**
-	 * Schema (DDL) script resource reference.
+	 * Schema (DDL) script resource references.
 	 */
-	private String schema;
+	private List<String> schema;
 
 	/**
 	 * User of the database to execute DDL scripts (if different).
@@ -115,9 +122,9 @@ public class DataSourceProperties
 	private String schemaPassword;
 
 	/**
-	 * Data (DML) script resource reference.
+	 * Data (DML) script resource references.
 	 */
-	private String data;
+	private List<String> data;
 
 	/**
 	 * User of the database to execute DML scripts.
@@ -147,6 +154,8 @@ public class DataSourceProperties
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
 
 	private Xa xa = new Xa();
+
+	private String uniqueName;
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
@@ -181,6 +190,14 @@ public class DataSourceProperties
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public boolean isGenerateUniqueName() {
+		return this.generateUniqueName;
+	}
+
+	public void setGenerateUniqueName(boolean generateUniqueName) {
+		this.generateUniqueName = generateUniqueName;
 	}
 
 	public Class<? extends DataSource> getType() {
@@ -268,12 +285,22 @@ public class DataSourceProperties
 		if (StringUtils.hasText(this.url)) {
 			return this.url;
 		}
-		String url = this.embeddedDatabaseConnection.getUrl(this.name);
+		String url = this.embeddedDatabaseConnection.getUrl(determineDatabaseName());
 		if (!StringUtils.hasText(url)) {
 			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection,
 					this.environment, "url");
 		}
 		return url;
+	}
+
+	private String determineDatabaseName() {
+		if (this.generateUniqueName) {
+			if (this.uniqueName == null) {
+				this.uniqueName = UUID.randomUUID().toString();
+			}
+			return this.uniqueName;
+		}
+		return this.name;
 	}
 
 	/**
@@ -362,11 +389,11 @@ public class DataSourceProperties
 		this.platform = platform;
 	}
 
-	public String getSchema() {
+	public List<String> getSchema() {
 		return this.schema;
 	}
 
-	public void setSchema(String schema) {
+	public void setSchema(List<String> schema) {
 		this.schema = schema;
 	}
 
@@ -386,12 +413,12 @@ public class DataSourceProperties
 		this.schemaPassword = schemaPassword;
 	}
 
-	public String getData() {
+	public List<String> getData() {
 		return this.data;
 	}
 
-	public void setData(String script) {
-		this.data = script;
+	public void setData(List<String> data) {
+		this.data = data;
 	}
 
 	public String getDataUsername() {

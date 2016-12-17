@@ -9,8 +9,9 @@ buildscript {
 	}
 }
 
+apply plugin: 'application'
 apply plugin: 'java'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 
 repositories {
 	mavenLocal()

@@ -34,6 +34,7 @@ import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.ServletContainer;
+import org.apache.jasper.servlet.JspServlet;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -250,7 +251,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 	}
 
 	@Override
-	protected Object getJspServlet() {
+	protected JspServlet getJspServlet() {
 		return null; // Undertow does not support JSPs
 	}
 

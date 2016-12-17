@@ -22,6 +22,7 @@ import org.springframework.data.neo4j.repository.GraphRepository;
 
 public interface CityRepository extends GraphRepository<City> {
 
+	@Override
 	Page<City> findAll(Pageable pageable);
 
 }

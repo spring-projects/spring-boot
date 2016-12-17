@@ -48,6 +48,12 @@
     ]
   },
   {
+    "name": "endpoints.hypermedia.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable hypermedia support for endpoints.",
+    "defaultValue": false
+  },
+  {
     "name": "endpoints.info.path",
     "type": "java.lang.String",
     "description": "Endpoint URL path."
@@ -78,6 +84,18 @@
     "name": "info",
     "type": "java.util.Map<java.lang.String,java.lang.Object>",
     "description": "Arbitrary properties to add to the info endpoint."
+  },
+  {
+    "name": "management.health.cassandra.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable cassandra health check.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.health.couchbase.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable couchbase health check.",
+    "defaultValue": true
   },
   {
     "name": "management.health.db.enabled",
@@ -251,27 +269,6 @@
     "providers": [
       {
         "name": "any"
-      }
-    ]
-  },
-  {
-    "name": "management.shell.auth.type",
-    "values": [
-      {
-        "value": "simple",
-        "description": "Use a simple user/password based authentication."
-      },
-      {
-        "value": "spring",
-        "description": "Integrate with Spring Security."
-      },
-      {
-        "value": "key",
-        "description": "Use a Key-based authentication."
-      },
-      {
-        "value": "jaas",
-        "description": "Use JAAS authentication."
       }
     ]
   }

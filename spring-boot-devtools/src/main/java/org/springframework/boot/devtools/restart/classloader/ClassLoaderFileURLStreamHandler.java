@@ -27,12 +27,13 @@ import java.net.URLStreamHandler;
  * {@link URLStreamHandler} for the contents of a {@link ClassLoaderFile}.
  *
  * @author Phillip Webb
+ * @since 1.5.0
  */
-class ClassLoaderFileURLStreamHandler extends URLStreamHandler {
+public class ClassLoaderFileURLStreamHandler extends URLStreamHandler {
 
 	private ClassLoaderFile file;
 
-	ClassLoaderFileURLStreamHandler(ClassLoaderFile file) {
+	public ClassLoaderFileURLStreamHandler(ClassLoaderFile file) {
 		this.file = file;
 	}
 

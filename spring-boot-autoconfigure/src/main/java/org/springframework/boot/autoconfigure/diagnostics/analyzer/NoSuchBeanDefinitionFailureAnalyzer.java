@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.analyzer.AbstractInjectionFailureAnalyzer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
@@ -94,10 +95,23 @@ class NoSuchBeanDefinitionFailureAnalyzer
 	}
 
 	private String getBeanDescription(NoSuchBeanDefinitionException cause) {
-		if (cause.getBeanType() != null) {
-			return "a bean of type '" + cause.getBeanType().getName() + "'";
+		if (cause.getResolvableType() != null) {
+			Class<?> type = extractBeanType(cause.getResolvableType());
+			return "a bean of type '" + type.getName() + "'";
 		}
 		return "a bean named '" + cause.getBeanName() + "'";
+	}
+
+	private Class<?> extractBeanType(ResolvableType resolvableType) {
+		ResolvableType collectionType = resolvableType.asCollection();
+		if (!collectionType.equals(ResolvableType.NONE)) {
+			return collectionType.getGeneric(0).getRawClass();
+		}
+		ResolvableType mapType = resolvableType.asMap();
+		if (!mapType.equals(ResolvableType.NONE)) {
+			return mapType.getGeneric(1).getRawClass();
+		}
+		return resolvableType.getRawClass();
 	}
 
 	private List<AutoConfigurationResult> getAutoConfigurationResults(
@@ -203,9 +217,9 @@ class NoSuchBeanDefinitionFailureAnalyzer
 				return false;
 			}
 			String name = cause.getBeanName();
-			Class<?> type = cause.getBeanType();
-			return ((name != null && hasName(candidate, name))
-					|| (type != null && hasType(candidate, type)));
+			ResolvableType resolvableType = cause.getResolvableType();
+			return ((name != null && hasName(candidate, name)) || (resolvableType != null
+					&& hasType(candidate, extractBeanType(resolvableType))));
 		}
 
 		private boolean hasName(MethodMetadata methodMetadata, String name) {

@@ -26,8 +26,8 @@ import org.springframework.util.Assert;
  * readable {@literal String} variants that accept KB or MB suffixes, for example:
  *
  * <pre class="code">
- * factory.setMaxFileSize(&quot;10Mb&quot;);
- * factory.setMaxRequestSize(&quot;100Kb&quot;);
+ * factory.setMaxFileSize(&quot;10MB&quot;);
+ * factory.setMaxRequestSize(&quot;100KB&quot;);
  * </pre>
  *
  * @author Phillip Webb

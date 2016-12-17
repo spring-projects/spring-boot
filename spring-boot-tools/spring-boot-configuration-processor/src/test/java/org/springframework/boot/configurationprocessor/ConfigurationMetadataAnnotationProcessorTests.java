@@ -42,10 +42,12 @@ import org.springframework.boot.configurationsample.lombok.LombokInnerClassPrope
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
 import org.springframework.boot.configurationsample.lombok.SimpleLombokPojo;
+import org.springframework.boot.configurationsample.method.DeprecatedMethodConfig;
 import org.springframework.boot.configurationsample.method.EmptyTypeMethodConfig;
 import org.springframework.boot.configurationsample.method.InvalidMethodConfig;
 import org.springframework.boot.configurationsample.method.MethodAndClassConfig;
 import org.springframework.boot.configurationsample.method.SimpleMethodConfig;
+import org.springframework.boot.configurationsample.simple.ClassWithNestedProperties;
 import org.springframework.boot.configurationsample.simple.DeprecatedSingleProperty;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
 import org.springframework.boot.configurationsample.simple.NotAnnotated;
@@ -58,6 +60,7 @@ import org.springframework.boot.configurationsample.specific.BuilderPojo;
 import org.springframework.boot.configurationsample.specific.DeprecatedUnrelatedMethodPojo;
 import org.springframework.boot.configurationsample.specific.DoubleRegistrationProperties;
 import org.springframework.boot.configurationsample.specific.ExcludedTypesPojo;
+import org.springframework.boot.configurationsample.specific.GenericConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassAnnotatedGetterConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
@@ -285,6 +288,35 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
+	public void deprecatedMethodConfig() throws Exception {
+		Class<DeprecatedMethodConfig> type = DeprecatedMethodConfig.class;
+		ConfigurationMetadata metadata = compile(type);
+		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
+				.fromSource(DeprecatedMethodConfig.Foo.class)
+				.withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
+				.fromSource(DeprecatedMethodConfig.Foo.class)
+				.withDeprecation(null, null));
+	}
+
+	@Test
+	@SuppressWarnings("deprecation")
+	public void deprecatedMethodConfigOnClass() throws Exception {
+		Class<?> type = org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.class;
+		ConfigurationMetadata metadata = compile(type);
+		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
+				.fromSource(
+						org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
+				.withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
+				.fromSource(
+						org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
+				.withDeprecation(null, null));
+	}
+
+	@Test
 	public void innerClassRootConfig() throws Exception {
 		ConfigurationMetadata metadata = compile(InnerClassRootConfig.class);
 		assertThat(metadata).has(Metadata.withProperty("config.name"));
@@ -318,6 +350,17 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withProperty("specific.value"));
 		assertThat(metadata).has(Metadata.withProperty("foo.name"));
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("specific.foo"));
+	}
+
+	@Test
+	public void nestedClassChildProperties() throws Exception {
+		ConfigurationMetadata metadata = compile(ClassWithNestedProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("nestedChildProps")
+				.fromSource(ClassWithNestedProperties.NestedChildClass.class));
+		assertThat(metadata).has(Metadata.withProperty("nestedChildProps.child-class-property", Integer.class)
+				.fromSource(ClassWithNestedProperties.NestedChildClass.class).withDefaultValue(20));
+		assertThat(metadata).has(Metadata.withProperty("nestedChildProps.parent-class-property", Integer.class)
+				.fromSource(ClassWithNestedProperties.NestedChildClass.class).withDefaultValue(10));
 	}
 
 	@Test
@@ -359,6 +402,32 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Compilation failed");
 		compile(InvalidDoubleRegistrationProperties.class);
+	}
+
+	@Test
+	public void genericTypes() throws IOException {
+		ConfigurationMetadata metadata = compile(GenericConfig.class);
+		assertThat(metadata).has(Metadata.withGroup("generic").ofType(
+				"org.springframework.boot.configurationsample.specific.GenericConfig"));
+		assertThat(metadata).has(Metadata.withGroup("generic.foo").ofType(
+				"org.springframework.boot.configurationsample.specific.GenericConfig$Foo"));
+		assertThat(metadata).has(Metadata.withGroup("generic.foo.bar").ofType(
+				"org.springframework.boot.configurationsample.specific.GenericConfig$Bar"));
+		assertThat(metadata).has(Metadata.withGroup("generic.foo.bar.biz").ofType(
+				"org.springframework.boot.configurationsample.specific.GenericConfig$Bar$Biz"));
+		assertThat(metadata).has(Metadata.withProperty("generic.foo.name")
+				.ofType(String.class).fromSource(GenericConfig.Foo.class));
+		assertThat(metadata).has(Metadata.withProperty("generic.foo.string-to-bar")
+				.ofType("java.util.Map<java.lang.String,org.springframework.boot.configurationsample.specific.GenericConfig.Bar<java.lang.Integer>>")
+				.fromSource(GenericConfig.Foo.class));
+		assertThat(metadata).has(Metadata.withProperty("generic.foo.string-to-integer")
+				.ofType("java.util.Map<java.lang.String,java.lang.Integer>")
+				.fromSource(GenericConfig.Foo.class));
+		assertThat(metadata).has(Metadata.withProperty("generic.foo.bar.name")
+				.ofType("java.lang.String").fromSource(GenericConfig.Bar.class));
+		assertThat(metadata).has(Metadata.withProperty("generic.foo.bar.biz.name")
+				.ofType("java.lang.String").fromSource(GenericConfig.Bar.Biz.class));
+		assertThat(metadata.getItems()).hasSize(9);
 	}
 
 	@Test

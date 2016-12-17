@@ -200,8 +200,6 @@ public class SpringApplication {
 
 	private Banner banner;
 
-	private boolean printedCustomBannerViaDeprecatedMethod;
-
 	private ResourceLoader resourceLoader;
 
 	private BeanNameGenerator beanNameGenerator;
@@ -301,7 +299,7 @@ public class SpringApplication {
 		FailureAnalyzers analyzers = null;
 		configureHeadlessProperty();
 		SpringApplicationRunListeners listeners = getRunListeners(args);
-		listeners.started();
+		listeners.starting();
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(
 					args);
@@ -571,7 +569,7 @@ public class SpringApplication {
 						ex);
 			}
 		}
-		return (ConfigurableApplicationContext) BeanUtils.instantiate(contextClass);
+		return (ConfigurableApplicationContext) BeanUtils.instantiateClass(contextClass);
 	}
 
 	/**

@@ -39,8 +39,7 @@ diverge from the defaults.
 By default, Spring Boot {spring-boot-version} requires http://www.java.com[Java 7] and
 Spring Framework {spring-version} or above. You can use Spring Boot with Java 6 with some
 additional configuration. See <<howto.adoc#howto-use-java-6>> for more details. Explicit
-build support is provided for Maven (3.2+) and Gradle (1.12 or 2.x). Gradle 3 is not
-supported.
+build support is provided for Maven (3.2+), and Gradle 2 (2.9 or later) and 3.
 
 TIP: Although you can use Spring Boot with Java 6 or 7, we generally recommend Java 8 if
 at all possible.
@@ -205,9 +204,8 @@ scope.
 
 [[getting-started-gradle-installation]]
 ==== Gradle installation
-Spring Boot is compatible with Gradle 1.12 or 2.x. 2.14.1 is recommended. Gradle 3 is not
-supported. If you don't already have Gradle installed you can follow the instructions at
-http://www.gradle.org/.
+Spring Boot is compatible with Gradle 2 (2.9 or later) and Gradle 3. If you don't already
+have Gradle installed you can follow the instructions at http://www.gradle.org/.
 
 Spring Boot dependencies can be declared using the `org.springframework.boot` `group`.
 Typically your project will declare dependencies to one or more
@@ -226,22 +224,28 @@ Here is a typical `build.gradle` file:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
+ifeval::["{spring-boot-repo}" == "release"]
+	plugins {
+		id 'org.springframework.boot' version '{spring-boot-version}'
+		id 'java'
+	}
+endif::[]
+ifeval::["{spring-boot-repo}" != "release"]
 	buildscript {
 		repositories {
 			jcenter()
-ifndef::release[]
-			maven { url "http://repo.spring.io/snapshot" }
-			maven { url "http://repo.spring.io/milestone" }
-endif::release[]
+			maven { url 'http://repo.spring.io/snapshot' }
+			maven { url 'http://repo.spring.io/milestone' }
 		}
 		dependencies {
-			classpath("org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}")
+			classpath 'org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}'
 		}
 	}
 
 	apply plugin: 'java'
-	apply plugin: 'spring-boot'
+	apply plugin: 'org.springframework.boot'
 
+endif::[]
 	jar {
 		baseName = 'myproject'
 		version =  '0.0.1-SNAPSHOT'
@@ -249,10 +253,10 @@ endif::release[]
 
 	repositories {
 		jcenter()
-ifndef::release[]
+ifeval::["{spring-boot-repo}" != "release"]
 		maven { url "http://repo.spring.io/snapshot" }
 		maven { url "http://repo.spring.io/milestone" }
-endif::release[]
+endif::[]
 	}
 
 	dependencies {
@@ -769,7 +773,7 @@ Save your `pom.xml` and run `mvn package` from the command line:
 ----
 
 If you look in the `target` directory you should see `myproject-0.0.1-SNAPSHOT.jar`. The
-file should be around 10 Mb in size. If you want to peek inside, you can use `jar tvf`:
+file should be around 10 MB in size. If you want to peek inside, you can use `jar tvf`:
 
 [indent=0]
 ----

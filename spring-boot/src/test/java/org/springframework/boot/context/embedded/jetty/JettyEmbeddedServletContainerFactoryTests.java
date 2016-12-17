@@ -19,7 +19,6 @@ package org.springframework.boot.context.embedded.jetty;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +28,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jasper.servlet.JspServlet;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -247,16 +247,6 @@ public class JettyEmbeddedServletContainerFactoryTests
 	}
 
 	@Test
-	public void jspServletInitParameters() {
-		JettyEmbeddedServletContainerFactory factory = getFactory();
-		Map<String, String> initParameters = new HashMap<String, String>();
-		initParameters.put("a", "alpha");
-		factory.getJspServlet().setInitParameters(initParameters);
-		this.container = factory.getEmbeddedServletContainer();
-		assertThat(getJspServlet().getInitParameters()).isEqualTo(initParameters);
-	}
-
-	@Test
 	public void useForwardHeaders() throws Exception {
 		JettyEmbeddedServletContainerFactory factory = getFactory();
 		factory.setUseForwardHeaders(true);
@@ -316,10 +306,15 @@ public class JettyEmbeddedServletContainerFactoryTests
 	}
 
 	@Override
-	protected ServletHolder getJspServlet() {
+	protected JspServlet getJspServlet() throws Exception {
 		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container)
 				.getServer().getHandler();
-		return context.getServletHandler().getServlet("jsp");
+		ServletHolder holder = context.getServletHandler().getServlet("jsp");
+		if (holder == null) {
+			return null;
+		}
+		holder.start();
+		return (JspServlet) holder.getServlet();
 	}
 
 	@Override

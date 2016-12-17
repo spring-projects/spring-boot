@@ -83,8 +83,8 @@ public class LogFile {
 	 * @param properties the properties to apply to
 	 */
 	public void applyTo(Properties properties) {
-		put(properties, "LOG_PATH", this.path);
-		put(properties, "LOG_FILE", toString());
+		put(properties, LoggingApplicationListener.LOG_PATH, this.path);
+		put(properties, LoggingApplicationListener.LOG_FILE, toString());
 	}
 
 	private void put(Properties properties, String key, String value) {

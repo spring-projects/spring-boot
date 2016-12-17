@@ -67,6 +67,19 @@ public class DataSourcePropertiesTests {
 	}
 
 	@Test
+	public void determineUrlWithGenerateUniqueName() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setGenerateUniqueName(true);
+		properties.afterPropertiesSet();
+		assertThat(properties.determineUrl()).isEqualTo(properties.determineUrl());
+
+		DataSourceProperties properties2 = new DataSourceProperties();
+		properties2.setGenerateUniqueName(true);
+		properties2.afterPropertiesSet();
+		assertThat(properties.determineUrl()).isNotEqualTo(properties2.determineUrl());
+	}
+
+	@Test
 	public void determineUsername() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.afterPropertiesSet();

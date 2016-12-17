@@ -504,6 +504,11 @@ public class RabbitProperties {
 		private Boolean defaultRequeueRejected;
 
 		/**
+		 * How often idle container events should be published in milliseconds.
+		 */
+		private Long idleEventInterval;
+
+		/**
 		 * Optional properties for a retry interceptor.
 		 */
 		@NestedConfigurationProperty
@@ -563,6 +568,14 @@ public class RabbitProperties {
 
 		public void setDefaultRequeueRejected(Boolean defaultRequeueRejected) {
 			this.defaultRequeueRejected = defaultRequeueRejected;
+		}
+
+		public Long getIdleEventInterval() {
+			return this.idleEventInterval;
+		}
+
+		public void setIdleEventInterval(Long idleEventInterval) {
+			this.idleEventInterval = idleEventInterval;
 		}
 
 		public ListenerRetry getRetry() {

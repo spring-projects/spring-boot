@@ -387,8 +387,6 @@ With Gradle, the equivalent configuration would be:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	apply plugin: 'spring-boot'
-
 	springBoot {
 		executable = true
 	}
@@ -548,9 +546,12 @@ the following example and place it in `/etc/systemd/system` directory:
 TIP: Remember to change the `Description`, `User` and `ExecStart` fields for your
 application.
 
+TIP: Note that `ExecStart` field does not declare the script action command, which means
+that `run` command is used by default.
+
 Note that unlike when running as an `init.d` service, user that runs the application, PID
-file and console log file behave differently under `systemd` and must be configured using
-appropriate fields in '`service`' script. Consult the
+file and console log file are managed by `systemd` itself and therefore must be configured
+using appropriate fields in '`service`' script. Consult the
 http://www.freedesktop.org/software/systemd/man/systemd.service.html[service unit
 configuration man page] for more details.
 
@@ -597,6 +598,12 @@ The following property substitutions are supported with the default script:
 |The `Provides` section of "`INIT INFO`". Defaults to `spring-boot-application` for Gradle
  and to `${project.artifactId}` for Maven.
 
+|`initInfoRequiredStart`
+|The `Required-Start` section of "`INIT INFO`". Defaults to `$remote_fs $syslog $network`.
+
+|`initInfoRequiredStop`
+|The `Required-Stop` section of "`INIT INFO`". Defaults to `$remote_fs $syslog $network`.
+
 |`initInfoShortDescription`
 |The `Short-Description` section of "`INIT INFO`". Defaults to `Spring Boot Application`
 for Gradle and to `${project.name}` for Maven.
@@ -614,8 +621,15 @@ for Gradle and to `${project.name}` for Maven.
 |`logFolder`
 |The default value for `LOG_FOLDER`. Only valid for an `init.d` service.
 
+|`logFilename`
+|The default value for `LOG_FILENAME`. Only valid for an `init.d` service.
+
 |`pidFolder`
 |The default value for `PID_FOLDER`. Only valid for an `init.d` service.
+
+|`pidFilename`
+|The default value for the name of the pid file in `PID_FOLDER`. Only valid for an
+ `init.d` service.
 
 |`useStartStopDaemon`
 |If the `start-stop-daemon` command, when it's available, should be used to control the

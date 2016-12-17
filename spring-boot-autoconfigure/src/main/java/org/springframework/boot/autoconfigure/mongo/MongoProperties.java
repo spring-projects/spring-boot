@@ -50,20 +50,22 @@ public class MongoProperties {
 	 */
 	public static final int DEFAULT_PORT = 27017;
 
+	public static final String DEFAULT_URI = "mongodb://localhost/test";
+
 	/**
-	 * Mongo server host.
+	 * Mongo server host. Cannot be set with uri.
 	 */
 	private String host;
 
 	/**
-	 * Mongo server port.
+	 * Mongo server port. Cannot be set with uri.
 	 */
 	private Integer port = null;
 
 	/**
-	 * Mongo database URI. When set, host and port are ignored.
+	 * Mongo database URI. Cannot be set with host, port and credentials.
 	 */
-	private String uri = "mongodb://localhost/test";
+	private String uri;
 
 	/**
 	 * Database name.
@@ -81,12 +83,12 @@ public class MongoProperties {
 	private String gridFsDatabase;
 
 	/**
-	 * Login user of the mongo server.
+	 * Login user of the mongo server. Cannot be set with uri.
 	 */
 	private String username;
 
 	/**
-	 * Login password of the mongo server.
+	 * Login password of the mongo server. Cannot be set with uri.
 	 */
 	private char[] password;
 
@@ -156,6 +158,10 @@ public class MongoProperties {
 		return this.uri;
 	}
 
+	public String determineUri() {
+		return (this.uri != null ? this.uri : DEFAULT_URI);
+	}
+
 	public void setUri(String uri) {
 		this.uri = uri;
 	}
@@ -180,7 +186,7 @@ public class MongoProperties {
 		if (this.database != null) {
 			return this.database;
 		}
-		return new MongoClientURI(this.uri).getDatabase();
+		return new MongoClientURI(determineUri()).getDatabase();
 	}
 
 	/**
@@ -198,6 +204,10 @@ public class MongoProperties {
 			Environment environment) throws UnknownHostException {
 		try {
 			if (hasCustomAddress() || hasCustomCredentials()) {
+				if (this.uri != null) {
+					throw new IllegalStateException("Invalid mongo configuration, "
+							+ "either uri or host/port/credentials must be specified");
+				}
 				if (options == null) {
 					options = MongoClientOptions.builder().build();
 				}
@@ -215,7 +225,7 @@ public class MongoProperties {
 						credentials, options);
 			}
 			// The options and credentials are in the URI
-			return new MongoClient(new MongoClientURI(this.uri, builder(options)));
+			return new MongoClient(new MongoClientURI(determineUri(), builder(options)));
 		}
 		finally {
 			clearPassword();

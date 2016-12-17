@@ -371,6 +371,10 @@ public class JarFile extends java.util.jar.JarFile {
 		return this.pathFromRoot;
 	}
 
+	JarFileType getType() {
+		return this.type;
+	}
+
 	/**
 	 * Register a {@literal 'java.protocol.handler.pkgs'} property so that a
 	 * {@link URLStreamHandler} will be located to deal with jar URLs.
@@ -396,7 +400,10 @@ public class JarFile extends java.util.jar.JarFile {
 		}
 	}
 
-	private enum JarFileType {
+	/**
+	 * The type of a {@link JarFile}.
+	 */
+	enum JarFileType {
 		DIRECT, NESTED_DIRECTORY, NESTED_JAR
 	}
 

@@ -98,8 +98,7 @@ public class JolokiaAutoConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			boolean endpointsEnabled = isEnabled(context, "endpoints.", true);
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("Jolokia");
+			ConditionMessage.Builder message = ConditionMessage.forCondition("Jolokia");
 			if (isEnabled(context, "endpoints.jolokia.", endpointsEnabled)) {
 				return ConditionOutcome.match(message.because("enabled"));
 			}

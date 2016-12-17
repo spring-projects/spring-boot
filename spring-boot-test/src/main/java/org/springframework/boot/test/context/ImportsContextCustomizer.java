@@ -207,12 +207,22 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 	/**
 	 * The key used to ensure correct application context caching. Keys are generated
-	 * based on <em>all</em> the annotations used with the test. We must use something
-	 * broader than just {@link Import @Import} annotations since an {@code @Import} may
-	 * use an {@link ImportSelector} which could make decisions based on anything
-	 * available from {@link AnnotationMetadata}.
+	 * based on <em>all</em> the annotations used with the test that aren't core Java or
+	 * Kotlin annotations. We must use something broader than just {@link Import @Import}
+	 * annotations since an {@code @Import} may use an {@link ImportSelector} which could
+	 * make decisions based on anything available from {@link AnnotationMetadata}.
 	 */
 	static class ContextCustomizerKey {
+
+		private static final Set<AnnotationFilter> ANNOTATION_FILTERS;
+
+		static {
+			Set<AnnotationFilter> filters = new HashSet<AnnotationFilter>();
+			filters.add(new JavaLangAnnotationFilter());
+			filters.add(new KotlinAnnotationFilter());
+			filters.add(new SpockAnnotationFilter());
+			ANNOTATION_FILTERS = Collections.unmodifiableSet(filters);
+		}
 
 		private final Set<Annotation> annotations;
 
@@ -239,12 +249,21 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		private void collectElementAnnotations(AnnotatedElement element,
 				Set<Annotation> annotations, Set<Class<?>> seen) {
 			for (Annotation annotation : element.getDeclaredAnnotations()) {
-				if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
+				if (!isIgnoredAnnotation(annotation)) {
 					annotations.add(annotation);
 					collectClassAnnotations(annotation.annotationType(), annotations,
 							seen);
 				}
 			}
+		}
+
+		private boolean isIgnoredAnnotation(Annotation annotation) {
+			for (AnnotationFilter annotationFilter : ANNOTATION_FILTERS) {
+				if (annotationFilter.isIgnored(annotation)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		@Override
@@ -256,6 +275,56 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		public boolean equals(Object obj) {
 			return (obj != null && getClass().equals(obj.getClass())
 					&& this.annotations.equals(((ContextCustomizerKey) obj).annotations));
+		}
+	}
+
+	/**
+	 * Filter used to limit considered annotations.
+	 */
+	private interface AnnotationFilter {
+
+		boolean isIgnored(Annotation annotation);
+
+	}
+
+	/**
+	 * {@link AnnotationFilter} for {@literal java.lang} annotations.
+	 */
+	private static final class JavaLangAnnotationFilter implements AnnotationFilter {
+
+		@Override
+		public boolean isIgnored(Annotation annotation) {
+			return AnnotationUtils.isInJavaLangAnnotationPackage(annotation);
+		}
+
+	}
+
+	/**
+	 * {@link AnnotationFilter} for Kotlin annotations.
+	 */
+	private static final class KotlinAnnotationFilter implements AnnotationFilter {
+
+		@Override
+		public boolean isIgnored(Annotation annotation) {
+			return "kotlin.Metadata".equals(annotation.annotationType().getName())
+					|| isInKotlinAnnotationPackage(annotation);
+		}
+
+		private boolean isInKotlinAnnotationPackage(Annotation annotation) {
+			return annotation.annotationType().getName().startsWith("kotlin.annotation.");
+		}
+
+	}
+
+	/**
+	 * {@link AnnotationFilter} for Spock annotations.
+	 */
+	private static final class SpockAnnotationFilter implements AnnotationFilter {
+
+		@Override
+		public boolean isIgnored(Annotation annotation) {
+			return annotation.annotationType().getName()
+					.startsWith("org.spockframework.");
 		}
 
 	}

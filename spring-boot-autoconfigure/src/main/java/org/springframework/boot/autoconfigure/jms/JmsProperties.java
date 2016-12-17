@@ -41,6 +41,8 @@ public class JmsProperties {
 
 	private final Listener listener = new Listener();
 
+	private final Template template = new Template();
+
 	public boolean isPubSubDomain() {
 		return this.pubSubDomain;
 	}
@@ -59,6 +61,10 @@ public class JmsProperties {
 
 	public Listener getListener() {
 		return this.listener;
+	}
+
+	public Template getTemplate() {
+		return this.template;
 	}
 
 	public static class Listener {
@@ -126,6 +132,112 @@ public class JmsProperties {
 		}
 	}
 
+	public static class Template {
+
+		/**
+		 * Default destination to use on send/receive operations that do not have a
+		 * destination parameter.
+		 */
+		private String defaultDestination;
+
+		/**
+		 * Delivery delay to use for send calls in milliseconds.
+		 */
+		private Long deliveryDelay;
+
+		/**
+		 * Delivery mode. Enable QoS when set.
+		 */
+		private DeliveryMode deliveryMode;
+
+		/**
+		 * Priority of a message when sending. Enable QoS when set.
+		 */
+		private Integer priority;
+
+		/**
+		 * Time-to-live of a message when sending in milliseconds. Enable QoS when set.
+		 */
+		private Long timeToLive;
+
+		/**
+		 * Enable explicit QoS when sending a message. When enabled, the delivery mode,
+		 * priority and time-to-live properties will be used when sending a message. QoS
+		 * is automatically enabled when at least one of those settings is customized.
+		 */
+		private Boolean qosEnabled;
+
+		/**
+		 * Timeout to use for receive calls in milliseconds.
+		 */
+		private Long receiveTimeout;
+
+		public String getDefaultDestination() {
+			return this.defaultDestination;
+		}
+
+		public void setDefaultDestination(String defaultDestination) {
+			this.defaultDestination = defaultDestination;
+		}
+
+		public Long getDeliveryDelay() {
+			return this.deliveryDelay;
+		}
+
+		public void setDeliveryDelay(Long deliveryDelay) {
+			this.deliveryDelay = deliveryDelay;
+		}
+
+		public DeliveryMode getDeliveryMode() {
+			return this.deliveryMode;
+		}
+
+		public void setDeliveryMode(DeliveryMode deliveryMode) {
+			this.deliveryMode = deliveryMode;
+		}
+
+		public Integer getPriority() {
+			return this.priority;
+		}
+
+		public void setPriority(Integer priority) {
+			this.priority = priority;
+		}
+
+		public Long getTimeToLive() {
+			return this.timeToLive;
+		}
+
+		public void setTimeToLive(Long timeToLive) {
+			this.timeToLive = timeToLive;
+		}
+
+		public boolean determineQosEnabled() {
+			if (this.qosEnabled != null) {
+				return this.qosEnabled;
+			}
+			return (getDeliveryMode() != null || getPriority() != null
+					|| getTimeToLive() != null);
+		}
+
+		public Boolean getQosEnabled() {
+			return this.qosEnabled;
+		}
+
+		public void setQosEnabled(Boolean qosEnabled) {
+			this.qosEnabled = qosEnabled;
+		}
+
+		public Long getReceiveTimeout() {
+			return this.receiveTimeout;
+		}
+
+		public void setReceiveTimeout(Long receiveTimeout) {
+			this.receiveTimeout = receiveTimeout;
+		}
+
+	}
+
 	/**
 	 * Translate the acknowledge modes defined on the {@link javax.jms.Session}.
 	 *
@@ -164,6 +276,34 @@ public class JmsProperties {
 		public int getMode() {
 			return this.mode;
 		}
+
+	}
+
+	public enum DeliveryMode {
+
+		/**
+		 * Does not require that the message be logged to stable storage. This is the
+		 * lowest-overhead delivery mode but can lead to lost of message if the broker
+		 * goes down.
+		 */
+		NON_PERSISTENT(1),
+
+		/*
+		 * Instructs the JMS provider to log the message to stable storage as part of the
+		 * client's send operation.
+		 */
+		PERSISTENT(2);
+
+		private final int value;
+
+		DeliveryMode(int value) {
+			this.value = value;
+		}
+
+		public int getValue() {
+			return this.value;
+		}
+
 	}
 
 }

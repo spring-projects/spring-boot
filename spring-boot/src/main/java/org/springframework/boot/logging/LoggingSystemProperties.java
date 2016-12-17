@@ -28,15 +28,15 @@ import org.springframework.core.env.Environment;
  */
 class LoggingSystemProperties {
 
-	static final String PID_KEY = "PID";
+	static final String PID_KEY = LoggingApplicationListener.PID_KEY;
 
-	static final String EXCEPTION_CONVERSION_WORD = "LOG_EXCEPTION_CONVERSION_WORD";
+	static final String EXCEPTION_CONVERSION_WORD = LoggingApplicationListener.EXCEPTION_CONVERSION_WORD;
 
-	static final String CONSOLE_LOG_PATTERN = "CONSOLE_LOG_PATTERN";
+	static final String CONSOLE_LOG_PATTERN = LoggingApplicationListener.CONSOLE_LOG_PATTERN;
 
-	static final String FILE_LOG_PATTERN = "FILE_LOG_PATTERN";
+	static final String FILE_LOG_PATTERN = LoggingApplicationListener.FILE_LOG_PATTERN;
 
-	static final String LOG_LEVEL_PATTERN = "LOG_LEVEL_PATTERN";
+	static final String LOG_LEVEL_PATTERN = LoggingApplicationListener.LOG_LEVEL_PATTERN;
 
 	private final Environment environment;
 

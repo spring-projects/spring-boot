@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,6 +39,8 @@ import org.junit.Test;
 
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggerConfiguration;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.testutil.Matched;
 import org.springframework.util.FileCopyUtils;
@@ -57,6 +60,7 @@ import static org.mockito.Mockito.verify;
  * @author Daniel Fullarton
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Ben Hale
  */
 public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
@@ -121,6 +125,12 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	public void getSupportedLevels() {
+		assertThat(this.loggingSystem.getSupportedLogLevels())
+				.isEqualTo(EnumSet.allOf(LogLevel.class));
+	}
+
+	@Test
 	public void setLevel() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
@@ -129,6 +139,29 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.debug("Hello");
 		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"))
 				.isEqualTo(1);
+	}
+
+	@Test
+	public void getLoggingConfigurations() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
+		List<LoggerConfiguration> configurations = this.loggingSystem
+				.getLoggerConfigurations();
+		assertThat(configurations).isNotEmpty();
+		assertThat(configurations.get(0).getName())
+				.isEqualTo(LoggingSystem.ROOT_LOGGER_NAME);
+	}
+
+	@Test
+	public void getLoggingConfiguration() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
+		LoggerConfiguration configuration = this.loggingSystem
+				.getLoggerConfiguration(getClass().getName());
+		assertThat(configuration).isEqualTo(new LoggerConfiguration(getClass().getName(),
+				LogLevel.DEBUG, LogLevel.DEBUG));
 	}
 
 	@Test

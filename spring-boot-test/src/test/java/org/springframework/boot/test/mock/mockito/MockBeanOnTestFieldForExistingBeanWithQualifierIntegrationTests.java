@@ -36,6 +36,9 @@ import static org.mockito.Mockito.verify;
 /**
  * Test {@link MockBean} on a test class field can be used to replace existing bean while
  * preserving qualifiers.
+ *
+ * @author Stephane Nicoll
+ * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
 public class MockBeanOnTestFieldForExistingBeanWithQualifierIntegrationTests {

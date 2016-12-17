@@ -85,16 +85,16 @@
     "defaultValue": true
   },
   {
+    "name": "spring.data.neo4j.open-in-view",
+    "type": "java.lang.Boolean",
+    "description": "Register OpenSessionInViewInterceptor. Binds a Neo4j Session to the thread for the entire processing of the request.",
+    "defaultValue": false
+  },
+  {
     "name": "spring.data.neo4j.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Neo4j repositories.",
     "defaultValue": true
-  },
-  {
-    "name": "spring.data.neo4j.session.scope",
-    "type": "java.lang.String",
-    "description": "Scope (lifetime) of the session.",
-    "defaultValue": "singleton"
   },
   {
     "name": "spring.data.redis.repositories.enabled",
@@ -107,6 +107,10 @@
     "type": "java.lang.Boolean",
     "description": "Enable Solr repositories.",
     "defaultValue": true
+  },
+  {
+    "name": "spring.elasticsearch.jest.uris",
+    "defaultValue": ["http://localhost:9200"]
   },
   {
     "name": "spring.http.encoding.enabled",
@@ -365,21 +369,13 @@
     ]
   },
   {
-    "name": "spring.data.neo4j.session.scope",
-    "values": [
-      {
-        "value": "singleton"
-      },
-      {
-        "value": "session"
-      },
-      {
-        "value": "request"
-      }
-    ],
+    "name": "spring.datasource.data",
     "providers": [
       {
-        "name": "any"
+        "name": "handle-as",
+        "parameters": {
+          "target": "java.util.List<org.springframework.core.io.Resource>"
+        }
       }
     ]
   },
@@ -395,12 +391,93 @@
     ]
   },
   {
+    "name": "spring.datasource.schema",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "java.util.List<org.springframework.core.io.Resource>"
+        }
+      }
+    ]
+  },
+  {
     "name": "spring.datasource.xa.data-source-class-name",
     "providers": [
       {
         "name": "class-reference",
         "parameters": {
           "target": "javax.sql.XADataSource"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.kafka.consumer.auto-offset-reset",
+    "values": [
+      {
+        "value": "earliest",
+        "description": "Automatically reset the offset to the earliest offset."
+      },
+      {
+        "value": "latest",
+        "description": "Automatically reset the offset to the latest offset."
+      },
+      {
+        "value": "none",
+        "description": "Throw exception to the consumer if no previous offset is found for the consumer's group."
+      },
+      {
+        "value": "exception",
+        "description": "Throw exception to the consumer."
+      }
+    ],
+    "providers": [
+      {
+        "name": "any"
+      }
+    ]
+  },
+  {
+    "name": "spring.kafka.consumer.key-deserializer",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.apache.kafka.common.serialization.Deserializer"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.kafka.consumer.value-deserializer",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.apache.kafka.common.serialization.Deserializer"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.kafka.producer.key-serializer",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.apache.kafka.common.serialization.Serializer"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.kafka.producer.value-serializer",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.apache.kafka.common.serialization.Serializer"
         }
       }
     ]

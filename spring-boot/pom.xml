@@ -71,7 +71,7 @@
 		</dependency>
 		<dependency>
 			<groupId>javax.jms</groupId>
-			<artifactId>jms-api</artifactId>
+			<artifactId>javax.jms-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -247,6 +247,11 @@
 		</dependency>
 		<!-- Test -->
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-test-support</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-1.0-sdk</artifactId>
 			<scope>test</scope>
@@ -254,6 +259,11 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

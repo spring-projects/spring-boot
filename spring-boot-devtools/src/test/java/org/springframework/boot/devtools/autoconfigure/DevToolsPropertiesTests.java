@@ -36,7 +36,7 @@ public class DevToolsPropertiesTests {
 		assertThat(restart.getAllExclude()).containsOnly("META-INF/maven/**",
 				"META-INF/resources/**", "resources/**", "static/**", "public/**",
 				"templates/**", "**/*Test.class", "**/*Tests.class", "git.properties",
-				"foo/**", "bar/**");
+				"META-INF/build-info.properties", "foo/**", "bar/**");
 	}
 
 	@Test

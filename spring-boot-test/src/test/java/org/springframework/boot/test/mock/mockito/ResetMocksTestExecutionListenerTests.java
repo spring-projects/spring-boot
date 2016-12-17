@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.example.ExampleService;
 import org.springframework.context.ApplicationContext;
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ResetMocksTestExecutionListener}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -92,6 +94,31 @@ public class ResetMocksTestExecutionListenerTests {
 		public ExampleService fail() {
 			// gh-5870
 			throw new RuntimeException();
+		}
+
+		@Bean
+		public BrokenFactoryBean brokenFactoryBean() {
+			// gh-7270
+			return new BrokenFactoryBean();
+		}
+
+	}
+
+	static class BrokenFactoryBean implements FactoryBean<String> {
+
+		@Override
+		public String getObject() throws Exception {
+			throw new IllegalStateException();
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return String.class;
+		}
+
+		@Override
+		public boolean isSingleton() {
+			return true;
 		}
 
 	}

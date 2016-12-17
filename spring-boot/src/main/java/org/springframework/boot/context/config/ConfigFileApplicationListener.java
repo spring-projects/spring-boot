@@ -36,6 +36,8 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
+import org.springframework.boot.bind.PropertySourcesPropertyValues;
+import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
@@ -55,6 +57,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.PropertySources;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -390,8 +393,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			}
 			// Any pre-existing active profiles set via property sources (e.g. System
 			// properties) take precedence over those added in config files.
-			Set<Profile> activeProfiles = getProfilesForValue(
-					this.environment.getProperty(ACTIVE_PROFILES_PROPERTY));
+			Set<Profile> activeProfiles = bindSpringProfiles(
+					this.environment.getPropertySources()).getActiveProfiles();
 			maybeActivateProfiles(activeProfiles);
 			return activeProfiles;
 		}
@@ -506,12 +509,23 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		}
 
 		private void handleProfileProperties(PropertySource<?> propertySource) {
-			Set<Profile> activeProfiles = getProfilesForValue(
-					propertySource.getProperty(ACTIVE_PROFILES_PROPERTY));
-			maybeActivateProfiles(activeProfiles);
-			Set<Profile> includeProfiles = getProfilesForValue(
-					propertySource.getProperty(INCLUDE_PROFILES_PROPERTY));
-			addProfiles(includeProfiles);
+			SpringProfiles springProfiles = bindSpringProfiles(propertySource);
+			maybeActivateProfiles(springProfiles.getActiveProfiles());
+			addProfiles(springProfiles.getIncludeProfiles());
+		}
+
+		private SpringProfiles bindSpringProfiles(PropertySource<?> propertySource) {
+			MutablePropertySources propertySources = new MutablePropertySources();
+			propertySources.addFirst(propertySource);
+			return bindSpringProfiles(propertySources);
+		}
+
+		private SpringProfiles bindSpringProfiles(PropertySources propertySources) {
+			SpringProfiles springProfiles = new SpringProfiles();
+			RelaxedDataBinder dataBinder = new RelaxedDataBinder(springProfiles,
+					"spring.profiles");
+			dataBinder.bind(new PropertySourcesPropertyValues(propertySources));
+			return springProfiles;
 		}
 
 		private void maybeActivateProfiles(Set<Profile> profiles) {
@@ -538,16 +552,6 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 					iterator.remove();
 				}
 			}
-		}
-
-		private Set<Profile> getProfilesForValue(Object property) {
-			String value = (property == null ? null : property.toString());
-			Set<String> profileNames = asResolvedSet(value, null);
-			Set<Profile> profiles = new LinkedHashSet<Profile>();
-			for (String profileName : profileNames) {
-				profiles.add(new Profile(profileName));
-			}
-			return profiles;
 		}
 
 		private void addProfiles(Set<Profile> profiles) {
@@ -746,6 +750,50 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		@Override
 		public String[] getPropertyNames() {
 			return this.names;
+		}
+
+	}
+
+	/**
+	 * Holder for {@code spring.profiles} properties.
+	 */
+	static final class SpringProfiles {
+
+		private List<String> active = new ArrayList<String>();
+
+		private List<String> include = new ArrayList<String>();
+
+		public List<String> getActive() {
+			return this.active;
+		}
+
+		public void setActive(List<String> active) {
+			this.active = active;
+		}
+
+		public List<String> getInclude() {
+			return this.include;
+		}
+
+		public void setInclude(List<String> include) {
+			this.include = include;
+		}
+
+		Set<Profile> getActiveProfiles() {
+			return asProfileSet(this.active);
+		}
+
+		Set<Profile> getIncludeProfiles() {
+			return asProfileSet(this.include);
+		}
+
+		private Set<Profile> asProfileSet(List<String> profileNames) {
+			List<Profile> profiles = new ArrayList<Profile>();
+			for (String profileName : profileNames) {
+				profiles.add(new Profile(profileName));
+			}
+			Collections.reverse(profiles);
+			return new LinkedHashSet<Profile>(profiles);
 		}
 
 	}

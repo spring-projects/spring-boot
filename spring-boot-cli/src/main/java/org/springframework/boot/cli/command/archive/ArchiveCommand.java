@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,6 +73,7 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Andrey Stolyarov
+ * @author Henri Kerola
  */
 abstract class ArchiveCommand extends OptionParsingCommand {
 
@@ -102,6 +103,10 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 		public ArchiveOptionHandler(String type, Layout layout) {
 			this.type = type;
 			this.layout = layout;
+		}
+
+		protected Layout getLayout() {
+			return this.layout;
 		}
 
 		@Override
@@ -278,11 +283,15 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 					libraries.add(new Library(entry.getFile(), LibraryScope.COMPILE));
 				}
 				else {
-					writer.writeEntry(entry.getName(),
-							new FileInputStream(entry.getFile()));
+					writeClasspathEntry(writer, entry);
 				}
 			}
 			return libraries;
+		}
+
+		protected void writeClasspathEntry(JarWriter writer, MatchedResource entry)
+				throws IOException {
+			writer.writeEntry(entry.getName(), new FileInputStream(entry.getFile()));
 		}
 
 		protected abstract LibraryScope getLibraryScope(File file);

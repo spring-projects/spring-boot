@@ -22,13 +22,14 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers;
+import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers.ContentSecurityPolicyMode;
 import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -40,6 +41,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity.IgnoredRequestConfigurer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -47,7 +49,9 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.header.writers.HstsHeaderWriter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -93,8 +97,17 @@ public class SpringBootWebSecurityConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean({ IgnoredPathsWebSecurityConfigurerAdapter.class })
-	public IgnoredPathsWebSecurityConfigurerAdapter ignoredPathsWebSecurityConfigurerAdapter() {
-		return new IgnoredPathsWebSecurityConfigurerAdapter();
+	public IgnoredPathsWebSecurityConfigurerAdapter ignoredPathsWebSecurityConfigurerAdapter(
+			List<IgnoredRequestCustomizer> customizers) {
+		return new IgnoredPathsWebSecurityConfigurerAdapter(customizers);
+	}
+
+	@Bean
+	public IgnoredRequestCustomizer defaultIgnoredRequestsCustomizer(
+			ServerProperties server, SecurityProperties security,
+			ObjectProvider<ErrorController> errorController) {
+		return new DefaultIgnoredRequestCustomizer(server, security,
+				errorController.getIfAvailable());
 	}
 
 	public static void configureHeaders(HeadersConfigurer<?> configurer,
@@ -107,6 +120,16 @@ public class SpringBootWebSecurityConfiguration {
 		}
 		if (!headers.isContentType()) {
 			configurer.contentTypeOptions().disable();
+		}
+		if (StringUtils.hasText(headers.getContentSecurityPolicy())) {
+			String policyDirectives = headers.getContentSecurityPolicy();
+			ContentSecurityPolicyMode mode = headers.getContentSecurityPolicyMode();
+			if (mode == ContentSecurityPolicyMode.DEFAULT) {
+				configurer.contentSecurityPolicy(policyDirectives);
+			}
+			else {
+				configurer.contentSecurityPolicy(policyDirectives).reportOnly();
+			}
 		}
 		if (!headers.isXss()) {
 			configurer.xssProtection().disable();
@@ -135,14 +158,12 @@ public class SpringBootWebSecurityConfiguration {
 	private static class IgnoredPathsWebSecurityConfigurerAdapter
 			implements WebSecurityConfigurer<WebSecurity> {
 
-		@Autowired(required = false)
-		private ErrorController errorController;
+		private final List<IgnoredRequestCustomizer> customizers;
 
-		@Autowired
-		private SecurityProperties security;
-
-		@Autowired
-		private ServerProperties server;
+		IgnoredPathsWebSecurityConfigurerAdapter(
+				List<IgnoredRequestCustomizer> customizers) {
+			this.customizers = customizers;
+		}
 
 		@Override
 		public void configure(WebSecurity builder) throws Exception {
@@ -150,14 +171,55 @@ public class SpringBootWebSecurityConfiguration {
 
 		@Override
 		public void init(WebSecurity builder) throws Exception {
+			for (IgnoredRequestCustomizer customizer : this.customizers) {
+				customizer.customize(builder.ignoring());
+			}
+		}
+
+	}
+
+	private class DefaultIgnoredRequestCustomizer implements IgnoredRequestCustomizer {
+
+		private final ServerProperties server;
+
+		private final SecurityProperties security;
+
+		private final ErrorController errorController;
+
+		DefaultIgnoredRequestCustomizer(ServerProperties server,
+				SecurityProperties security, ErrorController errorController) {
+			this.server = server;
+			this.security = security;
+			this.errorController = errorController;
+		}
+
+		@Override
+		public void customize(IgnoredRequestConfigurer configurer) {
 			List<String> ignored = getIgnored(this.security);
 			if (this.errorController != null) {
 				ignored.add(normalizePath(this.errorController.getErrorPath()));
 			}
 			String[] paths = this.server.getPathsArray(ignored);
+			List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
 			if (!ObjectUtils.isEmpty(paths)) {
-				builder.ignoring().antMatchers(paths);
+				for (String pattern : paths) {
+					matchers.add(new AntPathRequestMatcher(pattern, null));
+				}
 			}
+			if (!matchers.isEmpty()) {
+				configurer.requestMatchers(new OrRequestMatcher(matchers));
+			}
+		}
+
+		private List<String> getIgnored(SecurityProperties security) {
+			List<String> ignored = new ArrayList<String>(security.getIgnored());
+			if (ignored.isEmpty()) {
+				ignored.addAll(DEFAULT_IGNORED);
+			}
+			else if (ignored.contains("none")) {
+				ignored.remove("none");
+			}
+			return ignored;
 		}
 
 		private String normalizePath(String errorPath) {

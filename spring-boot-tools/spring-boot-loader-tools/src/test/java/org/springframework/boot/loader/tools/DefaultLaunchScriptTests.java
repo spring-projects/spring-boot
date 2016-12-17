@@ -47,8 +47,28 @@ public class DefaultLaunchScriptTests {
 	}
 
 	@Test
+	public void logFilenameCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("logFilename");
+	}
+
+	@Test
+	public void pidFilenameCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("pidFilename");
+	}
+
+	@Test
 	public void initInfoProvidesCanBeReplaced() throws Exception {
 		assertThatPlaceholderCanBeReplaced("initInfoProvides");
+	}
+
+	@Test
+	public void initInfoRequiredStartCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("initInfoRequiredStart");
+	}
+
+	@Test
+	public void initInfoRequiredStopCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("initInfoRequiredStop");
 	}
 
 	@Test
