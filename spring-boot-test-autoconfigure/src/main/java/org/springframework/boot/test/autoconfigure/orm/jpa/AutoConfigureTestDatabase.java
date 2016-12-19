@@ -34,7 +34,8 @@ import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
  * instead of any application defined or auto-configured {@link DataSource}.
  *
  * @author Stephane Nicoll
- * @deprecated since 1.5 in favour of {@link org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase}
+ * @deprecated since 1.5 in favour of
+ * {@link org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase}
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)

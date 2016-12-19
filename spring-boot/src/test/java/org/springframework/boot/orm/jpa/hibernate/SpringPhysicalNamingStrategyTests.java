@@ -70,13 +70,14 @@ public class SpringPhysicalNamingStrategyTests {
 	@Test
 	public void tableNameShouldNotBeLowerCaseIfCaseSensitive() throws Exception {
 		this.metadata = this.metadataSources.getMetadataBuilder(this.serviceRegistry)
-				.applyPhysicalNamingStrategy(new TestSpringPhysicalNamingStrategy()).build();
+				.applyPhysicalNamingStrategy(new TestSpringPhysicalNamingStrategy())
+				.build();
 		PersistentClass binding = this.metadata
 				.getEntityBinding(TelephoneNumber.class.getName());
 		assertThat(binding.getTable().getQuotedName()).isEqualTo("Telephone_Number");
 	}
 
-	private class TestSpringPhysicalNamingStrategy extends SpringPhysicalNamingStrategy  {
+	private class TestSpringPhysicalNamingStrategy extends SpringPhysicalNamingStrategy {
 
 		@Override
 		protected boolean isCaseInsensitive(JdbcEnvironment jdbcEnvironment) {
@@ -84,4 +85,5 @@ public class SpringPhysicalNamingStrategyTests {
 		}
 
 	}
+
 }

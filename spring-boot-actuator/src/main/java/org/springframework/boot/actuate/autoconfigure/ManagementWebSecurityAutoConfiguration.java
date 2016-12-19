@@ -126,6 +126,7 @@ public class ManagementWebSecurityAutoConfiguration {
 			}
 
 		}
+
 	}
 
 	@Configuration

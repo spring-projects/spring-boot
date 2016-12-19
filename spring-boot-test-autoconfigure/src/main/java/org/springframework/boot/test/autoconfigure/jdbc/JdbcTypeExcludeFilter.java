@@ -49,10 +49,10 @@ class JdbcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	@Override
 	protected ComponentScan.Filter[] getFilters(FilterType type) {
 		switch (type) {
-			case INCLUDE:
-				return this.annotation.includeFilters();
-			case EXCLUDE:
-				return this.annotation.excludeFilters();
+		case INCLUDE:
+			return this.annotation.includeFilters();
+		case EXCLUDE:
+			return this.annotation.excludeFilters();
 		}
 		throw new IllegalStateException("Unsupported type " + type);
 	}

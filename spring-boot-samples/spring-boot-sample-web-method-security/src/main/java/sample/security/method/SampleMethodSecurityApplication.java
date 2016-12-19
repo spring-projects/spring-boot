@@ -73,8 +73,8 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 		@Override
 		public void init(AuthenticationManagerBuilder auth) throws Exception {
 			auth.inMemoryAuthentication().withUser("admin").password("admin")
-					.roles("ADMIN", "USER", "ACTUATOR").and().withUser("user").password("user")
-					.roles("USER");
+					.roles("ADMIN", "USER", "ACTUATOR").and().withUser("user")
+					.password("user").roles("USER");
 		}
 
 	}

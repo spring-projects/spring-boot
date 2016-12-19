@@ -176,7 +176,8 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		List<LoggerConfiguration> configurations = this.loggingSystem
 				.getLoggerConfigurations();
 		assertThat(configurations).isNotEmpty();
-		assertThat(configurations.get(0).getName()).isEqualTo(LoggingSystem.ROOT_LOGGER_NAME);
+		assertThat(configurations.get(0).getName())
+				.isEqualTo(LoggingSystem.ROOT_LOGGER_NAME);
 	}
 
 	@Test

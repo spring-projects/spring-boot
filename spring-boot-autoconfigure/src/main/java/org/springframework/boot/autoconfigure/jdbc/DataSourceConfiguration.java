@@ -84,6 +84,7 @@ abstract class DataSourceConfiguration {
 
 	/**
 	 * DBCP DataSource configuration.
+	 *
 	 * @deprecated as of Spring Boot 1.5 in favor of DBCP2
 	 */
 	@ConditionalOnClass(org.apache.commons.dbcp.BasicDataSource.class)

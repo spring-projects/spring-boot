@@ -130,6 +130,7 @@ public class JmsProperties {
 					? this.concurrency + "-" + this.maxConcurrency
 					: String.valueOf(this.concurrency));
 		}
+
 	}
 
 	public static class Template {

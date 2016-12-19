@@ -346,8 +346,8 @@ public class CrshAutoConfigurationTests {
 							&& authentication.getCredentials().equals(PASSWORD)) {
 						authentication = new UsernamePasswordAuthenticationToken(
 								authentication.getPrincipal(),
-								authentication.getCredentials(), Collections
-										.singleton(new SimpleGrantedAuthority("ACTUATOR")));
+								authentication.getCredentials(), Collections.singleton(
+										new SimpleGrantedAuthority("ACTUATOR")));
 					}
 					else {
 						throw new BadCredentialsException(

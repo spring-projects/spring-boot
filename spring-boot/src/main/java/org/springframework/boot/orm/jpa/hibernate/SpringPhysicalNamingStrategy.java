@@ -75,16 +75,15 @@ public class SpringPhysicalNamingStrategy implements PhysicalNamingStrategy {
 		}
 
 		String text = builder.toString();
-		String finalText = isCaseInsensitive(jdbcEnvironment) ? text.toLowerCase(Locale.ROOT)
-				: text;
+		String finalText = isCaseInsensitive(jdbcEnvironment)
+				? text.toLowerCase(Locale.ROOT) : text;
 		return new Identifier(finalText, name.isQuoted());
 	}
 
 	/**
 	 * Specify whether the database is case sensitive.
 	 * @param jdbcEnvironment The JDBC environment which can be used to determine case
-	 * @return true if the database is case insensitive
-	 * sensitivity
+	 * @return true if the database is case insensitive sensitivity
 	 */
 	protected boolean isCaseInsensitive(JdbcEnvironment jdbcEnvironment) {
 		return true;

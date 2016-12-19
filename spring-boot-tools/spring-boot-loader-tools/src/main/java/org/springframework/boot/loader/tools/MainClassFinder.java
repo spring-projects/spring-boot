@@ -392,7 +392,6 @@ public abstract class MainClassFinder {
 		 * Creates a new {@code MainClass} rather represents the main class with the given
 		 * {@code name}. The class is annotated with the annotations with the given
 		 * {@code annotationNames}.
-		 *
 		 * @param name the name of the class
 		 * @param annotationNames the names of the annotations on the class
 		 */

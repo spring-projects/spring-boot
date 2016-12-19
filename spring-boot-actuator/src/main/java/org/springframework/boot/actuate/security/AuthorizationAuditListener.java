@@ -64,8 +64,8 @@ public class AuthorizationAuditListener extends AbstractAuthorizationAuditListen
 		if (event.getAuthentication().getDetails() != null) {
 			data.put("details", event.getAuthentication().getDetails());
 		}
-		publish(new AuditEvent(event.getAuthentication().getName(),
-				AUTHORIZATION_FAILURE, data));
+		publish(new AuditEvent(event.getAuthentication().getName(), AUTHORIZATION_FAILURE,
+				data));
 	}
 
 }

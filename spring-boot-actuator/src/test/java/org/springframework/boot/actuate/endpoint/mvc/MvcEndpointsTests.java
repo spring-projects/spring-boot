@@ -109,6 +109,7 @@ public class MvcEndpointsTests {
 		TestMvcEndpoint(Endpoint<?> delegate) {
 			super(delegate);
 		}
+
 	}
 
 	private static class OtherTestMvcEndpoint extends EndpointMvcAdapter {
@@ -116,6 +117,7 @@ public class MvcEndpointsTests {
 		OtherTestMvcEndpoint(Endpoint<?> delegate) {
 			super(delegate);
 		}
+
 	}
 
 }
