@@ -52,27 +52,33 @@ public class ConditionalOnMissingClassTests {
 	@Configuration
 	@ConditionalOnMissingClass("org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClassTests")
 	protected static class BasicConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnMissingClass("FOO")
 	protected static class MissingConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
 	protected static class FooConfiguration {
+
 		@Bean
 		public String foo() {
 			return "foo";
 		}
+
 	}
 
 }

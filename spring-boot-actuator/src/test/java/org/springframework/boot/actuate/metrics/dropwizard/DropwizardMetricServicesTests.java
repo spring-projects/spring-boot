@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DropwizardMetricServicesTests {
 
 	private final MetricRegistry registry = new MetricRegistry();
+
 	private final DropwizardMetricServices writer = new DropwizardMetricServices(
 			this.registry);
 
@@ -89,7 +90,6 @@ public class DropwizardMetricServicesTests {
 	 * thread is updating the same set of metrics. This would be an example case of the
 	 * writer being used with the MetricsFilter handling several requests/sec to the same
 	 * URL.
-	 *
 	 * @throws Exception if an error occurs
 	 */
 	@Test

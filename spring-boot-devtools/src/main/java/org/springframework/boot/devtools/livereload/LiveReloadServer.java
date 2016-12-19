@@ -249,6 +249,7 @@ public class LiveReloadServer {
 
 	/**
 	 * {@link Runnable} to handle a single connection.
+	 *
 	 * @see Connection
 	 */
 	private class ConnectionHandler implements Runnable {

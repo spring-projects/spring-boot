@@ -146,6 +146,7 @@ public class SocialWebAutoConfiguration {
 				}
 			};
 		}
+
 	}
 
 	@Configuration
@@ -186,4 +187,5 @@ public class SocialWebAutoConfiguration {
 		}
 
 	}
+
 }

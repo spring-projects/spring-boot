@@ -97,6 +97,7 @@ public class JerseyAutoConfigurationWithoutApplicationPathTests {
 			ServerPropertiesAutoConfiguration.class, JerseyAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
+
 	}
 
 }

@@ -410,6 +410,7 @@ public class SecurityAutoConfigurationTests {
 		public void onApplicationEvent(AbstractAuthenticationEvent event) {
 			this.event = event;
 		}
+
 	}
 
 	@Configuration

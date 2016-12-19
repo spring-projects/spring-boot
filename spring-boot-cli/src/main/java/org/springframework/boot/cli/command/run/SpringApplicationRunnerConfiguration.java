@@ -40,4 +40,5 @@ public interface SpringApplicationRunnerConfiguration
 	 * @return the logging level
 	 */
 	Level getLogLevel();
+
 }

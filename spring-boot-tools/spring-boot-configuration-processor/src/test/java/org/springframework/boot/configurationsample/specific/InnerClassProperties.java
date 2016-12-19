@@ -89,12 +89,15 @@ public class InnerClassProperties {
 			public void setName(String name) {
 				this.name = name;
 			}
+
 		}
 
 	}
 
 	public enum Fourth {
+
 		YES, NO
+
 	}
 
 }

@@ -528,6 +528,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		public JestClient jestClient() {
 			return mock(JestClient.class);
 		}
+
 	}
 
 }

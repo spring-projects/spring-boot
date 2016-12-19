@@ -30,9 +30,9 @@ import org.springframework.context.annotation.Configuration;
  * standard {@code @Configuration} annotation so that configuration can be found
  * automatically (for example in tests).
  * <p>
- * Application should only ever include <em>one</em>
- * {@code @SpringBootConfiguration} and most idiomatic Spring Boot applications
- * will inherit it from {@code @SpringBootApplication}.
+ * Application should only ever include <em>one</em> {@code @SpringBootConfiguration} and
+ * most idiomatic Spring Boot applications will inherit it from
+ * {@code @SpringBootApplication}.
  *
  * @author Phillip Webb
  * @since 1.4.0

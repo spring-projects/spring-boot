@@ -45,4 +45,5 @@ public class HelpExample {
 	public String getExample() {
 		return this.example;
 	}
+
 }

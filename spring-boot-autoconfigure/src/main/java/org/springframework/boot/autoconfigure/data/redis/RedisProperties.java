@@ -256,4 +256,5 @@ public class RedisProperties {
 		}
 
 	}
+
 }

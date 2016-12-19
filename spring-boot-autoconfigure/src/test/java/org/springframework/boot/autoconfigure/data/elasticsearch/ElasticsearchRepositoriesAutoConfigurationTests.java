@@ -110,4 +110,5 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	protected static class CustomizedConfiguration {
 
 	}
+
 }

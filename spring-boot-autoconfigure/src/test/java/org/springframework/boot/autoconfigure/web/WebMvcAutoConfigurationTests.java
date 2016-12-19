@@ -754,6 +754,7 @@ public class WebMvcAutoConfigurationTests {
 
 	private static class CustomWebBindingInitializer
 			extends ConfigurableWebBindingInitializer {
+
 	}
 
 	@Configuration
@@ -780,6 +781,7 @@ public class WebMvcAutoConfigurationTests {
 
 			};
 		}
+
 	}
 
 	private static class MyRequestMappingHandlerMapping
@@ -801,6 +803,7 @@ public class WebMvcAutoConfigurationTests {
 
 			};
 		}
+
 	}
 
 	private static class MyRequestMappingHandlerAdapter

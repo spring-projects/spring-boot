@@ -315,6 +315,7 @@ public abstract class MainClassFinder {
 
 	/**
 	 * Callback interface used to receive class names.
+	 *
 	 * @param <T> the result type
 	 */
 	public interface ClassNameCallback<T> {

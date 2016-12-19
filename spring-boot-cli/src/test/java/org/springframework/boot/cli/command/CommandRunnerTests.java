@@ -199,6 +199,9 @@ public class CommandRunnerTests {
 	}
 
 	private enum Call {
+
 		SHOW_USAGE, ERROR_MESSAGE, PRINT_STACK_TRACE
+
 	}
+
 }

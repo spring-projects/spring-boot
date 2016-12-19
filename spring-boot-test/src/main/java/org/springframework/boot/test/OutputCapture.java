@@ -26,4 +26,5 @@ package org.springframework.boot.test;
  */
 @Deprecated
 public class OutputCapture extends org.springframework.boot.test.rule.OutputCapture {
+
 }

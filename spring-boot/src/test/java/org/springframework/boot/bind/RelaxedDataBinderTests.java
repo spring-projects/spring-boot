@@ -852,6 +852,7 @@ public class RelaxedDataBinderTests {
 		public void setNested(Map<Bingo, Object> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedMapOfListOfString {
@@ -1101,7 +1102,9 @@ public class RelaxedDataBinderTests {
 	}
 
 	enum Bingo {
+
 		THIS, or, THAT, THE_OTHER, THAT_OTHER
+
 	}
 
 	public static class ValidatedTarget {

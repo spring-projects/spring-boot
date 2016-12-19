@@ -73,8 +73,7 @@ public class DatabaseDriverTests {
 				.isEqualTo(DatabaseDriver.UNKNOWN);
 		assertThat(DatabaseDriver.fromProductName("Apache Derby"))
 				.isEqualTo(DatabaseDriver.DERBY);
-		assertThat(DatabaseDriver.fromProductName("H2"))
-				.isEqualTo(DatabaseDriver.H2);
+		assertThat(DatabaseDriver.fromProductName("H2")).isEqualTo(DatabaseDriver.H2);
 		assertThat(DatabaseDriver.fromProductName("HSQL Database Engine"))
 				.isEqualTo(DatabaseDriver.HSQLDB);
 		assertThat(DatabaseDriver.fromProductName("SQLite"))
@@ -122,8 +121,9 @@ public class DatabaseDriverTests {
 				.isEqualTo(DatabaseDriver.ORACLE);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:postgresql://127.0.0.1:5432/sample"))
 				.isEqualTo(DatabaseDriver.POSTGRESQL);
-		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:jtds:sqlserver://127.0.0.1:1433/sample"))
-				.isEqualTo(DatabaseDriver.JTDS);
+		assertThat(
+				DatabaseDriver.fromJdbcUrl("jdbc:jtds:sqlserver://127.0.0.1:1433/sample"))
+						.isEqualTo(DatabaseDriver.JTDS);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:sqlserver://127.0.0.1:1433"))
 				.isEqualTo(DatabaseDriver.SQLSERVER);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:firebirdsql://localhost/sample"))
@@ -134,8 +134,9 @@ public class DatabaseDriverTests {
 				.isEqualTo(DatabaseDriver.DB2_AS400);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:teradata://localhost/SAMPLE"))
 				.isEqualTo(DatabaseDriver.TERADATA);
-		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:informix-sqli://localhost:1533/sample"))
-				.isEqualTo(DatabaseDriver.INFORMIX);
+		assertThat(
+				DatabaseDriver.fromJdbcUrl("jdbc:informix-sqli://localhost:1533/sample"))
+						.isEqualTo(DatabaseDriver.INFORMIX);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:informix-direct://sample"))
 				.isEqualTo(DatabaseDriver.INFORMIX);
 	}

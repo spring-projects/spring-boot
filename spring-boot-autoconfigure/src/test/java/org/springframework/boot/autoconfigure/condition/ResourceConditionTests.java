@@ -79,6 +79,7 @@ public class ResourceConditionTests {
 		public String foo() {
 			return "foo";
 		}
+
 	}
 
 	@Configuration
@@ -89,6 +90,7 @@ public class ResourceConditionTests {
 		public String foo() {
 			return "foo";
 		}
+
 	}
 
 	private static class DefaultLocationResourceCondition extends ResourceCondition {
@@ -96,6 +98,7 @@ public class ResourceConditionTests {
 		DefaultLocationResourceCondition() {
 			super("test", "spring.foo.test.", "config", "classpath:/logging.properties");
 		}
+
 	}
 
 	private static class UnknownDefaultLocationResourceCondition
@@ -107,4 +110,5 @@ public class ResourceConditionTests {
 		}
 
 	}
+
 }

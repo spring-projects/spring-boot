@@ -93,6 +93,7 @@ public class AnsiOutputApplicationListenerTests {
 
 	@Configuration
 	public static class Config {
+
 	}
 
 }

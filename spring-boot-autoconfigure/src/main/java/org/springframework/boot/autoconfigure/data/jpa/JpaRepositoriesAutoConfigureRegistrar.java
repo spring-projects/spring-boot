@@ -51,5 +51,7 @@ class JpaRepositoriesAutoConfigureRegistrar
 
 	@EnableJpaRepositories
 	private static class EnableJpaRepositoriesConfiguration {
+
 	}
+
 }

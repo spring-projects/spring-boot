@@ -382,4 +382,5 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		}
 
 	}
+
 }

@@ -346,6 +346,7 @@ public class JarWriter {
 		public boolean hasZipHeader() {
 			return Arrays.equals(this.header, ZIP_HEADER);
 		}
+
 	}
 
 	/**
@@ -386,6 +387,7 @@ public class JarWriter {
 			entry.setCrc(this.crc.getValue());
 			entry.setMethod(ZipEntry.STORED);
 		}
+
 	}
 
 	/**

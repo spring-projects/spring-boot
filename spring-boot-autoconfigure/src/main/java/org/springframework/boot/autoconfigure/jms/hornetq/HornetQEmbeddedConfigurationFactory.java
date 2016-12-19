@@ -87,4 +87,5 @@ class HornetQEmbeddedConfigurationFactory {
 		String tempDirectory = System.getProperty("java.io.tmpdir");
 		return new File(tempDirectory, "hornetq-data").getAbsolutePath();
 	}
+
 }

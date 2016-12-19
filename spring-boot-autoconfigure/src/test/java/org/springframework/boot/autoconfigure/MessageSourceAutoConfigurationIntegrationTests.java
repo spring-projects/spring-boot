@@ -55,4 +55,5 @@ public class MessageSourceAutoConfigurationIntegrationTests {
 	protected static class Config {
 
 	}
+
 }

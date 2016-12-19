@@ -47,4 +47,5 @@ public class ShutdownEndpointMBean extends EndpointMBean {
 	public Object shutdown() {
 		return convert(getEndpoint().invoke());
 	}
+
 }

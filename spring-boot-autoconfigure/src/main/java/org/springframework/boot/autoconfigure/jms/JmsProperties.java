@@ -124,6 +124,7 @@ public class JmsProperties {
 					? this.concurrency + "-" + this.maxConcurrency
 					: String.valueOf(this.concurrency));
 		}
+
 	}
 
 	/**
@@ -164,6 +165,7 @@ public class JmsProperties {
 		public int getMode() {
 			return this.mode;
 		}
+
 	}
 
 }

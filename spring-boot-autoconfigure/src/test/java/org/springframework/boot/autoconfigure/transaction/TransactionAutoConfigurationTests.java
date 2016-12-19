@@ -94,6 +94,7 @@ public class TransactionAutoConfigurationTests {
 
 	@Configuration
 	static class EmptyConfiguration {
+
 	}
 
 	@Configuration
@@ -108,6 +109,7 @@ public class TransactionAutoConfigurationTests {
 		public PlatformTransactionManager transactionManagerTwo() {
 			return mock(PlatformTransactionManager.class);
 		}
+
 	}
 
 	@Configuration

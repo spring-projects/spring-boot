@@ -83,6 +83,7 @@ public class AopAutoConfigurationTests {
 
 	@Configuration
 	protected static class TestConfiguration {
+
 		@Bean
 		public TestAspect aspect() {
 			return new TestAspect();
@@ -92,16 +93,20 @@ public class AopAutoConfigurationTests {
 		public TestInterface bean() {
 			return new TestBean();
 		}
+
 	}
 
 	protected static class TestBean implements TestInterface {
+
 		@Override
 		public void foo() {
 		}
+
 	}
 
 	@Aspect
 	protected static class TestAspect {
+
 		private boolean called;
 
 		public boolean isCalled() {
@@ -112,6 +117,7 @@ public class AopAutoConfigurationTests {
 		public void before() {
 			this.called = true;
 		}
+
 	}
 
 	public interface TestInterface {

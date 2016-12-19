@@ -113,7 +113,9 @@ public class HttpEncodingProperties {
 	}
 
 	enum Type {
+
 		REQUEST, RESPONSE
+
 	}
 
 }

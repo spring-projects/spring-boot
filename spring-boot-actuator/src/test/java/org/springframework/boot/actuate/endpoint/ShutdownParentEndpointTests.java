@@ -96,9 +96,12 @@ public class ShutdownParentEndpointTests {
 			};
 
 		}
+
 	}
 
 	@Configuration
 	public static class Empty {
+
 	}
+
 }

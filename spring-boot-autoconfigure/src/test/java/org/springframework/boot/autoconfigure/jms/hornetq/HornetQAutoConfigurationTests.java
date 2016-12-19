@@ -383,10 +383,12 @@ public class HornetQAutoConfigurationTests {
 				}
 			});
 		}
+
 	}
 
 	@Configuration
 	protected static class EmptyConfiguration {
+
 	}
 
 	@Configuration
@@ -402,6 +404,7 @@ public class HornetQAutoConfigurationTests {
 		TopicConfiguration sampleTopicConfiguration() {
 			return new TopicConfigurationImpl("sampleTopic", "/topic/1");
 		}
+
 	}
 
 	@Configuration
@@ -414,6 +417,7 @@ public class HornetQAutoConfigurationTests {
 					.add(new JMSQueueConfigurationImpl("custom", null, false));
 			return config;
 		}
+
 	}
 
 	@Configuration
@@ -430,6 +434,7 @@ public class HornetQAutoConfigurationTests {
 				}
 			};
 		}
+
 	}
 
 }

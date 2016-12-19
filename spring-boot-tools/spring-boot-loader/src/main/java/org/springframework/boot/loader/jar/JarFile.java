@@ -404,7 +404,9 @@ public class JarFile extends java.util.jar.JarFile {
 	 * The type of a {@link JarFile}.
 	 */
 	enum JarFileType {
+
 		DIRECT, NESTED_DIRECTORY, NESTED_JAR
+
 	}
 
 }

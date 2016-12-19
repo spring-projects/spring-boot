@@ -167,6 +167,7 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 		public void setValue(double value) {
 			this.value = value;
 		}
+
 	}
 
 }

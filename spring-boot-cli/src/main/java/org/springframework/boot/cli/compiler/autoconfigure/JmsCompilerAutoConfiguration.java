@@ -51,4 +51,5 @@ public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {
 				"org.springframework.jms.listener",
 				"org.springframework.jms.listener.adapter");
 	}
+
 }

@@ -268,6 +268,7 @@ public class SpringBootWebSecurityConfigurationTests {
 	@MinimalWebConfiguration
 	@Import(SecurityAutoConfiguration.class)
 	protected static class VanillaWebConfiguration {
+
 	}
 
 	@MinimalWebConfiguration

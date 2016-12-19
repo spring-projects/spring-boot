@@ -107,12 +107,14 @@ public class EntityScanTests {
 	@EntityScan("com.mycorp.entity")
 	@SuppressWarnings("deprecation")
 	static class ValueConfig extends BaseConfig {
+
 	}
 
 	@Configuration
 	@EntityScan("com.mycorp.entity")
 	@SuppressWarnings("deprecation")
 	static class MissingEntityManager {
+
 	}
 
 	@Configuration
@@ -144,6 +146,7 @@ public class EntityScanTests {
 			};
 
 		}
+
 	}
 
 	private static class TestLocalContainerEntityManagerFactoryBean

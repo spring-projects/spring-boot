@@ -122,6 +122,7 @@ public class LiquibaseAutoConfiguration {
 					.username(this.properties.getUser())
 					.password(this.properties.getPassword()).build();
 		}
+
 	}
 
 	/**

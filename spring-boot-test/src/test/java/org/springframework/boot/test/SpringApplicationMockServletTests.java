@@ -36,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link WebAppConfiguration} using {@link SpringApplicationContextLoader} with
  * a plain mock Servlet environment.
  *
- *
  * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)

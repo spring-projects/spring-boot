@@ -93,4 +93,5 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 		}
 		return name;
 	}
+
 }

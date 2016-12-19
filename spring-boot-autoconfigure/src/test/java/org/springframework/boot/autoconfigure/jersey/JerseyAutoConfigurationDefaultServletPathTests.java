@@ -98,6 +98,7 @@ public class JerseyAutoConfigurationDefaultServletPathTests {
 			ServerPropertiesAutoConfiguration.class, JerseyAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
+
 	}
 
 }

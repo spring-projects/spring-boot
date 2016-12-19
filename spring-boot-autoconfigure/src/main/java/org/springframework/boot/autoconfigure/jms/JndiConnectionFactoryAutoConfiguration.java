@@ -95,10 +95,12 @@ public class JndiConnectionFactoryAutoConfiguration {
 
 		@ConditionalOnJndi({ "java:/JmsXA", "java:/XAConnectionFactory" })
 		static class Jndi {
+
 		}
 
 		@ConditionalOnProperty(prefix = "spring.jms", name = "jndi-name")
 		static class Property {
+
 		}
 
 	}

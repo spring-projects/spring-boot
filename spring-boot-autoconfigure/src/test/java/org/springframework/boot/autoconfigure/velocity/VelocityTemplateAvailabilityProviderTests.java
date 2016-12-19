@@ -72,4 +72,5 @@ public class VelocityTemplateAvailabilityProviderTests {
 		assertThat(this.provider.isTemplateAvailable("suffixed", this.environment,
 				getClass().getClassLoader(), this.resourceLoader)).isTrue();
 	}
+
 }

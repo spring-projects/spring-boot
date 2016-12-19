@@ -156,6 +156,7 @@ public class FilteredClassPathRunner extends BlockJUnit4ClassRunner {
 			}
 			return false;
 		}
+
 	}
 
 	/**

@@ -22,4 +22,5 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @MetaComponentScan
 public class InDefaultPackageWithMetaAnnotationConfiguration {
+
 }

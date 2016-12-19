@@ -173,4 +173,5 @@ public class OAuth2RestOperationsConfiguration {
 		}
 
 	}
+
 }

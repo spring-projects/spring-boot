@@ -146,4 +146,5 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 		}
 
 	}
+
 }

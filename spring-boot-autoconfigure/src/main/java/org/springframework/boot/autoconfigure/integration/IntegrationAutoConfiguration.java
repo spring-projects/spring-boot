@@ -57,6 +57,7 @@ public class IntegrationAutoConfiguration {
 	@Configuration
 	@EnableIntegration
 	protected static class IntegrationConfiguration {
+
 	}
 
 	@Configuration

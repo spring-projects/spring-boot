@@ -224,6 +224,7 @@ public final class RelaxedNames implements Iterable<String> {
 			}
 			return builder.toString();
 		}
+
 	}
 
 	/**

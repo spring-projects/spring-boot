@@ -107,7 +107,9 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	 * Profile match types.
 	 */
 	enum ProfileType {
+
 		POSITIVE, NEGATIVE
+
 	}
 
 	/**

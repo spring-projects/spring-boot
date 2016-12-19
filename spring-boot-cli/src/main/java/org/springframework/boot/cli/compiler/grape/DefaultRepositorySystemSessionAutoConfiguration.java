@@ -68,4 +68,5 @@ public class DefaultRepositorySystemSessionAutoConfiguration
 		}
 		return new File(System.getProperty("user.home"), ".m2");
 	}
+
 }

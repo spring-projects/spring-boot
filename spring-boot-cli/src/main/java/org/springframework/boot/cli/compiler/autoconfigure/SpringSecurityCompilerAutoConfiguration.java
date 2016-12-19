@@ -55,4 +55,5 @@ public class SpringSecurityCompilerAutoConfiguration extends CompilerAutoConfigu
 						"org.springframework.security.config.annotation.web",
 						"org.springframework.security.config.annotation.web.builders");
 	}
+
 }

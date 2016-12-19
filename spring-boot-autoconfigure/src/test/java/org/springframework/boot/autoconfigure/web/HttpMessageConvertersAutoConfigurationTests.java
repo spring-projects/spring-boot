@@ -240,10 +240,12 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	@Configuration
 	protected static class JacksonObjectMapperConfig {
+
 		@Bean
 		public ObjectMapper objectMapper() {
 			return new ObjectMapper();
 		}
+
 	}
 
 	@Configuration
@@ -258,6 +260,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 		public Jackson2ObjectMapperBuilder builder() {
 			return new Jackson2ObjectMapperBuilder();
 		}
+
 	}
 
 	@Configuration
@@ -270,6 +273,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 			converter.setObjectMapper(objectMapper);
 			return converter;
 		}
+
 	}
 
 	@Configuration
@@ -281,6 +285,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 			converter.setGson(gson);
 			return converter;
 		}
+
 	}
 
 	@Configuration
@@ -290,6 +295,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 		public StringHttpMessageConverter customStringMessageConverter() {
 			return new StringHttpMessageConverter();
 		}
+
 	}
 
 	@Configuration
@@ -300,6 +306,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 			return new TypeConstrainedMappingJackson2HttpMessageConverter(
 					ResourceSupport.class);
 		}
+
 	}
 
 }

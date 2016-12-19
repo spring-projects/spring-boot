@@ -293,10 +293,12 @@ public class SpringApplicationTests {
 		final AtomicReference<SpringApplication> reference = new AtomicReference<SpringApplication>();
 		class ApplicationReadyEventListener
 				implements ApplicationListener<ApplicationReadyEvent> {
+
 			@Override
 			public void onApplicationEvent(ApplicationReadyEvent event) {
 				reference.set(event.getSpringApplication());
 			}
+
 		}
 		application.addListeners(new ApplicationReadyEventListener());
 		this.context = application.run("--foo=bar");
@@ -309,10 +311,12 @@ public class SpringApplicationTests {
 		application.setWebEnvironment(false);
 		final AtomicReference<ApplicationContext> reference = new AtomicReference<ApplicationContext>();
 		class InitializerListener implements ApplicationListener<ContextRefreshedEvent> {
+
 			@Override
 			public void onApplicationEvent(ContextRefreshedEvent event) {
 				reference.set(event.getApplicationContext());
 			}
+
 		}
 		application.setListeners(Arrays.asList(new InitializerListener()));
 		this.context = application.run("--foo=bar");
@@ -328,10 +332,12 @@ public class SpringApplicationTests {
 		final List<ApplicationEvent> events = new ArrayList<ApplicationEvent>();
 		class ApplicationRunningEventListener
 				implements ApplicationListener<ApplicationEvent> {
+
 			@Override
 			public void onApplicationEvent(ApplicationEvent event) {
 				events.add((event));
 			}
+
 		}
 		application.addListeners(new ApplicationRunningEventListener());
 		this.context = application.run();
@@ -1064,6 +1070,7 @@ public class SpringApplicationTests {
 		public void fail() {
 			throw new RefreshFailureException();
 		}
+
 	}
 
 	static class ExitStatusException extends RuntimeException

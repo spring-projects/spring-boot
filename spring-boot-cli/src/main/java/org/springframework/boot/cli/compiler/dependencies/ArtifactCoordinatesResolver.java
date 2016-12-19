@@ -51,4 +51,5 @@ public interface ArtifactCoordinatesResolver {
 	 * @return The version of the module
 	 */
 	String getVersion(String module);
+
 }

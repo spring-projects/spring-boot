@@ -327,6 +327,7 @@ public class ShellProperties {
 		public void setAuthTimeout(Integer authTimeout) {
 			this.authTimeout = authTimeout;
 		}
+
 	}
 
 	/**

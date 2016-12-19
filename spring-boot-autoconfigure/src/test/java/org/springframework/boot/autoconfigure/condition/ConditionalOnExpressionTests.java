@@ -51,18 +51,23 @@ public class ConditionalOnExpressionTests {
 	@Configuration
 	@ConditionalOnExpression("false")
 	protected static class MissingConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnExpression("true")
 	protected static class BasicConfiguration {
+
 		@Bean
 		public String foo() {
 			return "foo";
 		}
+
 	}
+
 }

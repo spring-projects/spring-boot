@@ -143,5 +143,7 @@ public class CommandCompleter extends StringsCompleter {
 		public String getUsage() {
 			return this.usage;
 		}
+
 	}
+
 }

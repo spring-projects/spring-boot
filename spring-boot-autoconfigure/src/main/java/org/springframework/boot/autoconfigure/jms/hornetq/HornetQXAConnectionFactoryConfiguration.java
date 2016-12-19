@@ -61,4 +61,5 @@ class HornetQXAConnectionFactoryConfiguration {
 		return new HornetQConnectionFactoryFactory(beanFactory, properties)
 				.createConnectionFactory(SpringBootHornetQConnectionFactory.class);
 	}
+
 }

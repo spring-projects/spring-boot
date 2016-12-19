@@ -148,6 +148,7 @@ public class JndiDataSourceAutoConfigurationTests {
 		MBeanExporter mbeanExporter() {
 			return new MBeanExporter();
 		}
+
 	}
 
 }

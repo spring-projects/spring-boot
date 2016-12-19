@@ -72,4 +72,5 @@ public class SpringTestCompilerAutoConfiguration extends CompilerAutoConfigurati
 						"org.springframework.boot.test.context.SpringBootTest.WebEnvironment",
 						"org.springframework.boot.test.web.client.TestRestTemplate");
 	}
+
 }

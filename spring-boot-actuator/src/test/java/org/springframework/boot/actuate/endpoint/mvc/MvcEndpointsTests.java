@@ -89,6 +89,7 @@ public class MvcEndpointsTests {
 		public String invoke() {
 			return "foo";
 		}
+
 	}
 
 }

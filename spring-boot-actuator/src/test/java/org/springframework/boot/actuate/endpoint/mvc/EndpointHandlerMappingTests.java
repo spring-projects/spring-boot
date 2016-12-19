@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EndpointHandlerMappingTests {
 
 	private final StaticApplicationContext context = new StaticApplicationContext();
+
 	private Method method;
 
 	@Before

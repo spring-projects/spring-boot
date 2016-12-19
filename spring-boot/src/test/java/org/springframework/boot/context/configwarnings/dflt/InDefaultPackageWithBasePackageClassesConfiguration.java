@@ -23,4 +23,5 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan(basePackageClasses = ExampleBean.class)
 public class InDefaultPackageWithBasePackageClassesConfiguration {
+
 }

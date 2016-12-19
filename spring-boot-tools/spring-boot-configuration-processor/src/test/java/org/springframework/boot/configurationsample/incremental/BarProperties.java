@@ -53,4 +53,5 @@ public class BarProperties {
 	public void setCounter(Integer counter) {
 		this.counter = counter;
 	}
+
 }

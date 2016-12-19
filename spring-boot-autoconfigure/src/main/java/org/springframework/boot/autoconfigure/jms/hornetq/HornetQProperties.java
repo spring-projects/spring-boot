@@ -215,7 +215,6 @@ public class HornetQProperties {
 		/**
 		 * Creates the minimal transport parameters for an embedded transport
 		 * configuration.
-		 *
 		 * @return the transport parameters
 		 * @see TransportConstants#SERVER_ID_PROP_NAME
 		 */

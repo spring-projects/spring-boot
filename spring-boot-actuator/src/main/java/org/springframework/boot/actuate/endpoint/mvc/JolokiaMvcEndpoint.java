@@ -116,6 +116,7 @@ public class JolokiaMvcEndpoint extends AbstractMvcEndpoint implements Initializ
 			}
 			return value;
 		}
+
 	}
 
 }

@@ -220,10 +220,12 @@ public class AutoConfigurationReportLoggingInitializerTests {
 	@Configuration
 	@Import(WebMvcAutoConfiguration.class)
 	static class ErrorConfig {
+
 		@Bean
 		public String iBreak() {
 			throw new RuntimeException();
 		}
+
 	}
 
 }
