@@ -576,7 +576,7 @@ public class TestRestTemplate {
 	 * @return the converted object
 	 * @throws RestClientException on client-side HTTP error
 	 * @see HttpEntity
-	 * @since 2.0
+	 * @since 1.4.3
 	 */
 	<T> T patchForObject(String url, Object request, Class<T> responseType,
 			Object... uriVariables) throws RestClientException {
@@ -599,7 +599,7 @@ public class TestRestTemplate {
 	 * @return the converted object
 	 * @throws RestClientException on client-side HTTP error
 	 * @see HttpEntity
-	 * @since 2.0
+	 * @since 1.4.3
 	 */
 	<T> T patchForObject(String url, Object request, Class<T> responseType,
 			Map<String, ?> uriVariables) throws RestClientException {
@@ -619,7 +619,7 @@ public class TestRestTemplate {
 	 * @return the converted object
 	 * @throws RestClientException on client-side HTTP error
 	 * @see HttpEntity
-	 * @since 2.0
+	 * @since 1.4.3
 	 */
 	<T> T patchForObject(URI url, Object request, Class<T> responseType)
 			throws RestClientException {
