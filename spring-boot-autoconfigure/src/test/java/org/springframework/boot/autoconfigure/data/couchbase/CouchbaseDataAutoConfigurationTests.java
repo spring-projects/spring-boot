@@ -18,20 +18,17 @@ package org.springframework.boot.autoconfigure.data.couchbase;
 
 import java.util.Set;
 
-import javax.validation.Validator;
-
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfigurer;
 import org.springframework.boot.autoconfigure.data.couchbase.city.City;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.couchbase.config.AbstractCouchbaseDataConfiguration;
@@ -44,7 +41,6 @@ import org.springframework.data.couchbase.repository.support.IndexManager;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CouchbaseDataAutoConfiguration}.
@@ -79,11 +75,9 @@ public class CouchbaseDataAutoConfigurationTests {
 
 	@Test
 	public void validatorIsPresent() {
-		load(ValidatorConfiguration.class);
-		ValidatingCouchbaseEventListener listener = this.context
-				.getBean(ValidatingCouchbaseEventListener.class);
-		assertThat(new DirectFieldAccessor(listener).getPropertyValue("validator"))
-				.isEqualTo(this.context.getBean(Validator.class));
+		load(CouchbaseTestConfigurer.class);
+		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class))
+				.hasSize(1);
 	}
 
 	@Test
@@ -132,20 +126,10 @@ public class CouchbaseDataAutoConfigurationTests {
 			context.register(config);
 		}
 		context.register(PropertyPlaceholderAutoConfiguration.class,
-				CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class);
+				ValidationAutoConfiguration.class, CouchbaseAutoConfiguration.class,
+				CouchbaseDataAutoConfiguration.class);
 		context.refresh();
 		this.context = context;
-	}
-
-	@Configuration
-	@Import(CouchbaseTestConfigurer.class)
-	static class ValidatorConfiguration {
-
-		@Bean
-		public Validator myValidator() {
-			return mock(Validator.class);
-		}
-
 	}
 
 	@Configuration

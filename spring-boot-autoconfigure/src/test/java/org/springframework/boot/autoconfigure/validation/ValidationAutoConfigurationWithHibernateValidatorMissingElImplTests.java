@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.validation;
 
+import javax.validation.Validator;
+
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,6 +52,7 @@ public class ValidationAutoConfigurationWithHibernateValidatorMissingElImplTests
 	public void validationIsDisabled() {
 		this.context = new AnnotationConfigApplicationContext(
 				ValidationAutoConfiguration.class);
+		assertThat(this.context.getBeansOfType(Validator.class)).isEmpty();
 		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class))
 				.isEmpty();
 	}
