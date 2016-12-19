@@ -110,4 +110,5 @@ public class SpringBootMockServletContext extends MockServletContext {
 		}
 		return resource;
 	}
+
 }

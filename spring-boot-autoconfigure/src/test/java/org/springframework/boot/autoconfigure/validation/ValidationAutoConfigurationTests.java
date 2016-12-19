@@ -67,14 +67,15 @@ public class ValidationAutoConfigurationTests {
 	public void userDefinedMethodValidationPostProcessorTakesPrecedence() {
 		load(SampleConfiguration.class);
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
-		Object userMethodValidationPostProcessor =
-				this.context.getBean("testMethodValidationPostProcessor");
+		Object userMethodValidationPostProcessor = this.context
+				.getBean("testMethodValidationPostProcessor");
 		assertThat(this.context.getBean(MethodValidationPostProcessor.class))
 				.isSameAs(userMethodValidationPostProcessor);
 		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class))
 				.hasSize(1);
-		assertThat(this.context.getBean(Validator.class)).isNotSameAs(
-				new DirectFieldAccessor(userMethodValidationPostProcessor).getPropertyValue("validator"));
+		assertThat(this.context.getBean(Validator.class))
+				.isNotSameAs(new DirectFieldAccessor(userMethodValidationPostProcessor)
+						.getPropertyValue("validator"));
 	}
 
 	public void load(Class<?> config) {

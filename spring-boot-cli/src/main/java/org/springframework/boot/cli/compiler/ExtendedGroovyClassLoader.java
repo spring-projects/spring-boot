@@ -164,6 +164,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 					.put(classNode.getName().replace(".", "/") + ".class", code);
 			return createdClass;
 		}
+
 	}
 
 	/**
@@ -238,6 +239,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 			this.groovyOnlyClassLoader.loadClass(name);
 			return super.loadClass(name, resolve);
 		}
+
 	}
 
 }

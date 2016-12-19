@@ -269,8 +269,8 @@ public class EndpointMBeanExporterTests {
 		MBeanExporter mbeanExporter = registerLoggersEndpoint();
 		Object response = mbeanExporter.getServer().invoke(
 				getObjectName("loggersEndpoint", this.context), "setLogLevel",
-				new Object[]{"com.example", "trace"},
-				new String[]{String.class.getName(), String.class.getName()});
+				new Object[] { "com.example", "trace" },
+				new String[] { String.class.getName(), String.class.getName() });
 		assertThat(response).isNull();
 	}
 
@@ -280,10 +280,9 @@ public class EndpointMBeanExporterTests {
 		this.thrown.expect(MBeanException.class);
 		this.thrown.expectCause(hasMessage(containsString("No enum constant")));
 		this.thrown.expectCause(hasMessage(containsString("LogLevel.INVALID")));
-		mbeanExporter.getServer().invoke(
-				getObjectName("loggersEndpoint", this.context), "setLogLevel",
-				new Object[]{"com.example", "invalid"},
-				new String[]{String.class.getName(), String.class.getName()});
+		mbeanExporter.getServer().invoke(getObjectName("loggersEndpoint", this.context),
+				"setLogLevel", new Object[] { "com.example", "invalid" },
+				new String[] { String.class.getName(), String.class.getName() });
 	}
 
 	private MBeanExporter registerLoggersEndpoint() {

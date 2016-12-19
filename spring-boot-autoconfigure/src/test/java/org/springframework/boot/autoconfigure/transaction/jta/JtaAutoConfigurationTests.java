@@ -284,6 +284,7 @@ public class JtaAutoConfigurationTests {
 			XADataSource dataSource = mock(XADataSource.class);
 			return wrapper.wrapDataSource(dataSource);
 		}
+
 	}
 
 }

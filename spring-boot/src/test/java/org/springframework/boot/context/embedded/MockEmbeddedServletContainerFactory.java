@@ -200,6 +200,7 @@ public class MockEmbeddedServletContainerFactory
 		}
 
 		private static class EmptyEnumeration<E> implements Enumeration<E> {
+
 			static final EmptyEnumeration<Object> EMPTY_ENUMERATION = new EmptyEnumeration<Object>();
 
 			@Override
@@ -211,6 +212,7 @@ public class MockEmbeddedServletContainerFactory
 			public E nextElement() {
 				throw new NoSuchElementException();
 			}
+
 		}
 
 	}
@@ -233,6 +235,7 @@ public class MockEmbeddedServletContainerFactory
 		public Servlet getServlet() {
 			return this.servlet;
 		}
+
 	}
 
 	public static class RegisteredFilter {
@@ -253,5 +256,7 @@ public class MockEmbeddedServletContainerFactory
 		public Filter getFilter() {
 			return this.filter;
 		}
+
 	}
+
 }

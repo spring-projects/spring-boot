@@ -26,4 +26,5 @@ import org.springframework.data.repository.Repository;
 public interface CityRepository extends Repository<City, String> {
 
 	Page<City> findByNameStartingWith(String name, Pageable page);
+
 }

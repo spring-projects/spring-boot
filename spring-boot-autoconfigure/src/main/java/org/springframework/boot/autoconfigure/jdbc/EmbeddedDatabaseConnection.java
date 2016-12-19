@@ -117,7 +117,6 @@ public enum EmbeddedDatabaseConnection {
 	/**
 	 * Convenience method to determine if a given driver class name represents an embedded
 	 * database type.
-	 *
 	 * @param driverClass the driver class
 	 * @return true if the driver class is one of the embedded types
 	 */
@@ -130,7 +129,6 @@ public enum EmbeddedDatabaseConnection {
 	/**
 	 * Convenience method to determine if a given data source represents an embedded
 	 * database type.
-	 *
 	 * @param dataSource the data source to interrogate
 	 * @return true if the data source is one of the embedded types
 	 */
@@ -186,4 +184,5 @@ public enum EmbeddedDatabaseConnection {
 		}
 
 	}
+
 }

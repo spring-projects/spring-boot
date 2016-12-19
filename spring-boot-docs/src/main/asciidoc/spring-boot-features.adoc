@@ -2716,6 +2716,7 @@ advanced examples, typically to take full control over the configuration of the
 DataSource.
 
 
+
 [[boot-features-embedded-database-support]]
 ==== Embedded Database Support
 It's often convenient to develop applications using an in-memory embedded database.

@@ -74,5 +74,7 @@ public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {
 		public HealthAggregator healthAggregator() {
 			return new OrderedHealthAggregator();
 		}
+
 	}
+
 }

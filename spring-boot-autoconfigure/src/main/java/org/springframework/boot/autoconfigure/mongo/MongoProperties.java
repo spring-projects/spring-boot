@@ -194,7 +194,6 @@ public class MongoProperties {
 	 * {@code environment}. If the configured port is zero, the value of the
 	 * {@code local.mongo.port} property retrieved from the {@code environment} is used to
 	 * configure the client.
-	 *
 	 * @param options the options
 	 * @param environment the environment
 	 * @return the Mongo client

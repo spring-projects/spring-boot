@@ -48,9 +48,9 @@ public abstract class LoggingSystem {
 	public static final String NONE = "none";
 
 	/**
-	 * The name used for the root logger. LoggingSystem implementations should ensure
-	 * that this is the name used to represent the root logger, regardless of the
-	 * underlying implementation.
+	 * The name used for the root logger. LoggingSystem implementations should ensure that
+	 * this is the name used to represent the root logger, regardless of the underlying
+	 * implementation.
 	 */
 	public static final String ROOT_LOGGER_NAME = "ROOT";
 

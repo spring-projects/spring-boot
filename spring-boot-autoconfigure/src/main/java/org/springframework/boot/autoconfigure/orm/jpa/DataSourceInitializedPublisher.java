@@ -106,6 +106,7 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 				registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
 			}
 		}
+
 	}
 
 }

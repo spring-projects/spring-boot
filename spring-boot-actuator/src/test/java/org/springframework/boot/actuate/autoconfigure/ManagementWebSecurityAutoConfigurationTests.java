@@ -274,11 +274,13 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	@EnableGlobalAuthentication
 	@Configuration
 	static class AuthenticationConfig {
+
 		@Autowired
 		public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 			auth.inMemoryAuthentication().withUser("user").password("password")
 					.roles("USER");
 		}
+
 	}
 
 	@Configuration

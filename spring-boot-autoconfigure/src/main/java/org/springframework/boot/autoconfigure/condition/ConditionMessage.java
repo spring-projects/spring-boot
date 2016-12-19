@@ -228,8 +228,8 @@ public final class ConditionMessage {
 
 		/**
 		 * Indicate that one or more results were found. For example
-		 * {@code found("bean", "beans").items("x", "y")} results in the message
-		 * "found beans x, y".
+		 * {@code found("bean", "beans").items("x", "y")} results in the message "found
+		 * beans x, y".
 		 * @param singular the article found in singular form
 		 * @param plural the article found in plural form
 		 * @return an {@link ItemsBuilder}
@@ -240,8 +240,8 @@ public final class ConditionMessage {
 
 		/**
 		 * Indicate that one or more results were not found. For example
-		 * {@code didNotFind("bean").items("x")} results in the message
-		 * "did not find bean x".
+		 * {@code didNotFind("bean").items("x")} results in the message "did not find bean
+		 * x".
 		 * @param article the article found
 		 * @return an {@link ItemsBuilder}
 		 */
@@ -251,8 +251,8 @@ public final class ConditionMessage {
 
 		/**
 		 * Indicate that one or more results were found. For example
-		 * {@code didNotFind("bean", "beans").items("x", "y")} results in the message
-		 * "did not find beans x, y".
+		 * {@code didNotFind("bean", "beans").items("x", "y")} results in the message "did
+		 * not find beans x, y".
 		 * @param singular the article found in singular form
 		 * @param plural the article found in plural form
 		 * @return an {@link ItemsBuilder}
@@ -330,8 +330,8 @@ public final class ConditionMessage {
 
 		/**
 		 * Used when no items are available. For example
-		 * {@code didNotFind("any beans").atAll()} results in the message
-		 * "did not find any beans".
+		 * {@code didNotFind("any beans").atAll()} results in the message "did not find
+		 * any beans".
 		 * @return a built {@link ConditionMessage}
 		 */
 		public ConditionMessage atAll() {
@@ -340,8 +340,8 @@ public final class ConditionMessage {
 
 		/**
 		 * Indicate the items. For example
-		 * {@code didNotFind("bean", "beans").items("x", "y")} results in the message
-		 * "did not find beans x, y".
+		 * {@code didNotFind("bean", "beans").items("x", "y")} results in the message "did
+		 * not find beans x, y".
 		 * @param items the items (may be {@code null})
 		 * @return a built {@link ConditionMessage}
 		 */
@@ -351,8 +351,8 @@ public final class ConditionMessage {
 
 		/**
 		 * Indicate the items. For example
-		 * {@code didNotFind("bean", "beans").items("x", "y")} results in the message
-		 * "did not find beans x, y".
+		 * {@code didNotFind("bean", "beans").items("x", "y")} results in the message "did
+		 * not find beans x, y".
 		 * @param style the render style
 		 * @param items the items (may be {@code null})
 		 * @return a built {@link ConditionMessage}

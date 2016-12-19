@@ -60,6 +60,7 @@ public class RepackagerTests {
 	};
 
 	private static final long JAN_1_1980;
+
 	private static final long JAN_1_1985;
 
 	static {

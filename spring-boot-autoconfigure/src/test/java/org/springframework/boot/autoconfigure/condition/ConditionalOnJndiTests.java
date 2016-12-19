@@ -157,6 +157,7 @@ public class ConditionalOnJndiTests {
 		public String foo() {
 			return "foo";
 		}
+
 	}
 
 	@Configuration
@@ -167,6 +168,7 @@ public class ConditionalOnJndiTests {
 		public String foo() {
 			return "foo";
 		}
+
 	}
 
 	private static class MockableOnJndi extends OnJndiCondition {
@@ -193,6 +195,7 @@ public class ConditionalOnJndiTests {
 		public void setFoundLocation(String foundLocation) {
 			this.foundLocation = foundLocation;
 		}
+
 	}
 
 }

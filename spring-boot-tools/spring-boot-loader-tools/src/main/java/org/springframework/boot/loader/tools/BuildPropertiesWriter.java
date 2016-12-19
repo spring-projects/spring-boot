@@ -39,7 +39,6 @@ public final class BuildPropertiesWriter {
 	/**
 	 * Creates a new {@code BuildPropertiesWriter} that will write to the given
 	 * {@code outputFile}.
-	 *
 	 * @param outputFile the output file
 	 */
 	public BuildPropertiesWriter(File outputFile) {
@@ -168,4 +167,5 @@ public final class BuildPropertiesWriter {
 		}
 
 	}
+
 }

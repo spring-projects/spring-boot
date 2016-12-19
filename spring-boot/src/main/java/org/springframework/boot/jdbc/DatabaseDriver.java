@@ -164,7 +164,7 @@ public enum DatabaseDriver {
 	 * Informix.
 	 */
 	INFORMIX("informix", "Informix Dynamic Server", "com.informix.jdbc.IfxDriver", null,
-			"select count(*) from systables")  {
+			"select count(*) from systables") {
 
 		@Override
 		protected Collection<String> getUrlPrefixes() {

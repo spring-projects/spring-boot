@@ -122,6 +122,7 @@ class InternalOutputCapture implements TestRule {
 			this.copy.flush();
 			this.original.flush();
 		}
+
 	}
 
 }

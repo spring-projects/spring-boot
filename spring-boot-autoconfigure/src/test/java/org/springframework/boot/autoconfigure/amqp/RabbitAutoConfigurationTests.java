@@ -420,10 +420,12 @@ public class RabbitAutoConfigurationTests {
 
 	@Configuration
 	protected static class TestConfiguration2 {
+
 		@Bean
 		ConnectionFactory aDifferentConnectionFactory() {
 			return new CachingConnectionFactory("otherserver", 8001);
 		}
+
 	}
 
 	@Configuration
@@ -453,6 +455,7 @@ public class RabbitAutoConfigurationTests {
 			messagingTemplate.setDefaultDestination("fooBar");
 			return messagingTemplate;
 		}
+
 	}
 
 	@Configuration

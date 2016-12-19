@@ -116,5 +116,7 @@ class BitronixJtaConfiguration {
 		public BitronixXAConnectionFactoryWrapper xaConnectionFactoryWrapper() {
 			return new BitronixXAConnectionFactoryWrapper();
 		}
+
 	}
+
 }

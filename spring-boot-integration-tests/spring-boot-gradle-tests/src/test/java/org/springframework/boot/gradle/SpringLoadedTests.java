@@ -91,4 +91,5 @@ public class SpringLoadedTests {
 		}
 		fail("Required pattern '" + requiredPattern + "' not matched in " + actualOutput);
 	}
+
 }

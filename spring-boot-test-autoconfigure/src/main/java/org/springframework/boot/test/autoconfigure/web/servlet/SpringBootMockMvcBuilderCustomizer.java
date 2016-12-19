@@ -229,6 +229,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 
 	/**
 	 * {@link LinesWriter} used to defer writing until errors are detected.
+	 *
 	 * @see MockMvcPrintOnlyOnFailureTestExecutionListener
 	 */
 	static class DeferredLinesWriter implements LinesWriter {

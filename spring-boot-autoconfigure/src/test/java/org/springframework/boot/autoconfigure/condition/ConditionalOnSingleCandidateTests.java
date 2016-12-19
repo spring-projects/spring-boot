@@ -240,4 +240,5 @@ public class ConditionalOnSingleCandidateTests {
 		}
 
 	}
+
 }

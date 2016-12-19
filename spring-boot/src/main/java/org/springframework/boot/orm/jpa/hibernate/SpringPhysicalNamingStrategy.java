@@ -73,18 +73,30 @@ public class SpringPhysicalNamingStrategy implements PhysicalNamingStrategy {
 				builder.insert(i++, '_');
 			}
 		}
+		return getIdentifier(builder.toString(), name.isQuoted(), jdbcEnvironment);
+	}
 
-		String text = builder.toString();
-		String finalText = isCaseInsensitive(jdbcEnvironment) ? text.toLowerCase(Locale.ROOT)
-				: text;
-		return new Identifier(finalText, name.isQuoted());
+	/**
+	 * Get an the identifier for the specified details. By default his method will return
+	 * an identifier with the name adapted based on the result of
+	 * {@link #isCaseInsensitive(JdbcEnvironment)}
+	 * @param name the name of the identifier
+	 * @param quoted if the identifier is quoted
+	 * @param jdbcEnvironment the JDBC environment
+	 * @return an identifier instance
+	 */
+	protected Identifier getIdentifier(String name, boolean quoted,
+			JdbcEnvironment jdbcEnvironment) {
+		if (isCaseInsensitive(jdbcEnvironment)) {
+			name = name.toLowerCase(Locale.ROOT);
+		}
+		return new Identifier(name, quoted);
 	}
 
 	/**
 	 * Specify whether the database is case sensitive.
 	 * @param jdbcEnvironment The JDBC environment which can be used to determine case
-	 * @return true if the database is case insensitive
-	 * sensitivity
+	 * @return true if the database is case insensitive sensitivity
 	 */
 	protected boolean isCaseInsensitive(JdbcEnvironment jdbcEnvironment) {
 		return true;

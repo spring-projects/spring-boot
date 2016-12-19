@@ -58,4 +58,5 @@ public class HalJsonMvcEndpoint extends AbstractNamedMvcEndpoint {
 	protected final ManagementServletContext getManagementServletContext() {
 		return this.managementServletContext;
 	}
+
 }

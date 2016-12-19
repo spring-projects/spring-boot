@@ -699,6 +699,7 @@ public class EnableConfigurationPropertiesTests {
 		}
 
 		// No getter - you should be able to bind to a write-only bean
+
 	}
 
 	// No annotation

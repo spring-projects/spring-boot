@@ -37,17 +37,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AutoConfigurationSorterTests {
 
 	private static final String LOWEST = OrderLowest.class.getName();
+
 	private static final String HIGHEST = OrderHighest.class.getName();
+
 	private static final String A = AutoConfigureA.class.getName();
+
 	private static final String B = AutoConfigureB.class.getName();
+
 	private static final String C = AutoConfigureC.class.getName();
+
 	private static final String D = AutoConfigureD.class.getName();
+
 	private static final String E = AutoConfigureE.class.getName();
+
 	private static final String W = AutoConfigureW.class.getName();
+
 	private static final String X = AutoConfigureX.class.getName();
+
 	private static final String Y = AutoConfigureY.class.getName();
+
 	private static final String Z = AutoConfigureZ.class.getName();
+
 	private static final String A2 = AutoConfigureA2.class.getName();
+
 	private static final String W2 = AutoConfigureW2.class.getName();
 
 	@Rule

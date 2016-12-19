@@ -86,4 +86,5 @@ public final class ChangedFiles implements Iterable<ChangedFile> {
 	public String toString() {
 		return this.sourceFolder + " " + this.files;
 	}
+
 }

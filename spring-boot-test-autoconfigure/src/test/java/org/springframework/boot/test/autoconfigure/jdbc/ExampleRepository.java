@@ -49,8 +49,9 @@ public class ExampleRepository {
 	}
 
 	public ExampleEntity findById(int id) {
-		return this.jdbcTemplate.queryForObject("select id, name from example where id =?",
-				new Object[] { id }, ROW_MAPPER);
+		return this.jdbcTemplate.queryForObject(
+				"select id, name from example where id =?", new Object[] { id },
+				ROW_MAPPER);
 	}
 
 	public Collection<ExampleEntity> findAll() {
@@ -65,6 +66,7 @@ public class ExampleRepository {
 			String name = rs.getString("name");
 			return new ExampleEntity(id, name);
 		}
+
 	}
 
 }

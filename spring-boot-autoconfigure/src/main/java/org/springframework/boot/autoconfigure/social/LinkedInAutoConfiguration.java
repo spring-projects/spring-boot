@@ -84,6 +84,7 @@ public class LinkedInAutoConfiguration {
 			return new LinkedInConnectionFactory(this.properties.getAppId(),
 					this.properties.getAppSecret());
 		}
+
 	}
 
 }

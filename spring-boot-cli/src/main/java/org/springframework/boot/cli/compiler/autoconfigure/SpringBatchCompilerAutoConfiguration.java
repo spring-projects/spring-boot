@@ -64,4 +64,5 @@ public class SpringBatchCompilerAutoConfiguration extends CompilerAutoConfigurat
 				"org.springframework.batch.core.converter.JobParametersConverter",
 				"org.springframework.batch.core.converter.DefaultJobParametersConverter");
 	}
+
 }

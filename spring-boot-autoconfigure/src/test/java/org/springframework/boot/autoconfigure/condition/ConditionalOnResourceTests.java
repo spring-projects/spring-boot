@@ -61,27 +61,34 @@ public class ConditionalOnResourceTests {
 	@Configuration
 	@ConditionalOnResource(resources = "foo")
 	protected static class MissingConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnResource(resources = "schema.sql")
 	protected static class BasicConfiguration {
+
 		@Bean
 		public String foo() {
 			return "foo";
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnResource(resources = "${schema}")
 	protected static class PlaceholderConfiguration {
+
 		@Bean
 		public String foo() {
 			return "foo";
 		}
+
 	}
+
 }

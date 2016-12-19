@@ -65,4 +65,5 @@ public class ClassLoaderFileURLStreamHandler extends URLStreamHandler {
 		}
 
 	}
+
 }

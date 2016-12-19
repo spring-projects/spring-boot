@@ -48,4 +48,5 @@ public class JUnitCompilerAutoConfiguration extends CompilerAutoConfiguration {
 				.addStaticStars("org.hamcrest.MatcherAssert")
 				.addStaticStars("org.hamcrest.Matchers");
 	}
+
 }

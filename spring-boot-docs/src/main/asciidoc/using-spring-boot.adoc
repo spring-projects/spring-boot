@@ -782,7 +782,7 @@ will cache compiled templates to avoid repeatedly parsing template files.
 Also, Spring MVC can add HTTP caching headers to responses when serving static resources.
 
 Whilst caching is very beneficial in production, it can be counter productive during
-development, preventing you from seeing the changes you just made in your application. 
+development, preventing you from seeing the changes you just made in your application.
 For this reason, spring-boot-devtools will disable those caching options by default.
 
 Cache options are usually configured by settings in your `application.properties` file.

@@ -220,6 +220,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 			}
 			return false;
 		}
+
 	}
 
 	/**

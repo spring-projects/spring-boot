@@ -95,4 +95,5 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor
 			throw ex;
 		}
 	}
+
 }

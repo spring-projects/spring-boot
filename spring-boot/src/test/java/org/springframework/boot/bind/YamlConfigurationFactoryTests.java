@@ -100,13 +100,18 @@ public class YamlConfigurationFactoryTests {
 	}
 
 	private static class Foo {
+
 		@NotNull
 		public String name;
 
 		public String bar;
+
 	}
 
 	private static class Jee {
+
 		public Map<Object, Object> mymap;
+
 	}
+
 }

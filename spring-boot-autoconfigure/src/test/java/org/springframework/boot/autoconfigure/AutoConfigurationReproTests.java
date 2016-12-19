@@ -58,6 +58,7 @@ public class AutoConfigurationReproTests {
 
 	@Configuration
 	public static class Config {
+
 	}
 
 	@Configuration

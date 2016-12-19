@@ -61,4 +61,5 @@ public class SpringIntegrationCompilerAutoConfiguration
 				"org.springframework.integration.config.EnableIntegration");
 		imports.addStarImports("org.springframework.integration.annotation");
 	}
+
 }

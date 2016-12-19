@@ -269,6 +269,7 @@ public class FlywayAutoConfigurationTests {
 			initializer.setOrder(Ordered.HIGHEST_PRECEDENCE);
 			return initializer;
 		}
+
 	}
 
 	@Configuration
@@ -310,6 +311,7 @@ public class FlywayAutoConfigurationTests {
 		public void assertCalled() {
 			assertThat(this.called).isTrue();
 		}
+
 	}
 
 }

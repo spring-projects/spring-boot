@@ -71,6 +71,7 @@ import org.springframework.retry.support.RetryTemplate;
  * <li>{@literal spring.rabbitmq.virtualHost} is used to specify the (optional) virtual
  * host to which the client should connect.</li>
  * </ul>
+ *
  * @author Greg Turnquist
  * @author Josh Long
  * @author Stephane Nicoll

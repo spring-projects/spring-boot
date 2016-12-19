@@ -171,7 +171,9 @@ public class SecurityProperties implements SecurityPrerequisite {
 	public static class Headers {
 
 		public enum HSTS {
+
 			NONE, DOMAIN, ALL
+
 		}
 
 		public enum ContentSecurityPolicyMode {

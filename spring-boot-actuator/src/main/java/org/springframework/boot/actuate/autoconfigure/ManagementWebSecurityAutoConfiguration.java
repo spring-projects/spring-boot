@@ -126,6 +126,7 @@ public class ManagementWebSecurityAutoConfiguration {
 			}
 
 		}
+
 	}
 
 	@Configuration
@@ -158,6 +159,7 @@ public class ManagementWebSecurityAutoConfiguration {
 	@Conditional(WebSecurityEnablerCondition.class)
 	@EnableWebSecurity
 	protected static class WebSecurityEnabler extends AuthenticationManagerConfiguration {
+
 	}
 
 	/**

@@ -67,6 +67,7 @@ public class GenericConfig<T> {
 		public Map<String, Integer> getStringToInteger() {
 			return this.stringToInteger;
 		}
+
 	}
 
 	public static class Bar<U> {
@@ -99,6 +100,7 @@ public class GenericConfig<T> {
 			public void setName(String name) {
 				this.name = name;
 			}
+
 		}
 
 	}

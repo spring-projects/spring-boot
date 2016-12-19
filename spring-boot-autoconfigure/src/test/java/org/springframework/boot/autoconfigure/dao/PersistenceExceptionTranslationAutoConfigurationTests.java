@@ -99,6 +99,7 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 		public TestRepository testRepository(EntityManagerFactory entityManagerFactory) {
 			return new TestRepository(entityManagerFactory.createEntityManager());
 		}
+
 	}
 
 	@Repository
@@ -113,6 +114,7 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 		public void doSomething() {
 			this.entityManager.persist(null);
 		}
+
 	}
 
 }

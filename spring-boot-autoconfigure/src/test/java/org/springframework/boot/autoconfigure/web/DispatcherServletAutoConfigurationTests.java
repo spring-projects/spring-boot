@@ -243,6 +243,7 @@ public class DispatcherServletAutoConfigurationTests {
 		public String dispatcherServlet() {
 			return "spring";
 		}
+
 	}
 
 	@Configuration

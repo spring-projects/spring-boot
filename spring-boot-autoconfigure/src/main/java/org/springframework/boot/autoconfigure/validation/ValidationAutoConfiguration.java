@@ -56,7 +56,8 @@ public class ValidationAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MethodValidationPostProcessor methodValidationPostProcessor(Validator validator) {
+	public MethodValidationPostProcessor methodValidationPostProcessor(
+			Validator validator) {
 		MethodValidationPostProcessor processor = new MethodValidationPostProcessor();
 		processor.setValidator(validator);
 		return processor;

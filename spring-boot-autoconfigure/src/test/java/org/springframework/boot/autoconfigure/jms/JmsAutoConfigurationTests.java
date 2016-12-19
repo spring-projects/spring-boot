@@ -412,6 +412,7 @@ public class JmsAutoConfigurationTests {
 
 	@Configuration
 	protected static class TestConfiguration {
+
 	}
 
 	@Configuration
@@ -552,6 +553,7 @@ public class JmsAutoConfigurationTests {
 			return factory;
 
 		}
+
 	}
 
 	@Configuration

@@ -761,6 +761,7 @@ public class CacheAutoConfigurationTests {
 	@Import({ GenericCacheConfiguration.class,
 			CacheManagerCustomizersConfiguration.class })
 	static class GenericCacheAndCustomizersConfiguration {
+
 	}
 
 	@Configuration

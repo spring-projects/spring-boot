@@ -68,8 +68,7 @@ public class WebMvcTestAllControllersIntegrationTests {
 
 	@Test
 	public void shouldRunValidationSuccess() throws Exception {
-		this.mvc.perform(get("/three/OK"))
-				.andExpect(status().isOk())
+		this.mvc.perform(get("/three/OK")).andExpect(status().isOk())
 				.andExpect(content().string("Hello OK"));
 	}
 

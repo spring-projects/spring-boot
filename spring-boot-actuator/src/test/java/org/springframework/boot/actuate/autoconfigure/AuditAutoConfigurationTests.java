@@ -101,6 +101,7 @@ public class AuditAutoConfigurationTests {
 	}
 
 	public static class TestAuditEventRepository extends InMemoryAuditEventRepository {
+
 	}
 
 	@Configuration
