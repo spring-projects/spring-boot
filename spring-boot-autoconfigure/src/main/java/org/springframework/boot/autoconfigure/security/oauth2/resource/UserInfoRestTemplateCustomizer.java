@@ -33,7 +33,6 @@ public interface UserInfoRestTemplateCustomizer {
 
 	/**
 	 * Customize the rest template before it is initialized.
-	 *
 	 * @param template the rest template
 	 */
 	void customize(OAuth2RestTemplate template);

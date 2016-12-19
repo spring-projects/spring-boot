@@ -132,4 +132,5 @@ public class CloudFoundryVcapEnvironmentPostProcessorTests {
 	private String getProperty(String key) {
 		return this.context.getEnvironment().getProperty(key);
 	}
+
 }

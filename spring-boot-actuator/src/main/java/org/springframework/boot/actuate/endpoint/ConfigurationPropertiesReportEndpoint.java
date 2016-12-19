@@ -332,6 +332,7 @@ public class ConfigurationPropertiesReportEndpoint
 			}
 			return setter;
 		}
+
 	}
 
 }

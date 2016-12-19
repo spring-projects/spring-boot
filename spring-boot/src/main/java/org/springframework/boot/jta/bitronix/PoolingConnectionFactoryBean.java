@@ -115,6 +115,7 @@ public class PoolingConnectionFactoryBean extends PoolingConnectionFactory
 	/**
 	 * A {@link XAConnectionFactory} implementation that delegates to the
 	 * {@link ThreadLocal} {@link PoolingConnectionFactoryBean}.
+	 *
 	 * @see PoolingConnectionFactoryBean#setConnectionFactory(XAConnectionFactory)
 	 */
 	public static class DirectXAConnectionFactory implements XAConnectionFactory {

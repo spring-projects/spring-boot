@@ -60,6 +60,7 @@ public class MustacheAutoConfigurationIntegrationTests {
 
 	@Autowired
 	private EmbeddedWebApplicationContext context;
+
 	private int port;
 
 	@Before
@@ -117,6 +118,7 @@ public class MustacheAutoConfigurationIntegrationTests {
 			DispatcherServletAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
+
 	}
 
 }

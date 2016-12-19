@@ -79,6 +79,7 @@ abstract class DataSourceConfiguration {
 		public HikariDataSource dataSource(DataSourceProperties properties) {
 			return createDataSource(properties, HikariDataSource.class);
 		}
+
 	}
 
 	/**
@@ -105,6 +106,7 @@ abstract class DataSourceConfiguration {
 			}
 			return dataSource;
 		}
+
 	}
 
 	/**
@@ -121,6 +123,7 @@ abstract class DataSourceConfiguration {
 			return createDataSource(properties,
 					org.apache.commons.dbcp2.BasicDataSource.class);
 		}
+
 	}
 
 	/**

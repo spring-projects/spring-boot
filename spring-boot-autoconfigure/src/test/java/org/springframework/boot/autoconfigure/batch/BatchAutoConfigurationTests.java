@@ -269,11 +269,13 @@ public class BatchAutoConfigurationTests {
 
 	@Configuration
 	protected static class EmptyConfiguration {
+
 	}
 
 	@EnableBatchProcessing
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfiguration {
+
 	}
 
 	@EnableBatchProcessing
@@ -281,6 +283,7 @@ public class BatchAutoConfigurationTests {
 	protected static class TestCustomConfiguration implements BatchConfigurer {
 
 		private JobRepository jobRepository;
+
 		private MapJobRepositoryFactoryBean factory = new MapJobRepositoryFactoryBean();
 
 		@Override
@@ -311,10 +314,12 @@ public class BatchAutoConfigurationTests {
 			explorer.afterPropertiesSet();
 			return explorer.getObject();
 		}
+
 	}
 
 	@EnableBatchProcessing
 	protected static class NamedJobConfigurationWithRegisteredJob {
+
 		@Autowired
 		private JobRegistry jobRegistry;
 
@@ -351,6 +356,7 @@ public class BatchAutoConfigurationTests {
 			job.setJobRepository(this.jobRepository);
 			return job;
 		}
+
 	}
 
 	@EnableBatchProcessing
@@ -382,10 +388,12 @@ public class BatchAutoConfigurationTests {
 			job.setJobRepository(this.jobRepository);
 			return job;
 		}
+
 	}
 
 	@EnableBatchProcessing
 	protected static class JobConfiguration {
+
 		@Autowired
 		private JobRepository jobRepository;
 
@@ -412,6 +420,7 @@ public class BatchAutoConfigurationTests {
 			job.setJobRepository(this.jobRepository);
 			return job;
 		}
+
 	}
 
 }

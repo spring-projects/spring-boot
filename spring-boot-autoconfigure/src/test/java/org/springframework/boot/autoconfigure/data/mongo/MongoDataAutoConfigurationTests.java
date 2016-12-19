@@ -201,6 +201,7 @@ public class MongoDataAutoConfigurationTests {
 		public CustomConversions customConversions() {
 			return new CustomConversions(Arrays.asList(new MyConverter()));
 		}
+
 	}
 
 	@Configuration
@@ -223,4 +224,5 @@ public class MongoDataAutoConfigurationTests {
 		LocalDateTime date;
 
 	}
+
 }

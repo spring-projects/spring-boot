@@ -47,4 +47,5 @@ public class ExampleFilter implements Filter {
 		chain.doFilter(request, response);
 		response.getWriter().write("]");
 	}
+
 }

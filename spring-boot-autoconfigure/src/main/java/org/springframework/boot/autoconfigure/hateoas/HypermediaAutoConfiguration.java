@@ -126,4 +126,5 @@ public class HypermediaAutoConfiguration {
 		}
 
 	}
+
 }

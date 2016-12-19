@@ -77,4 +77,5 @@ class AnsiString {
 	public String toString() {
 		return this.value.toString();
 	}
+
 }

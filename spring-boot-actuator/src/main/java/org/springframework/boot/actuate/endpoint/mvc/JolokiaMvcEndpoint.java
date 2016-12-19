@@ -116,6 +116,7 @@ public class JolokiaMvcEndpoint extends AbstractNamedMvcEndpoint
 			}
 			return value;
 		}
+
 	}
 
 }

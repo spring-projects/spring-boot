@@ -48,4 +48,5 @@ public class SpringRetryCompilerAutoConfiguration extends CompilerAutoConfigurat
 	public void applyImports(ImportCustomizer imports) {
 		imports.addStarImports("org.springframework.retry.annotation");
 	}
+
 }

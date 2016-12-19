@@ -499,6 +499,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		public void setFoo(String foo) {
 			this.foo = foo;
 		}
+
 	}
 
 	public static class CustomPropertyValidator implements Validator {
@@ -577,7 +578,9 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	enum FooEnum {
+
 		FOO, BAZ, BAR
+
 	}
 
 	@Configuration

@@ -279,6 +279,7 @@ public class PublicMetricsAutoConfigurationTests {
 		public DataSource commonsDbcpDataSource() {
 			return InitializedBuilder.create().type(BasicDataSource.class).build();
 		}
+
 	}
 
 	@Configuration
@@ -295,6 +296,7 @@ public class PublicMetricsAutoConfigurationTests {
 		public DataSource commonsDbcpDataSource() {
 			return InitializedBuilder.create().type(BasicDataSource.class).build();
 		}
+
 	}
 
 	@Configuration
@@ -311,6 +313,7 @@ public class PublicMetricsAutoConfigurationTests {
 		public DataSource dataSource() {
 			return InitializedBuilder.create().type(BasicDataSource.class).build();
 		}
+
 	}
 
 	@Configuration
@@ -326,6 +329,7 @@ public class PublicMetricsAutoConfigurationTests {
 				}
 			};
 		}
+
 	}
 
 	@Configuration
@@ -386,4 +390,5 @@ public class PublicMetricsAutoConfigurationTests {
 		}
 
 	}
+
 }

@@ -79,6 +79,7 @@ public class DevToolsHomePropertiesPostProcessorTests {
 		protected File getHomeFolder() {
 			return DevToolsHomePropertiesPostProcessorTests.this.home;
 		}
+
 	}
 
 }

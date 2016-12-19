@@ -114,6 +114,7 @@ public class DefaultErrorViewIntegrationTests {
 			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
+
 	}
 
 	@Configuration

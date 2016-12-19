@@ -233,6 +233,7 @@ public class BindingPreparationTests {
 	}
 
 	public static class TargetWithNestedMap {
+
 		private Map<String, Object> nested;
 
 		public Map<String, Object> getNested() {
@@ -242,9 +243,11 @@ public class BindingPreparationTests {
 		public void setNested(Map<String, Object> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedMapOfListOfString {
+
 		private Map<String, List<String>> nested;
 
 		public Map<String, List<String>> getNested() {
@@ -254,9 +257,11 @@ public class BindingPreparationTests {
 		public void setNested(Map<String, List<String>> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedListOfMaps {
+
 		private List<Map<String, String>> nested;
 
 		public List<Map<String, String>> getNested() {
@@ -266,9 +271,11 @@ public class BindingPreparationTests {
 		public void setNested(List<Map<String, String>> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedListOfLists {
+
 		private List<List<String>> nested;
 
 		public List<List<String>> getNested() {
@@ -278,9 +285,11 @@ public class BindingPreparationTests {
 		public void setNested(List<List<String>> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedListOfBeansWithList {
+
 		private List<TargetWithList> nested;
 
 		public List<TargetWithList> getNested() {
@@ -290,9 +299,11 @@ public class BindingPreparationTests {
 		public void setNested(List<TargetWithList> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithList {
+
 		private List<VanillaTarget> list;
 
 		public List<VanillaTarget> getList() {
@@ -306,6 +317,7 @@ public class BindingPreparationTests {
 	}
 
 	public static class TargetWithNestedMapOfBean {
+
 		private Map<String, VanillaTarget> nested;
 
 		public Map<String, VanillaTarget> getNested() {
@@ -315,6 +327,7 @@ public class BindingPreparationTests {
 		public void setNested(Map<String, VanillaTarget> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class VanillaTarget {

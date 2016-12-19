@@ -90,14 +90,17 @@ public class JolokiaMvcEndpointContextPathTests {
 			EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class })
 	public static class Config {
+
 	}
 
 	public static class ContextPathListener
 			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
 		@Override
 		public void initialize(ConfigurableApplicationContext context) {
 			EnvironmentTestUtils.addEnvironment(context, "management.contextPath:/admin");
 		}
 
 	}
+
 }

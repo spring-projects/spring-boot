@@ -100,6 +100,7 @@ public class JerseyAutoConfigurationCustomServletContextPathTests {
 			ServerPropertiesAutoConfiguration.class, JerseyAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
+
 	}
 
 }

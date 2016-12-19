@@ -53,10 +53,12 @@ public class SpringIntegrationMetricReaderTests {
 	@Configuration
 	@Import({ JmxAutoConfiguration.class, IntegrationAutoConfiguration.class })
 	protected static class TestConfiguration {
+
 		@Bean
 		public SpringIntegrationMetricReader reader(IntegrationMBeanExporter exporter) {
 			return new SpringIntegrationMetricReader(exporter);
 		}
+
 	}
 
 }

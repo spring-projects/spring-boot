@@ -318,6 +318,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		}
 
 		public static class Bar {
+
 			private String name = "123456";
 
 			public String getName() {
@@ -327,6 +328,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 			public void setName(String name) {
 				this.name = name;
 			}
+
 		}
 
 	}

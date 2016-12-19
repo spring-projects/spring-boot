@@ -68,6 +68,7 @@ public class ReactorAutoConfigurationTests {
 		public EventBus customEventBus() {
 			return EventBus.create(dispatcher());
 		}
+
 	}
 
 }

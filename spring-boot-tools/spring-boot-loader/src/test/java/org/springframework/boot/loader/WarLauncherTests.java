@@ -60,4 +60,5 @@ public class WarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 				new URL("jar:" + jarRoot.toURI().toURL() + "!/WEB-INF/classes!/"),
 				new URL("jar:" + jarRoot.toURI().toURL() + "!/WEB-INF/lib/foo.jar!/"));
 	}
+
 }

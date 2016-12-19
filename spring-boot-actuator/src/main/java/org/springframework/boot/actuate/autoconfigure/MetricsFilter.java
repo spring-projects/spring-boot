@@ -145,7 +145,8 @@ final class MetricsFilter extends OncePerRequestFilter {
 				suffix);
 	}
 
-	private String determineMetricNameSuffix(HttpServletRequest request, String path, int status) {
+	private String determineMetricNameSuffix(HttpServletRequest request, String path,
+			int status) {
 		Object bestMatchingPattern = request
 				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 		if (bestMatchingPattern != null) {

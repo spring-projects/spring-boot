@@ -130,6 +130,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
+
 	}
 
 	@Configuration

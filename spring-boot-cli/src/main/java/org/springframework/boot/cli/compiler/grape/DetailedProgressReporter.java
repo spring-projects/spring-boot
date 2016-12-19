@@ -66,4 +66,5 @@ final class DetailedProgressReporter implements ProgressReporter {
 	@Override
 	public void finished() {
 	}
+
 }

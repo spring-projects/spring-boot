@@ -110,10 +110,12 @@ public class MailSenderAutoConfiguration {
 
 		@ConditionalOnProperty(prefix = "spring.mail", name = "host")
 		static class HostProperty {
+
 		}
 
 		@ConditionalOnProperty(prefix = "spring.mail", name = "jndi-name")
 		static class JndiNameProperty {
+
 		}
 
 	}

@@ -78,4 +78,5 @@ public class DependencyAutoConfigurationTransformation implements ASTTransformat
 			}
 		}
 	}
+
 }

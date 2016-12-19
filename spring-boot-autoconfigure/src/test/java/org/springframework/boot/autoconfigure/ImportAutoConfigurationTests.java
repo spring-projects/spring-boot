@@ -79,21 +79,25 @@ public class ImportAutoConfigurationTests {
 
 	@Configuration
 	static class ConfigA {
+
 	}
 
 	@Configuration
 	@AutoConfigureAfter(ConfigA.class)
 	static class ConfigB {
+
 	}
 
 	@Configuration
 	@AutoConfigureAfter(ConfigB.class)
 	static class ConfigC {
+
 	}
 
 	@Configuration
 	@AutoConfigureAfter(ConfigC.class)
 	static class ConfigD {
+
 	}
 
 }

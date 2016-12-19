@@ -425,6 +425,7 @@ public class OAuth2AutoConfigurationTests {
 	@Configuration
 	@EnableOAuth2Client
 	protected static class ClientConfiguration extends TestSecurityConfiguration {
+
 	}
 
 	@Configuration

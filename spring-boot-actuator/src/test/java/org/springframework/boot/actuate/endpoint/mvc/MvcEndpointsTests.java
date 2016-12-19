@@ -101,6 +101,7 @@ public class MvcEndpointsTests {
 		public String invoke() {
 			return "foo";
 		}
+
 	}
 
 	private static class TestMvcEndpoint extends EndpointMvcAdapter {

@@ -160,19 +160,23 @@ public class ConditionalOnBeanTests {
 	@Configuration
 	@ConditionalOnBean(String.class)
 	protected static class OnBeanClassConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnBean(type = "java.lang.String")
 	protected static class OnBeanClassNameConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
