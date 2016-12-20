@@ -40,6 +40,7 @@
 		<module>spring-boot-sample-data-mongodb</module>
 		<module>spring-boot-sample-data-neo4j</module>
 		<module>spring-boot-sample-data-redis</module>
+		<module>spring-boot-sample-data-redis-embedded</module>
 		<module>spring-boot-sample-data-rest</module>
 		<module>spring-boot-sample-data-solr</module>
 		<module>spring-boot-sample-devtools</module>

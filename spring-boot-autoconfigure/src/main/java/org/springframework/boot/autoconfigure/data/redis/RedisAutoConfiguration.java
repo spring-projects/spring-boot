@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Sentine
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisNode;
@@ -84,15 +85,15 @@ public class RedisAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(RedisConnectionFactory.class)
-		public JedisConnectionFactory redisConnectionFactory()
+		public JedisConnectionFactory redisConnectionFactory(Environment environment)
 				throws UnknownHostException {
-			return applyProperties(createJedisConnectionFactory());
+			return applyProperties(createJedisConnectionFactory(), environment);
 		}
 
 		protected final JedisConnectionFactory applyProperties(
-				JedisConnectionFactory factory) {
+				JedisConnectionFactory factory, Environment environment) {
 			factory.setHostName(this.properties.getHost());
-			factory.setPort(this.properties.getPort());
+			factory.setPort(this.properties.determinePort(environment));
 			if (this.properties.getPassword() != null) {
 				factory.setPassword(this.properties.getPassword());
 			}
