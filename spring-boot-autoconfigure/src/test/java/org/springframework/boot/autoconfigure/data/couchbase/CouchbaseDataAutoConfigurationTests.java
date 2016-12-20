@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.couchbase;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.junit.After;
@@ -23,17 +24,22 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfigurer;
 import org.springframework.boot.autoconfigure.data.couchbase.city.City;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.couchbase.config.AbstractCouchbaseDataConfiguration;
+import org.springframework.data.couchbase.config.BeanNames;
 import org.springframework.data.couchbase.config.CouchbaseConfigurer;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
+import org.springframework.data.couchbase.core.convert.CustomConversions;
 import org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext;
 import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
 import org.springframework.data.couchbase.core.query.Consistency;
@@ -119,6 +125,14 @@ public class CouchbaseDataAutoConfigurationTests {
 		assertThat(initialEntitySet).containsOnly(City.class);
 	}
 
+	@Test
+	public void customConversions() {
+		load(CustomConversionsConfig.class);
+		CouchbaseTemplate template = this.context.getBean(CouchbaseTemplate.class);
+		assertThat(template.getConverter().getConversionService()
+				.canConvert(CouchbaseProperties.class, Boolean.class)).isTrue();
+	}
+
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(context, environment);
@@ -148,10 +162,29 @@ public class CouchbaseDataAutoConfigurationTests {
 	}
 
 	@Configuration
+	@Import(CouchbaseTestConfigurer.class)
+	static class CustomConversionsConfig {
+
+		@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
+		public CustomConversions myCustomConversions() {
+			return new CustomConversions(Collections.singletonList(new MyConverter()));
+		}
+
+	}
+
+	@Configuration
 	@EntityScan("org.springframework.boot.autoconfigure.data.couchbase.city")
 	@Import(CustomCouchbaseConfiguration.class)
 	static class EntityScanConfig {
 
+	}
+
+	static class MyConverter implements Converter<CouchbaseProperties, Boolean> {
+
+		@Override
+		public Boolean convert(CouchbaseProperties value) {
+			return true;
+		}
 	}
 
 }

@@ -3778,10 +3778,7 @@ http://docs.spring.io/spring-data/couchbase/docs/current/reference/html/[referen
 
 You can inject an auto-configured `CouchbaseTemplate` instance as you would with any
 other Spring Bean as long as a _default_ `CouchbaseConfigurer` is available (that
-happens when you enable the couchbase support as explained above). If you want to
-bypass the auto-configuration for Spring Data Couchbase, provide your own
-`org.springframework.data.couchbase.config.AbstractCouchbaseDataConfiguration`
-implementation.
+happens when you enable the couchbase support as explained above).
 
 
 [source,java,indent=0]
@@ -3801,8 +3798,35 @@ implementation.
 	}
 ----
 
-If you add a `@Bean` of your own of type `CouchbaseTemplate` named `couchbaseTemplate` it
-will replace the default.
+There are a few beans that you can define in your own configuration to override those
+provided by the auto-configuration:
+
+* A `CouchbaseTemplate` `@Bean` with name `couchbaseTemplate`
+* An `IndexManager` `@Bean` with name `couchbaseIndexManager`
+* A `CustomConversions` `@Bean` with name `couchbaseCustomConversions`
+
+To avoid hard-coding those names in your own config, you can reuse `BeanNames` provided
+by Spring Data Couchbase. For instance, you can customize the converters to use as
+follows:
+
+[source,java,indent=0]
+----
+	@Configuration
+	public class SomeConfiguration {
+
+		@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
+		public CustomConversions myCustomConversions() {
+			return new CustomConversions(...);
+		}
+
+		// ...
+
+	}
+----
+
+TIP: If you want to fully bypass the auto-configuration for Spring Data Couchbase, provide
+your own `org.springframework.data.couchbase.config.AbstractCouchbaseDataConfiguration`
+implementation.
 
 
 
