@@ -16,12 +16,6 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -76,7 +70,7 @@ import org.springframework.util.StringUtils;
 public class OAuth2RestOperationsConfiguration {
 
 	@Configuration
-	@ConditionalOnClientCredentials
+	@Conditional(ClientCredentialsCondition.class)
 	protected static class SingletonScopedConfiguration {
 
 		@Bean
@@ -96,7 +90,7 @@ public class OAuth2RestOperationsConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(OAuth2ClientConfiguration.class)
-	@ConditionalOnNotClientCredentials
+	@Conditional(NoClientCredentialsCondition.class)
 	@Import(OAuth2ProtectedResourceDetailsConfiguration.class)
 	protected static class SessionScopedConfiguration {
 
@@ -126,15 +120,13 @@ public class OAuth2RestOperationsConfiguration {
 
 	}
 
-	/*
-	 * When the authentication is per cookie but the stored token is an oauth2 one, we can
-	 * pass that on to a client that wants to call downstream. We don't even need an
-	 * OAuth2ClientContextFilter until we need to refresh the access token. To handle
-	 * refresh tokens you need to {@code @EnableOAuth2Client}
-	 */
+	// When the authentication is per cookie but the stored token is an oauth2 one, we can
+	// pass that on to a client that wants to call downstream. We don't even need an
+	// OAuth2ClientContextFilter until we need to refresh the access token. To handle
+	// refresh tokens you need to @EnableOAuth2Client
 	@Configuration
 	@ConditionalOnMissingBean(OAuth2ClientConfiguration.class)
-	@ConditionalOnNotClientCredentials
+	@Conditional(NoClientCredentialsCondition.class)
 	@Import(OAuth2ProtectedResourceDetailsConfiguration.class)
 	protected static class RequestScopedConfiguration {
 
@@ -182,22 +174,24 @@ public class OAuth2RestOperationsConfiguration {
 
 	}
 
-	@Conditional(ClientCredentialsCondition.class)
-	@Target({ ElementType.TYPE, ElementType.METHOD })
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	public static @interface ConditionalOnClientCredentials {
+	/**
+	 * Condition to check for no client credentials.
+	 */
+	static class NoClientCredentialsCondition extends NoneNestedConditions {
+
+		NoClientCredentialsCondition() {
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
+		}
+
+		@Conditional(ClientCredentialsCondition.class)
+		static class ClientCredentialsActivated {
+		}
 
 	}
 
-	@Conditional(NotClientCredentialsCondition.class)
-	@Target({ ElementType.TYPE, ElementType.METHOD })
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	public static @interface ConditionalOnNotClientCredentials {
-
-	}
-
+	/**
+	 * Condition to check for client credentials.
+	 */
 	static class ClientCredentialsCondition extends AnyNestedCondition {
 
 		ClientCredentialsCondition() {
@@ -210,17 +204,6 @@ public class OAuth2RestOperationsConfiguration {
 
 		@ConditionalOnNotWebApplication
 		static class NoWebApplication {
-		}
-	}
-
-	static class NotClientCredentialsCondition extends NoneNestedConditions {
-
-		NotClientCredentialsCondition() {
-			super(ConfigurationPhase.PARSE_CONFIGURATION);
-		}
-
-		@ConditionalOnClientCredentials
-		static class ClientCredentialsActivated {
 		}
 
 	}
