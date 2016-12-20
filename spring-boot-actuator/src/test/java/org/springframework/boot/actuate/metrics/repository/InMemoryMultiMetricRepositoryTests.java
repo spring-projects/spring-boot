@@ -16,7 +16,9 @@
 
 package org.springframework.boot.actuate.metrics.repository;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -29,15 +31,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Dave Syer
  */
-public class InMemoryPrefixMetricRepositoryTests {
+public class InMemoryMultiMetricRepositoryTests {
 
-	private final InMemoryMetricRepository repository = new InMemoryMetricRepository();
+	private final InMemoryMultiMetricRepository repository =
+			new InMemoryMultiMetricRepository();
 
 	@Test
 	public void registeredPrefixCounted() {
-		this.repository.increment(new Delta<Number>("foo.bar", 1));
-		this.repository.increment(new Delta<Number>("foo.bar", 1));
-		this.repository.increment(new Delta<Number>("foo.spam", 1));
+		this.repository.increment("foo", new Delta<Number>("bar", 1));
+		this.repository.increment("foo", new Delta<Number>("bar", 1));
+		this.repository.increment("foo", new Delta<Number>("spam", 1));
 		Set<String> names = new HashSet<String>();
 		for (Metric<?> metric : this.repository.findAll("foo")) {
 			names.add(metric.getName());
@@ -48,7 +51,7 @@ public class InMemoryPrefixMetricRepositoryTests {
 
 	@Test
 	public void prefixWithWildcard() {
-		this.repository.increment(new Delta<Number>("foo.bar", 1));
+		this.repository.increment("foo", new Delta<Number>("bar", 1));
 		Set<String> names = new HashSet<String>();
 		for (Metric<?> metric : this.repository.findAll("foo.*")) {
 			names.add(metric.getName());
@@ -59,7 +62,7 @@ public class InMemoryPrefixMetricRepositoryTests {
 
 	@Test
 	public void prefixWithPeriod() {
-		this.repository.increment(new Delta<Number>("foo.bar", 1));
+		this.repository.increment("foo", new Delta<Number>("bar", 1));
 		Set<String> names = new HashSet<String>();
 		for (Metric<?> metric : this.repository.findAll("foo.")) {
 			names.add(metric.getName());
@@ -70,8 +73,8 @@ public class InMemoryPrefixMetricRepositoryTests {
 
 	@Test
 	public void onlyRegisteredPrefixCounted() {
-		this.repository.increment(new Delta<Number>("foo.bar", 1));
-		this.repository.increment(new Delta<Number>("foobar.spam", 1));
+		this.repository.increment("foo", new Delta<Number>("bar", 1));
+		this.repository.increment("foobar", new Delta<Number>("spam", 1));
 		Set<String> names = new HashSet<String>();
 		for (Metric<?> metric : this.repository.findAll("foo")) {
 			names.add(metric.getName());
@@ -85,13 +88,13 @@ public class InMemoryPrefixMetricRepositoryTests {
 		this.repository.increment("foo", new Delta<Number>("foo.bar", 1));
 		this.repository.increment("foo", new Delta<Number>("foo.bar", 2));
 		this.repository.increment("foo", new Delta<Number>("foo.spam", 1));
-		Set<String> names = new HashSet<String>();
+		Map<String, Metric<?>> metrics = new HashMap<String, Metric<?>>();
 		for (Metric<?> metric : this.repository.findAll("foo")) {
-			names.add(metric.getName());
+			metrics.put(metric.getName(), metric);
 		}
-		assertThat(names).hasSize(2);
-		assertThat(names.contains("foo.bar")).isTrue();
-		assertThat(this.repository.findOne("foo.bar").getValue()).isEqualTo(3L);
+		assertThat(metrics).hasSize(2);
+		assertThat(metrics).containsKeys("foo.bar", "foo.spam");
+		assertThat(metrics.get("foo.bar").getValue()).isEqualTo(3L);
 	}
 
 }

@@ -28,6 +28,7 @@ import org.springframework.boot.actuate.metrics.buffer.GaugeBuffers;
 import org.springframework.boot.actuate.metrics.export.Exporter;
 import org.springframework.boot.actuate.metrics.export.MetricCopyExporter;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
+import org.springframework.boot.actuate.metrics.repository.InMemoryMultiMetricRepository;
 import org.springframework.boot.actuate.metrics.writer.DefaultCounterService;
 import org.springframework.boot.actuate.metrics.writer.DefaultGaugeService;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
@@ -152,6 +153,13 @@ public class MetricRepositoryAutoConfiguration {
 		@ActuatorMetricWriter
 		public InMemoryMetricRepository actuatorMetricRepository() {
 			return new InMemoryMetricRepository();
+		}
+
+		@Bean
+		@ExportMetricReader
+		@ActuatorMetricWriter
+		public InMemoryMultiMetricRepository actuatorMultiMetricRepository() {
+			return new InMemoryMultiMetricRepository(actuatorMetricRepository());
 		}
 
 	}
