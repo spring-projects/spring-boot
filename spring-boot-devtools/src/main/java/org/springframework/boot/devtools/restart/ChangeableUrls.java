@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -29,6 +30,9 @@ import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.devtools.settings.DevToolsSettings;
 import org.springframework.util.StringUtils;
@@ -41,6 +45,8 @@ import org.springframework.util.StringUtils;
  */
 final class ChangeableUrls implements Iterable<URL> {
 
+	private static final Log logger = LogFactory.getLog(ChangeableUrls.class);
+
 	private final List<URL> urls;
 
 	private ChangeableUrls(URL... urls) {
@@ -52,6 +58,11 @@ final class ChangeableUrls implements Iterable<URL> {
 				reloadableUrls.add(url);
 			}
 		}
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("Matching URLs for reloading : " + Arrays.toString(reloadableUrls.toArray()));
+		}
+
 		this.urls = Collections.unmodifiableList(reloadableUrls);
 	}
 

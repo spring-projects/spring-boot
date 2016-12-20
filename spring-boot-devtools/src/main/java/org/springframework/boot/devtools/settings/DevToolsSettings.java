@@ -18,11 +18,15 @@ package org.springframework.boot.devtools.settings;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -39,6 +43,8 @@ public class DevToolsSettings {
 	 * The location to look for settings properties. Can be present in multiple JAR files.
 	 */
 	public static final String SETTINGS_RESOURCE_LOCATION = "META-INF/spring-devtools.properties";
+
+	private static final Log logger = LogFactory.getLog(DevToolsSettings.class);
 
 	private static DevToolsSettings settings;
 
@@ -85,6 +91,12 @@ public class DevToolsSettings {
 		return false;
 	}
 
+	private static void logMessage(String message) {
+		if (logger.isDebugEnabled()) {
+			logger.debug(message);
+		}
+	}
+
 	public static DevToolsSettings get() {
 		if (settings == null) {
 			settings = load();
@@ -105,6 +117,10 @@ public class DevToolsSettings {
 				settings.add(PropertiesLoaderUtils
 						.loadProperties(new UrlResource(urls.nextElement())));
 			}
+
+			logMessage("Included patterns for restart : " + Arrays.toString(settings.restartIncludePatterns.toArray()));
+			logMessage("Excluded patterns for restart : " + Arrays.toString(settings.restartExcludePatterns.toArray()));
+
 			return settings;
 		}
 		catch (Exception ex) {
