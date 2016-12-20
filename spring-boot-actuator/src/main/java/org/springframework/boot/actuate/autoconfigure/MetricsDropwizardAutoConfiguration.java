@@ -16,17 +16,25 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import com.codahale.metrics.MetricRegistry;
+import javax.sql.DataSource;
 
+import com.codahale.metrics.MetricRegistry;
+import com.zaxxer.hikari.HikariDataSource;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
 import org.springframework.boot.actuate.metrics.reader.MetricRegistryMetricReader;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -34,11 +42,13 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for Dropwizard-based metrics.
  *
  * @author Dave Syer
+ * @author Tommy Ludwig
  * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass(MetricRegistry.class)
 @AutoConfigureBefore(MetricRepositoryAutoConfiguration.class)
+@AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class MetricsDropwizardAutoConfiguration {
 
 	@Bean
@@ -61,6 +71,45 @@ public class MetricsDropwizardAutoConfiguration {
 		MetricRegistryMetricReader reader = new MetricRegistryMetricReader(
 				metricRegistry);
 		return new MetricReaderPublicMetrics(reader);
+	}
+
+	@Bean
+	@ConditionalOnClass(HikariDataSource.class)
+	@ConditionalOnBean(DataSource.class)
+	public HikariMetricRegistryConfigurer hikariMetricRegistryConfigurer(
+			MetricRegistry metricRegistry) {
+		return new HikariMetricRegistryConfigurer(metricRegistry);
+	}
+
+	private static final class HikariMetricRegistryConfigurer
+			implements BeanPostProcessor {
+
+		private final MetricRegistry metricRegistry;
+
+		private HikariMetricRegistryConfigurer(MetricRegistry metricRegistry) {
+			this.metricRegistry = metricRegistry;
+		}
+
+		@Override
+		public Object postProcessBeforeInitialization(Object bean, String beanName)
+				throws BeansException {
+			if (bean instanceof HikariDataSource) {
+				customize((HikariDataSource) bean);
+			}
+			return bean;
+		}
+
+		private void customize(HikariDataSource dataSource) {
+			if (dataSource.getMetricRegistry() == null) {
+				dataSource.setMetricRegistry(this.metricRegistry);
+			}
+		}
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean, String beanName)
+				throws BeansException {
+			return bean;
+		}
 	}
 
 }
