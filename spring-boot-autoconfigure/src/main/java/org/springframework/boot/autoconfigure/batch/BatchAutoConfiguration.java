@@ -37,11 +37,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
 
 /**
@@ -57,6 +59,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Eddú Meléndez
+ * @author Kazuki Shimizu
  */
 @Configuration
 @ConditionalOnClass({ JobLauncher.class, DataSource.class, JdbcOperations.class })
@@ -133,15 +136,18 @@ public class BatchAutoConfiguration {
 		return factory;
 	}
 
-	@ConditionalOnClass(name = "javax.persistence.EntityManagerFactory")
+	@EnableConfigurationProperties({BatchProperties.class, TransactionProperties.class})
+	@ConditionalOnClass(value = PlatformTransactionManager.class, name = "javax.persistence.EntityManagerFactory")
 	@ConditionalOnMissingBean(BatchConfigurer.class)
 	@Configuration
 	protected static class JpaBatchConfiguration {
 
 		private final BatchProperties properties;
+		private final TransactionProperties transactionProperties;
 
-		protected JpaBatchConfiguration(BatchProperties properties) {
+		protected JpaBatchConfiguration(BatchProperties properties, TransactionProperties transactionProperties) {
 			this.properties = properties;
+			this.transactionProperties = transactionProperties;
 		}
 
 		// The EntityManagerFactory may not be discoverable by type when this condition
@@ -151,14 +157,14 @@ public class BatchAutoConfiguration {
 		@ConditionalOnBean(name = "entityManagerFactory")
 		public BasicBatchConfigurer jpaBatchConfigurer(DataSource dataSource,
 				EntityManagerFactory entityManagerFactory) {
-			return new BasicBatchConfigurer(this.properties, dataSource,
+			return new BasicBatchConfigurer(this.properties, this.transactionProperties, dataSource,
 					entityManagerFactory);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(name = "entityManagerFactory")
 		public BasicBatchConfigurer basicBatchConfigurer(DataSource dataSource) {
-			return new BasicBatchConfigurer(this.properties, dataSource);
+			return new BasicBatchConfigurer(this.properties, this.transactionProperties, dataSource);
 		}
 
 	}

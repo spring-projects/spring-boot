@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
+import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
@@ -59,8 +60,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  */
-@EnableConfigurationProperties(JpaProperties.class)
+@EnableConfigurationProperties({JpaProperties.class, TransactionProperties.class})
 @Import(DataSourceInitializedPublisher.Registrar.class)
 public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
@@ -81,8 +83,10 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	@Bean
 	@ConditionalOnMissingBean(PlatformTransactionManager.class)
-	public PlatformTransactionManager transactionManager() {
-		return new JpaTransactionManager();
+	public PlatformTransactionManager transactionManager(TransactionProperties transactionProperties) {
+		JpaTransactionManager transactionManager = new JpaTransactionManager();
+		transactionProperties.applyTo(transactionManager);
+		return transactionManager;
 	}
 
 	@Bean
