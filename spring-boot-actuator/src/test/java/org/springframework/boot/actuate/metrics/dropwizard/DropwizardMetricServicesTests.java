@@ -22,14 +22,18 @@ import java.util.List;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Reservoir;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.UniformReservoir;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyString;
 
 /**
  * Tests for {@link DropwizardMetricServices}.
@@ -39,10 +43,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DropwizardMetricServicesTests {
 
-	private final MetricRegistry registry = new MetricRegistry();
+	private MetricRegistry registry = new MetricRegistry();
 
-	private final DropwizardMetricServices writer = new DropwizardMetricServices(
-			this.registry);
+	@Mock
+	private ReservoirFactory reservoirFactory;
+
+	private DropwizardMetricServices writer;
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+		this.writer = new DropwizardMetricServices(this.registry, this.reservoirFactory);
+	}
 
 	@Test
 	public void incrementCounter() {
@@ -87,20 +99,14 @@ public class DropwizardMetricServicesTests {
 
 	@Test
 	public void setCustomReservoirTimer() {
-		this.writer.setReservoirFactory(new ReservoirFactory() {
-			@Override
-			protected Reservoir defaultReservoir() {
-				return new UniformReservoir();
-			}
-		});
-
+		given(this.reservoirFactory.getReservoir(anyString()))
+				.willReturn(new UniformReservoir());
 		this.writer.submit("timer.foo", 200);
 		this.writer.submit("timer.foo", 300);
 		assertThat(this.registry.timer("timer.foo").getCount()).isEqualTo(2);
-
 		Timer timer = (Timer) this.registry.getMetrics().get("timer.foo");
-		Histogram histogram = (Histogram) ReflectionTestUtils
-				.getField(timer, "histogram");
+		Histogram histogram = (Histogram) ReflectionTestUtils.getField(timer,
+				"histogram");
 		assertThat(ReflectionTestUtils.getField(histogram, "reservoir").getClass()
 				.equals(UniformReservoir.class)).isTrue();
 	}
@@ -114,13 +120,8 @@ public class DropwizardMetricServicesTests {
 
 	@Test
 	public void setCustomReservoirHistogram() {
-		this.writer.setReservoirFactory(new ReservoirFactory() {
-			@Override
-			protected Reservoir defaultReservoir() {
-				return new UniformReservoir();
-			}
-		});
-
+		given(this.reservoirFactory.getReservoir(anyString()))
+				.willReturn(new UniformReservoir());
 		this.writer.submit("histogram.foo", 2.1);
 		this.writer.submit("histogram.foo", 2.3);
 		assertThat(this.registry.histogram("histogram.foo").getCount()).isEqualTo(2);

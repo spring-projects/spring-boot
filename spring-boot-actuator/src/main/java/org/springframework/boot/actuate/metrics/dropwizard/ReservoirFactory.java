@@ -18,22 +18,34 @@ package org.springframework.boot.actuate.metrics.dropwizard;
 
 import com.codahale.metrics.Reservoir;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.ObjectFactory;
-
 /**
- * A {@link Reservoir} factory to instantiate the Reservoir that will be set as default
- * for the {@link DropwizardMetricServices}.
- * The Reservoir instances can't be shared across {@link com.codahale.metrics.Metric}.
+ * Factory interface that can be used by {@link DropwizardMetricServices} to create a
+ * custom {@link Reservoir}.
  *
  * @author Lucas Saldanha
+ * @author Phillip Webb
+ * @since 1.5.0
  */
-public abstract class ReservoirFactory implements ObjectFactory<Reservoir> {
+public interface ReservoirFactory {
 
-	protected abstract Reservoir defaultReservoir();
+	/**
+	 * Default empty {@link ReservoirFactory} implementation.
+	 */
+	ReservoirFactory NONE = new ReservoirFactory() {
 
-	@Override
-	public Reservoir getObject() throws BeansException {
-		return defaultReservoir();
-	}
+		@Override
+		public Reservoir getReservoir(String name) {
+			return null;
+		}
+
+	};
+
+	/**
+	 * Return the {@link Reservoir} instance to use or {@code null} if a custom reservoir
+	 * is not needed.
+	 * @param name the name of the metric
+	 * @return a reservoir instance or {@code null}
+	 */
+	Reservoir getReservoir(String name);
+
 }

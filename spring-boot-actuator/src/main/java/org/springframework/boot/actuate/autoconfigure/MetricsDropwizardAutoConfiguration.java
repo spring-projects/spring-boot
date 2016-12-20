@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import com.codahale.metrics.MetricRegistry;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
@@ -43,8 +43,12 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureBefore(MetricRepositoryAutoConfiguration.class)
 public class MetricsDropwizardAutoConfiguration {
 
-	@Autowired(required = false)
-	private ReservoirFactory reservoirFactory;
+	private final ReservoirFactory reservoirFactory;
+
+	public MetricsDropwizardAutoConfiguration(
+			ObjectProvider<ReservoirFactory> reservoirFactory) {
+		this.reservoirFactory = reservoirFactory.getIfAvailable();
+	}
 
 	@Bean
 	@ConditionalOnMissingBean

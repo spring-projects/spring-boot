@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import com.codahale.metrics.Reservoir;
 import com.codahale.metrics.UniformReservoir;
-
 import org.junit.After;
 import org.junit.Test;
 
@@ -27,7 +26,6 @@ import org.springframework.boot.actuate.metrics.dropwizard.ReservoirFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,24 +50,23 @@ public class MetricsDropwizardAutoConfigurationTests {
 	public void dropwizardWithoutCustomReservoirConfigured() {
 		this.context = new AnnotationConfigApplicationContext(
 				MetricsDropwizardAutoConfiguration.class);
-
 		DropwizardMetricServices dropwizardMetricServices = this.context
 				.getBean(DropwizardMetricServices.class);
-
-		assertThat(ReflectionTestUtils.getField(dropwizardMetricServices, "reservoirFactory"))
-				.isNull();
+		ReservoirFactory reservoirFactory = (ReservoirFactory) ReflectionTestUtils
+				.getField(dropwizardMetricServices, "reservoirFactory");
+		assertThat(reservoirFactory.getReservoir("test")).isNull();
 	}
 
 	@Test
 	public void dropwizardWithCustomReservoirConfigured() {
 		this.context = new AnnotationConfigApplicationContext(
 				MetricsDropwizardAutoConfiguration.class, Config.class);
-
 		DropwizardMetricServices dropwizardMetricServices = this.context
 				.getBean(DropwizardMetricServices.class);
-
-		assertThat(ReflectionTestUtils.getField(dropwizardMetricServices, "reservoirFactory"))
-				.isNotNull();
+		ReservoirFactory reservoirFactory = (ReservoirFactory) ReflectionTestUtils
+				.getField(dropwizardMetricServices, "reservoirFactory");
+		assertThat(reservoirFactory.getReservoir("test"))
+				.isInstanceOf(UniformReservoir.class);
 	}
 
 	@Configuration
@@ -77,13 +74,18 @@ public class MetricsDropwizardAutoConfigurationTests {
 
 		@Bean
 		public ReservoirFactory reservoirFactory() {
-			return new ReservoirFactory() {
-				@Override
-				protected Reservoir defaultReservoir() {
-					return new UniformReservoir();
-				}
-			};
+			return new UniformReservoirFactory();
 		}
+
+	}
+
+	private static class UniformReservoirFactory implements ReservoirFactory {
+
+		@Override
+		public Reservoir getReservoir(String name) {
+			return new UniformReservoir();
+		}
+
 	}
 
 }

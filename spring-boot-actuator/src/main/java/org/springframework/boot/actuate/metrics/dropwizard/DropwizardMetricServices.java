@@ -31,6 +31,8 @@ import com.codahale.metrics.Timer;
 
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
+import org.springframework.core.ResolvableType;
+import org.springframework.util.Assert;
 
 /**
  * A {@link GaugeService} and {@link CounterService} that sends data to a Dropwizard
@@ -55,7 +57,7 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 
 	private final MetricRegistry registry;
 
-	private ReservoirFactory reservoirFactory;
+	private final ReservoirFactory reservoirFactory;
 
 	private final ConcurrentMap<String, SimpleGauge> gauges = new ConcurrentHashMap<String, SimpleGauge>();
 
@@ -66,19 +68,20 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 	 * @param registry the underlying metric registry
 	 */
 	public DropwizardMetricServices(MetricRegistry registry) {
-		this.registry = registry;
+		this(registry, null);
 	}
 
 	/**
 	 * Create a new {@link DropwizardMetricServices} instance.
 	 * @param registry the underlying metric registry
 	 * @param reservoirFactory the factory that instantiates the {@link Reservoir} that
-	 *                            will be used on Timers and Histograms
+	 * will be used on Timers and Histograms
 	 */
 	public DropwizardMetricServices(MetricRegistry registry,
 			ReservoirFactory reservoirFactory) {
 		this.registry = registry;
-		this.reservoirFactory = reservoirFactory;
+		this.reservoirFactory = (reservoirFactory == null ? ReservoirFactory.NONE
+				: reservoirFactory);
 	}
 
 	@Override
@@ -106,14 +109,10 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 	@Override
 	public void submit(String name, double value) {
 		if (name.startsWith("histogram")) {
-			long longValue = (long) value;
-			Histogram metric = registerHistogram(name);
-			metric.update(longValue);
+			submitHistogram(name, value);
 		}
 		else if (name.startsWith("timer")) {
-			long longValue = (long) value;
-			Timer metric = registerTimer(name);
-			metric.update(longValue, TimeUnit.MILLISECONDS);
+			submitTimer(name, value);
 		}
 		else {
 			name = wrapGaugeName(name);
@@ -121,40 +120,36 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 		}
 	}
 
-	private Histogram registerHistogram(String name) {
-		if (this.reservoirFactory == null) {
-			return this.registry.histogram(name);
-		}
-		else {
-			Histogram histogram = new Histogram(this.reservoirFactory.getObject());
-			return getOrAddMetric(name, histogram);
-		}
+	private void submitTimer(String name, double value) {
+		long longValue = (long) value;
+		Timer metric = register(name, new TimerMetricRegistrar());
+		metric.update(longValue, TimeUnit.MILLISECONDS);
 	}
 
-	private Timer registerTimer(String name) {
-		if (this.reservoirFactory == null) {
-			return this.registry.timer(name);
-		}
-		else {
-			Timer timer = new Timer(this.reservoirFactory.getObject());
-			return getOrAddMetric(name, timer);
-		}
+	private void submitHistogram(String name, double value) {
+		long longValue = (long) value;
+		Histogram metric = register(name, new HistogramMetricRegistrar());
+		metric.update(longValue);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends Metric> T getOrAddMetric(String name, T newMetric) {
-		Metric metric = this.registry.getMetrics().get(name);
-		if (metric == null) {
-			return this.registry.register(name, newMetric);
+	private <T extends Metric> T register(String name, MetricRegistrar<T> registrar) {
+		Reservoir reservoir = this.reservoirFactory.getReservoir(name);
+		if (reservoir == null) {
+			return registrar.register(this.registry, name);
 		}
-		else {
-			if (metric.getClass().equals(newMetric.getClass())) {
-				return (T) metric;
-			}
-			else {
-				throw new IllegalArgumentException(
-						name + " is already used for a different type of metric");
-			}
+		Metric metric = this.registry.getMetrics().get(name);
+		if (metric != null) {
+			registrar.checkExisting(metric);
+			return (T) metric;
+		}
+		try {
+			return this.registry.register(name, registrar.createForReservoir(reservoir));
+		}
+		catch (IllegalArgumentException ex) {
+			Metric added = this.registry.getMetrics().get(name);
+			registrar.checkExisting(metric);
+			return (T) added;
 		}
 	}
 
@@ -201,10 +196,6 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 		this.registry.remove(name);
 	}
 
-	void setReservoirFactory(ReservoirFactory reservoirFactory) {
-		this.reservoirFactory = reservoirFactory;
-	}
-
 	/**
 	 * Simple {@link Gauge} implementation to {@literal double} value.
 	 */
@@ -223,6 +214,64 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 
 		public void setValue(double value) {
 			this.value = value;
+		}
+
+	}
+
+	/**
+	 * Strategy used to register metrics.
+	 */
+	private static abstract class MetricRegistrar<T extends Metric> {
+
+		private final Class<T> type;
+
+		@SuppressWarnings("unchecked")
+		MetricRegistrar() {
+			this.type = (Class<T>) ResolvableType
+					.forClass(MetricRegistrar.class, getClass()).resolveGeneric();
+		}
+
+		public void checkExisting(Metric metric) {
+			Assert.isInstanceOf(this.type, metric,
+					"Different metric type already registered");
+		}
+
+		protected abstract T register(MetricRegistry registry, String name);
+
+		protected abstract T createForReservoir(Reservoir reservoir);
+
+	}
+
+	/**
+	 * {@link MetricRegistrar} for {@link Timer} metrics.
+	 */
+	private static class TimerMetricRegistrar extends MetricRegistrar<Timer> {
+
+		@Override
+		protected Timer register(MetricRegistry registry, String name) {
+			return registry.timer(name);
+		}
+
+		@Override
+		protected Timer createForReservoir(Reservoir reservoir) {
+			return new Timer(reservoir);
+		}
+
+	}
+
+	/**
+	 * {@link MetricRegistrar} for {@link Histogram} metrics.
+	 */
+	private static class HistogramMetricRegistrar extends MetricRegistrar<Histogram> {
+
+		@Override
+		protected Histogram register(MetricRegistry registry, String name) {
+			return registry.histogram(name);
+		}
+
+		@Override
+		protected Histogram createForReservoir(Reservoir reservoir) {
+			return new Histogram(reservoir);
 		}
 
 	}
