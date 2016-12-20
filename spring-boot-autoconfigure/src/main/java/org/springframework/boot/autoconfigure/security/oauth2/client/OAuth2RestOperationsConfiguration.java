@@ -200,7 +200,7 @@ public class OAuth2RestOperationsConfiguration {
 
 	static class ClientCredentialsCondition extends AnyNestedCondition {
 
-		public ClientCredentialsCondition() {
+		ClientCredentialsCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
@@ -215,7 +215,7 @@ public class OAuth2RestOperationsConfiguration {
 
 	static class NotClientCredentialsCondition extends NoneNestedConditions {
 
-		public NotClientCredentialsCondition() {
+		NotClientCredentialsCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
