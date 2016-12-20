@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 
 import ch.qos.logback.classic.Level;
@@ -35,6 +36,7 @@ import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Default logback configuration used by Spring Boot. Uses {@link LogbackConfigurator} to
@@ -132,22 +134,36 @@ class DefaultLogbackConfiguration {
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
 		appender.setEncoder(encoder);
 		config.start(encoder);
-
 		appender.setFile(logFile);
+		getRollingPolicy(appender, config, logFile);
+		getMaxFileSize(appender, config);
+		config.appender("FILE", appender);
+		return appender;
+	}
 
+	private void getRollingPolicy(RollingFileAppender<ILoggingEvent> appender,
+			LogbackConfigurator config, String logFile) {
 		FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
 		rollingPolicy.setFileNamePattern(logFile + ".%i");
 		appender.setRollingPolicy(rollingPolicy);
 		rollingPolicy.setParent(appender);
 		config.start(rollingPolicy);
+	}
 
+	private void getMaxFileSize(RollingFileAppender<ILoggingEvent> appender,
+			LogbackConfigurator config) {
 		SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>();
-		triggeringPolicy.setMaxFileSize(FileSize.valueOf("10MB"));
+		try {
+			triggeringPolicy.setMaxFileSize(FileSize.valueOf("10MB"));
+		}
+		catch (NoSuchMethodError ex) {
+			// Logback < 1.1.8 used String configuration
+			Method method = ReflectionUtils.findMethod(SizeBasedTriggeringPolicy.class,
+					"setMaxFileSize", String.class);
+			ReflectionUtils.invokeMethod(method, triggeringPolicy, "10MB");
+		}
 		appender.setTriggeringPolicy(triggeringPolicy);
 		config.start(triggeringPolicy);
-
-		config.appender("FILE", appender);
-		return appender;
 	}
 
 }

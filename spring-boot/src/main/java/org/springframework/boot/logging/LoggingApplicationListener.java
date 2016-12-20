@@ -316,12 +316,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private boolean ignoreLogConfig(String logConfig) {
-		return !StringUtils.hasLength(logConfig)
-				|| isDefaultAzureLoggingConfig(logConfig);
-	}
-
-	private boolean isDefaultAzureLoggingConfig(String candidate) {
-		return candidate.startsWith("-Djava.util.logging.config.file=");
+		return !StringUtils.hasLength(logConfig) || logConfig.startsWith("-D");
 	}
 
 	private void initializeFinalLoggingLevels(ConfigurableEnvironment environment,
