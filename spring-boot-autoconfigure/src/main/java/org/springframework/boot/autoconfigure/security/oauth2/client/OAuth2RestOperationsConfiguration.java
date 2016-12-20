@@ -16,16 +16,24 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2RestOperationsConfiguration.OAuth2ClientIdCondition;
@@ -68,7 +76,7 @@ import org.springframework.util.StringUtils;
 public class OAuth2RestOperationsConfiguration {
 
 	@Configuration
-	@ConditionalOnNotWebApplication
+	@ConditionalOnClientCredentials
 	protected static class SingletonScopedConfiguration {
 
 		@Bean
@@ -88,7 +96,7 @@ public class OAuth2RestOperationsConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(OAuth2ClientConfiguration.class)
-	@ConditionalOnWebApplication
+	@ConditionalOnNotClientCredentials
 	@Import(OAuth2ProtectedResourceDetailsConfiguration.class)
 	protected static class SessionScopedConfiguration {
 
@@ -126,7 +134,7 @@ public class OAuth2RestOperationsConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnMissingBean(OAuth2ClientConfiguration.class)
-	@ConditionalOnWebApplication
+	@ConditionalOnNotClientCredentials
 	@Import(OAuth2ProtectedResourceDetailsConfiguration.class)
 	protected static class RequestScopedConfiguration {
 
@@ -170,6 +178,49 @@ public class OAuth2RestOperationsConfiguration {
 			}
 			return ConditionOutcome.match(message
 					.didNotFind("security.oauth2.client.client-id property").atAll());
+		}
+
+	}
+
+	@Conditional(ClientCredentialsCondition.class)
+	@Target({ ElementType.TYPE, ElementType.METHOD })
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	public static @interface ConditionalOnClientCredentials {
+
+	}
+
+	@Conditional(NotClientCredentialsCondition.class)
+	@Target({ ElementType.TYPE, ElementType.METHOD })
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	public static @interface ConditionalOnNotClientCredentials {
+
+	}
+
+	static class ClientCredentialsCondition extends AnyNestedCondition {
+
+		public ClientCredentialsCondition() {
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
+		}
+
+		@ConditionalOnProperty(prefix = "security.oauth2.client", name = "grant-type", havingValue = "client_credentials", matchIfMissing = false)
+		static class ClientCredentialsConfigured {
+		}
+
+		@ConditionalOnNotWebApplication
+		static class NoWebApplication {
+		}
+	}
+
+	static class NotClientCredentialsCondition extends NoneNestedConditions {
+
+		public NotClientCredentialsCondition() {
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
+		}
+
+		@ConditionalOnClientCredentials
+		static class ClientCredentialsActivated {
 		}
 
 	}
