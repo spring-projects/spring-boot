@@ -17,25 +17,25 @@
 package org.springframework.boot.test.mock.mockito.example;
 
 /**
- * Example generic service implementation for spy tests.
+ * Example bean for mocking tests that calls {@link ExampleGenericService}.
  *
  * @author Phillip Webb
  */
-public class SimpleExampleStringGenericService implements ExampleGenericService<String> {
+public class ExampleGenericStringServiceCaller {
 
-	private final String greeting;
+	private final ExampleGenericService<String> stringService;
 
-	public SimpleExampleStringGenericService() {
-		this("simple");
+	public ExampleGenericStringServiceCaller(
+			ExampleGenericService<String> stringService) {
+		this.stringService = stringService;
 	}
 
-	public SimpleExampleStringGenericService(String greeting) {
-		this.greeting = greeting;
+	public ExampleGenericService<String> getStringService() {
+		return this.stringService;
 	}
 
-	@Override
-	public String greeting() {
-		return this.greeting;
+	public String sayGreeting() {
+		return "I say " + this.stringService.greeting();
 	}
 
 }
