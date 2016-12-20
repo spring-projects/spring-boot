@@ -28,7 +28,6 @@ import org.jboss.tm.XAResourceRecoveryRegistry;
 import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 import org.springframework.boot.jta.XADataSourceWrapper;
@@ -56,15 +55,13 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass({ JtaTransactionManager.class,
 		com.arjuna.ats.jta.UserTransaction.class, XAResourceRecoveryRegistry.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
-@EnableConfigurationProperties({JtaProperties.class, TransactionProperties.class})
+@EnableConfigurationProperties(JtaProperties.class)
 public class NarayanaJtaConfiguration {
 
 	private final JtaProperties jtaProperties;
-	private final TransactionProperties transactionProperties;
 
-	public NarayanaJtaConfiguration(JtaProperties jtaProperties, TransactionProperties transactionProperties) {
+	public NarayanaJtaConfiguration(JtaProperties jtaProperties) {
 		this.jtaProperties = jtaProperties;
-		this.transactionProperties = transactionProperties;
 	}
 
 	@Bean
@@ -122,8 +119,9 @@ public class NarayanaJtaConfiguration {
 	@Bean
 	public JtaTransactionManager transactionManager(UserTransaction userTransaction,
 			TransactionManager transactionManager) {
-		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(userTransaction, transactionManager);
-		this.transactionProperties.applyTo(jtaTransactionManager);
+		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(
+				userTransaction, transactionManager);
+		this.jtaProperties.getTransaction().applyTo(jtaTransactionManager);
 		return jtaTransactionManager;
 	}
 

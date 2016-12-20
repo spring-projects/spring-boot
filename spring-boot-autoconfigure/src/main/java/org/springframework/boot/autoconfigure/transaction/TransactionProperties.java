@@ -16,27 +16,24 @@
 
 package org.springframework.boot.autoconfigure.transaction;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 
 /**
- * External configuration properties for a {@link org.springframework.transaction.PlatformTransactionManager} created by
- * Spring. All {@literal spring.transaction.} properties are also applied to the {@code PlatformTransactionManager}.
+ * Nested configuration properties that can be applied to an
+ * {@link AbstractPlatformTransactionManager}.
  *
  * @author Kazuki Shimizu
  * @since 1.5.0
  */
-@ConfigurationProperties(prefix = "spring.transaction")
 public class TransactionProperties {
 
 	/**
-	 * The default transaction timeout (sec).
+	 * Default transaction timeout in seconds.
 	 */
 	private Integer defaultTimeout;
 
 	/**
-	 * The indicating flag whether perform the rollback processing on commit failure (If perform rollback, set to the true).
+	 * Perform the rollback on commit failurures.
 	 */
 	private Boolean rollbackOnCommitFailure;
 
@@ -57,22 +54,15 @@ public class TransactionProperties {
 	}
 
 	/**
-	 * Apply all transaction custom properties to a specified {@link PlatformTransactionManager} instance.
-	 *
+	 * Apply all transaction custom properties to the specified transaction manager.
 	 * @param transactionManager the target transaction manager
-	 * @see AbstractPlatformTransactionManager#setDefaultTimeout(int)
-	 * @see AbstractPlatformTransactionManager#setRollbackOnCommitFailure(boolean)
 	 */
-	public void applyTo(PlatformTransactionManager transactionManager) {
-		if (transactionManager instanceof AbstractPlatformTransactionManager) {
-			AbstractPlatformTransactionManager abstractPlatformTransactionManager =
-					(AbstractPlatformTransactionManager) transactionManager;
-			if (this.defaultTimeout != null) {
-				abstractPlatformTransactionManager.setDefaultTimeout(this.defaultTimeout);
-			}
-			if (this.rollbackOnCommitFailure != null) {
-				abstractPlatformTransactionManager.setRollbackOnCommitFailure(this.rollbackOnCommitFailure);
-			}
+	public void applyTo(AbstractPlatformTransactionManager transactionManager) {
+		if (this.defaultTimeout != null) {
+			transactionManager.setDefaultTimeout(this.defaultTimeout);
+		}
+		if (this.rollbackOnCommitFailure != null) {
+			transactionManager.setRollbackOnCommitFailure(this.rollbackOnCommitFailure);
 		}
 	}
 

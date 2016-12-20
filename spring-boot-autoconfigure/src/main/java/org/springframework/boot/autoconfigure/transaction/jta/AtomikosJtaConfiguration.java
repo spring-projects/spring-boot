@@ -30,7 +30,6 @@ import com.atomikos.icatch.jta.UserTransactionManager;
 import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 import org.springframework.boot.jta.XADataSourceWrapper;
@@ -55,17 +54,15 @@ import org.springframework.util.StringUtils;
  * @since 1.2.0
  */
 @Configuration
-@EnableConfigurationProperties({AtomikosProperties.class, JtaProperties.class, TransactionProperties.class})
+@EnableConfigurationProperties({ AtomikosProperties.class, JtaProperties.class })
 @ConditionalOnClass({ JtaTransactionManager.class, UserTransactionManager.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
 class AtomikosJtaConfiguration {
 
 	private final JtaProperties jtaProperties;
-	private final TransactionProperties transactionProperties;
 
-	AtomikosJtaConfiguration(JtaProperties jtaProperties, TransactionProperties transactionProperties) {
+	AtomikosJtaConfiguration(JtaProperties jtaProperties) {
 		this.jtaProperties = jtaProperties;
-		this.transactionProperties = transactionProperties;
 	}
 
 	@Bean(initMethod = "init", destroyMethod = "shutdownForce")
@@ -115,8 +112,9 @@ class AtomikosJtaConfiguration {
 	@Bean
 	public JtaTransactionManager transactionManager(UserTransaction userTransaction,
 			TransactionManager transactionManager) {
-		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(userTransaction, transactionManager);
-		this.transactionProperties.applyTo(jtaTransactionManager);
+		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(
+				userTransaction, transactionManager);
+		this.jtaProperties.getTransaction().applyTo(jtaTransactionManager);
 		return jtaTransactionManager;
 	}
 

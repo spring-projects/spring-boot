@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
-import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -53,9 +52,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass({SessionFactory.class, PlatformTransactionManager.class})
+@ConditionalOnClass({ SessionFactory.class, PlatformTransactionManager.class })
 @ConditionalOnMissingBean(SessionFactory.class)
-@EnableConfigurationProperties({Neo4jProperties.class, TransactionProperties.class})
+@EnableConfigurationProperties(Neo4jProperties.class)
 @SuppressWarnings("deprecation")
 public class Neo4jDataAutoConfiguration {
 
@@ -90,9 +89,10 @@ public class Neo4jDataAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(PlatformTransactionManager.class)
 	public Neo4jTransactionManager transactionManager(SessionFactory sessionFactory,
-			TransactionProperties transactionProperties) {
-		Neo4jTransactionManager transactionManager = new Neo4jTransactionManager(sessionFactory);
-		transactionProperties.applyTo(transactionManager);
+			Neo4jProperties properties) {
+		Neo4jTransactionManager transactionManager = new Neo4jTransactionManager(
+				sessionFactory);
+		properties.getTransaction().applyTo(transactionManager);
 		return transactionManager;
 	}
 

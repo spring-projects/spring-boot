@@ -37,7 +37,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -136,18 +135,16 @@ public class BatchAutoConfiguration {
 		return factory;
 	}
 
-	@EnableConfigurationProperties({BatchProperties.class, TransactionProperties.class})
+	@EnableConfigurationProperties(BatchProperties.class)
 	@ConditionalOnClass(value = PlatformTransactionManager.class, name = "javax.persistence.EntityManagerFactory")
 	@ConditionalOnMissingBean(BatchConfigurer.class)
 	@Configuration
 	protected static class JpaBatchConfiguration {
 
 		private final BatchProperties properties;
-		private final TransactionProperties transactionProperties;
 
-		protected JpaBatchConfiguration(BatchProperties properties, TransactionProperties transactionProperties) {
+		protected JpaBatchConfiguration(BatchProperties properties) {
 			this.properties = properties;
-			this.transactionProperties = transactionProperties;
 		}
 
 		// The EntityManagerFactory may not be discoverable by type when this condition
@@ -157,14 +154,14 @@ public class BatchAutoConfiguration {
 		@ConditionalOnBean(name = "entityManagerFactory")
 		public BasicBatchConfigurer jpaBatchConfigurer(DataSource dataSource,
 				EntityManagerFactory entityManagerFactory) {
-			return new BasicBatchConfigurer(this.properties, this.transactionProperties, dataSource,
+			return new BasicBatchConfigurer(this.properties, dataSource,
 					entityManagerFactory);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(name = "entityManagerFactory")
 		public BasicBatchConfigurer basicBatchConfigurer(DataSource dataSource) {
-			return new BasicBatchConfigurer(this.properties, this.transactionProperties, dataSource);
+			return new BasicBatchConfigurer(this.properties, dataSource);
 		}
 
 	}

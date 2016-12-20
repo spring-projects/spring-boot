@@ -16,7 +16,9 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
+import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * Configuration properties for Spring Batch.
@@ -46,12 +48,23 @@ public class BatchProperties {
 
 	private final Job job = new Job();
 
+	@NestedConfigurationProperty
+	private final TransactionProperties transaction = new TransactionProperties();
+
 	public String getSchema() {
 		return this.schema;
 	}
 
 	public void setSchema(String schema) {
 		this.schema = schema;
+	}
+
+	public String getTablePrefix() {
+		return this.tablePrefix;
+	}
+
+	public void setTablePrefix(String tablePrefix) {
+		this.tablePrefix = tablePrefix;
 	}
 
 	public Initializer getInitializer() {
@@ -62,12 +75,8 @@ public class BatchProperties {
 		return this.job;
 	}
 
-	public void setTablePrefix(String tablePrefix) {
-		this.tablePrefix = tablePrefix;
-	}
-
-	public String getTablePrefix() {
-		return this.tablePrefix;
+	public TransactionProperties getTransaction() {
+		return this.transaction;
 	}
 
 	public class Initializer {

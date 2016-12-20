@@ -108,14 +108,16 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 	}
 
 	@Test
-	public void testCustomizeDataSourceTransactionManagerUsingProperties() throws Exception {
+	public void testCustomizeDataSourceTransactionManagerUsingProperties()
+			throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.transaction.default-timeout:30",
-				"spring.transaction.rollback-on-commit-failure:true");
+				"spring.datasource.transaction.default-timeout:30",
+				"spring.datasource.transaction.rollback-on-commit-failure:true");
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class);
 		this.context.refresh();
-		DataSourceTransactionManager transactionManager = this.context.getBean(DataSourceTransactionManager.class);
+		DataSourceTransactionManager transactionManager = this.context
+				.getBean(DataSourceTransactionManager.class);
 		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
 		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 	}

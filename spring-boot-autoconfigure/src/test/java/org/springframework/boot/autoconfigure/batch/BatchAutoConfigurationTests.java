@@ -70,6 +70,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Vedran Pavic
+ * @author Kazuki Shimizu
  */
 public class BatchAutoConfigurationTests {
 
@@ -273,8 +274,8 @@ public class BatchAutoConfigurationTests {
 	public void testCustomizeJpaTransactionManagerUsingProperties() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.transaction.default-timeout:30",
-				"spring.transaction.rollback-on-commit-failure:true");
+				"spring.batch.transaction.default-timeout:30",
+				"spring.batch.transaction.rollback-on-commit-failure:true");
 		this.context.register(TestConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
 				HibernateJpaAutoConfiguration.class, BatchAutoConfiguration.class,
@@ -288,19 +289,20 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	public void testCustomizeDataSourceTransactionManagerUsingProperties() throws Exception {
+	public void testCustomizeDataSourceTransactionManagerUsingProperties()
+			throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.transaction.default-timeout:30",
-				"spring.transaction.rollback-on-commit-failure:true");
+				"spring.batch.transaction.default-timeout:30",
+				"spring.batch.transaction.rollback-on-commit-failure:true");
 		this.context.register(TestConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
-				BatchAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class, BatchAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		this.context.getBean(BatchConfigurer.class);
-		DataSourceTransactionManager transactionManager = DataSourceTransactionManager.class.cast(
-				this.context.getBean(BatchConfigurer.class).getTransactionManager());
+		DataSourceTransactionManager transactionManager = DataSourceTransactionManager.class
+				.cast(this.context.getBean(BatchConfigurer.class)
+						.getTransactionManager());
 		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
 		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 	}

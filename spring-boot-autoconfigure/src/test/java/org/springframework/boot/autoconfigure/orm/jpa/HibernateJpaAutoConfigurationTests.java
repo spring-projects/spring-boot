@@ -49,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  */
 public class HibernateJpaAutoConfigurationTests
 		extends AbstractJpaAutoConfigurationTests {
@@ -175,11 +176,12 @@ public class HibernateJpaAutoConfigurationTests
 	@Test
 	public void testCustomJpaTransactionManagerUsingProperties() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.transaction.default-timeout:30",
-				"spring.transaction.rollback-on-commit-failure:true");
+				"spring.jpa.transaction.default-timeout:30",
+				"spring.jpa.transaction.rollback-on-commit-failure:true");
 		setupTestConfiguration();
 		this.context.refresh();
-		JpaTransactionManager transactionManager = context.getBean(JpaTransactionManager.class);
+		JpaTransactionManager transactionManager = this.context
+				.getBean(JpaTransactionManager.class);
 		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
 		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 	}

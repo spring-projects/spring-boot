@@ -54,6 +54,7 @@ import static org.mockito.Mockito.verify;
  * @author Michael Hunger
  * @author Vince Bickers
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  */
 @SuppressWarnings("deprecation")
 public class Neo4jDataAutoConfigurationTests {
@@ -81,10 +82,10 @@ public class Neo4jDataAutoConfigurationTests {
 
 	@Test
 	public void customNeo4jTransactionManagerUsingProperties() {
-		load(null,
-				"spring.transaction.default-timeout=30",
-				"spring.transaction.rollback-on-commit-failure:true");
-		Neo4jTransactionManager transactionManager = this.context.getBean(Neo4jTransactionManager.class);
+		load(null, "spring.data.neo4j.transaction.default-timeout=30",
+				"spring.data.neo4j.transaction.rollback-on-commit-failure:true");
+		Neo4jTransactionManager transactionManager = this.context
+				.getBean(Neo4jTransactionManager.class);
 		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
 		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 	}
