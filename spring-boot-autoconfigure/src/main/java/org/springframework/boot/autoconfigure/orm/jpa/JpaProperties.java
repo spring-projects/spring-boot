@@ -230,7 +230,7 @@ public class JpaProperties {
 		private static final String DEFAULT_IMPLICIT_STRATEGY = "org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy";
 
 		/**
-		 * Fully qualfied name of the implicit naming strategy.
+		 * Fully qualified name of the implicit naming strategy.
 		 */
 		private String implicitStrategy;
 
