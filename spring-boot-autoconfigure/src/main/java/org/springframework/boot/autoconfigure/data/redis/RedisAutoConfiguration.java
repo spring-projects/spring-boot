@@ -22,8 +22,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;
@@ -66,8 +64,6 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(RedisProperties.class)
 public class RedisAutoConfiguration {
 
-	private static final Log logger = LogFactory.getLog(RedisAutoConfiguration.class);
-
 	/**
 	 * Redis connection configuration.
 	 */
@@ -98,29 +94,7 @@ public class RedisAutoConfiguration {
 
 		protected final JedisConnectionFactory applyProperties(
 				JedisConnectionFactory factory) {
-			if (StringUtils.hasText(this.properties.getUrl())) {
-				if (this.properties.getUrl().startsWith("rediss://")) {
-					factory.setUseSsl(true);
-				}
-				try {
-					URI redisURI = new URI(this.properties.getUrl());
-					factory.setHostName(redisURI.getHost());
-					factory.setPort(redisURI.getPort());
-					if (redisURI.getUserInfo() != null) {
-						factory.setPassword(redisURI.getUserInfo().split(":", 2)[1]);
-					}
-				}
-				catch (URISyntaxException e) {
-					logger.error("Incorrect spring.redis.url", e);
-				}
-			}
-			else {
-				factory.setHostName(this.properties.getHost());
-				factory.setPort(this.properties.getPort());
-				if (this.properties.getPassword() != null) {
-					factory.setPassword(this.properties.getPassword());
-				}
-			}
+			configureConnection(factory);
 			if (this.properties.isSsl()) {
 				factory.setUseSsl(true);
 			}
@@ -129,6 +103,43 @@ public class RedisAutoConfiguration {
 				factory.setTimeout(this.properties.getTimeout());
 			}
 			return factory;
+		}
+
+		private void configureConnection(JedisConnectionFactory factory) {
+			if (StringUtils.hasText(this.properties.getUrl())) {
+				configureConnectionFromUrl(factory);
+			}
+			else {
+				factory.setHostName(this.properties.getHost());
+				factory.setPort(this.properties.getPort());
+				if (this.properties.getPassword() != null) {
+					factory.setPassword(this.properties.getPassword());
+				}
+			}
+		}
+
+		private void configureConnectionFromUrl(JedisConnectionFactory factory) {
+			String url = this.properties.getUrl();
+			if (url.startsWith("rediss://")) {
+				factory.setUseSsl(true);
+			}
+			try {
+				URI uri = new URI(url);
+				factory.setHostName(uri.getHost());
+				factory.setPort(uri.getPort());
+				if (uri.getUserInfo() != null) {
+					String password = uri.getUserInfo();
+					int index = password.lastIndexOf(":");
+					if (index >= 0) {
+						password = password.substring(index + 1);
+					}
+					factory.setPassword(password);
+				}
+			}
+			catch (URISyntaxException ex) {
+				throw new IllegalArgumentException("Malformed 'spring.redis.url' " + url,
+						ex);
+			}
 		}
 
 		protected final RedisSentinelConfiguration getSentinelConfig() {
