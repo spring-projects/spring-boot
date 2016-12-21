@@ -43,6 +43,7 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Gary Russell
  * @author Stephane Nicoll
+ * @author Artem Bilan
  * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "spring.kafka")
@@ -199,7 +200,7 @@ public class KafkaProperties {
 		 * Frequency in milliseconds that the consumer offsets are auto-committed to Kafka
 		 * if 'enable.auto.commit' true.
 		 */
-		private Long autoCommitInterval;
+		private Integer autoCommitInterval;
 
 		/**
 		 * What to do when there is no initial offset in Kafka or if the current offset
@@ -264,11 +265,11 @@ public class KafkaProperties {
 			return this.ssl;
 		}
 
-		public Long getAutoCommitInterval() {
+		public Integer getAutoCommitInterval() {
 			return this.autoCommitInterval;
 		}
 
-		public void setAutoCommitInterval(Long autoCommitInterval) {
+		public void setAutoCommitInterval(Integer autoCommitInterval) {
 			this.autoCommitInterval = autoCommitInterval;
 		}
 
