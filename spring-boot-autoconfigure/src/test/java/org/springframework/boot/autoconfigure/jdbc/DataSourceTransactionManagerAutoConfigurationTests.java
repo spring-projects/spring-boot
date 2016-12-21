@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 
 import org.junit.Test;
 
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -104,6 +105,21 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 		assertThat(this.context.getBean(DataSourceTransactionManager.class)).isNotNull();
 		assertThat(this.context.getBean(AbstractTransactionManagementConfiguration.class))
 				.isNotNull();
+	}
+
+	@Test
+	public void testCustomizeDataSourceTransactionManagerUsingProperties()
+			throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.transaction.default-timeout:30",
+				"spring.datasource.transaction.rollback-on-commit-failure:true");
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class);
+		this.context.refresh();
+		DataSourceTransactionManager transactionManager = this.context
+				.getBean(DataSourceTransactionManager.class);
+		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
+		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 	}
 
 	@EnableTransactionManagement

@@ -58,7 +58,8 @@ public class PropertiesConfigurationFactory<T>
 
 	private static final char[] TARGET_NAME_DELIMITERS = { '_', '.' };
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private static final Log logger = LogFactory
+			.getLog(PropertiesConfigurationFactory.class);
 
 	private boolean ignoreUnknownFields = true;
 
@@ -228,8 +229,8 @@ public class PropertiesConfigurationFactory<T>
 	public void bindPropertiesToTarget() throws BindException {
 		Assert.state(this.propertySources != null, "PropertySources should not be null");
 		try {
-			if (this.logger.isTraceEnabled()) {
-				this.logger.trace("Property Sources: " + this.propertySources);
+			if (logger.isTraceEnabled()) {
+				logger.trace("Property Sources: " + this.propertySources);
 
 			}
 			this.hasBeenBound = true;
@@ -239,8 +240,9 @@ public class PropertiesConfigurationFactory<T>
 			if (this.exceptionIfInvalid) {
 				throw ex;
 			}
-			this.logger.error("Failed to load Properties validation bean. "
-					+ "Your Properties may be invalid.", ex);
+			PropertiesConfigurationFactory.logger
+					.error("Failed to load Properties validation bean. "
+							+ "Your Properties may be invalid.", ex);
 		}
 	}
 
@@ -340,10 +342,10 @@ public class PropertiesConfigurationFactory<T>
 		dataBinder.validate();
 		BindingResult errors = dataBinder.getBindingResult();
 		if (errors.hasErrors()) {
-			this.logger.error("Properties configuration failed validation");
+			logger.error("Properties configuration failed validation");
 			for (ObjectError error : errors.getAllErrors()) {
-				this.logger
-						.error(this.messageSource != null
+				logger.error(
+						this.messageSource != null
 								? this.messageSource.getMessage(error,
 										Locale.getDefault()) + " (" + error + ")"
 								: error);

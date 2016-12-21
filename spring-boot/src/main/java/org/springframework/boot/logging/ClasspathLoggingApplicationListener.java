@@ -42,17 +42,17 @@ public final class ClasspathLoggingApplicationListener
 
 	private static final int ORDER = LoggingApplicationListener.DEFAULT_ORDER + 1;
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private static final Log logger = LogFactory
+			.getLog(ClasspathLoggingApplicationListener.class);
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (this.logger.isDebugEnabled()) {
+		if (logger.isDebugEnabled()) {
 			if (event instanceof ApplicationEnvironmentPreparedEvent) {
-				this.logger
-						.debug("Application started with classpath: " + getClasspath());
+				logger.debug("Application started with classpath: " + getClasspath());
 			}
 			else if (event instanceof ApplicationFailedEvent) {
-				this.logger.debug(
+				logger.debug(
 						"Application failed to start with classpath: " + getClasspath());
 			}
 		}

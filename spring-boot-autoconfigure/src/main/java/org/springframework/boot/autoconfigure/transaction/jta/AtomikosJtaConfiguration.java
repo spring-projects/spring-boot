@@ -50,10 +50,11 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Kazuki Shimizu
  * @since 1.2.0
  */
 @Configuration
-@EnableConfigurationProperties(AtomikosProperties.class)
+@EnableConfigurationProperties({ AtomikosProperties.class, JtaProperties.class })
 @ConditionalOnClass({ JtaTransactionManager.class, UserTransactionManager.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
 class AtomikosJtaConfiguration {
@@ -111,7 +112,10 @@ class AtomikosJtaConfiguration {
 	@Bean
 	public JtaTransactionManager transactionManager(UserTransaction userTransaction,
 			TransactionManager transactionManager) {
-		return new JtaTransactionManager(userTransaction, transactionManager);
+		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(
+				userTransaction, transactionManager);
+		this.jtaProperties.getTransaction().applyTo(jtaTransactionManager);
+		return jtaTransactionManager;
 	}
 
 	@Configuration

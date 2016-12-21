@@ -37,6 +37,7 @@ import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfigurati
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,6 +49,7 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  */
 public class HibernateJpaAutoConfigurationTests
 		extends AbstractJpaAutoConfigurationTests {
@@ -132,6 +134,19 @@ public class HibernateJpaAutoConfigurationTests
 				.getJpaPropertyMap();
 		assertThat((String) jpaPropertyMap.get("hibernate.transaction.jta.platform"))
 				.isEqualTo(TestJtaPlatform.class.getName());
+	}
+
+	@Test
+	public void testCustomJpaTransactionManagerUsingProperties() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jpa.transaction.default-timeout:30",
+				"spring.jpa.transaction.rollback-on-commit-failure:true");
+		setupTestConfiguration();
+		this.context.refresh();
+		JpaTransactionManager transactionManager = this.context
+				.getBean(JpaTransactionManager.class);
+		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
+		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 	}
 
 	public static class TestJtaPlatform implements JtaPlatform {

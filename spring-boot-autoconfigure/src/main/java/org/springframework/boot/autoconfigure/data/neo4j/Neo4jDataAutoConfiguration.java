@@ -48,10 +48,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Josh Long
  * @author Vince Bickers
  * @author Stephane Nicoll
+ * @author Kazuki Shimizu
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass(SessionFactory.class)
+@ConditionalOnClass({ SessionFactory.class, PlatformTransactionManager.class })
 @ConditionalOnMissingBean(SessionFactory.class)
 @EnableConfigurationProperties(Neo4jProperties.class)
 @SuppressWarnings("deprecation")
@@ -87,8 +88,12 @@ public class Neo4jDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(PlatformTransactionManager.class)
-	public Neo4jTransactionManager transactionManager(SessionFactory sessionFactory) {
-		return new Neo4jTransactionManager(sessionFactory);
+	public Neo4jTransactionManager transactionManager(SessionFactory sessionFactory,
+			Neo4jProperties properties) {
+		Neo4jTransactionManager transactionManager = new Neo4jTransactionManager(
+				sessionFactory);
+		properties.getTransaction().applyTo(transactionManager);
+		return transactionManager;
 	}
 
 	private String[] getPackagesToScan(ApplicationContext applicationContext) {

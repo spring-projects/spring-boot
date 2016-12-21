@@ -81,20 +81,24 @@ public class AutoConfigurationReportLoggingInitializerTests {
 
 		given(this.log.isDebugEnabled()).willReturn(debug);
 		willAnswer(new Answer<Object>() {
+
 			@Override
 			public Object answer(InvocationOnMock invocation) throws Throwable {
 				return AutoConfigurationReportLoggingInitializerTests.this.debugLog
 						.add(String.valueOf(invocation.getArguments()[0]));
 			}
+
 		}).given(this.log).debug(anyObject());
 
 		given(this.log.isInfoEnabled()).willReturn(info);
 		willAnswer(new Answer<Object>() {
+
 			@Override
 			public Object answer(InvocationOnMock invocation) throws Throwable {
 				return AutoConfigurationReportLoggingInitializerTests.this.infoLog
 						.add(String.valueOf(invocation.getArguments()[0]));
 			}
+
 		}).given(this.log).info(anyObject());
 
 		LogFactory.releaseAll();

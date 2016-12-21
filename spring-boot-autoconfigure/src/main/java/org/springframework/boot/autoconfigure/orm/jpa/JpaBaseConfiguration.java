@@ -59,6 +59,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  */
 @EnableConfigurationProperties(JpaProperties.class)
 @Import(DataSourceInitializedPublisher.Registrar.class)
@@ -82,7 +83,9 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@Bean
 	@ConditionalOnMissingBean(PlatformTransactionManager.class)
 	public PlatformTransactionManager transactionManager() {
-		return new JpaTransactionManager();
+		JpaTransactionManager transactionManager = new JpaTransactionManager();
+		this.properties.getTransaction().applyTo(transactionManager);
+		return transactionManager;
 	}
 
 	@Bean
