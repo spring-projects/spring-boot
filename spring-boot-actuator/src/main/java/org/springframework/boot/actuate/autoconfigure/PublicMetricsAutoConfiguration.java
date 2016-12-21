@@ -46,13 +46,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.integration.monitor.IntegrationMBeanExporter;
+import org.springframework.integration.config.EnableIntegrationManagement;
+import org.springframework.integration.support.management.IntegrationManagementConfigurer;
 import org.springframework.lang.UsesJava7;
 
 /**
@@ -61,6 +63,7 @@ import org.springframework.lang.UsesJava7;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Johannes Edmeier
+ * @author Artem Bilan
  * @since 1.2.0
  */
 @Configuration
@@ -139,18 +142,28 @@ public class PublicMetricsAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(IntegrationMBeanExporter.class)
-	@ConditionalOnBean(IntegrationMBeanExporter.class)
+	@ConditionalOnClass(EnableIntegrationManagement.class)
 	@ConditionalOnJava(JavaVersion.SEVEN)
 	@UsesJava7
 	static class IntegrationMetricsConfiguration {
 
+		@Bean(name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME)
+		@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class,
+				name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME,
+				search = SearchStrategy.CURRENT)
+		public IntegrationManagementConfigurer managementConfigurer() {
+			IntegrationManagementConfigurer configurer = new IntegrationManagementConfigurer();
+			configurer.setDefaultCountsEnabled(true);
+			configurer.setDefaultStatsEnabled(true);
+			return configurer;
+		}
+
 		@Bean
 		@ConditionalOnMissingBean(name = "springIntegrationPublicMetrics")
 		public MetricReaderPublicMetrics springIntegrationPublicMetrics(
-				IntegrationMBeanExporter exporter) {
+				IntegrationManagementConfigurer managementConfigurer) {
 			return new MetricReaderPublicMetrics(
-					new SpringIntegrationMetricReader(exporter));
+					new SpringIntegrationMetricReader(managementConfigurer));
 		}
 
 	}
