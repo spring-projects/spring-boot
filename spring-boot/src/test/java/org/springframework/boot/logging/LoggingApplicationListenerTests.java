@@ -167,7 +167,7 @@ public class LoggingApplicationListenerTests {
 	@Test
 	public void tomcatNopLoggingConfigDoesNotCauseAFailure() throws Exception {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"logging.config: -Dnop");
+				"LOGGING_CONFIG: -Dnop");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.info("Hello world");
