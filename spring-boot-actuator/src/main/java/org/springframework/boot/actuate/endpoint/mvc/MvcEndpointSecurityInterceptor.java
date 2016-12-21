@@ -17,11 +17,16 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -34,9 +39,14 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  */
 public class MvcEndpointSecurityInterceptor extends HandlerInterceptorAdapter {
 
+	private static final Log logger = LogFactory
+			.getLog(MvcEndpointSecurityInterceptor.class);
+
 	private final boolean secure;
 
 	private final List<String> roles;
+
+	private AtomicBoolean loggedUnauthorizedAttempt = new AtomicBoolean();
 
 	public MvcEndpointSecurityInterceptor(boolean secure, List<String> roles) {
 		this.secure = secure;
@@ -66,18 +76,23 @@ public class MvcEndpointSecurityInterceptor extends HandlerInterceptorAdapter {
 	private void sendFailureResponse(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		if (request.getUserPrincipal() != null) {
-			StringBuilder message = new StringBuilder();
-			for (String role : this.roles) {
-				message.append(role).append(" ");
-			}
+			String roles = StringUtils.collectionToDelimitedString(this.roles, " ");
 			response.sendError(HttpStatus.FORBIDDEN.value(),
-					"Access is denied. User must have one of the these roles: "
-							+ message.toString().trim());
+					"Access is denied. User must have one of the these roles: " + roles);
 		}
 		else {
+			logUnauthorizedAttempt();
 			response.sendError(HttpStatus.UNAUTHORIZED.value(),
-					"Full authentication is required to access this resource. "
-							+ "Consider adding Spring Security or set management.security.enabled to false.");
+					"Full authentication is required to access this resource.");
+		}
+	}
+
+	private void logUnauthorizedAttempt() {
+		if (this.loggedUnauthorizedAttempt.compareAndSet(false, true)
+				&& logger.isInfoEnabled()) {
+			logger.info("Full authentication is required to access "
+					+ "actuator endpoints. Consider adding Spring Security "
+					+ "or set 'management.security.enabled' to false.");
 		}
 	}
 

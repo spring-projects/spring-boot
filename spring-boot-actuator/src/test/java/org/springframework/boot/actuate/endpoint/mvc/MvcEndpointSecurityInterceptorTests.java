@@ -23,9 +23,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
@@ -41,6 +43,9 @@ import static org.mockito.Mockito.verify;
  * @author Madhura Bhave
  */
 public class MvcEndpointSecurityInterceptorTests {
+
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	private MvcEndpointSecurityInterceptor securityInterceptor;
 
@@ -97,8 +102,13 @@ public class MvcEndpointSecurityInterceptorTests {
 		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
 				this.handlerMethod)).isFalse();
 		verify(this.response).sendError(HttpStatus.UNAUTHORIZED.value(),
-				"Full authentication is required to access this resource. "
-						+ "Consider adding Spring Security or set management.security.enabled to false.");
+				"Full authentication is required to access this resource.");
+		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
+				this.handlerMethod)).isFalse();
+		assertThat(this.output.toString())
+				.containsOnlyOnce("Full authentication is required to access actuator "
+						+ "endpoints. Consider adding Spring Security or set "
+						+ "'management.security.enabled' to false");
 	}
 
 	@Test
