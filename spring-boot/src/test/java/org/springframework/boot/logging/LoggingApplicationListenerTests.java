@@ -470,6 +470,16 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	public void environmentPropertiesIgnoreUnresolvablePlaceholders() {
+		// gh-7719
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"logging.pattern.console=console ${pid}");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertThat(System.getProperty("CONSOLE_LOG_PATTERN")).isEqualTo("console ${pid}");
+	}
+
+	@Test
 	public void logFilePropertiesCanReferenceSystemProperties() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.file=target/${PID}.log");
