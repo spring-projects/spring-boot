@@ -32,12 +32,11 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.ProducerFactory;
 
 /**
- * Example custom kafka configuration beans used when the user wants to
- * apply different common properties to the producer and consumer.
+ * Example custom kafka configuration beans used when the user wants to apply different
+ * common properties to the producer and consumer.
  *
  * @author Gary Russell
  * @since 1.5
- *
  */
 public class KafkaSpecialProducerConsumerConfigExample {
 
@@ -65,7 +64,8 @@ public class KafkaSpecialProducerConsumerConfigExample {
 		 */
 		@Bean
 		public ConsumerFactory<?, ?> kafkaConsumerFactory(KafkaProperties properties) {
-			Map<String, Object> consumererProperties = properties.buildConsumerProperties();
+			Map<String, Object> consumererProperties = properties
+					.buildConsumerProperties();
 			consumererProperties.put(CommonClientConfigs.METRIC_REPORTER_CLASSES_CONFIG,
 					MyConsumerMetricsReporter.class);
 			return new DefaultKafkaConsumerFactory<Object, Object>(consumererProperties);

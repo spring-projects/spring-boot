@@ -4646,9 +4646,12 @@ Only a subset of the properties supported by Kafka are available via the `KafkaP
 class. If you wish to configure the producer or consumer with additional properties that
 are not directly supported, use the following:
 
-`spring.kafka.properties.foo.bar=baz`
+[source,properties,indent=0]
+----
+	spring.kafka.properties.foo.bar=baz
+----
 
-This sets the common `foo.bar` kafka property to `baz`.
+This sets the common `foo.bar` Kafka property to `baz`.
 
 These properties will be shared by both the consumer and producer factory beans.
 If you wish to customize these components with different properties, such as to use a
@@ -4658,6 +4661,8 @@ different metrics reader for each, you can override the bean definitions, as fol
 ----
 include::{code-examples}/kafka/KafkaSpecialProducerConsumerConfigExample.java[tag=configuration]
 ----
+
+
 
 [[boot-features-restclient]]
 == Calling REST services

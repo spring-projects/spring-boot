@@ -33,6 +33,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Configuration properties for Spring for Apache Kafka.
@@ -46,18 +47,6 @@ import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMo
  */
 @ConfigurationProperties(prefix = "spring.kafka")
 public class KafkaProperties {
-
-	private final Consumer consumer = new Consumer();
-
-	private final Producer producer = new Producer();
-
-	private final Listener listener = new Listener();
-
-	private final Template template = new Template();
-
-	private final Ssl ssl = new Ssl();
-
-	// Apache Kafka Common Properties
 
 	/**
 	 * Comma-delimited list of host:port pairs to use for establishing the initial
@@ -76,25 +65,15 @@ public class KafkaProperties {
 	 */
 	private Map<String, String> properties = new HashMap<String, String>();
 
-	public Consumer getConsumer() {
-		return this.consumer;
-	}
+	private final Consumer consumer = new Consumer();
 
-	public Producer getProducer() {
-		return this.producer;
-	}
+	private final Producer producer = new Producer();
 
-	public Listener getListener() {
-		return this.listener;
-	}
+	private final Listener listener = new Listener();
 
-	public Ssl getSsl() {
-		return this.ssl;
-	}
+	private final Ssl ssl = new Ssl();
 
-	public Template getTemplate() {
-		return this.template;
-	}
+	private final Template template = new Template();
 
 	public List<String> getBootstrapServers() {
 		return this.bootstrapServers;
@@ -118,6 +97,26 @@ public class KafkaProperties {
 
 	public void setProperties(Map<String, String> properties) {
 		this.properties = properties;
+	}
+
+	public Consumer getConsumer() {
+		return this.consumer;
+	}
+
+	public Producer getProducer() {
+		return this.producer;
+	}
+
+	public Listener getListener() {
+		return this.listener;
+	}
+
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
+	public Template getTemplate() {
+		return this.template;
 	}
 
 	private Map<String, Object> buildCommonProperties() {
@@ -148,7 +147,7 @@ public class KafkaProperties {
 			properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG,
 					this.ssl.getTruststorePassword());
 		}
-		if (this.properties != null && this.properties.size() > 0) {
+		if (!CollectionUtils.isEmpty(this.properties)) {
 			properties.putAll(this.properties);
 		}
 		return properties;
@@ -163,9 +162,9 @@ public class KafkaProperties {
 	 * instance
 	 */
 	public Map<String, Object> buildConsumerProperties() {
-		Map<String, Object> props = buildCommonProperties();
-		props.putAll(this.consumer.buildProperties());
-		return props;
+		Map<String, Object> properties = buildCommonProperties();
+		properties.putAll(this.consumer.buildProperties());
+		return properties;
 	}
 
 	/**
@@ -177,9 +176,9 @@ public class KafkaProperties {
 	 * instance
 	 */
 	public Map<String, Object> buildProducerProperties() {
-		Map<String, Object> props = buildCommonProperties();
-		props.putAll(this.producer.buildProperties());
-		return props;
+		Map<String, Object> properties = buildCommonProperties();
+		properties.putAll(this.producer.buildProperties());
+		return properties;
 	}
 
 	private static String resourceToPath(Resource resource) {
@@ -425,7 +424,8 @@ public class KafkaProperties {
 						this.valueDeserializer);
 			}
 			if (this.maxPollRecords != null) {
-				properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, this.maxPollRecords);
+				properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG,
+						this.maxPollRecords);
 			}
 			return properties;
 		}

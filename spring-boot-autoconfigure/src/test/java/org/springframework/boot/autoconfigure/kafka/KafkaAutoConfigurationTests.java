@@ -60,8 +60,7 @@ public class KafkaAutoConfigurationTests {
 
 	@Test
 	public void consumerProperties() {
-		load("spring.kafka.bootstrap-servers=foo:1234",
-				"spring.kafka.properties.foo=bar",
+		load("spring.kafka.bootstrap-servers=foo:1234", "spring.kafka.properties.foo=bar",
 				"spring.kafka.properties.baz=qux",
 				"spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
 				"spring.kafka.ssl.key-password=p1",
@@ -113,8 +112,7 @@ public class KafkaAutoConfigurationTests {
 				.isEqualTo(LongDeserializer.class);
 		assertThat(configs.get(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG))
 				.isEqualTo(IntegerDeserializer.class);
-		assertThat(configs.get(ConsumerConfig.MAX_POLL_RECORDS_CONFIG))
-				.isEqualTo(42);
+		assertThat(configs.get(ConsumerConfig.MAX_POLL_RECORDS_CONFIG)).isEqualTo(42);
 		assertThat(configs.get("foo")).isEqualTo("bar");
 		assertThat(configs.get("baz")).isEqualTo("qux");
 		assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
