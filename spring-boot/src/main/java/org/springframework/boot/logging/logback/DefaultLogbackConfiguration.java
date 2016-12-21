@@ -72,7 +72,8 @@ class DefaultLogbackConfiguration {
 		if (environment == null) {
 			return new PropertySourcesPropertyResolver(null);
 		}
-		return new RelaxedPropertyResolver(environment, "logging.pattern.");
+		return RelaxedPropertyResolver.ignoringUnresolvableNestedPlaceholders(environment,
+				"logging.pattern.");
 	}
 
 	public void apply(LogbackConfigurator config) {
