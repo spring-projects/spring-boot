@@ -33,6 +33,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Configuration properties for Spring for Apache Kafka.
@@ -47,18 +48,6 @@ import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMo
 @ConfigurationProperties(prefix = "spring.kafka")
 public class KafkaProperties {
 
-	private final Consumer consumer = new Consumer();
-
-	private final Producer producer = new Producer();
-
-	private final Listener listener = new Listener();
-
-	private final Template template = new Template();
-
-	private final Ssl ssl = new Ssl();
-
-	// Apache Kafka Common Properties
-
 	/**
 	 * Comma-delimited list of host:port pairs to use for establishing the initial
 	 * connection to the Kafka cluster.
@@ -70,6 +59,45 @@ public class KafkaProperties {
 	 * Id to pass to the server when making requests; used for server-side logging.
 	 */
 	private String clientId;
+
+	/**
+	 * Additional properties used to configure the client.
+	 */
+	private Map<String, String> properties = new HashMap<String, String>();
+
+	private final Consumer consumer = new Consumer();
+
+	private final Producer producer = new Producer();
+
+	private final Listener listener = new Listener();
+
+	private final Ssl ssl = new Ssl();
+
+	private final Template template = new Template();
+
+	public List<String> getBootstrapServers() {
+		return this.bootstrapServers;
+	}
+
+	public void setBootstrapServers(List<String> bootstrapServers) {
+		this.bootstrapServers = bootstrapServers;
+	}
+
+	public String getClientId() {
+		return this.clientId;
+	}
+
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
+
+	public Map<String, String> getProperties() {
+		return this.properties;
+	}
+
+	public void setProperties(Map<String, String> properties) {
+		this.properties = properties;
+	}
 
 	public Consumer getConsumer() {
 		return this.consumer;
@@ -89,22 +117,6 @@ public class KafkaProperties {
 
 	public Template getTemplate() {
 		return this.template;
-	}
-
-	public List<String> getBootstrapServers() {
-		return this.bootstrapServers;
-	}
-
-	public void setBootstrapServers(List<String> bootstrapServers) {
-		this.bootstrapServers = bootstrapServers;
-	}
-
-	public String getClientId() {
-		return this.clientId;
-	}
-
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
 	}
 
 	private Map<String, Object> buildCommonProperties() {
@@ -135,6 +147,9 @@ public class KafkaProperties {
 			properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG,
 					this.ssl.getTruststorePassword());
 		}
+		if (!CollectionUtils.isEmpty(this.properties)) {
+			properties.putAll(this.properties);
+		}
 		return properties;
 	}
 
@@ -147,9 +162,9 @@ public class KafkaProperties {
 	 * instance
 	 */
 	public Map<String, Object> buildConsumerProperties() {
-		Map<String, Object> props = buildCommonProperties();
-		props.putAll(this.consumer.buildProperties());
-		return props;
+		Map<String, Object> properties = buildCommonProperties();
+		properties.putAll(this.consumer.buildProperties());
+		return properties;
 	}
 
 	/**
@@ -161,9 +176,9 @@ public class KafkaProperties {
 	 * instance
 	 */
 	public Map<String, Object> buildProducerProperties() {
-		Map<String, Object> props = buildCommonProperties();
-		props.putAll(this.producer.buildProperties());
-		return props;
+		Map<String, Object> properties = buildCommonProperties();
+		properties.putAll(this.producer.buildProperties());
+		return properties;
 	}
 
 	private static String resourceToPath(Resource resource) {
@@ -239,6 +254,11 @@ public class KafkaProperties {
 		 * Deserializer class for values.
 		 */
 		private Class<?> valueDeserializer = StringDeserializer.class;
+
+		/**
+		 * Maximum number of records returned in a single call to poll().
+		 */
+		private Integer maxPollRecords;
 
 		public Ssl getSsl() {
 			return this.ssl;
@@ -332,6 +352,14 @@ public class KafkaProperties {
 			this.valueDeserializer = valueDeserializer;
 		}
 
+		public Integer getMaxPollRecords() {
+			return this.maxPollRecords;
+		}
+
+		public void setMaxPollRecords(Integer maxPollRecords) {
+			this.maxPollRecords = maxPollRecords;
+		}
+
 		public Map<String, Object> buildProperties() {
 			Map<String, Object> properties = new HashMap<String, Object>();
 			if (this.autoCommitInterval != null) {
@@ -394,6 +422,10 @@ public class KafkaProperties {
 			if (this.valueDeserializer != null) {
 				properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
 						this.valueDeserializer);
+			}
+			if (this.maxPollRecords != null) {
+				properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG,
+						this.maxPollRecords);
 			}
 			return properties;
 		}
