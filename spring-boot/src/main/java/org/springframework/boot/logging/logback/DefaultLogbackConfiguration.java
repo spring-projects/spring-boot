@@ -136,13 +136,13 @@ class DefaultLogbackConfiguration {
 		appender.setEncoder(encoder);
 		config.start(encoder);
 		appender.setFile(logFile);
-		getRollingPolicy(appender, config, logFile);
-		getMaxFileSize(appender, config);
+		setRollingPolicy(appender, config, logFile);
+		setMaxFileSize(appender, config);
 		config.appender("FILE", appender);
 		return appender;
 	}
 
-	private void getRollingPolicy(RollingFileAppender<ILoggingEvent> appender,
+	private void setRollingPolicy(RollingFileAppender<ILoggingEvent> appender,
 			LogbackConfigurator config, String logFile) {
 		FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
 		rollingPolicy.setFileNamePattern(logFile + ".%i");
@@ -151,7 +151,7 @@ class DefaultLogbackConfiguration {
 		config.start(rollingPolicy);
 	}
 
-	private void getMaxFileSize(RollingFileAppender<ILoggingEvent> appender,
+	private void setMaxFileSize(RollingFileAppender<ILoggingEvent> appender,
 			LogbackConfigurator config) {
 		SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>();
 		try {
