@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -39,10 +40,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  */
 @Configuration
 @ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
+@EnableConfigurationProperties(DataSourceProperties.class)
 public class DataSourceTransactionManagerAutoConfiguration {
 
 	@Configuration
@@ -57,8 +60,12 @@ public class DataSourceTransactionManagerAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(PlatformTransactionManager.class)
-		public DataSourceTransactionManager transactionManager() {
-			return new DataSourceTransactionManager(this.dataSource);
+		public DataSourceTransactionManager transactionManager(
+				DataSourceProperties properties) {
+			DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(
+					this.dataSource);
+			properties.getTransaction().applyTo(transactionManager);
+			return transactionManager;
 		}
 
 	}

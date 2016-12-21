@@ -30,6 +30,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Kazuki Shimizu
  * @since 1.2.0
  */
 @Configuration
@@ -40,9 +41,18 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
 class JndiJtaConfiguration {
 
+	private final JtaProperties jtaProperties;
+
+	JndiJtaConfiguration(JtaProperties jtaProperties) {
+		this.jtaProperties = jtaProperties;
+	}
+
 	@Bean
 	public JtaTransactionManager transactionManager() {
-		return new JtaTransactionManagerFactoryBean().getObject();
+		JtaTransactionManager transactionManager = new JtaTransactionManagerFactoryBean()
+				.getObject();
+		this.jtaProperties.getTransaction().applyTo(transactionManager);
+		return transactionManager;
 	}
 
 }

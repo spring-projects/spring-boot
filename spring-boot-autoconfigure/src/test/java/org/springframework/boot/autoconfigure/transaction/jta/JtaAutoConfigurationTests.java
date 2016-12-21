@@ -69,6 +69,7 @@ import static org.mockito.Mockito.mock;
  * @author Josh Long
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  */
 public class JtaAutoConfigurationTests {
 
@@ -243,6 +244,34 @@ public class JtaAutoConfigurationTests {
 				.getBean(PoolingDataSourceBean.class);
 		assertThat(dataSource.getMinPoolSize()).isEqualTo(5);
 		assertThat(dataSource.getMaxPoolSize()).isEqualTo(10);
+	}
+
+	@Test
+	public void atomikosCustomizeJtaTransactionManagerUsingProperties() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jta.transaction.default-timeout:30",
+				"spring.jta.transaction.rollback-on-commit-failure:true");
+		this.context.register(AtomikosJtaConfiguration.class);
+		this.context.refresh();
+		JtaTransactionManager transactionManager = this.context
+				.getBean(JtaTransactionManager.class);
+		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
+		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
+	}
+
+	@Test
+	public void bitronixCustomizeJtaTransactionManagerUsingProperties() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jta.transaction.default-timeout:30",
+				"spring.jta.transaction.rollback-on-commit-failure:true");
+		this.context.register(BitronixJtaConfiguration.class);
+		this.context.refresh();
+		JtaTransactionManager transactionManager = this.context
+				.getBean(JtaTransactionManager.class);
+		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
+		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 	}
 
 	@Configuration
