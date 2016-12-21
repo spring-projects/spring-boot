@@ -100,7 +100,7 @@ public class KafkaAutoConfigurationTests {
 		assertThat(configs.get(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG))
 				.isEqualTo(Boolean.FALSE);
 		assertThat(configs.get(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG))
-				.isEqualTo(123L);
+				.isEqualTo(123);
 		assertThat(configs.get(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG))
 				.isEqualTo("earliest");
 		assertThat(configs.get(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG)).isEqualTo(456);
