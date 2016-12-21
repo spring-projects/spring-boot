@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
+import org.springframework.integration.support.management.IntegrationManagementConfigurer;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
@@ -86,12 +87,14 @@ public class IntegrationAutoConfigurationTests {
 		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
 		assertDomains(mBeanServer, true, "org.springframework.integration",
 				"org.springframework.integration.monitor");
+		assertThat(this.context.getBean(IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME)).isNotNull();
 	}
 
 	@Test
 	public void disableJmxIntegration() {
 		load("spring.jmx.enabled=false");
 		assertThat(this.context.getBeansOfType(MBeanServer.class)).hasSize(0);
+		assertThat(this.context.getBeansOfType(IntegrationManagementConfigurer.class)).isEmpty();
 	}
 
 	@Test

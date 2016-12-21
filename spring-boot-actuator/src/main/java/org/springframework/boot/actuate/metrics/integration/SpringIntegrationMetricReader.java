@@ -22,24 +22,29 @@ import java.util.List;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
-import org.springframework.integration.monitor.IntegrationMBeanExporter;
+import org.springframework.integration.support.management.IntegrationManagementConfigurer;
+import org.springframework.integration.support.management.MessageChannelMetrics;
+import org.springframework.integration.support.management.MessageHandlerMetrics;
+import org.springframework.integration.support.management.MessageSourceMetrics;
+import org.springframework.integration.support.management.PollableChannelManagement;
 import org.springframework.integration.support.management.Statistics;
 import org.springframework.lang.UsesJava7;
 
 /**
  * A {@link MetricReader} for Spring Integration metrics (as provided by
- * spring-integration-jmx).
+ * {@link IntegrationManagementConfigurer}).
  *
  * @author Dave Syer
+ * @author Artem Bilan
  * @since 1.3.0
  */
 @UsesJava7
 public class SpringIntegrationMetricReader implements MetricReader {
 
-	private final IntegrationMBeanExporter exporter;
+	private final IntegrationManagementConfigurer managementConfigurer;
 
-	public SpringIntegrationMetricReader(IntegrationMBeanExporter exporter) {
-		this.exporter = exporter;
+	public SpringIntegrationMetricReader(IntegrationManagementConfigurer managementConfigurer) {
+		this.managementConfigurer = managementConfigurer;
 	}
 
 	@Override
@@ -49,31 +54,40 @@ public class SpringIntegrationMetricReader implements MetricReader {
 
 	@Override
 	public Iterable<Metric<?>> findAll() {
-		IntegrationMBeanExporter exporter = this.exporter;
 		List<Metric<?>> metrics = new ArrayList<Metric<?>>();
-		for (String name : exporter.getChannelNames()) {
+
+		for (String name : this.managementConfigurer.getChannelNames()) {
+			MessageChannelMetrics channelMetrics = this.managementConfigurer.getChannelMetrics(name);
 			String prefix = "integration.channel." + name;
-			metrics.addAll(getStatistics(prefix + ".errorRate",
-					exporter.getChannelErrorRate(name)));
-			metrics.add(new Metric<Long>(prefix + ".sendCount",
-					exporter.getChannelSendCountLong(name)));
-			metrics.addAll(getStatistics(prefix + ".sendRate",
-					exporter.getChannelSendRate(name)));
-			metrics.add(new Metric<Long>(prefix + ".receiveCount",
-					exporter.getChannelReceiveCountLong(name)));
+			metrics.addAll(getStatistics(prefix + ".errorRate", channelMetrics.getErrorRate()));
+			metrics.add(new Metric<Long>(prefix + ".sendCount", channelMetrics.getSendCountLong()));
+			metrics.addAll(getStatistics(prefix + ".sendRate", channelMetrics.getSendRate()));
+			if (channelMetrics instanceof PollableChannelManagement) {
+				metrics.add(new Metric<Long>(prefix + ".receiveCount",
+						((PollableChannelManagement) channelMetrics).getReceiveCountLong()));
+			}
 		}
-		for (String name : exporter.getHandlerNames()) {
-			metrics.addAll(getStatistics("integration.handler." + name + ".duration",
-					exporter.getHandlerDuration(name)));
+
+		for (String name : this.managementConfigurer.getHandlerNames()) {
+			MessageHandlerMetrics handlerMetrics = this.managementConfigurer.getHandlerMetrics(name);
+			String prefix = "integration.handler." + name;
+			metrics.addAll(getStatistics(prefix + ".duration", handlerMetrics.getDuration()));
+			metrics.add(new Metric<Long>(prefix + ".activeCount", handlerMetrics.getActiveCountLong()));
 		}
-		metrics.add(new Metric<Integer>("integration.activeHandlerCount",
-				exporter.getActiveHandlerCount()));
+
+		for (String name : this.managementConfigurer.getSourceNames()) {
+			MessageSourceMetrics sourceMetrics = this.managementConfigurer.getSourceMetrics(name);
+			String prefix = "integration.source." + name;
+			metrics.add(new Metric<Long>(prefix + ".messageCount", sourceMetrics.getMessageCountLong()));
+		}
+
 		metrics.add(new Metric<Integer>("integration.handlerCount",
-				exporter.getHandlerCount()));
+				this.managementConfigurer.getHandlerNames().length));
 		metrics.add(new Metric<Integer>("integration.channelCount",
-				exporter.getChannelCount()));
-		metrics.add(new Metric<Integer>("integration.queuedMessageCount",
-				exporter.getQueuedMessageCount()));
+				this.managementConfigurer.getChannelNames().length));
+		metrics.add(new Metric<Integer>("integration.sourceCount",
+				this.managementConfigurer.getSourceNames().length));
+
 		return metrics;
 	}
 
@@ -91,9 +105,10 @@ public class SpringIntegrationMetricReader implements MetricReader {
 
 	@Override
 	public long count() {
-		int totalChannelCount = this.exporter.getChannelCount() * 11;
-		int totalHandlerCount = this.exporter.getHandlerCount() * 5;
-		return totalChannelCount + totalHandlerCount + 4;
+		int totalChannelCount = this.managementConfigurer.getChannelNames().length;
+		int totalHandlerCount = this.managementConfigurer.getHandlerNames().length;
+		int totalSourceCount = this.managementConfigurer.getSourceNames().length;
+		return totalChannelCount + totalHandlerCount + totalSourceCount;
 	}
 
 }
