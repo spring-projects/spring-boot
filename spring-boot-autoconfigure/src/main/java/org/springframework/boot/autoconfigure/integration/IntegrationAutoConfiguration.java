@@ -21,8 +21,6 @@ import javax.management.MBeanServer;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -35,6 +33,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.integration.config.EnableIntegration;
+import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
 import org.springframework.integration.monitor.IntegrationMBeanExporter;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
@@ -67,16 +66,9 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationJmxConfiguration
 			implements EnvironmentAware, BeanFactoryAware {
 
-		private final IntegrationManagementConfigurer configurer;
-
 		private BeanFactory beanFactory;
 
 		private RelaxedPropertyResolver propertyResolver;
-
-		protected IntegrationJmxConfiguration(
-				@Qualifier(IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME) ObjectProvider<IntegrationManagementConfigurer> configurerProvider) {
-			this.configurer = configurerProvider.getIfAvailable();
-		}
 
 		@Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -100,15 +92,23 @@ public class IntegrationAutoConfiguration {
 			if (StringUtils.hasLength(server)) {
 				exporter.setServer(this.beanFactory.getBean(server, MBeanServer.class));
 			}
-			if (this.configurer != null) {
-				if (this.configurer.getDefaultCountsEnabled() == null) {
-					this.configurer.setDefaultCountsEnabled(true);
-				}
-				if (this.configurer.getDefaultStatsEnabled() == null) {
-					this.configurer.setDefaultStatsEnabled(true);
-				}
-			}
 			return exporter;
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass({EnableIntegrationManagement.class, EnableIntegrationMBeanExport.class})
+	@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class,
+			name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME,
+			search = SearchStrategy.CURRENT)
+	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
+	protected static class IntegrationManagementConfiguration {
+
+		@Configuration
+		@EnableIntegrationManagement(defaultCountsEnabled = "true", defaultStatsEnabled = "true")
+		protected static class EnableIntegrationManagementConfiguration {
+
 		}
 
 	}
