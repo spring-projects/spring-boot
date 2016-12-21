@@ -64,11 +64,10 @@ public class KafkaSpecialProducerConsumerConfigExample {
 		 */
 		@Bean
 		public ConsumerFactory<?, ?> kafkaConsumerFactory(KafkaProperties properties) {
-			Map<String, Object> consumererProperties = properties
-					.buildConsumerProperties();
-			consumererProperties.put(CommonClientConfigs.METRIC_REPORTER_CLASSES_CONFIG,
+			Map<String, Object> consumerProperties = properties.buildConsumerProperties();
+			consumerProperties.put(CommonClientConfigs.METRIC_REPORTER_CLASSES_CONFIG,
 					MyConsumerMetricsReporter.class);
-			return new DefaultKafkaConsumerFactory<Object, Object>(consumererProperties);
+			return new DefaultKafkaConsumerFactory<Object, Object>(consumerProperties);
 		}
 
 	}
