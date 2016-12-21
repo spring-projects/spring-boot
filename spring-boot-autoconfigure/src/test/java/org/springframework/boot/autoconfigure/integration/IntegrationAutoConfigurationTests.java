@@ -87,14 +87,17 @@ public class IntegrationAutoConfigurationTests {
 		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
 		assertDomains(mBeanServer, true, "org.springframework.integration",
 				"org.springframework.integration.monitor");
-		assertThat(this.context.getBean(IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME)).isNotNull();
+		Object bean = this.context
+				.getBean(IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME);
+		assertThat(bean).isNotNull();
 	}
 
 	@Test
 	public void disableJmxIntegration() {
 		load("spring.jmx.enabled=false");
 		assertThat(this.context.getBeansOfType(MBeanServer.class)).hasSize(0);
-		assertThat(this.context.getBeansOfType(IntegrationManagementConfigurer.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(IntegrationManagementConfigurer.class))
+				.isEmpty();
 	}
 
 	@Test

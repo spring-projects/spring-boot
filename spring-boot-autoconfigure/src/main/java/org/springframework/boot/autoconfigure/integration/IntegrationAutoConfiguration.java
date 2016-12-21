@@ -98,10 +98,9 @@ public class IntegrationAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass({EnableIntegrationManagement.class, EnableIntegrationMBeanExport.class})
-	@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class,
-			name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME,
-			search = SearchStrategy.CURRENT)
+	@ConditionalOnClass({ EnableIntegrationManagement.class,
+			EnableIntegrationMBeanExport.class })
+	@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class, name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME, search = SearchStrategy.CURRENT)
 	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
 	protected static class IntegrationManagementConfiguration {
 

@@ -148,9 +148,7 @@ public class PublicMetricsAutoConfiguration {
 	static class IntegrationMetricsConfiguration {
 
 		@Bean(name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME)
-		@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class,
-				name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME,
-				search = SearchStrategy.CURRENT)
+		@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class, name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME, search = SearchStrategy.CURRENT)
 		public IntegrationManagementConfigurer managementConfigurer() {
 			IntegrationManagementConfigurer configurer = new IntegrationManagementConfigurer();
 			configurer.setDefaultCountsEnabled(true);

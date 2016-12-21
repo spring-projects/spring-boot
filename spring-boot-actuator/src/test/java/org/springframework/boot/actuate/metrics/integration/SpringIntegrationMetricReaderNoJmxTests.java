@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.metrics.integration;
 
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -53,7 +52,7 @@ public class SpringIntegrationMetricReaderNoJmxTests {
 	}
 
 	@Configuration
-	@Import({IntegrationAutoConfiguration.class, PublicMetricsAutoConfiguration.class})
+	@Import({ IntegrationAutoConfiguration.class, PublicMetricsAutoConfiguration.class })
 	protected static class TestConfiguration {
 
 	}

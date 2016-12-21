@@ -41,10 +41,10 @@ import org.springframework.lang.UsesJava7;
 @UsesJava7
 public class SpringIntegrationMetricReader implements MetricReader {
 
-	private final IntegrationManagementConfigurer managementConfigurer;
+	private final IntegrationManagementConfigurer configurer;
 
-	public SpringIntegrationMetricReader(IntegrationManagementConfigurer managementConfigurer) {
-		this.managementConfigurer = managementConfigurer;
+	public SpringIntegrationMetricReader(IntegrationManagementConfigurer configurer) {
+		this.configurer = configurer;
 	}
 
 	@Override
@@ -54,60 +54,79 @@ public class SpringIntegrationMetricReader implements MetricReader {
 
 	@Override
 	public Iterable<Metric<?>> findAll() {
-		List<Metric<?>> metrics = new ArrayList<Metric<?>>();
-
-		for (String name : this.managementConfigurer.getChannelNames()) {
-			MessageChannelMetrics channelMetrics = this.managementConfigurer.getChannelMetrics(name);
-			String prefix = "integration.channel." + name;
-			metrics.addAll(getStatistics(prefix + ".errorRate", channelMetrics.getErrorRate()));
-			metrics.add(new Metric<Long>(prefix + ".sendCount", channelMetrics.getSendCountLong()));
-			metrics.addAll(getStatistics(prefix + ".sendRate", channelMetrics.getSendRate()));
-			if (channelMetrics instanceof PollableChannelManagement) {
-				metrics.add(new Metric<Long>(prefix + ".receiveCount",
-						((PollableChannelManagement) channelMetrics).getReceiveCountLong()));
-			}
-		}
-
-		for (String name : this.managementConfigurer.getHandlerNames()) {
-			MessageHandlerMetrics handlerMetrics = this.managementConfigurer.getHandlerMetrics(name);
-			String prefix = "integration.handler." + name;
-			metrics.addAll(getStatistics(prefix + ".duration", handlerMetrics.getDuration()));
-			metrics.add(new Metric<Long>(prefix + ".activeCount", handlerMetrics.getActiveCountLong()));
-		}
-
-		for (String name : this.managementConfigurer.getSourceNames()) {
-			MessageSourceMetrics sourceMetrics = this.managementConfigurer.getSourceMetrics(name);
-			String prefix = "integration.source." + name;
-			metrics.add(new Metric<Long>(prefix + ".messageCount", sourceMetrics.getMessageCountLong()));
-		}
-
-		metrics.add(new Metric<Integer>("integration.handlerCount",
-				this.managementConfigurer.getHandlerNames().length));
-		metrics.add(new Metric<Integer>("integration.channelCount",
-				this.managementConfigurer.getChannelNames().length));
-		metrics.add(new Metric<Integer>("integration.sourceCount",
-				this.managementConfigurer.getSourceNames().length));
-
-		return metrics;
+		List<Metric<?>> result = new ArrayList<Metric<?>>();
+		String[] channelNames = this.configurer.getChannelNames();
+		String[] handlerNames = this.configurer.getHandlerNames();
+		String[] sourceNames = this.configurer.getSourceNames();
+		addChannelMetrics(result, channelNames);
+		addHandlerMetrics(result, handlerNames);
+		addSourceMetrics(result, sourceNames);
+		result.add(new Metric<Integer>("integration.handlerCount", handlerNames.length));
+		result.add(new Metric<Integer>("integration.channelCount", channelNames.length));
+		result.add(new Metric<Integer>("integration.sourceCount", sourceNames.length));
+		return result;
 	}
 
-	private Collection<? extends Metric<?>> getStatistics(String name,
-			Statistics statistic) {
+	private void addChannelMetrics(List<Metric<?>> result, String[] names) {
+		for (String name : names) {
+			addChannelMetrics(result, name, this.configurer.getChannelMetrics(name));
+		}
+	}
+
+	private void addChannelMetrics(List<Metric<?>> result, String name,
+			MessageChannelMetrics metrics) {
+		String prefix = "integration.channel." + name;
+		result.addAll(getStatistics(prefix + ".errorRate", metrics.getErrorRate()));
+		result.add(new Metric<Long>(prefix + ".sendCount", metrics.getSendCountLong()));
+		result.addAll(getStatistics(prefix + ".sendRate", metrics.getSendRate()));
+		if (metrics instanceof PollableChannelManagement) {
+			result.add(new Metric<Long>(prefix + ".receiveCount",
+					((PollableChannelManagement) metrics).getReceiveCountLong()));
+		}
+	}
+
+	private void addHandlerMetrics(List<Metric<?>> result, String[] names) {
+		for (String name : names) {
+			addHandlerMetrics(result, name, this.configurer.getHandlerMetrics(name));
+		}
+	}
+
+	private void addHandlerMetrics(List<Metric<?>> result, String name,
+			MessageHandlerMetrics metrics) {
+		String prefix = "integration.handler." + name;
+		result.addAll(getStatistics(prefix + ".duration", metrics.getDuration()));
+		long activeCount = metrics.getActiveCountLong();
+		result.add(new Metric<Long>(prefix + ".activeCount", activeCount));
+	}
+
+	private void addSourceMetrics(List<Metric<?>> result, String[] names) {
+		for (String name : names) {
+			addSourceMetrics(result, name, this.configurer.getSourceMetrics(name));
+		}
+	}
+
+	private void addSourceMetrics(List<Metric<?>> result, String name,
+			MessageSourceMetrics sourceMetrics) {
+		String prefix = "integration.source." + name;
+		result.add(new Metric<Long>(prefix + ".messageCount",
+				sourceMetrics.getMessageCountLong()));
+	}
+
+	private Collection<? extends Metric<?>> getStatistics(String name, Statistics stats) {
 		List<Metric<?>> metrics = new ArrayList<Metric<?>>();
-		metrics.add(new Metric<Double>(name + ".mean", statistic.getMean()));
-		metrics.add(new Metric<Double>(name + ".max", statistic.getMax()));
-		metrics.add(new Metric<Double>(name + ".min", statistic.getMin()));
-		metrics.add(
-				new Metric<Double>(name + ".stdev", statistic.getStandardDeviation()));
-		metrics.add(new Metric<Long>(name + ".count", statistic.getCountLong()));
+		metrics.add(new Metric<Double>(name + ".mean", stats.getMean()));
+		metrics.add(new Metric<Double>(name + ".max", stats.getMax()));
+		metrics.add(new Metric<Double>(name + ".min", stats.getMin()));
+		metrics.add(new Metric<Double>(name + ".stdev", stats.getStandardDeviation()));
+		metrics.add(new Metric<Long>(name + ".count", stats.getCountLong()));
 		return metrics;
 	}
 
 	@Override
 	public long count() {
-		int totalChannelCount = this.managementConfigurer.getChannelNames().length;
-		int totalHandlerCount = this.managementConfigurer.getHandlerNames().length;
-		int totalSourceCount = this.managementConfigurer.getSourceNames().length;
+		int totalChannelCount = this.configurer.getChannelNames().length;
+		int totalHandlerCount = this.configurer.getHandlerNames().length;
+		int totalSourceCount = this.configurer.getSourceNames().length;
 		return totalChannelCount + totalHandlerCount + totalSourceCount;
 	}
 

@@ -92,7 +92,7 @@ public class PublicMetricsAutoConfigurationTests {
 	public void metricReaderPublicMetrics() throws Exception {
 		load();
 		assertThat(this.context.getBeansOfType(MetricReaderPublicMetrics.class))
-				.hasSize(1);
+				.hasSize(2);
 	}
 
 	@Test

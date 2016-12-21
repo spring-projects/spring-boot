@@ -56,7 +56,8 @@ public class SpringIntegrationMetricReaderTests {
 	protected static class TestConfiguration {
 
 		@Bean
-		public SpringIntegrationMetricReader reader(IntegrationManagementConfigurer managementConfigurer) {
+		public SpringIntegrationMetricReader reader(
+				IntegrationManagementConfigurer managementConfigurer) {
 			return new SpringIntegrationMetricReader(managementConfigurer);
 		}
 
