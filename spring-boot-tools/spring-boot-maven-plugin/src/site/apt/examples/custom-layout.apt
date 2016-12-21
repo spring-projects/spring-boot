@@ -47,7 +47,7 @@
   </build>
   ...
 </project>
-+---
+---
 
   The layout factory is provided as an implementation of <<<LayoutFactory>>> (from
   spring-boot-loader-tools) explicitly specified in the pom. If there is only one custom

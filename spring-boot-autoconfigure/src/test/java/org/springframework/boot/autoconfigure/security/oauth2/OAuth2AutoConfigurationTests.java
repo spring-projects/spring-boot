@@ -211,7 +211,7 @@ public class OAuth2AutoConfigurationTests {
 				"security.oauth2.client.clientId=client",
 				"security.oauth2.client.grantType=client_credentials");
 		this.context.refresh();
-		// Thr primary context is fine (not session scoped):
+		// The primary context is fine (not session scoped):
 		assertThat(this.context.getBean(OAuth2ClientContext.class).getAccessTokenRequest())
 				.isNotNull();
 		assertThat(countBeans(ClientCredentialsResourceDetails.class)).isEqualTo(1);

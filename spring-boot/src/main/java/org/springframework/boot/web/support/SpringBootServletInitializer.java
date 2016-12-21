@@ -163,7 +163,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	}
 
 	/**
-	 * Configure the application. Normally all you would need to do is add sources (e.g.
+	 * Configure the application. Normally all you would need to do is to add sources (e.g.
 	 * config classes) because other settings have sensible defaults. You might choose
 	 * (for instance) to add default command line arguments, or set an active Spring
 	 * profile.
