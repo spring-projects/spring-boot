@@ -18,9 +18,6 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -42,8 +39,6 @@ import org.springframework.social.oauth2.AccessGrant;
  * @since 1.3.0
  */
 public class SpringSocialTokenServices implements ResourceServerTokenServices {
-
-	protected final Log logger = LogFactory.getLog(getClass());
 
 	private final OAuth2ConnectionFactory<?> connectionFactory;
 
