@@ -32,6 +32,7 @@ import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.jpa.vendor.Database;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -164,6 +165,20 @@ public class JpaPropertiesTests {
 				.getHibernateProperties(mockStandaloneDataSource());
 		assertThat(hibernateProperties)
 				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
+	}
+
+	@Test
+	public void determineH2DatabaseWhenJdbcUrlIsProvided() {
+		JpaProperties properties = load(HibernateVersion.V5);
+		Database database = properties.determineDatabase("jdbc:h2:mem:testdb");
+		assertThat(database).isEqualTo(Database.H2);
+	}
+
+	@Test
+	public void determineDefaultDatabaseWhenJdbcUrlIsProvided() {
+		JpaProperties properties = load(HibernateVersion.V5);
+		Database database = properties.determineDatabase("jdbc:unknown://localhost");
+		assertThat(database).isEqualTo(Database.DEFAULT);
 	}
 
 	@SuppressWarnings("unchecked")

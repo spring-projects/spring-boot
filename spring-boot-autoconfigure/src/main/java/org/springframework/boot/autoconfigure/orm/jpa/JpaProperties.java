@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.util.StringUtils;
 
@@ -33,6 +34,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.jpa")
@@ -123,6 +125,20 @@ public class JpaProperties {
 	 */
 	public Map<String, String> getHibernateProperties(DataSource dataSource) {
 		return this.hibernate.getAdditionalProperties(this.properties, dataSource);
+	}
+
+	/**
+	 * Return the database form the jdbc url or the value for `spring.jpa.database`.
+	 * @param jdbcUrl the url from `spring.datasource.url`
+	 * @return {@code Database}
+	 */
+	public Database determineDatabase(String jdbcUrl) {
+		DatabasePlatform databasePlatform = DatabasePlatform.fromDatabaseDriver(
+				DatabaseDriver.fromJdbcUrl(jdbcUrl));
+		if (databasePlatform != null) {
+			return databasePlatform.getDatabase();
+		}
+		return this.database;
 	}
 
 	public static class Hibernate {
