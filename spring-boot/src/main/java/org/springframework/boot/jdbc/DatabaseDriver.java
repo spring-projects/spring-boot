@@ -182,13 +182,13 @@ public enum DatabaseDriver {
 
 	private final String validationQuery;
 
-	DatabaseDriver(String id, String name, String driverClassName) {
-		this(id, name, driverClassName, null);
+	DatabaseDriver(String id, String productName, String driverClassName) {
+		this(id, productName, driverClassName, null);
 	}
 
-	DatabaseDriver(String id, String name, String driverClassName,
+	DatabaseDriver(String id, String productName, String driverClassName,
 			String xaDataSourceClassName) {
-		this(id, name, driverClassName, xaDataSourceClassName, null);
+		this(id, productName, driverClassName, xaDataSourceClassName, null);
 	}
 
 	DatabaseDriver(String id, String productName, String driverClassName,

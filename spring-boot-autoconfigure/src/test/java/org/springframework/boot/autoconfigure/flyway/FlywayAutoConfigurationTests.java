@@ -237,19 +237,18 @@ public class FlywayAutoConfigurationTests {
 	@Test
 	public void useVendorDirectory() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"flyway.locations:classpath:db/vendors/{vendor}");
+				"flyway.locations=classpath:db/vendors/{vendor},classpath:db/changelog");
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
-		assertThat(flyway.getLocations()).containsExactly(
-				"classpath:db/vendors/h2");
+		assertThat(flyway.getLocations()).containsExactlyInAnyOrder(
+				"classpath:db/vendors/h2", "classpath:db/changelog");
 	}
 
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
 		this.context.register(annotatedClasses);
 		this.context.refresh();
-
 	}
 
 	@Configuration

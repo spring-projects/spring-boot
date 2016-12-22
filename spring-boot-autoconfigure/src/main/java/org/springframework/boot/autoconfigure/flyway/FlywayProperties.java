@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.flyway;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,9 +37,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class FlywayProperties {
 
 	/**
-	 * Locations of migrations scripts.
+	 * Locations of migrations scripts. Can contain the special "{vendor}" placeholder
+	 * to use vendor-specific locations.
 	 */
-	private List<String> locations = new ArrayList<String>(Arrays.asList("db/migration"));
+	private List<String> locations = new ArrayList<String>(Collections.singletonList("db/migration"));
 
 	/**
 	 * Check that migration scripts location exists.
