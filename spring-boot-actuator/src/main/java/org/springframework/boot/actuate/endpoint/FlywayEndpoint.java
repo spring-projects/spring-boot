@@ -16,13 +16,9 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +27,7 @@ import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.MigrationState;
 import org.flywaydb.core.api.MigrationType;
 
-import org.springframework.boot.actuate.endpoint.FlywayEndpoint.FlywayMigration;
+import org.springframework.boot.actuate.endpoint.FlywayEndpoint.FlywayReport;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -44,48 +40,54 @@ import org.springframework.util.Assert;
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "endpoints.flyway")
-public class FlywayEndpoint extends AbstractEndpoint<Map<String, List<FlywayMigration>>> {
+public class FlywayEndpoint extends AbstractEndpoint<List<FlywayReport>> {
 
-	private final List<Flyway> flyway;
+	private final Map<String, Flyway> flyways;
 
 	public FlywayEndpoint(Flyway flyway) {
-		this(Collections.singletonList(flyway));
+		this(Collections.singletonMap("default", flyway));
 	}
 
-	public FlywayEndpoint(List<Flyway> flyway) {
+	public FlywayEndpoint(Map<String, Flyway> flyways) {
 		super("flyway");
-		Assert.notNull(flyway, "Flyway must not be null");
-		this.flyway = flyway;
+		Assert.notEmpty(flyways, "Flyways must be specified");
+		this.flyways = flyways;
 	}
 
 	@Override
-	public Map<String, List<FlywayMigration>> invoke() {
-		Map<String, List<FlywayMigration>> migrations = new HashMap<String, List<FlywayMigration>>();
-		for (Flyway flyway : this.flyway) {
-			Connection connection = null;
-			try {
-				connection = flyway.getDataSource().getConnection();
-				DatabaseMetaData metaData = connection.getMetaData();
-
-				List<FlywayMigration> migration = new ArrayList<FlywayMigration>();
-				for (MigrationInfo info : flyway.info().all()) {
-					migration.add(new FlywayMigration(info));
-				}
-				migrations.put(metaData.getURL(), migration);
+	public List<FlywayReport> invoke() {
+		List<FlywayReport> reports = new ArrayList<FlywayReport>();
+		for (Map.Entry<String, Flyway> entry : this.flyways.entrySet()) {
+			List<FlywayMigration> migrations = new ArrayList<FlywayMigration>();
+			for (MigrationInfo info : entry.getValue().info().all()) {
+				migrations.add(new FlywayMigration(info));
 			}
-			catch (SQLException e) {
-				//Continue
-			}
-			finally {
-				try {
-					connection.close();
-				}
-				catch (SQLException e) {
-					//Continue
-				}
-			}
+			reports.add(new FlywayReport(entry.getKey(), migrations));
 		}
-		return migrations;
+		return reports;
+	}
+
+	/**
+	 * Flyway report for one datasource.
+	 */
+	public static class FlywayReport {
+
+		private final String name;
+		private final List<FlywayMigration> migrations;
+
+		public FlywayReport(String name, List<FlywayMigration> migrations) {
+			this.name = name;
+			this.migrations = migrations;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public List<FlywayMigration> getMigrations() {
+			return this.migrations;
+		}
+
 	}
 
 	/**

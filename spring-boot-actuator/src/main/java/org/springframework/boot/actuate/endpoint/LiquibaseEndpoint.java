@@ -16,10 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,9 +27,9 @@ import liquibase.changelog.StandardChangeLogHistoryService;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.DatabaseException;
 import liquibase.integration.spring.SpringLiquibase;
 
+import org.springframework.boot.actuate.endpoint.LiquibaseEndpoint.LiquibaseReport;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -42,50 +40,68 @@ import org.springframework.util.Assert;
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "endpoints.liquibase")
-public class LiquibaseEndpoint extends AbstractEndpoint<Map<String, List<Map<String, ?>>>> {
+public class LiquibaseEndpoint extends AbstractEndpoint<List<LiquibaseReport>> {
 
-	private final List<SpringLiquibase> liquibase;
+	private final Map<String, SpringLiquibase> liquibases;
 
 	public LiquibaseEndpoint(SpringLiquibase liquibase) {
-		this(Collections.singletonList(liquibase));
+		this(Collections.singletonMap("default", liquibase));
 	}
 
-	public LiquibaseEndpoint(List<SpringLiquibase> liquibase) {
+	public LiquibaseEndpoint(Map<String, SpringLiquibase> liquibase) {
 		super("liquibase");
-		Assert.notNull(liquibase, "Liquibase must not be null");
-		this.liquibase = liquibase;
+		Assert.notEmpty(liquibase, "Liquibase must be specified");
+		this.liquibases = liquibase;
 	}
 
 	@Override
-	public Map<String, List<Map<String, ?>>> invoke() {
-		Map<String, List<Map<String, ?>>> services = new HashMap<String, List<Map<String, ?>>>();
-
+	public List<LiquibaseReport> invoke() {
+		List<LiquibaseReport> reports = new ArrayList<LiquibaseReport>();
 		DatabaseFactory factory = DatabaseFactory.getInstance();
-
-		for (SpringLiquibase liquibase : this.liquibase) {
-			StandardChangeLogHistoryService service = new StandardChangeLogHistoryService();
+		StandardChangeLogHistoryService service = new StandardChangeLogHistoryService();
+		for (Map.Entry<String, SpringLiquibase> entry : this.liquibases.entrySet()) {
 			try {
-				DatabaseMetaData metaData = liquibase.getDataSource().getConnection().getMetaData();
+				DataSource dataSource = entry.getValue().getDataSource();
+				JdbcConnection connection = new JdbcConnection(dataSource.getConnection());
 				try {
-					DataSource dataSource = liquibase.getDataSource();
-					JdbcConnection connection = new JdbcConnection(dataSource.getConnection());
-					try {
-						Database database = factory.findCorrectDatabaseImplementation(connection);
-						services.put(metaData.getURL(), service.queryDatabaseChangeLogTable(database));
-					}
-					finally {
-						connection.close();
-					}
+					Database database = factory.findCorrectDatabaseImplementation(connection);
+					reports.add(new LiquibaseReport(entry.getKey(),
+							service.queryDatabaseChangeLogTable(database)));
 				}
-				catch (DatabaseException ex) {
-					throw new IllegalStateException("Unable to get Liquibase changelog", ex);
+				finally {
+					connection.close();
 				}
 			}
-			catch (SQLException e) {
-				//Continue
+			catch (Exception ex) {
+				throw new IllegalStateException("Unable to get Liquibase changelog", ex);
 			}
 		}
-		return services;
+
+		return reports;
+	}
+
+	/**
+	 * Liquibase report for one datasource.
+	 */
+	public static class LiquibaseReport {
+
+		private final String name;
+
+		private final List<Map<String, ?>> changeLogs;
+
+		public LiquibaseReport(String name, List<Map<String, ?>> changeLogs) {
+			this.name = name;
+			this.changeLogs = changeLogs;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public List<Map<String, ?>> getChangeLogs() {
+			return this.changeLogs;
+		}
+
 	}
 
 }

@@ -193,8 +193,8 @@ public class EndpointAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public FlywayEndpoint flywayEndpoint(List<Flyway> flyway) {
-			return new FlywayEndpoint(flyway);
+		public FlywayEndpoint flywayEndpoint(Map<String, Flyway> flyways) {
+			return new FlywayEndpoint(flyways);
 		}
 
 	}
@@ -206,8 +206,9 @@ public class EndpointAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public LiquibaseEndpoint liquibaseEndpoint(List<SpringLiquibase> liquibase) {
-			return new LiquibaseEndpoint(liquibase);
+		public LiquibaseEndpoint liquibaseEndpoint(
+				Map<String, SpringLiquibase> liquibases) {
+			return new LiquibaseEndpoint(liquibases);
 		}
 
 	}
