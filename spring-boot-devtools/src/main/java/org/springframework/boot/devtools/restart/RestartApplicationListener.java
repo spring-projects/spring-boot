@@ -51,9 +51,6 @@ public class RestartApplicationListener
 				|| event instanceof ApplicationFailedEvent) {
 			Restarter.getInstance().finish();
 		}
-		if (event instanceof ApplicationFailedEvent) {
-			onApplicationFailedEvent((ApplicationFailedEvent) event);
-		}
 	}
 
 	private void onApplicationStartingEvent(ApplicationStartingEvent event) {
@@ -73,10 +70,6 @@ public class RestartApplicationListener
 
 	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
 		Restarter.getInstance().prepare(event.getApplicationContext());
-	}
-
-	private void onApplicationFailedEvent(ApplicationFailedEvent event) {
-		Restarter.getInstance().remove(event.getApplicationContext());
 	}
 
 	@Override
