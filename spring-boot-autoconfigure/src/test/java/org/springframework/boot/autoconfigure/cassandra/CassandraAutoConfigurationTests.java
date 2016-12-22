@@ -64,10 +64,19 @@ public class CassandraAutoConfigurationTests {
 
 	@Test
 	public void createCustomizeCluster() {
-		load(ClusterConfig.class);
+		load(MockCustomizerConfig.class);
 		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
-		assertThat(this.context.getBeanNamesForType(ClusterCustomizer.class).length)
+		assertThat(this.context.getBeanNamesForType(ClusterBuilderCustomizer.class).length)
 				.isEqualTo(1);
+	}
+
+	@Test
+	public void customizerOverridesAutoConfig() {
+		load(SimpleCustomizerConfig.class,
+				"spring.data.cassandra.cluster-name=testcluster");
+		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
+		Cluster cluster = this.context.getBean(Cluster.class);
+		assertThat(cluster.getClusterName()).isEqualTo("overridden-name");
 	}
 
 	private void load(String... environment) {
@@ -87,11 +96,26 @@ public class CassandraAutoConfigurationTests {
 	}
 
 	@Configuration
-	static class ClusterConfig {
+	static class MockCustomizerConfig {
 
 		@Bean
-		public ClusterCustomizer customizer() {
-			return mock(ClusterCustomizer.class);
+		public ClusterBuilderCustomizer customizer() {
+			return mock(ClusterBuilderCustomizer.class);
+		}
+
+	}
+
+	@Configuration
+	static class SimpleCustomizerConfig {
+
+		@Bean
+		public ClusterBuilderCustomizer customizer() {
+			return new ClusterBuilderCustomizer() {
+				@Override
+				public void customize(Cluster.Builder clusterBuilder) {
+					clusterBuilder.withClusterName("overridden-name");
+				}
+			};
 		}
 
 	}
