@@ -51,7 +51,7 @@ import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetada
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.integration.monitor.IntegrationMBeanExporter;
+import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
 
 /**
@@ -139,7 +139,7 @@ public class PublicMetricsAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(IntegrationMBeanExporter.class)
+	@ConditionalOnClass(EnableIntegrationManagement.class)
 	static class IntegrationMetricsConfiguration {
 
 		@Bean(name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME)
