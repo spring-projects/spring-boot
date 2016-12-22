@@ -77,7 +77,7 @@ public class SpringPhysicalNamingStrategy implements PhysicalNamingStrategy {
 	}
 
 	/**
-	 * Get an the identifier for the specified details. By default his method will return
+	 * Get an the identifier for the specified details. By default this method will return
 	 * an identifier with the name adapted based on the result of
 	 * {@link #isCaseInsensitive(JdbcEnvironment)}
 	 * @param name the name of the identifier
@@ -95,7 +95,7 @@ public class SpringPhysicalNamingStrategy implements PhysicalNamingStrategy {
 
 	/**
 	 * Specify whether the database is case sensitive.
-	 * @param jdbcEnvironment The JDBC environment which can be used to determine case
+	 * @param jdbcEnvironment the JDBC environment which can be used to determine case
 	 * @return true if the database is case insensitive sensitivity
 	 */
 	protected boolean isCaseInsensitive(JdbcEnvironment jdbcEnvironment) {
