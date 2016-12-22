@@ -234,6 +234,18 @@ public class FlywayAutoConfigurationTests {
 				.isEqualTo(MigrationVersion.fromVersion("1"));
 	}
 
+	@Test
+	public void useVendorDirectory() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"flyway.locations:classpath:db/vendors/{vendor}");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertThat(flyway.getLocations()).containsExactly(
+				"classpath:db/vendors/h2");
+	}
+
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
 		this.context.register(annotatedClasses);
 		this.context.refresh();
