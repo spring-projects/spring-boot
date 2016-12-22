@@ -31,9 +31,11 @@ import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.config.EnableIntegrationManagement;
+import org.springframework.integration.gateway.GatewayProxyFactoryBean;
 import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
 import org.springframework.integration.monitor.IntegrationMBeanExporter;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
@@ -53,12 +55,18 @@ import org.springframework.util.StringUtils;
 @AutoConfigureAfter(JmxAutoConfiguration.class)
 public class IntegrationAutoConfiguration {
 
+	/**
+	 * Basic Spring Integration configuration.
+	 */
 	@Configuration
 	@EnableIntegration
 	protected static class IntegrationConfiguration {
 
 	}
 
+	/**
+	 * Spring Integration JMX configuration.
+	 */
 	@Configuration
 	@ConditionalOnClass(EnableIntegrationMBeanExport.class)
 	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class, search = SearchStrategy.CURRENT)
@@ -97,6 +105,9 @@ public class IntegrationAutoConfiguration {
 
 	}
 
+	/**
+	 * Integration management configuration.
+	 */
 	@Configuration
 	@ConditionalOnClass({ EnableIntegrationManagement.class,
 			EnableIntegrationMBeanExport.class })
@@ -107,8 +118,16 @@ public class IntegrationAutoConfiguration {
 		@Configuration
 		@EnableIntegrationManagement(defaultCountsEnabled = "true", defaultStatsEnabled = "true")
 		protected static class EnableIntegrationManagementConfiguration {
-
 		}
+
+	}
+
+	/**
+	 * Integration component scan configuration.
+	 */
+	@ConditionalOnMissingBean(GatewayProxyFactoryBean.class)
+	@Import(IntegrationAutoConfigurationScanRegistrar.class)
+	protected static class IntegrationComponentScanAutoConfiguration {
 
 	}
 
