@@ -20,13 +20,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.actuate.autoconfigure.PublicMetricsAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
-import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.integration.support.management.IntegrationManagementConfigurer;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -35,31 +35,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link SpringIntegrationMetricReader}.
  *
- * @author Dave Syer
  * @author Artem Bilan
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest("spring.jmx.enabled=true")
+@SpringBootTest("spring.jmx.enabled=false")
 @DirtiesContext
-public class SpringIntegrationMetricReaderTests {
+public class SpringIntegrationMetricReaderNoJmxTests {
 
 	@Autowired
-	private SpringIntegrationMetricReader reader;
+	@Qualifier("springIntegrationPublicMetrics")
+	private MetricReaderPublicMetrics integrationMetricReader;
 
 	@Test
 	public void test() {
-		assertThat(this.reader.count() > 0).isTrue();
+		assertThat(this.integrationMetricReader.metrics().size() > 0).isTrue();
 	}
 
 	@Configuration
-	@Import({ JmxAutoConfiguration.class, IntegrationAutoConfiguration.class })
+	@Import({ IntegrationAutoConfiguration.class, PublicMetricsAutoConfiguration.class })
 	protected static class TestConfiguration {
-
-		@Bean
-		public SpringIntegrationMetricReader reader(
-				IntegrationManagementConfigurer managementConfigurer) {
-			return new SpringIntegrationMetricReader(managementConfigurer);
-		}
 
 	}
 
