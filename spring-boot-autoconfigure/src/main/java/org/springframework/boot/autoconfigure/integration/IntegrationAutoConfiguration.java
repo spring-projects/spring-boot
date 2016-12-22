@@ -16,15 +16,11 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
-import java.util.Map;
-
 import javax.management.MBeanServer;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -37,12 +33,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
-import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.core.type.StandardAnnotationMetadata;
-import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.config.EnableIntegrationManagement;
-import org.springframework.integration.config.IntegrationComponentScanRegistrar;
 import org.springframework.integration.gateway.GatewayProxyFactoryBean;
 import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
 import org.springframework.integration.monitor.IntegrationMBeanExporter;
@@ -63,12 +55,18 @@ import org.springframework.util.StringUtils;
 @AutoConfigureAfter(JmxAutoConfiguration.class)
 public class IntegrationAutoConfiguration {
 
+	/**
+	 * Basic Spring Integration configuration.
+	 */
 	@Configuration
 	@EnableIntegration
 	protected static class IntegrationConfiguration {
 
 	}
 
+	/**
+	 * Spring Integration JMX configuration.
+	 */
 	@Configuration
 	@ConditionalOnClass(EnableIntegrationMBeanExport.class)
 	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class, search = SearchStrategy.CURRENT)
@@ -107,6 +105,9 @@ public class IntegrationAutoConfiguration {
 
 	}
 
+	/**
+	 * Integration management configuration.
+	 */
 	@Configuration
 	@ConditionalOnClass({ EnableIntegrationManagement.class,
 			EnableIntegrationMBeanExport.class })
@@ -121,44 +122,12 @@ public class IntegrationAutoConfiguration {
 
 	}
 
+	/**
+	 * Integration component scan configuration.
+	 */
 	@ConditionalOnMissingBean(GatewayProxyFactoryBean.class)
-	@Import(AutoIntegrationComponentScanRegistrar.class)
+	@Import(IntegrationAutoConfigurationScanRegistrar.class)
 	protected static class IntegrationComponentScanAutoConfiguration {
-
-	}
-
-	private static class AutoIntegrationComponentScanRegistrar
-			extends IntegrationComponentScanRegistrar {
-
-		@Override
-		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-				final BeanDefinitionRegistry registry) {
-			StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(
-					IntegrationComponentScanConfiguration.class, true) {
-
-				@Override
-				public Map<String, Object> getAnnotationAttributes(
-						String annotationName) {
-					Map<String, Object> annotationAttributes = super.getAnnotationAttributes(
-							annotationName);
-					if (IntegrationComponentScan.class.getName().equals(annotationName)) {
-						BeanFactory beanFactory = (BeanFactory) registry;
-						if (AutoConfigurationPackages.has(beanFactory)) {
-							annotationAttributes.put("value",
-									AutoConfigurationPackages.get(beanFactory));
-						}
-					}
-					return annotationAttributes;
-				}
-
-			};
-			super.registerBeanDefinitions(metadata, registry);
-		}
-
-		@IntegrationComponentScan
-		private class IntegrationComponentScanConfiguration {
-
-		}
 
 	}
 

@@ -24,6 +24,7 @@ import javax.management.MBeanServer;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration.IntegrationComponentScanAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -65,7 +66,7 @@ public class IntegrationAutoConfigurationTests {
 	public void integrationIsAvailable() {
 		load();
 		assertThat(this.context.getBean(TestGateway.class)).isNotNull();
-		assertThat(this.context.getBean(IntegrationAutoConfiguration.IntegrationComponentScanAutoConfiguration.class))
+		assertThat(this.context.getBean(IntegrationComponentScanAutoConfiguration.class))
 				.isNotNull();
 	}
 
@@ -73,12 +74,12 @@ public class IntegrationAutoConfigurationTests {
 	public void explicitIntegrationComponentScan() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(IntegrationComponentScanConfiguration.class,
-				JmxAutoConfiguration.class,
-				IntegrationAutoConfiguration.class);
+				JmxAutoConfiguration.class, IntegrationAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(TestGateway.class)).isNotNull();
-		assertThat(this.context.getBeansOfType(IntegrationAutoConfiguration.IntegrationComponentScanAutoConfiguration.class))
-				.isEmpty();
+		assertThat(this.context
+				.getBeansOfType(IntegrationComponentScanAutoConfiguration.class))
+						.isEmpty();
 	}
 
 	@Test
@@ -89,7 +90,8 @@ public class IntegrationAutoConfigurationTests {
 		this.context.setParent(parent);
 		this.context.register(JmxAutoConfiguration.class,
 				IntegrationAutoConfiguration.class);
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "SPRING_JMX_DEFAULT_DOMAIN=org.foo");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"SPRING_JMX_DEFAULT_DOMAIN=org.foo");
 		this.context.refresh();
 		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
 	}
