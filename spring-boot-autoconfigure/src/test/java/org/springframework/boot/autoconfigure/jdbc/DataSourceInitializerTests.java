@@ -297,9 +297,8 @@ public class DataSourceInitializerTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.initialize:true",
-				"spring.datasource.schema:"
-						+ ClassUtils.addResourcePathToPackagePath(getClass(),
-						"schema.sql"),
+				"spring.datasource.schema:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "schema.sql"),
 				"spring.datasource.data:classpath:does/not/exist.sql");
 
 		this.thrown.expect(BeanCreationException.class);

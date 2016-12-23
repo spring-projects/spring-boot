@@ -233,6 +233,7 @@ public class PropertiesConfigurationFactoryTests {
 
 	// Foo needs to be public and to have setters for all properties
 	public static class Foo {
+
 		@NotNull
 		private String name;
 

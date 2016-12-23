@@ -98,4 +98,5 @@ final class SummaryProgressReporter implements ProgressReporter {
 			System.out.println("");
 		}
 	}
+
 }

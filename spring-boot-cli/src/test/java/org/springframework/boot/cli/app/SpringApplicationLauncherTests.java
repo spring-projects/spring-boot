@@ -140,6 +140,7 @@ public class SpringApplicationLauncherTests {
 		public void run(String[] args) {
 			TestSpringApplication.args = args;
 		}
+
 	}
 
 	private class TestSpringApplicationLauncher extends SpringApplicationLauncher {

@@ -50,4 +50,5 @@ public abstract class AbstractHealthIndicator implements HealthIndicator {
 	 * system status.
 	 */
 	protected abstract void doHealthCheck(Health.Builder builder) throws Exception;
+
 }

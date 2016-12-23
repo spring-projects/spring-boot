@@ -134,4 +134,5 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		}
 		return cleaned.toString();
 	}
+
 }

@@ -506,6 +506,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	class LaunchRunner implements Runnable {
 
 		private final String startClassName;
+
 		private final String[] args;
 
 		LaunchRunner(String startClassName, String... args) {

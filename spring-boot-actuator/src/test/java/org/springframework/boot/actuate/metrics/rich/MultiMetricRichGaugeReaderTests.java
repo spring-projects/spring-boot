@@ -32,9 +32,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MultiMetricRichGaugeReaderTests {
 
 	private InMemoryMetricRepository repository = new InMemoryMetricRepository();
+
 	private MultiMetricRichGaugeReader reader = new MultiMetricRichGaugeReader(
 			this.repository);
+
 	private InMemoryRichGaugeRepository data = new InMemoryRichGaugeRepository();
+
 	private RichGaugeExporter exporter = new RichGaugeExporter(this.data,
 			this.repository);
 

@@ -251,6 +251,7 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 			}
 			return null;
 		}
+
 	}
 
 }

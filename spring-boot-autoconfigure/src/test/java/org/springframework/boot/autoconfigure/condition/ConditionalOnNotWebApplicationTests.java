@@ -51,18 +51,23 @@ public class ConditionalOnNotWebApplicationTests {
 	@Configuration
 	@ConditionalOnWebApplication
 	protected static class MissingConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnNotWebApplication
 	protected static class BasicConfiguration {
+
 		@Bean
 		public String foo() {
 			return "foo";
 		}
+
 	}
+
 }

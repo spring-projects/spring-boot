@@ -43,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JerseyAutoConfiguration} when using custom load on startup.
+ *
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
@@ -77,6 +78,7 @@ public class JerseyAutoConfigurationCustomLoadOnStartupTests {
 			ServerPropertiesAutoConfiguration.class, JerseyAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
+
 	}
 
 }

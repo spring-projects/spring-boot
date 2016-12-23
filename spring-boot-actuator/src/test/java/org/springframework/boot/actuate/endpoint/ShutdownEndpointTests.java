@@ -102,4 +102,5 @@ public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoin
 		}
 
 	}
+
 }

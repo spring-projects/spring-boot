@@ -227,18 +227,6 @@ are always repeatable). You should always set the version of the `spring-boot` g
 plugin to the actual Spring Boot version that you wish to use. Details of the versions
 that are provided can be found in the <<appendix-dependency-versions, appendix>>.
 
-The dependency management plugin will only supply a version where one is not specified. To
-use a version of an artifact that differs from the one that the plugin would provide,
-simply specify the version when you declare the dependency as you usually would. For
-example:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-	dependencies {
-		compile("org.thymeleaf:thymeleaf-spring4:2.1.1.RELEASE")
-	}
-----
-
 To learn more about the capabilities of the Dependency Management Plugin, please refer to
 its {dependency-management-plugin-documentation}[documentation].
 

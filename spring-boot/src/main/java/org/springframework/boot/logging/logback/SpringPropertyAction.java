@@ -37,6 +37,7 @@ import org.springframework.core.env.Environment;
 class SpringPropertyAction extends Action {
 
 	private static final String SOURCE_ATTRIBUTE = "source";
+
 	private static final String DEFAULT_VALUE_ATTRIBUTE = "defaultValue";
 
 	private final Environment environment;

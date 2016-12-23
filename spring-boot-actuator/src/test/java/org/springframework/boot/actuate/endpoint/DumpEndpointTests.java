@@ -54,4 +54,5 @@ public class DumpEndpointTests extends AbstractEndpointTests<DumpEndpoint> {
 		}
 
 	}
+
 }

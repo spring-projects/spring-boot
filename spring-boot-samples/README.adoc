@@ -77,12 +77,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-hateoas[spring-boot-sample-hateoas]
 | RESTful API built using Spring Hateoas
 
-| link:spring-boot-sample-hibernate4[spring-boot-sample-hibernate4]
-| Demonstrates how to use Hibernate 4
-
-| link:spring-boot-sample-hibernate4[spring-boot-sample-hibernate52]
-| Demonstrates how to use Hibernate 5.2
-
 | link:spring-boot-sample-hypermedia[spring-boot-sample-hypermedia]
 | Demonstrates Actuator's hypermedia support, including HAL Browser
 

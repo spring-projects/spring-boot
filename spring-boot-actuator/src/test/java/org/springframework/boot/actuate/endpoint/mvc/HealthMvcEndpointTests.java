@@ -64,8 +64,8 @@ public class HealthMvcEndpointTests {
 	private UsernamePasswordAuthenticationToken user = createAuthenticationToken(
 			"ROLE_USER");
 
-	private UsernamePasswordAuthenticationToken admin = createAuthenticationToken(
-			"ROLE_ADMIN");
+	private UsernamePasswordAuthenticationToken actuator = createAuthenticationToken(
+			"ROLE_ACTUATOR");
 
 	private UsernamePasswordAuthenticationToken hero = createAuthenticationToken(
 			"ROLE_HERO");
@@ -137,7 +137,7 @@ public class HealthMvcEndpointTests {
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		given(this.endpoint.isSensitive()).willReturn(false);
-		Object result = this.mvc.invoke(this.admin);
+		Object result = this.mvc.invoke(this.actuator);
 		assertThat(result instanceof Health).isTrue();
 		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
 		assertThat(((Health) result).getDetails().get("foo")).isEqualTo("bar");
@@ -169,7 +169,7 @@ public class HealthMvcEndpointTests {
 		this.environment.getPropertySources().addLast(SECURITY_ROLES);
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
-		Object result = this.mvc.invoke(this.admin);
+		Object result = this.mvc.invoke(this.actuator);
 		assertThat(result instanceof Health).isTrue();
 		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
 		assertThat(((Health) result).getDetails().get("foo")).isNull();
@@ -181,7 +181,7 @@ public class HealthMvcEndpointTests {
 		given(this.endpoint.isSensitive()).willReturn(true);
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
-		Object result = this.mvc.invoke(this.admin);
+		Object result = this.mvc.invoke(this.actuator);
 		assertThat(result instanceof Health).isTrue();
 		Health health = (Health) result;
 		assertThat(health.getStatus() == Status.UP).isTrue();

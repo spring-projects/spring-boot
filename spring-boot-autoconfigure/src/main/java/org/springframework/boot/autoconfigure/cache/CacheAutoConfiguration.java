@@ -101,6 +101,7 @@ public class CacheAutoConfiguration {
 	 * instantiation.
 	 */
 	static class CacheManagerValidatorPostProcessor implements BeanFactoryPostProcessor {
+
 		@Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
 				throws BeansException {
@@ -120,6 +121,7 @@ public class CacheAutoConfiguration {
 			result[result.length - 1] = value;
 			return result;
 		}
+
 	}
 
 	/**
@@ -141,6 +143,7 @@ public class CacheAutoConfiguration {
 							+ "be auto-configured, check your configuration (caching "
 							+ "type is '" + this.cacheProperties.getType() + "')");
 		}
+
 	}
 
 	/**

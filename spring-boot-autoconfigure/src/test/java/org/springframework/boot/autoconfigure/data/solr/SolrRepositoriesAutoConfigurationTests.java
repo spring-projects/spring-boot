@@ -111,5 +111,7 @@ public class SolrRepositoriesAutoConfigurationTests {
 	// To not find any repositories
 	@EnableSolrRepositories("foo.bar")
 	protected static class SortOfInvalidCustomConfiguration {
+
 	}
+
 }

@@ -134,10 +134,12 @@ public class CouchbaseAutoConfiguration {
 
 		@Conditional(OnBootstrapHostsCondition.class)
 		static class BootstrapHostsProperty {
+
 		}
 
 		@ConditionalOnBean(type = "org.springframework.data.couchbase.config.CouchbaseConfigurer")
 		static class CouchbaseConfigurerAvailable {
+
 		}
 
 	}

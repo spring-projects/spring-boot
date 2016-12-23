@@ -52,6 +52,7 @@ public class DeprecatedMethodConfig {
 		public void setFlag(boolean flag) {
 			this.flag = flag;
 		}
+
 	}
 
 }

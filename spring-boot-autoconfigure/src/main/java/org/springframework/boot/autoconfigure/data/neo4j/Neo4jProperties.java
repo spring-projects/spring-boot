@@ -23,7 +23,9 @@ import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.config.DriverConfiguration;
 
 import org.springframework.beans.BeansException;
+import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.ClassUtils;
@@ -69,6 +71,9 @@ public class Neo4jProperties implements ApplicationContextAware {
 
 	private final Embedded embedded = new Embedded();
 
+	@NestedConfigurationProperty
+	private final TransactionProperties transaction = new TransactionProperties();
+
 	private ClassLoader classLoader = Neo4jProperties.class.getClassLoader();
 
 	public String getUri() {
@@ -105,6 +110,10 @@ public class Neo4jProperties implements ApplicationContextAware {
 
 	public Embedded getEmbedded() {
 		return this.embedded;
+	}
+
+	public TransactionProperties getTransaction() {
+		return this.transaction;
 	}
 
 	@Override

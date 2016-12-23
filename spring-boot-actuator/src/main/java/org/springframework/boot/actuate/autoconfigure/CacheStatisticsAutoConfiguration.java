@@ -93,6 +93,7 @@ public class CacheStatisticsAutoConfiguration {
 		public HazelcastCacheStatisticsProvider hazelcastCacheStatisticsProvider() {
 			return new HazelcastCacheStatisticsProvider();
 		}
+
 	}
 
 	@Configuration

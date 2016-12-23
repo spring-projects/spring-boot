@@ -95,6 +95,7 @@ public class DataSourceAutoConfiguration {
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	@Import(EmbeddedDataSourceConfiguration.class)
 	protected static class EmbeddedDatabaseConfiguration {
+
 	}
 
 	@Configuration
@@ -140,10 +141,12 @@ public class DataSourceAutoConfiguration {
 
 		@ConditionalOnProperty(prefix = "spring.datasource", name = "type")
 		static class ExplicitType {
+
 		}
 
 		@Conditional(PooledDataSourceAvailableCondition.class)
 		static class PooledDataSourceAvailable {
+
 		}
 
 	}
@@ -177,6 +180,7 @@ public class DataSourceAutoConfiguration {
 					.findType();
 			return (dataSourceClass == null ? null : dataSourceClass.getClassLoader());
 		}
+
 	}
 
 	/**

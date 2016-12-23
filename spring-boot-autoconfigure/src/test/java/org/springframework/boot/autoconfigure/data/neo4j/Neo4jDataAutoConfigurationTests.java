@@ -20,7 +20,11 @@ import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Test;
 import org.neo4j.ogm.drivers.http.driver.HttpDriver;
+import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
+import org.neo4j.ogm.session.event.Event;
+import org.neo4j.ogm.session.event.EventListener;
+import org.neo4j.ogm.session.event.PersistenceEvent;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
@@ -33,11 +37,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.template.Neo4jOperations;
+import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.data.neo4j.web.support.OpenSessionInViewInterceptor;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link Neo4jDataAutoConfiguration}. Tests can't use the embedded driver as we
@@ -47,6 +54,7 @@ import static org.mockito.Mockito.mock;
  * @author Michael Hunger
  * @author Vince Bickers
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  */
 @SuppressWarnings("deprecation")
 public class Neo4jDataAutoConfigurationTests {
@@ -67,8 +75,19 @@ public class Neo4jDataAutoConfigurationTests {
 				.hasSize(1);
 		assertThat(this.context.getBeansOfType(SessionFactory.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(Neo4jOperations.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(Neo4jTransactionManager.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(OpenSessionInViewInterceptor.class))
 				.isEmpty();
+	}
+
+	@Test
+	public void customNeo4jTransactionManagerUsingProperties() {
+		load(null, "spring.data.neo4j.transaction.default-timeout=30",
+				"spring.data.neo4j.transaction.rollback-on-commit-failure:true");
+		Neo4jTransactionManager transactionManager = this.context
+				.getBean(Neo4jTransactionManager.class);
+		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
+		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 	}
 
 	@Test
@@ -115,6 +134,17 @@ public class Neo4jDataAutoConfigurationTests {
 		load(null, "spring.data.neo4j.open-in-view=true");
 		assertThat(this.context.getBeansOfType(OpenSessionInViewInterceptor.class))
 				.hasSize(1);
+	}
+
+	@Test
+	public void eventListenersAreAutoRegistered() {
+		load(EventListenerConfiguration.class);
+		Session session = this.context.getBean(SessionFactory.class).openSession();
+		session.notifyListeners(new PersistenceEvent(null, Event.TYPE.PRE_SAVE));
+		verify(this.context.getBean("eventListenerOne", EventListener.class))
+				.onPreSave(any(Event.class));
+		verify(this.context.getBean("eventListenerTwo", EventListener.class))
+				.onPreSave(any(Event.class));
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -165,6 +195,21 @@ public class Neo4jDataAutoConfigurationTests {
 		@Bean
 		public Neo4jOperations myNeo4jOperations() {
 			return mock(Neo4jOperations.class);
+		}
+
+	}
+
+	@Configuration
+	static class EventListenerConfiguration {
+
+		@Bean
+		public EventListener eventListenerOne() {
+			return mock(EventListener.class);
+		}
+
+		@Bean
+		public EventListener eventListenerTwo() {
+			return mock(EventListener.class);
 		}
 
 	}

@@ -22,4 +22,5 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan("org.springframework.boot.context.configwarnings.nested")
 public class InDefaultPackageWithValueConfiguration {
+
 }

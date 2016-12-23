@@ -65,7 +65,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = SpringBootHypermediaApplication.class, loader = SpringBootContextLoader.class)
 @WebAppConfiguration
 @TestPropertySource(properties = { "spring.jackson.serialization.indent_output=true",
-		"endpoints.health.sensitive=true", "endpoints.actuator.enabled=false" })
+		"endpoints.health.sensitive=true", "endpoints.actuator.enabled=false",
+		"management.security.enabled=false" })
 @DirtiesContext
 @AutoConfigureRestDocs(EndpointDocumentation.RESTDOCS_OUTPUT_DIR)
 @AutoConfigureMockMvc(print = MockMvcPrint.NONE)

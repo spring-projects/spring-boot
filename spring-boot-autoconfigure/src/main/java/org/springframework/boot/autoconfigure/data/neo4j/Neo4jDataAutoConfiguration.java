@@ -19,7 +19,9 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 import java.util.List;
 
 import org.neo4j.ogm.session.SessionFactory;
+import org.neo4j.ogm.session.event.EventListener;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -46,10 +48,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Josh Long
  * @author Vince Bickers
  * @author Stephane Nicoll
+ * @author Kazuki Shimizu
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnClass(SessionFactory.class)
+@ConditionalOnClass({ SessionFactory.class, PlatformTransactionManager.class })
 @ConditionalOnMissingBean(SessionFactory.class)
 @EnableConfigurationProperties(Neo4jProperties.class)
 @SuppressWarnings("deprecation")
@@ -63,8 +66,18 @@ public class Neo4jDataAutoConfiguration {
 
 	@Bean
 	public SessionFactory sessionFactory(org.neo4j.ogm.config.Configuration configuration,
-			ApplicationContext applicationContext) {
-		return new SessionFactory(configuration, getPackagesToScan(applicationContext));
+			ApplicationContext applicationContext,
+			ObjectProvider<List<EventListener>> eventListenersProvider) {
+		SessionFactory sessionFactory = new SessionFactory(configuration,
+				getPackagesToScan(applicationContext));
+		List<EventListener> providedEventListeners = eventListenersProvider
+				.getIfAvailable();
+		if (providedEventListeners != null) {
+			for (EventListener eventListener : providedEventListeners) {
+				sessionFactory.register(eventListener);
+			}
+		}
+		return sessionFactory;
 	}
 
 	@Bean
@@ -75,8 +88,12 @@ public class Neo4jDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(PlatformTransactionManager.class)
-	public Neo4jTransactionManager transactionManager(SessionFactory sessionFactory) {
-		return new Neo4jTransactionManager(sessionFactory);
+	public Neo4jTransactionManager transactionManager(SessionFactory sessionFactory,
+			Neo4jProperties properties) {
+		Neo4jTransactionManager transactionManager = new Neo4jTransactionManager(
+				sessionFactory);
+		properties.getTransaction().applyTo(transactionManager);
+		return transactionManager;
 	}
 
 	private String[] getPackagesToScan(ApplicationContext applicationContext) {

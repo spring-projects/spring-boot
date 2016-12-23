@@ -77,4 +77,5 @@ public class ValueHint implements Serializable {
 		return "ValueHint{" + "value=" + this.value + ", description='" + this.description
 				+ '\'' + '}';
 	}
+
 }

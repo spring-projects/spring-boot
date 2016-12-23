@@ -159,10 +159,12 @@ class JCacheCacheConfiguration {
 
 		@Conditional(JCacheProviderAvailableCondition.class)
 		static class JCacheProvider {
+
 		}
 
 		@ConditionalOnSingleCandidate(CacheManager.class)
 		static class CustomJCacheCacheManager {
+
 		}
 
 	}

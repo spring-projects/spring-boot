@@ -78,4 +78,5 @@ public class InMemoryRichGaugeRepository implements RichGaugeRepository {
 	public long count() {
 		return this.repository.count();
 	}
+
 }

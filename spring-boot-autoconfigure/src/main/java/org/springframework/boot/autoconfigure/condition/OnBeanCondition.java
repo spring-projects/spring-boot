@@ -439,6 +439,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			Assert.isTrue(getTypes().size() == 1, annotationName() + " annotations must "
 					+ "specify only one type (got " + getTypes() + ")");
 		}
+
 	}
 
 	static final class BeanTypeDeductionException extends RuntimeException {

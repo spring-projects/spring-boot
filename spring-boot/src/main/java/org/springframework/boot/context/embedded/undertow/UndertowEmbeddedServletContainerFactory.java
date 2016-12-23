@@ -412,8 +412,8 @@ public class UndertowEmbeddedServletContainerFactory
 			String prefix = (this.accessLogPrefix != null ? this.accessLogPrefix
 					: "access_log.");
 			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
-					createWorker(), this.accessLogDirectory, prefix,
-					this.accessLogSuffix, this.accessLogRotate);
+					createWorker(), this.accessLogDirectory, prefix, this.accessLogSuffix,
+					this.accessLogRotate);
 			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
 					: "common";
 			return new AccessLogHandler(handler, accessLogReceiver, formatString,

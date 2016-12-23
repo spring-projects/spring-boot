@@ -87,4 +87,5 @@ public class XmlEmbeddedWebApplicationContextTests {
 		Servlet servlet = this.context.getBean(Servlet.class);
 		verify(containerFactory.getServletContext()).addServlet("servlet", servlet);
 	}
+
 }

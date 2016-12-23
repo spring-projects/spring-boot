@@ -121,28 +121,34 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 	@Configuration
 	@Import(Config.class)
 	public static class TomcatConfig {
+
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {
 			return new TomcatEmbeddedServletContainerFactory(0);
 		}
+
 	}
 
 	@Configuration
 	@Import(Config.class)
 	public static class JettyConfig {
+
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {
 			return new JettyEmbeddedServletContainerFactory(0);
 		}
+
 	}
 
 	@Configuration
 	@Import(Config.class)
 	public static class UndertowConfig {
+
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {
 			return new UndertowEmbeddedServletContainerFactory(0);
 		}
+
 	}
 
 	@Configuration
@@ -161,6 +167,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 		public HelloWorldController helloWorldController() {
 			return new HelloWorldController();
 		}
+
 	}
 
 	@Configuration
@@ -201,6 +208,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 		public HelloWorldController helloWorldController() {
 			return new HelloWorldController();
 		}
+
 	}
 
 	@Controller

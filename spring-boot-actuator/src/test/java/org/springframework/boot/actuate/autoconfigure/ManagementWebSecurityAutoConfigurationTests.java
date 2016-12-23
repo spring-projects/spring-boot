@@ -120,7 +120,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(
 				user.getAuthorities());
 		assertThat(authorities).containsAll(AuthorityUtils
-				.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ADMIN"));
+				.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ACTUATOR"));
 	}
 
 	private UserDetails getUser() {
@@ -274,11 +274,13 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	@EnableGlobalAuthentication
 	@Configuration
 	static class AuthenticationConfig {
+
 		@Autowired
 		public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 			auth.inMemoryAuthentication().withUser("user").password("password")
 					.roles("USER");
 		}
+
 	}
 
 	@Configuration

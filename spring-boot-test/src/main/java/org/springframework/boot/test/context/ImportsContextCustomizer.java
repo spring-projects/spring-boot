@@ -277,44 +277,55 @@ class ImportsContextCustomizer implements ContextCustomizer {
 					&& this.annotations.equals(((ContextCustomizerKey) obj).annotations));
 		}
 
-		private interface AnnotationFilter {
+	}
 
-			boolean isIgnored(Annotation annotation);
+	/**
+	 * Filter used to limit considered annotations.
+	 */
+	private interface AnnotationFilter {
 
+		boolean isIgnored(Annotation annotation);
+
+	}
+
+	/**
+	 * {@link AnnotationFilter} for {@literal java.lang} annotations.
+	 */
+	private static final class JavaLangAnnotationFilter implements AnnotationFilter {
+
+		@Override
+		public boolean isIgnored(Annotation annotation) {
+			return AnnotationUtils.isInJavaLangAnnotationPackage(annotation);
 		}
 
-		private static final class JavaLangAnnotationFilter implements AnnotationFilter {
+	}
 
-			@Override
-			public boolean isIgnored(Annotation annotation) {
-				return AnnotationUtils.isInJavaLangAnnotationPackage(annotation);
-			}
+	/**
+	 * {@link AnnotationFilter} for Kotlin annotations.
+	 */
+	private static final class KotlinAnnotationFilter implements AnnotationFilter {
 
+		@Override
+		public boolean isIgnored(Annotation annotation) {
+			return "kotlin.Metadata".equals(annotation.annotationType().getName())
+					|| isInKotlinAnnotationPackage(annotation);
 		}
 
-		private static final class KotlinAnnotationFilter implements AnnotationFilter {
-
-			@Override
-			public boolean isIgnored(Annotation annotation) {
-				return "kotlin.Metadata".equals(annotation.annotationType().getName())
-						|| isInKotlinAnnotationPackage(annotation);
-			}
-
-			private boolean isInKotlinAnnotationPackage(Annotation annotation) {
-				return annotation.annotationType().getName()
-						.startsWith("kotlin.annotation.");
-			}
-
+		private boolean isInKotlinAnnotationPackage(Annotation annotation) {
+			return annotation.annotationType().getName().startsWith("kotlin.annotation.");
 		}
 
-		private static final class SpockAnnotationFilter implements AnnotationFilter {
+	}
 
-			@Override
-			public boolean isIgnored(Annotation annotation) {
-				return annotation.annotationType().getName()
-						.startsWith("org.spockframework.");
-			}
+	/**
+	 * {@link AnnotationFilter} for Spock annotations.
+	 */
+	private static final class SpockAnnotationFilter implements AnnotationFilter {
 
+		@Override
+		public boolean isIgnored(Annotation annotation) {
+			return annotation.annotationType().getName()
+					.startsWith("org.spockframework.");
 		}
 
 	}

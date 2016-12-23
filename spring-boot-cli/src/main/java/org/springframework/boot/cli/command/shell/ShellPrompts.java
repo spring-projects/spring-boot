@@ -55,4 +55,5 @@ public class ShellPrompts {
 	public String getPrompt() {
 		return this.prompts.isEmpty() ? DEFAULT_PROMPT : this.prompts.peek();
 	}
+
 }

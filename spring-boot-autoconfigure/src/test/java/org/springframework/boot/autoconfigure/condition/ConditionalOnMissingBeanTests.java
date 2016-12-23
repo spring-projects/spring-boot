@@ -423,6 +423,7 @@ public class ConditionalOnMissingBeanTests {
 	@Configuration
 	@Import(FactoryBeanRegistrar.class)
 	protected static class RegisteredFactoryBeanConfiguration {
+
 	}
 
 	protected static class FactoryBeanRegistrar implements ImportBeanDefinitionRegistrar {
@@ -621,4 +622,5 @@ public class ConditionalOnMissingBeanTests {
 		}
 
 	}
+
 }

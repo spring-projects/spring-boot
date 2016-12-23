@@ -233,6 +233,7 @@ class ProjectLibraries implements Libraries {
 		public String toString() {
 			return getFile().getAbsolutePath();
 		}
+
 	}
 
 	/**

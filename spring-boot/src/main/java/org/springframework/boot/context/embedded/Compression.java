@@ -77,4 +77,5 @@ public class Compression {
 	public void setExcludedUserAgents(String[] excludedUserAgents) {
 		this.excludedUserAgents = excludedUserAgents;
 	}
+
 }

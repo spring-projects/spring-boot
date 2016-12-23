@@ -83,6 +83,7 @@ public class ThymeleafAutoConfiguration {
 			public SpringResourceResourceResolver thymeleafResourceResolver() {
 				return new SpringResourceResourceResolver();
 			}
+
 		}
 
 		@Configuration

@@ -108,4 +108,5 @@ public class ResolveDependencyCoordinatesTransformation
 		ConstantExpression expression = new ConstantExpression(value);
 		annotation.setMember(name, expression);
 	}
+
 }

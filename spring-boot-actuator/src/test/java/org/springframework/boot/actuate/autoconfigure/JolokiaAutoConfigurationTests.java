@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -25,6 +26,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.MvcEndpointSecurityInterceptor;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -141,7 +143,10 @@ public class JolokiaAutoConfigurationTests {
 		@Bean
 		public EndpointHandlerMapping endpointHandlerMapping(
 				Collection<? extends MvcEndpoint> endpoints) {
-			return new EndpointHandlerMapping(endpoints);
+			EndpointHandlerMapping mapping = new EndpointHandlerMapping(endpoints);
+			mapping.setSecurityInterceptor(
+					new MvcEndpointSecurityInterceptor(false, Collections.EMPTY_LIST));
+			return mapping;
 		}
 
 	}

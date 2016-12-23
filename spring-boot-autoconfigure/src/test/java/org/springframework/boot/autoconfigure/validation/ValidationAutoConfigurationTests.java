@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.validation;
 
 import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 import javax.validation.constraints.Size;
 
 import org.junit.After;
@@ -24,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,6 +56,7 @@ public class ValidationAutoConfigurationTests {
 	@Test
 	public void validationIsEnabled() {
 		load(SampleService.class);
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		SampleService service = this.context.getBean(SampleService.class);
 		service.doSomething("Valid");
 		this.thrown.expect(ConstraintViolationException.class);
@@ -63,10 +66,16 @@ public class ValidationAutoConfigurationTests {
 	@Test
 	public void userDefinedMethodValidationPostProcessorTakesPrecedence() {
 		load(SampleConfiguration.class);
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
+		Object userMethodValidationPostProcessor = this.context
+				.getBean("testMethodValidationPostProcessor");
 		assertThat(this.context.getBean(MethodValidationPostProcessor.class))
-				.isSameAs(this.context.getBean("testMethodValidationPostProcessor"));
+				.isSameAs(userMethodValidationPostProcessor);
 		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class))
 				.hasSize(1);
+		assertThat(this.context.getBean(Validator.class))
+				.isNotSameAs(new DirectFieldAccessor(userMethodValidationPostProcessor)
+						.getPropertyValue("validator"));
 	}
 
 	public void load(Class<?> config) {
