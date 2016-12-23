@@ -135,7 +135,7 @@
 		<neo4j-ogm.version>2.1.0</neo4j-ogm.version>
 		<postgresql.version>9.4.1212.jre7</postgresql.version>
 		<querydsl.version>4.1.4</querydsl.version>
-		<reactor.version>3.0.3.RELEASE</reactor.version>
+		<reactor.version>3.0.4.RELEASE</reactor.version>
 		<selenium.version>2.53.1</selenium.version>
 		<selenium-htmlunit.version>2.23.2</selenium-htmlunit.version>
 		<sendgrid.version>2.2.2</sendgrid.version>
