@@ -158,6 +158,11 @@
 				<version>3.0.20</version>
 			</dependency>
 			<dependency>
+				<groupId>org.sonatype.plexus</groupId>
+				<artifactId>plexus-build-api</artifactId>
+				<version>0.0.7</version>
+			</dependency>
+			<dependency>
 				<groupId>org.eclipse.aether</groupId>
 				<artifactId>aether-api</artifactId>
 				<version>${aether.version}</version>
