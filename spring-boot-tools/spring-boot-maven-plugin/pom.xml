@@ -170,6 +170,10 @@
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-utils</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.sonatype.plexus</groupId>
+			<artifactId>plexus-build-api</artifactId>
+		</dependency>
 		<!-- Optional -->
 		<dependency>
 			<groupId>org.apache.maven.plugins</groupId>
