@@ -199,7 +199,7 @@ public class LiveReloadServer {
 	}
 
 	private void closeAllConnections() throws IOException {
-		synchronized (this.monitor) {
+		synchronized (this.connections) {
 			for (Connection connection : this.connections) {
 				connection.close();
 			}
@@ -211,25 +211,27 @@ public class LiveReloadServer {
 	 */
 	public void triggerReload() {
 		synchronized (this.monitor) {
-			for (Connection connection : this.connections) {
-				try {
-					connection.triggerReload();
-				}
-				catch (Exception ex) {
-					logger.debug("Unable to send reload message", ex);
+			synchronized (this.connections) {
+				for (Connection connection : this.connections) {
+					try {
+						connection.triggerReload();
+					}
+					catch (Exception ex) {
+						logger.debug("Unable to send reload message", ex);
+					}
 				}
 			}
 		}
 	}
 
 	private void addConnection(Connection connection) {
-		synchronized (this.monitor) {
+		synchronized (this.connections) {
 			this.connections.add(connection);
 		}
 	}
 
 	private void removeConnection(Connection connection) {
-		synchronized (this.monitor) {
+		synchronized (this.connections) {
 			this.connections.remove(connection);
 		}
 	}
