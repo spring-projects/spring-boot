@@ -216,8 +216,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		Handler[] handlers = jettyContainer.getServer()
 				.getChildHandlersByClass(WebAppContext.class);
 		WebAppContext webAppContext = (WebAppContext) handlers[0];
-		int actual = webAppContext.getSessionHandler().getSessionManager()
-				.getMaxInactiveInterval();
+		int actual = webAppContext.getSessionHandler().getMaxInactiveInterval();
 		assertThat(actual).isEqualTo(expected);
 	}
 
