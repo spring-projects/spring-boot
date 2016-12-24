@@ -38,8 +38,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Annotation that can be specified on a test class that runs Spring Boot based tests.
- * Provides the following features over and above the regular
- * <em>Spring TestContext Framework</em>:
+ * Provides the following features over and above the regular <em>Spring TestContext
+ * Framework</em>:
  * <ul>
  * <li>Uses {@link SpringBootContextLoader} as the default {@link ContextLoader} when no
  * specific {@link ContextConfiguration#loader() @ContextConfiguration(loader=...)} is

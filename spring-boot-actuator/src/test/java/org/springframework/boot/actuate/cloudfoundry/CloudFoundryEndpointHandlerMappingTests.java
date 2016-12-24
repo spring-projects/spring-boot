@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.cloudfoundry;
 import java.util.Collections;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
@@ -35,7 +34,6 @@ import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
-import org.springframework.web.servlet.HandlerInterceptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,19 +44,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class CloudFoundryEndpointHandlerMappingTests
 		extends AbstractEndpointHandlerMappingTests {
-
-	@Test
-	public void getHandlerExecutionChainShouldHaveSecurityInterceptor() throws Exception {
-		CloudFoundrySecurityInterceptor securityInterceptor = Mockito
-				.mock(CloudFoundrySecurityInterceptor.class);
-		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
-		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
-				Collections.singleton(endpoint), null, securityInterceptor);
-		HandlerExecutionChain handlerExecutionChain = handlerMapping
-				.getHandlerExecutionChain(endpoint, new MockHttpServletRequest());
-		HandlerInterceptor[] interceptors = handlerExecutionChain.getInterceptors();
-		assertThat(interceptors).contains(securityInterceptor);
-	}
 
 	@Test
 	public void getHandlerExecutionChainWhenEndpointHasPathShouldMapAgainstName()

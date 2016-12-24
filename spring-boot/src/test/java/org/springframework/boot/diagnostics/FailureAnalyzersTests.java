@@ -94,6 +94,7 @@ public class FailureAnalyzersTests {
 		public FailureAnalysis analyze(Throwable failure) {
 			return null;
 		}
+
 	}
 
 	interface BeanFactoryAwareFailureAnalyzer extends BeanFactoryAware, FailureAnalyzer {

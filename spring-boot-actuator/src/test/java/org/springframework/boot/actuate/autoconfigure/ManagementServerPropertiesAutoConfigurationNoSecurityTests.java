@@ -20,9 +20,9 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.boot.junit.runner.classpath.ClassPathExclusions;
+import org.springframework.boot.junit.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.boot.testutil.ClassPathExclusions;
-import org.springframework.boot.testutil.FilteredClassPathRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@RunWith(FilteredClassPathRunner.class)
+@RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("spring-security-*.jar")
 public class ManagementServerPropertiesAutoConfigurationNoSecurityTests {
 
@@ -48,17 +48,16 @@ public class ManagementServerPropertiesAutoConfigurationNoSecurityTests {
 
 	@Test
 	public void securitySettingsIgnoredWithoutSpringSecurity() {
-		ManagementServerProperties properties =
-				load("management.security.enabled=false");
+		ManagementServerProperties properties = load("management.security.enabled=false");
 		assertThat(properties.getSecurity().isEnabled()).isFalse();
 	}
 
 	public ManagementServerProperties load(String... environment) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(ctx, environment);
-		ctx.register(ManagementServerPropertiesAutoConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, environment);
+		context.register(ManagementServerPropertiesAutoConfiguration.class);
+		context.refresh();
+		this.context = context;
 		return this.context.getBean(ManagementServerProperties.class);
 	}
 

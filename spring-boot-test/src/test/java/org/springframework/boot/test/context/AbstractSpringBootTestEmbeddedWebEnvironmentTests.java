@@ -60,6 +60,10 @@ public abstract class AbstractSpringBootTestEmbeddedWebEnvironmentTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
+	public WebApplicationContext getContext() {
+		return this.context;
+	}
+
 	public TestRestTemplate getRestTemplate() {
 		return this.restTemplate;
 	}

@@ -182,7 +182,7 @@ public class BasicErrorControllerIntegrationTests {
 				.accept(MediaType.TEXT_HTML).build();
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(request,
 				String.class);
-		String resp = entity.getBody().toString();
+		String resp = entity.getBody();
 		assertThat(resp).contains("We are out of storage");
 	}
 

@@ -42,6 +42,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
 
 /**
@@ -57,6 +58,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Eddú Meléndez
+ * @author Kazuki Shimizu
  */
 @Configuration
 @ConditionalOnClass({ JobLauncher.class, DataSource.class, JdbcOperations.class })
@@ -133,7 +135,8 @@ public class BatchAutoConfiguration {
 		return factory;
 	}
 
-	@ConditionalOnClass(name = "javax.persistence.EntityManagerFactory")
+	@EnableConfigurationProperties(BatchProperties.class)
+	@ConditionalOnClass(value = PlatformTransactionManager.class, name = "javax.persistence.EntityManagerFactory")
 	@ConditionalOnMissingBean(BatchConfigurer.class)
 	@Configuration
 	protected static class JpaBatchConfiguration {

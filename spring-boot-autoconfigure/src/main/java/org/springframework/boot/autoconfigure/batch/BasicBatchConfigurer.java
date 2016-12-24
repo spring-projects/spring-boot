@@ -32,8 +32,8 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 import org.springframework.util.StringUtils;
 
 /**
@@ -41,8 +41,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  */
-@Component
 public class BasicBatchConfigurer implements BatchConfigurer {
 
 	private static final Log logger = LogFactory.getLog(BasicBatchConfigurer.class);
@@ -152,6 +152,12 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	}
 
 	protected PlatformTransactionManager createTransactionManager() {
+		AbstractPlatformTransactionManager transactionManager = createAppropriateTransactionManager();
+		this.properties.getTransaction().applyTo(transactionManager);
+		return transactionManager;
+	}
+
+	private AbstractPlatformTransactionManager createAppropriateTransactionManager() {
 		if (this.entityManagerFactory != null) {
 			return new JpaTransactionManager(this.entityManagerFactory);
 		}

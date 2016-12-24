@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests that {code ResetMocksTestExecutionListener} and
+ * Tests that {@code ResetMocksTestExecutionListener} and
  * {@code MockitoTestExecutionListener} gracefully degrade when Mockito is not on the
  * classpath.
  *

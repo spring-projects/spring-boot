@@ -30,6 +30,7 @@ import org.springframework.data.couchbase.config.AbstractCouchbaseDataConfigurat
 import org.springframework.data.couchbase.config.BeanNames;
 import org.springframework.data.couchbase.config.CouchbaseConfigurer;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
+import org.springframework.data.couchbase.core.convert.CustomConversions;
 import org.springframework.data.couchbase.core.mapping.Document;
 import org.springframework.data.couchbase.core.query.Consistency;
 import org.springframework.data.couchbase.repository.support.IndexManager;
@@ -79,6 +80,13 @@ class SpringBootCouchbaseDataConfiguration extends AbstractCouchbaseDataConfigur
 	@Bean(name = BeanNames.COUCHBASE_TEMPLATE)
 	public CouchbaseTemplate couchbaseTemplate() throws Exception {
 		return super.couchbaseTemplate();
+	}
+
+	@Override
+	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
+	@Bean(name = BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
+	public CustomConversions customConversions() {
+		return super.customConversions();
 	}
 
 	@Override

@@ -242,6 +242,9 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		catch (ClassNotFoundException ex) {
 			// Ignore
 		}
+		catch (NoClassDefFoundError ex) {
+			// Ignore
+		}
 	}
 
 }

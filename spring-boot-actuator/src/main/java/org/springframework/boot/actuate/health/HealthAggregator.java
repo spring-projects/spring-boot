@@ -42,4 +42,5 @@ public interface HealthAggregator {
 	 * @return the aggregated health
 	 */
 	Health aggregate(Map<String, Health> healths);
+
 }

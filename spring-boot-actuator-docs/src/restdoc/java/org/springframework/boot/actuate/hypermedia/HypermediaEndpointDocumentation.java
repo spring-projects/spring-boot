@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = SpringBootHypermediaApplication.class, loader = SpringBootContextLoader.class)
 @WebAppConfiguration
 @TestPropertySource(properties = { "spring.jackson.serialization.indent_output=true",
-		"endpoints.hypermedia.enabled=true" })
+		"endpoints.hypermedia.enabled=true", "management.security.enabled=false" })
 @DirtiesContext
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs("target/generated-snippets")

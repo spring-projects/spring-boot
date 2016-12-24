@@ -36,7 +36,8 @@ public class DependencyResolutionContextTests {
 	@Test
 	public void canAddSpringBootDependencies() {
 		DependencyResolutionContext dependencyResolutionContext = new DependencyResolutionContext();
-		dependencyResolutionContext.addDependencyManagement(new SpringBootDependenciesDependencyManagement());
+		dependencyResolutionContext.addDependencyManagement(
+				new SpringBootDependenciesDependencyManagement());
 		assertThat(dependencyResolutionContext.getManagedDependencies()).isNotEmpty();
 	}
 

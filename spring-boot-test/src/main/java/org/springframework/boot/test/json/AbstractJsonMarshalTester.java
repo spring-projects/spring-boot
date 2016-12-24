@@ -345,6 +345,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	/**
 	 * Utility class used to support field initialization. Used by subclasses to support
 	 * {@code initFields}.
+	 *
 	 * @param <M> The marshaller type
 	 */
 	protected static abstract class FieldInitializer<M> {

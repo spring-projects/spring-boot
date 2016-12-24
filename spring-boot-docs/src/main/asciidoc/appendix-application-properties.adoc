@@ -127,8 +127,8 @@ content into your application; rather pick only the properties that you need.
 	spring.pid.file= # Location of the PID file to write (if ApplicationPidFileWriter is used).
 
 	# PROFILES
-	spring.profiles.active= # Comma-separated list of <<howto-set-active-spring-profiles,active profiles>>.
-	spring.profiles.include= # Unconditionally activate the specified comma separated profiles.
+	spring.profiles.active= # Comma-separated list (or list if using YAML) of <<howto-set-active-spring-profiles,active profiles>>.
+	spring.profiles.include= # Unconditionally activate the specified comma separated profiles (or list of profiles if using YAML).
 
 	# SENDGRID ({sc-spring-boot-autoconfigure}/sendgrid/SendGridAutoConfiguration.{sc-ext}[SendGridAutoConfiguration])
 	spring.sendgrid.api-key= # SendGrid api key (alternative to username/password)
@@ -153,11 +153,11 @@ content into your application; rather pick only the properties that you need.
 	server.context-path= # Context path of the application.
 	server.display-name=application # Display name of the application.
 	server.max-http-header-size=0 # Maximum size in bytes of the HTTP message header.
-	server.max-http-post-size=0 # Maximum size in bytes of the HTTP post content.
 	server.error.include-stacktrace=never # When to include a "stacktrace" attribute.
 	server.error.path=/error # Path of the error controller.
 	server.error.whitelabel.enabled=true # Enable the default error page displayed in browsers in case of a server error.
 	server.jetty.acceptors= # Number of acceptor threads to use.
+	server.jetty.max-http-post-size=0 # Maximum size in bytes of the HTTP post or put content.
 	server.jetty.selectors= # Number of selector threads to use.
 	server.jsp-servlet.class-name=org.apache.jasper.servlet.JspServlet # The class name of the JSP servlet.
 	server.jsp-servlet.init-parameters.*= # Init parameters used to configure the JSP servlet
@@ -193,11 +193,13 @@ content into your application; rather pick only the properties that you need.
 	server.ssl.trust-store-provider= # Provider for the trust store.
 	server.ssl.trust-store-type= # Type of the trust store.
 	server.tomcat.accept-count= # Maximum queue length for incoming connection requests when all possible request processing threads are in use.
+	server.tomcat.accesslog.buffered=true # Buffer output such that it is only flushed periodically.
 	server.tomcat.accesslog.directory=logs # Directory in which log files are created. Can be relative to the tomcat base dir or absolute.
 	server.tomcat.accesslog.enabled=false # Enable access log.
 	server.tomcat.accesslog.pattern=common # Format pattern for access logs.
 	server.tomcat.accesslog.prefix=access_log # Log file name prefix.
 	server.tomcat.accesslog.rename-on-rotate=false # Defer inclusion of the date stamp in the file name until rotate time.
+	server.tomcat.accesslog.request-attributes-enabled=false # Set request attributes for IP address, Hostname, protocol and port used for the request.
 	server.tomcat.accesslog.rotate=true # Enable access log rotation.
 	server.tomcat.accesslog.suffix=.log # Log file name suffix.
 	server.tomcat.additional-tld-skip-patterns= # Comma-separated list of additional patterns that match jars to ignore for TLD scanning.
@@ -211,6 +213,7 @@ content into your application; rather pick only the properties that you need.
 			172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
 			172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3} # regular expression matching trusted IP addresses.
 	server.tomcat.max-connections= # Maximum number of connections that the server will accept and process at any given time.
+	server.tomcat.max-http-post-size=0 # Maximum size in bytes of the HTTP post content.
 	server.tomcat.max-threads=0 # Maximum amount of worker threads.
 	server.tomcat.min-spare-threads=0 # Minimum amount of worker threads.
 	server.tomcat.port-header=X-Forwarded-Port # Name of the HTTP header used to override the original port value.
@@ -229,6 +232,7 @@ content into your application; rather pick only the properties that you need.
 	server.undertow.buffers-per-region= # Number of buffer per region.
 	server.undertow.direct-buffers= # Allocate buffers outside the Java heap.
 	server.undertow.io-threads= # Number of I/O threads to create for the worker.
+	server.undertow.max-http-post-size=0 # Maximum size in bytes of the HTTP post content.
 	server.undertow.worker-threads= # Number of worker threads.
 
 	# FREEMARKER ({sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[FreeMarkerAutoConfiguration])
@@ -286,8 +290,8 @@ content into your application; rather pick only the properties that you need.
 	spring.http.multipart.enabled=true # Enable support of multi-part uploads.
 	spring.http.multipart.file-size-threshold=0 # Threshold after which files will be written to disk. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
 	spring.http.multipart.location= # Intermediate location of uploaded files.
-	spring.http.multipart.max-file-size=1Mb # Max file size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
-	spring.http.multipart.max-request-size=10Mb # Max request size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
+	spring.http.multipart.max-file-size=1MB # Max file size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
+	spring.http.multipart.max-request-size=10MB # Max request size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
 	spring.http.multipart.resolve-lazily=false # Whether to resolve the multipart request lazily at the time of file or parameter access.
 
 	# JACKSON ({sc-spring-boot-autoconfigure}/jackson/JacksonProperties.{sc-ext}[JacksonProperties])
@@ -373,12 +377,13 @@ content into your application; rather pick only the properties that you need.
 	spring.resources.static-locations=classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/ # Locations of static resources.
 
 	# SPRING SESSION ({sc-spring-boot-autoconfigure}/session/SessionProperties.{sc-ext}[SessionProperties])
+	spring.session.hazelcast.flush-mode= # Sessions flush mode.
 	spring.session.hazelcast.map-name=spring:session:sessions # Name of the map used to store sessions.
 	spring.session.jdbc.initializer.enabled= # Create the required session tables on startup if necessary. Enabled automatically if the default table name is set or a custom schema is configured.
 	spring.session.jdbc.schema=classpath:org/springframework/session/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.session.jdbc.table-name=SPRING_SESSION # Name of database table used to store sessions.
 	spring.session.mongo.collection-name=sessions # Collection name used to store sessions.
-	spring.session.redis.flush-mode= # Flush mode for the Redis sessions.
+	spring.session.redis.flush-mode= # Sessions flush mode.
 	spring.session.redis.namespace= # Namespace for keys used to store sessions.
 	spring.session.store-type= # Session store type.
 
@@ -430,6 +435,8 @@ content into your application; rather pick only the properties that you need.
 	security.filter-order=0 # Security filter chain order.
 	security.filter-dispatcher-types=ASYNC, FORWARD, INCLUDE, REQUEST # Security filter chain dispatcher types.
 	security.headers.cache=true # Enable cache control HTTP headers.
+	security.headers.content-security-policy= # Value for content security policy header.
+	security.headers.content-security-policy-mode=default # Content security policy mode.
 	security.headers.content-type=true # Enable "X-Content-Type-Options" header.
 	security.headers.frame=true # Enable "X-Frame-Options" header.
 	security.headers.hsts= # HTTP Strict Transport Security (HSTS) mode (none, domain, all).
@@ -571,9 +578,10 @@ content into your application; rather pick only the properties that you need.
 	# NEO4J ({sc-spring-boot-autoconfigure}/neo4j/Neo4jProperties.{sc-ext}[Neo4jProperties])
 	spring.data.neo4j.compiler= # Compiler to use.
 	spring.data.neo4j.embedded.enabled=true # Enable embedded mode if the embedded driver is available.
+	spring.data.neo4j.open-in-view=false # Register OpenSessionInViewInterceptor. Binds a Neo4j Session to the thread for the entire processing of the request.
 	spring.data.neo4j.password= # Login password of the server.
 	spring.data.neo4j.repositories.enabled=true # Enable Neo4j repositories.
-	spring.data.neo4j.session.scope=singleton # Scope (lifetime) of the session.
+	spring.data.neo4j.transaction.*= # Transaction manager settings
 	spring.data.neo4j.uri= # URI used by the driver. Auto-detected by default.
 	spring.data.neo4j.username= # Login user of the server.
 
@@ -596,7 +604,7 @@ content into your application; rather pick only the properties that you need.
 
 	# DATASOURCE ({sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[DataSourceAutoConfiguration] & {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[DataSourceProperties])
 	spring.datasource.continue-on-error=false # Do not stop if an error occurs while initializing the database.
-	spring.datasource.data= # Data (DML) script resource reference.
+	spring.datasource.data= # Data (DML) script resource references.
 	spring.datasource.data-username= # User of the database to execute DML scripts (if different).
 	spring.datasource.data-password= # Password of the database to execute DML scripts (if different).
 	spring.datasource.dbcp2.*= # Commons DBCP2 specific settings
@@ -609,12 +617,13 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.name=testdb # Name of the datasource.
 	spring.datasource.password= # Login password of the database.
 	spring.datasource.platform=all # Platform to use in the schema resource (schema-${platform}.sql).
-	spring.datasource.schema= # Schema (DDL) script resource reference.
+	spring.datasource.schema= # Schema (DDL) script resource references.
 	spring.datasource.schema-username= # User of the database to execute DDL scripts (if different).
 	spring.datasource.schema-password= # Password of the database to execute DDL scripts (if different).
 	spring.datasource.separator=; # Statement separator in SQL initialization scripts.
 	spring.datasource.sql-script-encoding= # SQL scripts encoding.
 	spring.datasource.tomcat.*= # Tomcat datasource specific settings
+	spring.datasource.transaction.*= # Transaction manager settings
 	spring.datasource.type= # Fully qualified name of the connection pool implementation to use. By default, it is auto-detected from the classpath.
 	spring.datasource.url= # JDBC url of the database.
 	spring.datasource.username=
@@ -643,17 +652,18 @@ content into your application; rather pick only the properties that you need.
 	spring.jpa.database-platform= # Name of the target database to operate on, auto-detected by default. Can be alternatively set using the "Database" enum.
 	spring.jpa.generate-ddl=false # Initialize the schema on startup.
 	spring.jpa.hibernate.ddl-auto= # DDL mode. This is actually a shortcut for the "hibernate.hbm2ddl.auto" property. Default to "create-drop" when using an embedded database, "none" otherwise.
-	spring.jpa.hibernate.naming.implicit-strategy= # Hibernate 5 implicit naming strategy fully qualified name.
-	spring.jpa.hibernate.naming.physical-strategy= # Hibernate 5 physical naming strategy fully qualified name.
-	spring.jpa.hibernate.naming.strategy= # Hibernate 4 naming strategy fully qualified name. Not supported with Hibernate 5.
+	spring.jpa.hibernate.naming.implicit-strategy= # Implicit naming strategy fully qualified name.
+	spring.jpa.hibernate.naming.physical-strategy= # Physical naming strategy fully qualified name.
 	spring.jpa.hibernate.use-new-id-generator-mappings= # Use Hibernate's newer IdentifierGenerator for AUTO, TABLE and SEQUENCE.
 	spring.jpa.open-in-view=true # Register OpenEntityManagerInViewInterceptor. Binds a JPA EntityManager to the thread for the entire processing of the request.
 	spring.jpa.properties.*= # Additional native properties to set on the JPA provider.
 	spring.jpa.show-sql=false # Enable logging of SQL statements.
+	spring.jpa.transaction.*= # Transaction manager settings
 
 	# JTA ({sc-spring-boot-autoconfigure}/transaction/jta/JtaAutoConfiguration.{sc-ext}[JtaAutoConfiguration])
 	spring.jta.enabled=true # Enable JTA support.
 	spring.jta.log-dir= # Transaction logs directory.
+	spring.jta.transaction.*= # Transaction manager settings
 	spring.jta.transaction-manager-id= # Transaction manager unique identifier.
 
 	# ATOMIKOS ({sc-spring-boot}/jta/atomikos/AtomikosProperties.{sc-ext}[AtomikosProperties])
@@ -787,8 +797,10 @@ content into your application; rather pick only the properties that you need.
 	spring.redis.cluster.max-redirects= # Maximum number of redirects to follow when executing commands across the cluster.
 	spring.redis.cluster.nodes= # Comma-separated list of "host:port" pairs to bootstrap from.
 	spring.redis.database=0 # Database index used by the connection factory.
+	spring.redis.url= # Connection URL, will override host, port and password (user will be ignored), e.g. redis://user:password@example.com:6379
 	spring.redis.host=localhost # Redis server host.
 	spring.redis.password= # Login password of the redis server.
+	spring.redis.ssl=false # Enable SSL support.
 	spring.redis.pool.max-active=8 # Max number of connections that can be allocated by the pool at a given time. Use a negative value for no limit.
 	spring.redis.pool.max-idle=8 # Max number of "idle" connections in the pool. Use a negative value to indicate an unlimited number of idle connections.
 	spring.redis.pool.max-wait=-1 # Maximum amount of time (in milliseconds) a connection allocation should block before throwing an exception when the pool is exhausted. Use a negative value to block indefinitely.
@@ -836,6 +848,7 @@ content into your application; rather pick only the properties that you need.
 	spring.batch.job.names= # Comma-separated list of job names to execute on startup (For instance `job1,job2`). By default, all Jobs found in the context are executed.
 	spring.batch.schema=classpath:org/springframework/batch/core/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.batch.table-prefix= # Table prefix for all the batch meta-data tables.
+	spring.batch.transaction.*= # Transaction manager settings
 
 	# JMS ({sc-spring-boot-autoconfigure}/jms/JmsProperties.{sc-ext}[JmsProperties])
 	spring.jms.jndi-name= # Connection factory JNDI name. When set, takes precedence to others connection factory auto-configurations.
@@ -851,6 +864,43 @@ content into your application; rather pick only the properties that you need.
 	spring.jms.template.qos-enabled= # Enable explicit QoS when sending a message.
 	spring.jms.template.receive-timeout= # Timeout to use for receive calls in milliseconds.
 	spring.jms.template.time-to-live= # Time-to-live of a message when sending in milliseconds. Enable QoS when set.
+
+	# APACHE KAFKA ({sc-spring-boot-autoconfigure}/kafka/KafkaProperties.{sc-ext}[KafkaProperties])
+	spring.kafka.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster.
+	spring.kafka.client-id= # Id to pass to the server when making requests; used for server-side logging.
+	spring.kafka.consumer.auto-commit-interval= # Frequency in milliseconds that the consumer offsets are auto-committed to Kafka if 'enable.auto.commit' true.
+	spring.kafka.consumer.auto-offset-reset= # What to do when there is no initial offset in Kafka or if the current offset does not exist any more on the server.
+	spring.kafka.consumer.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster.
+	spring.kafka.consumer.client-id= # Id to pass to the server when making requests; used for server-side logging.
+	spring.kafka.consumer.enable-auto-commit= # If true the consumer's offset will be periodically committed in the background.
+	spring.kafka.consumer.fetch-max-wait= # Maximum amount of time in milliseconds the server will block before answering the fetch request if there isn't sufficient data to immediately satisfy the requirement given by "fetch.min.bytes".
+	spring.kafka.consumer.fetch-min-size= # Minimum amount of data the server should return for a fetch request in bytes.
+	spring.kafka.consumer.group-id= # Unique string that identifies the consumer group this consumer belongs to.
+	spring.kafka.consumer.heartbeat-interval= # Expected time in milliseconds between heartbeats to the consumer coordinator.
+	spring.kafka.consumer.key-deserializer= # Deserializer class for keys.
+	spring.kafka.consumer.max-poll-messages= # Maximum number of records returned in a single call to poll().
+	spring.kafka.consumer.value-deserializer= # Deserializer class for values.
+	spring.kafka.listener.ack-count= # Number of records between offset commits when ackMode is "COUNT" or "COUNT_TIME".
+	spring.kafka.listener.ack-mode= # Listener AckMode; see the spring-kafka documentation.
+	spring.kafka.listener.ack-time= # Time in milliseconds between offset commits when ackMode is "TIME" or "COUNT_TIME".
+	spring.kafka.listener.concurrency= # Number of threads to run in the listener containers.
+	spring.kafka.listener.poll-timeout= # Timeout in milliseconds to use when polling the consumer.
+	spring.kafka.producer.acks= # Number of acknowledgments the producer requires the leader to have received before considering a request complete.
+	spring.kafka.producer.batch-size= # Number of records to batch before sending.
+	spring.kafka.producer.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster.
+	spring.kafka.producer.buffer-memory= # Total bytes of memory the producer can use to buffer records waiting to be sent to the server.
+	spring.kafka.producer.client-id= # Id to pass to the server when making requests; used for server-side logging.
+	spring.kafka.producer.compression-type= # Compression type for all data generated by the producer.
+	spring.kafka.producer.key-serializer= # Serializer class for keys.
+	spring.kafka.producer.retries= # When greater than zero, enables retrying of failed sends.
+	spring.kafka.producer.value-serializer= # Serializer class for values.
+	spring.kafka.properties.*= # Additional properties used to configure the client.
+	spring.kafka.ssl.key-password= # Password of the private key in the key store file.
+	spring.kafka.ssl.keystore-location= # Location of the key store file.
+	spring.kafka.ssl.keystore-password= # Store password for the key store file.
+	spring.kafka.ssl.truststore-location= # Location of the trust store file.
+	spring.kafka.ssl.truststore-password= # Store password for the trust store file.
+	spring.kafka.template.default-topic= # Default topic to which messages will be sent.
 
 	# RABBIT ({sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[RabbitProperties])
 	spring.rabbitmq.addresses= # Comma-separated list of addresses to which the client should connect.
@@ -1022,8 +1072,10 @@ content into your application; rather pick only the properties that you need.
 	management.ssl.trust-store-provider= # Provider for the trust store. Requires a custom management.port.
 	management.ssl.trust-store-type= # Type of the trust store. Requires a custom management.port.
 
-	# HEALTH INDICATORS (previously health.*)
+	# HEALTH INDICATORS
 	management.health.db.enabled=true # Enable database health check.
+	management.health.cassandra.enabled=true # Enable cassandra health check.
+	management.health.couchbase.enabled=true # Enable couchbase health check.
 	management.health.defaults.enabled=true # Enable default health indicators.
 	management.health.diskspace.enabled=true # Enable disk space health check.
 	management.health.diskspace.path= # Path used to compute the available disk space.
@@ -1089,5 +1141,12 @@ content into your application; rather pick only the properties that you need.
 	spring.devtools.remote.restart.enabled=true # Enable remote restart.
 	spring.devtools.remote.secret= # A shared secret required to establish a connection (required to enable remote support).
 	spring.devtools.remote.secret-header-name=X-AUTH-TOKEN # HTTP header used to transfer the shared secret.
+
+
+	# ----------------------------------------
+	# TESTING PROPERTIES
+	# ----------------------------------------
+
+	spring.test.database.replace=any # Type of existing DataSource to replace.
 
 ----

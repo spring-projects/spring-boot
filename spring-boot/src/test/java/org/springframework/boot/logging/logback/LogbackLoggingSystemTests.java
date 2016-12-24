@@ -18,6 +18,7 @@ package org.springframework.boot.logging.logback;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
@@ -42,6 +43,7 @@ import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.testutil.Matched;
 import org.springframework.mock.env.MockEnvironment;
@@ -163,6 +165,13 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	public void getSupportedLevels() {
+		assertThat(this.loggingSystem.getSupportedLogLevels())
+				.isEqualTo(EnumSet.of(LogLevel.TRACE, LogLevel.DEBUG, LogLevel.INFO,
+						LogLevel.WARN, LogLevel.ERROR, LogLevel.OFF));
+	}
+
+	@Test
 	public void setLevel() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
@@ -182,7 +191,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 				.getLoggerConfigurations();
 		assertThat(configurations).isNotEmpty();
 		assertThat(configurations.get(0).getName())
-				.isEqualTo(org.slf4j.Logger.ROOT_LOGGER_NAME);
+				.isEqualTo(LoggingSystem.ROOT_LOGGER_NAME);
 	}
 
 	@Test

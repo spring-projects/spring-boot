@@ -52,6 +52,8 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  */
 public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
+	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
+
 	private static final String SPRING_LOADED_AGENT_CLASS_NAME = "org.springsource.loaded.agent.SpringLoadedAgent";
 
 	/**
@@ -89,7 +91,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Current working directory to use for the application. If not specified, basedir
-	 * will be used NOTE: the use of working directory means that processes will be
+	 * will be used. NOTE: the use of working directory means that processes will be
 	 * started by forking a new JVM.
 	 * @since 1.5
 	 */
@@ -167,7 +169,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * Skip the execution.
 	 * @since 1.3.2
 	 */
-	@Parameter(defaultValue = "false")
+	@Parameter(property = "skip", defaultValue = "false")
 	private boolean skip;
 
 	@Override
@@ -374,7 +376,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		String mainClass = this.mainClass;
 		if (mainClass == null) {
 			try {
-				mainClass = MainClassFinder.findSingleMainClass(this.classesDirectory);
+				mainClass = MainClassFinder.findSingleMainClass(this.classesDirectory,
+						SPRING_BOOT_APPLICATION_CLASS_NAME);
 			}
 			catch (IOException ex) {
 				throw new MojoExecutionException(ex.getMessage(), ex);
@@ -503,6 +506,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	class LaunchRunner implements Runnable {
 
 		private final String startClassName;
+
 		private final String[] args;
 
 		LaunchRunner(String startClassName, String... args) {

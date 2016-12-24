@@ -78,6 +78,7 @@ public class MixedVersionRepackagingTests {
 		public boolean matches(JarFile jarFile) {
 			return jarFile.getEntry(this.entryName) != null;
 		}
+
 	}
 
 }

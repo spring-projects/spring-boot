@@ -51,4 +51,5 @@ final class RedisUtils {
 			RedisConnectionFactory redisConnectionFactory) {
 		return new StringRedisTemplate(redisConnectionFactory);
 	}
+
 }

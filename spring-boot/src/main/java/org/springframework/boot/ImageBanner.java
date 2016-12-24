@@ -49,7 +49,7 @@ import org.springframework.util.Assert;
  */
 public class ImageBanner implements Banner {
 
-	private static final Log log = LogFactory.getLog(ImageBanner.class);
+	private static final Log logger = LogFactory.getLog(ImageBanner.class);
 
 	private static final double[] RGB_WEIGHT = { 0.2126d, 0.7152d, 0.0722d };
 
@@ -76,9 +76,9 @@ public class ImageBanner implements Banner {
 			printBanner(environment, out);
 		}
 		catch (Throwable ex) {
-			log.warn("Image banner not printable: " + this.image + " (" + ex.getClass()
+			logger.warn("Image banner not printable: " + this.image + " (" + ex.getClass()
 					+ ": '" + ex.getMessage() + "')");
-			log.debug("Image banner printing failure", ex);
+			logger.debug("Image banner printing failure", ex);
 		}
 		finally {
 			if (headless == null) {

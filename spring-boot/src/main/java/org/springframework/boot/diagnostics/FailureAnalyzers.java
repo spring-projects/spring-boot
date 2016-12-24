@@ -48,7 +48,7 @@ import org.springframework.util.ReflectionUtils;
  */
 public final class FailureAnalyzers {
 
-	private static final Log log = LogFactory.getLog(FailureAnalyzers.class);
+	private static final Log logger = LogFactory.getLog(FailureAnalyzers.class);
 
 	private final ClassLoader classLoader;
 
@@ -82,7 +82,7 @@ public final class FailureAnalyzers {
 				analyzers.add((FailureAnalyzer) constructor.newInstance());
 			}
 			catch (Throwable ex) {
-				log.trace("Failed to load " + analyzerName, ex);
+				logger.trace("Failed to load " + analyzerName, ex);
 			}
 		}
 		AnnotationAwareOrderComparator.sort(analyzers);

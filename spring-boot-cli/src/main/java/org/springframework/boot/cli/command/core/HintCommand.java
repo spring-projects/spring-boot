@@ -111,4 +111,5 @@ public class HintCommand extends AbstractCommand {
 		}
 		return false;
 	}
+
 }

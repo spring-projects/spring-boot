@@ -55,4 +55,5 @@ public class RabbitCompilerAutoConfiguration extends CompilerAutoConfiguration {
 				"org.springframework.amqp.rabbit.listener.adapter",
 				"org.springframework.amqp.core");
 	}
+
 }

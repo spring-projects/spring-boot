@@ -11,8 +11,8 @@
 
 ### BEGIN INIT INFO
 # Provides:          {{initInfoProvides:spring-boot-application}}
-# Required-Start:    $remote_fs $syslog $network
-# Required-Stop:     $remote_fs $syslog $network
+# Required-Start:    {{initInfoRequiredStart:$remote_fs $syslog $network}}
+# Required-Stop:     {{initInfoRequiredStop:$remote_fs $syslog $network}}
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: {{initInfoShortDescription:Spring Boot Application}}
@@ -71,8 +71,10 @@ if [[ -z "$identity" ]]; then
 fi
 
 # Initialize log file name if not provided by the config file
-[[ -z "$LOG_FILENAME" ]] && LOG_FILENAME="${identity}.log"
+[[ -z "$LOG_FILENAME" ]] && LOG_FILENAME="{{logFilename:${identity}.log}}"
 
+# Initialize stop wait time if not provided by the config file
+[[ -z "$STOP_WAIT_TIME" ]] && STOP_WAIT_TIME={{stopWaitTime:60}}
 
 # ANSI Colors
 echoRed() { echo $'\e[0;31m'"$1"$'\e[0m'; }
@@ -114,7 +116,7 @@ if [[ "$identity" == "$init_script" ]] || [[ "$identity" == "$APP_NAME" ]]; then
   PID_FOLDER="$PID_FOLDER/${identity}"
   pid_subfolder=$PID_FOLDER
 fi
-pid_file="$PID_FOLDER/${identity}.pid"
+pid_file="$PID_FOLDER/{{pidFilename:${identity}.pid}}"
 log_file="$LOG_FOLDER/$LOG_FILENAME"
 
 # Determine the user to run as if we are root
@@ -133,7 +135,7 @@ else
     exit 1
 fi
 
-arguments=(-Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS -jar $jarfile $RUN_ARGS "$@")
+arguments=(-Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS -jar "$jarfile" $RUN_ARGS "$@")
 
 # Action functions
 start() {
@@ -192,9 +194,9 @@ stop() {
 
 do_stop() {
   kill "$1" &> /dev/null || { echoRed "Unable to kill process $1"; return 1; }
-  for i in $(seq 1 60); do
+  for i in $(seq 1 $STOP_WAIT_TIME); do
     isRunning "$1" || { echoGreen "Stopped [$1]"; rm -f "$2"; return 0; }
-    [[ $i -eq 30 ]] && kill "$1" &> /dev/null
+    [[ $i -eq STOP_WAIT_TIME/2 ]] && kill "$1" &> /dev/null
     sleep 1
   done
   echoRed "Unable to kill process $1";

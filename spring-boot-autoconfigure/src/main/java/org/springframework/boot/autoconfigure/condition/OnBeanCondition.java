@@ -126,7 +126,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 	private List<String> getMatchingBeans(ConditionContext context,
 			BeanSearchSpec beans) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		if (beans.getStrategy() == SearchStrategy.PARENTS) {
+		if (beans.getStrategy() == SearchStrategy.ANCESTORS) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
 			Assert.isInstanceOf(ConfigurableListableBeanFactory.class, parent,
 					"Unable to use SearchStrategy.PARENTS");
@@ -175,6 +175,9 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			return result;
 		}
 		catch (ClassNotFoundException ex) {
+			return Collections.emptySet();
+		}
+		catch (NoClassDefFoundError ex) {
 			return Collections.emptySet();
 		}
 	}
@@ -436,6 +439,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			Assert.isTrue(getTypes().size() == 1, annotationName() + " annotations must "
 					+ "specify only one type (got " + getTypes() + ")");
 		}
+
 	}
 
 	static final class BeanTypeDeductionException extends RuntimeException {

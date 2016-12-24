@@ -58,6 +58,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,6 +70,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Vedran Pavic
+ * @author Kazuki Shimizu
  */
 public class BatchAutoConfigurationTests {
 
@@ -267,13 +270,52 @@ public class BatchAutoConfigurationTests {
 				.queryForList("select * from BATCH_JOB_EXECUTION");
 	}
 
+	@Test
+	public void testCustomizeJpaTransactionManagerUsingProperties() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.batch.transaction.default-timeout:30",
+				"spring.batch.transaction.rollback-on-commit-failure:true");
+		this.context.register(TestConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				HibernateJpaAutoConfiguration.class, BatchAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		this.context.getBean(BatchConfigurer.class);
+		JpaTransactionManager transactionManager = JpaTransactionManager.class.cast(
+				this.context.getBean(BatchConfigurer.class).getTransactionManager());
+		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
+		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
+	}
+
+	@Test
+	public void testCustomizeDataSourceTransactionManagerUsingProperties()
+			throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.batch.transaction.default-timeout:30",
+				"spring.batch.transaction.rollback-on-commit-failure:true");
+		this.context.register(TestConfiguration.class,
+				EmbeddedDataSourceConfiguration.class, BatchAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		this.context.getBean(BatchConfigurer.class);
+		DataSourceTransactionManager transactionManager = DataSourceTransactionManager.class
+				.cast(this.context.getBean(BatchConfigurer.class)
+						.getTransactionManager());
+		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
+		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
+	}
+
 	@Configuration
 	protected static class EmptyConfiguration {
+
 	}
 
 	@EnableBatchProcessing
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfiguration {
+
 	}
 
 	@EnableBatchProcessing
@@ -281,6 +323,7 @@ public class BatchAutoConfigurationTests {
 	protected static class TestCustomConfiguration implements BatchConfigurer {
 
 		private JobRepository jobRepository;
+
 		private MapJobRepositoryFactoryBean factory = new MapJobRepositoryFactoryBean();
 
 		@Override
@@ -311,10 +354,12 @@ public class BatchAutoConfigurationTests {
 			explorer.afterPropertiesSet();
 			return explorer.getObject();
 		}
+
 	}
 
 	@EnableBatchProcessing
 	protected static class NamedJobConfigurationWithRegisteredJob {
+
 		@Autowired
 		private JobRegistry jobRegistry;
 
@@ -351,6 +396,7 @@ public class BatchAutoConfigurationTests {
 			job.setJobRepository(this.jobRepository);
 			return job;
 		}
+
 	}
 
 	@EnableBatchProcessing
@@ -382,10 +428,12 @@ public class BatchAutoConfigurationTests {
 			job.setJobRepository(this.jobRepository);
 			return job;
 		}
+
 	}
 
 	@EnableBatchProcessing
 	protected static class JobConfiguration {
+
 		@Autowired
 		private JobRepository jobRepository;
 
@@ -412,6 +460,7 @@ public class BatchAutoConfigurationTests {
 			job.setJobRepository(this.jobRepository);
 			return job;
 		}
+
 	}
 
 }

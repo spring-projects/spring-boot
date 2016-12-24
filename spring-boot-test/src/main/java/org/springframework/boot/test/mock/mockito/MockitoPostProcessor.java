@@ -37,6 +37,8 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -184,14 +186,15 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			BeanDefinitionRegistry registry, MockDefinition definition, Field field) {
 		RootBeanDefinition beanDefinition = createBeanDefinition(definition);
 		String beanName = getBeanName(beanFactory, registry, definition, beanDefinition);
+		String transformedBeanName = BeanFactoryUtils.transformedBeanName(beanName);
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1,
 				beanName);
-		if (registry.containsBeanDefinition(beanName)) {
-			registry.removeBeanDefinition(beanName);
+		if (registry.containsBeanDefinition(transformedBeanName)) {
+			registry.removeBeanDefinition(transformedBeanName);
 		}
-		registry.registerBeanDefinition(beanName, beanDefinition);
+		registry.registerBeanDefinition(transformedBeanName, beanDefinition);
 		Object mock = createMock(definition, beanName);
-		beanFactory.registerSingleton(beanName, mock);
+		beanFactory.registerSingleton(transformedBeanName, mock);
 		this.mockitoBeans.add(mock);
 		this.beanNameRegistry.put(definition, beanName);
 		if (field != null) {
@@ -249,7 +252,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			createSpy(registry, definition, field);
 		}
 		else {
-			registerSpies(definition, field, existingBeans);
+			registerSpies(registry, definition, field, existingBeans);
 		}
 	}
 
@@ -306,15 +309,41 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		registerSpy(definition, field, beanName);
 	}
 
-	private void registerSpies(SpyDefinition definition, Field field,
-			String[] existingBeans) {
-		Assert.state(field == null || existingBeans.length == 1,
-				"Unable to register spy bean " + definition.getTypeToSpy()
-						+ " expected a single existing bean to replace but found "
-						+ new TreeSet<String>(Arrays.asList(existingBeans)));
-		for (String beanName : existingBeans) {
-			registerSpy(definition, field, beanName);
+	private void registerSpies(BeanDefinitionRegistry registry, SpyDefinition definition,
+			Field field, String[] existingBeans) {
+		ResolvableType type = definition.getTypeToSpy();
+		try {
+			if (ObjectUtils.isEmpty(existingBeans)) {
+				throw new NoSuchBeanDefinitionException(type);
+			}
+			if (existingBeans.length > 1) {
+				existingBeans = new String[] {
+						determinePrimaryCandidate(registry, existingBeans, type) };
+			}
+			registerSpy(definition, field, existingBeans[0]);
 		}
+		catch (RuntimeException ex) {
+			throw new IllegalStateException(
+					"Unable to register spy bean " + definition.getTypeToSpy(), ex);
+		}
+	}
+
+	private String determinePrimaryCandidate(BeanDefinitionRegistry registry,
+			String[] candidateBeanNames, ResolvableType type) {
+		String primaryBeanName = null;
+		for (String candidateBeanName : candidateBeanNames) {
+			BeanDefinition beanDefinition = registry.getBeanDefinition(candidateBeanName);
+			if (beanDefinition.isPrimary()) {
+				if (primaryBeanName != null) {
+					throw new NoUniqueBeanDefinitionException(type.resolve(),
+							candidateBeanNames.length,
+							"more than one 'primary' bean found among candidates: "
+									+ Arrays.asList(candidateBeanNames));
+				}
+				primaryBeanName = candidateBeanName;
+			}
+		}
+		return primaryBeanName;
 	}
 
 	private void registerSpy(SpyDefinition definition, Field field, String beanName) {

@@ -42,6 +42,9 @@ abstract class DataSourceConfiguration {
 		return (T) properties.initializeDataSourceBuilder().type(type).build();
 	}
 
+	/**
+	 * Tomcat Pool DataSource configuration.
+	 */
 	@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.tomcat.jdbc.pool.DataSource", matchIfMissing = true)
 	static class Tomcat extends DataSourceConfiguration {
@@ -64,6 +67,9 @@ abstract class DataSourceConfiguration {
 
 	}
 
+	/**
+	 * Hikari DataSource configuration.
+	 */
 	@ConditionalOnClass(HikariDataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "com.zaxxer.hikari.HikariDataSource", matchIfMissing = true)
 	static class Hikari extends DataSourceConfiguration {
@@ -73,8 +79,12 @@ abstract class DataSourceConfiguration {
 		public HikariDataSource dataSource(DataSourceProperties properties) {
 			return createDataSource(properties, HikariDataSource.class);
 		}
+
 	}
 
+	/**
+	 * DBCP DataSource configuration.
+	 */
 	@ConditionalOnClass(org.apache.commons.dbcp2.BasicDataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp2.BasicDataSource", matchIfMissing = true)
 	static class Dbcp2 extends DataSourceConfiguration {
@@ -86,8 +96,12 @@ abstract class DataSourceConfiguration {
 			return createDataSource(properties,
 					org.apache.commons.dbcp2.BasicDataSource.class);
 		}
+
 	}
 
+	/**
+	 * Generic DataSource configuration.
+	 */
 	@ConditionalOnMissingBean(DataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type")
 	static class Generic {

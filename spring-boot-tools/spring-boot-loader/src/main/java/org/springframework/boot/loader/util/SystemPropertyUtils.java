@@ -32,7 +32,6 @@ import java.util.Set;
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @author Dave Syer
- *
  * @see System#getProperty(String)
  */
 public abstract class SystemPropertyUtils {

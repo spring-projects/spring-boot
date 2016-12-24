@@ -63,6 +63,7 @@ public class RestartScopeInitializer
 		public String getConversationId() {
 			return null;
 		}
+
 	}
 
 }

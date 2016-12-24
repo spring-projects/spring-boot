@@ -20,6 +20,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.NavigableSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.logging.LogLevel;
@@ -35,8 +38,7 @@ import org.springframework.util.Assert;
  * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "endpoints.loggers")
-public class LoggersEndpoint
-		extends AbstractEndpoint<Map<String, LoggersEndpoint.LoggerLevels>> {
+public class LoggersEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private final LoggingSystem loggingSystem;
 
@@ -51,18 +53,31 @@ public class LoggersEndpoint
 	}
 
 	@Override
-	public Map<String, LoggerLevels> invoke() {
+	public Map<String, Object> invoke() {
 		Collection<LoggerConfiguration> configurations = this.loggingSystem
 				.getLoggerConfigurations();
 		if (configurations == null) {
 			return Collections.emptyMap();
 		}
-		Map<String, LoggerLevels> result = new LinkedHashMap<String, LoggerLevels>(
+		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		result.put("levels", getLevels());
+		result.put("loggers", getLoggers(configurations));
+		return result;
+	}
+
+	private NavigableSet<LogLevel> getLevels() {
+		Set<LogLevel> levels = this.loggingSystem.getSupportedLogLevels();
+		return new TreeSet<LogLevel>(levels).descendingSet();
+	}
+
+	private Map<String, LoggerLevels> getLoggers(
+			Collection<LoggerConfiguration> configurations) {
+		Map<String, LoggerLevels> loggers = new LinkedHashMap<String, LoggerLevels>(
 				configurations.size());
 		for (LoggerConfiguration configuration : configurations) {
-			result.put(configuration.getName(), new LoggerLevels(configuration));
+			loggers.put(configuration.getName(), new LoggerLevels(configuration));
 		}
-		return result;
+		return loggers;
 	}
 
 	public LoggerLevels invoke(String name) {

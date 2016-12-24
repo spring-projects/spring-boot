@@ -27,7 +27,6 @@ public class SampleNeo4jApplication implements CommandLineRunner {
 	@Autowired
 	private CustomerRepository repository;
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void run(String... args) throws Exception {
 		this.repository.deleteAll();

@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.junit.Test;
 
@@ -25,8 +26,10 @@ import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link AbstractEndpointHandlerMapping}.
@@ -38,11 +41,51 @@ public abstract class AbstractEndpointHandlerMappingTests {
 	private final StaticApplicationContext context = new StaticApplicationContext();
 
 	@Test
+	public void securityInterceptorShouldBePresentForNonCorsRequest() throws Exception {
+		HandlerInterceptor securityInterceptor = mock(HandlerInterceptor.class);
+		TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("a"));
+		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<TestActionEndpoint>(
+				Collections.singletonList(endpoint));
+		mapping.setApplicationContext(this.context);
+		mapping.setSecurityInterceptor(securityInterceptor);
+		mapping.afterPropertiesSet();
+		assertThat(mapping.getHandler(request("POST", "/a")).getInterceptors())
+				.contains(securityInterceptor);
+	}
+
+	@Test
+	public void securityInterceptorIfNullShouldNotBeAdded() throws Exception {
+		TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("a"));
+		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<TestActionEndpoint>(
+				Collections.singletonList(endpoint));
+		mapping.setApplicationContext(this.context);
+		mapping.afterPropertiesSet();
+		assertThat(mapping.getHandler(request("POST", "/a")).getInterceptors()).isNull();
+	}
+
+	@Test
+	public void securityInterceptorShouldBePresentAfterCorsInterceptorForCorsRequest()
+			throws Exception {
+		HandlerInterceptor securityInterceptor = mock(HandlerInterceptor.class);
+		TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("a"));
+		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<TestActionEndpoint>(
+				Collections.singletonList(endpoint));
+		mapping.setApplicationContext(this.context);
+		mapping.setSecurityInterceptor(securityInterceptor);
+		mapping.afterPropertiesSet();
+		MockHttpServletRequest request = request("POST", "/a");
+		request.addHeader("Origin", "http://example.com");
+		assertThat(mapping.getHandler(request).getInterceptors().length).isEqualTo(2);
+		assertThat(mapping.getHandler(request).getInterceptors()[1])
+				.isEqualTo(securityInterceptor);
+	}
+
+	@Test
 	public void pathNotMappedWhenGetPathReturnsNull() throws Exception {
 		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
 		TestActionEndpoint other = new TestActionEndpoint(new TestEndpoint("b"));
-		AbstractEndpointHandlerMapping mapping = new TestEndpointHandlerMapping(
-				Arrays.asList(endpoint, other));
+		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<MvcEndpoint>(
+				Arrays.<MvcEndpoint>asList(endpoint, other));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
 		assertThat(mapping.getHandlerMethods()).hasSize(1);
@@ -89,9 +132,10 @@ public abstract class AbstractEndpointHandlerMappingTests {
 
 	}
 
-	private static class TestEndpointHandlerMapping extends AbstractEndpointHandlerMapping {
+	private static class TestEndpointHandlerMapping<E extends MvcEndpoint>
+			extends AbstractEndpointHandlerMapping<E> {
 
-		TestEndpointHandlerMapping(Collection<? extends MvcEndpoint> endpoints) {
+		TestEndpointHandlerMapping(Collection<E> endpoints) {
 			super(endpoints);
 		}
 

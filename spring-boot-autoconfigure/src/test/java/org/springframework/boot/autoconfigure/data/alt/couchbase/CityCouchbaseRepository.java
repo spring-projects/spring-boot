@@ -23,4 +23,5 @@ import org.springframework.data.repository.Repository;
  * @author Eddú Meléndez
  */
 public interface CityCouchbaseRepository extends Repository<City, Long> {
+
 }

@@ -37,7 +37,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ColorConverterTests {
 
 	private ColorConverter converter;
+
 	private LoggingEvent event;
+
 	private final String in = "in";
 
 	@BeforeClass
@@ -132,4 +134,5 @@ public class ColorConverterTests {
 		String out = this.converter.transform(this.event, this.in);
 		assertThat(out).isEqualTo("\033[32min\033[0;39m");
 	}
+
 }

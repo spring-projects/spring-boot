@@ -17,6 +17,9 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -45,12 +48,21 @@ public class LoggersEndpointTests extends AbstractEndpointTests<LoggersEndpoint>
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void invokeShouldReturnConfigurations() throws Exception {
 		given(getLoggingSystem().getLoggerConfigurations()).willReturn(Collections
 				.singletonList(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG)));
-		LoggerLevels levels = getEndpointBean().invoke().get("ROOT");
-		assertThat(levels.getConfiguredLevel()).isNull();
-		assertThat(levels.getEffectiveLevel()).isEqualTo("DEBUG");
+		given(getLoggingSystem().getSupportedLogLevels())
+				.willReturn(EnumSet.allOf(LogLevel.class));
+		Map<String, Object> result = getEndpointBean().invoke();
+		Map<String, LoggerLevels> loggers = (Map<String, LoggerLevels>) result
+				.get("loggers");
+		Set<LogLevel> levels = (Set<LogLevel>) result.get("levels");
+		LoggerLevels rootLevels = loggers.get("ROOT");
+		assertThat(rootLevels.getConfiguredLevel()).isNull();
+		assertThat(rootLevels.getEffectiveLevel()).isEqualTo("DEBUG");
+		assertThat(levels).containsExactly(LogLevel.OFF, LogLevel.FATAL, LogLevel.ERROR,
+				LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG, LogLevel.TRACE);
 	}
 
 	public void invokeWhenNameSpecifiedShouldReturnLevels() throws Exception {

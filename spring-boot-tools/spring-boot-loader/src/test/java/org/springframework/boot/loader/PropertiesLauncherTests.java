@@ -253,6 +253,7 @@ public class PropertiesLauncherTests {
 		protected Class<?> findClass(String name) throws ClassNotFoundException {
 			return super.findClass(name);
 		}
+
 	}
 
 }

@@ -47,7 +47,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -84,6 +83,11 @@ public class AuthenticationManagerConfiguration {
 			SecurityProperties securityProperties,
 			List<SecurityPrerequisite> dependencies) {
 		return new SpringBootAuthenticationConfigurerAdapter(securityProperties);
+	}
+
+	@Bean
+	public AuthenticationManagerConfigurationListener authenticationManagerConfigurationListener() {
+		return new AuthenticationManagerConfigurationListener();
 	}
 
 	/**
@@ -193,7 +197,6 @@ public class AuthenticationManagerConfiguration {
 	 * {@link ApplicationListener} to autowire the {@link AuthenticationEventPublisher}
 	 * into the {@link AuthenticationManager}.
 	 */
-	@Component
 	protected static class AuthenticationManagerConfigurationListener
 			implements SmartInitializingSingleton {
 

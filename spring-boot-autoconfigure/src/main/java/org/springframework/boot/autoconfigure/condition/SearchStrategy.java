@@ -29,9 +29,9 @@ public enum SearchStrategy {
 	CURRENT,
 
 	/**
-	 * Search all parents and ancestors, but not the current context.
+	 * Search all ancestors, but not the current context.
 	 */
-	PARENTS,
+	ANCESTORS,
 
 	/**
 	 * Search the entire hierarchy.

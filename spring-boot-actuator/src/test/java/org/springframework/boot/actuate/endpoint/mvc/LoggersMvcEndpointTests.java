@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Collections;
+import java.util.EnumSet;
 
 import org.junit.After;
 import org.junit.Before;
@@ -39,6 +40,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -63,6 +65,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@TestPropertySource(properties = "management.security.enabled=false")
 public class LoggersMvcEndpointTests {
 
 	@Autowired
@@ -80,18 +83,22 @@ public class LoggersMvcEndpointTests {
 				.alwaysDo(MockMvcResultHandlers.print()).build();
 	}
 
+	@Before
 	@After
-	public void reset() {
+	public void resetMocks() {
 		Mockito.reset(this.loggingSystem);
+		given(this.loggingSystem.getSupportedLogLevels())
+				.willReturn(EnumSet.allOf(LogLevel.class));
 	}
 
 	@Test
 	public void getLoggerShouldReturnAllLoggerConfigurations() throws Exception {
 		given(this.loggingSystem.getLoggerConfigurations()).willReturn(Collections
 				.singletonList(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG)));
+		String expected = "{\"levels\":[\"OFF\",\"FATAL\",\"ERROR\",\"WARN\",\"INFO\",\"DEBUG\",\"TRACE\"],"
+				+ "\"loggers\":{\"ROOT\":{\"configuredLevel\":null,\"effectiveLevel\":\"DEBUG\"}}}";
 		this.mvc.perform(get("/loggers")).andExpect(status().isOk())
-				.andExpect(content().string(equalTo("{\"ROOT\":{\"configuredLevel\":"
-						+ "null,\"effectiveLevel\":\"DEBUG\"}}")));
+				.andExpect(content().json(expected));
 	}
 
 	@Test

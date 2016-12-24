@@ -78,6 +78,7 @@ public class MockBeanWithAsyncInterfaceMethodIntegrationTests {
 		public MyService myService(Transformer transformer) {
 			return new MyService(transformer);
 		}
+
 	}
 
 }

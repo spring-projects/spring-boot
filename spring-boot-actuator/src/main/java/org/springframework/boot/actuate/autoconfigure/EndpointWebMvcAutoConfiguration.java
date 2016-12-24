@@ -266,6 +266,7 @@ public class EndpointWebMvcAutoConfiguration
 	@Conditional(OnManagementMvcCondition.class)
 	@Import(ManagementContextConfigurationsImportSelector.class)
 	protected static class EndpointWebMvcConfiguration {
+
 	}
 
 	/**

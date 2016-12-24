@@ -24,13 +24,18 @@ import javax.management.MBeanServer;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration.IntegrationComponentScanAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.integration.annotation.IntegrationComponentScan;
+import org.springframework.integration.annotation.MessagingGateway;
+import org.springframework.integration.gateway.RequestReplyExchanger;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
+import org.springframework.integration.support.management.IntegrationManagementConfigurer;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
@@ -60,24 +65,35 @@ public class IntegrationAutoConfigurationTests {
 	@Test
 	public void integrationIsAvailable() {
 		load();
-		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
+		assertThat(this.context.getBean(TestGateway.class)).isNotNull();
+		assertThat(this.context.getBean(IntegrationComponentScanAutoConfiguration.class))
+				.isNotNull();
+	}
+
+	@Test
+	public void explicitIntegrationComponentScan() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(IntegrationComponentScanConfiguration.class,
+				JmxAutoConfiguration.class, IntegrationAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(TestGateway.class)).isNotNull();
+		assertThat(this.context
+				.getBeansOfType(IntegrationComponentScanAutoConfiguration.class))
+						.isEmpty();
 	}
 
 	@Test
 	public void parentContext() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(JmxAutoConfiguration.class,
-				IntegrationAutoConfiguration.class);
-		this.context.refresh();
+		load();
 		AnnotationConfigApplicationContext parent = this.context;
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setParent(parent);
 		this.context.register(JmxAutoConfiguration.class,
 				IntegrationAutoConfiguration.class);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"SPRING_JMX_DEFAULT_DOMAIN=org.foo");
 		this.context.refresh();
 		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
-		((ConfigurableApplicationContext) this.context.getParent()).close();
-		this.context.close();
 	}
 
 	@Test
@@ -86,12 +102,17 @@ public class IntegrationAutoConfigurationTests {
 		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
 		assertDomains(mBeanServer, true, "org.springframework.integration",
 				"org.springframework.integration.monitor");
+		Object bean = this.context
+				.getBean(IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME);
+		assertThat(bean).isNotNull();
 	}
 
 	@Test
 	public void disableJmxIntegration() {
 		load("spring.jmx.enabled=false");
 		assertThat(this.context.getBeansOfType(MBeanServer.class)).hasSize(0);
+		assertThat(this.context.getBeansOfType(IntegrationManagementConfigurer.class))
+				.isEmpty();
 	}
 
 	@Test
@@ -142,6 +163,17 @@ public class IntegrationAutoConfigurationTests {
 		public MBeanExporter myMBeanExporter() {
 			return mock(MBeanExporter.class);
 		}
+
+	}
+
+	@Configuration
+	@IntegrationComponentScan
+	static class IntegrationComponentScanConfiguration {
+
+	}
+
+	@MessagingGateway
+	public interface TestGateway extends RequestReplyExchanger {
 
 	}
 

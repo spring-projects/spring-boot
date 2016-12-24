@@ -65,7 +65,8 @@ public class ExplodedArchive implements Archive {
 	 * Create a new {@link ExplodedArchive} instance.
 	 * @param root the root folder
 	 * @param recursive if recursive searching should be used to locate the manifest.
-	 * Defaults to {@code true}, folders with a large tree might want to set this to {code
+	 * Defaults to {@code true}, folders with a large tree might want to set this to
+	 * {@code
 	 * false}.
 	 */
 	public ExplodedArchive(File root, boolean recursive) {

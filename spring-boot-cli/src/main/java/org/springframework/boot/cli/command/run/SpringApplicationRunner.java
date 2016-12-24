@@ -92,7 +92,6 @@ public class SpringApplicationRunner {
 
 	/**
 	 * Compile and run the application.
-	 *
 	 * @throws Exception on error
 	 */
 	public void compileAndRun() throws Exception {
@@ -203,6 +202,7 @@ public class SpringApplicationRunner {
 				}
 			}
 		}
+
 	}
 
 	/**

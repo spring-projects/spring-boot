@@ -148,7 +148,9 @@ public class RunCommand extends OptionParsingCommand {
 				}
 				return Level.INFO;
 			}
+
 		}
+
 	}
 
 }

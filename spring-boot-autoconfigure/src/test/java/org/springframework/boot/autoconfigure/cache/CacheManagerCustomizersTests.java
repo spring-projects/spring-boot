@@ -35,7 +35,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
- *
  * @author Stephane Nicoll
  */
 public class CacheManagerCustomizersTests {
@@ -92,4 +91,5 @@ public class CacheManagerCustomizersTests {
 		}
 
 	}
+
 }

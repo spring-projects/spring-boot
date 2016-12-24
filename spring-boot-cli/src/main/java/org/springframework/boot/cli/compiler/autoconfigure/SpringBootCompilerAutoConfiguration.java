@@ -102,4 +102,5 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 		}
 		return false;
 	}
+
 }

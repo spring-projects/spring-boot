@@ -51,6 +51,7 @@ class CassandraRepositoriesAutoConfigureRegistrar
 
 	@EnableCassandraRepositories
 	private static class EnableCassandraRepositoriesConfiguration {
+
 	}
 
 }

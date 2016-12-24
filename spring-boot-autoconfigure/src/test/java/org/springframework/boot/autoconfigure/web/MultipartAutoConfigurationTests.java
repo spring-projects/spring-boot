@@ -223,10 +223,12 @@ public class MultipartAutoConfigurationTests {
 
 	@Configuration
 	public static class ContainerWithNothing {
+
 	}
 
 	@Configuration
 	public static class ContainerWithNoMultipartJetty {
+
 		@Bean
 		JettyEmbeddedServletContainerFactory containerFactory() {
 			return new JettyEmbeddedServletContainerFactory();
@@ -236,10 +238,12 @@ public class MultipartAutoConfigurationTests {
 		WebController controller() {
 			return new WebController();
 		}
+
 	}
 
 	@Configuration
 	public static class ContainerWithNoMultipartUndertow {
+
 		@Bean
 		UndertowEmbeddedServletContainerFactory containerFactory() {
 			return new UndertowEmbeddedServletContainerFactory();
@@ -249,6 +253,7 @@ public class MultipartAutoConfigurationTests {
 		WebController controller() {
 			return new WebController();
 		}
+
 	}
 
 	@Configuration

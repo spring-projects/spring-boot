@@ -228,6 +228,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 			// will try and register a ContextLoaderListener which we don't need
 			servletContext.setInitParameter("contextConfigLocation", "<NONE>");
 		}
+
 	}
 
 	@ConditionalOnClass(JacksonFeature.class)

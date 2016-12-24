@@ -45,7 +45,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	/**
 	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
 	 * authentication for management endpoints. If you want to add your own authentication
-	 * for all or some of those endpoints the best thing to do is add your own
+	 * for all or some of those endpoints the best thing to do is to add your own
 	 * WebSecurityConfigurerAdapter with lower order, for instance by using
 	 * {@code ACCESS_OVERRIDE_ORDER}.
 	 */
@@ -168,7 +168,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		/**
 		 * Comma-separated list of roles that can access the management endpoint.
 		 */
-		private List<String> roles = Arrays.asList("ADMIN");
+		private List<String> roles = Arrays.asList("ACTUATOR");
 
 		/**
 		 * Session creating policy for security use (always, never, if_required,

@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -26,7 +27,9 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
@@ -106,9 +109,9 @@ public class DataSourceProperties
 	private String platform = "all";
 
 	/**
-	 * Schema (DDL) script resource reference.
+	 * Schema (DDL) script resource references.
 	 */
-	private String schema;
+	private List<String> schema;
 
 	/**
 	 * User of the database to execute DDL scripts (if different).
@@ -121,9 +124,9 @@ public class DataSourceProperties
 	private String schemaPassword;
 
 	/**
-	 * Data (DML) script resource reference.
+	 * Data (DML) script resource references.
 	 */
-	private String data;
+	private List<String> data;
 
 	/**
 	 * User of the database to execute DML scripts.
@@ -155,6 +158,9 @@ public class DataSourceProperties
 	private Xa xa = new Xa();
 
 	private String uniqueName;
+
+	@NestedConfigurationProperty
+	private final TransactionProperties transaction = new TransactionProperties();
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
@@ -388,11 +394,11 @@ public class DataSourceProperties
 		this.platform = platform;
 	}
 
-	public String getSchema() {
+	public List<String> getSchema() {
 		return this.schema;
 	}
 
-	public void setSchema(String schema) {
+	public void setSchema(List<String> schema) {
 		this.schema = schema;
 	}
 
@@ -412,12 +418,12 @@ public class DataSourceProperties
 		this.schemaPassword = schemaPassword;
 	}
 
-	public String getData() {
+	public List<String> getData() {
 		return this.data;
 	}
 
-	public void setData(String script) {
-		this.data = script;
+	public void setData(List<String> data) {
+		this.data = data;
 	}
 
 	public String getDataUsername() {
@@ -470,6 +476,10 @@ public class DataSourceProperties
 
 	public void setXa(Xa xa) {
 		this.xa = xa;
+	}
+
+	public TransactionProperties getTransaction() {
+		return this.transaction;
 	}
 
 	/**

@@ -66,4 +66,5 @@ public class City implements Serializable {
 	public String toString() {
 		return getName() + "," + getState() + "," + getCountry();
 	}
+
 }

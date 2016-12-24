@@ -51,6 +51,7 @@ public class SimpleMethodConfig {
 		public void setFlag(boolean flag) {
 			this.flag = flag;
 		}
+
 	}
 
 }

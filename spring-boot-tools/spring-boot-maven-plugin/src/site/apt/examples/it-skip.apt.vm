@@ -1,0 +1,63 @@
+ -----
+ Skip integration tests
+ -----
+ Stephane Nicoll
+ -----
+ 2016-11-25
+ -----
+
+  The <<<skip>>> property allows to skip the execution of the Spring Boot maven plugin
+  altogether. This example shows how you can skip integration tests with a command-line
+  property and still make sure that the <<repackage>> goal runs:
+
+---
+<project>
+  <properties>
+    <skip.it>false</skip.it>
+    ...
+  </properties>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+        <executions>
+          <execution>
+            <id>pre-integration-test</id>
+            <goals>
+              <goal>start</goal>
+            </goals>
+            <configuration>
+              <skip>${skip.it}</skip>
+            </configuration>
+          </execution>
+          <execution>
+            <id>post-integration-test</id>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+            <configuration>
+              <skip>${skip.it}</skip>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <skip>${skip.it}</skip>
+        </configuration>
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+---
+
+  By default, the integration tests will run but this setup allows you to easily disable
+  them on the command-line as follows: <<<mvn verify -Dskip.it=true>>>.

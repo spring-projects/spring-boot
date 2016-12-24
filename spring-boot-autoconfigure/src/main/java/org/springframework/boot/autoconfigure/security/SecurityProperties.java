@@ -48,7 +48,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 	/**
 	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
 	 * authentication for application endpoints. If you want to add your own
-	 * authentication for all or some of those endpoints the best thing to do is add your
+	 * authentication for all or some of those endpoints the best thing to do is to add your
 	 * own WebSecurityConfigurerAdapter with lower order.
 	 */
 	public static final int BASIC_AUTH_ORDER = Ordered.LOWEST_PRECEDENCE - 5;
@@ -171,7 +171,23 @@ public class SecurityProperties implements SecurityPrerequisite {
 	public static class Headers {
 
 		public enum HSTS {
+
 			NONE, DOMAIN, ALL
+
+		}
+
+		public enum ContentSecurityPolicyMode {
+
+			/**
+			 * Use the 'Content-Security-Policy' header.
+			 */
+			DEFAULT,
+
+			/**
+			 * Use the 'Content-Security-Policy-Report-Only' header.
+			 */
+			REPORT_ONLY
+
 		}
 
 		/**
@@ -193,6 +209,16 @@ public class SecurityProperties implements SecurityPrerequisite {
 		 * Enable "X-Content-Type-Options" header.
 		 */
 		private boolean contentType = true;
+
+		/**
+		 * Value for content security policy header.
+		 */
+		private String contentSecurityPolicy;
+
+		/**
+		 * Content security policy mode.
+		 */
+		private ContentSecurityPolicyMode contentSecurityPolicyMode = ContentSecurityPolicyMode.DEFAULT;
 
 		/**
 		 * HTTP Strict Transport Security (HSTS) mode (none, domain, all).
@@ -229,6 +255,23 @@ public class SecurityProperties implements SecurityPrerequisite {
 
 		public void setContentType(boolean contentType) {
 			this.contentType = contentType;
+		}
+
+		public String getContentSecurityPolicy() {
+			return this.contentSecurityPolicy;
+		}
+
+		public void setContentSecurityPolicy(String contentSecurityPolicy) {
+			this.contentSecurityPolicy = contentSecurityPolicy;
+		}
+
+		public ContentSecurityPolicyMode getContentSecurityPolicyMode() {
+			return this.contentSecurityPolicyMode;
+		}
+
+		public void setContentSecurityPolicyMode(
+				ContentSecurityPolicyMode contentSecurityPolicyMode) {
+			this.contentSecurityPolicyMode = contentSecurityPolicyMode;
 		}
 
 		public HSTS getHsts() {

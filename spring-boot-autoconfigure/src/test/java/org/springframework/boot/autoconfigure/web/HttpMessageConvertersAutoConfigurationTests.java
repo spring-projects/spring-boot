@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -220,10 +219,6 @@ public class HttpMessageConvertersAutoConfigurationTests {
 				RepositoryRestMvcConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
-
-		Map<String, MappingJackson2HttpMessageConverter> beansOfType = this.context
-				.getBeansOfType(MappingJackson2HttpMessageConverter.class);
-		System.out.println(beansOfType);
 		BeanDefinition beanDefinition = this.context
 				.getBeanDefinition("mappingJackson2HttpMessageConverter");
 		assertThat(beanDefinition.getFactoryBeanName()).isEqualTo(
@@ -245,10 +240,12 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	@Configuration
 	protected static class JacksonObjectMapperConfig {
+
 		@Bean
 		public ObjectMapper objectMapper() {
 			return new ObjectMapper();
 		}
+
 	}
 
 	@Configuration
@@ -263,6 +260,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 		public Jackson2ObjectMapperBuilder builder() {
 			return new Jackson2ObjectMapperBuilder();
 		}
+
 	}
 
 	@Configuration
@@ -275,6 +273,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 			converter.setObjectMapper(objectMapper);
 			return converter;
 		}
+
 	}
 
 	@Configuration
@@ -286,6 +285,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 			converter.setGson(gson);
 			return converter;
 		}
+
 	}
 
 	@Configuration
@@ -295,6 +295,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 		public StringHttpMessageConverter customStringMessageConverter() {
 			return new StringHttpMessageConverter();
 		}
+
 	}
 
 	@Configuration
@@ -305,6 +306,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 			return new TypeConstrainedMappingJackson2HttpMessageConverter(
 					ResourceSupport.class);
 		}
+
 	}
 
 }

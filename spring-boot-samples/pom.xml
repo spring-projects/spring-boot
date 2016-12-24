@@ -32,10 +32,10 @@
 		<module>spring-boot-sample-atmosphere</module>
 		<module>spring-boot-sample-batch</module>
 		<module>spring-boot-sample-cache</module>
+		<module>spring-boot-sample-custom-layout</module>
 		<module>spring-boot-sample-data-cassandra</module>
 		<module>spring-boot-sample-data-couchbase</module>
 		<module>spring-boot-sample-data-elasticsearch</module>
-		<module>spring-boot-sample-data-gemfire</module>
 		<module>spring-boot-sample-data-jpa</module>
 		<module>spring-boot-sample-data-mongodb</module>
 		<module>spring-boot-sample-data-neo4j</module>
@@ -45,8 +45,6 @@
 		<module>spring-boot-sample-devtools</module>
 		<module>spring-boot-sample-flyway</module>
 		<module>spring-boot-sample-hateoas</module>
-		<module>spring-boot-sample-hibernate4</module>
-		<module>spring-boot-sample-hibernate52</module>
 		<module>spring-boot-sample-hypermedia</module>
 		<module>spring-boot-sample-hypermedia-gson</module>
 		<module>spring-boot-sample-hypermedia-jpa</module>

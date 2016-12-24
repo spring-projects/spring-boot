@@ -387,8 +387,6 @@ With Gradle, the equivalent configuration would be:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	apply plugin: 'org.springframework.boot'
-
 	springBoot {
 		executable = true
 	}
@@ -600,6 +598,12 @@ The following property substitutions are supported with the default script:
 |The `Provides` section of "`INIT INFO`". Defaults to `spring-boot-application` for Gradle
  and to `${project.artifactId}` for Maven.
 
+|`initInfoRequiredStart`
+|The `Required-Start` section of "`INIT INFO`". Defaults to `$remote_fs $syslog $network`.
+
+|`initInfoRequiredStop`
+|The `Required-Stop` section of "`INIT INFO`". Defaults to `$remote_fs $syslog $network`.
+
 |`initInfoShortDescription`
 |The `Short-Description` section of "`INIT INFO`". Defaults to `Spring Boot Application`
 for Gradle and to `${project.name}` for Maven.
@@ -617,12 +621,23 @@ for Gradle and to `${project.name}` for Maven.
 |`logFolder`
 |The default value for `LOG_FOLDER`. Only valid for an `init.d` service.
 
+|`logFilename`
+|The default value for `LOG_FILENAME`. Only valid for an `init.d` service.
+
 |`pidFolder`
 |The default value for `PID_FOLDER`. Only valid for an `init.d` service.
+
+|`pidFilename`
+|The default value for the name of the pid file in `PID_FOLDER`. Only valid for an
+ `init.d` service.
 
 |`useStartStopDaemon`
 |If the `start-stop-daemon` command, when it's available, should be used to control the
  process. Defaults to `true`.
+
+|`stopWaitTime`
+|The default value for `STOP_WAIT_TIME`. Only valid for an `init.d` service.
+ Defaults to 60 seconds.
 |===
 
 
@@ -683,6 +698,10 @@ The following environment properties are supported with the default script:
 |`DEBUG`
 |if not empty will set the `-x` flag on the shell process, making it easy to see the logic
  in the script.
+
+|`STOP_WAIT_TIME`
+|The time in seconds to wait when stopping the application before forcing a shutdown
+ (`60` by default).
 |===
 
 NOTE: The `PID_FOLDER`, `LOG_FOLDER` and `LOG_FILENAME` variables are only valid for an

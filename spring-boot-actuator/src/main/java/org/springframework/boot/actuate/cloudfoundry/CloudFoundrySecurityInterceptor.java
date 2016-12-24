@@ -38,7 +38,8 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  */
 class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 
-	protected final Log logger = LogFactory.getLog(getClass());
+	private static final Log logger = LogFactory
+			.getLog(CloudFoundrySecurityInterceptor.class);
 
 	private final TokenValidator tokenValidator;
 
@@ -74,7 +75,7 @@ class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 			check(request, mvcEndpoint);
 		}
 		catch (CloudFoundryAuthorizationException ex) {
-			this.logger.error(ex);
+			logger.error(ex);
 			response.setContentType(MediaType.APPLICATION_JSON.toString());
 			response.getWriter()
 					.write("{\"security_error\":\"" + ex.getMessage() + "\"}");
