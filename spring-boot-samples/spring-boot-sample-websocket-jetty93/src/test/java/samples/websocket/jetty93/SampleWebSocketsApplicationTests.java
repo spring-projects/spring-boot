@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package samples.websocket.jetty;
+package samples.websocket.jetty93;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -22,13 +22,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.jetty.websocket.jsr356.ClientContainer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import samples.websocket.jetty.client.FixedClientContainer;
-import samples.websocket.jetty.client.GreetingService;
-import samples.websocket.jetty.client.SimpleClientWebSocketHandler;
-import samples.websocket.jetty.client.SimpleGreetingService;
+import samples.websocket.jetty93.SampleJetty93WebSocketsApplication;
+import samples.websocket.jetty93.client.GreetingService;
+import samples.websocket.jetty93.client.SimpleClientWebSocketHandler;
+import samples.websocket.jetty93.client.SimpleGreetingService;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -48,7 +47,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = SampleJettyWebSocketsApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = SampleJetty93WebSocketsApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 public class SampleWebSocketsApplicationTests {
 
@@ -110,7 +109,7 @@ public class SampleWebSocketsApplicationTests {
 		}
 
 		@Bean
-		public WebSocketConnectionManager wsConnectionManager() throws Exception {
+		public WebSocketConnectionManager wsConnectionManager() {
 
 			WebSocketConnectionManager manager = new WebSocketConnectionManager(client(),
 					handler(), this.webSocketUri);
@@ -120,10 +119,8 @@ public class SampleWebSocketsApplicationTests {
 		}
 
 		@Bean
-		public StandardWebSocketClient client() throws Exception {
-			ClientContainer clientContainer = new FixedClientContainer();
-			clientContainer.start();
-			return new StandardWebSocketClient(clientContainer);
+		public StandardWebSocketClient client() {
+			return new StandardWebSocketClient();
 		}
 
 		@Bean
