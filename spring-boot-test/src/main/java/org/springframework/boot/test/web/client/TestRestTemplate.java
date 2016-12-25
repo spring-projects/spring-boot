@@ -575,10 +575,10 @@ public class TestRestTemplate {
 	 * @param <T> the type of the return value
 	 * @return the converted object
 	 * @throws RestClientException on client-side HTTP error
+	 * @since 1.4.4
 	 * @see HttpEntity
-	 * @since 1.4.3
 	 */
-	<T> T patchForObject(String url, Object request, Class<T> responseType,
+	public <T> T patchForObject(String url, Object request, Class<T> responseType,
 			Object... uriVariables) throws RestClientException {
 		return this.restTemplate.patchForObject(url, request, responseType, uriVariables);
 	}
@@ -598,10 +598,10 @@ public class TestRestTemplate {
 	 * @param <T> the type of the return value
 	 * @return the converted object
 	 * @throws RestClientException on client-side HTTP error
+	 * @since 1.4.4
 	 * @see HttpEntity
-	 * @since 1.4.3
 	 */
-	<T> T patchForObject(String url, Object request, Class<T> responseType,
+	public <T> T patchForObject(String url, Object request, Class<T> responseType,
 			Map<String, ?> uriVariables) throws RestClientException {
 		return this.restTemplate.patchForObject(url, request, responseType, uriVariables);
 	}
@@ -618,10 +618,10 @@ public class TestRestTemplate {
 	 * @param <T> the type of the return value
 	 * @return the converted object
 	 * @throws RestClientException on client-side HTTP error
+	 * @since 1.4.4
 	 * @see HttpEntity
-	 * @since 1.4.3
 	 */
-	<T> T patchForObject(URI url, Object request, Class<T> responseType)
+	public <T> T patchForObject(URI url, Object request, Class<T> responseType)
 			throws RestClientException {
 		return this.restTemplate.patchForObject(url, request, responseType);
 
