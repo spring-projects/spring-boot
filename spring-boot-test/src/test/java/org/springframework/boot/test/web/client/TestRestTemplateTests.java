@@ -17,6 +17,7 @@
 package org.springframework.boot.test.web.client;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.util.List;
 
@@ -47,6 +48,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class TestRestTemplateTests {
 
@@ -93,6 +95,9 @@ public class TestRestTemplateTests {
 					throws IllegalArgumentException, IllegalAccessException {
 				Method equivalent = ReflectionUtils.findMethod(TestRestTemplate.class,
 						method.getName(), method.getParameterTypes());
+				assertThat(equivalent).as("Method %s not found", method).isNotNull();
+				assertThat(Modifier.isPublic(equivalent.getModifiers()))
+						.as("Method %s should have been public", equivalent).isTrue();
 				try {
 					equivalent.invoke(restTemplate,
 							mockArguments(method.getParameterTypes()));
@@ -127,6 +132,12 @@ public class TestRestTemplateTests {
 					return Object.class;
 				}
 				return mock(type);
+			}
+
+		}, new ReflectionUtils.MethodFilter() {
+			@Override
+			public boolean matches(Method method) {
+				return Modifier.isPublic(method.getModifiers());
 			}
 
 		});
