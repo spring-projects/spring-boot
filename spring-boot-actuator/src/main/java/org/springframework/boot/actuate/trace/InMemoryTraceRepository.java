@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import java.util.Map;
  * @author Olivier Bourgain
  */
 public class InMemoryTraceRepository implements TraceRepository {
+
+	private ThreadLocal<Trace> currentTraceHolder = new ThreadLocal<Trace>();
 
 	private int capacity = 100;
 
@@ -65,8 +67,8 @@ public class InMemoryTraceRepository implements TraceRepository {
 	}
 
 	@Override
-	public void add(Map<String, Object> map) {
-		Trace trace = new Trace(new Date(), map);
+	public void add(String id, Map<String, Object> map) {
+		Trace trace = new Trace(id, new Date(), map);
 		synchronized (this.traces) {
 			while (this.traces.size() >= this.capacity) {
 				this.traces.remove(this.reverse ? this.capacity - 1 : 0);
@@ -78,6 +80,32 @@ public class InMemoryTraceRepository implements TraceRepository {
 				this.traces.add(trace);
 			}
 		}
+		Trace currentTrace = currentTraceHolder.get();
+		if (currentTrace != null) {
+			throw new IllegalStateException("There is another trace associated with current thread");
+		}
+		currentTraceHolder.set(trace);
 	}
 
+	@Override
+	public Trace current() {
+		Trace currentTrace = currentTraceHolder.get();
+		if (currentTrace == null) {
+			throw new IllegalStateException("There is no trace associated with current thread");
+		}
+		return currentTrace;
+	}
+
+	@Override
+	public void finish(String id) {
+		Trace currentTrace = currentTraceHolder.get();
+		if (currentTrace == null) {
+			throw new IllegalStateException("There is no trace associated with current thread");
+		}
+		if (!currentTrace.getId().equals(id)) {
+			throw new IllegalStateException("Current trace identifier is different from current trace");
+		}
+		currentTrace.setEnded(new Date());
+		currentTraceHolder.remove();
+	}
 }

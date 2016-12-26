@@ -23,6 +23,7 @@ import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -99,7 +100,9 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 			HttpServletResponse response, FilterChain filterChain)
 					throws ServletException, IOException {
 		Map<String, Object> trace = getTrace(request);
-		logTrace(request, trace);
+		String traceId = UUID.randomUUID().toString();
+		logTrace(request, traceId, trace);
+		this.repository.add(traceId, trace);
 		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
 		try {
 			filterChain.doFilter(request, response);
@@ -108,7 +111,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		finally {
 			enhanceTrace(trace, status == response.getStatus() ? response
 					: new CustomStatusResponseWrapper(response, status));
-			this.repository.add(trace);
+			this.repository.finish(traceId);
 		}
 	}
 
@@ -199,10 +202,10 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		return headers;
 	}
 
-	private void logTrace(HttpServletRequest request, Map<String, Object> trace) {
+	private void logTrace(HttpServletRequest request, String traceId, Map<String, Object> trace) {
 		if (logger.isTraceEnabled()) {
 			logger.trace("Processing request " + request.getMethod() + " "
-					+ request.getRequestURI());
+					+ request.getRequestURI() + " id " + traceId);
 			if (this.dumpRequests) {
 				logger.trace("Headers: " + trace.get("headers"));
 			}

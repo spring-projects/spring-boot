@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,24 @@ public interface TraceRepository {
 	/**
 	 * Add a new {@link Trace} object at the current time.
 	 * @param traceInfo trace information
+	 * @throws IllegalStateException if trace associated with current thread
+	 * was not finished
 	 */
-	void add(Map<String, Object> traceInfo);
+	void add(String id, Map<String, Object> traceInfo);
 
+	/**
+	 * Returns started {@link Trace} associated with current thread.
+	 * @return trace
+	 * @throws IllegalStateException if any trace was not associated with current thread
+	 */
+	Trace current();
+
+	/**
+	 * Marks a {@link Trace} with trace identifier as finished and removes it
+	 * from the {@link #current()} holder.
+	 * @param id trace identifier
+	 * @throws IllegalStateException if any trace was not associated with current thread
+	 * or its identifier not match to the given
+	 */
+	void finish(String id);
 }

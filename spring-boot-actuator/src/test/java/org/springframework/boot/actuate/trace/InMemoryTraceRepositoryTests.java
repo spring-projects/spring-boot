@@ -35,26 +35,30 @@ public class InMemoryTraceRepositoryTests {
 	@Test
 	public void capacityLimited() {
 		this.repository.setCapacity(2);
-		this.repository.add(Collections.<String, Object>singletonMap("foo", "bar"));
-		this.repository.add(Collections.<String, Object>singletonMap("bar", "foo"));
-		this.repository.add(Collections.<String, Object>singletonMap("bar", "bar"));
+		this.repository.add("trace-1", Collections.<String, Object>singletonMap("foo", "bar"));
+		this.repository.add("trace-2", Collections.<String, Object>singletonMap("bar", "foo"));
+		this.repository.add("trace-3", Collections.<String, Object>singletonMap("bar", "bar"));
 		List<Trace> traces = this.repository.findAll();
 		assertThat(traces).hasSize(2);
 		assertThat(traces.get(0).getInfo().get("bar")).isEqualTo("bar");
+		assertThat(traces.get(0).getId()).isEqualTo("trace-3");
 		assertThat(traces.get(1).getInfo().get("bar")).isEqualTo("foo");
+		assertThat(traces.get(1).getId()).isEqualTo("trace-2");
 	}
 
 	@Test
 	public void reverseFalse() {
 		this.repository.setReverse(false);
 		this.repository.setCapacity(2);
-		this.repository.add(Collections.<String, Object>singletonMap("foo", "bar"));
-		this.repository.add(Collections.<String, Object>singletonMap("bar", "foo"));
-		this.repository.add(Collections.<String, Object>singletonMap("bar", "bar"));
+		this.repository.add("trace-1", Collections.<String, Object>singletonMap("foo", "bar"));
+		this.repository.add("trace-2", Collections.<String, Object>singletonMap("bar", "foo"));
+		this.repository.add("trace-3", Collections.<String, Object>singletonMap("bar", "bar"));
 		List<Trace> traces = this.repository.findAll();
 		assertThat(traces).hasSize(2);
 		assertThat(traces.get(1).getInfo().get("bar")).isEqualTo("bar");
+		assertThat(traces.get(1).getId()).isEqualTo("trace-3");
 		assertThat(traces.get(0).getInfo().get("bar")).isEqualTo("foo");
+		assertThat(traces.get(0).getId()).isEqualTo("trace-2");
 	}
 
 }
