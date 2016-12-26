@@ -3,7 +3,7 @@
 [[common-application-properties]]
 == Common application properties
 Various properties can be specified inside your `application.properties`/`application.yml`
-file or as command line switches. This section provides a list common Spring Boot
+file or as command line switches. This section provides a list of common Spring Boot
 properties and references to the underlying classes that consume them.
 
 NOTE: Property contributions can come from additional jar files on your classpath so
