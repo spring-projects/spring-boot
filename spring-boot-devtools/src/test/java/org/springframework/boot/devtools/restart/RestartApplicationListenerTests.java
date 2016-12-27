@@ -16,8 +16,6 @@
 
 package org.springframework.boot.devtools.restart;
 
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,8 +64,6 @@ public class RestartApplicationListenerTests {
 		assertThat(ReflectionTestUtils.getField(Restarter.getInstance(), "args"))
 				.isEqualTo(ARGS);
 		assertThat(Restarter.getInstance().isFinished()).isTrue();
-		assertThat((List<?>) ReflectionTestUtils.getField(Restarter.getInstance(),
-				"rootContexts")).isNotEmpty();
 	}
 
 	@Test
@@ -76,8 +72,6 @@ public class RestartApplicationListenerTests {
 		assertThat(ReflectionTestUtils.getField(Restarter.getInstance(), "args"))
 				.isEqualTo(ARGS);
 		assertThat(Restarter.getInstance().isFinished()).isTrue();
-		assertThat((List<?>) ReflectionTestUtils.getField(Restarter.getInstance(),
-				"rootContexts")).isEmpty();
 	}
 
 	@Test
