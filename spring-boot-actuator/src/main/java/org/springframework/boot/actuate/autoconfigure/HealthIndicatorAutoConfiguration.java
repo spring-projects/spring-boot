@@ -193,8 +193,8 @@ public class HealthIndicatorAutoConfiguration {
 		}
 
 		private static Map<String, DataSource> filterDataSources(
-				Map<String,DataSource> candidates) {
-			Map<String,DataSource> dataSources = new LinkedHashMap<String, DataSource>();
+				Map<String, DataSource> candidates) {
+			Map<String, DataSource> dataSources = new LinkedHashMap<String, DataSource>();
 			for (Map.Entry<String, DataSource> entry : candidates.entrySet()) {
 				if (!(entry.getValue() instanceof AbstractRoutingDataSource)) {
 					dataSources.put(entry.getKey(), entry.getValue());
