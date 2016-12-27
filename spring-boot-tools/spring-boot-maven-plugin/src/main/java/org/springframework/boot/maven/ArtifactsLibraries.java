@@ -110,7 +110,7 @@ public class ArtifactsLibraries implements Libraries {
 
 	private String getFileName(Artifact artifact) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(artifact.getArtifactId()).append("-").append(artifact.getVersion());
+		sb.append(artifact.getArtifactId()).append("-").append(artifact.getBaseVersion());
 		String classifier = artifact.getClassifier();
 		if (classifier != null) {
 			sb.append("-").append(classifier);
