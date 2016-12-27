@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch.jest;
 
+import java.util.List;
+
 import com.google.gson.Gson;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
@@ -50,10 +52,14 @@ public class JestAutoConfiguration {
 
 	private final ObjectProvider<Gson> gsonProvider;
 
+	private final List<HttpClientConfigBuilderCustomizer> builderCustomizers;
+
 	public JestAutoConfiguration(JestProperties properties,
-			ObjectProvider<Gson> gsonProvider) {
+			ObjectProvider<Gson> gsonProvider,
+			ObjectProvider<List<HttpClientConfigBuilderCustomizer>> builderCustomizersProvider) {
 		this.properties = properties;
 		this.gsonProvider = gsonProvider;
+		this.builderCustomizers = builderCustomizersProvider.getIfAvailable();
 	}
 
 	@Bean(destroyMethod = "shutdownClient")
@@ -81,8 +87,19 @@ public class JestAutoConfiguration {
 		if (gson != null) {
 			builder.gson(gson);
 		}
-		return builder.connTimeout(this.properties.getConnectionTimeout())
-				.readTimeout(this.properties.getReadTimeout()).build();
+		builder.multiThreaded(this.properties.isMultiThreaded());
+		builder.connTimeout(this.properties.getConnectionTimeout())
+				.readTimeout(this.properties.getReadTimeout());
+		customize(builder);
+		return builder.build();
+	}
+
+	private void customize(HttpClientConfig.Builder builder) {
+		if (this.builderCustomizers != null) {
+			for (HttpClientConfigBuilderCustomizer customizer : this.builderCustomizers) {
+				customizer.customize(builder);
+			}
+		}
 	}
 
 }
