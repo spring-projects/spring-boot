@@ -29,13 +29,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.MultiDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.MultiDataSourceUsingPrimaryConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -58,6 +60,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Kazuki Shimizu
  */
 public abstract class AbstractJpaAutoConfigurationTests {
 
@@ -77,10 +80,40 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	public void testNoDataSource() throws Exception {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				getAutoConfigureClass());
-		this.expected.expect(BeanCreationException.class);
-		this.expected.expectMessage("No qualifying bean");
-		this.expected.expectMessage("DataSource");
 		this.context.refresh();
+		assertThat(this.context.getBeansOfType(JpaProperties.class).size()).isEqualTo(1);
+		assertThat(this.context.getBeansOfType(JpaVendorAdapter.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(EntityManagerFactoryBuilder.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(LocalContainerEntityManagerFactoryBean.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(PlatformTransactionManager.class)).isEmpty();
+	}
+
+	@Test
+	public void testMultiDataSource() throws Exception {
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				MultiDataSourceConfiguration.class,
+				getAutoConfigureClass());
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(DataSource.class).size()).isEqualTo(2);
+		assertThat(this.context.getBeansOfType(JpaProperties.class).size()).isEqualTo(1);
+		assertThat(this.context.getBeansOfType(JpaVendorAdapter.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(EntityManagerFactoryBuilder.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(LocalContainerEntityManagerFactoryBean.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(PlatformTransactionManager.class)).isEmpty();
+	}
+
+	@Test
+	public void testMultiDataSourceUsingPrimary() throws Exception {
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				MultiDataSourceUsingPrimaryConfiguration.class,
+				getAutoConfigureClass());
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(DataSource.class).size()).isEqualTo(2);
+		assertThat(this.context.getBean(JpaProperties.class)).isNotNull();
+		assertThat(this.context.getBean(JpaVendorAdapter.class)).isNotNull();
+		assertThat(this.context.getBean(EntityManagerFactoryBuilder.class)).isNotNull();
+		assertThat(this.context.getBean(LocalContainerEntityManagerFactoryBean.class)).isNotNull();
+		assertThat(this.context.getBean(JpaTransactionManager.class)).isNotNull();
 	}
 
 	@Test

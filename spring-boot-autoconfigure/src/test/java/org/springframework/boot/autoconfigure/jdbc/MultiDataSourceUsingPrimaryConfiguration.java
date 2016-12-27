@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Primary;
  * @author Kazuki Shimizu
  */
 @Configuration
-class MultiDataSourceUsingPrimaryConfiguration {
+public class MultiDataSourceUsingPrimaryConfiguration {
 
 	@Bean
 	@Primary
