@@ -1057,7 +1057,7 @@ content into your application; rather pick only the properties that you need.
 	management.context-path= # Management endpoint context-path. For instance `/actuator`
 	management.port= # Management endpoint HTTP port. Uses the same port as the application by default. Configure a different port to use management-specific SSL.
 	management.security.enabled=true # Enable security.
-	management.security.roles=ADMIN # Comma-separated list of roles that can access the management endpoint.
+	management.security.roles=ACTUATOR # Comma-separated list of roles that can access the management endpoint.
 	management.security.sessions=stateless # Session creating policy to use (always, never, if_required, stateless).
 	management.ssl.ciphers= # Supported SSL ciphers. Requires a custom management.port.
 	management.ssl.client-auth= # Whether client authentication is wanted ("want") or needed ("need"). Requires a trust store. Requires a custom management.port.
@@ -1107,7 +1107,7 @@ content into your application; rather pick only the properties that you need.
 	management.shell.auth.key.path= # Path to the authentication key. This should point to a valid ".pem" file.
 	management.shell.auth.simple.user.name=user # Login user.
 	management.shell.auth.simple.user.password= # Login password.
-	management.shell.auth.spring.roles=ADMIN # Comma-separated list of required roles to login to the CRaSH console.
+	management.shell.auth.spring.roles=ACTUATOR # Comma-separated list of required roles to login to the CRaSH console.
 	management.shell.command-path-patterns=classpath*:/commands/**,classpath*:/crash/commands/** # Patterns to use to look for commands.
 	management.shell.command-refresh-interval=-1 # Scan for changes and update the command if necessary (in seconds).
 	management.shell.config-path-patterns=classpath*:/crash/* # Patterns to use to look for configurations.
