@@ -76,8 +76,8 @@ public class PublicMetricsAutoConfiguration {
 	private final List<MetricReader> metricReaders;
 
 	public PublicMetricsAutoConfiguration(
-			@ExportMetricReader ObjectProvider<List<MetricReader>> metricReadersProvider) {
-		this.metricReaders = metricReadersProvider.getIfAvailable();
+			@ExportMetricReader ObjectProvider<List<MetricReader>> metricReaders) {
+		this.metricReaders = metricReaders.getIfAvailable();
 	}
 
 	@Bean

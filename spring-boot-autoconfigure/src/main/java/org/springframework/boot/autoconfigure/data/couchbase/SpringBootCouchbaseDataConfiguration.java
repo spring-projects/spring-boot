@@ -53,10 +53,10 @@ class SpringBootCouchbaseDataConfiguration extends AbstractCouchbaseDataConfigur
 
 	SpringBootCouchbaseDataConfiguration(ApplicationContext applicationContext,
 			CouchbaseDataProperties properties,
-			ObjectProvider<CouchbaseConfigurer> couchbaseConfigurerProvider) {
+			ObjectProvider<CouchbaseConfigurer> couchbaseConfigurer) {
 		this.applicationContext = applicationContext;
 		this.properties = properties;
-		this.couchbaseConfigurer = couchbaseConfigurerProvider.getIfAvailable();
+		this.couchbaseConfigurer = couchbaseConfigurer.getIfAvailable();
 	}
 
 	@Override

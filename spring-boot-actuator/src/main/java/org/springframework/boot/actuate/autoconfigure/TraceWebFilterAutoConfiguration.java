@@ -54,10 +54,10 @@ public class TraceWebFilterAutoConfiguration {
 
 	public TraceWebFilterAutoConfiguration(TraceRepository traceRepository,
 			TraceProperties traceProperties,
-			ObjectProvider<ErrorAttributes> errorAttributesProvider) {
+			ObjectProvider<ErrorAttributes> errorAttributes) {
 		this.traceRepository = traceRepository;
 		this.traceProperties = traceProperties;
-		this.errorAttributes = errorAttributesProvider.getIfAvailable();
+		this.errorAttributes = errorAttributes.getIfAvailable();
 	}
 
 	@Bean

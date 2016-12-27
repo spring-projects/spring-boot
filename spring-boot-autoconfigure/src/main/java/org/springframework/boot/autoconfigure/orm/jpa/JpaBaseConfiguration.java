@@ -74,10 +74,10 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	private ConfigurableListableBeanFactory beanFactory;
 
 	protected JpaBaseConfiguration(DataSource dataSource, JpaProperties properties,
-			ObjectProvider<JtaTransactionManager> jtaTransactionManagerProvider) {
+			ObjectProvider<JtaTransactionManager> jtaTransactionManager) {
 		this.dataSource = dataSource;
 		this.properties = properties;
-		this.jtaTransactionManager = jtaTransactionManagerProvider.getIfAvailable();
+		this.jtaTransactionManager = jtaTransactionManager.getIfAvailable();
 	}
 
 	@Bean
@@ -103,10 +103,10 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@ConditionalOnMissingBean
 	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(
 			JpaVendorAdapter jpaVendorAdapter,
-			ObjectProvider<PersistenceUnitManager> persistenceUnitManagerProvider) {
+			ObjectProvider<PersistenceUnitManager> persistenceUnitManager) {
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(
 				jpaVendorAdapter, this.properties.getProperties(),
-				persistenceUnitManagerProvider.getIfAvailable());
+				persistenceUnitManager.getIfAvailable());
 		builder.setCallback(getVendorCallback());
 		return builder;
 	}

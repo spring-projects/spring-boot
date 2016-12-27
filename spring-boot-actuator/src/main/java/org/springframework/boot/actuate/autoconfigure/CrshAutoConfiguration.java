@@ -180,8 +180,8 @@ public class CrshAutoConfiguration {
 		private final ManagementServerProperties management;
 
 		public AuthenticationManagerAdapterConfiguration(
-				ObjectProvider<ManagementServerProperties> managementProvider) {
-			this.management = managementProvider.getIfAvailable();
+				ObjectProvider<ManagementServerProperties> management) {
+			this.management = management.getIfAvailable();
 		}
 
 		@Bean

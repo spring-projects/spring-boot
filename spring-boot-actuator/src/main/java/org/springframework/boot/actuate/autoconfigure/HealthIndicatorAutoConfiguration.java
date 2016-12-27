@@ -186,10 +186,10 @@ public class HealthIndicatorAutoConfiguration {
 		private DataSourcePoolMetadataProvider poolMetadataProvider;
 
 		public DataSourcesHealthIndicatorConfiguration(
-				ObjectProvider<Map<String, DataSource>> dataSourcesProvider,
-				ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProvidersProvider) {
-			this.dataSources = filterDataSources(dataSourcesProvider.getIfAvailable());
-			this.metadataProviders = metadataProvidersProvider.getIfAvailable();
+				ObjectProvider<Map<String, DataSource>> dataSources,
+				ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders) {
+			this.dataSources = filterDataSources(dataSources.getIfAvailable());
+			this.metadataProviders = metadataProviders.getIfAvailable();
 		}
 
 		private Map<String, DataSource> filterDataSources(
@@ -341,8 +341,8 @@ public class HealthIndicatorAutoConfiguration {
 		private final Map<String, JavaMailSenderImpl> mailSenders;
 
 		public MailHealthIndicatorConfiguration(
-				ObjectProvider<Map<String, JavaMailSenderImpl>> mailSendersProvider) {
-			this.mailSenders = mailSendersProvider.getIfAvailable();
+				ObjectProvider<Map<String, JavaMailSenderImpl>> mailSenders) {
+			this.mailSenders = mailSenders.getIfAvailable();
 		}
 
 		@Bean
@@ -362,8 +362,8 @@ public class HealthIndicatorAutoConfiguration {
 		private final Map<String, ConnectionFactory> connectionFactories;
 
 		public JmsHealthIndicatorConfiguration(
-				ObjectProvider<Map<String, ConnectionFactory>> connectionFactoriesProvider) {
-			this.connectionFactories = connectionFactoriesProvider.getIfAvailable();
+				ObjectProvider<Map<String, ConnectionFactory>> connectionFactories) {
+			this.connectionFactories = connectionFactories.getIfAvailable();
 		}
 
 		@Bean

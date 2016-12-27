@@ -58,9 +58,9 @@ public class EndpointMBeanExportAutoConfiguration {
 	private final ObjectMapper objectMapper;
 
 	public EndpointMBeanExportAutoConfiguration(EndpointMBeanExportProperties properties,
-			ObjectProvider<ObjectMapper> objectMapperProvider) {
+			ObjectProvider<ObjectMapper> objectMapper) {
 		this.properties = properties;
-		this.objectMapper = objectMapperProvider.getIfAvailable();
+		this.objectMapper = objectMapper.getIfAvailable();
 	}
 
 	@Bean

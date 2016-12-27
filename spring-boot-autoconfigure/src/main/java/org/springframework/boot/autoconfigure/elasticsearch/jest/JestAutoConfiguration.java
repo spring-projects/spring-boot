@@ -54,12 +54,11 @@ public class JestAutoConfiguration {
 
 	private final List<HttpClientConfigBuilderCustomizer> builderCustomizers;
 
-	public JestAutoConfiguration(JestProperties properties,
-			ObjectProvider<Gson> gsonProvider,
-			ObjectProvider<List<HttpClientConfigBuilderCustomizer>> builderCustomizersProvider) {
+	public JestAutoConfiguration(JestProperties properties, ObjectProvider<Gson> gson,
+			ObjectProvider<List<HttpClientConfigBuilderCustomizer>> builderCustomizers) {
 		this.properties = properties;
-		this.gsonProvider = gsonProvider;
-		this.builderCustomizers = builderCustomizersProvider.getIfAvailable();
+		this.gsonProvider = gson;
+		this.builderCustomizers = builderCustomizers.getIfAvailable();
 	}
 
 	@Bean(destroyMethod = "shutdownClient")
