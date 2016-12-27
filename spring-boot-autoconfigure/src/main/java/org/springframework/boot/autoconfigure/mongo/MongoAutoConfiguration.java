@@ -54,9 +54,9 @@ public class MongoAutoConfiguration {
 	private MongoClient mongo;
 
 	public MongoAutoConfiguration(MongoProperties properties,
-			ObjectProvider<MongoClientOptions> optionsProvider, Environment environment) {
+			ObjectProvider<MongoClientOptions> options, Environment environment) {
 		this.properties = properties;
-		this.options = optionsProvider.getIfAvailable();
+		this.options = options.getIfAvailable();
 		this.environment = environment;
 	}
 

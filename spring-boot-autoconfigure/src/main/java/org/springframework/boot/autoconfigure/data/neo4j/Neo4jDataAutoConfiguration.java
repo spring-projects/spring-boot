@@ -67,11 +67,10 @@ public class Neo4jDataAutoConfiguration {
 	@Bean
 	public SessionFactory sessionFactory(org.neo4j.ogm.config.Configuration configuration,
 			ApplicationContext applicationContext,
-			ObjectProvider<List<EventListener>> eventListenersProvider) {
+			ObjectProvider<List<EventListener>> eventListeners) {
 		SessionFactory sessionFactory = new SessionFactory(configuration,
 				getPackagesToScan(applicationContext));
-		List<EventListener> providedEventListeners = eventListenersProvider
-				.getIfAvailable();
+		List<EventListener> providedEventListeners = eventListeners.getIfAvailable();
 		if (providedEventListeners != null) {
 			for (EventListener eventListener : providedEventListeners) {
 				sessionFactory.register(eventListener);

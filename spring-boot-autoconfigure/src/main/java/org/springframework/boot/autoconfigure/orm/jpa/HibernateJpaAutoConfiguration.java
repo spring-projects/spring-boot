@@ -88,8 +88,8 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 
 	public HibernateJpaAutoConfiguration(DataSource dataSource,
 			JpaProperties jpaProperties,
-			ObjectProvider<JtaTransactionManager> jtaTransactionManagerProvider) {
-		super(dataSource, jpaProperties, jtaTransactionManagerProvider);
+			ObjectProvider<JtaTransactionManager> jtaTransactionManager) {
+		super(dataSource, jpaProperties, jtaTransactionManager);
 	}
 
 	@Override

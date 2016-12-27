@@ -24,7 +24,6 @@ import io.searchbox.client.JestClient;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.CassandraHealthIndicator;
 import org.springframework.boot.actuate.health.CompositeHealthIndicator;
@@ -242,9 +241,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		assertThat(beans).hasSize(1);
 		HealthIndicator bean = beans.values().iterator().next();
 		assertThat(bean).isExactlyInstanceOf(CompositeHealthIndicator.class);
-		Map<String, HealthIndicator> indicators = (Map<String, HealthIndicator>)
-				new DirectFieldAccessor(bean).getPropertyValue("indicators");
-		assertThat(indicators).hasSize(2);
+		assertThat(bean.health().getDetails()).containsOnlyKeys("dataSource",
+				"testDataSource");
 	}
 
 	@Test
@@ -258,8 +256,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertThat(beans.values().iterator().next().getClass())
-				.isEqualTo(DataSourceHealthIndicator.class);
+		assertThat(beans.values().iterator().next())
+				.isExactlyInstanceOf(DataSourceHealthIndicator.class);
 	}
 
 	@Test

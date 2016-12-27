@@ -100,9 +100,9 @@ public class ManagementWebSecurityAutoConfiguration {
 	@Bean
 	public IgnoredRequestCustomizer managementIgnoredRequestCustomizer(
 			ManagementServerProperties management,
-			ObjectProvider<ManagementContextResolver> contextResolverProvider) {
+			ObjectProvider<ManagementContextResolver> contextResolver) {
 		return new ManagementIgnoredRequestCustomizer(management,
-				contextResolverProvider.getIfAvailable());
+				contextResolver.getIfAvailable());
 	}
 
 	private class ManagementIgnoredRequestCustomizer implements IgnoredRequestCustomizer {
@@ -133,22 +133,23 @@ public class ManagementWebSecurityAutoConfiguration {
 	protected static class ManagementSecurityPropertiesConfiguration
 			implements SecurityPrerequisite {
 
-		private final SecurityProperties security;
+		private final SecurityProperties securityProperties;
 
-		private final ManagementServerProperties management;
+		private final ManagementServerProperties managementServerProperties;
 
 		public ManagementSecurityPropertiesConfiguration(
-				ObjectProvider<SecurityProperties> securityProvider,
-				ObjectProvider<ManagementServerProperties> managementProvider) {
-			this.security = securityProvider.getIfAvailable();
-			this.management = managementProvider.getIfAvailable();
+				ObjectProvider<SecurityProperties> securityProperties,
+				ObjectProvider<ManagementServerProperties> managementServerProperties) {
+			this.securityProperties = securityProperties.getIfAvailable();
+			this.managementServerProperties = managementServerProperties.getIfAvailable();
 		}
 
 		@PostConstruct
 		public void init() {
-			if (this.management != null && this.security != null) {
-				this.security.getUser().getRole()
-						.addAll(this.management.getSecurity().getRoles());
+			if (this.managementServerProperties != null
+					&& this.securityProperties != null) {
+				this.securityProperties.getUser().getRole()
+						.addAll(this.managementServerProperties.getSecurity().getRoles());
 			}
 		}
 
@@ -200,10 +201,10 @@ public class ManagementWebSecurityAutoConfiguration {
 
 		public ManagementWebSecurityConfigurerAdapter(SecurityProperties security,
 				ManagementServerProperties management,
-				ObjectProvider<ManagementContextResolver> contextResolverProvider) {
+				ObjectProvider<ManagementContextResolver> contextResolver) {
 			this.security = security;
 			this.management = management;
-			this.contextResolver = contextResolverProvider.getIfAvailable();
+			this.contextResolver = contextResolver.getIfAvailable();
 		}
 
 		@Override

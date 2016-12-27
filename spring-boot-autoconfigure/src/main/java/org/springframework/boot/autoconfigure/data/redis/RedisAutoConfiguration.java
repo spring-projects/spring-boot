@@ -78,11 +78,11 @@ public class RedisAutoConfiguration {
 		private final RedisClusterConfiguration clusterConfiguration;
 
 		public RedisConnectionConfiguration(RedisProperties properties,
-				ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
-				ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider) {
+				ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
+				ObjectProvider<RedisClusterConfiguration> clusterConfiguration) {
 			this.properties = properties;
-			this.sentinelConfiguration = sentinelConfigurationProvider.getIfAvailable();
-			this.clusterConfiguration = clusterConfigurationProvider.getIfAvailable();
+			this.sentinelConfiguration = sentinelConfiguration.getIfAvailable();
+			this.clusterConfiguration = clusterConfiguration.getIfAvailable();
 		}
 
 		@Bean

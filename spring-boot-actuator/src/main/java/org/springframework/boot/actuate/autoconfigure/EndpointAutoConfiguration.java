@@ -93,17 +93,16 @@ public class EndpointAutoConfiguration {
 
 	private final TraceRepository traceRepository;
 
-	public EndpointAutoConfiguration(
-			ObjectProvider<HealthAggregator> healthAggregatorProvider,
-			ObjectProvider<Map<String, HealthIndicator>> healthIndicatorsProvider,
-			ObjectProvider<List<InfoContributor>> infoContributorsProvider,
-			ObjectProvider<Collection<PublicMetrics>> publicMetricsProvider,
-			ObjectProvider<TraceRepository> traceRepositoryProvider) {
-		this.healthAggregator = healthAggregatorProvider.getIfAvailable();
-		this.healthIndicators = healthIndicatorsProvider.getIfAvailable();
-		this.infoContributors = infoContributorsProvider.getIfAvailable();
-		this.publicMetrics = publicMetricsProvider.getIfAvailable();
-		this.traceRepository = traceRepositoryProvider.getIfAvailable();
+	public EndpointAutoConfiguration(ObjectProvider<HealthAggregator> healthAggregator,
+			ObjectProvider<Map<String, HealthIndicator>> healthIndicators,
+			ObjectProvider<List<InfoContributor>> infoContributors,
+			ObjectProvider<Collection<PublicMetrics>> publicMetrics,
+			ObjectProvider<TraceRepository> traceRepository) {
+		this.healthAggregator = healthAggregator.getIfAvailable();
+		this.healthIndicators = healthIndicators.getIfAvailable();
+		this.infoContributors = infoContributors.getIfAvailable();
+		this.publicMetrics = publicMetrics.getIfAvailable();
+		this.traceRepository = traceRepository.getIfAvailable();
 	}
 
 	@Bean

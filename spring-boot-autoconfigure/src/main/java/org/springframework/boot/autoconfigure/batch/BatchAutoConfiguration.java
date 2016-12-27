@@ -72,9 +72,9 @@ public class BatchAutoConfiguration {
 	private final JobParametersConverter jobParametersConverter;
 
 	public BatchAutoConfiguration(BatchProperties properties,
-			ObjectProvider<JobParametersConverter> jobParametersConverterProvider) {
+			ObjectProvider<JobParametersConverter> jobParametersConverter) {
 		this.properties = properties;
-		this.jobParametersConverter = jobParametersConverterProvider.getIfAvailable();
+		this.jobParametersConverter = jobParametersConverter.getIfAvailable();
 	}
 
 	@Bean

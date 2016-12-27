@@ -71,13 +71,12 @@ class JCacheCacheConfiguration {
 
 	JCacheCacheConfiguration(CacheProperties cacheProperties,
 			CacheManagerCustomizers customizers,
-			ObjectProvider<javax.cache.configuration.Configuration<?, ?>> defaultCacheConfigurationProvider,
-			ObjectProvider<List<JCacheManagerCustomizer>> cacheManagerCustomizersProvider) {
+			ObjectProvider<javax.cache.configuration.Configuration<?, ?>> defaultCacheConfiguration,
+			ObjectProvider<List<JCacheManagerCustomizer>> cacheManagerCustomizers) {
 		this.cacheProperties = cacheProperties;
 		this.customizers = customizers;
-		this.defaultCacheConfiguration = defaultCacheConfigurationProvider
-				.getIfAvailable();
-		this.cacheManagerCustomizers = cacheManagerCustomizersProvider.getIfAvailable();
+		this.defaultCacheConfiguration = defaultCacheConfiguration.getIfAvailable();
+		this.cacheManagerCustomizers = cacheManagerCustomizers.getIfAvailable();
 	}
 
 	@Bean

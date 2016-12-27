@@ -100,10 +100,10 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	private String path;
 
 	public JerseyAutoConfiguration(JerseyProperties jersey, ResourceConfig config,
-			ObjectProvider<List<ResourceConfigCustomizer>> customizersProvider) {
+			ObjectProvider<List<ResourceConfigCustomizer>> customizers) {
 		this.jersey = jersey;
 		this.config = config;
-		this.customizers = customizersProvider.getIfAvailable();
+		this.customizers = customizers.getIfAvailable();
 	}
 
 	@PostConstruct

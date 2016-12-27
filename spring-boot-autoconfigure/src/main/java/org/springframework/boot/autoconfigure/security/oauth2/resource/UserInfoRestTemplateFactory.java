@@ -59,12 +59,12 @@ public class UserInfoRestTemplateFactory {
 	private OAuth2RestTemplate template;
 
 	public UserInfoRestTemplateFactory(
-			ObjectProvider<List<UserInfoRestTemplateCustomizer>> customizersProvider,
-			ObjectProvider<OAuth2ProtectedResourceDetails> detailsProvider,
-			ObjectProvider<OAuth2ClientContext> oauth2ClientContextProvider) {
-		this.customizers = customizersProvider.getIfAvailable();
-		this.details = detailsProvider.getIfAvailable();
-		this.oauth2ClientContext = oauth2ClientContextProvider.getIfAvailable();
+			ObjectProvider<List<UserInfoRestTemplateCustomizer>> customizers,
+			ObjectProvider<OAuth2ProtectedResourceDetails> details,
+			ObjectProvider<OAuth2ClientContext> oauth2ClientContext) {
+		this.customizers = customizers.getIfAvailable();
+		this.details = details.getIfAvailable();
+		this.oauth2ClientContext = oauth2ClientContext.getIfAvailable();
 	}
 
 	public OAuth2RestTemplate getUserInfoRestTemplate() {
