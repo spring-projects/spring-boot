@@ -81,6 +81,7 @@ public class JestAutoConfiguration {
 		if (gson != null) {
 			builder.gson(gson);
 		}
+		builder.multiThreaded(this.properties.isMultiThreaded());
 		return builder.connTimeout(this.properties.getConnectionTimeout())
 				.readTimeout(this.properties.getReadTimeout()).build();
 	}
