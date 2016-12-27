@@ -462,7 +462,7 @@ that use Spring Boot. If you're looking to solve a specific problem; check there
 You can shortcut the steps below by going to https://start.spring.io and choosing the
 `web` starter from the dependencies searcher. This will automatically generate a new
 project structure so that you can <<getting-started-first-application-code,start coding
-right the way>>. Check the https://github.com/spring-io/initializr[documentation for
+right away>>. Check the https://github.com/spring-io/initializr[documentation for
 more details].
 ====
 
