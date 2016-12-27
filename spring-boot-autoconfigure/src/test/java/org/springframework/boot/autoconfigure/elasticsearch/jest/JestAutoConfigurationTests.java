@@ -88,10 +88,11 @@ public class JestAutoConfigurationTests {
 
 	@Test
 	public void customizerOverridesAutoConfig() {
-		load(BuilderCustomizer.class, "spring.elasticsearch.jest.uris=http://localhost:9200");
+		load(BuilderCustomizer.class,
+				"spring.elasticsearch.jest.uris=http://localhost:9200");
 		JestHttpClient client = (JestHttpClient) this.context.getBean(JestClient.class);
-		assertThat(client.getGson()).isSameAs(
-				this.context.getBean(BuilderCustomizer.class).getGson());
+		assertThat(client.getGson())
+				.isSameAs(this.context.getBean(BuilderCustomizer.class).getGson());
 	}
 
 	@Test
@@ -166,10 +167,12 @@ public class JestAutoConfigurationTests {
 		@Bean
 		public HttpClientConfigBuilderCustomizer customizer() {
 			return new HttpClientConfigBuilderCustomizer() {
+
 				@Override
 				public void customize(HttpClientConfig.Builder builder) {
 					builder.gson(BuilderCustomizer.this.gson);
 				}
+
 			};
 		}
 

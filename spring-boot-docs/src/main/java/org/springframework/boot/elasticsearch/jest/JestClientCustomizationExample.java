@@ -37,9 +37,9 @@ public class JestClientCustomizationExample {
 
 		@Override
 		public void customize(HttpClientConfig.Builder builder) {
-			builder.maxTotalConnection(100)
-					.defaultMaxTotalConnectionPerRoute(5);
+			builder.maxTotalConnection(100).defaultMaxTotalConnectionPerRoute(5);
 		}
+
 	}
 	// end::customizer[]
 }

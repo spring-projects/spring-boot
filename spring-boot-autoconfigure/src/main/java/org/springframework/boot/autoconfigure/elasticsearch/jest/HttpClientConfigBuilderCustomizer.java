@@ -20,7 +20,8 @@ import io.searchbox.client.config.HttpClientConfig;
 
 /**
  * Callback interface that can be implemented by beans wishing to further customize the
- * {@link HttpClientConfig} via {@link HttpClientConfig.Builder} retaining its default
+ * {@link io.searchbox.client.config.HttpClientConfig} via
+ * {@link io.searchbox.client.config.HttpClientConfig.Builder} retaining its default
  * auto-configuration.
  *
  * @author Stephane Nicoll
@@ -29,7 +30,7 @@ import io.searchbox.client.config.HttpClientConfig;
 public interface HttpClientConfigBuilderCustomizer {
 
 	/**
-	 * Customize the {@link HttpClientConfig.Builder}.
+	 * Customize the {@link io.searchbox.client.config.HttpClientConfig.Builder}.
 	 * @param builder the builder to customize
 	 */
 	void customize(HttpClientConfig.Builder builder);
