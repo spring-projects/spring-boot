@@ -3615,6 +3615,15 @@ configured:
 	spring.elasticsearch.jest.password=secret
 ----
 
+You can also register an arbitrary number of beans implementing
+`HttpClientConfigBuilderCustomizer` for more advanced customizations. The example below
+tunes additional HTTP settings:
+
+[source,java,indent=0]
+----
+include::{code-examples}/elasticsearch/jest/JestClientCustomizationExample.java[tag=customizer]
+----
+
 To take full control over the registration, define a `JestClient` bean.
 
 
