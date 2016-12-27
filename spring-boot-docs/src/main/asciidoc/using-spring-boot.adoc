@@ -1025,7 +1025,7 @@ is set. The client component must be launched manually.
 
 
 ==== Running the remote client application
-The remote client application is designed to be run from within you IDE. You need to run
+The remote client application is designed to be run from within your IDE. You need to run
 `org.springframework.boot.devtools.RemoteSpringApplication` using the same classpath as
 the remote project that you're connecting to. The _non-option_ argument passed to the
 application should be the remote URL that you are connecting to.
