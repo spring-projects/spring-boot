@@ -24,8 +24,10 @@ import io.searchbox.client.JestClient;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.CassandraHealthIndicator;
+import org.springframework.boot.actuate.health.CompositeHealthIndicator;
 import org.springframework.boot.actuate.health.CouchbaseHealthIndicator;
 import org.springframework.boot.actuate.health.DataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.DiskSpaceHealthIndicator;
@@ -61,6 +63,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
+import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -216,6 +219,39 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void dataSourceHealthIndicator() {
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.health.diskspace.enabled:false");
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertThat(beans).hasSize(1);
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(DataSourceHealthIndicator.class);
+	}
+
+	@Test
+	public void dataSourceHealthIndicatorWithSeveralDataSources() {
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				DataSourceConfig.class, ManagementServerProperties.class,
+				HealthIndicatorAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.health.diskspace.enabled:false");
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertThat(beans).hasSize(1);
+		HealthIndicator bean = beans.values().iterator().next();
+		assertThat(bean).isExactlyInstanceOf(CompositeHealthIndicator.class);
+		Map<String, HealthIndicator> indicators = (Map<String, HealthIndicator>)
+				new DirectFieldAccessor(bean).getPropertyValue("indicators");
+		assertThat(indicators).hasSize(2);
+	}
+
+	@Test
+	public void dataSourceHealthIndicatorWithAbstractRoutingDataSource() {
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				RoutingDatasourceConfig.class, ManagementServerProperties.class,
+				HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.diskspace.enabled:false");
 		this.context.refresh();
@@ -507,10 +543,20 @@ public class HealthIndicatorAutoConfigurationTests {
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.test")
-		public DataSource dataSource() {
+		public DataSource testDataSource() {
 			return DataSourceBuilder.create()
 					.driverClassName("org.hsqldb.jdbc.JDBCDriver")
 					.url("jdbc:hsqldb:mem:test").username("sa").build();
+		}
+
+	}
+
+	@Configuration
+	protected static class RoutingDatasourceConfig {
+
+		@Bean
+		AbstractRoutingDataSource routingDataSource() {
+			return mock(AbstractRoutingDataSource.class);
 		}
 
 	}

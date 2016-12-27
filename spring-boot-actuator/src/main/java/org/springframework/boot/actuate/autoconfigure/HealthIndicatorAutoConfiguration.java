@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.jms.ConnectionFactory;
@@ -75,6 +76,7 @@ import org.springframework.data.couchbase.core.CouchbaseOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 /**
@@ -170,7 +172,7 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(JdbcTemplate.class)
+	@ConditionalOnClass({ JdbcTemplate.class, AbstractRoutingDataSource.class })
 	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnEnabledHealthIndicator("db")
 	public static class DataSourcesHealthIndicatorConfiguration extends
@@ -186,8 +188,19 @@ public class HealthIndicatorAutoConfiguration {
 		public DataSourcesHealthIndicatorConfiguration(
 				ObjectProvider<Map<String, DataSource>> dataSourcesProvider,
 				ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProvidersProvider) {
-			this.dataSources = dataSourcesProvider.getIfAvailable();
+			this.dataSources = filterDataSources(dataSourcesProvider.getIfAvailable());
 			this.metadataProviders = metadataProvidersProvider.getIfAvailable();
+		}
+
+		private static Map<String, DataSource> filterDataSources(
+				Map<String,DataSource> candidates) {
+			Map<String,DataSource> dataSources = new LinkedHashMap<String, DataSource>();
+			for (Map.Entry<String, DataSource> entry : candidates.entrySet()) {
+				if (!(entry.getValue() instanceof AbstractRoutingDataSource)) {
+					dataSources.put(entry.getKey(), entry.getValue());
+				}
+			}
+			return dataSources;
 		}
 
 		@Override
