@@ -51,6 +51,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
@@ -426,8 +427,9 @@ public class Restarter {
 	}
 
 	private void prepare(GenericApplicationContext applicationContext) {
-		applicationContext.setResourceLoader(
-				new ClassLoaderFilesResourcePatternResolver(this.classLoaderFiles));
+		ResourceLoader resourceLoader = new ClassLoaderFilesResourcePatternResolver(
+				applicationContext, this.classLoaderFiles);
+		applicationContext.setResourceLoader(resourceLoader);
 	}
 
 	private LeakSafeThread getLeakSafeThread() {
