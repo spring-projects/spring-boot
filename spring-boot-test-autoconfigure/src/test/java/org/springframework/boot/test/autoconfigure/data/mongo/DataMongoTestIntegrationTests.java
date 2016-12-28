@@ -51,7 +51,7 @@ public class DataMongoTestIntegrationTests {
 	private ApplicationContext applicationContext;
 
 	@Test
-	public void testStuff() {
+	public void testRepository() {
 		ExampleDocument exampleDocument = new ExampleDocument();
 		exampleDocument.setText("Look, new @DataMongoTest!");
 
