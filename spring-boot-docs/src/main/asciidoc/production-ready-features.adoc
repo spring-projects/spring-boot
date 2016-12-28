@@ -1092,8 +1092,12 @@ Example:
 @Bean
 @ExportMetricWriter
 MetricWriter metricWriter(MetricExportProperties export) {
-	return new RedisMetricRepository(connectionFactory,
-      export.getRedis().getPrefix(), export.getRedis().getKey());
+	RedisMetricRepository redisMetricRepository = new RedisMetricRepository(
+		connectionFactory,
+		export.getRedis().getPrefix(),
+		export.getRedis().getKey());
+        redisMetricRepository.afterPropertiesSet();
+	return redisMetricRepository;
 }
 ----
 
