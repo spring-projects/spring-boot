@@ -1809,6 +1809,7 @@ By default, resources are mapped on `/**` but you can tune that via
 `spring.mvc.static-path-pattern`. For instance, relocating all resources to `/resources/**`
 can be achieved as follows:
 
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring.mvc.static-path-pattern=/resources/**
 ----
