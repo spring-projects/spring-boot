@@ -1806,11 +1806,11 @@ Spring decides not to handle it. Most of the time this will not happen (unless y
 the default MVC configuration) because Spring will always be able to handle requests
 through the `DispatcherServlet`.
 
-
-By default, resources are mapped on `/**` but you can tune that via
+By default, resources are mapped on `+/**+` but you can tune that via
 `spring.mvc.static-path-pattern`. For instance, relocating all resources to `/resources/**`
 can be achieved as follows:
 
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring.mvc.static-path-pattern=/resources/**
 ----
