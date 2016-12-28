@@ -20,7 +20,9 @@ import com.datastax.driver.core.Cluster;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link Cluster} via {@link Cluster.Builder} retaining its default auto-configuration.
+ * {@link com.datastax.driver.core.Cluster} via
+ * {@link com.datastax.driver.core.Cluster.Builder} retaining its default
+ * auto-configuration.
  *
  * @author Eddú Meléndez
  * @since 1.5.0
@@ -28,7 +30,7 @@ import com.datastax.driver.core.Cluster;
 public interface ClusterBuilderCustomizer {
 
 	/**
-	 * Customize the {@link Cluster.Builder}.
+	 * Customize the {@link com.datastax.driver.core.Cluster.Builder}.
 	 * @param clusterBuilder the builder to customize
 	 */
 	void customize(Cluster.Builder clusterBuilder);

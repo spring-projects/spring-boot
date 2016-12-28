@@ -28,6 +28,8 @@ import static org.assertj.core.api.Assertions.offset;
 
 /**
  * Tests for {@link InMemoryMetricRepository}.
+ *
+ * @author Dave Syer
  */
 public class InMemoryMetricRepositoryTests {
 

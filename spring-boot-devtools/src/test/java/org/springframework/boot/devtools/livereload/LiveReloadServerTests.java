@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -56,8 +55,6 @@ public class LiveReloadServerTests {
 
 	private static final String HANDSHAKE = "{command: 'hello', "
 			+ "protocols: ['http://livereload.com/protocols/official-7']}";
-
-	private static final ByteBuffer NO_DATA = ByteBuffer.allocate(0);
 
 	private int port = SocketUtils.findAvailableTcpPort();
 

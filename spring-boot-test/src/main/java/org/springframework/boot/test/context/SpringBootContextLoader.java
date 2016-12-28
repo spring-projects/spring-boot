@@ -38,6 +38,7 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -160,13 +161,19 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	}
 
 	private boolean hasCustomServerPort(List<String> properties) {
-		Map<String, Object> props = TestPropertySourceUtils.convertInlinedPropertiesToMap(
-				properties.toArray(new String[properties.size()]));
-		MutablePropertySources sources = new MutablePropertySources();
-		sources.addFirst(new MapPropertySource("inline", props));
+		PropertySources sources = convertToPropertySources(properties);
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 				new PropertySourcesPropertyResolver(sources), "server.");
 		return resolver.containsProperty("port");
+	}
+
+	private PropertySources convertToPropertySources(List<String> properties) {
+		Map<String, Object> source = TestPropertySourceUtils
+				.convertInlinedPropertiesToMap(
+						properties.toArray(new String[properties.size()]));
+		MutablePropertySources sources = new MutablePropertySources();
+		sources.addFirst(new MapPropertySource("inline", source));
+		return sources;
 	}
 
 	private List<ApplicationContextInitializer<?>> getInitializers(

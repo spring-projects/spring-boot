@@ -44,16 +44,16 @@ public class InMemoryMetricRepository implements MetricRepository {
 		final int amount = delta.getValue().intValue();
 		final Date timestamp = delta.getTimestamp();
 		this.metrics.update(metricName, new Callback<Metric<?>>() {
+
 			@Override
 			public Metric<?> modify(Metric<?> current) {
 				if (current != null) {
 					return new Metric<Long>(metricName,
 							current.increment(amount).getValue(), timestamp);
 				}
-				else {
-					return new Metric<Long>(metricName, (long) amount, timestamp);
-				}
+				return new Metric<Long>(metricName, (long) amount, timestamp);
 			}
+
 		});
 	}
 
