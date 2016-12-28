@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.test.context.BootstrapWith;
@@ -43,14 +42,7 @@ import org.springframework.test.context.BootstrapWith;
  * <p>
  * By default, tests annotated with {@code @DataMongoTest} will use an embedded in-memory
  * Mongod process if "de.flapdoodle.embed:de.flapdoodle.embed.mongo" is on the
- * class path and thus replacing the default connection to a MongoDB. The
- * {@link AutoConfigureEmbeddedTestMongod @AutoConfigureEmbeddedTestMongod} annotation can
- * be used to override this setting.
- * <p>
- * If you are looking to load your full application configuration, but use an embedded
- * Mongod, you should consider {@link SpringBootTest @SpringBootTest} combined with
- * {@link AutoConfigureEmbeddedTestMongod @AutoConfigureEmbeddedTestMongod} rather than this
- * annotation.
+ * classpath and thus replacing the default connection to a MongoDB.
  *
  * @author Michael J. Simons
  * @since 1.5.0
@@ -63,7 +55,6 @@ import org.springframework.test.context.BootstrapWith;
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(DataMongoTypeExcludeFilter.class)
 @AutoConfigureCache
-@AutoConfigureEmbeddedTestMongod
 @AutoConfigureDataMongo
 @ImportAutoConfiguration
 public @interface DataMongoTest {
