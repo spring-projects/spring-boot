@@ -22,6 +22,7 @@ import java.util.HashSet;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
+import org.springframework.util.Assert;
 
 /**
  * {@link MultiMetricRepository} implementation backed by a
@@ -36,12 +37,22 @@ public class InMemoryMultiMetricRepository implements MultiMetricRepository {
 
 	private final Collection<String> groups = new HashSet<String>();
 
-	public InMemoryMultiMetricRepository(InMemoryMetricRepository repository) {
-		this.repository = repository;
-	}
-
+	/**
+	 * Create a new {@link InMemoryMetricRepository} backed by a new
+	 * {@link InMemoryMetricRepository}.
+	 */
 	public InMemoryMultiMetricRepository() {
 		this(new InMemoryMetricRepository());
+	}
+
+	/**
+	 * Create a new {@link InMemoryMetricRepository} backed by the specified
+	 * {@link InMemoryMetricRepository}.
+	 * @param repository the backing repository
+	 */
+	public InMemoryMultiMetricRepository(InMemoryMetricRepository repository) {
+		Assert.notNull(repository, "Repository must not be null");
+		this.repository = repository;
 	}
 
 	@Override

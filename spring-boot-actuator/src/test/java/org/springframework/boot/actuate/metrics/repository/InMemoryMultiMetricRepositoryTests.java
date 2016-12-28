@@ -29,12 +29,13 @@ import org.springframework.boot.actuate.metrics.writer.Delta;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Tests for {@link InMemoryMultiMetricRepository}.
+ *
  * @author Dave Syer
  */
 public class InMemoryMultiMetricRepositoryTests {
 
-	private final InMemoryMultiMetricRepository repository =
-			new InMemoryMultiMetricRepository();
+	private final InMemoryMultiMetricRepository repository = new InMemoryMultiMetricRepository();
 
 	@Test
 	public void registeredPrefixCounted() {

@@ -40,7 +40,7 @@ public class RemoteShellStarterDeprecatedWarningAutoConfiguration {
 
 	@PostConstruct
 	public void logWarning() {
-		logger.warn("spring-boot-starter-remote-shell is deprecated since Spring Boot "
+		logger.warn("spring-boot-starter-remote-shell is deprecated as of Spring Boot "
 				+ "1.5 and will be removed in Spring Boot 2.0");
 	}
 

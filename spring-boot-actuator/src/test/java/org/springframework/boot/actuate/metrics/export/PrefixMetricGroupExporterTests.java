@@ -54,8 +54,8 @@ public class PrefixMetricGroupExporterTests {
 	@Test
 	public void countersIncremented() {
 		this.writer.increment("counter.foo", new Delta<Long>("bar", 1L));
-		this.reader.set("counter", Collections.<Metric<?>>singletonList(
-				new Metric<Number>("counter.foo.bar", 1)));
+		this.reader.set("counter", Collections
+				.<Metric<?>>singletonList(new Metric<Number>("counter.foo.bar", 1)));
 		this.exporter.setGroups(Collections.singleton("counter.foo"));
 		this.exporter.export();
 		assertThat(this.writer.findAll("counter.foo").iterator().next().getValue())
@@ -65,8 +65,7 @@ public class PrefixMetricGroupExporterTests {
 	@Test
 	public void unprefixedMetricsNotCopied() {
 		this.reader.set("foo", Arrays.<Metric<?>>asList(
-				new Metric<Number>("foo.bar", 2.3),
-				new Metric<Number>("foo.spam", 1.3)));
+				new Metric<Number>("foo.bar", 2.3), new Metric<Number>("foo.spam", 1.3)));
 		this.exporter.setGroups(Collections.singleton("bar"));
 		this.exporter.export();
 		assertThat(Iterables.collection(this.writer.groups())).isEmpty();
@@ -84,10 +83,9 @@ public class PrefixMetricGroupExporterTests {
 	@Test
 	public void onlyPrefixedMetricsCopied() {
 		this.reader.set("foo", Arrays.<Metric<?>>asList(
-				new Metric<Number>("foo.bar", 2.3),
-				new Metric<Number>("foo.spam", 1.3)));
-		this.reader.set("foobar", Collections.<Metric<?>>singletonList(
-				new Metric<Number>("foobar.spam", 1.3)));
+				new Metric<Number>("foo.bar", 2.3), new Metric<Number>("foo.spam", 1.3)));
+		this.reader.set("foobar", Collections
+				.<Metric<?>>singletonList(new Metric<Number>("foobar.spam", 1.3)));
 		this.exporter.setGroups(Collections.singleton("foo"));
 		this.exporter.export();
 		assertThat(Iterables.collection(this.writer.groups())).hasSize(1);

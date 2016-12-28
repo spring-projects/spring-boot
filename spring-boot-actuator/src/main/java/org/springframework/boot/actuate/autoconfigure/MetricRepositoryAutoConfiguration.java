@@ -158,8 +158,9 @@ public class MetricRepositoryAutoConfiguration {
 		@Bean
 		@ExportMetricReader
 		@ActuatorMetricWriter
-		public InMemoryMultiMetricRepository actuatorMultiMetricRepository() {
-			return new InMemoryMultiMetricRepository(actuatorMetricRepository());
+		public InMemoryMultiMetricRepository actuatorMultiMetricRepository(
+				InMemoryMetricRepository actuatorMetricRepository) {
+			return new InMemoryMultiMetricRepository(actuatorMetricRepository);
 		}
 
 	}
