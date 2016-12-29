@@ -37,6 +37,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -153,15 +154,18 @@ public class BatchAutoConfiguration {
 		@Bean
 		@ConditionalOnBean(name = "entityManagerFactory")
 		public BasicBatchConfigurer jpaBatchConfigurer(DataSource dataSource,
-				EntityManagerFactory entityManagerFactory) {
+				EntityManagerFactory entityManagerFactory,
+				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 			return new BasicBatchConfigurer(this.properties, dataSource,
-					entityManagerFactory);
+					entityManagerFactory, transactionManagerCustomizers);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(name = "entityManagerFactory")
-		public BasicBatchConfigurer basicBatchConfigurer(DataSource dataSource) {
-			return new BasicBatchConfigurer(this.properties, dataSource);
+		public BasicBatchConfigurer basicBatchConfigurer(DataSource dataSource,
+				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+			return new BasicBatchConfigurer(this.properties, dataSource,
+					transactionManagerCustomizers);
 		}
 
 	}

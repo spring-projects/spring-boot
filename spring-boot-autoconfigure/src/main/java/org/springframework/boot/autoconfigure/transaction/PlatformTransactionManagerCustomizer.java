@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.elasticsearch.jest;
+package org.springframework.boot.autoconfigure.transaction;
 
-import io.searchbox.client.config.HttpClientConfig;
-import io.searchbox.client.config.HttpClientConfig.Builder;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
- * Callback interface that can be implemented by beans wishing to further customize the
- * {@link HttpClientConfig} via a {@link Builder HttpClientConfig.Builder} whilst
- * retaining default auto-configuration.
+ * Callback interface that can be implemented by beans wishing to customize
+ * {@link PlatformTransactionManager PlatformTransactionManagers} whilst retaining default
+ * auto-configuration.
  *
- * @author Stephane Nicoll
- * @since 1.5.0
+ * @param <T> The transaction manager type
+ * @author Phillip Webb
  */
-public interface HttpClientConfigBuilderCustomizer {
 
+public interface PlatformTransactionManagerCustomizer<T extends PlatformTransactionManager> {
 	/**
-	 * Customize the {@link Builder}.
-	 * @param builder the builder to customize
+	 * Customize the given transaction manager.
+	 * @param transactionManager the transaction manager to customize
 	 */
-	void customize(Builder builder);
+	void customize(T transactionManager);
 
 }

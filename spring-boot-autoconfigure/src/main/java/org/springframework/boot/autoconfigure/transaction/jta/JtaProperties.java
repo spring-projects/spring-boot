@@ -16,9 +16,7 @@
 
 package org.springframework.boot.autoconfigure.transaction.jta;
 
-import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 /**
@@ -44,9 +42,6 @@ public class JtaProperties {
 	 */
 	private String transactionManagerId;
 
-	@NestedConfigurationProperty
-	private final TransactionProperties transaction = new TransactionProperties();
-
 	public void setLogDir(String logDir) {
 		this.logDir = logDir;
 	}
@@ -61,10 +56,6 @@ public class JtaProperties {
 
 	public void setTransactionManagerId(String transactionManagerId) {
 		this.transactionManagerId = transactionManagerId;
-	}
-
-	public TransactionProperties getTransaction() {
-		return this.transaction;
 	}
 
 }

@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.orm.jpa.vendor.Database;
@@ -67,9 +66,6 @@ public class JpaProperties {
 	private boolean showSql = false;
 
 	private Hibernate hibernate = new Hibernate();
-
-	@NestedConfigurationProperty
-	private final TransactionProperties transaction = new TransactionProperties();
 
 	public Map<String, String> getProperties() {
 		return this.properties;
@@ -127,10 +123,6 @@ public class JpaProperties {
 	 */
 	public Map<String, String> getHibernateProperties(DataSource dataSource) {
 		return this.hibernate.getAdditionalProperties(this.properties, dataSource);
-	}
-
-	public TransactionProperties getTransaction() {
-		return this.transaction;
 	}
 
 	public static class Hibernate {

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.transaction;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -27,6 +28,7 @@ import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -37,6 +39,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link TransactionAutoConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Phillip Webb
  */
 public class TransactionAutoConfigurationTests {
 
@@ -80,6 +83,17 @@ public class TransactionAutoConfigurationTests {
 				.getBeansOfType(TransactionTemplate.class);
 		assertThat(beans).hasSize(1);
 		assertThat(beans.containsKey("transactionTemplateFoo")).isTrue();
+	}
+
+	@Test
+	public void platformTransactionManagerCustomizers() throws Exception {
+		load(SeveralTransactionManagersConfiguration.class);
+		TransactionManagerCustomizers customizers = this.context
+				.getBean(TransactionManagerCustomizers.class);
+		List<?> field = (List<?>) ReflectionTestUtils.getField(customizers,
+				"customizers");
+		assertThat(field).hasSize(1).first().isInstanceOf(TransactionProperties.class);
+
 	}
 
 	private void load(Class<?>... configs) {
