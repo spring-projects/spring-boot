@@ -155,7 +155,7 @@ public class Neo4jDataAutoConfigurationTests {
 			ctx.register(config);
 		}
 		ctx.register(PropertyPlaceholderAutoConfiguration.class,
-				Neo4jDataAutoConfiguration.class, TransactionAutoConfiguration.class);
+				TransactionAutoConfiguration.class, Neo4jDataAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
 	}

@@ -27,6 +27,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * A collection of {@link PlatformTransactionManagerCustomizer}.
  *
  * @author Phillip Webb
+ * @since 1.5.0
  */
 public class TransactionManagerCustomizers {
 

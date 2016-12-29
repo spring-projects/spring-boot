@@ -20,7 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 
 /**
- * Nested configuration properties that can be applied to an
+ * Configuration properties that can be applied to an
  * {@link AbstractPlatformTransactionManager}.
  *
  * @author Kazuki Shimizu
