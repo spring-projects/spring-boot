@@ -157,7 +157,7 @@ public class BatchAutoConfiguration {
 				EntityManagerFactory entityManagerFactory,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 			return new BasicBatchConfigurer(this.properties, dataSource,
-					entityManagerFactory, transactionManagerCustomizers);
+					entityManagerFactory, transactionManagerCustomizers.getIfAvailable());
 		}
 
 		@Bean
@@ -165,7 +165,7 @@ public class BatchAutoConfiguration {
 		public BasicBatchConfigurer basicBatchConfigurer(DataSource dataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 			return new BasicBatchConfigurer(this.properties, dataSource,
-					transactionManagerCustomizers);
+					transactionManagerCustomizers.getIfAvailable());
 		}
 
 	}

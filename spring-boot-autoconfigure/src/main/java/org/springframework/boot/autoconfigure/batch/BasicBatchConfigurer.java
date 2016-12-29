@@ -30,7 +30,6 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -73,7 +72,7 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	 * {@code null})
 	 */
 	protected BasicBatchConfigurer(BatchProperties properties, DataSource dataSource,
-			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+			TransactionManagerCustomizers transactionManagerCustomizers) {
 		this(properties, dataSource, null, transactionManagerCustomizers);
 	}
 
@@ -87,12 +86,11 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	 */
 	protected BasicBatchConfigurer(BatchProperties properties, DataSource dataSource,
 			EntityManagerFactory entityManagerFactory,
-			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+			TransactionManagerCustomizers transactionManagerCustomizers) {
 		this.properties = properties;
 		this.entityManagerFactory = entityManagerFactory;
 		this.dataSource = dataSource;
-		this.transactionManagerCustomizers = transactionManagerCustomizers
-				.getIfAvailable();
+		this.transactionManagerCustomizers = transactionManagerCustomizers;
 	}
 
 	@Override

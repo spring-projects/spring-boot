@@ -25,9 +25,10 @@ import org.springframework.transaction.PlatformTransactionManager;
  *
  * @param <T> The transaction manager type
  * @author Phillip Webb
+ * @since 1.5.0
  */
-
 public interface PlatformTransactionManagerCustomizer<T extends PlatformTransactionManager> {
+
 	/**
 	 * Customize the given transaction manager.
 	 * @param transactionManager the transaction manager to customize
