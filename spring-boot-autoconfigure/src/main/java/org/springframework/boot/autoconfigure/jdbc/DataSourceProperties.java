@@ -27,9 +27,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
@@ -158,9 +156,6 @@ public class DataSourceProperties
 	private Xa xa = new Xa();
 
 	private String uniqueName;
-
-	@NestedConfigurationProperty
-	private final TransactionProperties transaction = new TransactionProperties();
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
@@ -476,10 +471,6 @@ public class DataSourceProperties
 
 	public void setXa(Xa xa) {
 		this.xa = xa;
-	}
-
-	public TransactionProperties getTransaction() {
-		return this.transaction;
 	}
 
 	/**

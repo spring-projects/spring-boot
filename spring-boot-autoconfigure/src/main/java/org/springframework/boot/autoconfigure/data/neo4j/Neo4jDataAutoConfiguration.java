@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -88,10 +89,17 @@ public class Neo4jDataAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(PlatformTransactionManager.class)
 	public Neo4jTransactionManager transactionManager(SessionFactory sessionFactory,
-			Neo4jProperties properties) {
-		Neo4jTransactionManager transactionManager = new Neo4jTransactionManager(
-				sessionFactory);
-		properties.getTransaction().applyTo(transactionManager);
+			Neo4jProperties properties,
+			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+		return customize(new Neo4jTransactionManager(sessionFactory),
+				transactionManagerCustomizers.getIfAvailable());
+	}
+
+	private Neo4jTransactionManager customize(Neo4jTransactionManager transactionManager,
+			TransactionManagerCustomizers customizers) {
+		if (customizers != null) {
+			customizers.customize(transactionManager);
+		}
 		return transactionManager;
 	}
 

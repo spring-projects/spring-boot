@@ -582,7 +582,6 @@ content into your application; rather pick only the properties that you need.
 	spring.data.neo4j.open-in-view=false # Register OpenSessionInViewInterceptor. Binds a Neo4j Session to the thread for the entire processing of the request.
 	spring.data.neo4j.password= # Login password of the server.
 	spring.data.neo4j.repositories.enabled=true # Enable Neo4j repositories.
-	spring.data.neo4j.transaction.*= # Transaction manager settings
 	spring.data.neo4j.uri= # URI used by the driver. Auto-detected by default.
 	spring.data.neo4j.username= # Login user of the server.
 
@@ -624,7 +623,6 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.separator=; # Statement separator in SQL initialization scripts.
 	spring.datasource.sql-script-encoding= # SQL scripts encoding.
 	spring.datasource.tomcat.*= # Tomcat datasource specific settings
-	spring.datasource.transaction.*= # Transaction manager settings
 	spring.datasource.type= # Fully qualified name of the connection pool implementation to use. By default, it is auto-detected from the classpath.
 	spring.datasource.url= # JDBC url of the database.
 	spring.datasource.username=
@@ -661,12 +659,10 @@ content into your application; rather pick only the properties that you need.
 	spring.jpa.open-in-view=true # Register OpenEntityManagerInViewInterceptor. Binds a JPA EntityManager to the thread for the entire processing of the request.
 	spring.jpa.properties.*= # Additional native properties to set on the JPA provider.
 	spring.jpa.show-sql=false # Enable logging of SQL statements.
-	spring.jpa.transaction.*= # Transaction manager settings
 
 	# JTA ({sc-spring-boot-autoconfigure}/transaction/jta/JtaAutoConfiguration.{sc-ext}[JtaAutoConfiguration])
 	spring.jta.enabled=true # Enable JTA support.
 	spring.jta.log-dir= # Transaction logs directory.
-	spring.jta.transaction.*= # Transaction manager settings
 	spring.jta.transaction-manager-id= # Transaction manager unique identifier.
 
 	# ATOMIKOS ({sc-spring-boot}/jta/atomikos/AtomikosProperties.{sc-ext}[AtomikosProperties])
@@ -813,6 +809,11 @@ content into your application; rather pick only the properties that you need.
 	spring.redis.sentinel.nodes= # Comma-separated list of host:port pairs.
 	spring.redis.timeout=0 # Connection timeout in milliseconds.
 
+	# TRANSACTION ({sc-spring-boot-autoconfigure}/transaction/TransactionProperties.{sc-ext}[TransactionProperties])
+	spring.transaction.default-timeout= # Default transaction timeout in seconds.
+	spring.transaction.rollback-on-commit-failure= # Perform the rollback on commit failures.
+
+
 
 	# ----------------------------------------
 	# INTEGRATION PROPERTIES
@@ -851,7 +852,6 @@ content into your application; rather pick only the properties that you need.
 	spring.batch.job.names= # Comma-separated list of job names to execute on startup (For instance `job1,job2`). By default, all Jobs found in the context are executed.
 	spring.batch.schema=classpath:org/springframework/batch/core/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.batch.table-prefix= # Table prefix for all the batch meta-data tables.
-	spring.batch.transaction.*= # Transaction manager settings
 
 	# JMS ({sc-spring-boot-autoconfigure}/jms/JmsProperties.{sc-ext}[JmsProperties])
 	spring.jms.jndi-name= # Connection factory JNDI name. When set, takes precedence to others connection factory auto-configurations.

@@ -176,8 +176,8 @@ public class HibernateJpaAutoConfigurationTests
 	@Test
 	public void testCustomJpaTransactionManagerUsingProperties() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jpa.transaction.default-timeout:30",
-				"spring.jpa.transaction.rollback-on-commit-failure:true");
+				"spring.transaction.default-timeout:30",
+				"spring.transaction.rollback-on-commit-failure:true");
 		setupTestConfiguration();
 		this.context.refresh();
 		JpaTransactionManager transactionManager = this.context
