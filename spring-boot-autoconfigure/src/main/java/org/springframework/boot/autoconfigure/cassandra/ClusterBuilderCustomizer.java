@@ -17,11 +17,11 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Cluster.Builder;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link com.datastax.driver.core.Cluster} via
- * {@link com.datastax.driver.core.Cluster.Builder} retaining its default
+ * {@link Cluster} via a {@link Builder Cluster.Builder} whilst retaining default
  * auto-configuration.
  *
  * @author Eddú Meléndez
@@ -30,9 +30,9 @@ import com.datastax.driver.core.Cluster;
 public interface ClusterBuilderCustomizer {
 
 	/**
-	 * Customize the {@link com.datastax.driver.core.Cluster.Builder}.
+	 * Customize the {@link Builder}.
 	 * @param clusterBuilder the builder to customize
 	 */
-	void customize(Cluster.Builder clusterBuilder);
+	void customize(Builder clusterBuilder);
 
 }
