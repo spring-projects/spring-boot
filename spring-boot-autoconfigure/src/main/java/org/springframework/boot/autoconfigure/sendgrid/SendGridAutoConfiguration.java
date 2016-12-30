@@ -77,11 +77,14 @@ public class SendGridAutoConfiguration {
 
 		@ConditionalOnProperty(prefix = "spring.sendgrid", value = "username")
 		static class SendGridUserProperty {
+
 		}
 
 		@ConditionalOnProperty(prefix = "spring.sendgrid", value = "api-key")
 		static class SendGridApiKeyProperty {
+
 		}
 
 	}
+
 }

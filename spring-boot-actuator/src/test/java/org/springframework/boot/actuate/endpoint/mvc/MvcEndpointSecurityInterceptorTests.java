@@ -16,19 +16,26 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
+import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.method.HandlerMethod;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MvcEndpointSecurityInterceptor}.
@@ -36,6 +43,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  */
 public class MvcEndpointSecurityInterceptorTests {
+
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	private MvcEndpointSecurityInterceptor securityInterceptor;
 
@@ -47,7 +57,7 @@ public class MvcEndpointSecurityInterceptorTests {
 
 	private MockHttpServletRequest request;
 
-	private MockHttpServletResponse response;
+	private HttpServletResponse response;
 
 	private MockServletContext servletContext;
 
@@ -62,7 +72,7 @@ public class MvcEndpointSecurityInterceptorTests {
 		this.handlerMethod = new HandlerMethod(this.mvcEndpoint, "invoke");
 		this.servletContext = new MockServletContext();
 		this.request = new MockHttpServletRequest(this.servletContext);
-		this.response = new MockHttpServletResponse();
+		this.response = mock(HttpServletResponse.class);
 	}
 
 	@Test
@@ -87,11 +97,30 @@ public class MvcEndpointSecurityInterceptorTests {
 	}
 
 	@Test
-	public void sensitiveEndpointIfRoleIsNotPresentShouldNotAllowAccess()
+	public void sensitiveEndpointIfNotAuthenticatedShouldNotAllowAccess()
 			throws Exception {
+		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
+				this.handlerMethod)).isFalse();
+		verify(this.response).sendError(HttpStatus.UNAUTHORIZED.value(),
+				"Full authentication is required to access this resource.");
+		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
+				this.handlerMethod)).isFalse();
+		assertThat(this.output.toString())
+				.containsOnlyOnce("Full authentication is required to access actuator "
+						+ "endpoints. Consider adding Spring Security or set "
+						+ "'management.security.enabled' to false");
+	}
+
+	@Test
+	public void sensitiveEndpointIfRoleIsNotCorrectShouldNotAllowAccess()
+			throws Exception {
+		Principal principal = mock(Principal.class);
+		this.request.setUserPrincipal(principal);
 		this.servletContext.declareRoles("HERO");
 		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
 				this.handlerMethod)).isFalse();
+		verify(this.response).sendError(HttpStatus.FORBIDDEN.value(),
+				"Access is denied. User must have one of the these roles: SUPER_HERO");
 	}
 
 	private static class TestEndpoint extends AbstractEndpoint<Object> {

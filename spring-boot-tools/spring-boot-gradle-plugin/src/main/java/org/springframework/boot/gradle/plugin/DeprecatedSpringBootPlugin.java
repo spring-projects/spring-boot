@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * to use the new Gradle Plugin Portal-compatible ID {@code org.springframework.boot}.
  *
  * @author Andy Wilkinson
- * @deprecated since 1.4.2 in favor of {@link SpringBootPlugin}
+ * @deprecated as of 1.4.2 in favor of {@link SpringBootPlugin}
  */
 @Deprecated
 public class DeprecatedSpringBootPlugin extends SpringBootPlugin {

@@ -187,6 +187,42 @@ public class OAuth2AutoConfigurationTests {
 	}
 
 	@Test
+	public void testCanUseClientCredentials() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(TestSecurityConfiguration.class,
+				MinimalSecureWebApplication.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"security.oauth2.client.clientId=client",
+				"security.oauth2.client.grantType=client_credentials");
+		this.context.refresh();
+		OAuth2ClientContext bean = this.context.getBean(OAuth2ClientContext.class);
+		assertThat(bean.getAccessTokenRequest()).isNotNull();
+		assertThat(countBeans(ClientCredentialsResourceDetails.class)).isEqualTo(1);
+		assertThat(countBeans(OAuth2ClientContext.class)).isEqualTo(1);
+	}
+
+	@Test
+	public void testCanUseClientCredentialsWithEnableOAuth2Client() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(ClientConfiguration.class,
+				MinimalSecureWebApplication.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"security.oauth2.client.clientId=client",
+				"security.oauth2.client.grantType=client_credentials");
+		this.context.refresh();
+		// The primary context is fine (not session scoped):
+		OAuth2ClientContext bean = this.context.getBean(OAuth2ClientContext.class);
+		assertThat(bean.getAccessTokenRequest()).isNotNull();
+		assertThat(countBeans(ClientCredentialsResourceDetails.class)).isEqualTo(1);
+		// Kind of a bug (should ideally be 1), but the cause is in Spring OAuth2 (there
+		// is no need for the extra session-scoped bean). What this test proves is that
+		// even if the user screws up and does @EnableOAuth2Client for client credentials,
+		// it will still just about work (because of the @Primary annotation on the
+		// Boot-created instance of OAuth2ClientContext).
+		assertThat(countBeans(OAuth2ClientContext.class)).isEqualTo(2);
+	}
+
+	@Test
 	public void testClientIsNotAuthCode() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(MinimalSecureNonWebApplication.class);
@@ -425,6 +461,7 @@ public class OAuth2AutoConfigurationTests {
 	@Configuration
 	@EnableOAuth2Client
 	protected static class ClientConfiguration extends TestSecurityConfiguration {
+
 	}
 
 	@Configuration

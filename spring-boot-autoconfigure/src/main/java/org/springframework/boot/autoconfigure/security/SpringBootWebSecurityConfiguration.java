@@ -237,6 +237,7 @@ public class SpringBootWebSecurityConfiguration {
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	protected static class ApplicationNoWebSecurityConfigurerAdapter
 			extends WebSecurityConfigurerAdapter {
+
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.requestMatcher(new RequestMatcher() {
@@ -246,6 +247,7 @@ public class SpringBootWebSecurityConfiguration {
 				}
 			});
 		}
+
 	}
 
 	@Configuration

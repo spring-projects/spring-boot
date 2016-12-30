@@ -52,7 +52,7 @@ import org.springframework.validation.Validator;
 public class YamlConfigurationFactory<T>
 		implements FactoryBean<T>, MessageSourceAware, InitializingBean {
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private static final Log logger = LogFactory.getLog(YamlConfigurationFactory.class);
 
 	private final Class<?> type;
 
@@ -137,8 +137,8 @@ public class YamlConfigurationFactory<T>
 		Assert.state(this.yaml != null, "Yaml document should not be null: "
 				+ "either set it directly or set the resource to load it from");
 		try {
-			if (this.logger.isTraceEnabled()) {
-				this.logger.trace(String.format("Yaml document is %n%s", this.yaml));
+			if (logger.isTraceEnabled()) {
+				logger.trace(String.format("Yaml document is %n%s", this.yaml));
 			}
 			Constructor constructor = new YamlJavaBeanPropertyConstructor(this.type,
 					this.propertyAliases);
@@ -151,7 +151,7 @@ public class YamlConfigurationFactory<T>
 			if (this.exceptionIfInvalid) {
 				throw ex;
 			}
-			this.logger.error("Failed to load YAML validation bean. "
+			logger.error("Failed to load YAML validation bean. "
 					+ "Your YAML file may be invalid.", ex);
 		}
 	}
@@ -161,19 +161,23 @@ public class YamlConfigurationFactory<T>
 				"configuration");
 		this.validator.validate(this.configuration, errors);
 		if (errors.hasErrors()) {
-			this.logger.error("YAML configuration failed validation");
+			logger.error("YAML configuration failed validation");
 			for (ObjectError error : errors.getAllErrors()) {
-				this.logger
-						.error(this.messageSource != null
-								? this.messageSource.getMessage(error,
-										Locale.getDefault()) + " (" + error + ")"
-								: error);
+				logger.error(getErrorMessage(error));
 			}
 			if (this.exceptionIfInvalid) {
 				BindException summary = new BindException(errors);
 				throw summary;
 			}
 		}
+	}
+
+	private Object getErrorMessage(ObjectError error) {
+		if (this.messageSource != null) {
+			Locale locale = Locale.getDefault();
+			return this.messageSource.getMessage(error, locale) + " (" + error + ")";
+		}
+		return error;
 	}
 
 	@Override

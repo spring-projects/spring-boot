@@ -31,6 +31,7 @@ import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,5 +95,12 @@ public @interface JdbcTest {
 	 * @return exclude filters to apply
 	 */
 	ComponentScan.Filter[] excludeFilters() default {};
+
+	/**
+	 * Auto-configuration exclusions that should be applied for this test.
+	 * @return auto-configuration exclusions to apply
+	 */
+	@AliasFor(annotation = ImportAutoConfiguration.class, attribute = "exclude")
+	Class<?>[] excludeAutoConfiguration() default {};
 
 }

@@ -54,4 +54,5 @@ public class FacebookAutoConfigurationTests extends AbstractSocialAutoConfigurat
 		assertNoConnectionFrameworkBeans();
 		assertMissingBean(Facebook.class);
 	}
+
 }

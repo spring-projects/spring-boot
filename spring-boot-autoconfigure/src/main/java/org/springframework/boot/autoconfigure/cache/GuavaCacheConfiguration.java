@@ -58,14 +58,14 @@ class GuavaCacheConfiguration {
 
 	GuavaCacheConfiguration(CacheProperties cacheProperties,
 			CacheManagerCustomizers customizers,
-			ObjectProvider<CacheBuilder<Object, Object>> cacheBuilderProvider,
-			ObjectProvider<CacheBuilderSpec> cacheBuilderSpecProvider,
-			ObjectProvider<CacheLoader<Object, Object>> cacheLoaderProvider) {
+			ObjectProvider<CacheBuilder<Object, Object>> cacheBuilder,
+			ObjectProvider<CacheBuilderSpec> cacheBuilderSpec,
+			ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
 		this.cacheProperties = cacheProperties;
 		this.customizers = customizers;
-		this.cacheBuilder = cacheBuilderProvider.getIfAvailable();
-		this.cacheBuilderSpec = cacheBuilderSpecProvider.getIfAvailable();
-		this.cacheLoader = cacheLoaderProvider.getIfAvailable();
+		this.cacheBuilder = cacheBuilder.getIfAvailable();
+		this.cacheBuilderSpec = cacheBuilderSpec.getIfAvailable();
+		this.cacheLoader = cacheLoader.getIfAvailable();
 	}
 
 	@Bean

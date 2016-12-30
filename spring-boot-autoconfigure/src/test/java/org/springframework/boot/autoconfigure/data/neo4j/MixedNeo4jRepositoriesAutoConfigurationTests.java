@@ -165,6 +165,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 			}
 			return names.toArray(new String[names.size()]);
 		}
+
 	}
 
 }

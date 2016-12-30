@@ -29,7 +29,7 @@ import org.springframework.core.env.Environment;
  * state too much at this early stage since it might be modified later in the lifecycle.
  *
  * @author Dave Syer
- * @deprecated since 1.5.0 in favor of {@link ApplicationStartingEvent}
+ * @deprecated as of 1.5 in favor of {@link ApplicationStartingEvent}
  */
 @Deprecated
 @SuppressWarnings("serial")

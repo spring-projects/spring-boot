@@ -116,4 +116,5 @@ public class StarterDependenciesIntegrationTests {
 			fail(root.getMessage());
 		}
 	}
+
 }

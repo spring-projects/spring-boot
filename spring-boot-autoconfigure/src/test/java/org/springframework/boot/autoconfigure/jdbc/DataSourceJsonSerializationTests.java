@@ -76,6 +76,7 @@ public class DataSourceJsonSerializationTests {
 
 	@JsonSerialize(using = TomcatDataSourceSerializer.class)
 	protected interface DataSourceJson {
+
 	}
 
 	protected static class TomcatDataSourceSerializer extends JsonSerializer<DataSource> {

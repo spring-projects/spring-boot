@@ -36,6 +36,7 @@ public class ClassWithNestedProperties {
 		public void setParentClassProperty(int parentClassProperty) {
 			this.parentClassProperty = parentClassProperty;
 		}
+
 	}
 
 	@ConfigurationProperties(prefix = "nestedChildProps")
@@ -50,5 +51,7 @@ public class ClassWithNestedProperties {
 		public void setChildClassProperty(int childClassProperty) {
 			this.childClassProperty = childClassProperty;
 		}
+
 	}
+
 }

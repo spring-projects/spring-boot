@@ -43,4 +43,5 @@ public class JolokiaProperties {
 	public void setConfig(Map<String, String> config) {
 		this.config = config;
 	}
+
 }

@@ -62,6 +62,7 @@ public class MethodAndClassConfig {
 		public void setFlag(boolean flag) {
 			this.flag = flag;
 		}
+
 	}
 
 }

@@ -62,6 +62,7 @@ public class TestProject {
 	 * incremental builds.
 	 */
 	private File sourceFolder;
+
 	private TestCompiler compiler;
 
 	private Set<File> sourceFiles = new LinkedHashSet<File>();
@@ -202,4 +203,5 @@ public class TestProject {
 	private static String getContents(File file) throws Exception {
 		return FileCopyUtils.copyToString(new FileReader(file));
 	}
+
 }

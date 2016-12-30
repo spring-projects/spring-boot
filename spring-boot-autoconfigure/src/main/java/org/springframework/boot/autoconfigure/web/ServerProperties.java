@@ -1554,6 +1554,7 @@ public class ServerProperties
 			public void setRotate(boolean rotate) {
 				this.rotate = rotate;
 			}
+
 		}
 
 	}
@@ -1605,4 +1606,5 @@ public class ServerProperties
 		}
 
 	}
+
 }

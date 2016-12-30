@@ -198,6 +198,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 		protected void stopAcceptingConnections() {
 			this.acceptConnections = false;
 		}
+
 	}
 
 	/**
@@ -221,5 +222,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 				this.closed = true;
 			}
 		}
+
 	}
+
 }

@@ -234,10 +234,21 @@ public class FlywayAutoConfigurationTests {
 				.isEqualTo(MigrationVersion.fromVersion("1"));
 	}
 
+	@Test
+	public void useVendorDirectory() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"flyway.locations=classpath:db/vendors/{vendor},classpath:db/changelog");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertThat(flyway.getLocations()).containsExactlyInAnyOrder(
+				"classpath:db/vendors/h2", "classpath:db/changelog");
+	}
+
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
 		this.context.register(annotatedClasses);
 		this.context.refresh();
-
 	}
 
 	@Configuration
@@ -269,6 +280,7 @@ public class FlywayAutoConfigurationTests {
 			initializer.setOrder(Ordered.HIGHEST_PRECEDENCE);
 			return initializer;
 		}
+
 	}
 
 	@Configuration
@@ -310,6 +322,7 @@ public class FlywayAutoConfigurationTests {
 		public void assertCalled() {
 			assertThat(this.called).isTrue();
 		}
+
 	}
 
 }

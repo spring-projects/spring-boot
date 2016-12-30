@@ -60,9 +60,9 @@ public class SpringApplicationAdminJmxAutoConfiguration {
 	private final Environment environment;
 
 	public SpringApplicationAdminJmxAutoConfiguration(
-			ObjectProvider<MBeanExporter> mbeanExporterProvider,
+			ObjectProvider<MBeanExporter> mbeanExporter,
 			Environment environment) {
-		this.mbeanExporter = mbeanExporterProvider.getIfAvailable();
+		this.mbeanExporter = mbeanExporter.getIfAvailable();
 		this.environment = environment;
 	}
 

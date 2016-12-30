@@ -43,4 +43,5 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
 @EnableWebSecurity
 public class FallbackWebSecurityAutoConfiguration {
+
 }

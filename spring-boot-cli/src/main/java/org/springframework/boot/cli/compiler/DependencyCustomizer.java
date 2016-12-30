@@ -253,7 +253,6 @@ public class DependencyCustomizer {
 	/**
 	 * Strategy called to test if dependencies can be added. Subclasses override as
 	 * required. Returns {@code true} by default.
-	 *
 	 * @return {@code true} if dependencies can be added, otherwise {@code false}
 	 */
 	protected boolean canAdd() {
@@ -267,4 +266,5 @@ public class DependencyCustomizer {
 	public DependencyResolutionContext getDependencyResolutionContext() {
 		return this.dependencyResolutionContext;
 	}
+
 }

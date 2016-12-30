@@ -46,11 +46,14 @@ class CloudFoundrySecurityService {
 	private String uaaUrl;
 
 	CloudFoundrySecurityService(RestTemplateBuilder restTemplateBuilder,
-			String cloudControllerUrl) {
+			String cloudControllerUrl, boolean skipSslValidation) {
 		Assert.notNull(restTemplateBuilder, "RestTemplateBuilder must not be null");
 		Assert.notNull(cloudControllerUrl, "CloudControllerUrl must not be null");
-		this.restTemplate = restTemplateBuilder
-				.requestFactory(SkipSslVerificationHttpRequestFactory.class).build();
+		if (skipSslValidation) {
+			restTemplateBuilder = restTemplateBuilder
+					.requestFactory(SkipSslVerificationHttpRequestFactory.class);
+		}
+		this.restTemplate = restTemplateBuilder.build();
 		this.cloudControllerUrl = cloudControllerUrl;
 	}
 

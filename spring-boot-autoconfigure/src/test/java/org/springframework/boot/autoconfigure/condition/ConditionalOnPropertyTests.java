@@ -461,4 +461,5 @@ public class ConditionalOnPropertyTests {
 	public @interface ConditionalOnMyFeature {
 
 	}
+
 }

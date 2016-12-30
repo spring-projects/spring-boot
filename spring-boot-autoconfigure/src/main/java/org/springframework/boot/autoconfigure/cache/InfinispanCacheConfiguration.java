@@ -56,11 +56,10 @@ public class InfinispanCacheConfiguration {
 
 	public InfinispanCacheConfiguration(CacheProperties cacheProperties,
 			CacheManagerCustomizers customizers,
-			ObjectProvider<ConfigurationBuilder> defaultConfigurationBuilderProvider) {
+			ObjectProvider<ConfigurationBuilder> defaultConfigurationBuilder) {
 		this.cacheProperties = cacheProperties;
 		this.customizers = customizers;
-		this.defaultConfigurationBuilder = defaultConfigurationBuilderProvider
-				.getIfAvailable();
+		this.defaultConfigurationBuilder = defaultConfigurationBuilder.getIfAvailable();
 	}
 
 	@Bean

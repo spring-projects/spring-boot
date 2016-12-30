@@ -18,6 +18,7 @@ package org.springframework.boot.context.embedded.jetty;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -47,12 +48,13 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
-import org.eclipse.jetty.server.session.HashSessionManager;
+import org.eclipse.jetty.server.session.DefaultSessionCache;
+import org.eclipse.jetty.server.session.FileSessionDataStore;
+import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletMapping;
@@ -112,6 +114,8 @@ public class JettyEmbeddedServletContainerFactory
 	private static final String GZIP_HANDLER_JETTY_9_3 = "org.eclipse.jetty.server.handler.gzip.GzipHandler";
 
 	private static final String CONNECTOR_JETTY_8 = "org.eclipse.jetty.server.nio.SelectChannelConnector";
+
+	private static final String SESSION_JETTY_9_3 = "org.eclipse.jetty.server.session.HashSessionManager";
 
 	private List<Configuration> configurations = new ArrayList<Configuration>();
 
@@ -366,6 +370,20 @@ public class JettyEmbeddedServletContainerFactory
 		postProcessWebAppContext(context);
 	}
 
+	private void configureSession(WebAppContext context) {
+		SessionConfigurer configurer = getSessionConfigurer();
+		configurer.configure(context, getSessionTimeout(), isPersistSession(),
+				new SessionDirectory() {
+
+					@Override
+					public File get() {
+						return JettyEmbeddedServletContainerFactory.this
+								.getValidSessionStoreDir();
+					}
+
+				});
+	}
+
 	private void addLocaleMappings(WebAppContext context) {
 		for (Map.Entry<Locale, Charset> entry : getLocaleCharsetMappings().entrySet()) {
 			Locale locale = entry.getKey();
@@ -374,25 +392,11 @@ public class JettyEmbeddedServletContainerFactory
 		}
 	}
 
-	private void configureSession(WebAppContext context) {
-		SessionManager sessionManager = context.getSessionHandler().getSessionManager();
-		int sessionTimeout = (getSessionTimeout() > 0 ? getSessionTimeout() : -1);
-		sessionManager.setMaxInactiveInterval(sessionTimeout);
-		if (isPersistSession()) {
-			Assert.isInstanceOf(HashSessionManager.class, sessionManager,
-					"Unable to use persistent sessions");
-			configurePersistSession(sessionManager);
+	private SessionConfigurer getSessionConfigurer() {
+		if (ClassUtils.isPresent(SESSION_JETTY_9_3, getClass().getClassLoader())) {
+			return new Jetty93SessionConfigurer();
 		}
-	}
-
-	private void configurePersistSession(SessionManager sessionManager) {
-		try {
-			((HashSessionManager) sessionManager)
-					.setStoreDirectory(getValidSessionStoreDir());
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException(ex);
-		}
+		return new Jetty94SessionConfigurer();
 	}
 
 	private File getTempDirectory() {
@@ -702,6 +706,7 @@ public class JettyEmbeddedServletContainerFactory
 			serverConnector.setPort(port);
 			return serverConnector;
 		}
+
 	}
 
 	/**
@@ -953,6 +958,97 @@ public class JettyEmbeddedServletContainerFactory
 		@Override
 		public Server createServer(ThreadPool threadPool) {
 			return new Server(threadPool);
+		}
+
+	}
+
+	/**
+	 * Provides access to the session directory.
+	 */
+	private interface SessionDirectory {
+
+		File get();
+
+	}
+
+	/**
+	 * Strategy used to configure Jetty sessions.
+	 */
+	private interface SessionConfigurer {
+
+		void configure(WebAppContext context, int timeout, boolean persist,
+				SessionDirectory sessionDirectory);
+
+	}
+
+	/**
+	 * SessionConfigurer for Jetty 9.3 and earlier.
+	 */
+	private static class Jetty93SessionConfigurer implements SessionConfigurer {
+
+		@Override
+		public void configure(WebAppContext context, int timeout, boolean persist,
+				SessionDirectory sessionDirectory) {
+			SessionHandler handler = context.getSessionHandler();
+			Object manager = getSessionManager(handler);
+			setMaxInactiveInterval(manager, timeout > 0 ? timeout : -1);
+			if (persist) {
+				Class<?> hashSessionManagerClass = ClassUtils.resolveClassName(
+						"org.eclipse.jetty.server.session.HashSessionManager",
+						handler.getClass().getClassLoader());
+				Assert.isInstanceOf(hashSessionManagerClass, manager,
+						"Unable to use persistent sessions");
+				configurePersistSession(manager, sessionDirectory);
+			}
+		}
+
+		private Object getSessionManager(SessionHandler handler) {
+			Method method = ReflectionUtils.findMethod(SessionHandler.class,
+					"getSessionManager");
+			return ReflectionUtils.invokeMethod(method, handler);
+		}
+
+		private void setMaxInactiveInterval(Object manager, int interval) {
+			Method method = ReflectionUtils.findMethod(manager.getClass(),
+					"setMaxInactiveInterval", Integer.TYPE);
+			ReflectionUtils.invokeMethod(method, manager, interval);
+		}
+
+		private void configurePersistSession(Object manager,
+				SessionDirectory sessionDirectory) {
+			try {
+				setStoreDirectory(manager, sessionDirectory.get());
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
+
+		private void setStoreDirectory(Object manager, File file) throws IOException {
+			Method method = ReflectionUtils.findMethod(manager.getClass(),
+					"setStoreDirectory", File.class);
+			ReflectionUtils.invokeMethod(method, manager, file);
+		}
+
+	}
+
+	/**
+	 * SessionConfigurer for Jetty 9.4 and earlier.
+	 */
+	private static class Jetty94SessionConfigurer implements SessionConfigurer {
+
+		@Override
+		public void configure(WebAppContext context, int timeout, boolean persist,
+				SessionDirectory sessionDirectory) {
+			SessionHandler handler = context.getSessionHandler();
+			handler.setMaxInactiveInterval(timeout > 0 ? timeout : -1);
+			if (persist) {
+				DefaultSessionCache cache = new DefaultSessionCache(handler);
+				FileSessionDataStore store = new FileSessionDataStore();
+				store.setStoreDir(sessionDirectory.get());
+				cache.setSessionDataStore(store);
+				handler.setSessionCache(cache);
+			}
 		}
 
 	}

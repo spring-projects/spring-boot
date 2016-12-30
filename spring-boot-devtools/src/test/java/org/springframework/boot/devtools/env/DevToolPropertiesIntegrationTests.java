@@ -118,6 +118,7 @@ public class DevToolPropertiesIntegrationTests {
 		public MyBean myBean() {
 			return new MyBean();
 		}
+
 	}
 
 	static class MyBean {
@@ -132,4 +133,5 @@ public class DevToolPropertiesIntegrationTests {
 		}
 
 	}
+
 }

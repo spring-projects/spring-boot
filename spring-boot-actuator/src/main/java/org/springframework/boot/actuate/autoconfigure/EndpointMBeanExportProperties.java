@@ -83,4 +83,5 @@ public class EndpointMBeanExportProperties {
 	public void setStaticNames(String[] staticNames) {
 		this.staticNames = StringUtils.splitArrayElementsIntoProperties(staticNames, "=");
 	}
+
 }

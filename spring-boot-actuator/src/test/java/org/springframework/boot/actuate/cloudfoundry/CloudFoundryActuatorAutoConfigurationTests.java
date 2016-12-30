@@ -42,6 +42,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.config.annotation.web.builders.WebSecurity.IgnoredRequestConfigurer;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -115,6 +116,22 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		String cloudControllerUrl = (String) ReflectionTestUtils
 				.getField(interceptorSecurityService, "cloudControllerUrl");
 		assertThat(cloudControllerUrl).isEqualTo("http://my-cloud-controller.com");
+	}
+
+	@Test
+	public void skipSslValidation() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.cloudfoundry.skipSslValidation:true");
+		this.context.refresh();
+		CloudFoundryEndpointHandlerMapping handlerMapping = getHandlerMapping();
+		Object interceptor = ReflectionTestUtils.getField(handlerMapping,
+				"securityInterceptor");
+		Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
+				"cloudFoundrySecurityService");
+		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils
+				.getField(interceptorSecurityService, "restTemplate");
+		assertThat(restTemplate.getRequestFactory())
+				.isInstanceOf(SkipSslVerificationHttpRequestFactory.class);
 	}
 
 	@Test

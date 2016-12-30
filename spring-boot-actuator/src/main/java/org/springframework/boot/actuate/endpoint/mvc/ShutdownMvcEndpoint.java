@@ -49,4 +49,5 @@ public class ShutdownMvcEndpoint extends EndpointMvcAdapter {
 		}
 		return super.invoke();
 	}
+
 }

@@ -165,6 +165,18 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	public void tomcatNopLoggingConfigDoesNotCauseAFailure() throws Exception {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"LOGGING_CONFIG: -Dnop");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.logger.info("Hello world");
+		String output = this.outputCapture.toString().trim();
+		assertThat(output).contains("Hello world").doesNotContain("???");
+		assertThat(new File(tmpDir() + "/spring.log").exists()).isFalse();
+	}
+
+	@Test
 	public void overrideConfigBroken() throws Exception {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-broken.xml");
@@ -455,6 +467,16 @@ public class LoggingApplicationListenerTests {
 		assertThat(System.getProperty("LOG_LEVEL_PATTERN")).isEqualTo("level");
 		assertThat(System.getProperty("LOG_PATH")).isEqualTo("path");
 		assertThat(System.getProperty("PID")).isNotNull();
+	}
+
+	@Test
+	public void environmentPropertiesIgnoreUnresolvablePlaceholders() {
+		// gh-7719
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"logging.pattern.console=console ${pid}");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertThat(System.getProperty("CONSOLE_LOG_PATTERN")).isEqualTo("console ${pid}");
 	}
 
 	@Test

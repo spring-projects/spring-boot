@@ -45,8 +45,7 @@ public class WebMvcTestCustomDispatcherServletIntegrationTests {
 
 	@Test
 	public void dispatcherServletIsCustomized() throws Exception {
-		this.mvc.perform(get("/does-not-exist"))
-				.andExpect(status().isBadRequest())
+		this.mvc.perform(get("/does-not-exist")).andExpect(status().isBadRequest())
 				.andExpect(content().string("Invalid request: /does-not-exist"));
 	}
 

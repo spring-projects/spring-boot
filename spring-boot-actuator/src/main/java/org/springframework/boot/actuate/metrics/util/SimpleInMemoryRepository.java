@@ -99,6 +99,7 @@ public class SimpleInMemoryRepository<T> {
 
 	/**
 	 * Callback used to update a value.
+	 *
 	 * @param <T> the value type
 	 */
 	public interface Callback<T> {

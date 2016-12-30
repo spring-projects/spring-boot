@@ -70,7 +70,7 @@
 			<dependency>
 				<groupId>io.spring.gradle</groupId>
 				<artifactId>dependency-management-plugin</artifactId>
-				<version>0.6.1.RELEASE</version>
+				<version>1.0.0.RC1</version>
 			</dependency>
 			<dependency>
 				<groupId>jline</groupId>
@@ -236,6 +236,11 @@
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-runtime</artifactId>
 				<version>1.0.4</version>
+			</dependency>
+			<dependency>
+				<groupId>org.sonatype.plexus</groupId>
+				<artifactId>plexus-build-api</artifactId>
+				<version>0.0.7</version>
 			</dependency>
 			<dependency>
 				<groupId>org.zeroturnaround</groupId>

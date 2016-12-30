@@ -21,6 +21,10 @@ stop_service() {
   service spring-boot-app stop
 }
 
+force_stop_service() {
+  service spring-boot-app force-stop
+}
+
 await_app() {
   if [ -z $1 ]
   then

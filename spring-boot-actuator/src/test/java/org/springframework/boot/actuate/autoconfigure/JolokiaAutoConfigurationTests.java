@@ -144,8 +144,8 @@ public class JolokiaAutoConfigurationTests {
 		public EndpointHandlerMapping endpointHandlerMapping(
 				Collection<? extends MvcEndpoint> endpoints) {
 			EndpointHandlerMapping mapping = new EndpointHandlerMapping(endpoints);
-			mapping.setSecurityInterceptor(
-					new MvcEndpointSecurityInterceptor(false, Collections.EMPTY_LIST));
+			mapping.setSecurityInterceptor(new MvcEndpointSecurityInterceptor(false,
+					Collections.<String>emptyList()));
 			return mapping;
 		}
 

@@ -37,11 +37,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
 
 /**
@@ -57,6 +59,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Eddú Meléndez
+ * @author Kazuki Shimizu
  */
 @Configuration
 @ConditionalOnClass({ JobLauncher.class, DataSource.class, JdbcOperations.class })
@@ -70,9 +73,9 @@ public class BatchAutoConfiguration {
 	private final JobParametersConverter jobParametersConverter;
 
 	public BatchAutoConfiguration(BatchProperties properties,
-			ObjectProvider<JobParametersConverter> jobParametersConverterProvider) {
+			ObjectProvider<JobParametersConverter> jobParametersConverter) {
 		this.properties = properties;
-		this.jobParametersConverter = jobParametersConverterProvider.getIfAvailable();
+		this.jobParametersConverter = jobParametersConverter.getIfAvailable();
 	}
 
 	@Bean
@@ -133,7 +136,8 @@ public class BatchAutoConfiguration {
 		return factory;
 	}
 
-	@ConditionalOnClass(name = "javax.persistence.EntityManagerFactory")
+	@EnableConfigurationProperties(BatchProperties.class)
+	@ConditionalOnClass(value = PlatformTransactionManager.class, name = "javax.persistence.EntityManagerFactory")
 	@ConditionalOnMissingBean(BatchConfigurer.class)
 	@Configuration
 	protected static class JpaBatchConfiguration {
@@ -150,15 +154,18 @@ public class BatchAutoConfiguration {
 		@Bean
 		@ConditionalOnBean(name = "entityManagerFactory")
 		public BasicBatchConfigurer jpaBatchConfigurer(DataSource dataSource,
-				EntityManagerFactory entityManagerFactory) {
+				EntityManagerFactory entityManagerFactory,
+				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 			return new BasicBatchConfigurer(this.properties, dataSource,
-					entityManagerFactory);
+					entityManagerFactory, transactionManagerCustomizers.getIfAvailable());
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(name = "entityManagerFactory")
-		public BasicBatchConfigurer basicBatchConfigurer(DataSource dataSource) {
-			return new BasicBatchConfigurer(this.properties, dataSource);
+		public BasicBatchConfigurer basicBatchConfigurer(DataSource dataSource,
+				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+			return new BasicBatchConfigurer(this.properties, dataSource,
+					transactionManagerCustomizers.getIfAvailable());
 		}
 
 	}

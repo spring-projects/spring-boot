@@ -67,8 +67,7 @@ public class SpringProfileDocumentMatcherTests {
 	@Test
 	public void matchesCommaSeparatedArray() throws IOException {
 		DocumentMatcher matcher = new SpringProfileDocumentMatcher("foo", "bar");
-		Properties properties = getProperties(
-				String.format("spring.profiles: [bar, spam]"));
+		Properties properties = getProperties("spring.profiles: [bar, spam]");
 		assertThat(matcher.matches(properties)).isEqualTo(MatchStatus.FOUND);
 	}
 

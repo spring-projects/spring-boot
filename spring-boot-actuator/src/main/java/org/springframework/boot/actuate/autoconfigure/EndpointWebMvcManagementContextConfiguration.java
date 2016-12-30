@@ -81,11 +81,11 @@ public class EndpointWebMvcManagementContextConfiguration {
 			HealthMvcEndpointProperties healthMvcEndpointProperties,
 			ManagementServerProperties managementServerProperties,
 			EndpointCorsProperties corsProperties,
-			ObjectProvider<List<EndpointHandlerMappingCustomizer>> mappingCustomizersProvider) {
+			ObjectProvider<List<EndpointHandlerMappingCustomizer>> mappingCustomizers) {
 		this.healthMvcEndpointProperties = healthMvcEndpointProperties;
 		this.managementServerProperties = managementServerProperties;
 		this.corsProperties = corsProperties;
-		List<EndpointHandlerMappingCustomizer> providedCustomizers = mappingCustomizersProvider
+		List<EndpointHandlerMappingCustomizer> providedCustomizers = mappingCustomizers
 				.getIfAvailable();
 		this.mappingCustomizers = providedCustomizers == null
 				? Collections.<EndpointHandlerMappingCustomizer>emptyList()

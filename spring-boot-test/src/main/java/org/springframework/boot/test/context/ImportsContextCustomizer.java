@@ -276,6 +276,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			return (obj != null && getClass().equals(obj.getClass())
 					&& this.annotations.equals(((ContextCustomizerKey) obj).annotations));
 		}
+
 	}
 
 	/**

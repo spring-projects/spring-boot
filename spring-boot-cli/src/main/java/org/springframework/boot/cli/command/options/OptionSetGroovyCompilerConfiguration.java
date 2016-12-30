@@ -91,4 +91,5 @@ public class OptionSetGroovyCompilerConfiguration implements GroovyCompilerConfi
 	public List<RepositoryConfiguration> getRepositoryConfiguration() {
 		return this.repositoryConfiguration;
 	}
+
 }

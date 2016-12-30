@@ -49,8 +49,8 @@ class LoggingSystemProperties {
 	}
 
 	public void apply(LogFile logFile) {
-		RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(
-				this.environment, "logging.");
+		RelaxedPropertyResolver propertyResolver = RelaxedPropertyResolver
+				.ignoringUnresolvableNestedPlaceholders(this.environment, "logging.");
 		setSystemProperty(propertyResolver, EXCEPTION_CONVERSION_WORD,
 				"exception-conversion-word");
 		setSystemProperty(propertyResolver, CONSOLE_LOG_PATTERN, "pattern.console");

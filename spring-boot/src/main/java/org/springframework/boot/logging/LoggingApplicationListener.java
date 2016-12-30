@@ -97,6 +97,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	/**
 	 * The name of the Spring property that contains the directory where log files are
 	 * written.
+	 * @deprecated as of 1.5 in favor of {@link LogFile#PATH_PROPERTY}
 	 */
 	@Deprecated
 	public static final String PATH_PROPERTY = LogFile.PATH_PROPERTY;
@@ -104,6 +105,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	/**
 	 * The name of the Spring property that contains the name of the log file. Names can
 	 * be an exact location or relative to the current directory.
+	 * @deprecated as of 1.5 in favor of {@link LogFile#FILE_PROPERTY}
 	 */
 	@Deprecated
 	public static final String FILE_PROPERTY = LogFile.FILE_PROPERTY;
@@ -316,12 +318,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private boolean ignoreLogConfig(String logConfig) {
-		return !StringUtils.hasLength(logConfig)
-				|| isDefaultAzureLoggingConfig(logConfig);
-	}
-
-	private boolean isDefaultAzureLoggingConfig(String candidate) {
-		return candidate.startsWith("-Djava.util.logging.config.file=");
+		return !StringUtils.hasLength(logConfig) || logConfig.startsWith("-D");
 	}
 
 	private void initializeFinalLoggingLevels(ConfigurableEnvironment environment,

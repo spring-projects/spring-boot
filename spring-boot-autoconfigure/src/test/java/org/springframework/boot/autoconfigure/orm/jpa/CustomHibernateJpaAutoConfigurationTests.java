@@ -106,4 +106,5 @@ public class CustomHibernateJpaAutoConfigurationTests {
 	protected static class TestConfiguration {
 
 	}
+
 }

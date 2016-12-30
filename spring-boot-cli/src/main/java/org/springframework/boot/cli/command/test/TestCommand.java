@@ -68,6 +68,7 @@ public class TestCommand extends OptionParsingCommand {
 					CompilerOptionHandler optionHandler) {
 				super(options, optionHandler);
 			}
+
 		}
 
 	}

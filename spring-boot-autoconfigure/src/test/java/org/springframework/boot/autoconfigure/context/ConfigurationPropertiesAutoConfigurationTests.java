@@ -82,6 +82,7 @@ public class ConfigurationPropertiesAutoConfigurationTests {
 		public void setName(String name) {
 			this.name = name;
 		}
+
 	}
 
 }

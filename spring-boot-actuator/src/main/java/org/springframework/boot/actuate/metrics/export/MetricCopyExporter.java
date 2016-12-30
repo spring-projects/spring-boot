@@ -240,4 +240,5 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 		}
 
 	};
+
 }

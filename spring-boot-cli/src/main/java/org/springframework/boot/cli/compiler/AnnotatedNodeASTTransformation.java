@@ -131,4 +131,5 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 		}
 
 	}
+
 }

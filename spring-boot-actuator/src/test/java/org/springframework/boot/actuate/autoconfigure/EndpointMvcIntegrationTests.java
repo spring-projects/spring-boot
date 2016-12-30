@@ -110,8 +110,8 @@ public class EndpointMvcIntegrationTests {
 		private final List<HttpMessageConverter<?>> converters;
 
 		public Application(
-				ObjectProvider<List<HttpMessageConverter<?>>> convertersProvider) {
-			this.converters = convertersProvider.getIfAvailable();
+				ObjectProvider<List<HttpMessageConverter<?>>> converters) {
+			this.converters = converters.getIfAvailable();
 		}
 
 		@RequestMapping("/{name}/{env}/{bar}")
@@ -139,7 +139,7 @@ public class EndpointMvcIntegrationTests {
 
 				@Override
 				public void customize(EndpointHandlerMapping mapping) {
-					mapping.setInterceptors(new Object[] { interceptor() });
+					mapping.setInterceptors(interceptor());
 				}
 
 			};

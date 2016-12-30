@@ -105,6 +105,7 @@ public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 	}
 
 	private class LocalRepositoryManagerAnswer implements Answer<LocalRepositoryManager> {
+
 		@Override
 		public LocalRepositoryManager answer(InvocationOnMock invocation)
 				throws Throwable {

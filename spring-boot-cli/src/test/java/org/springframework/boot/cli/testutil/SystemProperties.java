@@ -33,7 +33,6 @@ public final class SystemProperties {
 	/**
 	 * Performs the given {@code action} with the given system properties set. System
 	 * properties are restored to their previous values once the action has run.
-	 *
 	 * @param action The action to perform
 	 * @param systemPropertyPairs The system properties, each in the form
 	 * {@code key:value}
@@ -61,4 +60,5 @@ public final class SystemProperties {
 			}
 		}
 	}
+
 }

@@ -127,10 +127,12 @@ public class SpringBootServletInitializerTests {
 				SpringApplicationBuilder application) {
 			return application.sources(Config.class);
 		}
+
 	}
 
 	@Configuration
 	public class WithConfigurationAnnotation extends MockSpringBootServletInitializer {
+
 	}
 
 	public class WithConfiguredSource extends MockSpringBootServletInitializer {

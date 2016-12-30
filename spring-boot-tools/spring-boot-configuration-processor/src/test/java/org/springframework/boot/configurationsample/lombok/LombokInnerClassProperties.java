@@ -57,7 +57,9 @@ public class LombokInnerClassProperties {
 	}
 
 	public enum Fourth {
+
 		YES, NO
+
 	}
 
 }

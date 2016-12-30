@@ -3,7 +3,7 @@
 [[common-application-properties]]
 == Common application properties
 Various properties can be specified inside your `application.properties`/`application.yml`
-file or as command line switches. This section provides a list common Spring Boot
+file or as command line switches. This section provides a list of common Spring Boot
 properties and references to the underlying classes that consume them.
 
 NOTE: Property contributions can come from additional jar files on your classpath so
@@ -194,6 +194,7 @@ content into your application; rather pick only the properties that you need.
 	server.ssl.trust-store-provider= # Provider for the trust store.
 	server.ssl.trust-store-type= # Type of the trust store.
 	server.tomcat.accept-count= # Maximum queue length for incoming connection requests when all possible request processing threads are in use.
+	server.tomcat.accesslog.buffered=true # Buffer output such that it is only flushed periodically.
 	server.tomcat.accesslog.directory=logs # Directory in which log files are created. Can be relative to the tomcat base dir or absolute.
 	server.tomcat.accesslog.enabled=false # Enable access log.
 	server.tomcat.accesslog.pattern=common # Format pattern for access logs.
@@ -628,6 +629,7 @@ content into your application; rather pick only the properties that you need.
 
 	# JEST (Elasticsearch HTTP client) ({sc-spring-boot-autoconfigure}/jest/JestProperties.{sc-ext}[JestProperties])
 	spring.elasticsearch.jest.connection-timeout=3000 # Connection timeout in milliseconds.
+	spring.elasticsearch.jest.multi-threaded=true # Enable connection requests from multiple execution threads.
 	spring.elasticsearch.jest.password= # Login password.
 	spring.elasticsearch.jest.proxy.host= # Proxy host the HTTP client should use.
 	spring.elasticsearch.jest.proxy.port= # Proxy port the HTTP client should use.
@@ -794,8 +796,10 @@ content into your application; rather pick only the properties that you need.
 	spring.redis.cluster.max-redirects= # Maximum number of redirects to follow when executing commands across the cluster.
 	spring.redis.cluster.nodes= # Comma-separated list of "host:port" pairs to bootstrap from.
 	spring.redis.database=0 # Database index used by the connection factory.
+	spring.redis.url= # Connection URL, will override host, port and password (user will be ignored), e.g. redis://user:password@example.com:6379
 	spring.redis.host=localhost # Redis server host.
 	spring.redis.password= # Login password of the redis server.
+	spring.redis.ssl=false # Enable SSL support.
 	spring.redis.pool.max-active=8 # Max number of connections that can be allocated by the pool at a given time. Use a negative value for no limit.
 	spring.redis.pool.max-idle=8 # Max number of "idle" connections in the pool. Use a negative value to indicate an unlimited number of idle connections.
 	spring.redis.pool.max-wait=-1 # Maximum amount of time (in milliseconds) a connection allocation should block before throwing an exception when the pool is exhausted. Use a negative value to block indefinitely.
@@ -804,6 +808,11 @@ content into your application; rather pick only the properties that you need.
 	spring.redis.sentinel.master= # Name of Redis server.
 	spring.redis.sentinel.nodes= # Comma-separated list of host:port pairs.
 	spring.redis.timeout=0 # Connection timeout in milliseconds.
+
+	# TRANSACTION ({sc-spring-boot-autoconfigure}/transaction/TransactionProperties.{sc-ext}[TransactionProperties])
+	spring.transaction.default-timeout= # Default transaction timeout in seconds.
+	spring.transaction.rollback-on-commit-failure= # Perform the rollback on commit failures.
+
 
 
 	# ----------------------------------------
@@ -872,6 +881,7 @@ content into your application; rather pick only the properties that you need.
 	spring.kafka.consumer.group-id= # Unique string that identifies the consumer group this consumer belongs to.
 	spring.kafka.consumer.heartbeat-interval= # Expected time in milliseconds between heartbeats to the consumer coordinator.
 	spring.kafka.consumer.key-deserializer= # Deserializer class for keys.
+	spring.kafka.consumer.max-poll-messages= # Maximum number of records returned in a single call to poll().
 	spring.kafka.consumer.value-deserializer= # Deserializer class for values.
 	spring.kafka.listener.ack-count= # Number of records between offset commits when ackMode is "COUNT" or "COUNT_TIME".
 	spring.kafka.listener.ack-mode= # Listener AckMode; see the spring-kafka documentation.
@@ -887,6 +897,7 @@ content into your application; rather pick only the properties that you need.
 	spring.kafka.producer.key-serializer= # Serializer class for keys.
 	spring.kafka.producer.retries= # When greater than zero, enables retrying of failed sends.
 	spring.kafka.producer.value-serializer= # Serializer class for values.
+	spring.kafka.properties.*= # Additional properties used to configure the client.
 	spring.kafka.ssl.key-password= # Password of the private key in the key store file.
 	spring.kafka.ssl.keystore-location= # Location of the key store file.
 	spring.kafka.ssl.keystore-password= # Store password for the key store file.
@@ -1046,7 +1057,7 @@ content into your application; rather pick only the properties that you need.
 	management.context-path= # Management endpoint context-path. For instance `/actuator`
 	management.port= # Management endpoint HTTP port. Uses the same port as the application by default. Configure a different port to use management-specific SSL.
 	management.security.enabled=true # Enable security.
-	management.security.roles=ADMIN # Comma-separated list of roles that can access the management endpoint.
+	management.security.roles=ACTUATOR # Comma-separated list of roles that can access the management endpoint.
 	management.security.sessions=stateless # Session creating policy to use (always, never, if_required, stateless).
 	management.ssl.ciphers= # Supported SSL ciphers. Requires a custom management.port.
 	management.ssl.client-auth= # Whether client authentication is wanted ("want") or needed ("need"). Requires a trust store. Requires a custom management.port.
@@ -1064,8 +1075,10 @@ content into your application; rather pick only the properties that you need.
 	management.ssl.trust-store-provider= # Provider for the trust store. Requires a custom management.port.
 	management.ssl.trust-store-type= # Type of the trust store. Requires a custom management.port.
 
-	# HEALTH INDICATORS (previously health.*)
+	# HEALTH INDICATORS
 	management.health.db.enabled=true # Enable database health check.
+	management.health.cassandra.enabled=true # Enable cassandra health check.
+	management.health.couchbase.enabled=true # Enable couchbase health check.
 	management.health.defaults.enabled=true # Enable default health indicators.
 	management.health.diskspace.enabled=true # Enable disk space health check.
 	management.health.diskspace.path= # Path used to compute the available disk space.
@@ -1094,7 +1107,7 @@ content into your application; rather pick only the properties that you need.
 	management.shell.auth.key.path= # Path to the authentication key. This should point to a valid ".pem" file.
 	management.shell.auth.simple.user.name=user # Login user.
 	management.shell.auth.simple.user.password= # Login password.
-	management.shell.auth.spring.roles=ADMIN # Comma-separated list of required roles to login to the CRaSH console.
+	management.shell.auth.spring.roles=ACTUATOR # Comma-separated list of required roles to login to the CRaSH console.
 	management.shell.command-path-patterns=classpath*:/commands/**,classpath*:/crash/commands/** # Patterns to use to look for commands.
 	management.shell.command-refresh-interval=-1 # Scan for changes and update the command if necessary (in seconds).
 	management.shell.config-path-patterns=classpath*:/crash/* # Patterns to use to look for configurations.
@@ -1151,5 +1164,12 @@ content into your application; rather pick only the properties that you need.
 	spring.devtools.remote.restart.enabled=true # Enable remote restart.
 	spring.devtools.remote.secret= # A shared secret required to establish a connection (required to enable remote support).
 	spring.devtools.remote.secret-header-name=X-AUTH-TOKEN # HTTP header used to transfer the shared secret.
+
+
+	# ----------------------------------------
+	# TESTING PROPERTIES
+	# ----------------------------------------
+
+	spring.test.database.replace=any # Type of existing DataSource to replace.
 
 ----

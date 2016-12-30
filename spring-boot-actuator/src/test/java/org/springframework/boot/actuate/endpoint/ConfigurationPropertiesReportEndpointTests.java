@@ -186,10 +186,12 @@ public class ConfigurationPropertiesReportEndpointTests
 	@Configuration
 	@EnableConfigurationProperties
 	public static class Parent {
+
 		@Bean
 		public TestProperties testProperties() {
 			return new TestProperties();
 		}
+
 	}
 
 	@Configuration
@@ -281,4 +283,5 @@ public class ConfigurationPropertiesReportEndpointTests
 		}
 
 	}
+
 }
