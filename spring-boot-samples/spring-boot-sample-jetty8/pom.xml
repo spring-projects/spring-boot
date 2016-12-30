@@ -21,6 +21,7 @@
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 	</properties>
 	<dependencies>
+		<!-- Compile -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
@@ -39,6 +40,7 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 		</dependency>
+		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
