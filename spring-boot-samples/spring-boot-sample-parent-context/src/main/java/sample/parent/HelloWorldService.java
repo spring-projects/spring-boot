@@ -16,14 +16,16 @@
 
 package sample.parent;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class HelloWorldService {
 
-	@Autowired
-	private ServiceProperties configuration;
+	private final ServiceProperties configuration;
+
+	public HelloWorldService(ServiceProperties configuration) {
+		this.configuration = configuration;
+	}
 
 	public String getHelloMessage(String name) {
 		return this.configuration.getGreeting() + " " + name;

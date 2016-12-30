@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package sample.metrics.opentsdb;
+package sample.metrics.dropwizard;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
-@Component
 @ConfigurationProperties(prefix = "service", ignoreUnknownFields = false)
-public class HelloWorldService {
+public class HelloWorldProperties {
 
+	/**
+	 * Name of the service.
+	 */
 	private String name = "World";
 
 	public String getName() {
@@ -31,10 +32,6 @@ public class HelloWorldService {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getHelloMessage() {
-		return "Hello " + this.name;
 	}
 
 }

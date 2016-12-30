@@ -18,8 +18,10 @@ package sample.metrics.dropwizard;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
+@EnableConfigurationProperties(HelloWorldProperties.class)
 public class SampleDropwizardMetricsApplication {
 
 	public static void main(String[] args) throws Exception {
