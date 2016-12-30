@@ -271,7 +271,7 @@ status)
 run)
   run "$@"; exit $?;;
 *)
-  echo "Usage: $0 {start|stop|restart|force-reload|status|run}"; exit 1;
+  echo "Usage: $0 {start|stop|force-stop|restart|force-reload|status|run}"; exit 1;
 esac
 
 exit 0
