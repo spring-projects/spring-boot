@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.core.ResolvableType;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -30,6 +33,9 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @since 1.5.0
  */
 public class TransactionManagerCustomizers {
+
+	private static final Log logger = LogFactory
+			.getLog(TransactionManagerCustomizers.class);
 
 	private final List<PlatformTransactionManagerCustomizer<?>> customizers;
 
@@ -56,7 +62,17 @@ public class TransactionManagerCustomizers {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void customize(PlatformTransactionManager transactionManager,
 			PlatformTransactionManagerCustomizer customizer) {
-		customizer.customize(transactionManager);
+		try {
+			customizer.customize(transactionManager);
+		}
+		catch (ClassCastException ex) {
+			// Possibly a lambda-defined listener which we could not resolve the generic
+			// event type for
+			if (logger.isDebugEnabled()) {
+				logger.debug("Non-matching transaction manager type for customizer: "
+						+ customizer, ex);
+			}
+		}
 	}
 
 }
