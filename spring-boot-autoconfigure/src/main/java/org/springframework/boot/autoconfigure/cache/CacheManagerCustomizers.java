@@ -64,8 +64,7 @@ class CacheManagerCustomizers implements ApplicationContextAware {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void customize(CacheManager cacheManager,
-			CacheManagerCustomizer customizer) {
+	private void customize(CacheManager cacheManager, CacheManagerCustomizer customizer) {
 		try {
 			customizer.customize(cacheManager);
 		}
@@ -73,8 +72,9 @@ class CacheManagerCustomizers implements ApplicationContextAware {
 			// Possibly a lambda-defined customizer which we could not resolve the generic
 			// event type for
 			if (logger.isDebugEnabled()) {
-				logger.debug("Non-matching cache manager type for customizer: "
-						+ customizer, ex);
+				logger.debug(
+						"Non-matching cache manager type for customizer: " + customizer,
+						ex);
 			}
 		}
 	}
