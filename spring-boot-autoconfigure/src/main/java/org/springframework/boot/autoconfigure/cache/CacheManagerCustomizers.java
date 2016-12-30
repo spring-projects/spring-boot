@@ -21,6 +21,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.cache.CacheManager;
@@ -38,6 +41,8 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
  */
 class CacheManagerCustomizers implements ApplicationContextAware {
 
+	private static final Log logger = LogFactory.getLog(CacheManagerCustomizers.class);
+
 	private ConfigurableApplicationContext applicationContext;
 
 	/**
@@ -53,9 +58,25 @@ class CacheManagerCustomizers implements ApplicationContextAware {
 				cacheManager);
 		AnnotationAwareOrderComparator.sort(customizers);
 		for (CacheManagerCustomizer<CacheManager> customizer : customizers) {
-			customizer.customize(cacheManager);
+			customize(cacheManager, customizer);
 		}
 		return cacheManager;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void customize(CacheManager cacheManager,
+			CacheManagerCustomizer customizer) {
+		try {
+			customizer.customize(cacheManager);
+		}
+		catch (ClassCastException ex) {
+			// Possibly a lambda-defined listener which we could not resolve the generic
+			// event type for
+			if (logger.isDebugEnabled()) {
+				logger.debug("Non-matching transaction manager type for customizer: "
+						+ customizer, ex);
+			}
+		}
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
