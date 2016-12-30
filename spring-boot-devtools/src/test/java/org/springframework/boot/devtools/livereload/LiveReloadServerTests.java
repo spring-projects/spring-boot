@@ -83,9 +83,8 @@ public class LiveReloadServerTests {
 	@Test
 	public void triggerReload() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
-		handler.setExpectedMessageCount(1);
 		this.server.triggerReload();
-		handler.awaitMessages();
+		Thread.sleep(200);
 		this.server.stop();
 		assertThat(handler.getMessages().get(0))
 				.contains("http://livereload.com/protocols/official-7");
@@ -208,8 +207,6 @@ public class LiveReloadServerTests {
 
 		private final CountDownLatch helloLatch = new CountDownLatch(2);
 
-		private CountDownLatch messagesLatch;
-
 		private final List<String> messages = new ArrayList<String>();
 
 		private int pongCount;
@@ -229,18 +226,11 @@ public class LiveReloadServerTests {
 			Thread.sleep(200);
 		}
 
-		public void setExpectedMessageCount(int count) {
-			this.messagesLatch = new CountDownLatch(count);
-		}
-
 		@Override
 		protected void handleTextMessage(WebSocketSession session, TextMessage message)
 				throws Exception {
 			if (message.getPayload().contains("hello")) {
 				this.helloLatch.countDown();
-			}
-			if (this.messagesLatch != null) {
-				this.messagesLatch.countDown();
 			}
 			this.messages.add(message.getPayload());
 		}
@@ -263,10 +253,6 @@ public class LiveReloadServerTests {
 
 		public void close() throws IOException {
 			this.session.close();
-		}
-
-		public void awaitMessages() throws InterruptedException {
-			this.messagesLatch.await(1, TimeUnit.MINUTES);
 		}
 
 		public List<String> getMessages() {
