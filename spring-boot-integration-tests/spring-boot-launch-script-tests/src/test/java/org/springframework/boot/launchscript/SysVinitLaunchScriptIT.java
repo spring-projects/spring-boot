@@ -95,6 +95,13 @@ public class SysVinitLaunchScriptIT {
 	}
 
 	@Test
+	public void statusWhenForceStopped() throws Exception {
+		String output = doTest("status-when-force-stopped.sh");
+		assertThat(output).contains("Status: 3");
+		assertThat(output).has(coloredString(AnsiColor.RED, "Not running"));
+	}
+
+	@Test
 	public void statusWhenStarted() throws Exception {
 		String output = doTest("status-when-started.sh");
 		assertThat(output).contains("Status: 0");
@@ -113,6 +120,14 @@ public class SysVinitLaunchScriptIT {
 	@Test
 	public void stopWhenStopped() throws Exception {
 		String output = doTest("stop-when-stopped.sh");
+		assertThat(output).contains("Status: 0");
+		assertThat(output)
+				.has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
+	}
+
+	@Test
+	public void forceStopWhenStopped() throws Exception {
+		String output = doTest("force-stop-when-stopped.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output)
 				.has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
@@ -226,7 +241,7 @@ public class SysVinitLaunchScriptIT {
 		try {
 			copyFilesToContainer(docker, container, script);
 			docker.startContainerCmd(container).exec();
-			StringBuilder output = new StringBuilder();
+			final StringBuilder output = new StringBuilder();
 			AttachContainerResultCallback resultCallback = docker
 					.attachContainerCmd(container).withStdOut(true).withStdErr(true)
 					.withFollowStream(true).withLogs(true)
