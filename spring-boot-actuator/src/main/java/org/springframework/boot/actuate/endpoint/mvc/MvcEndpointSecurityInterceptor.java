@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsUtils;
@@ -60,6 +61,10 @@ public class MvcEndpointSecurityInterceptor extends HandlerInterceptorAdapter {
 			return true;
 		}
 		HandlerMethod handlerMethod = (HandlerMethod) handler;
+		if (HttpMethod.OPTIONS.matches(request.getMethod())
+				&& !(handlerMethod.getBean() instanceof MvcEndpoint)) {
+			return true;
+		}
 		MvcEndpoint mvcEndpoint = (MvcEndpoint) handlerMethod.getBean();
 		if (!mvcEndpoint.isSensitive()) {
 			return true;
