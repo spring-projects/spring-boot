@@ -117,6 +117,15 @@ public class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
+	public void exclusionsWithoutImport() throws Exception {
+		AnnotationMetadata annotationMetadata = new SimpleMetadataReaderFactory()
+				.getMetadataReader(ExclusionWithoutImport.class.getName())
+				.getAnnotationMetadata();
+		String[] imports = this.importSelector.selectImports(annotationMetadata);
+		assertThat(imports).containsOnly(FreeMarkerAutoConfiguration.class.getName());
+	}
+
+	@Test
 	public void exclusionsAliasesAreApplied() throws Exception {
 		AnnotationMetadata annotationMetadata = new SimpleMetadataReaderFactory()
 				.getMetadataReader(
@@ -146,6 +155,12 @@ public class ImportAutoConfigurationImportSelectorTests {
 	@ImportTwo
 	@ImportAutoConfiguration(exclude = ThymeleafAutoConfiguration.class)
 	static class MultipleImportsWithExclusion {
+
+	}
+
+	@ImportOne
+	@ImportAutoConfiguration(exclude = ThymeleafAutoConfiguration.class)
+	static class ExclusionWithoutImport {
 
 	}
 

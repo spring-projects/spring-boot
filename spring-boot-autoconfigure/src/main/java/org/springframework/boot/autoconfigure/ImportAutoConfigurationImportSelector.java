@@ -146,4 +146,9 @@ class ImportAutoConfigurationImportSelector
 		return super.getOrder() - 1;
 	}
 
+	@Override
+	protected void handleInvalidExcludes(List<String> invalidExcludes) {
+		// Ignore for test
+	}
+
 }
