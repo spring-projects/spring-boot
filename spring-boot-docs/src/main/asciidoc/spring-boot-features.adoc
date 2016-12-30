@@ -5584,6 +5584,13 @@ be loaded into the `ApplicationContext`:
 	}
 ----
 
+The If you want to use `@DataMongoTest` but not the embedded Mongod even if you have `de.flapdoodle.embed:de.flapdoodle.embed.mongo` on the class path, exclude its auto-configuration like so:
+
+[source,java,indent=0]
+----
+	@DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
+----
+
 A list of the auto-configuration that is enabled by `@DataMongoTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
