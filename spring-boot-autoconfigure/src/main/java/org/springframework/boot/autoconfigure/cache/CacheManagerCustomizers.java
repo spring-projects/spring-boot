@@ -76,8 +76,9 @@ public class CacheManagerCustomizers {
 			// Possibly a lambda-defined customizer which we could not resolve the generic
 			// event type for
 			if (logger.isDebugEnabled()) {
-				logger.debug("Non-matching cache manager type for customizer: "
-						+ customizer, ex);
+				logger.debug(
+						"Non-matching cache manager type for customizer: " + customizer,
+						ex);
 			}
 		}
 	}
