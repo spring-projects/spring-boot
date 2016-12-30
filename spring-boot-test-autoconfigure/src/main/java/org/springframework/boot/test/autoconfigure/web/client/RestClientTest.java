@@ -115,4 +115,11 @@ public @interface RestClientTest {
 	 */
 	ComponentScan.Filter[] excludeFilters() default {};
 
+	/**
+	 * Auto-configuration exclusions that should be applied for this test.
+	 * @return auto-configuration exclusions to apply
+	 */
+	@AliasFor(annotation = ImportAutoConfiguration.class, attribute = "exclude")
+	Class<?>[] excludeAutoConfiguration() default {};
+
 }
