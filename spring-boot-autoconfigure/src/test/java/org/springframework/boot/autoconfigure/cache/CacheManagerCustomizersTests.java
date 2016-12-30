@@ -37,8 +37,7 @@ public class CacheManagerCustomizersTests {
 
 	@Test
 	public void customizeWithNullCustomizersShouldDoNothing() {
-		new CacheManagerCustomizers(null)
-				.customize(mock(CacheManager.class));
+		new CacheManagerCustomizers(null).customize(mock(CacheManager.class));
 	}
 
 	@Test

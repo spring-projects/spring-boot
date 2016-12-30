@@ -31,10 +31,12 @@ public class SampleFlywayApplication {
 	@Bean
 	public CommandLineRunner runner(final PersonRepository repository) {
 		return new CommandLineRunner() {
+
 			@Override
 			public void run(String... args) throws Exception {
 				System.err.println(repository.findAll());
 			}
+
 		};
 	}
 

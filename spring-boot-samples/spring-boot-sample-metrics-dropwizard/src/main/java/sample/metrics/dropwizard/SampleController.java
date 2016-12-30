@@ -33,7 +33,8 @@ public class SampleController {
 
 	private final GaugeService gauges;
 
-	public SampleController(HelloWorldProperties helloWorldProperties, GaugeService gauges) {
+	public SampleController(HelloWorldProperties helloWorldProperties,
+			GaugeService gauges) {
 		this.helloWorldProperties = helloWorldProperties;
 		this.gauges = gauges;
 	}
@@ -42,8 +43,8 @@ public class SampleController {
 	@ResponseBody
 	public Map<String, String> hello() {
 		this.gauges.submit("timer.test.value", Math.random() * 1000 + 1000);
-		return Collections.singletonMap("message", "Hello " +
-				this.helloWorldProperties.getName());
+		return Collections.singletonMap("message",
+				"Hello " + this.helloWorldProperties.getName());
 	}
 
 }
