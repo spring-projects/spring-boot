@@ -19,9 +19,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.GZIPInputStream;
 
-import org.fusesource.hawtbuf.ByteArrayInputStream;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,28 +35,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for {@link HeapdumpMvcEndpoint}.
+ * Tests for {@link HeapdumpMvcEndpoint} OPTIONS call with security.
  *
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource(properties = "management.security.enabled=false")
-public class HeapdumpMvcEndpointTests {
+public class HeapdumpMvcEndpointSecureOptionsTests {
 
 	@Autowired
 	private WebApplicationContext context;
@@ -77,36 +70,6 @@ public class HeapdumpMvcEndpointTests {
 	@After
 	public void reset() {
 		this.endpoint.reset();
-	}
-
-	@Test
-	public void invokeWhenDisabledShouldReturnNotFoundStatus() throws Exception {
-		this.endpoint.setEnabled(false);
-		this.mvc.perform(get("/heapdump")).andExpect(status().isNotFound());
-	}
-
-	@Test
-	public void invokeWhenNotAvailableShouldReturnServiceUnavailableStatus()
-			throws Exception {
-		this.endpoint.setAvailable(false);
-		this.mvc.perform(get("/heapdump")).andExpect(status().isServiceUnavailable());
-	}
-
-	@Test
-	public void invokeWhenLockedShouldReturnTooManyRequestsStatus() throws Exception {
-		this.endpoint.setLocked(true);
-		this.mvc.perform(get("/heapdump")).andExpect(status().isTooManyRequests());
-		assertThat(Thread.interrupted()).isTrue();
-	}
-
-	@Test
-	public void invokeShouldReturnGzipContent() throws Exception {
-		MvcResult result = this.mvc.perform(get("/heapdump")).andExpect(status().isOk())
-				.andReturn();
-		byte[] bytes = result.getResponse().getContentAsByteArray();
-		GZIPInputStream stream = new GZIPInputStream(new ByteArrayInputStream(bytes));
-		byte[] uncompressed = FileCopyUtils.copyToByteArray(stream);
-		assertThat(uncompressed).isEqualTo("HEAPDUMP".getBytes());
 	}
 
 	@Test
