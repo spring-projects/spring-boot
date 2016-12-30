@@ -20,6 +20,7 @@
 		<tomcat.version>7.0.69</tomcat.version>
 	</properties>
 	<dependencies>
+		<!-- Compile -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
@@ -41,14 +42,11 @@
 			<artifactId>tomcat-juli</artifactId>
 			<version>${tomcat.version}</version>
 		</dependency>
+		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
 		</dependency>
 	</dependencies>
 	<build>

@@ -41,9 +41,9 @@ public class CacheManagerCustomizers {
 
 	public CacheManagerCustomizers(
 			List<? extends CacheManagerCustomizer<?>> customizers) {
-		this.customizers = (customizers != null ?
-				new ArrayList<CacheManagerCustomizer<?>>(customizers) :
-				Collections.<CacheManagerCustomizer<?>>emptyList());
+		this.customizers = (customizers != null
+				? new ArrayList<CacheManagerCustomizer<?>>(customizers)
+				: Collections.<CacheManagerCustomizer<?>>emptyList());
 	}
 
 	/**
@@ -57,8 +57,7 @@ public class CacheManagerCustomizers {
 	public <T extends CacheManager> T customize(T cacheManager) {
 		for (CacheManagerCustomizer<?> customizer : this.customizers) {
 			Class<?> generic = ResolvableType
-					.forClass(CacheManagerCustomizer.class,
-							customizer.getClass())
+					.forClass(CacheManagerCustomizer.class, customizer.getClass())
 					.resolveGeneric();
 			if (generic.isInstance(cacheManager)) {
 				customize(cacheManager, customizer);
@@ -76,8 +75,9 @@ public class CacheManagerCustomizers {
 			// Possibly a lambda-defined customizer which we could not resolve the generic
 			// event type for
 			if (logger.isDebugEnabled()) {
-				logger.debug("Non-matching cache manager type for customizer: "
-						+ customizer, ex);
+				logger.debug(
+						"Non-matching cache manager type for customizer: " + customizer,
+						ex);
 			}
 		}
 	}
