@@ -70,10 +70,10 @@ class CacheManagerCustomizers implements ApplicationContextAware {
 			customizer.customize(cacheManager);
 		}
 		catch (ClassCastException ex) {
-			// Possibly a lambda-defined listener which we could not resolve the generic
+			// Possibly a lambda-defined customizer which we could not resolve the generic
 			// event type for
 			if (logger.isDebugEnabled()) {
-				logger.debug("Non-matching transaction manager type for customizer: "
+				logger.debug("Non-matching cache manager type for customizer: "
 						+ customizer, ex);
 			}
 		}
