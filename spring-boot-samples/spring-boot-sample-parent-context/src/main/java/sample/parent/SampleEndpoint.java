@@ -27,8 +27,12 @@ import org.springframework.util.StreamUtils;
 @MessageEndpoint
 public class SampleEndpoint {
 
+	private final HelloWorldService helloWorldService;
+
 	@Autowired
-	private HelloWorldService helloWorldService;
+	public SampleEndpoint(HelloWorldService helloWorldService) {
+		this.helloWorldService = helloWorldService;
+	}
 
 	@ServiceActivator
 	public String hello(File input) throws Exception {

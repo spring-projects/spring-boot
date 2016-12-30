@@ -17,12 +17,13 @@
 package sample.actuator;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 @ConfigurationProperties(prefix = "service", ignoreUnknownFields = false)
-@Component
 public class ServiceProperties {
 
+	/**
+	 * Name of the service.
+	 */
 	private String name = "World";
 
 	public String getName() {

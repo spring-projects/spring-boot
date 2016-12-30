@@ -24,11 +24,13 @@ import org.springframework.boot.actuate.metrics.export.MetricExportProperties;
 import org.springframework.boot.actuate.metrics.jmx.JmxMetricWriter;
 import org.springframework.boot.actuate.metrics.repository.redis.RedisMetricRepository;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.jmx.export.MBeanExporter;
 
 @SpringBootApplication
+@EnableConfigurationProperties(HelloWorldProperties.class)
 public class SampleRedisExportApplication {
 
 	@Autowired

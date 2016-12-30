@@ -17,11 +17,9 @@
 package sample.metrics.opentsdb;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
-@Component
 @ConfigurationProperties(prefix = "service", ignoreUnknownFields = false)
-public class HelloWorldService {
+public class HelloWorldProperties {
 
 	private String name = "World";
 
@@ -31,10 +29,6 @@ public class HelloWorldService {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getHelloMessage() {
-		return "Hello " + this.name;
 	}
 
 }
