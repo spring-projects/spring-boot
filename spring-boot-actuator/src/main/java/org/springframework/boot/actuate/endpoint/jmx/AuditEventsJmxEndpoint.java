@@ -28,6 +28,7 @@ import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link JmxEndpoint} for {@link AuditEventRepository}.
@@ -72,7 +73,10 @@ public class AuditEventsJmxEndpoint extends AbstractJmxEndpoint {
 
 	private Date parseDate(String date) {
 		try {
-			return new SimpleDateFormat(DATE_FORMAT).parse(date);
+			if (StringUtils.hasLength(date)) {
+				return new SimpleDateFormat(DATE_FORMAT).parse(date);
+			}
+			return null;
 		}
 		catch (ParseException ex) {
 			throw new IllegalArgumentException(ex);

@@ -22,7 +22,6 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EndpointProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
-import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -33,7 +32,6 @@ import org.springframework.util.ObjectUtils;
  * @author Phillip Webb
  * @since 1.5.0
  */
-@ManagedResource
 public abstract class AbstractJmxEndpoint implements JmxEndpoint, EnvironmentAware {
 
 	private final DataConverter dataConverter;

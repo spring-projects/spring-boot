@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,9 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import org.springframework.boot.jdbc.DatabaseDriver;
-import org.springframework.jdbc.support.JdbcUtils;
-import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.util.StringUtils;
 
@@ -44,8 +38,6 @@ import org.springframework.util.StringUtils;
  */
 @ConfigurationProperties(prefix = "spring.jpa")
 public class JpaProperties {
-
-	private static final Log logger = LogFactory.getLog(JpaProperties.class);
 
 	/**
 	 * Additional native properties to set on the JPA provider.
@@ -144,19 +136,7 @@ public class JpaProperties {
 		if (this.database != null) {
 			return this.database;
 		}
-		try {
-			String jdbcUrl = (String) JdbcUtils.extractDatabaseMetaData(dataSource,
-					"getURL");
-			DatabasePlatform databasePlatform = DatabasePlatform.fromDatabaseDriver(
-					DatabaseDriver.fromJdbcUrl(jdbcUrl));
-			if (databasePlatform != null) {
-				return databasePlatform.getDatabase();
-			}
-		}
-		catch (MetaDataAccessException ex) {
-			logger.warn("Unable to determine jdbc url from datasource", ex);
-		}
-		return Database.DEFAULT;
+		return DatabaseLookup.getDatabase(dataSource);
 	}
 
 	public static class Hibernate {

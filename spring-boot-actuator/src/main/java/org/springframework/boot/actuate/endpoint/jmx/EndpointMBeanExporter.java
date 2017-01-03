@@ -46,9 +46,12 @@ import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler;
+import org.springframework.jmx.export.metadata.InvalidMetadataException;
+import org.springframework.jmx.export.metadata.JmxAttributeSource;
 import org.springframework.jmx.export.naming.MetadataNamingStrategy;
 import org.springframework.jmx.export.naming.SelfNaming;
 import org.springframework.jmx.support.ObjectNameManager;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -70,7 +73,7 @@ public class EndpointMBeanExporter extends MBeanExporter
 
 	private static final Log logger = LogFactory.getLog(EndpointMBeanExporter.class);
 
-	private final AnnotationJmxAttributeSource attributeSource = new AnnotationJmxAttributeSource();
+	private final AnnotationJmxAttributeSource attributeSource = new EndpointJmxAttributeSource();
 
 	private final MetadataMBeanInfoAssembler assembler = new MetadataMBeanInfoAssembler(
 			this.attributeSource);
@@ -253,8 +256,8 @@ public class EndpointMBeanExporter extends MBeanExporter
 		if (bean instanceof SelfNaming) {
 			return ((SelfNaming) bean).getObjectName();
 		}
-		if (bean instanceof EndpointMBean) {
-			return getObjectName((EndpointMBean) bean, beanKey);
+		if (bean instanceof JmxEndpoint) {
+			return getObjectName((JmxEndpoint) bean, beanKey);
 		}
 		return this.defaultNamingStrategy.getObjectName(bean, beanKey);
 	}
@@ -361,6 +364,21 @@ public class EndpointMBeanExporter extends MBeanExporter
 		finally {
 			this.lifecycleLock.unlock();
 		}
+	}
+
+	/**
+	 * {@link JmxAttributeSource} for {@link JmxEndpoint JmxEndpoints}.
+	 */
+	private static class EndpointJmxAttributeSource extends AnnotationJmxAttributeSource {
+
+		@Override
+		public org.springframework.jmx.export.metadata.ManagedResource getManagedResource(
+				Class<?> beanClass) throws InvalidMetadataException {
+			Assert.state(super.getManagedResource(beanClass) == null,
+					"@ManagedResource annotation found on JmxEndpoint " + beanClass);
+			return new org.springframework.jmx.export.metadata.ManagedResource();
+		}
+
 	}
 
 }
