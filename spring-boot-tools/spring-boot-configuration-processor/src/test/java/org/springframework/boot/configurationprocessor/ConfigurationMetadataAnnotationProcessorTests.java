@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -69,7 +69,10 @@ import org.springframework.boot.configurationsample.specific.InvalidDoubleRegist
 import org.springframework.boot.configurationsample.specific.SimplePojo;
 import org.springframework.util.FileCopyUtils;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Tests for {@link ConfigurationMetadataAnnotationProcessor}.
@@ -88,10 +91,12 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	private TestCompiler compiler;
+	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Before
 	public void createCompiler() throws IOException {
 		this.compiler = new TestCompiler(this.temporaryFolder);
+		mapper.setSerializationInclusion(NON_NULL);
 	}
 
 	@Test
@@ -626,11 +631,11 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		property.put("type", "java.lang.String");
 		property.put("sourceType", AdditionalMetadata.class.getName());
 		JSONArray properties = new JSONArray();
-		properties.put(property);
+		properties.add(property);
 		JSONObject additionalMetadata = new JSONObject();
 		additionalMetadata.put("properties", properties);
 		FileWriter writer = new FileWriter(additionalMetadataFile);
-		additionalMetadata.write(writer);
+		additionalMetadata.writeJSONString(writer);
 		writer.flush();
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator"));
@@ -712,7 +717,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".description"));
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".counter"));
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".number")
-				.fromSource(source).withDefaultValue(0).withDeprecation(null, null));
+				.fromSource(source).withDefaultValue(0L).withDeprecation(null, null));
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".items"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty(prefix + ".ignored"));
 	}
@@ -759,7 +764,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				}
 				jsonObject.put("deprecation", deprecationJson);
 			}
-			propertiesArray.put(jsonObject);
+			propertiesArray.add(jsonObject);
 
 		}
 		JSONObject additionalMetadata = new JSONObject();
@@ -780,7 +785,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 			throws IOException {
 		FileWriter writer = new FileWriter(metadataFile);
 		try {
-			metadata.write(writer);
+			mapper.writeValue(writer, metadata);
 		}
 		finally {
 			writer.close();

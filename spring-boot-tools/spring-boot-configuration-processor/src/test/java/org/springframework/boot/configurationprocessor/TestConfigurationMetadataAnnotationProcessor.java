@@ -24,6 +24,7 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 
+import org.json.simple.parser.ParseException;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
 
@@ -84,7 +85,7 @@ public class TestConfigurationMetadataAnnotationProcessor
 			}
 			return this.metadata;
 		}
-		catch (IOException e) {
+		catch (IOException|ParseException e) {
 			throw new RuntimeException("Failed to read metadata from disk", e);
 		}
 	}

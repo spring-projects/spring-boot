@@ -30,10 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
 
 /**
@@ -55,14 +55,14 @@ public class JsonMarshaller {
 		object.put("groups", toJsonArray(metadata, ItemType.GROUP));
 		object.put("properties", toJsonArray(metadata, ItemType.PROPERTY));
 		object.put("hints", toJsonArray(metadata.getHints()));
-		outputStream.write(object.toString(2).getBytes(UTF_8));
+		outputStream.write(object.toString().getBytes(UTF_8));
 	}
 
 	private JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) {
 		JSONArray jsonArray = new JSONArray();
 		for (ItemMetadata item : metadata.getItems()) {
 			if (item.isOfItemType(itemType)) {
-				jsonArray.put(toJsonObject(item));
+				jsonArray.add(toJsonObject(item));
 			}
 		}
 		return jsonArray;
@@ -71,7 +71,7 @@ public class JsonMarshaller {
 	private JSONArray toJsonArray(Collection<ItemHint> hints) {
 		JSONArray jsonArray = new JSONArray();
 		for (ItemHint hint : hints) {
-			jsonArray.put(toJsonObject(hint));
+			jsonArray.add(toJsonObject(hint));
 		}
 		return jsonArray;
 	}
@@ -117,7 +117,7 @@ public class JsonMarshaller {
 	private JSONArray getItemHintValues(ItemHint hint) {
 		JSONArray values = new JSONArray();
 		for (ItemHint.ValueHint value : hint.getValues()) {
-			values.put(getItemHintValue(value));
+			values.add(getItemHintValue(value));
 		}
 		return values;
 	}
@@ -132,7 +132,7 @@ public class JsonMarshaller {
 	private JSONArray getItemHintProviders(ItemHint hint) {
 		JSONArray providers = new JSONArray();
 		for (ItemHint.ValueProvider provider : hint.getProviders()) {
-			providers.put(getItemHintProvider(provider));
+			providers.add(getItemHintProvider(provider));
 		}
 		return providers;
 	}
@@ -172,7 +172,7 @@ public class JsonMarshaller {
 			JSONArray array = new JSONArray();
 			int length = Array.getLength(value);
 			for (int i = 0; i < length; i++) {
-				array.put(Array.get(value, i));
+				array.add(Array.get(value, i));
 			}
 			defaultValue = array;
 
@@ -180,25 +180,25 @@ public class JsonMarshaller {
 		return defaultValue;
 	}
 
-	public ConfigurationMetadata read(InputStream inputStream) throws IOException {
+	public ConfigurationMetadata read(InputStream inputStream) throws IOException, ParseException {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
-		JSONObject object = new JSONObject(toString(inputStream));
-		JSONArray groups = object.optJSONArray("groups");
+		JSONObject object = parseJson(inputStream);
+		JSONArray groups = getOrNull(object, "groups");
 		if (groups != null) {
-			for (int i = 0; i < groups.length(); i++) {
+			for (int i = 0; i < groups.size(); i++) {
 				metadata.add(toItemMetadata((JSONObject) groups.get(i), ItemType.GROUP));
 			}
 		}
-		JSONArray properties = object.optJSONArray("properties");
+		JSONArray properties = getOrNull(object, "properties");
 		if (properties != null) {
-			for (int i = 0; i < properties.length(); i++) {
+			for (int i = 0; i < properties.size(); i++) {
 				metadata.add(toItemMetadata((JSONObject) properties.get(i),
 						ItemType.PROPERTY));
 			}
 		}
-		JSONArray hints = object.optJSONArray("hints");
+		JSONArray hints = getOrNull(object, "hints");
 		if (hints != null) {
-			for (int i = 0; i < hints.length(); i++) {
+			for (int i = 0; i < hints.size(); i++) {
 				metadata.add(toItemHint((JSONObject) hints.get(i)));
 			}
 		}
@@ -206,42 +206,43 @@ public class JsonMarshaller {
 	}
 
 	private ItemMetadata toItemMetadata(JSONObject object, ItemType itemType) {
-		String name = object.getString("name");
-		String type = object.optString("type", null);
-		String description = object.optString("description", null);
-		String sourceType = object.optString("sourceType", null);
-		String sourceMethod = object.optString("sourceMethod", null);
-		Object defaultValue = readItemValue(object.opt("defaultValue"));
+		String name = getMustExist(object, "name");
+		String type = getOrNull(object, "type");
+		String description = getOrNull(object, "description");
+		String sourceType = getOrNull(object, "sourceType");
+		String sourceMethod = getOrNull(object, "sourceMethod");
+		Object defaultValue = readItemValue(getOrNull(object, "defaultValue"));
 		ItemDeprecation deprecation = toItemDeprecation(object);
 		return new ItemMetadata(itemType, name, null, type, sourceType, sourceMethod,
 				description, defaultValue, deprecation);
 	}
 
 	private ItemDeprecation toItemDeprecation(JSONObject object) {
-		if (object.has("deprecation")) {
-			JSONObject deprecationJsonObject = object.getJSONObject("deprecation");
+		if (object.containsKey("deprecation")) {
+			JSONObject deprecationJsonObject = getMustExist(object, "deprecation");
 			ItemDeprecation deprecation = new ItemDeprecation();
-			deprecation.setReason(deprecationJsonObject.optString("reason", null));
+			deprecation.setReason(getOrNull(deprecationJsonObject, "reason"));
 			deprecation
-					.setReplacement(deprecationJsonObject.optString("replacement", null));
+					.setReplacement(getOrNull(deprecationJsonObject, "replacement"));
 			return deprecation;
 		}
-		return (object.optBoolean("deprecated") ? new ItemDeprecation() : null);
+		final Boolean deprecated = getOrNull(object, "deprecated");
+		return (deprecated != null && deprecated) ? new ItemDeprecation() : null;
 	}
 
 	private ItemHint toItemHint(JSONObject object) {
-		String name = object.getString("name");
+		String name = getMustExist(object, "name");
 		List<ItemHint.ValueHint> values = new ArrayList<ItemHint.ValueHint>();
-		if (object.has("values")) {
-			JSONArray valuesArray = object.getJSONArray("values");
-			for (int i = 0; i < valuesArray.length(); i++) {
+		if (object.containsKey("values")) {
+			JSONArray valuesArray = getMustExist(object, "values");
+			for (int i = 0; i < valuesArray.size(); i++) {
 				values.add(toValueHint((JSONObject) valuesArray.get(i)));
 			}
 		}
 		List<ItemHint.ValueProvider> providers = new ArrayList<ItemHint.ValueProvider>();
-		if (object.has("providers")) {
-			JSONArray providersObject = object.getJSONArray("providers");
-			for (int i = 0; i < providersObject.length(); i++) {
+		if (object.containsKey("providers")) {
+			JSONArray providersObject = getMustExist(object, "providers");
+			for (int i = 0; i < providersObject.size(); i++) {
 				providers.add(toValueProvider((JSONObject) providersObject.get(i)));
 			}
 		}
@@ -249,16 +250,16 @@ public class JsonMarshaller {
 	}
 
 	private ItemHint.ValueHint toValueHint(JSONObject object) {
-		Object value = readItemValue(object.get("value"));
-		String description = object.optString("description", null);
+		Object value = readItemValue(getMustExist(object, "value"));
+		String description = getOrNull(object, "description");
 		return new ItemHint.ValueHint(value, description);
 	}
 
 	private ItemHint.ValueProvider toValueProvider(JSONObject object) {
-		String name = object.getString("name");
+		String name = getMustExist(object, "name");
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		if (object.has("parameters")) {
-			JSONObject parametersObject = object.getJSONObject("parameters");
+		if (object.containsKey("parameters")) {
+			JSONObject parametersObject = getMustExist(object, "parameters");
 			for (Object k : parametersObject.keySet()) {
 				String key = (String) k;
 				Object value = readItemValue(parametersObject.get(key));
@@ -271,8 +272,8 @@ public class JsonMarshaller {
 	private Object readItemValue(Object value) {
 		if (value instanceof JSONArray) {
 			JSONArray array = (JSONArray) value;
-			Object[] content = new Object[array.length()];
-			for (int i = 0; i < array.length(); i++) {
+			Object[] content = new Object[array.size()];
+			for (int i = 0; i < array.size(); i++) {
 				content[i] = array.get(i);
 			}
 			return content;
@@ -280,7 +281,7 @@ public class JsonMarshaller {
 		return value;
 	}
 
-	private String toString(InputStream inputStream) throws IOException {
+	private JSONObject parseJson(InputStream inputStream) throws IOException, ParseException {
 		StringBuilder out = new StringBuilder();
 		InputStreamReader reader = new InputStreamReader(inputStream, UTF_8);
 		char[] buffer = new char[BUFFER_SIZE];
@@ -288,7 +289,31 @@ public class JsonMarshaller {
 		while ((bytesRead = reader.read(buffer)) != -1) {
 			out.append(buffer, 0, bytesRead);
 		}
-		return out.toString();
+		JSONParser parser = new JSONParser();
+		parser.parse(out.toString());
+		return (JSONObject) parser.parse(out.toString());
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T get(JSONObject source, String key, boolean mustExist) {
+		final T value = (T) source.get(key);
+		if (value != null) {
+			return value;
+		}
+
+		if (mustExist) {
+			throw new IllegalStateException("Key " + key + "not found.");
+		}
+
+		return null;
+	}
+
+	private <T> T getOrNull(JSONObject source, String key) {
+		return get(source, key, false);
+	}
+
+	private <T> T getMustExist(JSONObject source, String key) {
+		return get(source, key, true);
 	}
 
 	/**
@@ -296,12 +321,13 @@ public class JsonMarshaller {
 	 */
 	@SuppressWarnings("rawtypes")
 	private static class JSONOrderedObject extends JSONObject {
+		private static final long serialVersionUID = -2562835478249976579L;
 
 		private Set<String> keys = new LinkedHashSet<String>();
 
 		@Override
-		public JSONObject put(String key, Object value) throws JSONException {
-			this.keys.add(key);
+		public Object put(Object key, Object value) {
+			this.keys.add((String) key);
 			return super.put(key, value);
 		}
 
@@ -309,7 +335,5 @@ public class JsonMarshaller {
 		public Set keySet() {
 			return this.keys;
 		}
-
 	}
-
 }

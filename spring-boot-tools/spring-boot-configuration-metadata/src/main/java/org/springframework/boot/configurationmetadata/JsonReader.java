@@ -19,13 +19,18 @@ package org.springframework.boot.configurationmetadata;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  * Read standard json metadata format as {@link ConfigurationMetadataRepository}.
@@ -40,7 +45,7 @@ class JsonReader {
 	private final DescriptionExtractor descriptionExtractor = new DescriptionExtractor();
 
 	public RawConfigurationMetadata read(InputStream in, Charset charset)
-			throws IOException {
+	throws IOException, ParseException {
 		JSONObject json = readJson(in, charset);
 		List<ConfigurationMetadataSource> groups = parseAllSources(json);
 		List<ConfigurationMetadataItem> items = parseAllItems(json);
@@ -49,102 +54,83 @@ class JsonReader {
 	}
 
 	private List<ConfigurationMetadataSource> parseAllSources(JSONObject root) {
-		List<ConfigurationMetadataSource> result = new ArrayList<ConfigurationMetadataSource>();
-		if (!root.has("groups")) {
-			return result;
-		}
-		JSONArray sources = root.getJSONArray("groups");
-		for (int i = 0; i < sources.length(); i++) {
-			JSONObject source = sources.getJSONObject(i);
-			result.add(parseSource(source));
-		}
-		return result;
+		return parse(root, this::parseSource, "groups");
 	}
 
 	private List<ConfigurationMetadataItem> parseAllItems(JSONObject root) {
-		List<ConfigurationMetadataItem> result = new ArrayList<ConfigurationMetadataItem>();
-		if (!root.has("properties")) {
-			return result;
-		}
-		JSONArray items = root.getJSONArray("properties");
-		for (int i = 0; i < items.length(); i++) {
-			JSONObject item = items.getJSONObject(i);
-			result.add(parseItem(item));
-		}
-		return result;
+		return parse(root, this::parseItem, "properties");
 	}
 
 	private List<ConfigurationMetadataHint> parseAllHints(JSONObject root) {
-		List<ConfigurationMetadataHint> result = new ArrayList<ConfigurationMetadataHint>();
-		if (!root.has("hints")) {
-			return result;
+		return parse(root, this::parseHint, "hints");
+	}
+
+	private <T> List<T> parse(JSONObject root, Function<JSONObject, T> parser, String key) {
+		if (!root.containsKey(key)) {
+			return Collections.emptyList();
 		}
-		JSONArray items = root.getJSONArray("hints");
-		for (int i = 0; i < items.length(); i++) {
-			JSONObject item = items.getJSONObject(i);
-			result.add(parseHint(item));
-		}
-		return result;
+
+		List<JSONObject> items = getMustExist(root, (key));
+		return items.stream().map(parser).collect(Collectors.toList());
 	}
 
 	private ConfigurationMetadataSource parseSource(JSONObject json) {
 		ConfigurationMetadataSource source = new ConfigurationMetadataSource();
-		source.setGroupId(json.getString("name"));
-		source.setType(json.optString("type", null));
-		String description = json.optString("description", null);
+		source.setGroupId(getMustExist(json, "name"));
+		source.setType(getOrNull(json, "type"));
+		String description = getOrNull(json, "description");
 		source.setDescription(description);
 		source.setShortDescription(
 				this.descriptionExtractor.getShortDescription(description));
-		source.setSourceType(json.optString("sourceType", null));
-		source.setSourceMethod(json.optString("sourceMethod", null));
+		source.setSourceType(getOrNull(json, "sourceType"));
+		source.setSourceMethod(getOrNull(json, "sourceMethod"));
 		return source;
 	}
 
 	private ConfigurationMetadataItem parseItem(JSONObject json) {
 		ConfigurationMetadataItem item = new ConfigurationMetadataItem();
-		item.setId(json.getString("name"));
-		item.setType(json.optString("type", null));
-		String description = json.optString("description", null);
+		item.setId(getMustExist(json, "name"));
+		item.setType(getOrNull(json, "type"));
+		String description = getOrNull(json, "description");
 		item.setDescription(description);
 		item.setShortDescription(
 				this.descriptionExtractor.getShortDescription(description));
-		item.setDefaultValue(readItemValue(json.opt("defaultValue")));
+		item.setDefaultValue(readItemValue(getOrNull(json, "defaultValue")));
 		item.setDeprecation(parseDeprecation(json));
-		item.setSourceType(json.optString("sourceType", null));
-		item.setSourceMethod(json.optString("sourceMethod", null));
+		item.setSourceType(getOrNull(json, "sourceType"));
+		item.setSourceMethod(getOrNull(json, "sourceMethod"));
 		return item;
 	}
 
 	private ConfigurationMetadataHint parseHint(JSONObject json) {
 		ConfigurationMetadataHint hint = new ConfigurationMetadataHint();
-		hint.setId(json.getString("name"));
-		if (json.has("values")) {
-			JSONArray values = json.getJSONArray("values");
-			for (int i = 0; i < values.length(); i++) {
-				JSONObject value = values.getJSONObject(i);
+		hint.setId(getMustExist(json, ("name")));
+		if (json.containsKey("values")) {
+			JSONArray values = getMustExist(json, "values");
+			for (int i = 0; i < values.size(); i++) {
+				JSONObject value = (JSONObject) values.get(i);
 				ValueHint valueHint = new ValueHint();
-				valueHint.setValue(readItemValue(value.get("value")));
-				String description = value.optString("description", null);
+				valueHint.setValue(readItemValue(getMustExist(value, "value")));
+				String description = getOrNull(value, "description");
 				valueHint.setDescription(description);
 				valueHint.setShortDescription(
 						this.descriptionExtractor.getShortDescription(description));
 				hint.getValueHints().add(valueHint);
 			}
 		}
-		if (json.has("providers")) {
-			JSONArray providers = json.getJSONArray("providers");
-			for (int i = 0; i < providers.length(); i++) {
-				JSONObject provider = providers.getJSONObject(i);
+		if (json.containsKey("providers")) {
+			JSONArray providers = getMustExist(json, ("providers"));
+			for (int i = 0; i < providers.size(); i++) {
+				JSONObject provider = (JSONObject) providers.get(i);
 				ValueProvider valueProvider = new ValueProvider();
-				valueProvider.setName(provider.getString("name"));
-				if (provider.has("parameters")) {
-					JSONObject parameters = provider.getJSONObject("parameters");
-					Iterator<?> keys = parameters.keys();
-					while (keys.hasNext()) {
-						String key = (String) keys.next();
+				valueProvider.setName(getMustExist(provider, "name"));
+				if (provider.containsKey("parameters")) {
+					JSONObject parameters = getMustExist(provider, "parameters");
+					Set<String> keys = parameters.keySet();
+					keys.forEach(key -> {
 						valueProvider.getParameters().put(key,
-								readItemValue(parameters.get(key)));
-					}
+							readItemValue(getMustExist(parameters, key)));
+					});
 				}
 				hint.getValueProviders().add(valueProvider);
 			}
@@ -153,22 +139,23 @@ class JsonReader {
 	}
 
 	private Deprecation parseDeprecation(JSONObject object) {
-		if (object.has("deprecation")) {
-			JSONObject deprecationJsonObject = object.getJSONObject("deprecation");
+		if (object.containsKey("deprecation")) {
+			JSONObject deprecationJsonObject =  getMustExist(object, "deprecation");
 			Deprecation deprecation = new Deprecation();
-			deprecation.setReason(deprecationJsonObject.optString("reason", null));
+			deprecation.setReason(getOrNull(deprecationJsonObject, "reason"));
 			deprecation
-					.setReplacement(deprecationJsonObject.optString("replacement", null));
+					.setReplacement(getOrNull(deprecationJsonObject, "replacement"));
 			return deprecation;
 		}
-		return (object.optBoolean("deprecated") ? new Deprecation() : null);
+		final Boolean deprecated = getOrNull(object, "deprecated");
+		return (deprecated != null && deprecated) ? new Deprecation() : null;
 	}
 
 	private Object readItemValue(Object value) {
 		if (value instanceof JSONArray) {
 			JSONArray array = (JSONArray) value;
-			Object[] content = new Object[array.length()];
-			for (int i = 0; i < array.length(); i++) {
+			Object[] content = new Object[array.size()];
+			for (int i = 0; i < array.size(); i++) {
 				content[i] = array.get(i);
 			}
 			return content;
@@ -176,20 +163,42 @@ class JsonReader {
 		return value;
 	}
 
-	private JSONObject readJson(InputStream in, Charset charset) throws IOException {
+	private JSONObject readJson(InputStream in, Charset charset) throws IOException, ParseException {
 		try {
-			StringBuilder out = new StringBuilder();
+			StringWriter out = new StringWriter();
 			InputStreamReader reader = new InputStreamReader(in, charset);
 			char[] buffer = new char[BUFFER_SIZE];
-			int bytesRead = -1;
+			int bytesRead;
 			while ((bytesRead = reader.read(buffer)) != -1) {
-				out.append(buffer, 0, bytesRead);
+				out.append(new String(buffer), 0, bytesRead);
 			}
-			return new JSONObject(out.toString());
+			JSONParser parser = new JSONParser();
+			return (JSONObject) parser.parse(out.toString());
 		}
 		finally {
 			in.close();
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private <T> T get(JSONObject source, String key, boolean mustExist) {
+		final T value = (T) source.get(key);
+		if (value != null) {
+			return value;
+		}
+
+		if (mustExist) {
+			throw new IllegalStateException("Key " + key + "not found.");
+		}
+
+		return null;
+	}
+
+	private <T> T getOrNull(JSONObject source, String key) {
+		return get(source, key, false);
+	}
+
+	private <T> T getMustExist(JSONObject source, String key) {
+		return get(source, key, true);
+	}
 }

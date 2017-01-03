@@ -27,8 +27,7 @@ import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
-import org.json.JSONException;
-
+import org.json.simple.parser.ParseException;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
@@ -87,7 +86,7 @@ public class MetadataStore {
 		catch (IOException ex) {
 			return null;
 		}
-		catch (JSONException ex) {
+		catch (ParseException ex) {
 			throw new InvalidConfigurationMetadataException(
 					"Invalid additional meta-data in '" + METADATA_PATH + "': "
 							+ ex.getMessage(),
