@@ -224,9 +224,8 @@ final class AsciiBytes {
 	}
 
 	public static int hashCode(int hash, String string) {
-		char[] chars = string.toCharArray();
-		for (int i = 0; i < chars.length; i++) {
-			hash = 31 * hash + chars[i];
+		for (int i = 0; i < string.length(); i++) {
+			hash = 31 * hash + string.charAt(i);
 		}
 		return hash;
 	}
