@@ -90,7 +90,7 @@ public class EndpointMBeanExportAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(AuditEventRepository.class)
 	@ConditionalOnEnabledEndpoint("auditevents")
-	public AuditEventsJmxEndpoint abstractEndpointMBean(
+	public AuditEventsJmxEndpoint auditEventsEndpoint(
 			AuditEventRepository auditEventRepository) {
 		return new AuditEventsJmxEndpoint(this.objectMapper, auditEventRepository);
 	}
