@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
@@ -28,6 +29,7 @@ import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.AuditEventsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
@@ -62,6 +64,7 @@ import org.springframework.web.cors.CorsConfiguration;
  *
  * @author Dave Syer
  * @author Ben Hale
+ * @author Vedran Pavic
  * @since 1.3.0
  */
 @ManagementContextConfiguration
@@ -193,6 +196,14 @@ public class EndpointWebMvcManagementContextConfiguration {
 	@ConditionalOnEnabledEndpoint(value = "shutdown", enabledByDefault = false)
 	public ShutdownMvcEndpoint shutdownMvcEndpoint(ShutdownEndpoint delegate) {
 		return new ShutdownMvcEndpoint(delegate);
+	}
+
+	@Bean
+	@ConditionalOnBean(AuditEventRepository.class)
+	@ConditionalOnEnabledEndpoint("auditevents")
+	public AuditEventsMvcEndpoint auditEventMvcEndpoint(
+			AuditEventRepository auditEventRepository) {
+		return new AuditEventsMvcEndpoint(auditEventRepository);
 	}
 
 	private boolean isHealthSecure() {

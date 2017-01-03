@@ -103,14 +103,13 @@ public class EndpointMvcIntegrationTests {
 	@MinimalWebConfiguration
 	@Import({ ManagementServerPropertiesAutoConfiguration.class,
 			JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class })
+			EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class })
 	@RestController
 	protected static class Application {
 
 		private final List<HttpMessageConverter<?>> converters;
 
-		public Application(
-				ObjectProvider<List<HttpMessageConverter<?>>> converters) {
+		public Application(ObjectProvider<List<HttpMessageConverter<?>>> converters) {
 			this.converters = converters.getIfAvailable();
 		}
 

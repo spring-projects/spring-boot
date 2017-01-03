@@ -128,7 +128,7 @@ public class EndpointMBeanExporterTests {
 		this.context.registerBeanDefinition("endpoint1",
 				new RootBeanDefinition(TestEndpoint.class));
 		this.context.registerBeanDefinition("endpoint2",
-				new RootBeanDefinition(TestEndpoint.class));
+				new RootBeanDefinition(TestEndpoint2.class));
 		this.context.refresh();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 		assertThat(mbeanExporter.getServer()
@@ -326,6 +326,10 @@ public class EndpointMBeanExporterTests {
 		public String invoke() {
 			return "hello world";
 		}
+
+	}
+
+	public static class TestEndpoint2 extends TestEndpoint {
 
 	}
 
