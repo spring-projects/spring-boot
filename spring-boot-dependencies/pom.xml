@@ -96,7 +96,7 @@
 		<infinispan.version>8.2.5.Final</infinispan.version>
 		<jackson.version>2.8.5</jackson.version>
 		<janino.version>2.7.8</janino.version>
-		<javassist.version>3.20.0-GA</javassist.version> <!-- Same as Hibernate -->
+		<javassist.version>3.21.0-GA</javassist.version> <!-- Same as Hibernate -->
 		<javax-cache.version>1.0.0</javax-cache.version>
 		<javax-mail.version>1.5.6</javax-mail.version>
 		<javax-transaction.version>1.2</javax-transaction.version>
