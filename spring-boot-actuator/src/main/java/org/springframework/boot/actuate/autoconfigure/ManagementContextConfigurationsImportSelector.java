@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.context.annotation.DeferredImportSelector;
@@ -27,6 +28,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.ClassUtils;
 
 /**
  * Selects configuration classes for the management context configuration. Entries are
@@ -47,11 +49,26 @@ class ManagementContextConfigurationsImportSelector
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
 		// Find all possible auto configuration classes, filtering duplicates
-		List<String> factories = new ArrayList<String>(
-				new LinkedHashSet<String>(SpringFactoriesLoader.loadFactoryNames(
-						ManagementContextConfiguration.class, this.classLoader)));
-		AnnotationAwareOrderComparator.sort(factories);
-		return factories.toArray(new String[0]);
+		List<String> names = loadFactoryNames();
+		Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
+		for (String factoryName : names) {
+			classes.add(ClassUtils.resolveClassName(factoryName, this.classLoader));
+		}
+		return getSortedClassNames(new ArrayList<Class<?>>(classes));
+	}
+
+	protected List<String> loadFactoryNames() {
+		return SpringFactoriesLoader
+				.loadFactoryNames(ManagementContextConfiguration.class, this.classLoader);
+	}
+
+	private String[] getSortedClassNames(List<Class<?>> classes) {
+		AnnotationAwareOrderComparator.sort(classes);
+		List<String> names = new ArrayList<String>();
+		for (Class<?> sourceClass : classes) {
+			names.add(sourceClass.getName());
+		}
+		return names.toArray(new String[names.size()]);
 	}
 
 	@Override
