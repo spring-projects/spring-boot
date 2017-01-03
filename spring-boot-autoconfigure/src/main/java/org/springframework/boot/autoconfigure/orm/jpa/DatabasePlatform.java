@@ -23,9 +23,8 @@ import org.springframework.orm.jpa.vendor.Database;
  * Mapper between {@link Database} and {@link DatabaseDriver}.
  *
  * @author Eddú Meléndez
- * @version 1.5.0
  */
-public enum DatabasePlatform {
+enum DatabasePlatform {
 
 	DB2(Database.DB2, DatabaseDriver.DB2),
 

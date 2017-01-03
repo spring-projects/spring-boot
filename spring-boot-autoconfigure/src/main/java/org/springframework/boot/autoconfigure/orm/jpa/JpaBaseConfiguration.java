@@ -41,8 +41,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.jdbc.support.JdbcUtils;
-import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -104,14 +102,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	public JpaVendorAdapter jpaVendorAdapter() {
 		AbstractJpaVendorAdapter adapter = createJpaVendorAdapter();
 		adapter.setShowSql(this.properties.isShowSql());
-		try {
-			String jdbcUrl = (String) JdbcUtils.extractDatabaseMetaData(this.dataSource,
-					"getURL");
-			adapter.setDatabase(this.properties.determineDatabase(jdbcUrl));
-		}
-		catch (MetaDataAccessException ex) {
-			throw new IllegalStateException("Unable to detect database type", ex);
-		}
+		adapter.setDatabase(this.properties.determineDatabase(this.dataSource));
 		adapter.setDatabasePlatform(this.properties.getDatabasePlatform());
 		adapter.setGenerateDdl(this.properties.isGenerateDdl());
 		return adapter;

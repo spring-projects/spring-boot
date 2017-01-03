@@ -64,10 +64,10 @@ public class CustomHibernateJpaAutoConfigurationTests {
 		// Set up environment so we get a MySQL database but don't require server to be
 		// running...
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.driverClassName:com.mysql.jdbc.Driver",
+				"spring.datasource.database:mysql",
 				"spring.datasource.url:jdbc:mysql://localhost/nonexistent",
 				"spring.datasource.initialize:false", "spring.jpa.database:MYSQL");
-		this.context.register(TestConfiguration.class, MockDataSourceConfiguration.class,
+		this.context.register(TestConfiguration.class, DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				HibernateJpaAutoConfiguration.class);
 		this.context.refresh();
@@ -114,7 +114,6 @@ public class CustomHibernateJpaAutoConfigurationTests {
 	@Test
 	public void testDefaultDatabaseForH2() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.driverClassName:org.h2.Driver",
 				"spring.datasource.url:jdbc:h2:mem:testdb",
 				"spring.datasource.initialize:false");
 		this.context.register(TestConfiguration.class, DataSourceAutoConfiguration.class,

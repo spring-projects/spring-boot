@@ -21,10 +21,15 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.jdbc.support.JdbcUtils;
+import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.util.StringUtils;
 
@@ -39,6 +44,8 @@ import org.springframework.util.StringUtils;
  */
 @ConfigurationProperties(prefix = "spring.jpa")
 public class JpaProperties {
+
+	private static final Log logger = LogFactory.getLog(JpaProperties.class);
 
 	/**
 	 * Additional native properties to set on the JPA provider.
@@ -55,7 +62,7 @@ public class JpaProperties {
 	 * Target database to operate on, auto-detected by default. Can be alternatively set
 	 * using the "databasePlatform" property.
 	 */
-	private Database database = Database.DEFAULT;
+	private Database database;
 
 	/**
 	 * Initialize the schema on startup.
@@ -128,17 +135,28 @@ public class JpaProperties {
 	}
 
 	/**
-	 * Return the database form the jdbc url or the value for `spring.jpa.database`.
-	 * @param jdbcUrl the url from `spring.datasource.url`
+	 * Determine the {@link Database} to use based on this configuration and the primary
+	 * {@link DataSource}.
+	 * @param dataSource the auto-configured data source
 	 * @return {@code Database}
 	 */
-	public Database determineDatabase(String jdbcUrl) {
-		DatabasePlatform databasePlatform = DatabasePlatform.fromDatabaseDriver(
-				DatabaseDriver.fromJdbcUrl(jdbcUrl));
-		if (databasePlatform != null) {
-			return databasePlatform.getDatabase();
+	public Database determineDatabase(DataSource dataSource) {
+		if (this.database != null) {
+			return this.database;
 		}
-		return this.database;
+		try {
+			String jdbcUrl = (String) JdbcUtils.extractDatabaseMetaData(dataSource,
+					"getURL");
+			DatabasePlatform databasePlatform = DatabasePlatform.fromDatabaseDriver(
+					DatabaseDriver.fromJdbcUrl(jdbcUrl));
+			if (databasePlatform != null) {
+				return databasePlatform.getDatabase();
+			}
+		}
+		catch (MetaDataAccessException ex) {
+			logger.warn("Unable to determine jdbc url from datasource", ex);
+		}
+		return Database.DEFAULT;
 	}
 
 	public static class Hibernate {
