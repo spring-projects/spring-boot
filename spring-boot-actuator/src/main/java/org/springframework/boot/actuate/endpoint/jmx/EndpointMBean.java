@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
-import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
@@ -35,7 +34,6 @@ import org.springframework.util.ObjectUtils;
  * @see JmxEndpoint
  * @see DataEndpointMBean
  */
-@ManagedResource
 public abstract class EndpointMBean implements JmxEndpoint {
 
 	private final DataConverter dataConverter;

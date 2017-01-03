@@ -17,11 +17,13 @@
 package org.springframework.boot.actuate.endpoint.jmx;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
  * A strategy for the JMX layer on top of an {@link Endpoint}. Implementations are allowed
- * to use {@code @ManagedAttribute} and the full Spring JMX machinery. Implementations may
- * be backed by an actual {@link Endpoint} or may be specifically designed for JMX only.
+ * to use {@code @ManagedAttribute} and the full Spring JMX machinery but should not use
+ * the {@link ManagedResource @ManagedResource} annotation. Implementations may be backed
+ * by an actual {@link Endpoint} or may be specifically designed for JMX only.
  *
  * @author Phillip Webb
  * @since 1.5.0

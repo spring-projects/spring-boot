@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.jmx.export.annotation.ManagedOperation;
-import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
  * Special endpoint wrapper for {@link ShutdownEndpoint}.
@@ -29,7 +28,6 @@ import org.springframework.jmx.export.annotation.ManagedResource;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
-@ManagedResource
 public class ShutdownEndpointMBean extends EndpointMBean {
 
 	/**
