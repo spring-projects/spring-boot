@@ -17,7 +17,8 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Date;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * {@link MvcEndpoint} to expose {@link AuditEvent}s.
  *
  * @author Vedran Pavic
+ * @author Phillip Webb
  * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "endpoints.auditevents")
@@ -47,41 +49,18 @@ public class AuditEventsMvcEndpoint extends AbstractNamedMvcEndpoint {
 		this.auditEventRepository = auditEventRepository;
 	}
 
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = { "after" })
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<?> findByAfter(
-			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ") Date after) {
+	public ResponseEntity<?> findByPrincipalAndAfterAndType(
+			@RequestParam(required = false) String principal,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ") Date after,
+			@RequestParam(required = false) String type) {
 		if (!isEnabled()) {
 			return DISABLED_RESPONSE;
 		}
-		List<AuditEvent> auditEvents = this.auditEventRepository.find(after);
-		return ResponseEntity.ok(auditEvents);
-	}
-
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE,
-			params = { "principal", "after" })
-	@ResponseBody
-	public ResponseEntity<?> findByPrincipalAndAfter(@RequestParam String principal,
-			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ") Date after) {
-		if (!isEnabled()) {
-			return DISABLED_RESPONSE;
-		}
-		List<AuditEvent> auditEvents = this.auditEventRepository.find(principal, after);
-		return ResponseEntity.ok(auditEvents);
-	}
-
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE,
-			params = { "principal", "after", "type" })
-	@ResponseBody
-	public ResponseEntity<?> findByPrincipalAndAfterAndType(@RequestParam String principal,
-			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ") Date after,
-			@RequestParam String type) {
-		if (!isEnabled()) {
-			return DISABLED_RESPONSE;
-		}
-		List<AuditEvent> auditEvents = this.auditEventRepository.find(principal, after,
-				type);
-		return ResponseEntity.ok(auditEvents);
+		Map<Object, Object> result = new LinkedHashMap<Object, Object>();
+		result.put("events", this.auditEventRepository.find(principal, after, type));
+		return ResponseEntity.ok(result);
 	}
 
 }

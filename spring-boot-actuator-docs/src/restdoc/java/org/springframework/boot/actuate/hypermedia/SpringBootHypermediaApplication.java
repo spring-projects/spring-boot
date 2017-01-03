@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.lang.UsesJava8;
 
 // Flyway must go first
 @SpringBootApplication
@@ -59,12 +60,16 @@ public class SpringBootHypermediaApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		this.auditEventRepository.add(new AuditEvent(Date.from(Instant.parse(
-				"2016-11-01T11:00:00Z")), "user", "AUTHENTICATION_FAILURE",
-				Collections.emptyMap()));
-		this.auditEventRepository.add(new AuditEvent(Date.from(Instant.parse(
-				"2016-11-01T12:00:00Z")), "admin", "AUTHENTICATION_SUCCESS",
-				Collections.emptyMap()));
+		this.auditEventRepository.add(
+				createEvent("2016-11-01T11:00:00Z", "user", "AUTHENTICATION_FAILURE"));
+		this.auditEventRepository.add(
+				createEvent("2016-11-01T12:00:00Z", "admin", "AUTHENTICATION_SUCCESS"));
+	}
+
+	@UsesJava8
+	private AuditEvent createEvent(String instant, String principal, String type) {
+		return new AuditEvent(Date.from(Instant.parse(instant)), principal, type,
+				Collections.<String, Object>emptyMap());
 	}
 
 }

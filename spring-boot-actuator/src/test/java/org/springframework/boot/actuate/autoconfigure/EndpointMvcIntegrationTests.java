@@ -109,8 +109,7 @@ public class EndpointMvcIntegrationTests {
 
 		private final List<HttpMessageConverter<?>> converters;
 
-		public Application(
-				ObjectProvider<List<HttpMessageConverter<?>>> converters) {
+		public Application(ObjectProvider<List<HttpMessageConverter<?>>> converters) {
 			this.converters = converters.getIfAvailable();
 		}
 

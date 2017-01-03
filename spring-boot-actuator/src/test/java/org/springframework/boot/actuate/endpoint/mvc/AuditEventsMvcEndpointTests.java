@@ -37,6 +37,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -55,6 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@TestPropertySource(properties = "management.security.enabled=false")
 public class AuditEventsMvcEndpointTests {
 
 	@Autowired
@@ -78,26 +80,27 @@ public class AuditEventsMvcEndpointTests {
 	@Test
 	public void invokeFilterByDateAfter() throws Exception {
 		this.mvc.perform(get("/auditevents").param("after", "2016-11-01T13:00:00+0000"))
-				.andExpect(status().isOk()).andExpect(content().string("[]"));
+				.andExpect(status().isOk())
+				.andExpect(content().string("{\"events\":[]}"));
 	}
 
 	@Test
 	public void invokeFilterByPrincipalAndDateAfter() throws Exception {
-		this.mvc.perform(get("/auditevents").param("principal", "user")
-				.param("after", "2016-11-01T10:00:00+0000"))
+		this.mvc.perform(get("/auditevents").param("principal", "user").param("after",
+				"2016-11-01T10:00:00+0000"))
 				.andExpect(status().isOk())
-				.andExpect(content().string(containsString(
-						"\"principal\":\"user\",\"type\":\"login\"")))
+				.andExpect(content().string(
+						containsString("\"principal\":\"user\",\"type\":\"login\"")))
 				.andExpect(content().string(not(containsString("admin"))));
 	}
 
 	@Test
 	public void invokeFilterByPrincipalAndDateAfterAndType() throws Exception {
 		this.mvc.perform(get("/auditevents").param("principal", "admin")
-				.param("after", "2016-11-01T10:00:00+0000")
-				.param("type", "logout")).andExpect(status().isOk())
-				.andExpect(content().string(containsString(
-						"\"principal\":\"admin\",\"type\":\"logout\"")))
+				.param("after", "2016-11-01T10:00:00+0000").param("type", "logout"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(
+						containsString("\"principal\":\"admin\",\"type\":\"logout\"")))
 				.andExpect(content().string(not(containsString("login"))));
 	}
 
@@ -111,13 +114,15 @@ public class AuditEventsMvcEndpointTests {
 		@Bean
 		public AuditEventRepository auditEventsRepository() {
 			AuditEventRepository repository = new InMemoryAuditEventRepository(3);
-			repository.add(new AuditEvent(Date.from(Instant.parse(
-					"2016-11-01T11:00:00Z")), "admin", "login", Collections.emptyMap()));
-			repository.add(new AuditEvent(Date.from(Instant.parse(
-					"2016-11-01T12:00:00Z")), "admin", "logout", Collections.emptyMap()));
-			repository.add(new AuditEvent(Date.from(Instant.parse(
-					"2016-11-01T12:00:00Z")), "user", "login", Collections.emptyMap()));
+			repository.add(createEvent("2016-11-01T11:00:00Z", "admin", "login"));
+			repository.add(createEvent("2016-11-01T12:00:00Z", "admin", "logout"));
+			repository.add(createEvent("2016-11-01T12:00:00Z", "user", "login"));
 			return repository;
+		}
+
+		private AuditEvent createEvent(String instant, String principal, String type) {
+			return new AuditEvent(Date.from(Instant.parse(instant)), principal, type,
+					Collections.<String, Object>emptyMap());
 		}
 
 	}
