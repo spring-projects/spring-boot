@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
@@ -79,7 +80,7 @@ public class InfoMvcEndpointTests {
 						"\"beanName2\":{\"key21\":\"value21\",\"key22\":\"value22\"}")));
 	}
 
-	@Import({ JacksonAutoConfiguration.class,
+	@Import({ JacksonAutoConfiguration.class, AuditAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
 			EndpointWebMvcAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class })

@@ -133,14 +133,6 @@ public class HeapdumpMvcEndpointSecureOptionsTests {
 			};
 		}
 
-		public void setAvailable(boolean available) {
-			this.available = available;
-		}
-
-		public void setLocked(boolean locked) {
-			this.locked = locked;
-		}
-
 	}
 
 }

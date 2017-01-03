@@ -35,6 +35,7 @@ import org.springframework.boot.actuate.endpoint.LiquibaseEndpoint;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.AuditEventsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.DocsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
@@ -85,6 +86,7 @@ public class MvcEndpointPathConfigurationTests {
 	@Parameters(name = "{0}")
 	public static Object[] parameters() {
 		return new Object[] { new Object[] { "actuator", HalJsonMvcEndpoint.class },
+				new Object[] { "auditevents", AuditEventsMvcEndpoint.class },
 				new Object[] { "autoconfig", AutoConfigurationReportEndpoint.class },
 				new Object[] { "beans", BeansEndpoint.class },
 				new Object[] { "configprops",
@@ -143,9 +145,8 @@ public class MvcEndpointPathConfigurationTests {
 	@ImportAutoConfiguration({ EndpointAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class,
-			EndpointAutoConfiguration.class })
+			ServerPropertiesAutoConfiguration.class, AuditAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class })
 
 	protected static class TestConfiguration {
 

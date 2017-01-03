@@ -51,7 +51,7 @@ import org.springframework.context.annotation.Configuration;
 		HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
 		HypermediaAutoConfiguration.class, EndpointAutoConfiguration.class,
 		EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
-		PropertyPlaceholderAutoConfiguration.class })
+		PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class })
 public @interface MinimalActuatorHypermediaApplication {
 
 }

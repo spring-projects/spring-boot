@@ -31,6 +31,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -86,7 +87,11 @@ public class HalBrowserMvcEndpointDisabledIntegrationTests {
 				continue;
 			}
 			path = path.length() > 0 ? path : "/";
-			this.mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON))
+			MockHttpServletRequestBuilder requestBuilder = get(path);
+			if (endpoint instanceof AuditEventsMvcEndpoint) {
+				requestBuilder.param("after", "2016-01-01T12:00:00+00:00");
+			}
+			this.mockMvc.perform(requestBuilder.accept(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$._links").doesNotExist());
 		}

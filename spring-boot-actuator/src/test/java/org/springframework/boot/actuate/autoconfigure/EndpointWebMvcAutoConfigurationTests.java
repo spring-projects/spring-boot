@@ -364,7 +364,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				EmbeddedServletContainerAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class);
+				EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/test/endpoint", ports.get().server, "endpointoutput");
@@ -381,7 +381,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				EmbeddedServletContainerAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class);
+				EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		ServerProperties serverProperties = this.applicationContext
@@ -440,9 +440,9 @@ public class EndpointWebMvcAutoConfigurationTests {
 				BaseConfiguration.class, ServerPortConfig.class,
 				EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
-		// /health, /metrics, /loggers, /env, /actuator, /heapdump (/shutdown is disabled
-		// by default)
-		assertThat(this.applicationContext.getBeansOfType(MvcEndpoint.class)).hasSize(6);
+		// /health, /metrics, /loggers, /env, /actuator, /heapdump, /auditevents
+		// (/shutdown is disabled by default)
+		assertThat(this.applicationContext.getBeansOfType(MvcEndpoint.class)).hasSize(7);
 	}
 
 	@Test
@@ -734,7 +734,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 			HttpMessageConvertersAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class })
+			ServerPropertiesAutoConfiguration.class, AuditAutoConfiguration.class })
 	protected static class BaseConfiguration {
 
 	}

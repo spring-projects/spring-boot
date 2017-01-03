@@ -39,7 +39,6 @@ import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.jmx.export.MBeanExportException;
@@ -53,7 +52,7 @@ import org.springframework.jmx.support.ObjectNameManager;
 import org.springframework.util.ObjectUtils;
 
 /**
- * {@link ApplicationListener} that registers all known {@link Endpoint}s with an
+ * {@link SmartLifecycle} bean that registers all known {@link Endpoint}s with an
  * {@link MBeanServer} using the {@link MBeanExporter} located from the application
  * context.
  *
@@ -79,7 +78,7 @@ public class EndpointMBeanExporter extends MBeanExporter
 	private final MetadataNamingStrategy defaultNamingStrategy = new MetadataNamingStrategy(
 			this.attributeSource);
 
-	private final Set<Endpoint<?>> registeredEndpoints = new HashSet<Endpoint<?>>();
+	private final Set<Class<?>> registeredEndpoints = new HashSet<Class<?>>();
 
 	private volatile boolean autoStartup = true;
 
@@ -156,39 +155,88 @@ public class EndpointMBeanExporter extends MBeanExporter
 		locateAndRegisterEndpoints();
 	}
 
-	@SuppressWarnings({ "rawtypes" })
 	protected void locateAndRegisterEndpoints() {
-		Map<String, Endpoint> endpoints = this.beanFactory.getBeansOfType(Endpoint.class);
-		for (Map.Entry<String, Endpoint> endpointEntry : endpoints.entrySet()) {
-			if (!this.registeredEndpoints.contains(endpointEntry.getValue())
-					&& endpointEntry.getValue().isEnabled()) {
-				registerEndpoint(endpointEntry.getKey(), endpointEntry.getValue());
-				this.registeredEndpoints.add(endpointEntry.getValue());
+		registerJmxEndpoints(this.beanFactory.getBeansOfType(JmxEndpoint.class));
+		registerEndpoints(this.beanFactory.getBeansOfType(Endpoint.class));
+	}
+
+	private void registerJmxEndpoints(Map<String, JmxEndpoint> endpoints) {
+		for (Map.Entry<String, JmxEndpoint> entry : endpoints.entrySet()) {
+			String name = entry.getKey();
+			JmxEndpoint endpoint = entry.getValue();
+			Class<?> type = (endpoint.getEndpointType() != null
+					? endpoint.getEndpointType() : endpoint.getClass());
+			if (!this.registeredEndpoints.contains(type) && endpoint.isEnabled()) {
+				try {
+					registerBeanNameOrInstance(endpoint, name);
+				}
+				catch (MBeanExportException ex) {
+					logger.error("Could not register JmxEndpoint [" + name + "]", ex);
+				}
+				this.registeredEndpoints.add(type);
 			}
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
+	private void registerEndpoints(Map<String, Endpoint> endpoints) {
+		for (Map.Entry<String, Endpoint> entry : endpoints.entrySet()) {
+			String name = entry.getKey();
+			Endpoint endpoint = entry.getValue();
+			Class<?> type = endpoint.getClass();
+			if (!this.registeredEndpoints.contains(type) && endpoint.isEnabled()) {
+				registerEndpoint(name, endpoint);
+				this.registeredEndpoints.add(type);
+			}
+		}
+	}
+
+	/**
+	 * Register a regular {@link Endpoint} with the {@link MBeanServer}.
+	 * @param beanName the bean name
+	 * @param endpoint the endpoint to register
+	 * @deprecated as of 1.5 in favor of direct {@link JmxEndpoint} registration or
+	 * {@link #adaptEndpoint(String, Endpoint)}
+	 */
+	@Deprecated
 	protected void registerEndpoint(String beanName, Endpoint<?> endpoint) {
-		@SuppressWarnings("rawtypes")
-		Class<? extends Endpoint> type = endpoint.getClass();
-		if (AnnotationUtils.findAnnotation(type, ManagedResource.class) != null) {
-			// Already managed
+		Class<?> type = endpoint.getClass();
+		if (isAnnotatedWithManagedResource(type) || (type.isMemberClass()
+				&& isAnnotatedWithManagedResource(type.getEnclosingClass()))) {
+			// Endpoint is directly managed
 			return;
 		}
-		if (type.isMemberClass()
-				&& AnnotationUtils.findAnnotation(type.getEnclosingClass(),
-						ManagedResource.class) != null) {
-			// Nested class with @ManagedResource in parent
-			return;
-		}
+		JmxEndpoint jmxEndpoint = adaptEndpoint(beanName, endpoint);
 		try {
-			registerBeanNameOrInstance(getEndpointMBean(beanName, endpoint), beanName);
+			registerBeanNameOrInstance(jmxEndpoint, beanName);
 		}
 		catch (MBeanExportException ex) {
 			logger.error("Could not register MBean for endpoint [" + beanName + "]", ex);
 		}
 	}
 
+	private boolean isAnnotatedWithManagedResource(Class<?> type) {
+		return AnnotationUtils.findAnnotation(type, ManagedResource.class) != null;
+	}
+
+	/**
+	 * Adapt the given {@link Endpoint} to a {@link JmxEndpoint}.
+	 * @param beanName the bean name
+	 * @param endpoint the endpoint to adapt
+	 * @return an adapted endpoint
+	 */
+	protected JmxEndpoint adaptEndpoint(String beanName, Endpoint<?> endpoint) {
+		return getEndpointMBean(beanName, endpoint);
+	}
+
+	/**
+	 * Get a {@link EndpointMBean} for the specified {@link Endpoint}.
+	 * @param beanName the bean name
+	 * @param endpoint the endpoint
+	 * @return an {@link EndpointMBean}
+	 * @deprecated as of 1.5 in favor of {@link #adaptEndpoint(String, Endpoint)}
+	 */
+	@Deprecated
 	protected EndpointMBean getEndpointMBean(String beanName, Endpoint<?> endpoint) {
 		if (endpoint instanceof ShutdownEndpoint) {
 			return new ShutdownEndpointMBean(beanName, endpoint, this.objectMapper);
@@ -205,25 +253,27 @@ public class EndpointMBeanExporter extends MBeanExporter
 		if (bean instanceof SelfNaming) {
 			return ((SelfNaming) bean).getObjectName();
 		}
-
 		if (bean instanceof EndpointMBean) {
-			StringBuilder builder = new StringBuilder();
-			builder.append(this.domain);
-			builder.append(":type=Endpoint");
-			builder.append(",name=" + beanKey);
-			if (parentContextContainsSameBean(this.applicationContext, beanKey)) {
-				builder.append(",context="
-						+ ObjectUtils.getIdentityHexString(this.applicationContext));
-			}
-			if (this.ensureUniqueRuntimeObjectNames) {
-				builder.append(",identity=" + ObjectUtils
-						.getIdentityHexString(((EndpointMBean) bean).getEndpoint()));
-			}
-			builder.append(getStaticNames());
-			return ObjectNameManager.getInstance(builder.toString());
+			return getObjectName((EndpointMBean) bean, beanKey);
 		}
-
 		return this.defaultNamingStrategy.getObjectName(bean, beanKey);
+	}
+
+	private ObjectName getObjectName(JmxEndpoint jmxEndpoint, String beanKey)
+			throws MalformedObjectNameException {
+		StringBuilder builder = new StringBuilder();
+		builder.append(this.domain);
+		builder.append(":type=Endpoint");
+		builder.append(",name=" + beanKey);
+		if (parentContextContainsSameBean(this.applicationContext, beanKey)) {
+			builder.append(",context="
+					+ ObjectUtils.getIdentityHexString(this.applicationContext));
+		}
+		if (this.ensureUniqueRuntimeObjectNames) {
+			builder.append(",identity=" + jmxEndpoint.getIdentity());
+		}
+		builder.append(getStaticNames());
+		return ObjectNameManager.getInstance(builder.toString());
 	}
 
 	private boolean parentContextContainsSameBean(ApplicationContext applicationContext,

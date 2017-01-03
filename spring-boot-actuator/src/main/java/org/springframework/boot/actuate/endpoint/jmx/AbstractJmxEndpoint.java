@@ -19,71 +19,63 @@ package org.springframework.boot.actuate.endpoint.jmx;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.boot.actuate.endpoint.EndpointProperties;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.jmx.export.annotation.ManagedResource;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
 /**
- * Base for adapters that convert {@link Endpoint} implementations to {@link JmxEndpoint}.
+ * Abstract base class for {@link JmxEndpoint} implementations without a backing
+ * {@link Endpoint}.
  *
- * @author Christian Dupuis
- * @author Andy Wilkinson
  * @author Vedran Pavic
  * @author Phillip Webb
- * @see JmxEndpoint
- * @see DataEndpointMBean
+ * @since 1.5.0
  */
 @ManagedResource
-public abstract class EndpointMBean implements JmxEndpoint {
+public abstract class AbstractJmxEndpoint implements JmxEndpoint, EnvironmentAware {
 
 	private final DataConverter dataConverter;
 
-	private final Endpoint<?> endpoint;
+	private Environment environment;
 
 	/**
-	 * Create a new {@link EndpointMBean} instance.
-	 * @param beanName the bean name
-	 * @param endpoint the endpoint to wrap
-	 * @param objectMapper the {@link ObjectMapper} used to convert the payload
+	 * Enable the endpoint.
 	 */
-	public EndpointMBean(String beanName, Endpoint<?> endpoint,
-			ObjectMapper objectMapper) {
+	private Boolean enabled;
+
+	public AbstractJmxEndpoint(ObjectMapper objectMapper) {
 		this.dataConverter = new DataConverter(objectMapper);
-		Assert.notNull(beanName, "BeanName must not be null");
-		Assert.notNull(endpoint, "Endpoint must not be null");
-		this.endpoint = endpoint;
 	}
 
-	@ManagedAttribute(description = "Returns the class of the underlying endpoint")
-	public String getEndpointClass() {
-		return ClassUtils.getQualifiedName(getEndpointType());
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+	}
+
+	protected final Environment getEnvironment() {
+		return this.environment;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return this.endpoint.isEnabled();
+		return EndpointProperties.isEnabled(this.environment, this.enabled);
 	}
 
-	@ManagedAttribute(description = "Indicates whether the underlying endpoint exposes sensitive information")
-	public boolean isSensitive() {
-		return this.endpoint.isSensitive();
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	@Override
 	public String getIdentity() {
-		return ObjectUtils.getIdentityHexString(getEndpoint());
+		return ObjectUtils.getIdentityHexString(this);
 	}
 
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Class<? extends Endpoint> getEndpointType() {
-		return getEndpoint().getClass();
-	}
-
-	public Endpoint<?> getEndpoint() {
-		return this.endpoint;
+		return null;
 	}
 
 	/**
