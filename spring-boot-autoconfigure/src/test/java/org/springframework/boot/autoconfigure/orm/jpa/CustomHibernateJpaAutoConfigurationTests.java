@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.mock;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link HibernateJpaAutoConfiguration}.
@@ -120,7 +120,8 @@ public class CustomHibernateJpaAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class,
 				HibernateJpaAutoConfiguration.class);
 		this.context.refresh();
-		HibernateJpaVendorAdapter bean = this.context.getBean(HibernateJpaVendorAdapter.class);
+		HibernateJpaVendorAdapter bean = this.context
+				.getBean(HibernateJpaVendorAdapter.class);
 		Database database = (Database) ReflectionTestUtils.getField(bean, "database");
 		assertThat(database).isEqualTo(Database.H2);
 	}
@@ -139,11 +140,11 @@ public class CustomHibernateJpaAutoConfigurationTests {
 			DataSource dataSource = mock(DataSource.class);
 			try {
 				given(dataSource.getConnection()).willReturn(mock(Connection.class));
-				given(dataSource.getConnection().getMetaData()).willReturn(
-						mock(DatabaseMetaData.class));
+				given(dataSource.getConnection().getMetaData())
+						.willReturn(mock(DatabaseMetaData.class));
 			}
 			catch (SQLException e) {
-				//Do nothing
+				// Do nothing
 			}
 			return dataSource;
 		}
