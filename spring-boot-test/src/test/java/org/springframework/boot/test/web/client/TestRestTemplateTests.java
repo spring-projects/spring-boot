@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,16 +160,15 @@ public class TestRestTemplateTests {
 						.isInstanceOf(CustomHttpComponentsClientHttpRequestFactory.class);
 		assertThat(basicAuthTemplate.getRestTemplate().getUriTemplateHandler())
 				.isSameAs(originalTemplate.getRestTemplate().getUriTemplateHandler());
-		assertThat(basicAuthTemplate.getRestTemplate().getInterceptors())
-				.containsExactlyElementsOf(
-						originalTemplate.getRestTemplate().getInterceptors());
+		assertThat(basicAuthTemplate.getRestTemplate().getInterceptors()).hasSize(1);
 		assertBasicAuthorizationInterceptorCredentials(basicAuthTemplate, "user",
 				"password");
 	}
 
 	@Test
 	public void withBasicAuthReplacesBasicAuthInterceptorWhenAlreadyPresent() {
-		TestRestTemplate original = new TestRestTemplate("foo", "bar");
+		TestRestTemplate original = new TestRestTemplate("foo", "bar")
+				.withBasicAuth("replace", "repalce");
 		TestRestTemplate basicAuth = original.withBasicAuth("user", "password");
 		assertThat(basicAuth.getRestTemplate().getMessageConverters())
 				.containsExactlyElementsOf(
@@ -181,8 +180,7 @@ public class TestRestTemplateTests {
 						.isInstanceOf(CustomHttpComponentsClientHttpRequestFactory.class);
 		assertThat(basicAuth.getRestTemplate().getUriTemplateHandler())
 				.isSameAs(original.getRestTemplate().getUriTemplateHandler());
-		assertThat(basicAuth.getRestTemplate().getInterceptors())
-				.containsExactlyElementsOf(original.getRestTemplate().getInterceptors());
+		assertThat(basicAuth.getRestTemplate().getInterceptors()).hasSize(1);
 		assertBasicAuthorizationInterceptorCredentials(basicAuth, "user", "password");
 	}
 

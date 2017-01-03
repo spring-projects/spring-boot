@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -144,11 +143,19 @@ public class TestRestTemplate {
 		if (username == null) {
 			return;
 		}
-		List<ClientHttpRequestInterceptor> interceptors = Collections
-				.<ClientHttpRequestInterceptor>singletonList(
-						new BasicAuthorizationInterceptor(username, password));
-		restTemplate.setRequestFactory(new InterceptingClientHttpRequestFactory(
-				restTemplate.getRequestFactory(), interceptors));
+		List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
+		if (interceptors == null) {
+			interceptors = Collections.emptyList();
+		}
+		interceptors = new ArrayList<ClientHttpRequestInterceptor>(interceptors);
+		Iterator<ClientHttpRequestInterceptor> iterator = interceptors.iterator();
+		while (iterator.hasNext()) {
+			if (iterator.next() instanceof BasicAuthorizationInterceptor) {
+				iterator.remove();
+			}
+		}
+		interceptors.add(new BasicAuthorizationInterceptor(username, password));
+		restTemplate.setInterceptors(interceptors);
 	}
 
 	/**
@@ -985,8 +992,7 @@ public class TestRestTemplate {
 	public TestRestTemplate withBasicAuth(String username, String password) {
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.setMessageConverters(getRestTemplate().getMessageConverters());
-		restTemplate.setInterceptors(
-				removeBasicAuthInterceptorIfPresent(getRestTemplate().getInterceptors()));
+		restTemplate.setInterceptors(getRestTemplate().getInterceptors());
 		restTemplate.setRequestFactory(getRestTemplate().getRequestFactory());
 		restTemplate.setUriTemplateHandler(getRestTemplate().getUriTemplateHandler());
 		TestRestTemplate testRestTemplate = new TestRestTemplate(restTemplate, username,
@@ -994,19 +1000,6 @@ public class TestRestTemplate {
 		testRestTemplate.getRestTemplate()
 				.setErrorHandler(getRestTemplate().getErrorHandler());
 		return testRestTemplate;
-	}
-
-	private List<ClientHttpRequestInterceptor> removeBasicAuthInterceptorIfPresent(
-			List<ClientHttpRequestInterceptor> interceptors) {
-		List<ClientHttpRequestInterceptor> updatedInterceptors = new ArrayList<ClientHttpRequestInterceptor>(
-				interceptors);
-		Iterator<ClientHttpRequestInterceptor> iterator = updatedInterceptors.iterator();
-		while (iterator.hasNext()) {
-			if (iterator.next() instanceof BasicAuthorizationInterceptor) {
-				iterator.remove();
-			}
-		}
-		return interceptors;
 	}
 
 	/**
