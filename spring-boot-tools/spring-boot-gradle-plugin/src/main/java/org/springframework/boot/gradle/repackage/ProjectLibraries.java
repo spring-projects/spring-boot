@@ -127,8 +127,11 @@ class ProjectLibraries implements Libraries {
 			}
 			else if (dependency instanceof ProjectDependency) {
 				ProjectDependency projectDependency = (ProjectDependency) dependency;
-				libraries.addAll(getLibrariesForFileDependencies(
-						projectDependency.getProjectConfiguration(), scope));
+				Configuration dependencyConfiguration = projectDependency
+						.getDependencyProject().getConfigurations()
+						.getByName(projectDependency.getConfiguration());
+				libraries.addAll(
+						getLibrariesForFileDependencies(dependencyConfiguration, scope));
 			}
 		}
 		return libraries;
