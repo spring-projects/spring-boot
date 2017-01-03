@@ -153,7 +153,7 @@
 		<spring-amqp.version>1.7.0.RC1</spring-amqp.version>
 		<spring-cloud-connectors.version>1.2.3.RELEASE</spring-cloud-connectors.version>
 		<spring-batch.version>3.0.7.RELEASE</spring-batch.version>
-		<spring-data-releasetrain.version>Ingalls-BUILD-SNAPSHOT</spring-data-releasetrain.version>
+		<spring-data-releasetrain.version>Ingalls-RC1</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.21.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>4.3.6.RELEASE</spring-integration.version>
 		<spring-integration-java-dsl.version>1.2.0.RELEASE</spring-integration-java-dsl.version>
@@ -183,6 +183,7 @@
 		<thymeleaf-extras-java8time.version>2.1.0.RELEASE</thymeleaf-extras-java8time.version>
 		<tomcat.version>8.5.6</tomcat.version>
 		<undertow.version>1.4.3.Final</undertow.version>
+		<unboundid-ldapsdk.version>3.2.0</unboundid-ldapsdk.version>
 		<webjars-hal-browser.version>9f96c74</webjars-hal-browser.version>
 		<webjars-locator.version>0.32</webjars-locator.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
@@ -810,6 +811,11 @@
 				<groupId>com.timgroup</groupId>
 				<artifactId>java-statsd-client</artifactId>
 				<version>${statsd-client.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.unboundid</groupId>
+				<artifactId>unboundid-ldapsdk</artifactId>
+				<version>${unboundid-ldapsdk.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.zaxxer</groupId>
