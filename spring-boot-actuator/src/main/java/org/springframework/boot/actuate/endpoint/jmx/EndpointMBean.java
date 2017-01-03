@@ -23,16 +23,22 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 
 /**
- * Simple wrapper around {@link Endpoint} implementations to enable JMX export.
+ * Base for adapters that convert {@link Endpoint} implementations to {@link JmxEndpoint}.
  *
  * @author Christian Dupuis
  * @author Andy Wilkinson
  * @author Vedran Pavic
+ * @author Phillip Webb
+ * @see JmxEndpoint
+ * @see DataEndpointMBean
  */
 @ManagedResource
-public class EndpointMBean extends EndpointMBeanSupport {
+public abstract class EndpointMBean implements JmxEndpoint {
+
+	private final DataConverter dataConverter;
 
 	private final Endpoint<?> endpoint;
 
@@ -44,7 +50,7 @@ public class EndpointMBean extends EndpointMBeanSupport {
 	 */
 	public EndpointMBean(String beanName, Endpoint<?> endpoint,
 			ObjectMapper objectMapper) {
-		super(objectMapper);
+		this.dataConverter = new DataConverter(objectMapper);
 		Assert.notNull(beanName, "BeanName must not be null");
 		Assert.notNull(endpoint, "Endpoint must not be null");
 		this.endpoint = endpoint;
@@ -52,7 +58,12 @@ public class EndpointMBean extends EndpointMBeanSupport {
 
 	@ManagedAttribute(description = "Returns the class of the underlying endpoint")
 	public String getEndpointClass() {
-		return ClassUtils.getQualifiedName(this.endpoint.getClass());
+		return ClassUtils.getQualifiedName(getEndpointType());
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return this.endpoint.isEnabled();
 	}
 
 	@ManagedAttribute(description = "Indicates whether the underlying endpoint exposes sensitive information")
@@ -60,8 +71,28 @@ public class EndpointMBean extends EndpointMBeanSupport {
 		return this.endpoint.isSensitive();
 	}
 
+	@Override
+	public String getIdentity() {
+		return ObjectUtils.getIdentityHexString(getEndpoint());
+	}
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	public Class<? extends Endpoint> getEndpointType() {
+		return getEndpoint().getClass();
+	}
+
 	public Endpoint<?> getEndpoint() {
 		return this.endpoint;
+	}
+
+	/**
+	 * Convert the given data into JSON.
+	 * @param data the source data
+	 * @return the JSON representation
+	 */
+	protected Object convert(Object data) {
+		return this.dataConverter.convert(data);
 	}
 
 }

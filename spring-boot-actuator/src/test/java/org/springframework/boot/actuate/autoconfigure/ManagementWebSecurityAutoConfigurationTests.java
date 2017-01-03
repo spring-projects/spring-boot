@@ -202,8 +202,8 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
-				WebMvcAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class);
+				WebMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				AuditAutoConfiguration.class);
 		this.context.refresh();
 
 		Filter filter = this.context.getBean("springSecurityFilterChain", Filter.class);

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,57 +27,55 @@ import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.jmx.export.annotation.ManagedOperation;
-import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.util.Assert;
 
 /**
- * Special JMX endpoint wrapper for {@link AuditEventRepository}.
+ * {@link JmxEndpoint} for {@link AuditEventRepository}.
  *
  * @author Vedran Pavic
  * @since 1.5.0
  */
-@ManagedResource
 @ConfigurationProperties(prefix = "endpoints.auditevents")
-public class AuditEventsMBean extends AbstractEndpointMBean {
+public class AuditEventsJmxEndpoint extends AbstractJmxEndpoint {
 
-	private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+	private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
 	private final AuditEventRepository auditEventRepository;
 
-	public AuditEventsMBean(ObjectMapper objectMapper,
+	public AuditEventsJmxEndpoint(ObjectMapper objectMapper,
 			AuditEventRepository auditEventRepository) {
-		super(objectMapper, true);
+		super(objectMapper);
 		Assert.notNull(auditEventRepository, "AuditEventRepository must not be null");
 		this.auditEventRepository = auditEventRepository;
 	}
 
 	@ManagedOperation(description = "Retrieves a list of audit events meeting the given criteria")
 	public Object getData(String dateAfter) {
-		List<AuditEvent> auditEvents = this.auditEventRepository.find(
-				parseDate(dateAfter));
+		List<AuditEvent> auditEvents = this.auditEventRepository
+				.find(parseDate(dateAfter));
 		return convert(auditEvents);
 	}
 
 	@ManagedOperation(description = "Retrieves a list of audit events meeting the given criteria")
 	public Object getData(String dateAfter, String principal) {
-		List<AuditEvent> auditEvents = this.auditEventRepository.find(
-				principal, parseDate(dateAfter));
+		List<AuditEvent> auditEvents = this.auditEventRepository.find(principal,
+				parseDate(dateAfter));
 		return convert(auditEvents);
 	}
 
 	@ManagedOperation(description = "Retrieves a list of audit events meeting the given criteria")
 	public Object getData(String principal, String dateAfter, String type) {
-		List<AuditEvent> auditEvents = this.auditEventRepository.find(
-				principal, parseDate(dateAfter), type);
+		List<AuditEvent> auditEvents = this.auditEventRepository.find(principal,
+				parseDate(dateAfter), type);
 		return convert(auditEvents);
 	}
 
 	private Date parseDate(String date) {
 		try {
-			return dateFormat.parse(date);
+			return new SimpleDateFormat(DATE_FORMAT).parse(date);
 		}
-		catch (ParseException e) {
-			throw new IllegalArgumentException(e);
+		catch (ParseException ex) {
+			throw new IllegalArgumentException(ex);
 		}
 	}
 

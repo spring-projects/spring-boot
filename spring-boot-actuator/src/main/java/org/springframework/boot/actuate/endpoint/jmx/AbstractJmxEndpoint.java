@@ -22,16 +22,21 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EndpointProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
+import org.springframework.jmx.export.annotation.ManagedResource;
+import org.springframework.util.ObjectUtils;
 
 /**
- * Abstract base class for JMX endpoint implementations without a backing
+ * Abstract base class for {@link JmxEndpoint} implementations without a backing
  * {@link Endpoint}.
  *
  * @author Vedran Pavic
+ * @author Phillip Webb
  * @since 1.5.0
  */
-public abstract class AbstractEndpointMBean extends EndpointMBeanSupport
-		implements EnvironmentAware {
+@ManagedResource
+public abstract class AbstractJmxEndpoint implements JmxEndpoint, EnvironmentAware {
+
+	private final DataConverter dataConverter;
 
 	private Environment environment;
 
@@ -40,23 +45,8 @@ public abstract class AbstractEndpointMBean extends EndpointMBeanSupport
 	 */
 	private Boolean enabled;
 
-	/**
-	 * Mark if the endpoint exposes sensitive information.
-	 */
-	private Boolean sensitive;
-
-	private final boolean sensitiveDefault;
-
-	public AbstractEndpointMBean(ObjectMapper objectMapper, boolean sensitive) {
-		super(objectMapper);
-		this.sensitiveDefault = sensitive;
-	}
-
-	public AbstractEndpointMBean(ObjectMapper objectMapper, boolean sensitive,
-			boolean enabled) {
-		super(objectMapper);
-		this.sensitiveDefault = sensitive;
-		this.enabled = enabled;
+	public AbstractJmxEndpoint(ObjectMapper objectMapper) {
+		this.dataConverter = new DataConverter(objectMapper);
 	}
 
 	@Override
@@ -68,6 +58,7 @@ public abstract class AbstractEndpointMBean extends EndpointMBeanSupport
 		return this.environment;
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return EndpointProperties.isEnabled(this.environment, this.enabled);
 	}
@@ -77,18 +68,23 @@ public abstract class AbstractEndpointMBean extends EndpointMBeanSupport
 	}
 
 	@Override
-	public boolean isSensitive() {
-		return EndpointProperties.isSensitive(this.environment, this.sensitive,
-				this.sensitiveDefault);
-	}
-
-	public void setSensitive(Boolean sensitive) {
-		this.sensitive = sensitive;
+	public String getIdentity() {
+		return ObjectUtils.getIdentityHexString(this);
 	}
 
 	@Override
-	public String getEndpointClass() {
+	@SuppressWarnings("rawtypes")
+	public Class<? extends Endpoint> getEndpointType() {
 		return null;
+	}
+
+	/**
+	 * Convert the given data into JSON.
+	 * @param data the source data
+	 * @return the JSON representation
+	 */
+	protected Object convert(Object data) {
+		return this.dataConverter.convert(data);
 	}
 
 }

@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.autoconfigure.EndpointMBeanExportAutoConfiguration.JmxEnabledCondition;
 import org.springframework.boot.actuate.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.actuate.endpoint.jmx.AuditEventsMBean;
+import org.springframework.boot.actuate.endpoint.jmx.AuditEventsJmxEndpoint;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanExporter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -90,9 +90,9 @@ public class EndpointMBeanExportAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(AuditEventRepository.class)
 	@ConditionalOnEnabledEndpoint("auditevents")
-	public AuditEventsMBean abstractEndpointMBean(
+	public AuditEventsJmxEndpoint abstractEndpointMBean(
 			AuditEventRepository auditEventRepository) {
-		return new AuditEventsMBean(this.objectMapper, auditEventRepository);
+		return new AuditEventsJmxEndpoint(this.objectMapper, auditEventRepository);
 	}
 
 	/**
