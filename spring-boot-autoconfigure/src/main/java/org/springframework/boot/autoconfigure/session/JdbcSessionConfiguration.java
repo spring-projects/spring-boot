@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.session;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -53,11 +52,11 @@ class JdbcSessionConfiguration {
 	}
 
 	@Configuration
-	public static class SpringBootJdbcHttpSessionConfiguration
+	protected static class SpringBootJdbcHttpSessionConfiguration
 			extends JdbcHttpSessionConfiguration {
 
-		@Autowired
-		public void customize(SessionProperties sessionProperties) {
+		protected SpringBootJdbcHttpSessionConfiguration(
+				SessionProperties sessionProperties) {
 			Integer timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds(timeout);

@@ -21,7 +21,6 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Conditional;
@@ -48,13 +47,13 @@ class RedisSessionConfiguration {
 	private static final Log logger = LogFactory.getLog(RedisSessionConfiguration.class);
 
 	@Configuration
-	public static class SpringBootRedisHttpSessionConfiguration
+	protected static class SpringBootRedisHttpSessionConfiguration
 			extends RedisHttpSessionConfiguration {
 
 		private SessionProperties sessionProperties;
 
-		@Autowired
-		public void customize(SessionProperties sessionProperties) {
+		protected SpringBootRedisHttpSessionConfiguration(
+				SessionProperties sessionProperties) {
 			this.sessionProperties = sessionProperties;
 			Integer timeout = this.sessionProperties.getTimeout();
 			if (timeout != null) {
