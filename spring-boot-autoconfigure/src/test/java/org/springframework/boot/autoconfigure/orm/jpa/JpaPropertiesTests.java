@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -31,11 +33,14 @@ import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.jpa.vendor.Database;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JpaProperties}.
@@ -116,10 +121,58 @@ public class JpaPropertiesTests {
 				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
 	}
 
+	@Test
+	public void determineDatabaseNoCheckIfDatabaseIsSet() throws SQLException {
+		JpaProperties properties = load("spring.jpa.database=postgresql");
+		DataSource dataSource = mockStandaloneDataSource();
+		Database database = properties.determineDatabase(dataSource);
+		assertThat(database).isEqualTo(Database.POSTGRESQL);
+		verify(dataSource, never()).getConnection();
+	}
+
+	@Test
+	public void determineDatabaseWithKnownUrl() {
+		JpaProperties properties = load();
+		Database database = properties.determineDatabase(
+				mockDataSource("jdbc:h2:mem:testdb"));
+		assertThat(database).isEqualTo(Database.H2);
+	}
+
+	@Test
+	public void determineDatabaseWithKnownUrlAndUserConfig() {
+		JpaProperties properties = load("spring.jpa.database=mysql");
+		Database database = properties.determineDatabase(
+				mockDataSource("jdbc:h2:mem:testdb"));
+		assertThat(database).isEqualTo(Database.MYSQL);
+	}
+
+	@Test
+	public void determineDatabaseWithUnknownUrl() {
+		JpaProperties properties = load();
+		Database database = properties.determineDatabase(
+				mockDataSource("jdbc:unknown://localhost"));
+		assertThat(database).isEqualTo(Database.DEFAULT);
+	}
+
 	@SuppressWarnings("unchecked")
 	private DataSource mockStandaloneDataSource() throws SQLException {
 		DataSource ds = mock(DataSource.class);
 		given(ds.getConnection()).willThrow(SQLException.class);
+		return ds;
+	}
+
+	private DataSource mockDataSource(String jdbcUrl) {
+		DataSource ds = mock(DataSource.class);
+		try {
+			DatabaseMetaData metadata = mock(DatabaseMetaData.class);
+			given(metadata.getURL()).willReturn(jdbcUrl);
+			Connection connection = mock(Connection.class);
+			given(connection.getMetaData()).willReturn(metadata);
+			given(ds.getConnection()).willReturn(connection);
+		}
+		catch (SQLException e) {
+			//Do nothing
+		}
 		return ds;
 	}
 

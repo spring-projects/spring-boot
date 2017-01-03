@@ -61,6 +61,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Oliver Gierke
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
+ * @author Eddú Meléndez
  */
 @EnableConfigurationProperties(JpaProperties.class)
 @Import(DataSourceInitializedPublisher.Registrar.class)
@@ -101,7 +102,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	public JpaVendorAdapter jpaVendorAdapter() {
 		AbstractJpaVendorAdapter adapter = createJpaVendorAdapter();
 		adapter.setShowSql(this.properties.isShowSql());
-		adapter.setDatabase(this.properties.getDatabase());
+		adapter.setDatabase(this.properties.determineDatabase(this.dataSource));
 		adapter.setDatabasePlatform(this.properties.getDatabasePlatform());
 		adapter.setGenerateDdl(this.properties.isGenerateDdl());
 		return adapter;

@@ -1797,20 +1797,25 @@ annotation, e.g.
 === Configure JPA properties
 Spring Data JPA already provides some vendor-independent configuration options (e.g.
 for SQL logging) and Spring Boot exposes those, and a few more for hibernate as external
-configuration properties. The most common options to set are:
+configuration properties. Some of them are automatically detected according to the context
+so you shouldn't have to set them.
+
+The `spring.jpa.hibernate.ddl-auto` is a special case in that it has different defaults
+depending on whether you are using an embedded database (`create-drop`) or not (`none`).
+The dialect to use is also automatically detected based on the current `DataSource` but
+you can set `spring.jpa.database` yourself if you want to be explicit and bypass that
+check on startup.
+
+The most common options to set are:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.jpa.hibernate.ddl-auto=create-drop
 	spring.jpa.hibernate.naming.physical-strategy=com.example.MyPhysicalNamingStrategy
-	spring.jpa.database=H2
 	spring.jpa.show-sql=true
 ----
 
-The `ddl-auto` setting is a special case in that it has different defaults depending on
-whether you are using an embedded database (`create-drop`) or not (`none`). In addition
-all properties in `+spring.jpa.properties.*+` are passed through as normal JPA properties
-(with the prefix stripped) when the local `EntityManagerFactory` is created.
+In addition all properties in `+spring.jpa.properties.*+` are passed through as normal JPA
+properties (with the prefix stripped) when the local `EntityManagerFactory` is created.
 
 Hibernate defines `Physical` and `Implicit` naming strategies: Spring Boot configures
 `SpringPhysicalNamingStrategy` by default. This implementation provides the same
