@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.cloudfoundry;
 
-import java.security.Principal;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
@@ -36,7 +36,7 @@ class CloudFoundryHealthMvcEndpoint extends HealthMvcEndpoint {
 	}
 
 	@Override
-	protected boolean exposeHealthDetails(Principal principal) {
+	protected boolean exposeHealthDetails(HttpServletRequest request) {
 		return true;
 	}
 

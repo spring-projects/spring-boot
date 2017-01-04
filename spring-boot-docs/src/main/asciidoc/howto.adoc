@@ -177,12 +177,12 @@ element):
 
 [source,xml,indent=0]
 ----
-    <resources>
-        <resource>
-            <directory>src/main/resources</directory>
-            <filtering>true</filtering>
-        </resource>
-    </resources>
+	<resources>
+		<resource>
+			<directory>src/main/resources</directory>
+			<filtering>true</filtering>
+		</resource>
+	</resources>
 ----
 
 and (inside `<plugins/>`):

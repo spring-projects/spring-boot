@@ -1123,8 +1123,8 @@ Cloud Foundry you can add the following to your `manifest.yml`:
 [source,yaml,indent=0]
 ----
 	---
-	  env:
-	    JAVA_OPTS: "-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n"
+		env:
+			JAVA_OPTS: "-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n"
 ----
 
 TIP: Notice that you don't need to pass an `address=NNNN` option to `-Xrunjdwp`. If

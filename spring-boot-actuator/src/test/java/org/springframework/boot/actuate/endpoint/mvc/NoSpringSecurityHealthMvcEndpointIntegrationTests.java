@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfi
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.junit.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.junit.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
@@ -48,6 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Integration tests for the health endpoint when Spring Security is not available.
  *
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 @RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("spring-security-*.jar")
@@ -61,14 +63,28 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void healthDetailIsPresent() throws Exception {
+	public void healthDetailNotPresent() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 		mockMvc.perform(get("/health")).andExpect(status().isOk())
-				.andExpect(content().string(containsString("\"hello\":\"world\"")));
+				.andExpect(content().string(containsString("\"status\":\"UP\"")));
+	}
+
+	@Test
+	public void healthDetailPresent() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(TestConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.security.enabled:false");
+		this.context.refresh();
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/health")).andExpect(status().isOk())
+				.andExpect(content().string(containsString(
+						"\"status\":\"UP\",\"test\":{\"status\":\"UP\",\"hello\":\"world\"}")));
 	}
 
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
