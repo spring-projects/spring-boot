@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ public class MessageChannelMetricWriterTests {
 			@Override
 			public Object answer(InvocationOnMock invocation) throws Throwable {
 				MessageChannelMetricWriterTests.this.handler
-						.handleMessage(invocation.getArgumentAt(0, Message.class));
+						.handleMessage(invocation.getArgument(0));
 				return true;
 			}
 

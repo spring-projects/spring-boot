@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicHeader;
-import org.hamcrest.Matcher;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mockito.ArgumentMatcher;
@@ -143,14 +142,14 @@ public abstract class AbstractHttpClientMockTests {
 		given(response.getFirstHeader(headerName)).willReturn(header);
 	}
 
-	private Matcher<HttpGet> getForMetadata(boolean serviceCapabilities) {
+	private ArgumentMatcher<HttpGet> getForMetadata(boolean serviceCapabilities) {
 		if (!serviceCapabilities) {
 			return new HasAcceptHeader(InitializrService.ACCEPT_META_DATA, true);
 		}
 		return new HasAcceptHeader(InitializrService.ACCEPT_SERVICE_CAPABILITIES, true);
 	}
 
-	private Matcher<HttpGet> getForNonMetadata() {
+	private ArgumentMatcher<HttpGet> getForNonMetadata() {
 		return new HasAcceptHeader(InitializrService.ACCEPT_META_DATA, false);
 	}
 
@@ -188,7 +187,7 @@ public abstract class AbstractHttpClientMockTests {
 
 	}
 
-	private static class HasAcceptHeader extends ArgumentMatcher<HttpGet> {
+	private static class HasAcceptHeader implements ArgumentMatcher<HttpGet> {
 
 		private final String value;
 
@@ -200,11 +199,10 @@ public abstract class AbstractHttpClientMockTests {
 		}
 
 		@Override
-		public boolean matches(Object argument) {
-			if (!(argument instanceof HttpGet)) {
+		public boolean matches(HttpGet get) {
+			if (get == null) {
 				return false;
 			}
-			HttpGet get = (HttpGet) argument;
 			Header acceptHeader = get.getFirstHeader(HttpHeaders.ACCEPT);
 			if (this.shouldMatch) {
 				return acceptHeader != null && this.value.equals(acceptHeader.getValue());

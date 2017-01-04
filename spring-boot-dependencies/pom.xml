@@ -129,7 +129,7 @@
 		<lombok.version>1.16.12</lombok.version>
 		<mariadb.version>1.5.6</mariadb.version>
 		<mssql-jdbc.version>6.1.0.jre8</mssql-jdbc.version>
-		<mockito.version>1.10.19</mockito.version>
+		<mockito.version>2.5.4</mockito.version>
 		<mongodb.version>3.4.1</mongodb.version>
 		<mysql.version>5.1.40</mysql.version>
 		<narayana.version>5.5.0.Final</narayana.version>

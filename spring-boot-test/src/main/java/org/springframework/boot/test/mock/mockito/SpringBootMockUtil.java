@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,23 @@
 
 package org.springframework.boot.test.mock.mockito;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
-import org.mockito.ArgumentMatcher;
+import org.hamcrest.Matcher;
 import org.mockito.internal.matchers.LocalizedMatcher;
 import org.mockito.internal.progress.ArgumentMatcherStorage;
 import org.mockito.internal.progress.MockingProgress;
 import org.mockito.internal.progress.ThreadSafeMockingProgress;
 import org.mockito.internal.util.MockUtil;
+import org.mockito.internal.verification.MockAwareVerificationMode;
 import org.mockito.mock.MockCreationSettings;
+import org.mockito.verification.VerificationMode;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -35,18 +41,19 @@ import org.springframework.util.ReflectionUtils;
  * and 2.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 final class SpringBootMockUtil {
 
 	private static final MockUtilAdapter adapter;
 
 	static {
-		if (ClassUtils.isPresent("org.mockito.quality.MockitoHint",
+		if (ClassUtils.isPresent("org.mockito.ReturnValues",
 				SpringBootMockUtil.class.getClassLoader())) {
-			adapter = new Mockito2MockUtilAdapter();
+			adapter = new Mockito1MockUtilAdapter();
 		}
 		else {
-			adapter = new Mockito1MockUtilAdapter();
+			adapter = new Mockito2MockUtilAdapter();
 		}
 	}
 
@@ -67,6 +74,11 @@ final class SpringBootMockUtil {
 		adapter.reportMatchers(storage, matchers);
 	}
 
+	static MockAwareVerificationMode createMockAwareVerificationMode(Object mock,
+			VerificationMode mode) {
+		return adapter.createMockAwareVerificationMode(mock, mode);
+	}
+
 	private interface MockUtilAdapter {
 
 		MockCreationSettings<?> getMockSettings(Object mock);
@@ -76,15 +88,53 @@ final class SpringBootMockUtil {
 		void reportMatchers(ArgumentMatcherStorage storage,
 				List<LocalizedMatcher> matchers);
 
+		MockAwareVerificationMode createMockAwareVerificationMode(Object mock,
+				VerificationMode mode);
+
 	}
 
 	private static class Mockito1MockUtilAdapter implements MockUtilAdapter {
 
-		private static final MockingProgress mockingProgress = new ThreadSafeMockingProgress();
+		private final MockUtil mockUtil = BeanUtils.instantiate(MockUtil.class);
+
+		private final Method getMockSettingsMethod = ReflectionUtils
+				.findMethod(MockUtil.class, "getMockSettings", Object.class);
+
+		private static final MockingProgress mockingProgress =
+				createThreadSafeMockingProgress();
+
+		private final Method reportMatcherMethod = ReflectionUtils.findMethod(
+				ArgumentMatcherStorage.class, "reportMatcher", Matcher.class);
+
+		private static final Constructor<MockAwareVerificationMode> mockAwareVerificationModeConstructor =
+				getMockAwareVerificationModeConstructor();
+
+		private static MockingProgress createThreadSafeMockingProgress() {
+			try {
+				Class<?> target = ClassUtils.forName(
+						"org.mockito.internal.progress.ThreadSafeMockingProgress",
+						SpringBootMockUtil.class.getClassLoader());
+				return (MockingProgress) BeanUtils.instantiateClass(target);
+			}
+			catch (ClassNotFoundException ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
+
+		private static Constructor<MockAwareVerificationMode> getMockAwareVerificationModeConstructor() {
+			try {
+				return MockAwareVerificationMode.class.getConstructor(Object.class,
+						VerificationMode.class);
+			}
+			catch (NoSuchMethodException ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
 
 		@Override
 		public MockCreationSettings<?> getMockSettings(Object mock) {
-			return new MockUtil().getMockSettings(mock);
+			return (MockCreationSettings<?>) ReflectionUtils
+					.invokeMethod(this.getMockSettingsMethod, this.mockUtil, mock);
 		}
 
 		@Override
@@ -96,44 +146,83 @@ final class SpringBootMockUtil {
 		public void reportMatchers(ArgumentMatcherStorage storage,
 				List<LocalizedMatcher> matchers) {
 			for (LocalizedMatcher matcher : matchers) {
-				storage.reportMatcher(matcher);
+				ReflectionUtils.invokeMethod(this.reportMatcherMethod, storage, matcher);
 			}
 		}
 
+		@Override
+		public MockAwareVerificationMode createMockAwareVerificationMode(Object mock,
+				VerificationMode mode) {
+			return BeanUtils.instantiateClass(mockAwareVerificationModeConstructor, mock,
+					mode);
+		}
 	}
 
 	private static class Mockito2MockUtilAdapter implements MockUtilAdapter {
 
-		private final Method getMockSettingsMethod = ReflectionUtils
-				.findMethod(MockUtil.class, "getMockSettings", Object.class);
+		private static final Constructor<MockAwareVerificationMode> mockAwareVerificationModeConstructor;
+		private static final boolean mockAwareVerificationModeLegacy;
 
-		private final Method mockingProgressMethod = ReflectionUtils
-				.findMethod(ThreadSafeMockingProgress.class, "mockingProgress");
-
-		private final Method reportMatcherMethod = ReflectionUtils.findMethod(
-				ArgumentMatcherStorage.class, "reportMatcher", ArgumentMatcher.class);
-
-		private final Method getMatcherMethod = ReflectionUtils
-				.findMethod(LocalizedMatcher.class, "getMatcher");
+		static {
+			Constructor<MockAwareVerificationMode> c = getMockAwareVerificationModeConstructor();
+			if (c != null) {
+				mockAwareVerificationModeConstructor = c;
+				mockAwareVerificationModeLegacy = false;
+			}
+			else {
+				mockAwareVerificationModeConstructor = getMockAwareVerificationModeLegacyConstructor();
+				mockAwareVerificationModeLegacy = true;
+			}
+		}
 
 		@Override
 		public MockCreationSettings<?> getMockSettings(Object mock) {
-			return (MockCreationSettings<?>) ReflectionUtils
-					.invokeMethod(this.getMockSettingsMethod, null, mock);
+			return MockUtil.getMockSettings(mock);
 		}
 
 		@Override
 		public MockingProgress mockingProgress() {
-			return (MockingProgress) ReflectionUtils
-					.invokeMethod(this.mockingProgressMethod, null);
+			return ThreadSafeMockingProgress.mockingProgress();
 		}
 
 		@Override
 		public void reportMatchers(ArgumentMatcherStorage storage,
 				List<LocalizedMatcher> matchers) {
 			for (LocalizedMatcher matcher : matchers) {
-				ReflectionUtils.invokeMethod(this.reportMatcherMethod, storage,
-						ReflectionUtils.invokeMethod(this.getMatcherMethod, matcher));
+				storage.reportMatcher(matcher.getMatcher());
+			}
+		}
+
+		@Override
+		public MockAwareVerificationMode createMockAwareVerificationMode(Object mock,
+				VerificationMode mode) {
+			if (mockAwareVerificationModeLegacy) {
+				return BeanUtils.instantiateClass(mockAwareVerificationModeConstructor,
+						mock, mode);
+			}
+			else {
+				return BeanUtils.instantiateClass(mockAwareVerificationModeConstructor,
+						mock, mode, Collections.emptySet());
+			}
+		}
+
+		private static Constructor<MockAwareVerificationMode> getMockAwareVerificationModeLegacyConstructor() {
+			try {
+				return MockAwareVerificationMode.class.getConstructor(Object.class,
+						VerificationMode.class);
+			}
+			catch (NoSuchMethodException ex) {
+				return null;
+			}
+		}
+
+		private static Constructor<MockAwareVerificationMode> getMockAwareVerificationModeConstructor() {
+			try {
+				return MockAwareVerificationMode.class.getConstructor(Object.class,
+						VerificationMode.class, Set.class);
+			}
+			catch (NoSuchMethodException ex) {
+				return null;
 			}
 		}
 

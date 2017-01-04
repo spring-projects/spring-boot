@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -102,7 +102,7 @@ public class MockEmbeddedServletContainerFactory
 		private void initialize() {
 			try {
 				this.servletContext = mock(ServletContext.class);
-				given(this.servletContext.addServlet(anyString(), (Servlet) anyObject()))
+				given(this.servletContext.addServlet(anyString(), (Servlet) any()))
 						.willAnswer(new Answer<ServletRegistration.Dynamic>() {
 							@Override
 							public ServletRegistration.Dynamic answer(
@@ -114,7 +114,7 @@ public class MockEmbeddedServletContainerFactory
 								return registeredServlet.getRegistration();
 							}
 						});
-				given(this.servletContext.addFilter(anyString(), (Filter) anyObject()))
+				given(this.servletContext.addFilter(anyString(), (Filter) any()))
 						.willAnswer(new Answer<FilterRegistration.Dynamic>() {
 							@Override
 							public FilterRegistration.Dynamic answer(
@@ -133,8 +133,8 @@ public class MockEmbeddedServletContainerFactory
 							public Void answer(InvocationOnMock invocation)
 									throws Throwable {
 								initParameters.put(
-										invocation.getArgumentAt(0, String.class),
-										invocation.getArgumentAt(1, String.class));
+										invocation.getArgument(0),
+										invocation.getArgument(1));
 								return null;
 							}
 
@@ -147,7 +147,7 @@ public class MockEmbeddedServletContainerFactory
 							public String answer(InvocationOnMock invocation)
 									throws Throwable {
 								return initParameters
-										.get(invocation.getArgumentAt(0, String.class));
+										.get(invocation.getArgument(0));
 							}
 						});
 				given(this.servletContext.getAttributeNames()).willReturn(

@@ -81,7 +81,7 @@
 			<dependency>
 				<groupId>net.bytebuddy</groupId>
 				<artifactId>byte-buddy</artifactId>
-				<version>1.5.4</version>
+				<version>1.6.0</version>
 			</dependency>
 			<dependency>
 				<groupId>net.sf.jopt-simple</groupId>
