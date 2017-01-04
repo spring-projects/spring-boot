@@ -73,7 +73,7 @@ public class CacheManagerCustomizers {
 		}
 		catch (ClassCastException ex) {
 			// Possibly a lambda-defined customizer which we could not resolve the generic
-			// event type for
+			// cache manager type for
 			if (logger.isDebugEnabled()) {
 				logger.debug(
 						"Non-matching cache manager type for customizer: " + customizer,

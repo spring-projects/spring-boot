@@ -71,7 +71,7 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 	}
 
 	@Test
-	public void getResourceWhenHasServeletContextShouldReturnServletResource()
+	public void getResourceWhenHasServletContextShouldReturnServletResource()
 			throws Exception {
 		GenericWebApplicationContext context = new GenericWebApplicationContext(
 				new MockServletContext());

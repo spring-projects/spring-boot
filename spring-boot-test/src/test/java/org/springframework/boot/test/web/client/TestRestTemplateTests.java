@@ -168,7 +168,7 @@ public class TestRestTemplateTests {
 	@Test
 	public void withBasicAuthReplacesBasicAuthInterceptorWhenAlreadyPresent() {
 		TestRestTemplate original = new TestRestTemplate("foo", "bar")
-				.withBasicAuth("replace", "repalce");
+				.withBasicAuth("replace", "replace");
 		TestRestTemplate basicAuth = original.withBasicAuth("user", "password");
 		assertThat(basicAuth.getRestTemplate().getMessageConverters())
 				.containsExactlyElementsOf(

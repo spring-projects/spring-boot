@@ -57,7 +57,7 @@ public class WebMvcTestWebDriverCustomScopeIntegrationTests {
 	}
 
 	@Test
-	public void shouldBeADifferentWebClient() throws Exception {
+	public void shouldBeTheSameWebClient() throws Exception {
 		assertThat(previousWebDriver).isNotNull().isSameAs(this.webDriver);
 	}
 

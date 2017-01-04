@@ -125,8 +125,8 @@ public class Repackager {
 
 	/**
 	 * Sets the layout factory for the jar. The factory can be used when no specific
-	 * layout is specific.
-	 * @param layoutFactory the layoutFactory to set
+	 * layout is specified.
+	 * @param layoutFactory the layout factory to set
 	 */
 	public void setLayoutFactory(LayoutFactory layoutFactory) {
 		this.layoutFactory = layoutFactory;
