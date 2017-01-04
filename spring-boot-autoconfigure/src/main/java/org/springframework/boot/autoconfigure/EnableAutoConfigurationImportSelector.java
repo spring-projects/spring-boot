@@ -175,7 +175,7 @@ public class EnableAutoConfigurationImportSelector
 
 	/**
 	 * Handle any invalid excludes that have been specified.
-	 * @param invalidExcludes the list of invalid excludes (will always have at least on
+	 * @param invalidExcludes the list of invalid excludes (will always have at least one
 	 * element)
 	 */
 	protected void handleInvalidExcludes(List<String> invalidExcludes) {
