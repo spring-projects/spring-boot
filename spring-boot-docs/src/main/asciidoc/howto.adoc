@@ -2076,7 +2076,7 @@ add a special `{vendor}` placeholder to use vendor-specific scripts. Assume the 
 ----
 
 Rather than using `db/migration`, this configuration will set the folder to use according
-to the type of the database (i.e. `db/migration/mysql` for MySql). The list of supported
+to the type of the database (i.e. `db/migration/mysql` for MySQL). The list of supported
 database are available in {sc-spring-boot}/jdbc/DatabaseDriver.{sc-ext}[`DatabaseDriver`].
 
 See also the Flyway class from flyway-core for details of available settings like schemas

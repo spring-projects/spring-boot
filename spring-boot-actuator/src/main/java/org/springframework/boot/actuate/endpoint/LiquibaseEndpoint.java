@@ -48,10 +48,10 @@ public class LiquibaseEndpoint extends AbstractEndpoint<List<LiquibaseReport>> {
 		this(Collections.singletonMap("default", liquibase));
 	}
 
-	public LiquibaseEndpoint(Map<String, SpringLiquibase> liquibase) {
+	public LiquibaseEndpoint(Map<String, SpringLiquibase> liquibases) {
 		super("liquibase");
-		Assert.notEmpty(liquibase, "Liquibase must be specified");
-		this.liquibases = liquibase;
+		Assert.notEmpty(liquibases, "Liquibases must be specified");
+		this.liquibases = liquibases;
 	}
 
 	@Override

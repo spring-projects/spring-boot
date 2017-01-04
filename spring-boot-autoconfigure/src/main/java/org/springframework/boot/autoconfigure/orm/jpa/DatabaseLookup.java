@@ -62,7 +62,7 @@ final class DatabaseLookup {
 	/**
 	 * Return the most suitable {@link Database} for the given {@link DataSource}.
 	 * @param dataSource the source {@link DataSource}
-	 * @return the most sutable {@link Database}
+	 * @return the most suitable {@link Database}
 	 */
 	public static Database getDatabase(DataSource dataSource) {
 		if (dataSource == null) {
