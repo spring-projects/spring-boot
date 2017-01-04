@@ -74,7 +74,7 @@ fi
 [[ -z "$LOG_FILENAME" ]] && LOG_FILENAME="{{logFilename:${identity}.log}}"
 
 # Initialize stop wait time if not provided by the config file
-[[ -z "$STOP_WAIT_TIME" ]] && STOP_WAIT_TIME={{stopWaitTime:60}}
+[[ -z "$STOP_WAIT_TIME" ]] && STOP_WAIT_TIME="{{stopWaitTime:60}}"
 
 # ANSI Colors
 echoRed() { echo $'\e[0;31m'"$1"$'\e[0m'; }
