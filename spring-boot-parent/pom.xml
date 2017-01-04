@@ -627,6 +627,9 @@
 						<annotation>org.springframework.lang.UsesJava7</annotation>
 						<annotation>org.springframework.boot.lang.UsesUnsafeJava</annotation>
 					</annotations>
+					<excludeDependencies>
+						<excludeDependency>org.glassfish.hk2.external:asm-all-repackaged</excludeDependency>
+					</excludeDependencies>
 				</configuration>
 				<executions>
 					<execution>
