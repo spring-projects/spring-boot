@@ -1236,19 +1236,19 @@ Example:
 
 [source,java,indent=0]
 ----
-@Bean
-@ExportMetricWriter
-MetricWriter metricWriter(MetricExportProperties export) {
-	return new RedisMetricRepository(connectionFactory,
-      export.getRedis().getPrefix(), export.getRedis().getKey());
-}
+	@Bean
+	@ExportMetricWriter
+	MetricWriter metricWriter(MetricExportProperties export) {
+		return new RedisMetricRepository(connectionFactory,
+			export.getRedis().getPrefix(), export.getRedis().getKey());
+	}
 ----
 
 .application.properties
-[source,properties]
+[source,properties,indent=0]
 ----
-spring.metrics.export.redis.prefix: metrics.mysystem.${spring.application.name:application}.${random.value:0000}
-spring.metrics.export.redis.key: keys.metrics.mysystem
+	spring.metrics.export.redis.prefix: metrics.mysystem.${spring.application.name:application}.${random.value:0000}
+	spring.metrics.export.redis.key: keys.metrics.mysystem
 ----
 
 The prefix is constructed with the application name and id at the end, so it can easily be used
@@ -1287,21 +1287,21 @@ Example:
 
 [source,indent=0]
 ----
-curl localhost:4242/api/query?start=1h-ago&m=max:counter.status.200.root
-[
-	{
-		"metric": "counter.status.200.root",
-		"tags": {
-			"domain": "org.springframework.metrics",
-			"process": "b968a76"
-		},
-		"aggregateTags": [],
-		"dps": {
-			"1430492872": 2,
-			"1430492875": 6
+	curl localhost:4242/api/query?start=1h-ago&m=max:counter.status.200.root
+	[
+		{
+			"metric": "counter.status.200.root",
+			"tags": {
+				"domain": "org.springframework.metrics",
+				"process": "b968a76"
+			},
+			"aggregateTags": [],
+			"dps": {
+				"1430492872": 2,
+				"1430492875": 6
+			}
 		}
-	}
-]
+	]
 ----
 
 
@@ -1320,14 +1320,14 @@ Alternatively, you can provide a `@Bean` of type `StatsdMetricWriter` and mark i
 
 [source,java,indent=0]
 ----
-@Value("${spring.application.name:application}.${random.value:0000}")
-private String prefix = "metrics";
+	@Value("${spring.application.name:application}.${random.value:0000}")
+	private String prefix = "metrics";
 
-@Bean
-@ExportMetricWriter
-MetricWriter metricWriter() {
-	return new StatsdMetricWriter(prefix, "localhost", 8125);
-}
+	@Bean
+	@ExportMetricWriter
+	MetricWriter metricWriter() {
+		return new StatsdMetricWriter(prefix, "localhost", 8125);
+	}
 ----
 
 
@@ -1343,11 +1343,11 @@ Example:
 
 [source,java,indent=0]
 ----
-@Bean
-@ExportMetricWriter
-MetricWriter metricWriter(MBeanExporter exporter) {
-	return new JmxMetricWriter(exporter);
-}
+	@Bean
+	@ExportMetricWriter
+	MetricWriter metricWriter(MBeanExporter exporter) {
+		return new JmxMetricWriter(exporter);
+	}
 ----
 
 Each metric is exported as an individual MBean. The format for the `ObjectNames` is given
@@ -1374,24 +1374,24 @@ Example:
 
 [source,java,indent=0]
 ----
-  @Autowired
-  private MetricExportProperties export;
+	@Autowired
+	private MetricExportProperties export;
 
-  @Bean
-  public PublicMetrics metricsAggregate() {
-    return new MetricReaderPublicMetrics(aggregatesMetricReader());
-  }
+	@Bean
+	public PublicMetrics metricsAggregate() {
+		return new MetricReaderPublicMetrics(aggregatesMetricReader());
+	}
 
-  private MetricReader globalMetricsForAggregation() {
-    return new RedisMetricRepository(this.connectionFactory,
-        this.export.getRedis().getAggregatePrefix(), this.export.getRedis().getKey());
-  }
+	private MetricReader globalMetricsForAggregation() {
+		return new RedisMetricRepository(this.connectionFactory,
+			this.export.getRedis().getAggregatePrefix(), this.export.getRedis().getKey());
+	}
 
-  private MetricReader aggregatesMetricReader() {
-    AggregateMetricReader repository = new AggregateMetricReader(
-        globalMetricsForAggregation());
-    return repository;
-  }
+	private MetricReader aggregatesMetricReader() {
+		AggregateMetricReader repository = new AggregateMetricReader(
+			globalMetricsForAggregation());
+		return repository;
+	}
 ----
 
 NOTE: The example above uses `MetricExportProperties` to inject and extract the key and
@@ -1455,34 +1455,34 @@ and obtain basic information about the last 100 requests:
 
 [source,json,indent=0]
 ----
-[{
-    "timestamp": 1394343677415,
-    "info": {
-      "method": "GET",
-      "path": "/trace",
-      "headers": {
-        "request": {
-          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-          "Connection": "keep-alive",
-          "Accept-Encoding": "gzip, deflate",
-          "User-Agent": "Mozilla/5.0 Gecko/Firefox",
-          "Accept-Language": "en-US,en;q=0.5",
-          "Cookie": "_ga=GA1.1.827067509.1390890128; ..."
-          "Authorization": "Basic ...",
-          "Host": "localhost:8080"
-        },
-        "response": {
-          "Strict-Transport-Security": "max-age=31536000 ; includeSubDomains",
-          "X-Application-Context": "application:8080",
-          "Content-Type": "application/json;charset=UTF-8",
-          "status": "200"
-        }
-      }
-    }
-  },{
-    "timestamp": 1394343684465,
-    ...
-    }]
+	[{
+		"timestamp": 1394343677415,
+		"info": {
+			"method": "GET",
+			"path": "/trace",
+			"headers": {
+				"request": {
+					"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+					"Connection": "keep-alive",
+					"Accept-Encoding": "gzip, deflate",
+					"User-Agent": "Mozilla/5.0 Gecko/Firefox",
+					"Accept-Language": "en-US,en;q=0.5",
+					"Cookie": "_ga=GA1.1.827067509.1390890128; ..."
+					"Authorization": "Basic ...",
+					"Host": "localhost:8080"
+				},
+				"response": {
+					"Strict-Transport-Security": "max-age=31536000 ; includeSubDomains",
+					"X-Application-Context": "application:8080",
+					"Content-Type": "application/json;charset=UTF-8",
+					"status": "200"
+				}
+			}
+		}
+	},{
+		"timestamp": 1394343684465,
+		...
+	}]
 ----
 
 
