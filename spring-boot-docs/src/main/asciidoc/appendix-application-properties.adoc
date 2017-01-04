@@ -1017,6 +1017,10 @@ content into your application; rather pick only the properties that you need.
 	endpoints.logfile.external-file= # External Logfile to be accessed.
 	endpoints.logfile.path=/logfile # Endpoint URL path.
 	endpoints.logfile.sensitive=true # Enable security on the endpoint.
+	endpoints.loggers.enabled=true # Enable the endpoint.
+	endpoints.loggers.id= # Endpoint identifier.
+	endpoints.loggers.path=/logfile # Endpoint path.
+	endpoints.loggers.sensitive=true # Mark if the endpoint exposes sensitive information.
 	endpoints.mappings.enabled= # Enable the endpoint.
 	endpoints.mappings.id= # Endpoint identifier.
 	endpoints.mappings.path= # Endpoint path.
