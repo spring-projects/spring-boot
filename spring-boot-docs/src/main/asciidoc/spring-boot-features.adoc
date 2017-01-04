@@ -4082,7 +4082,7 @@ cache:
 		public CacheManagerCustomizer<CouchbaseCacheManager> cacheManagerCustomizer() {
 			return c -> {
 				c.prepareCache("biz", CacheBuilder.newInstance(anotherBucket())
-						.withExpirationInMillis(2000));
+						.withExpiration(2));
 			};
 		}
 
