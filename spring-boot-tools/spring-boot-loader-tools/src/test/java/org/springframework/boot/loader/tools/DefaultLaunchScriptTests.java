@@ -134,7 +134,7 @@ public class DefaultLaunchScriptTests {
 	public void defaultForStopWaitTimeIs60() throws Exception {
 		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
 		String content = new String(script.toByteArray());
-		assertThat(content).contains("STOP_WAIT_TIME=60");
+		assertThat(content).contains("STOP_WAIT_TIME=\"60\"");
 	}
 
 	@Test
