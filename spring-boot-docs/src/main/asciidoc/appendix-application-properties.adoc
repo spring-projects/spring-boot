@@ -1058,6 +1058,8 @@ content into your application; rather pick only the properties that you need.
 	management.add-application-context-header=true # Add the "X-Application-Context" HTTP header in each response.
 	management.address= # Network address that the management endpoints should bind to.
 	management.context-path= # Management endpoint context-path. For instance `/actuator`
+	management.cloudfoundry.enabled= # Enable extended Cloud Foundry actuator endpoints
+	management.cloudfoundry.skip-ssl-validation= # Skip SSL verification for Cloud Foundry actuator endpoint security calls
 	management.port= # Management endpoint HTTP port. Uses the same port as the application by default. Configure a different port to use management-specific SSL.
 	management.security.enabled=true # Enable security.
 	management.security.roles=ACTUATOR # Comma-separated list of roles that can access the management endpoint.

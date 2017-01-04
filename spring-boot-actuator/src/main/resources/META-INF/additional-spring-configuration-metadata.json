@@ -86,6 +86,18 @@
     "description": "Arbitrary properties to add to the info endpoint."
   },
   {
+    "name": "management.cloudfoundry.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable extended Cloud Foundry actuator endpoints.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.cloudfoundry.skip-ssl-validation",
+    "type": "java.lang.Boolean",
+    "description": "Skip SSL verification for Cloud Foundry actuator endpoint security calls.",
+    "defaultValue": false
+  },
+  {
     "name": "management.health.cassandra.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable cassandra health check.",
