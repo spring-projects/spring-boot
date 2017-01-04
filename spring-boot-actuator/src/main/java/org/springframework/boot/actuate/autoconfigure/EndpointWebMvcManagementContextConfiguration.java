@@ -54,7 +54,6 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
@@ -162,7 +161,7 @@ public class EndpointWebMvcManagementContextConfiguration {
 	@ConditionalOnEnabledEndpoint("health")
 	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
 		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate,
-				isHealthSecure());
+				this.managementServerProperties.getSecurity().isEnabled());
 		if (this.healthMvcEndpointProperties.getMapping() != null) {
 			healthMvcEndpoint
 					.addStatusMapping(this.healthMvcEndpointProperties.getMapping());
@@ -204,17 +203,6 @@ public class EndpointWebMvcManagementContextConfiguration {
 	public AuditEventsMvcEndpoint auditEventMvcEndpoint(
 			AuditEventRepository auditEventRepository) {
 		return new AuditEventsMvcEndpoint(auditEventRepository);
-	}
-
-	private boolean isHealthSecure() {
-		return isSpringSecurityAvailable()
-				&& this.managementServerProperties.getSecurity().isEnabled();
-	}
-
-	private boolean isSpringSecurityAvailable() {
-		return ClassUtils.isPresent(
-				"org.springframework.security.config.annotation.web.WebSecurityConfigurer",
-				getClass().getClassLoader());
 	}
 
 	private static class LogFileCondition extends SpringBootCondition {

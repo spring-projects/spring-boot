@@ -16,11 +16,12 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.health.Health;
@@ -33,10 +34,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -49,6 +47,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Madhura Bhave
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "endpoints.health")
@@ -136,12 +135,12 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 
 	@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public Object invoke(Principal principal) {
+	public Object invoke(HttpServletRequest request) {
 		if (!getDelegate().isEnabled()) {
 			// Shouldn't happen because the request mapping should not be registered
 			return getDisabledResponse();
 		}
-		Health health = getHealth(principal);
+		Health health = getHealth(request);
 		HttpStatus status = getStatus(health);
 		if (status != null) {
 			return new ResponseEntity<Health>(health, status);
@@ -163,13 +162,13 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		return null;
 	}
 
-	private Health getHealth(Principal principal) {
+	private Health getHealth(HttpServletRequest request) {
 		long accessTime = System.currentTimeMillis();
 		if (isCacheStale(accessTime)) {
 			this.lastAccess = accessTime;
 			this.cached = getDelegate().invoke();
 		}
-		if (exposeHealthDetails(principal)) {
+		if (exposeHealthDetails(request)) {
 			return this.cached;
 		}
 		return Health.status(this.cached.getStatus()).build();
@@ -182,44 +181,19 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		return (accessTime - this.lastAccess) >= getDelegate().getTimeToLive();
 	}
 
-	protected boolean exposeHealthDetails(Principal principal) {
-		return isSecure(principal) || isUnrestricted();
-	}
-
-	private boolean isSecure(Principal principal) {
-		if (principal == null || principal.getClass().getName().contains("Anonymous")) {
-			return false;
+	protected boolean exposeHealthDetails(HttpServletRequest request) {
+		if (!this.secure) {
+			return true;
 		}
-		if (isSpringSecurityAuthentication(principal)) {
-			Authentication authentication = (Authentication) principal;
-			List<String> roles = Arrays.asList(StringUtils
-					.trimArrayElements(StringUtils.commaDelimitedListToStringArray(
-							this.roleResolver.getProperty("roles", "ROLE_ACTUATOR"))));
-			for (GrantedAuthority authority : authentication.getAuthorities()) {
-				String name = authority.getAuthority();
-				for (String role : roles) {
-					if (role.equals(name) || ("ROLE_" + role).equals(name)) {
-						return true;
-					}
-				}
+		List<String> roles = Arrays.asList(StringUtils
+				.trimArrayElements(StringUtils.commaDelimitedListToStringArray(
+						this.roleResolver.getProperty("roles", "ROLE_ACTUATOR"))));
+		for (String role : roles) {
+			if (request.isUserInRole(role) || request.isUserInRole("ROLE_" + role)) {
+				return true;
 			}
 		}
 		return false;
-	}
-
-	private boolean isSpringSecurityAuthentication(Principal principal) {
-		return ClassUtils.isPresent("org.springframework.security.core.Authentication",
-				null) && (principal instanceof Authentication);
-	}
-
-	private boolean isUnrestricted() {
-		Boolean sensitive = this.healthPropertyResolver.getProperty("sensitive",
-				Boolean.class);
-		if (sensitive == null) {
-			sensitive = this.endpointPropertyResolver.getProperty("sensitive",
-					Boolean.class);
-		}
-		return !this.secure && !Boolean.TRUE.equals(sensitive);
 	}
 
 }
