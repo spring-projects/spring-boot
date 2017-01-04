@@ -842,6 +842,8 @@ the following dependency to your project:
  	</dependency>
 ----
 
+NOTE: The remote shell is deprecated and will be removed in Spring Boot 2.0.
+
 TIP: If you want to also enable telnet access you will additionally need a dependency
 on `org.crsh:crsh.shell.telnet`.
 
