@@ -4959,7 +4959,7 @@ Spring Boot provides Spring Session auto-configuration for a wide range of store
 * Hazelcast
 * HashMap
 
-If Spring Session is available, you only need to choose the
+If Spring Session is available, you must choose the
 {sc-spring-boot-autoconfigure}/session/StoreType.{sc-ext}[`StoreType`] that you wish to
 use to store the sessions. For instance to use JDBC as backend store, you'd configure
 your application as follows:
@@ -4968,9 +4968,6 @@ your application as follows:
 ----
     spring.session.store-type=jdbc
 ----
-
-NOTE: For backward compatibility if Redis is available Spring Session will be automatically
-configured to use Redis.
 
 TIP: You can disable Spring Session by setting the `store-type` to `none`.
 

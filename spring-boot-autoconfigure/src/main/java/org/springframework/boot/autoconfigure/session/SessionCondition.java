@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,18 +23,14 @@ import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.util.ClassUtils;
 
 /**
  * General condition used with all session configuration classes.
  *
  * @author Tommy Ludwig
+ * @author Stephane Nicoll
  */
 class SessionCondition extends SpringBootCondition {
-
-	private static final boolean redisPresent = ClassUtils.isPresent(
-			"org.springframework.data.redis.core.RedisTemplate",
-			SessionCondition.class.getClassLoader());
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
@@ -46,10 +42,6 @@ class SessionCondition extends SpringBootCondition {
 		StoreType sessionStoreType = SessionStoreMappings
 				.getType(((AnnotationMetadata) metadata).getClassName());
 		if (!resolver.containsProperty("store-type")) {
-			if (sessionStoreType == StoreType.REDIS && redisPresent) {
-				return ConditionOutcome.match(
-						message.foundExactly("default store type of redis (deprecated)"));
-			}
 			return ConditionOutcome.noMatch(
 					message.didNotFind("spring.session.store-type property").atAll());
 		}
