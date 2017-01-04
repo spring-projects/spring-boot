@@ -536,11 +536,32 @@ all enabled endpoints to be exposed over HTTP. The default convention is to use 
 
 
 [[production-ready-sensitive-endpoints]]
-=== Securing sensitive endpoints
-If you add '`Spring Security`' to your project, all sensitive endpoints exposed over HTTP
-will be protected. By default '`basic`' authentication will be used with the username
-`user` and a generated password (which is printed on the console when the application
-starts).
+=== Accessing sensitive endpoints
+By default all sensitive HTTP endpoints are secured such that only users that have an
+`ACTUATOR` role may access them. Security is enforced using the standard
+`HttpServletRequest.isUserInRole` method.
+
+TIP: Use the `management.security.roles` property if you want something different to
+`ACTUATOR`.
+
+If you are deploying applications behind a firewall, you may prefer that all your actuator
+endpoints can be accessed without requiring authentication. You can do this by changing
+the `management.security.enabled` property:
+
+.application.properties
+[source,properties,indent=0]
+----
+	management.security.enabled=false
+----
+
+NOTE: By default, actuator endpoints are exposed on the same port that serves regular
+HTTP traffic. Take care not to accidentally expose sensitive information if you change
+the `management.security.enabled` property.
+
+If you're deploying applications publicly, you may want to add '`Spring Security`' to
+handle user authentication. When '`Spring Security`' is added, by default '`basic`'
+authentication will be used with the username `user` and a generated password (which is
+printed on the console when the application starts).
 
 TIP: Generated passwords are logged as the application starts. Search for '`Using default
 security password`'.
@@ -556,10 +577,6 @@ in your `application.properties`:
 	management.security.roles=SUPERUSER
 ----
 
-TIP: If you don't use Spring Security and your HTTP endpoints are exposed publicly,
-you should carefully consider which endpoints you enable. See
-<<production-ready-customizing-endpoints>> for details of how you can set
-`endpoints.enabled` to `false` then "`opt-in`" only specific endpoints.
 
 
 [[production-ready-customizing-management-server-context-path]]
