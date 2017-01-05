@@ -34,7 +34,6 @@ import org.mockito.stubbing.Answer;
 import org.mockito.verification.VerificationMode;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -171,36 +170,17 @@ abstract class MockitoApi {
 
 		Mockito1Api() {
 			this.mockUtil = BeanUtils.instantiateClass(MockUtil.class);
-			this.getMockSettingsMethod = findMockSettingsMethod();
+			this.getMockSettingsMethod = ReflectionUtils.findMethod(MockUtil.class,
+					"getMockSettings", Object.class);
 			this.mockingProgress = (MockingProgress) BeanUtils
 					.instantiateClass(ClassUtils.resolveClassName(
 							"org.mockito.internal.progress.ThreadSafeMockingProgress",
 							MockitoApi.class.getClassLoader()));
-			this.reportMatcherMethod = findReportMatcherMethod();
-			this.mockAwareVerificationModeConstructor = findMockAwareVerificationModeConstructor();
-		}
-
-		private Method findMockSettingsMethod() {
-			Method method = ReflectionUtils.findMethod(MockUtil.class, "getMockSettings",
-					Object.class);
-			Assert.state(method != null, "Unable to find getMockSettings method");
-			return method;
-		}
-
-		private Method findReportMatcherMethod() {
-			Method method = ReflectionUtils.findMethod(ArgumentMatcherStorage.class,
-					"reportMatcher", Matcher.class);
-			Assert.state(method != null, "Unable to find reportMatcher method");
-			return method;
-		}
-
-		private Constructor<MockAwareVerificationMode> findMockAwareVerificationModeConstructor() {
-			Constructor<MockAwareVerificationMode> constructor = ClassUtils
+			this.reportMatcherMethod = ReflectionUtils.findMethod(
+					ArgumentMatcherStorage.class, "reportMatcher", Matcher.class);
+			this.mockAwareVerificationModeConstructor = ClassUtils
 					.getConstructorIfAvailable(MockAwareVerificationMode.class,
 							Object.class, VerificationMode.class);
-			Assert.state(constructor != null,
-					"Unable to find MockAwareVerificationMode constructor");
-			return constructor;
 		}
 
 		@Override
