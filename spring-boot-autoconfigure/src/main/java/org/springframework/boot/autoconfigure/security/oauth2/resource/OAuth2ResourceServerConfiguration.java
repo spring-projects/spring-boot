@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -106,9 +105,8 @@ public class OAuth2ResourceServerConfiguration {
 	public static class ResourceServerFilterChainOrderProcessor
 			implements BeanPostProcessor {
 
-		private ResourceServerProperties resource;
+		private final ResourceServerProperties resource;
 
-		@Autowired
 		public ResourceServerFilterChainOrderProcessor(
 				ResourceServerProperties resource) {
 			this.resource = resource;
