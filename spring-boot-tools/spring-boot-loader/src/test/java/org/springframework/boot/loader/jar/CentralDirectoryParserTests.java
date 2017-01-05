@@ -25,18 +25,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.InOrder;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CentralDirectoryParser}.
@@ -61,16 +55,13 @@ public class CentralDirectoryParserTests {
 
 	@Test
 	public void visitsInOrder() throws Exception {
-		CentralDirectoryVisitor visitor = mock(CentralDirectoryVisitor.class);
+		MockCentralDirectoryVisitor visitor = new MockCentralDirectoryVisitor();
 		CentralDirectoryParser parser = new CentralDirectoryParser();
 		parser.addVisitor(visitor);
 		parser.parse(this.jarData, false);
-		InOrder ordered = inOrder(visitor);
-		ordered.verify(visitor).visitStart(any(CentralDirectoryEndRecord.class),
-				any(RandomAccessData.class));
-		ordered.verify(visitor, atLeastOnce())
-				.visitFileHeader(any(CentralDirectoryFileHeader.class), anyInt());
-		ordered.verify(visitor).visitEnd();
+		List<String> invocations = visitor.invocations;
+		assertThat(invocations).startsWith("visitStart").endsWith("visitEnd")
+				.contains("visitFileHeader");
 	}
 
 	@Test
@@ -114,6 +105,33 @@ public class CentralDirectoryParserTests {
 
 		public List<CentralDirectoryFileHeader> getHeaders() {
 			return this.headers;
+		}
+
+	}
+
+	private static class MockCentralDirectoryVisitor implements CentralDirectoryVisitor {
+
+		private final List<String> invocations = new ArrayList<String>();
+
+		@Override
+		public void visitStart(CentralDirectoryEndRecord endRecord,
+				RandomAccessData centralDirectoryData) {
+			this.invocations.add("visitStart");
+		}
+
+		@Override
+		public void visitFileHeader(CentralDirectoryFileHeader fileHeader,
+				int dataOffset) {
+			this.invocations.add("visitFileHeader");
+		}
+
+		@Override
+		public void visitEnd() {
+			this.invocations.add("visitEnd");
+		}
+
+		public List<String> getInvocations() {
+			return this.invocations;
 		}
 
 	}
