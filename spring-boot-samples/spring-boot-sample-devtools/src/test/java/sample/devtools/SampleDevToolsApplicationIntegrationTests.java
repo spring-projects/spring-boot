@@ -60,4 +60,11 @@ public class SampleDevToolsApplicationIntegrationTests {
 		assertThat(entity.getBody()).contains("public file");
 	}
 
+	@Test
+	public void testClassResource() throws Exception {
+		ResponseEntity<String> entity = this.restTemplate
+				.getForEntity("/application.properties", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
 }
