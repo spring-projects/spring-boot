@@ -105,7 +105,7 @@ public enum MockReset {
 		MockReset reset = MockReset.NONE;
 		if (ClassUtils.isPresent("org.mockito.internal.util.MockUtil", null)) {
 			if (Mockito.mockingDetails(mock).isMock()) {
-				MockCreationSettings settings = SpringBootMockUtil.getMockSettings(mock);
+				MockCreationSettings settings = MockitoApi.get().getMockSettings(mock);
 				List listeners = settings.getInvocationListeners();
 				for (Object listener : listeners) {
 					if (listener instanceof ResetInvocationListener) {

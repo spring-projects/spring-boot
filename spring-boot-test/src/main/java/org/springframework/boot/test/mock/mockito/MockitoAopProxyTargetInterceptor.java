@@ -24,6 +24,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.mockito.internal.matchers.LocalizedMatcher;
 import org.mockito.internal.progress.ArgumentMatcherStorage;
+import org.mockito.internal.progress.MockingProgress;
 import org.mockito.internal.verification.MockAwareVerificationMode;
 import org.mockito.verification.VerificationMode;
 
@@ -88,10 +89,11 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 
 		private final Object monitor = new Object();
 
+		private final MockingProgress progress = MockitoApi.get().mockingProgress();
+
 		public boolean isVerifying() {
 			synchronized (this.monitor) {
-				VerificationMode mode = SpringBootMockUtil.mockingProgress()
-						.pullVerificationMode();
+				VerificationMode mode = this.progress.pullVerificationMode();
 				if (mode != null) {
 					resetVerificationStarted(mode);
 					return true;
@@ -102,13 +104,12 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 
 		public void replaceVerifyMock(Object source, Object target) {
 			synchronized (this.monitor) {
-				VerificationMode mode = SpringBootMockUtil.mockingProgress()
-						.pullVerificationMode();
+				VerificationMode mode = this.progress.pullVerificationMode();
 				if (mode != null) {
 					if (mode instanceof MockAwareVerificationMode) {
 						MockAwareVerificationMode mockAwareMode = (MockAwareVerificationMode) mode;
 						if (mockAwareMode.getMock() == source) {
-							mode = SpringBootMockUtil.createMockAwareVerificationMode(
+							mode = MockitoApi.get().createMockAwareVerificationMode(
 									target, mockAwareMode);
 						}
 					}
@@ -118,11 +119,10 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 		}
 
 		private void resetVerificationStarted(VerificationMode mode) {
-			ArgumentMatcherStorage storage = SpringBootMockUtil.mockingProgress()
-					.getArgumentMatcherStorage();
+			ArgumentMatcherStorage storage = this.progress.getArgumentMatcherStorage();
 			List<LocalizedMatcher> matchers = storage.pullLocalizedMatchers();
-			SpringBootMockUtil.mockingProgress().verificationStarted(mode);
-			SpringBootMockUtil.reportMatchers(storage, matchers);
+			MockitoApi.get().mockingProgress().verificationStarted(mode);
+			MockitoApi.get().reportMatchers(storage, matchers);
 		}
 
 	}
