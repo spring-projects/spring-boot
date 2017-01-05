@@ -28,6 +28,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.hamcrest.Matcher;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.mockito.ArgumentMatcher;
 
@@ -95,7 +96,7 @@ public abstract class AbstractHttpClientMockTests {
 	}
 
 	protected void mockProjectGenerationError(int status, String message)
-			throws IOException {
+			throws IOException, JSONException {
 		// Required for project generation as the metadata is read first
 		mockSuccessfulMetadataGet(false);
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
@@ -105,7 +106,8 @@ public abstract class AbstractHttpClientMockTests {
 		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 	}
 
-	protected void mockMetadataGetError(int status, String message) throws IOException {
+	protected void mockMetadataGetError(int status, String message)
+			throws IOException, JSONException {
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		mockHttpEntity(response, createJsonError(status, message).getBytes(),
 				"application/json");
@@ -156,7 +158,7 @@ public abstract class AbstractHttpClientMockTests {
 		return "attachment; filename=\"" + fileName + "\"";
 	}
 
-	private String createJsonError(int status, String message) {
+	private String createJsonError(int status, String message) throws JSONException {
 		JSONObject json = new JSONObject();
 		json.put("status", status);
 		if (message != null) {
