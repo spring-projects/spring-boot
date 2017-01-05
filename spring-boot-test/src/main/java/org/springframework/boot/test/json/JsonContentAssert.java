@@ -987,9 +987,17 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		if (this.actual == null) {
 			return compareForNull(expectedJson);
 		}
-		return JSONCompare.compareJSON(
-				(expectedJson == null ? null : expectedJson.toString()),
-				this.actual.toString(), compareMode);
+		try {
+			return JSONCompare.compareJSON(
+					(expectedJson == null ? null : expectedJson.toString()),
+					this.actual.toString(), compareMode);
+		}
+		catch (Exception ex) {
+			if (ex instanceof RuntimeException) {
+				throw (RuntimeException) ex;
+			}
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	private JSONCompareResult compare(CharSequence expectedJson,
@@ -997,9 +1005,17 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		if (this.actual == null) {
 			return compareForNull(expectedJson);
 		}
-		return JSONCompare.compareJSON(
-				(expectedJson == null ? null : expectedJson.toString()),
-				this.actual.toString(), comparator);
+		try {
+			return JSONCompare.compareJSON(
+					(expectedJson == null ? null : expectedJson.toString()),
+					this.actual.toString(), comparator);
+		}
+		catch (Exception ex) {
+			if (ex instanceof RuntimeException) {
+				throw (RuntimeException) ex;
+			}
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	private JSONCompareResult compareForNull(CharSequence expectedJson) {
