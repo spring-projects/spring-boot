@@ -20,14 +20,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Set;
-
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.util.ObjectUtils;
 
 /**
  * Configuration meta-data.
@@ -46,18 +43,18 @@ public class ConfigurationMetadata {
 		SEPARATORS = Collections.unmodifiableSet(new HashSet<Character>(chars));
 	}
 
-	private final MultiValueMap<String, ItemMetadata> items;
+	private final Map<String, List<ItemMetadata>> items;
 
-	private final MultiValueMap<String, ItemHint> hints;
+	private final Map<String, List<ItemHint>> hints;
 
 	public ConfigurationMetadata() {
-		this.items = new LinkedMultiValueMap<String, ItemMetadata>();
-		this.hints = new LinkedMultiValueMap<String, ItemHint>();
+		this.items = new LinkedHashMap<String, List<ItemMetadata>>();
+		this.hints = new LinkedHashMap<String, List<ItemHint>>();
 	}
 
 	public ConfigurationMetadata(ConfigurationMetadata metadata) {
-		this.items = new LinkedMultiValueMap<String, ItemMetadata>(metadata.items);
-		this.hints = new LinkedMultiValueMap<String, ItemHint>(metadata.hints);
+		this.items = new LinkedHashMap<String, List<ItemMetadata>>(metadata.items);
+		this.hints = new LinkedHashMap<String, List<ItemHint>>(metadata.hints);
 	}
 
 	/**
@@ -65,7 +62,7 @@ public class ConfigurationMetadata {
 	 * @param itemMetadata the meta-data to add
 	 */
 	public void add(ItemMetadata itemMetadata) {
-		this.items.add(itemMetadata.getName(), itemMetadata);
+		add(this.items, itemMetadata.getName(), itemMetadata);
 	}
 
 	/**
@@ -73,7 +70,7 @@ public class ConfigurationMetadata {
 	 * @param itemHint the item hint to add
 	 */
 	public void add(ItemHint itemHint) {
-		this.hints.add(itemHint.getName(), itemHint);
+		add(this.hints, itemHint.getName(), itemHint);
 	}
 
 	/**
@@ -131,13 +128,22 @@ public class ConfigurationMetadata {
 			}
 		}
 		else {
-			this.items.add(metadata.getName(), metadata);
+			add(this.items, metadata.getName(), metadata);
 		}
+	}
+
+	private <K, V> void add(Map<K, List<V>> map, K key, V value) {
+		List<V> values = map.get(key);
+		if (values == null) {
+			values = new ArrayList<V>();
+			map.put(key, values);
+		}
+		values.add(value);
 	}
 
 	private ItemMetadata findMatchingItemMetadata(ItemMetadata metadata) {
 		List<ItemMetadata> candidates = this.items.get(metadata.getName());
-		if (CollectionUtils.isEmpty(candidates)) {
+		if (candidates == null || candidates.isEmpty()) {
 			return null;
 		}
 		ListIterator<ItemMetadata> it = candidates.listIterator();
@@ -150,12 +156,18 @@ public class ConfigurationMetadata {
 			return candidates.get(0);
 		}
 		for (ItemMetadata candidate : candidates) {
-			if (ObjectUtils.nullSafeEquals(candidate.getSourceType(),
-					metadata.getSourceType())) {
+			if (nullSafeEquals(candidate.getSourceType(), metadata.getSourceType())) {
 				return candidate;
 			}
 		}
 		return null;
+	}
+
+	private boolean nullSafeEquals(Object o1, Object o2) {
+		if (o1 == o2) {
+			return true;
+		}
+		return o1 != null && o2 != null && o1.equals(o2);
 	}
 
 	public static String nestedPrefix(String prefix, String name) {
@@ -185,8 +197,7 @@ public class ConfigurationMetadata {
 		return dashed.toString().toLowerCase();
 	}
 
-	private static <T extends Comparable<T>> List<T> flattenValues(
-			MultiValueMap<?, T> map) {
+	private static <T extends Comparable<T>> List<T> flattenValues(Map<?, List<T>> map) {
 		List<T> content = new ArrayList<T>();
 		for (List<T> values : map.values()) {
 			content.addAll(values);
