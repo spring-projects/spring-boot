@@ -879,7 +879,7 @@ content into your application; rather pick only the properties that you need.
 	spring.kafka.consumer.group-id= # Unique string that identifies the consumer group this consumer belongs to.
 	spring.kafka.consumer.heartbeat-interval= # Expected time in milliseconds between heartbeats to the consumer coordinator.
 	spring.kafka.consumer.key-deserializer= # Deserializer class for keys.
-	spring.kafka.consumer.max-poll-messages= # Maximum number of records returned in a single call to poll().
+	spring.kafka.consumer.max-poll-records= # Maximum number of records returned in a single call to poll().
 	spring.kafka.consumer.value-deserializer= # Deserializer class for values.
 	spring.kafka.listener.ack-count= # Number of records between offset commits when ackMode is "COUNT" or "COUNT_TIME".
 	spring.kafka.listener.ack-mode= # Listener AckMode; see the spring-kafka documentation.
@@ -960,8 +960,8 @@ content into your application; rather pick only the properties that you need.
 	endpoints.actuator.path= # Endpoint URL path.
 	endpoints.actuator.sensitive=false # Enable security on the endpoint.
 	endpoints.auditevents.enabled= # Enable the endpoint.
-	endpoints.auditevents.id= # Endpoint identifier.
 	endpoints.auditevents.path= # Endpoint path.
+	endpoints.auditevents.sensitive=false # Enable security on the endpoint.
 	endpoints.autoconfig.enabled= # Enable the endpoint.
 	endpoints.autoconfig.id= # Endpoint identifier.
 	endpoints.autoconfig.path= # Endpoint path.
