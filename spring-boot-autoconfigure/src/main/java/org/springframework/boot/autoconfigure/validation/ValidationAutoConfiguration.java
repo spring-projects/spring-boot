@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -51,7 +52,10 @@ public class ValidationAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public Validator validator() {
-		return new LocalValidatorFactoryBean();
+		LocalValidatorFactoryBean factoryBean = new LocalValidatorFactoryBean();
+		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory();
+		factoryBean.setMessageInterpolator(interpolatorFactory.getObject());
+		return factoryBean;
 	}
 
 	@Bean
