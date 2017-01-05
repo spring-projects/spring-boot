@@ -233,7 +233,8 @@ class InitializrService {
 		return null;
 	}
 
-	private JSONObject getContentAsJson(HttpEntity entity) throws IOException {
+	private JSONObject getContentAsJson(HttpEntity entity)
+			throws IOException, JSONException {
 		return new JSONObject(getContent(entity));
 	}
 

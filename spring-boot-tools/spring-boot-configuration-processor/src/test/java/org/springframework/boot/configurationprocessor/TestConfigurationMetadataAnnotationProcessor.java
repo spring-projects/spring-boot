@@ -70,7 +70,7 @@ public class TestConfigurationMetadataAnnotationProcessor
 	}
 
 	@Override
-	protected ConfigurationMetadata writeMetaData() {
+	protected ConfigurationMetadata writeMetaData() throws Exception {
 		super.writeMetaData();
 		try {
 			File metadataFile = new File(this.outputLocation,

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -18,20 +19,17 @@
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
 	<dependencies>
- 		<!-- Compile (should stick to the bare minimum) -->
- 		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
+		<!-- Shaded -->
+		<dependency>
+			<groupId>com.vaadin.external.google</groupId>
+			<artifactId>android-json</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
@@ -43,6 +41,34 @@
 					<!-- Ensure own annotation processor doesn't kick in -->
 					<proc>none</proc>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<filters>
+								<filter>
+									<artifact>com.vaadin.external.google:android-json</artifact>
+								</filter>
+							</filters>
+							<relocations>
+								<relocation>
+									<pattern>org.json</pattern>
+									<shadedPattern>org.springframework.boot.configurationprocessor.json</shadedPattern>
+								</relocation>
+							</relocations>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
+							<createSourcesJar>true</createSourcesJar>
+							<shadeSourcesContent>true</shadeSourcesContent>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

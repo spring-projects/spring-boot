@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -58,8 +59,9 @@ class InitializrServiceMetadata {
 	/**
 	 * Creates a new instance using the specified root {@link JSONObject}.
 	 * @param root the root JSONObject
+	 * @throws JSONException on JSON parsing failure
 	 */
-	InitializrServiceMetadata(JSONObject root) {
+	InitializrServiceMetadata(JSONObject root) throws JSONException {
 		this.dependencies = parseDependencies(root);
 		this.projectTypes = parseProjectTypes(root);
 		this.defaults = Collections.unmodifiableMap(parseDefaults(root));
@@ -124,7 +126,8 @@ class InitializrServiceMetadata {
 		return this.defaults;
 	}
 
-	private Map<String, Dependency> parseDependencies(JSONObject root) {
+	private Map<String, Dependency> parseDependencies(JSONObject root)
+			throws JSONException {
 		Map<String, Dependency> result = new HashMap<String, Dependency>();
 		if (!root.has(DEPENDENCIES_EL)) {
 			return result;
@@ -138,7 +141,8 @@ class InitializrServiceMetadata {
 		return result;
 	}
 
-	private MetadataHolder<String, ProjectType> parseProjectTypes(JSONObject root) {
+	private MetadataHolder<String, ProjectType> parseProjectTypes(JSONObject root)
+			throws JSONException {
 		MetadataHolder<String, ProjectType> result = new MetadataHolder<String, ProjectType>();
 		if (!root.has(TYPE_EL)) {
 			return result;
@@ -158,7 +162,7 @@ class InitializrServiceMetadata {
 		return result;
 	}
 
-	private Map<String, String> parseDefaults(JSONObject root) {
+	private Map<String, String> parseDefaults(JSONObject root) throws JSONException {
 		Map<String, String> result = new HashMap<String, String>();
 		Iterator<?> keys = root.keys();
 		while (keys.hasNext()) {
@@ -174,7 +178,8 @@ class InitializrServiceMetadata {
 		return result;
 	}
 
-	private void parseGroup(JSONObject group, Map<String, Dependency> dependencies) {
+	private void parseGroup(JSONObject group, Map<String, Dependency> dependencies)
+			throws JSONException {
 		if (group.has(VALUES_EL)) {
 			JSONArray content = group.getJSONArray(VALUES_EL);
 			for (int i = 0; i < content.length(); i++) {
@@ -184,14 +189,15 @@ class InitializrServiceMetadata {
 		}
 	}
 
-	private Dependency parseDependency(JSONObject object) {
+	private Dependency parseDependency(JSONObject object) throws JSONException {
 		String id = getStringValue(object, ID_ATTRIBUTE, null);
 		String name = getStringValue(object, NAME_ATTRIBUTE, null);
 		String description = getStringValue(object, DESCRIPTION_ATTRIBUTE, null);
 		return new Dependency(id, name, description);
 	}
 
-	private ProjectType parseType(JSONObject object, String defaultId) {
+	private ProjectType parseType(JSONObject object, String defaultId)
+			throws JSONException {
 		String id = getStringValue(object, ID_ATTRIBUTE, null);
 		String name = getStringValue(object, NAME_ATTRIBUTE, null);
 		String action = getStringValue(object, ACTION_ATTRIBUTE, null);
@@ -204,14 +210,15 @@ class InitializrServiceMetadata {
 		return new ProjectType(id, name, action, defaultType, tags);
 	}
 
-	private String getStringValue(JSONObject object, String name, String defaultValue) {
+	private String getStringValue(JSONObject object, String name, String defaultValue)
+			throws JSONException {
 		return object.has(name) ? object.getString(name) : defaultValue;
 	}
 
-	private Map<String, String> parseStringItems(JSONObject json) {
+	private Map<String, String> parseStringItems(JSONObject json) throws JSONException {
 		Map<String, String> result = new HashMap<String, String>();
-		for (Object k : json.keySet()) {
-			String key = (String) k;
+		for (Iterator<?> iterator = json.keys(); iterator.hasNext();) {
+			String key = (String) iterator.next();
 			Object value = json.get(key);
 			if (value instanceof String) {
 				result.put(key, (String) value);

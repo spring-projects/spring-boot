@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONException;
-
 /**
  * Load a {@link ConfigurationMetadataRepository} from the content of arbitrary
  * resource(s).
@@ -104,13 +102,8 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 			RawConfigurationMetadata metadata = this.reader.read(in, charset);
 			return create(metadata);
 		}
-		catch (IOException ex) {
-			throw new IllegalArgumentException(
-					"Failed to read configuration " + "metadata", ex);
-		}
-		catch (JSONException ex) {
-			throw new IllegalArgumentException(
-					"Invalid configuration " + "metadata document", ex);
+		catch (Exception ex) {
+			throw new IllegalStateException("Failed to read configuration metadata", ex);
 		}
 	}
 

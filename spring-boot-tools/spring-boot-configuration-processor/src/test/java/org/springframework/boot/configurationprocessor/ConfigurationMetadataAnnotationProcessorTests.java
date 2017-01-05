@@ -34,6 +34,7 @@ import org.springframework.boot.configurationprocessor.metadata.ConfigurationMet
 import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
 import org.springframework.boot.configurationprocessor.metadata.ItemHint;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
+import org.springframework.boot.configurationprocessor.metadata.TestJsonConverter;
 import org.springframework.boot.configurationsample.incremental.BarProperties;
 import org.springframework.boot.configurationsample.incremental.FooProperties;
 import org.springframework.boot.configurationsample.incremental.RenamedBarProperties;
@@ -630,8 +631,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		JSONObject additionalMetadata = new JSONObject();
 		additionalMetadata.put("properties", properties);
 		FileWriter writer = new FileWriter(additionalMetadataFile);
-		additionalMetadata.write(writer);
+		writer.append(additionalMetadata.toString(2));
 		writer.flush();
+		writer.close();
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator"));
 		assertThat(metadata).has(Metadata.withProperty("foo", String.class)
@@ -724,23 +726,28 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		return processor.getMetadata();
 	}
 
-	private void writeAdditionalMetadata(ItemMetadata... metadata) throws IOException {
+	private void writeAdditionalMetadata(ItemMetadata... metadata) throws Exception {
+		TestJsonConverter converter = new TestJsonConverter();
 		File additionalMetadataFile = createAdditionalMetadataFile();
 		JSONObject additionalMetadata = new JSONObject();
-		additionalMetadata.put("properties", metadata);
+		JSONArray properties = new JSONArray();
+		for (ItemMetadata itemMetadata : metadata) {
+			properties.put(converter.toJsonObject(itemMetadata));
+		}
+		additionalMetadata.put("properties", properties);
 		writeMetadata(additionalMetadataFile, additionalMetadata);
 	}
 
-	private void writeAdditionalHints(ItemHint... hints) throws IOException {
+	private void writeAdditionalHints(ItemHint... hints) throws Exception {
+		TestJsonConverter converter = new TestJsonConverter();
 		File additionalMetadataFile = createAdditionalMetadataFile();
 		JSONObject additionalMetadata = new JSONObject();
-		additionalMetadata.put("hints", hints);
+		additionalMetadata.put("hints", converter.toJsonArray(Arrays.asList(hints)));
 		writeMetadata(additionalMetadataFile, additionalMetadata);
 	}
 
-	private void writePropertyDeprecation(ItemMetadata... items) throws IOException {
+	private void writePropertyDeprecation(ItemMetadata... items) throws Exception {
 		File additionalMetadataFile = createAdditionalMetadataFile();
-
 		JSONArray propertiesArray = new JSONArray();
 		for (ItemMetadata item : items) {
 			JSONObject jsonObject = new JSONObject();
@@ -776,11 +783,10 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		return additionalMetadataFile;
 	}
 
-	private void writeMetadata(File metadataFile, JSONObject metadata)
-			throws IOException {
+	private void writeMetadata(File metadataFile, JSONObject metadata) throws Exception {
 		FileWriter writer = new FileWriter(metadataFile);
 		try {
-			metadata.write(writer);
+			writer.append(metadata.toString(2));
 		}
 		finally {
 			writer.close();

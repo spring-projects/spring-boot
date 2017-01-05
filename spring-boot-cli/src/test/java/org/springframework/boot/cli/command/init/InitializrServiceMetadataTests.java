@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 
@@ -37,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class InitializrServiceMetadataTests {
 
 	@Test
-	public void parseDefaults() {
+	public void parseDefaults() throws Exception {
 		InitializrServiceMetadata metadata = createInstance("2.0.0");
 		assertThat(metadata.getDefaults().get("bootVersion")).isEqualTo("1.1.8.RELEASE");
 		assertThat(metadata.getDefaults().get("javaVersion")).isEqualTo("1.7");
@@ -55,7 +56,7 @@ public class InitializrServiceMetadataTests {
 	}
 
 	@Test
-	public void parseDependencies() {
+	public void parseDependencies() throws Exception {
 		InitializrServiceMetadata metadata = createInstance("2.0.0");
 		assertThat(metadata.getDependencies()).hasSize(5);
 
@@ -70,7 +71,7 @@ public class InitializrServiceMetadataTests {
 	}
 
 	@Test
-	public void parseTypes() {
+	public void parseTypes() throws Exception {
 		InitializrServiceMetadata metadata = createInstance("2.0.0");
 		ProjectType projectType = metadata.getProjectTypes().get("maven-project");
 		assertThat(projectType).isNotNull();
@@ -78,7 +79,8 @@ public class InitializrServiceMetadataTests {
 		assertThat(projectType.getTags().get("format")).isEqualTo("project");
 	}
 
-	private static InitializrServiceMetadata createInstance(String version) {
+	private static InitializrServiceMetadata createInstance(String version)
+			throws JSONException {
 		try {
 			return new InitializrServiceMetadata(readJson(version));
 		}
@@ -87,7 +89,7 @@ public class InitializrServiceMetadataTests {
 		}
 	}
 
-	private static JSONObject readJson(String version) throws IOException {
+	private static JSONObject readJson(String version) throws IOException, JSONException {
 		Resource resource = new ClassPathResource(
 				"metadata/service-metadata-" + version + ".json");
 		InputStream stream = resource.getInputStream();
