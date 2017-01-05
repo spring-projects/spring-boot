@@ -643,11 +643,11 @@ public class SpringApplicationTests {
 		}
 		catch (RuntimeException ex) {
 		}
-		ArgumentCaptor<RuntimeException> ac = ArgumentCaptor.forClass(
-				RuntimeException.class);
-		verify(handler).registerLoggedException(ac.capture());
-		RuntimeException exception = ac.getValue();
-		assertThat(exception).hasCauseInstanceOf(RefreshFailureException.class);
+		ArgumentCaptor<RuntimeException> exceptionCaptor = ArgumentCaptor
+				.forClass(RuntimeException.class);
+		verify(handler).registerLoggedException(exceptionCaptor.capture());
+		assertThat(exceptionCaptor.getValue())
+				.hasCauseInstanceOf(RefreshFailureException.class);
 		assertThat(this.output.toString()).doesNotContain("NullPointerException");
 	}
 

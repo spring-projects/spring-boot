@@ -33,8 +33,8 @@ import org.springframework.web.util.UriTemplateHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -61,8 +61,7 @@ public class RootUriTemplateHandlerTests {
 		this.uri = new URI("http://example.com/hello");
 		this.handler = new RootUriTemplateHandler("http://example.com", this.delegate);
 		given(this.delegate.expand(anyString(), any(Map.class))).willReturn(this.uri);
-		given(this.delegate.expand(anyString(), (Object[]) any()))
-				.willReturn(this.uri);
+		given(this.delegate.expand(anyString(), (Object[]) any())).willReturn(this.uri);
 	}
 
 	@Test

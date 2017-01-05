@@ -38,8 +38,8 @@ import org.mockito.stubbing.Answer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
@@ -132,8 +132,7 @@ public class MockEmbeddedServletContainerFactory
 							@Override
 							public Void answer(InvocationOnMock invocation)
 									throws Throwable {
-								initParameters.put(
-										invocation.getArgument(0),
+								initParameters.put(invocation.getArgument(0),
 										invocation.getArgument(1));
 								return null;
 							}
@@ -146,8 +145,7 @@ public class MockEmbeddedServletContainerFactory
 							@Override
 							public String answer(InvocationOnMock invocation)
 									throws Throwable {
-								return initParameters
-										.get(invocation.getArgument(0));
+								return initParameters.get(invocation.getArgument(0));
 							}
 						});
 				given(this.servletContext.getAttributeNames()).willReturn(

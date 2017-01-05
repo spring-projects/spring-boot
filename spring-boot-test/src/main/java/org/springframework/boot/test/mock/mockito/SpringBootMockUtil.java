@@ -95,19 +95,17 @@ final class SpringBootMockUtil {
 
 	private static class Mockito1MockUtilAdapter implements MockUtilAdapter {
 
-		private final MockUtil mockUtil = BeanUtils.instantiate(MockUtil.class);
+		private final MockUtil mockUtil = BeanUtils.instantiateClass(MockUtil.class);
 
 		private final Method getMockSettingsMethod = ReflectionUtils
 				.findMethod(MockUtil.class, "getMockSettings", Object.class);
 
-		private static final MockingProgress mockingProgress =
-				createThreadSafeMockingProgress();
+		private static final MockingProgress mockingProgress = createThreadSafeMockingProgress();
 
-		private final Method reportMatcherMethod = ReflectionUtils.findMethod(
-				ArgumentMatcherStorage.class, "reportMatcher", Matcher.class);
+		private final Method reportMatcherMethod = ReflectionUtils
+				.findMethod(ArgumentMatcherStorage.class, "reportMatcher", Matcher.class);
 
-		private static final Constructor<MockAwareVerificationMode> mockAwareVerificationModeConstructor =
-				getMockAwareVerificationModeConstructor();
+		private static final Constructor<MockAwareVerificationMode> mockAwareVerificationModeConstructor = getMockAwareVerificationModeConstructor();
 
 		private static MockingProgress createThreadSafeMockingProgress() {
 			try {

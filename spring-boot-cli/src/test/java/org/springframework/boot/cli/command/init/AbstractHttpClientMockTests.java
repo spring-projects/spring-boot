@@ -35,9 +35,9 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 /**
