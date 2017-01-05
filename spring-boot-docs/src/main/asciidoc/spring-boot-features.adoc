@@ -2528,6 +2528,10 @@ WARNING: If you use the `security.oauth2.resource.jwt.key-uri` the authorization
 needs to be running when your application starts up. It will log a warning if it can't
 find the key, and tell you what to do to fix it.
 
+OAuth2 resources are protected by a filter chain with order
+`security.oauth2.resource.filter-order` and the default is after the
+filter protecting the actuator endpoints by default (so actuator
+endpoints will stay on HTTP Basic unless you change the order).
 
 
 [[boot-features-security-oauth2-token-type]]

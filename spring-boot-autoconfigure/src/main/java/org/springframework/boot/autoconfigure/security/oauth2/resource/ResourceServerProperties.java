@@ -23,6 +23,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
@@ -76,6 +77,12 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 	private String tokenType = DefaultOAuth2AccessToken.BEARER_TYPE;
 
 	private Jwt jwt = new Jwt();
+
+	/**
+	 * The order of the filter chain used to authenticate tokens. Default puts it after
+	 * the actuator endpoints and before the default HTTP basic filter chain (catchall).
+	 */
+	private int filterOrder = SecurityProperties.ACCESS_OVERRIDE_ORDER - 1;
 
 	public ResourceServerProperties() {
 		this(null, null);
@@ -157,6 +164,14 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 
 	public String getClientSecret() {
 		return this.clientSecret;
+	}
+
+	public int getFilterOrder() {
+		return this.filterOrder;
+	}
+
+	public void setFilterOrder(int filterOrder) {
+		this.filterOrder = filterOrder;
 	}
 
 	@Override
