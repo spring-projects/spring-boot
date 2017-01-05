@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -257,10 +257,11 @@ public class ManagementWebSecurityAutoConfiguration {
 
 		private void configurePermittedRequests(
 				ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry requests) {
+			requests.requestMatchers(new LazyEndpointPathRequestMatcher(
+					this.contextResolver, EndpointPaths.SENSITIVE)).authenticated();
 			// Permit access to the non-sensitive endpoints
 			requests.requestMatchers(new LazyEndpointPathRequestMatcher(
 					this.contextResolver, EndpointPaths.NON_SENSITIVE)).permitAll();
-			requests.anyRequest().authenticated();
 		}
 
 	}
@@ -276,6 +277,15 @@ public class ManagementWebSecurityAutoConfiguration {
 				return !endpoint.isSensitive();
 			}
 
+		},
+
+		SENSITIVE {
+
+			@Override
+			protected boolean isIncluded(MvcEndpoint endpoint) {
+				return endpoint.isSensitive();
+			}
+
 		};
 
 		public String[] getPaths(EndpointHandlerMapping endpointHandlerMapping) {
@@ -289,12 +299,9 @@ public class ManagementWebSecurityAutoConfiguration {
 					String path = endpointHandlerMapping.getPath(endpoint.getPath());
 					paths.add(path);
 					if (!path.equals("")) {
-						if (endpoint.isSensitive()) {
-							// Ensure that nested paths are secured
-							paths.add(path + "/**");
-							// Add Spring MVC-generated additional paths
-							paths.add(path + ".*");
-						}
+						paths.add(path + "/**");
+						// Add Spring MVC-generated additional paths
+						paths.add(path + ".*");
 					}
 					paths.add(path + "/");
 				}
