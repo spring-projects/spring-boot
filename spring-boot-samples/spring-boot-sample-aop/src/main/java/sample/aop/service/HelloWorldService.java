@@ -29,4 +29,7 @@ public class HelloWorldService {
 		return "Hello " + this.name;
 	}
 
+	public String getHelloMessage(int i) {
+		return "Hello " + this.name + i;
+	}
 }
