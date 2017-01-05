@@ -69,9 +69,9 @@ import org.springframework.web.context.request.SessionScope;
 import org.springframework.web.filter.GenericFilterBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -381,8 +381,8 @@ public class EmbeddedWebApplicationContextTests {
 		ServletContext servletContext = getEmbeddedServletContainerFactory()
 				.getServletContext();
 		verify(initializer).onStartup(servletContext);
-		verify(servletContext).addServlet(anyString(), (Servlet) anyObject());
-		verify(servletContext).addFilter(anyString(), (Filter) anyObject());
+		verify(servletContext).addServlet(anyString(), (Servlet) any());
+		verify(servletContext).addFilter(anyString(), (Filter) any());
 	}
 
 	@Test
@@ -400,8 +400,8 @@ public class EmbeddedWebApplicationContextTests {
 		this.context.refresh();
 		ServletContext servletContext = getEmbeddedServletContainerFactory()
 				.getServletContext();
-		verify(servletContext, atMost(1)).addServlet(anyString(), (Servlet) anyObject());
-		verify(servletContext, atMost(1)).addFilter(anyString(), (Filter) anyObject());
+		verify(servletContext, atMost(1)).addServlet(anyString(), (Servlet) any());
+		verify(servletContext, atMost(1)).addFilter(anyString(), (Filter) any());
 	}
 
 	@Test
@@ -415,7 +415,7 @@ public class EmbeddedWebApplicationContextTests {
 		this.context.refresh();
 		ServletContext servletContext = getEmbeddedServletContainerFactory()
 				.getServletContext();
-		verify(servletContext, atMost(1)).addFilter(anyString(), (Filter) anyObject());
+		verify(servletContext, atMost(1)).addFilter(anyString(), (Filter) any());
 	}
 
 	@Test

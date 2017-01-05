@@ -37,10 +37,9 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.testutil.MockServlet;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -69,9 +68,9 @@ public class ServletRegistrationBeanTests {
 	@Before
 	public void setupMocks() {
 		MockitoAnnotations.initMocks(this);
-		given(this.servletContext.addServlet(anyString(), (Servlet) anyObject()))
+		given(this.servletContext.addServlet(anyString(), (Servlet) any()))
 				.willReturn(this.registration);
-		given(this.servletContext.addFilter(anyString(), (Filter) anyObject()))
+		given(this.servletContext.addFilter(anyString(), (Filter) any()))
 				.willReturn(this.filterRegistration);
 	}
 
@@ -87,7 +86,7 @@ public class ServletRegistrationBeanTests {
 	@Test
 	public void startupWithDoubleRegistration() throws Exception {
 		ServletRegistrationBean bean = new ServletRegistrationBean(this.servlet);
-		given(this.servletContext.addServlet(anyString(), (Servlet) anyObject()))
+		given(this.servletContext.addServlet(anyString(), (Servlet) any()))
 				.willReturn(null);
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addServlet("mockServlet", this.servlet);

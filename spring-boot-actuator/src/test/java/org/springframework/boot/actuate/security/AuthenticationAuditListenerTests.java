@@ -34,7 +34,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -68,7 +68,7 @@ public class AuthenticationAuditListenerTests {
 		this.listener.onApplicationEvent(new InteractiveAuthenticationSuccessEvent(
 				new UsernamePasswordAuthenticationToken("user", "password"), getClass()));
 		// No need to audit this one (it shadows a regular AuthenticationSuccessEvent)
-		verify(this.publisher, never()).publishEvent((ApplicationEvent) anyObject());
+		verify(this.publisher, never()).publishEvent((ApplicationEvent) any());
 	}
 
 	@Test

@@ -32,8 +32,8 @@ import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -61,7 +61,7 @@ public class CentralDirectoryParserTests {
 
 	@Test
 	public void visitsInOrder() throws Exception {
-		CentralDirectoryVisitor visitor = mock(TestCentralDirectoryVisitor.class);
+		CentralDirectoryVisitor visitor = mock(CentralDirectoryVisitor.class);
 		CentralDirectoryParser parser = new CentralDirectoryParser();
 		parser.addVisitor(visitor);
 		parser.parse(this.jarData, false);
@@ -115,10 +115,6 @@ public class CentralDirectoryParserTests {
 		public List<CentralDirectoryFileHeader> getHeaders() {
 			return this.headers;
 		}
-
-	}
-
-	public interface TestCentralDirectoryVisitor extends CentralDirectoryVisitor {
 
 	}
 

@@ -19,12 +19,10 @@ package samples.websocket.jetty93.snake;
 import java.io.IOException;
 
 import org.junit.Test;
-import samples.websocket.jetty93.snake.Snake;
-import samples.websocket.jetty93.snake.SnakeTimer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 
 public class SnakeTimerTests {
