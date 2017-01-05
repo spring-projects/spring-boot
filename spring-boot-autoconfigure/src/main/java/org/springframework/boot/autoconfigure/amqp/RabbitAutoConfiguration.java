@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.util.List;
+
 import com.codahale.metrics.MetricRegistry;
 import com.rabbitmq.client.Channel;
 
@@ -156,6 +158,9 @@ public class RabbitAutoConfiguration {
 		@Autowired(required = false)
 		private com.rabbitmq.client.ConnectionFactory rabbitNativeConnectionFactory;
 
+		@Autowired(required = false)
+		private List<ConnectionFactoryCustomizer> connectionFactoryCustomizers;
+
 		@Bean
 		public CachingConnectionFactory rabbitConnectionFactory(RabbitProperties config)
 				throws Exception {
@@ -164,6 +169,11 @@ public class RabbitAutoConfiguration {
 				RabbitConnectionFactoryBean rabbitConnectionFactoryBean = configureRabbitConnectionFactoryBean(config);
 				rabbitConnectionFactoryBean.afterPropertiesSet();
 				nativeConnectionFactory = rabbitConnectionFactoryBean.getObject();
+			}
+			if (this.connectionFactoryCustomizers != null) {
+				for (ConnectionFactoryCustomizer customizer : this.connectionFactoryCustomizers) {
+					customizer.customize(nativeConnectionFactory);
+				}
 			}
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(nativeConnectionFactory);
 			connectionFactory.setAddresses(config.determineAddresses());

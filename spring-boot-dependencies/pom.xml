@@ -188,6 +188,12 @@
 	</prerequisites>
 	<dependencyManagement>
 		<dependencies>
+			<!-- To be removed once Spring AMQP depends on RabbitMQ Java Client 4.1.0 -->
+			<dependency>
+			    <groupId>com.rabbitmq</groupId>
+				<artifactId>amqp-client</artifactId>
+				<version>4.1.0-SNAPSHOT</version>
+			</dependency>
 			<!-- Spring Boot -->
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
