@@ -164,9 +164,9 @@ abstract class MockitoApi {
 
 		private final Method getMatcherMethod;
 
-		private Constructor<MockAwareVerificationMode> mockAwareVerificationModeConstructor;
+		private final Constructor<MockAwareVerificationMode> mockAwareVerificationModeConstructor;
 
-		public Mockito2Api() {
+		Mockito2Api() {
 			this.getMockSettingsMethod = ReflectionUtils.findMethod(MockUtil.class,
 					"getMockSettings", Object.class);
 			this.mockingProgressMethod = ReflectionUtils

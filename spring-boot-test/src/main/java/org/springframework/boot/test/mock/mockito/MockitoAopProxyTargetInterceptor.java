@@ -91,7 +91,7 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 
 		private final MockingProgress progress;
 
-		public Verification(Object target) {
+		Verification(Object target) {
 			this.progress = MockitoApi.get().mockingProgress(target);
 		}
 
