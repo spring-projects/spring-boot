@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.ldap;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -36,11 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LdapAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
-
-	@Before
-	public void setup() {
-		this.context = new AnnotationConfigApplicationContext();
-	}
 
 	@After
 	public void close() {
@@ -87,6 +81,7 @@ public class LdapAutoConfigurationTests {
 	}
 
 	private void load(String... properties) {
+		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, properties);
 		this.context.register(LdapAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);

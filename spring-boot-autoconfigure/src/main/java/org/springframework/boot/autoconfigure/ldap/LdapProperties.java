@@ -21,12 +21,11 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
-import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
- * Configuration properties to configure {@link LdapTemplate}.
+ * Configuration properties for LDAP.
  *
  * @author Eddú Meléndez
  * @since 1.5.0

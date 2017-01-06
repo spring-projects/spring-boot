@@ -575,6 +575,9 @@ content into your application; rather pick only the properties that you need.
 	spring.data.elasticsearch.properties.*= # Additional properties used to configure the client.
 	spring.data.elasticsearch.repositories.enabled=true # Enable Elasticsearch repositories.
 
+	# DATA LDAP
+	spring.data.ldap.repositories.enabled=true # Enable LDAP repositories.
+
 	# MONGODB ({sc-spring-boot-autoconfigure}/mongo/MongoProperties.{sc-ext}[MongoProperties])
 	spring.data.mongodb.authentication-database= # Authentication database name.
 	spring.data.mongodb.database=test # Database name.

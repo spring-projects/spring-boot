@@ -38,7 +38,9 @@ public class LdapDataAutoConfigurationTests {
 
 	@After
 	public void close() {
-		this.context.close();
+		if (this.context != null) {
+			this.context.close();
+		}
 	}
 
 	@Test
