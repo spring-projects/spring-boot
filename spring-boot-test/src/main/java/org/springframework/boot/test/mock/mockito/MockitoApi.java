@@ -17,16 +17,19 @@
 package org.springframework.boot.test.mock.mockito;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
 import org.hamcrest.Matcher;
 import org.mockito.Answers;
+import org.mockito.internal.InternalMockHandler;
 import org.mockito.internal.matchers.LocalizedMatcher;
 import org.mockito.internal.progress.ArgumentMatcherStorage;
 import org.mockito.internal.progress.MockingProgress;
 import org.mockito.internal.progress.ThreadSafeMockingProgress;
+import org.mockito.internal.stubbing.InvocationContainer;
 import org.mockito.internal.util.MockUtil;
 import org.mockito.internal.verification.MockAwareVerificationMode;
 import org.mockito.mock.MockCreationSettings;
@@ -57,9 +60,10 @@ abstract class MockitoApi {
 
 	/**
 	 * Return the mocking progress for the current thread.
+	 * @param mock the mock object
 	 * @return the current mocking progress
 	 */
-	public abstract MockingProgress mockingProgress();
+	public abstract MockingProgress mockingProgress(Object mock);
 
 	/**
 	 * Set report matchers to the given storage.
@@ -90,11 +94,10 @@ abstract class MockitoApi {
 	 * @return the API version
 	 */
 	private static MockitoApi createApi() {
-		if (!ClassUtils.isPresent("org.mockito.ReturnValues",
-				MockitoApi.class.getClassLoader())) {
-			return new Mockito2Api();
+		if (ClassUtils.isPresent("org.mockito.ReturnValues", null)) {
+			return new Mockito1Api();
 		}
-		return new Mockito1Api();
+		return new Mockito2Api();
 	}
 
 	/**
@@ -103,6 +106,74 @@ abstract class MockitoApi {
 	 */
 	public static MockitoApi get() {
 		return api;
+	}
+
+	/**
+	 * {@link MockitoApi} for Mockito 1.0.
+	 */
+	private static class Mockito1Api extends MockitoApi {
+
+		private final MockUtil mockUtil;
+
+		private final Method getMockSettingsMethod;
+
+		private final Method getMockHandlerMethod;
+
+		private Method reportMatcherMethod;
+
+		private Constructor<MockAwareVerificationMode> mockAwareVerificationModeConstructor;
+
+		Mockito1Api() {
+			this.mockUtil = BeanUtils.instantiateClass(MockUtil.class);
+			this.getMockSettingsMethod = ReflectionUtils.findMethod(MockUtil.class,
+					"getMockSettings", Object.class);
+			this.getMockHandlerMethod = ReflectionUtils.findMethod(MockUtil.class,
+					"getMockHandler", Object.class);
+			this.reportMatcherMethod = ReflectionUtils.findMethod(
+					ArgumentMatcherStorage.class, "reportMatcher", Matcher.class);
+			this.mockAwareVerificationModeConstructor = ClassUtils
+					.getConstructorIfAvailable(MockAwareVerificationMode.class,
+							Object.class, VerificationMode.class);
+		}
+
+		@Override
+		public MockCreationSettings<?> getMockSettings(Object mock) {
+			return (MockCreationSettings<?>) ReflectionUtils
+					.invokeMethod(this.getMockSettingsMethod, this.mockUtil, mock);
+		}
+
+		@Override
+		public MockingProgress mockingProgress(Object mock) {
+			InternalMockHandler<?> handler = (InternalMockHandler<?>) ReflectionUtils
+					.invokeMethod(this.getMockHandlerMethod, this.mockUtil, mock);
+			InvocationContainer container = handler.getInvocationContainer();
+			Field field = ReflectionUtils.findField(container.getClass(),
+					"mockingProgress");
+			ReflectionUtils.makeAccessible(field);
+			return (MockingProgress) ReflectionUtils.getField(field, container);
+		}
+
+		@Override
+		public void reportMatchers(ArgumentMatcherStorage storage,
+				List<LocalizedMatcher> matchers) {
+			for (LocalizedMatcher matcher : matchers) {
+				ReflectionUtils.invokeMethod(this.reportMatcherMethod, storage, matcher);
+			}
+		}
+
+		@Override
+		public MockAwareVerificationMode createMockAwareVerificationMode(Object mock,
+				VerificationMode mode) {
+			return BeanUtils.instantiateClass(this.mockAwareVerificationModeConstructor,
+					mock, mode);
+		}
+
+		@Override
+		@SuppressWarnings("deprecation")
+		public Answer<Object> getAnswer(Answers answer) {
+			return answer.get();
+		}
+
 	}
 
 	/**
@@ -116,7 +187,7 @@ abstract class MockitoApi {
 		}
 
 		@Override
-		public MockingProgress mockingProgress() {
+		public MockingProgress mockingProgress(Object mock) {
 			return ThreadSafeMockingProgress.mockingProgress();
 		}
 
@@ -149,70 +220,6 @@ abstract class MockitoApi {
 		@Override
 		public Answer<Object> getAnswer(Answers answer) {
 			return answer;
-		}
-
-	}
-
-	/**
-	 * {@link MockitoApi} for Mockito 1.0.
-	 */
-	private static class Mockito1Api extends MockitoApi {
-
-		private final MockUtil mockUtil;
-
-		private final Method getMockSettingsMethod;
-
-		private final MockingProgress mockingProgress;
-
-		private Method reportMatcherMethod;
-
-		private Constructor<MockAwareVerificationMode> mockAwareVerificationModeConstructor;
-
-		Mockito1Api() {
-			this.mockUtil = BeanUtils.instantiateClass(MockUtil.class);
-			this.getMockSettingsMethod = ReflectionUtils.findMethod(MockUtil.class,
-					"getMockSettings", Object.class);
-			this.mockingProgress = (MockingProgress) BeanUtils
-					.instantiateClass(ClassUtils.resolveClassName(
-							"org.mockito.internal.progress.ThreadSafeMockingProgress",
-							MockitoApi.class.getClassLoader()));
-			this.reportMatcherMethod = ReflectionUtils.findMethod(
-					ArgumentMatcherStorage.class, "reportMatcher", Matcher.class);
-			this.mockAwareVerificationModeConstructor = ClassUtils
-					.getConstructorIfAvailable(MockAwareVerificationMode.class,
-							Object.class, VerificationMode.class);
-		}
-
-		@Override
-		public MockCreationSettings<?> getMockSettings(Object mock) {
-			return (MockCreationSettings<?>) ReflectionUtils
-					.invokeMethod(this.getMockSettingsMethod, this.mockUtil, mock);
-		}
-
-		@Override
-		public MockingProgress mockingProgress() {
-			return this.mockingProgress;
-		}
-
-		@Override
-		public void reportMatchers(ArgumentMatcherStorage storage,
-				List<LocalizedMatcher> matchers) {
-			for (LocalizedMatcher matcher : matchers) {
-				ReflectionUtils.invokeMethod(this.reportMatcherMethod, storage, matcher);
-			}
-		}
-
-		@Override
-		public MockAwareVerificationMode createMockAwareVerificationMode(Object mock,
-				VerificationMode mode) {
-			return BeanUtils.instantiateClass(this.mockAwareVerificationModeConstructor,
-					mock, mode);
-		}
-
-		@Override
-		@SuppressWarnings("deprecation")
-		public Answer<Object> getAnswer(Answers answer) {
-			return answer.get();
 		}
 
 	}

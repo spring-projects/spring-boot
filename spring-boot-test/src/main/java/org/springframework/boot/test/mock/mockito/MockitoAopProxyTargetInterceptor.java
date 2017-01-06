@@ -53,7 +53,7 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 	MockitoAopProxyTargetInterceptor(Object source, Object target) throws Exception {
 		this.source = source;
 		this.target = target;
-		this.verification = new Verification();
+		this.verification = new Verification(target);
 	}
 
 	@Override
@@ -89,7 +89,11 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 
 		private final Object monitor = new Object();
 
-		private final MockingProgress progress = MockitoApi.get().mockingProgress();
+		private final MockingProgress progress;
+
+		Verification(Object target) {
+			this.progress = MockitoApi.get().mockingProgress(target);
+		}
 
 		public boolean isVerifying() {
 			synchronized (this.monitor) {
@@ -121,7 +125,7 @@ class MockitoAopProxyTargetInterceptor implements MethodInterceptor {
 		private void resetVerificationStarted(VerificationMode mode) {
 			ArgumentMatcherStorage storage = this.progress.getArgumentMatcherStorage();
 			List<LocalizedMatcher> matchers = storage.pullLocalizedMatchers();
-			MockitoApi.get().mockingProgress().verificationStarted(mode);
+			this.progress.verificationStarted(mode);
 			MockitoApi.get().reportMatchers(storage, matchers);
 		}
 
