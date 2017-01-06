@@ -79,6 +79,12 @@
     "defaultValue": true
   },
   {
+    "name": "spring.data.ldap.repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable LDAP repositories.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.data.mongodb.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Mongo repositories.",
