@@ -5,6 +5,12 @@
       "type": "org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase$Replace",
       "description": "Type of existing DataSource to replace.",
       "defaultValue": "any"
+    },
+    {
+      "name": "spring.test.mockmvc.print",
+      "type": "org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint",
+      "description": "MVC Print option.",
+      "defaultValue": "default"
     }
   ]
 }
