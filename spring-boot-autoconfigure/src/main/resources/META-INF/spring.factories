@@ -29,6 +29,8 @@ org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfi
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.ldap.LdapDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.ldap.LdapRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration,\
@@ -63,6 +65,8 @@ org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfigu
 org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration,\
 org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration,\
 org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration,\
+org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfiguration,\
+org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration,\
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\
 org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration,\
 org.springframework.boot.autoconfigure.mail.MailSenderValidatorAutoConfiguration,\

@@ -3214,11 +3214,12 @@ https://github.com/spring-projects/spring-data-elasticsearch/[Elasticsearch],
 http://projects.spring.io/spring-data-solr/[Solr],
 http://projects.spring.io/spring-data-redis/[Redis],
 http://projects.spring.io/spring-data-gemfire/[Gemfire],
+http://projects.spring.io/spring-data-cassandra/[Cassandra],
 http://projects.spring.io/spring-data-couchbase/[Couchbase] and
-http://projects.spring.io/spring-data-cassandra/[Cassandra].
+http://projects.spring.io/spring-data-ldap/[LDAP].
 Spring Boot provides auto-configuration for Redis, MongoDB, Neo4j, Elasticsearch, Solr
-and Cassandra; you can make use of the other projects, but you will need to configure
-them yourself. Refer to the appropriate reference documentation at
+Cassandra, Couchbase and LDAP; you can make use of the other projects, but you will need
+to configure them yourself. Refer to the appropriate reference documentation at
 http://projects.spring.io/spring-data[projects.spring.io/spring-data].
 
 
@@ -3757,6 +3758,7 @@ TIP: For complete details of Spring Data Cassandra, refer to their
 http://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
 
 
+
 [[boot-features-couchbase]]
 === Couchbase
 http://www.couchbase.com/[Couchbase] is an open-source, distributed multi-model NoSQL
@@ -3861,6 +3863,89 @@ follows:
 TIP: If you want to fully bypass the auto-configuration for Spring Data Couchbase, provide
 your own `org.springframework.data.couchbase.config.AbstractCouchbaseDataConfiguration`
 implementation.
+
+
+
+[[boot-features-ldap]]
+=== LDAP
+https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol[LDAP] (Lightweight
+Directory Access Protocol) is an is an open, vendor-neutral, industry standard application
+protocol for accessing and maintaining distributed directory information services over an
+IP network. Spring Boot offers auto-configuration for any compliant LDAP server as well
+as support for the embedded in-memory LDAP server from
+https://www.ldap.com/unboundid-ldap-sdk-for-java[Unbounded].
+
+LDAP abstractions are provided by
+https://github.com/spring-projects/spring-data-ldap[Spring Data LDAP].
+There is a `spring-boot-starter-data-ldap` '`Starter`' for collecting the dependencies in
+a convenient way.
+
+
+
+[[boot-features-ldap-connecting]]
+==== Connecting to an LDAP server
+To connect to an LDAP server make sure you declare a dependency on the
+`spring-boot-starter-data-ldap` '`Starter`' or `spring-ldap-core` then declare the
+URLs of your server in your application.properties:
+
+[source,properties,indent=0]
+----
+	spring.ldap.urls=ldap://myserver:1235
+	spring.ldap.username=admin
+	spring.ldap.password=secret
+----
+
+If you need to customize connection settings you can use the `spring.ldap.base` and
+`spring.ldap.base-environment` properties.
+
+
+
+[[boot-features-ldap-spring-data-repositories]]
+==== Spring Data LDAP repositories
+Spring Data includes repository support for LDAP. For complete details of Spring
+Data LDAP, refer to their
+http://docs.spring.io/spring-data/ldap/docs/1.0.x/reference/html/[reference documentation].
+
+You can also inject an auto-configured `LdapTemplate` instance as you would with any
+other Spring Bean.
+
+
+[source,java,indent=0]
+----
+	@Component
+	public class MyBean {
+
+		private final LdapTemplate template;
+
+		@Autowired
+		public MyBean(LdapTemplate template) {
+			this.template = template;
+		}
+
+		// ...
+
+	}
+----
+
+
+
+[[boot-features-ldap-embedded]]
+==== Embedded in-memory LDAP server
+For testing purposes Spring Boot supports auto-configuration of an in-memory LDAP server
+from https://www.ldap.com/unboundid-ldap-sdk-for-java[Unbounded]. To configure the server
+add a dependency to `com.unboundid:unboundid-ldapsdk` and declare a `base-dn` property:
+
+[source,properties,indent=0]
+----
+	spring.ldap.embedded.base-dn=dc=spring,dc=io
+----
+
+By default the server will start on a random port and the trigger the regular LDAP support
+(there is not need to specify a `spring.ldap.urls` property).
+
+If there is a `schema.ldif` file on your classpath it will be used to initialize the
+server. You can also use the `spring.ldap.embedded.ldif` property if you want to load
+the initialization script from a different resource.
 
 
 

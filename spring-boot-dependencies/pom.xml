@@ -185,6 +185,7 @@
 		<thymeleaf-extras-java8time.version>2.1.0.RELEASE</thymeleaf-extras-java8time.version>
 		<tomcat.version>8.5.6</tomcat.version>
 		<undertow.version>1.4.8.Final</undertow.version>
+		<unboundid-ldapsdk.version>3.2.0</unboundid-ldapsdk.version>
 		<webjars-hal-browser.version>9f96c74</webjars-hal-browser.version>
 		<webjars-locator.version>0.32</webjars-locator.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
@@ -342,6 +343,11 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-jpa</artifactId>
+				<version>1.5.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-data-ldap</artifactId>
 				<version>1.5.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -812,6 +818,11 @@
 				<groupId>com.timgroup</groupId>
 				<artifactId>java-statsd-client</artifactId>
 				<version>${statsd-client.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.unboundid</groupId>
+				<artifactId>unboundid-ldapsdk</artifactId>
+				<version>${unboundid-ldapsdk.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.zaxxer</groupId>
