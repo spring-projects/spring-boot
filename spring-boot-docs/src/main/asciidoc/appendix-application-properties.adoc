@@ -1173,5 +1173,6 @@ content into your application; rather pick only the properties that you need.
 	# ----------------------------------------
 
 	spring.test.database.replace=any # Type of existing DataSource to replace.
+	spring.test.mockmvc.print=default # MVC Print option.
 
 ----
