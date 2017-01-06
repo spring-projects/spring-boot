@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.ldap.embedded;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,14 +27,15 @@ import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
 import com.unboundid.ldap.listener.InMemoryListenerConfig;
 import com.unboundid.ldap.sdk.LDAPException;
 import com.unboundid.ldif.LDIFReader;
-import org.apache.commons.io.IOUtils;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
 import org.springframework.boot.autoconfigure.ldap.LdapProperties;
+import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapProperties.Credential;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -63,22 +61,24 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties({ LdapProperties.class, EmbeddedLdapProperties.class })
 @AutoConfigureBefore(LdapAutoConfiguration.class)
 @ConditionalOnClass(InMemoryDirectoryServer.class)
+@ConditionalOnProperty(prefix = "spring.ldap.embedded", name = "base-dn")
 public class EmbeddedLdapAutoConfiguration {
+
+	private static final String PROPERTY_SOURCE_NAME = "ldap.ports";
+
+	private final EmbeddedLdapProperties embeddedProperties;
+
+	private final LdapProperties properties;
+
+	private final ConfigurableApplicationContext applicationContext;
+
+	private final Environment environment;
 
 	private InMemoryDirectoryServer server;
 
-	private EmbeddedLdapProperties embeddedProperties;
-
-	private LdapProperties properties;
-
-	private ConfigurableApplicationContext applicationContext;
-
-	private Environment environment;
-
 	public EmbeddedLdapAutoConfiguration(EmbeddedLdapProperties embeddedProperties,
-		LdapProperties properties,
-		ConfigurableApplicationContext applicationContext,
-		Environment environment) {
+			LdapProperties properties, ConfigurableApplicationContext applicationContext,
+			Environment environment) {
 		this.embeddedProperties = embeddedProperties;
 		this.properties = properties;
 		this.applicationContext = applicationContext;
@@ -88,98 +88,81 @@ public class EmbeddedLdapAutoConfiguration {
 	@Bean
 	@DependsOn("directoryServer")
 	@ConditionalOnMissingBean
-	public ContextSource contextSource() {
-		LdapContextSource contextSource = new LdapContextSource();
-
-		EmbeddedLdapProperties.Credential credential = this.embeddedProperties
-				.getCredential();
-		if (StringUtils.hasText(credential.getUsername()) &&
-				StringUtils.hasText(credential.getPassword())) {
-			contextSource.setUserDn(credential.getUsername());
-			contextSource.setPassword(credential.getPassword());
+	public ContextSource ldapContextSource() {
+		LdapContextSource source = new LdapContextSource();
+		if (hasCredentials(this.embeddedProperties.getCredential())) {
+			source.setUserDn(this.embeddedProperties.getCredential().getUsername());
+			source.setPassword(this.embeddedProperties.getCredential().getPassword());
 		}
-		contextSource.setUrls(this.properties.determineUrls(this.environment));
-		return contextSource;
+		source.setUrls(this.properties.determineUrls(this.environment));
+		return source;
 	}
 
 	@Bean
 	public InMemoryDirectoryServer directoryServer() throws LDAPException {
-		InMemoryDirectoryServerConfig config =
-				new InMemoryDirectoryServerConfig(this.embeddedProperties
-						.getPartitionSuffix());
-
-		EmbeddedLdapProperties.Credential credential = this.embeddedProperties
-				.getCredential();
-		if (StringUtils.hasText(credential.getUsername()) &&
-				StringUtils.hasText(credential.getPassword())) {
-			config.addAdditionalBindCredentials(credential
-					.getUsername(), credential.getPassword());
+		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(
+				this.embeddedProperties.getBaseDn());
+		if (hasCredentials(this.embeddedProperties.getCredential())) {
+			config.addAdditionalBindCredentials(
+					this.embeddedProperties.getCredential().getUsername(),
+					this.embeddedProperties.getCredential().getPassword());
 		}
-
-		config.setListenerConfigs(InMemoryListenerConfig.createLDAPConfig("LDAP",
-				this.embeddedProperties.getPort()));
-
+		InMemoryListenerConfig listenerConfig = InMemoryListenerConfig
+				.createLDAPConfig("LDAP", this.embeddedProperties.getPort());
+		config.setListenerConfigs(listenerConfig);
 		this.server = new InMemoryDirectoryServer(config);
-
-		populateDirectoryServer();
-
+		importLdif();
 		this.server.startListening();
-		publishPortInfo(this.server.getListenPort());
+		setPortProperty(this.applicationContext, this.server.getListenPort());
 		return this.server;
 	}
 
-	private void publishPortInfo(int port) {
-		setPortProperty(this.applicationContext, port);
+	private boolean hasCredentials(Credential credential) {
+		return StringUtils.hasText(credential.getUsername())
+				&& StringUtils.hasText(credential.getPassword());
 	}
 
-	private void setPortProperty(ApplicationContext currentContext,
-		int port) {
-		if (currentContext instanceof ConfigurableApplicationContext) {
-			MutablePropertySources sources = ((ConfigurableApplicationContext)
-					currentContext).getEnvironment().getPropertySources();
+	private void importLdif() throws LDAPException {
+		String location = this.embeddedProperties.getLdif();
+		if (StringUtils.hasText(location)) {
+			try {
+				Resource resource = this.applicationContext.getResource(location);
+				if (resource.exists()) {
+					InputStream inputStream = resource.getInputStream();
+					try {
+						this.server.importFromLDIF(true, new LDIFReader(inputStream));
+					}
+					finally {
+						inputStream.close();
+					}
+				}
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException("Unable to load LDIF " + location, ex);
+			}
+		}
+	}
+
+	private void setPortProperty(ApplicationContext context, int port) {
+		if (context instanceof ConfigurableApplicationContext) {
+			MutablePropertySources sources = ((ConfigurableApplicationContext) context)
+					.getEnvironment().getPropertySources();
 			getLdapPorts(sources).put("local.ldap.port", port);
 		}
-		if (currentContext.getParent() != null) {
-			setPortProperty(currentContext.getParent(), port);
+		if (context.getParent() != null) {
+			setPortProperty(context.getParent(), port);
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private Map<String, Object> getLdapPorts(MutablePropertySources sources) {
-		PropertySource<?> propertySource = sources.get("ldap.ports");
+		PropertySource<?> propertySource = sources.get(PROPERTY_SOURCE_NAME);
 		if (propertySource == null) {
-			propertySource = new MapPropertySource("ldap.ports",
+			propertySource = new MapPropertySource(PROPERTY_SOURCE_NAME,
 					new HashMap<String, Object>());
 			sources.addFirst(propertySource);
 		}
 		return (Map<String, Object>) propertySource.getSource();
-	}
-
-	private void populateDirectoryServer() throws LDAPException {
-		String location = this.embeddedProperties.getLdif();
-		if (StringUtils.hasText(location)) {
-			try {
-				Resource resource = this.applicationContext.getResource(
-						this.embeddedProperties.getLdif());
-				if (resource.exists()) {
-					File tempFile = File.createTempFile("ldap_test_data", ".ldif");
-					try {
-						InputStream inputStream = resource.getInputStream();
-						IOUtils.copy(inputStream, new FileOutputStream(tempFile));
-						this.server.importFromLDIF(true, new LDIFReader(tempFile));
-					}
-					catch (LDAPException e) {
-						e.printStackTrace();
-					}
-					finally {
-						tempFile.delete();
-					}
-				}
-			}
-			catch (IOException ex) {
-				throw new IllegalStateException(
-						"Unable to load resource from " + location, ex);
-			}
-		}
 	}
 
 	@PreDestroy

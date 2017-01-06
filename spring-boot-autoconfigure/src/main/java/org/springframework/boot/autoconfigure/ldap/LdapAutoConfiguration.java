@@ -39,27 +39,26 @@ import org.springframework.ldap.core.support.LdapContextSource;
 @EnableConfigurationProperties(LdapProperties.class)
 public class LdapAutoConfiguration {
 
-	private LdapProperties properties;
+	private final LdapProperties properties;
 
-	private Environment environment;
+	private final Environment environment;
 
-	public LdapAutoConfiguration(LdapProperties properties,
-		Environment environment) {
+	public LdapAutoConfiguration(LdapProperties properties, Environment environment) {
 		this.properties = properties;
 		this.environment = environment;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ContextSource contextSource() {
-		LdapContextSource contextSource = new LdapContextSource();
-		contextSource.setUserDn(this.properties.getUsername());
-		contextSource.setPassword(this.properties.getPassword());
-		contextSource.setBase(this.properties.getBase());
-		contextSource.setUrls(this.properties.determineUrls(this.environment));
-		contextSource.setBaseEnvironmentProperties(Collections
+	public ContextSource ldapContextSource() {
+		LdapContextSource source = new LdapContextSource();
+		source.setUserDn(this.properties.getUsername());
+		source.setPassword(this.properties.getPassword());
+		source.setBase(this.properties.getBase());
+		source.setUrls(this.properties.determineUrls(this.environment));
+		source.setBaseEnvironmentProperties(Collections
 				.<String, Object>unmodifiableMap(this.properties.getBaseEnvironment()));
-		return contextSource;
+		return source;
 	}
 
 }

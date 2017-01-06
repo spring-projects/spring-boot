@@ -315,19 +315,19 @@ content into your application; rather pick only the properties that you need.
 	spring.jersey.servlet.load-on-startup=-1 # Load on startup priority of the Jersey servlet.
 	spring.jersey.type=servlet # Jersey integration type.
 
-    # EMBEDDED LDAP ({sc-spring-boot-autoconfigure}/ldap/embedded/EmbeddedLdapProperties.{sc-ext}[EmbeddedLdapProperties])
-    spring.ldap.embedded.port= # Embedded LDAP port.
-    spring.ldap.embedded.credential.username= # Embedded LDAP username.
-    spring.ldap.embedded.credential.password= # Embedded LDAP password.
-    spring.ldap.embedded.partition-suffix= # LDAP partition suffix.
-    spring.ldap.embedded.ldif= # Schema (LDIF) script resource reference.
-
     # SPRING LDAP ({sc-spring-boot-autoconfigure}/ldap/LdapProperties.{sc-ext}[LdapProperties])
     spring.ldap.urls= # LDAP url of the server.
     spring.ldap.base= # Base suffix from which all operations should originate.
     spring.ldap.username= # Login user of the server.
     spring.ldap.password= # Login password of the server.
     spring.ldap.base-environment.*= # Ldap specification settings.
+
+    # EMBEDDED LDAP ({sc-spring-boot-autoconfigure}/ldap/embedded/EmbeddedLdapProperties.{sc-ext}[EmbeddedLdapProperties])
+    spring.ldap.embedded.port= # Embedded LDAP port.
+    spring.ldap.embedded.credential.username= # Embedded LDAP username.
+    spring.ldap.embedded.credential.password= # Embedded LDAP password.
+    spring.ldap.embedded.base-dn= # The base DN
+    spring.ldap.embedded.ldif= # Schema (LDIF) script resource reference.
 
 	# SPRING MOBILE DEVICE VIEWS ({sc-spring-boot-autoconfigure}/mobile/DeviceDelegatingViewResolverAutoConfiguration.{sc-ext}[DeviceDelegatingViewResolverAutoConfiguration])
 	spring.mobile.devicedelegatingviewresolver.enable-fallback=false # Enable support for fallback resolution.

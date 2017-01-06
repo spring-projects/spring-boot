@@ -61,7 +61,7 @@ public class EmbeddedLdapAutoConfigurationTests {
 	@Test
 	public void testSetDefaultPort() throws LDAPException {
 		load("spring.ldap.embedded.port:1234",
-				"spring.ldap.embedded.partitionSuffix:dc=spring,dc=org");
+				"spring.ldap.embedded.base-dn:dc=spring,dc=org");
 		InMemoryDirectoryServer server = this.context
 				.getBean(InMemoryDirectoryServer.class);
 		assertThat(server.getListenPort()).isEqualTo(1234);
@@ -69,7 +69,7 @@ public class EmbeddedLdapAutoConfigurationTests {
 
 	@Test
 	public void testRandomPortWithEnvironment() throws LDAPException {
-		load("spring.ldap.embedded.partitionSuffix:dc=spring,dc=org");
+		load("spring.ldap.embedded.base-dn:dc=spring,dc=org");
 		InMemoryDirectoryServer server = this.context
 				.getBean(InMemoryDirectoryServer.class);
 		assertThat(server.getListenPort()).isEqualTo(this.context.getEnvironment()
@@ -79,21 +79,19 @@ public class EmbeddedLdapAutoConfigurationTests {
 	@Test
 	public void testRandomPortWithValueAnnotation() throws LDAPException {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.ldap.embedded.partitionSuffix:dc=spring,dc=org");
+				"spring.ldap.embedded.base-dn:dc=spring,dc=org");
 		this.context.register(EmbeddedLdapAutoConfiguration.class,
 				LdapClientConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		LDAPConnection connection = this.context
-				.getBean(LDAPConnection.class);
-		assertThat(connection.getConnectedPort())
-				.isEqualTo(this.context.getEnvironment()
+		LDAPConnection connection = this.context.getBean(LDAPConnection.class);
+		assertThat(connection.getConnectedPort()).isEqualTo(this.context.getEnvironment()
 				.getProperty("local.ldap.port", Integer.class));
 	}
 
 	@Test
 	public void testSetCredentials() throws LDAPException {
-		load("spring.ldap.embedded.partitionSuffix:dc=spring,dc=org",
+		load("spring.ldap.embedded.base-dn:dc=spring,dc=org",
 				"spring.ldap.embedded.credential.username:uid=root",
 				"spring.ldap.embedded.credential.password:boot");
 		InMemoryDirectoryServer server = this.context
@@ -104,7 +102,7 @@ public class EmbeddedLdapAutoConfigurationTests {
 
 	@Test
 	public void testSetPartitionSuffix() throws LDAPException {
-		load("spring.ldap.embedded.partitionSuffix:dc=spring,dc=org");
+		load("spring.ldap.embedded.base-dn:dc=spring,dc=org");
 		InMemoryDirectoryServer server = this.context
 				.getBean(InMemoryDirectoryServer.class);
 		assertThat(server.getBaseDNs()).containsExactly(new DN("dc=spring,dc=org"));
@@ -112,35 +110,31 @@ public class EmbeddedLdapAutoConfigurationTests {
 
 	@Test
 	public void testSetLdifFile() throws LDAPException {
-		load("spring.ldap.embedded.partitionSuffix:dc=spring,dc=org",
-				"spring.ldap.embedded.ldif:classpath:schema.ldif");
+		load("spring.ldap.embedded.base-dn:dc=spring,dc=org");
 		InMemoryDirectoryServer server = this.context
 				.getBean(InMemoryDirectoryServer.class);
 		assertThat(server.countEntriesBelow("ou=company1,c=Sweden,dc=spring,dc=org"))
 				.isEqualTo(5);
 	}
+
 	@Test
 	public void testQueryEmbeddedLdap() throws LDAPException {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.ldap.embedded.partitionSuffix:dc=spring,dc=org",
-				"spring.ldap.embedded.ldif:classpath:schema.ldif");
+				"spring.ldap.embedded.base-dn:dc=spring,dc=org");
 		this.context.register(EmbeddedLdapAutoConfiguration.class,
-				LdapAutoConfiguration.class,
-				LdapDataAutoConfiguration.class,
+				LdapAutoConfiguration.class, LdapDataAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(LdapTemplate.class).length)
 				.isEqualTo(1);
-		LdapTemplate ldapTemplate = this.context
-				.getBean(LdapTemplate.class);
-		assertThat(ldapTemplate.list("ou=company1,c=Sweden,dc=spring,dc=org").size())
-				.isEqualTo(4);
+		LdapTemplate ldapTemplate = this.context.getBean(LdapTemplate.class);
+		assertThat(ldapTemplate.list("ou=company1,c=Sweden,dc=spring,dc=org")).hasSize(4);
 	}
 
 	private void load(String... properties) {
 		EnvironmentTestUtils.addEnvironment(this.context, properties);
 		this.context.register(EmbeddedLdapAutoConfiguration.class,
-						PropertyPlaceholderAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 	}
 

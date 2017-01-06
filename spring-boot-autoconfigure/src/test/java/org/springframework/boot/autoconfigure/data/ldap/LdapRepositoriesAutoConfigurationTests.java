@@ -52,16 +52,13 @@ public class LdapRepositoriesAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		load(TestConfiguration.class);
-
 		assertThat(this.context.getBean(PersonRepository.class)).isNotNull();
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {
 		load(EmptyConfiguration.class);
-
-		assertThat(this.context.getBeanNamesForType(PersonRepository.class).length)
-				.isEqualTo(0);
+		assertThat(this.context.getBeanNamesForType(PersonRepository.class)).isEmpty();
 	}
 
 	@Test
@@ -76,8 +73,7 @@ public class LdapRepositoriesAutoConfigurationTests {
 				"spring.ldap.urls:ldap://localhost:389");
 		this.context.register(configurationClasses);
 		this.context.register(LdapAutoConfiguration.class,
-				LdapDataAutoConfiguration.class,
-				LdapRepositoriesAutoConfiguration.class,
+				LdapDataAutoConfiguration.class, LdapRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 	}

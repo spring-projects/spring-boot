@@ -38,14 +38,14 @@ public class EmbeddedLdapProperties {
 	private Credential credential = new Credential();
 
 	/**
-	 * LDAP partition suffix.
+	 * Base DNs.
 	 */
-	private String partitionSuffix;
+	private String baseDn;
 
 	/**
 	 * Schema (LDIF) script resource reference.
 	 */
-	private String ldif;
+	private String ldif = "classpath:schema.ldif";
 
 	public int getPort() {
 		return this.port;
@@ -63,12 +63,12 @@ public class EmbeddedLdapProperties {
 		this.credential = credential;
 	}
 
-	public String getPartitionSuffix() {
-		return this.partitionSuffix;
+	public String getBaseDn() {
+		return this.baseDn;
 	}
 
-	public void setPartitionSuffix(String partitionSuffix) {
-		this.partitionSuffix = partitionSuffix;
+	public void setBaseDn(String baseDn) {
+		this.baseDn = baseDn;
 	}
 
 	public String getLdif() {

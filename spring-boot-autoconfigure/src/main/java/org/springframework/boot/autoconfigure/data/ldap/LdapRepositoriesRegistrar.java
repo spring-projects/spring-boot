@@ -31,8 +31,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * @author Eddú Meléndez
  * @since 1.5.0
  */
-class LdapRepositoriesRegistrar
-		extends AbstractRepositoryConfigurationSourceSupport {
+class LdapRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {

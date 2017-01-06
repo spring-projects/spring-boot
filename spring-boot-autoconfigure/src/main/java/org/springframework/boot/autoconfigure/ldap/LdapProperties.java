@@ -22,6 +22,9 @@ import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
+
 /**
  * Configuration properties to configure {@link LdapTemplate}.
  *
@@ -36,7 +39,7 @@ public class LdapProperties {
 	/**
 	 * LDAP urls.
 	 */
-	private String[] urls = new String[0];
+	private String[] urls;
 
 	/**
 	 * Base suffix from which all operations should originate.
@@ -99,29 +102,19 @@ public class LdapProperties {
 	}
 
 	public String[] determineUrls(Environment environment) {
-		if (this.urls.length == 0) {
-			String protocol = "ldap://";
-			String host = "localhost";
-			int port = determinePort(environment);
-			String[] ldapUrls = new String[1];
-			ldapUrls[0] = protocol + host + ":" + port;
-			return ldapUrls;
+		if (ObjectUtils.isEmpty(this.urls)) {
+			return new String[] { "ldap://localhost:" + determinePort(environment) };
 		}
 		return this.urls;
 	}
 
 	private int determinePort(Environment environment) {
-		if (environment != null) {
-			String localPort = environment.getProperty("local.ldap.port");
-			if (localPort != null) {
-				return Integer.valueOf(localPort);
-			}
-			else {
-				return DEFAULT_PORT;
-			}
+		Assert.state(environment != null, "No local LDAP port configured");
+		String localPort = environment.getProperty("local.ldap.port");
+		if (localPort != null) {
+			return Integer.valueOf(localPort);
 		}
-		throw new IllegalStateException(
-				"No local ldap port configuration is available");
+		return DEFAULT_PORT;
 	}
 
 }

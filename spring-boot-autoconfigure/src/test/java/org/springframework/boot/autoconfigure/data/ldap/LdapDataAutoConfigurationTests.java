@@ -49,8 +49,7 @@ public class LdapDataAutoConfigurationTests {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				LdapAutoConfiguration.class, LdapDataAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(LdapTemplate.class).length)
-				.isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(LdapTemplate.class)).hasSize(1);
 	}
 
 }
