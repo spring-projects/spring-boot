@@ -235,6 +235,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>com.unboundid</groupId>
+			<artifactId>unboundid-ldapsdk</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP-java6</artifactId>
 			<optional>true</optional>
@@ -380,6 +385,11 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-cassandra</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-ldap</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
