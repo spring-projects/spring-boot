@@ -85,7 +85,7 @@ public class MockDefinitionTests {
 				new Class<?>[] { ExampleExtraInterface.class },
 				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE, null);
 		ExampleService mock = definition.createMock();
-		MockCreationSettings<?> settings = SpringBootMockUtil.getMockSettings(mock);
+		MockCreationSettings<?> settings = MockitoApi.get().getMockSettings(mock);
 		assertThat(mock).isInstanceOf(ExampleService.class);
 		assertThat(mock).isInstanceOf(ExampleExtraInterface.class);
 		assertThat(settings.getMockName().toString()).isEqualTo("name");

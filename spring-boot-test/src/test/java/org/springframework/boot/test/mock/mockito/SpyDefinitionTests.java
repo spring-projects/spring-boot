@@ -78,7 +78,7 @@ public class SpyDefinitionTests {
 		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
 				MockReset.BEFORE, true, null);
 		RealExampleService spy = definition.createSpy(new RealExampleService("hello"));
-		MockCreationSettings<?> settings = SpringBootMockUtil.getMockSettings(spy);
+		MockCreationSettings<?> settings = MockitoApi.get().getMockSettings(spy);
 		assertThat(spy).isInstanceOf(ExampleService.class);
 		assertThat(settings.getMockName().toString()).isEqualTo("name");
 		assertThat(settings.getDefaultAnswer())
