@@ -13,8 +13,8 @@
 # Provides:          {{initInfoProvides:spring-boot-application}}
 # Required-Start:    {{initInfoRequiredStart:$remote_fs $syslog $network}}
 # Required-Stop:     {{initInfoRequiredStop:$remote_fs $syslog $network}}
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
+# Default-Start:     {{initInfoDefaultStart:2 3 4 5}}
+# Default-Stop:      {{initInfoDefaultStop:0 1 6}}
 # Short-Description: {{initInfoShortDescription:Spring Boot Application}}
 # Description:       {{initInfoDescription:Spring Boot Application}}
 # chkconfig:         {{initInfoChkconfig:2345 99 01}}
