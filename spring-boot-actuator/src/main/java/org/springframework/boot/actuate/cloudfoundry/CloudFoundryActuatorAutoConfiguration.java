@@ -26,14 +26,19 @@ import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.security.IgnoredRequestCustomizer;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -79,10 +84,14 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 	private CloudFoundrySecurityService getCloudFoundrySecurityService(
 			RestTemplateBuilder restTemplateBuilder, Environment environment) {
+		RelaxedPropertyResolver cloudFoundryProperties = new RelaxedPropertyResolver(
+				environment, "management.cloudfoundry.");
 		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
+		boolean skipSslValidation = cloudFoundryProperties
+				.getProperty("skip-ssl-validation", Boolean.class, false);
 		return cloudControllerUrl == null ? null
-				: new CloudFoundrySecurityService(restTemplateBuilder,
-						cloudControllerUrl);
+				: new CloudFoundrySecurityService(restTemplateBuilder, cloudControllerUrl,
+						skipSslValidation);
 	}
 
 	private CorsConfiguration getCorsConfiguration() {
@@ -93,6 +102,30 @@ public class CloudFoundryActuatorAutoConfiguration {
 		corsConfiguration.setAllowedHeaders(
 				Arrays.asList("Authorization", "X-Cf-App-Instance", "Content-Type"));
 		return corsConfiguration;
+	}
+
+	/**
+	 * Nested configuration for ignored requests if Spring Security is present.
+	 */
+	@ConditionalOnClass(WebSecurity.class)
+	static class CloudFoundryIgnoredRequestConfiguration {
+
+		@Bean
+		public IgnoredRequestCustomizer cloudFoundryIgnoredRequestCustomizer() {
+			return new CloudFoundryIgnoredRequestCustomizer();
+		}
+
+		private static class CloudFoundryIgnoredRequestCustomizer
+				implements IgnoredRequestCustomizer {
+
+			@Override
+			public void customize(WebSecurity.IgnoredRequestConfigurer configurer) {
+				configurer.requestMatchers(
+						new AntPathRequestMatcher("/cloudfoundryapplication/**"));
+			}
+
+		}
+
 	}
 
 }

@@ -91,7 +91,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
 		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
@@ -120,7 +120,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(
 				user.getAuthorities());
 		assertThat(authorities).containsAll(AuthorityUtils
-				.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ADMIN"));
+				.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ACTUATOR"));
 	}
 
 	private UserDetails getUser() {
@@ -202,8 +202,8 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
-				WebMvcAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+				WebMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				AuditAutoConfiguration.class);
 		this.context.refresh();
 
 		Filter filter = this.context.getBean("springSecurityFilterChain", Filter.class);
@@ -265,7 +265,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class,
 			FallbackWebSecurityAutoConfiguration.class })
 	static class WebConfiguration {
 
@@ -274,11 +274,13 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	@EnableGlobalAuthentication
 	@Configuration
 	static class AuthenticationConfig {
+
 		@Autowired
 		public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 			auth.inMemoryAuthentication().withUser("user").password("password")
 					.roles("USER");
 		}
+
 	}
 
 	@Configuration

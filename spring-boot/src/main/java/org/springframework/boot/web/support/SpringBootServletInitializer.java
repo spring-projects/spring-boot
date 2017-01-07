@@ -31,6 +31,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
@@ -126,7 +127,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 						+ "configure method or add an @Configuration annotation");
 		// Ensure error pages are registered
 		if (this.registerErrorPageFilter) {
-			application.getSources().add(ErrorPageFilter.class);
+			application.getSources().add(ErrorPageFilterConfiguration.class);
 		}
 		return run(application);
 	}
@@ -162,7 +163,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	}
 
 	/**
-	 * Configure the application. Normally all you would need to do is add sources (e.g.
+	 * Configure the application. Normally all you would need to do is to add sources (e.g.
 	 * config classes) because other settings have sensible defaults. You might choose
 	 * (for instance) to add default command line arguments, or set an active Spring
 	 * profile.
@@ -172,6 +173,19 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	 */
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
 		return builder;
+	}
+
+	/**
+	 * Configuration for {@link ErrorPageFilter}.
+	 */
+	@Configuration
+	static class ErrorPageFilterConfiguration {
+
+		@Bean
+		public ErrorPageFilter errorPageFilter() {
+			return new ErrorPageFilter();
+		}
+
 	}
 
 }

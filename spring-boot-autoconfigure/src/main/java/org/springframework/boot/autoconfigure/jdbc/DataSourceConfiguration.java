@@ -79,11 +79,13 @@ abstract class DataSourceConfiguration {
 		public HikariDataSource dataSource(DataSourceProperties properties) {
 			return createDataSource(properties, HikariDataSource.class);
 		}
+
 	}
 
 	/**
 	 * DBCP DataSource configuration.
-	 * @deprecated as of Spring Boot 1.5 in favor of DBCP2
+	 *
+	 * @deprecated as of 1.5 in favor of DBCP2
 	 */
 	@ConditionalOnClass(org.apache.commons.dbcp.BasicDataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp.BasicDataSource", matchIfMissing = true)
@@ -105,6 +107,7 @@ abstract class DataSourceConfiguration {
 			}
 			return dataSource;
 		}
+
 	}
 
 	/**
@@ -121,6 +124,7 @@ abstract class DataSourceConfiguration {
 			return createDataSource(properties,
 					org.apache.commons.dbcp2.BasicDataSource.class);
 		}
+
 	}
 
 	/**

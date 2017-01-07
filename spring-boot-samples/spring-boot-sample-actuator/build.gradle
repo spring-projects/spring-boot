@@ -45,14 +45,16 @@ dependencies {
 	compile("org.springframework.boot:spring-boot-starter-jdbc")
 	compile("org.springframework.boot:spring-boot-starter-security")
 	compile("org.springframework.boot:spring-boot-starter-web")
-	compile("com.h2database:h2")
+	runtime("com.h2database:h2")
+
+	compileOnly('org.springframework.boot:spring-boot-configuration-processor')
 
 	testCompile("org.springframework.boot:spring-boot-starter-test")
 
 	insecure configurations.runtime
 }
 
-// Slightly odd requirement (package a jar file as an insecure app, exlcuding Spring Security)
+// Slightly odd requirement (package a jar file as an insecure app, excluding Spring Security)
 // just to demonstrate the "customConfiguration" feature of the Boot gradle plugin.
 springBoot {
 	customConfiguration = "insecure"

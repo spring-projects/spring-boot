@@ -358,5 +358,7 @@ public class SpringApplicationBuilderTests {
 		public ApplicationContext getParent() {
 			return this.applicationContext.getParent();
 		}
+
 	}
+
 }

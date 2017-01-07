@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Description;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,14 +30,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Description("A controller for handling requests for hello messages")
 public class SampleController {
 
-	@Autowired
-	private HelloWorldService helloWorldService;
+	private final HelloWorldProperties helloWorldProperties;
+
+	public SampleController(HelloWorldProperties helloWorldProperties) {
+		this.helloWorldProperties = helloWorldProperties;
+	}
 
 	@GetMapping("/")
 	@ResponseBody
 	public Map<String, String> hello() {
-		return Collections.singletonMap("message",
-				this.helloWorldService.getHelloMessage());
+		return Collections.singletonMap("message", "Hello " +
+				this.helloWorldProperties.getName());
 	}
 
 	protected static class Message {

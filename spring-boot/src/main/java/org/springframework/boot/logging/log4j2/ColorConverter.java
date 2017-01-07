@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,6 @@ public final class ColorConverter extends LogEventPatternConverter {
 
 	/**
 	 * Creates a new instance of the class. Required by Log4J2.
-	 *
 	 * @param config the configuration
 	 * @param options the options
 	 * @return a new instance, or {@code null} if the options are invalid

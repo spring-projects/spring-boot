@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.jpa")
@@ -53,7 +54,7 @@ public class JpaProperties {
 	 * Target database to operate on, auto-detected by default. Can be alternatively set
 	 * using the "databasePlatform" property.
 	 */
-	private Database database = Database.DEFAULT;
+	private Database database;
 
 	/**
 	 * Initialize the schema on startup.
@@ -123,6 +124,19 @@ public class JpaProperties {
 	 */
 	public Map<String, String> getHibernateProperties(DataSource dataSource) {
 		return this.hibernate.getAdditionalProperties(this.properties, dataSource);
+	}
+
+	/**
+	 * Determine the {@link Database} to use based on this configuration and the primary
+	 * {@link DataSource}.
+	 * @param dataSource the auto-configured data source
+	 * @return {@code Database}
+	 */
+	public Database determineDatabase(DataSource dataSource) {
+		if (this.database != null) {
+			return this.database;
+		}
+		return DatabaseLookup.getDatabase(dataSource);
 	}
 
 	public static class Hibernate {

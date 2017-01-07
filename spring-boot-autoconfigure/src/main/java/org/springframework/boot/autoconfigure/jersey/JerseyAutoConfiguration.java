@@ -100,10 +100,10 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	private String path;
 
 	public JerseyAutoConfiguration(JerseyProperties jersey, ResourceConfig config,
-			ObjectProvider<List<ResourceConfigCustomizer>> customizersProvider) {
+			ObjectProvider<List<ResourceConfigCustomizer>> customizers) {
 		this.jersey = jersey;
 		this.config = config;
-		this.customizers = customizersProvider.getIfAvailable();
+		this.customizers = customizers.getIfAvailable();
 	}
 
 	@PostConstruct
@@ -228,6 +228,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 			// will try and register a ContextLoaderListener which we don't need
 			servletContext.setInitParameter("contextConfigLocation", "<NONE>");
 		}
+
 	}
 
 	@ConditionalOnClass(JacksonFeature.class)

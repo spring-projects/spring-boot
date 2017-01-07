@@ -59,4 +59,5 @@ public class BeansEndpoint extends AbstractEndpoint<List<Object>>
 	public List<Object> invoke() {
 		return this.parser.parseList(this.liveBeansView.getSnapshotAsJson());
 	}
+
 }

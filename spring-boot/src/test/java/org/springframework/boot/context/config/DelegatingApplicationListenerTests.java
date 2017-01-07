@@ -83,12 +83,14 @@ public class DelegatingApplicationListenerTests {
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	private static class MockInitA implements ApplicationListener<ContextRefreshedEvent> {
+
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
 			ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) event
 					.getApplicationContext();
 			applicationContext.getBeanFactory().registerSingleton("a", "a");
 		}
+
 	}
 
 	@Order(Ordered.LOWEST_PRECEDENCE)
@@ -102,6 +104,7 @@ public class DelegatingApplicationListenerTests {
 					.isEqualTo("a");
 			applicationContext.getBeanFactory().registerSingleton("b", "b");
 		}
+
 	}
 
 }

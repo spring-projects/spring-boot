@@ -17,7 +17,6 @@
 package org.springframework.boot.configurationprocessor;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.LinkedHashMap;
@@ -134,7 +133,12 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			}
 		}
 		if (roundEnv.processingOver()) {
-			writeMetaData();
+			try {
+				writeMetaData();
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException("Failed to write metadata", ex);
+			}
 		}
 		return false;
 	}
@@ -390,16 +394,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return values;
 	}
 
-	protected ConfigurationMetadata writeMetaData() {
+	protected ConfigurationMetadata writeMetaData() throws Exception {
 		ConfigurationMetadata metadata = this.metadataCollector.getMetadata();
 		metadata = mergeAdditionalMetadata(metadata);
 		if (!metadata.getItems().isEmpty()) {
-			try {
-				this.metadataStore.writeMetadata(metadata);
-			}
-			catch (IOException ex) {
-				throw new IllegalStateException("Failed to write metadata", ex);
-			}
+			this.metadataStore.writeMetadata(metadata);
 			return metadata;
 		}
 		return null;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.authserver.OAuth2AuthorizationServerConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.method.OAuth2MethodSecurityConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerConfiguration;
@@ -43,6 +44,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -183,6 +185,42 @@ public class OAuth2AutoConfigurationTests {
 		assertThat(countBeans(RESOURCE_SERVER_CONFIG)).isEqualTo(0);
 		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG)).isEqualTo(0);
 		// Scoped target and proxy:
+		assertThat(countBeans(OAuth2ClientContext.class)).isEqualTo(2);
+	}
+
+	@Test
+	public void testCanUseClientCredentials() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(TestSecurityConfiguration.class,
+				MinimalSecureWebApplication.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"security.oauth2.client.clientId=client",
+				"security.oauth2.client.grantType=client_credentials");
+		this.context.refresh();
+		OAuth2ClientContext bean = this.context.getBean(OAuth2ClientContext.class);
+		assertThat(bean.getAccessTokenRequest()).isNotNull();
+		assertThat(countBeans(ClientCredentialsResourceDetails.class)).isEqualTo(1);
+		assertThat(countBeans(OAuth2ClientContext.class)).isEqualTo(1);
+	}
+
+	@Test
+	public void testCanUseClientCredentialsWithEnableOAuth2Client() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(ClientConfiguration.class,
+				MinimalSecureWebApplication.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"security.oauth2.client.clientId=client",
+				"security.oauth2.client.grantType=client_credentials");
+		this.context.refresh();
+		// The primary context is fine (not session scoped):
+		OAuth2ClientContext bean = this.context.getBean(OAuth2ClientContext.class);
+		assertThat(bean.getAccessTokenRequest()).isNotNull();
+		assertThat(countBeans(ClientCredentialsResourceDetails.class)).isEqualTo(1);
+		// Kind of a bug (should ideally be 1), but the cause is in Spring OAuth2 (there
+		// is no need for the extra session-scoped bean). What this test proves is that
+		// even if the user screws up and does @EnableOAuth2Client for client credentials,
+		// it will still just about work (because of the @Primary annotation on the
+		// Boot-created instance of OAuth2ClientContext).
 		assertThat(countBeans(OAuth2ClientContext.class)).isEqualTo(2);
 	}
 
@@ -401,6 +439,7 @@ public class OAuth2AutoConfigurationTests {
 	}
 
 	@Configuration
+	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	protected static class TestSecurityConfiguration
 			extends WebSecurityConfigurerAdapter {
 
@@ -425,6 +464,7 @@ public class OAuth2AutoConfigurationTests {
 	@Configuration
 	@EnableOAuth2Client
 	protected static class ClientConfiguration extends TestSecurityConfiguration {
+
 	}
 
 	@Configuration

@@ -115,7 +115,7 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Matt Benson
  * @see ShellProperties
- * @deprecated as of 1.5
+ * @deprecated as of 1.5 since CRaSH is not actively maintained
  */
 @Configuration
 @ConditionalOnClass(PluginLifeCycle.class)
@@ -180,8 +180,8 @@ public class CrshAutoConfiguration {
 		private final ManagementServerProperties management;
 
 		public AuthenticationManagerAdapterConfiguration(
-				ObjectProvider<ManagementServerProperties> managementProvider) {
-			this.management = managementProvider.getIfAvailable();
+				ObjectProvider<ManagementServerProperties> management) {
+			this.management = management.getIfAvailable();
 		}
 
 		@Bean
@@ -295,7 +295,7 @@ public class CrshAutoConfiguration {
 			CRaSHPlugin<AuthenticationPlugin> implements AuthenticationPlugin<String> {
 
 		private static final PropertyDescriptor<String> ROLES = PropertyDescriptor.create(
-				"auth.spring.roles", "ADMIN",
+				"auth.spring.roles", "ACTUATOR",
 				"Comma separated list of roles required to access the shell");
 
 		@Autowired
@@ -305,7 +305,7 @@ public class CrshAutoConfiguration {
 		@Qualifier("shellAccessDecisionManager")
 		private AccessDecisionManager accessDecisionManager;
 
-		private String[] roles = new String[] { "ADMIN" };
+		private String[] roles = new String[] { "ACTUATOR" };
 
 		@Override
 		public boolean authenticate(String username, String password) throws Exception {
@@ -433,6 +433,7 @@ public class CrshAutoConfiguration {
 			}
 			return true;
 		}
+
 	}
 
 	/**
@@ -544,6 +545,7 @@ public class CrshAutoConfiguration {
 			}
 			return false;
 		}
+
 	}
 
 	/**

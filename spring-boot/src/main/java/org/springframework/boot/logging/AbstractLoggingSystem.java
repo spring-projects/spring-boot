@@ -184,6 +184,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	/**
 	 * Maintains a mapping between native levels and {@link LogLevel}.
+	 *
 	 * @param <T> The native level type
 	 */
 	protected static class LogLevels<T> {

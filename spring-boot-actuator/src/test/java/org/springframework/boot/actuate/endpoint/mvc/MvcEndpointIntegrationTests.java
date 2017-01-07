@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
@@ -67,15 +68,17 @@ public class MvcEndpointIntegrationTests {
 
 	@Test
 	public void defaultJsonResponseIsNotIndented() throws Exception {
+		TestSecurityContextHolder.getContext().setAuthentication(
+				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(DefaultConfiguration.class);
-		MockMvc mockMvc = createMockMvc();
+		this.context.register(SecureConfiguration.class);
+		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/mappings")).andExpect(content().string(startsWith("{\"")));
 	}
 
 	@Test
 	public void jsonResponsesCanBeIndented() throws Exception {
-		assertIndentedJsonResponse(DefaultConfiguration.class);
+		assertIndentedJsonResponse(SecureConfiguration.class);
 	}
 
 	@Test
@@ -100,9 +103,11 @@ public class MvcEndpointIntegrationTests {
 
 	@Test
 	public void jsonExtensionProvided() throws Exception {
+		TestSecurityContextHolder.getContext().setAuthentication(
+				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(DefaultConfiguration.class);
-		MockMvc mockMvc = createMockMvc();
+		this.context.register(SecureConfiguration.class);
+		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/beans.json")).andExpect(status().isOk());
 	}
 
@@ -147,7 +152,7 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void sensitiveEndpointsAreSecureWithNonAdminRoleWithCustomContextPath()
+	public void sensitiveEndpointsAreSecureWithNonActuatorRoleWithCustomContextPath()
 			throws Exception {
 		TestSecurityContextHolder.getContext().setAuthentication(
 				new TestingAuthenticationToken("user", "N/A", "ROLE_USER"));
@@ -160,10 +165,10 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void sensitiveEndpointsAreSecureWithAdminRoleWithCustomContextPath()
+	public void sensitiveEndpointsAreSecureWithActuatorRoleWithCustomContextPath()
 			throws Exception {
 		TestSecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken("user", "N/A", "ROLE_ADMIN"));
+				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -194,11 +199,13 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	private void assertIndentedJsonResponse(Class<?> configuration) throws Exception {
+		TestSecurityContextHolder.getContext().setAuthentication(
+				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(configuration);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.jackson.serialization.indent-output:true");
-		MockMvc mockMvc = createMockMvc();
+		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/mappings"))
 				.andExpect(content().string(startsWith("{" + LINE_SEPARATOR)));
 	}
@@ -223,28 +230,23 @@ public class MvcEndpointIntegrationTests {
 
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
+			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			AuditAutoConfiguration.class })
 	static class DefaultConfiguration {
 
 	}
 
-	@ImportAutoConfiguration({ HypermediaAutoConfiguration.class,
-			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
+	@Import(SecureConfiguration.class)
+	@ImportAutoConfiguration({ HypermediaAutoConfiguration.class })
 	static class SpringHateoasConfiguration {
 
 	}
 
+	@Import(SecureConfiguration.class)
 	@ImportAutoConfiguration({ HypermediaAutoConfiguration.class,
-			RepositoryRestMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
+			RepositoryRestMvcAutoConfiguration.class })
 	static class SpringDataRestConfiguration {
 
 	}

@@ -78,11 +78,11 @@ public class OAuth2AuthorizationServerConfiguration
 
 	public OAuth2AuthorizationServerConfiguration(BaseClientDetails details,
 			AuthenticationManager authenticationManager,
-			ObjectProvider<TokenStore> tokenStoreProvider,
+			ObjectProvider<TokenStore> tokenStore,
 			AuthorizationServerProperties properties) {
 		this.details = details;
 		this.authenticationManager = authenticationManager;
-		this.tokenStore = tokenStoreProvider.getIfAvailable();
+		this.tokenStore = tokenStore.getIfAvailable();
 		this.properties = properties;
 	}
 

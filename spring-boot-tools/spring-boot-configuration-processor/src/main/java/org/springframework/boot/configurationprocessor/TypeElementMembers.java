@@ -59,7 +59,8 @@ class TypeElementMembers {
 
 	private final FieldValuesParser fieldValuesParser;
 
-	TypeElementMembers(ProcessingEnvironment env, FieldValuesParser fieldValuesParser, TypeElement element) {
+	TypeElementMembers(ProcessingEnvironment env, FieldValuesParser fieldValuesParser,
+			TypeElement element) {
 		this.env = env;
 		this.typeUtils = new TypeUtils(this.env);
 		this.fieldValuesParser = fieldValuesParser;

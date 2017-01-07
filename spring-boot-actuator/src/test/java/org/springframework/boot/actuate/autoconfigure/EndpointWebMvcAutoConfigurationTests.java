@@ -128,6 +128,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Before
 	public void defaultContextPath() {
 		management.setContextPath("");
+		management.getSecurity().setEnabled(false);
 		server.setContextPath("");
 	}
 
@@ -147,6 +148,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onSamePort() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.applicationContext,
+				"management.security.enabled:false");
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				BaseConfiguration.class, ServerPortConfig.class,
 				EndpointWebMvcAutoConfiguration.class);
@@ -318,7 +321,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 	public void specificPortsViaProperties() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
 				"server.port:" + ports.get().server,
-				"management.port:" + ports.get().management);
+				"management.port:" + ports.get().management,
+				"management.security.enabled:false");
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ErrorMvcAutoConfiguration.class);
@@ -352,7 +356,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Test
 	public void contextPath() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"management.contextPath:/test");
+				"management.contextPath:/test", "management.security.enabled:false");
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				ServerPortConfig.class, PropertyPlaceholderAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
@@ -360,7 +364,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				EmbeddedServletContainerAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class);
+				EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/test/endpoint", ports.get().server, "endpointoutput");
@@ -377,7 +381,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				EmbeddedServletContainerAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class);
+				EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		ServerProperties serverProperties = this.applicationContext
@@ -436,9 +440,9 @@ public class EndpointWebMvcAutoConfigurationTests {
 				BaseConfiguration.class, ServerPortConfig.class,
 				EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
-		// /health, /metrics, /loggers, /env, /actuator, /heapdump (/shutdown is disabled
-		// by default)
-		assertThat(this.applicationContext.getBeansOfType(MvcEndpoint.class)).hasSize(6);
+		// /health, /metrics, /loggers, /env, /actuator, /heapdump, /auditevents
+		// (/shutdown is disabled by default)
+		assertThat(this.applicationContext.getBeansOfType(MvcEndpoint.class)).hasSize(7);
 	}
 
 	@Test
@@ -730,7 +734,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 			HttpMessageConvertersAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class })
+			ServerPropertiesAutoConfiguration.class, AuditAutoConfiguration.class })
 	protected static class BaseConfiguration {
 
 	}
@@ -846,7 +850,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 				@Override
 				public void customize(EndpointHandlerMapping mapping) {
-					mapping.setInterceptors(new Object[] { interceptor() });
+					mapping.setInterceptors(interceptor());
 				}
 
 			};
@@ -884,6 +888,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		public ManagementServerProperties managementServerProperties() {
 			ManagementServerProperties properties = new ManagementServerProperties();
 			properties.setPort(0);
+			properties.getSecurity().setEnabled(false);
 			return properties;
 		}
 

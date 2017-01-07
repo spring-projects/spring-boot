@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
 
 /**
- * Transforms {@link java.sql.SQLException} into a Spring-specific {@link
- * DataAccessException}.
+ * Transforms {@link java.sql.SQLException} into a Spring-specific
+ * {@link DataAccessException}.
  *
  * @author Lukas Eder
  * @author Andreas Ahlenstorf
@@ -66,8 +66,8 @@ class JooqExceptionTranslator extends DefaultExecuteListener {
 
 	/**
 	 * Handle a single exception in the chain. SQLExceptions might be nested multiple
-	 * levels deep. The outermost exception is usually the least interesting one (
-	 * "Call getNextException to see the cause."). Therefore the innermost exception is
+	 * levels deep. The outermost exception is usually the least interesting one ("Call
+	 * getNextException to see the cause."). Therefore the innermost exception is
 	 * propagated and all other exceptions are logged.
 	 * @param context the execute context
 	 * @param translator the exception translator

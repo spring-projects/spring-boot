@@ -54,20 +54,20 @@ public class BatchProperties {
 		this.schema = schema;
 	}
 
-	public Initializer getInitializer() {
-		return this.initializer;
-	}
-
-	public Job getJob() {
-		return this.job;
+	public String getTablePrefix() {
+		return this.tablePrefix;
 	}
 
 	public void setTablePrefix(String tablePrefix) {
 		this.tablePrefix = tablePrefix;
 	}
 
-	public String getTablePrefix() {
-		return this.tablePrefix;
+	public Initializer getInitializer() {
+		return this.initializer;
+	}
+
+	public Job getJob() {
+		return this.job;
 	}
 
 	public class Initializer {
@@ -111,4 +111,5 @@ public class BatchProperties {
 		}
 
 	}
+
 }

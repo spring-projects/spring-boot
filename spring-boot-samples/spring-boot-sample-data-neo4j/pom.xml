@@ -19,20 +19,12 @@
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
 	<dependencies>
+		<!-- Compile -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-neo4j</artifactId>
 		</dependency>
-		<!-- <dependency>
-      		<groupId>org.neo4j</groupId>
-      		<artifactId>neo4j-ogm-embedded-driver</artifactId>
-      		<version>${neo4j-ogm.version}</version>
-		</dependency>
-		<dependency>
-      		<groupId>org.neo4j</groupId>
-      		<artifactId>neo4j-ogm-bolt-driver</artifactId>
-      		<version>${neo4j-ogm.version}</version>
-		</dependency> -->
+		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

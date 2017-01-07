@@ -85,11 +85,10 @@ public class ResourceServerTokenServicesConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public UserInfoRestTemplateFactory userInfoRestTemplateFactory(
-			ObjectProvider<List<UserInfoRestTemplateCustomizer>> customizersProvider,
-			ObjectProvider<OAuth2ProtectedResourceDetails> detailsProvider,
-			ObjectProvider<OAuth2ClientContext> oauth2ClientContextProvider) {
-		return new UserInfoRestTemplateFactory(customizersProvider, detailsProvider,
-				oauth2ClientContextProvider);
+			ObjectProvider<List<UserInfoRestTemplateCustomizer>> customizers,
+			ObjectProvider<OAuth2ProtectedResourceDetails> details,
+			ObjectProvider<OAuth2ClientContext> oauth2ClientContext) {
+		return new UserInfoRestTemplateFactory(customizers, details, oauth2ClientContext);
 	}
 
 	@Configuration
@@ -133,12 +132,12 @@ public class ResourceServerTokenServicesConfiguration {
 			private final PrincipalExtractor principalExtractor;
 
 			public SocialTokenServicesConfiguration(ResourceServerProperties sso,
-					ObjectProvider<OAuth2ConnectionFactory<?>> connectionFactoryProvider,
+					ObjectProvider<OAuth2ConnectionFactory<?>> connectionFactory,
 					UserInfoRestTemplateFactory restTemplateFactory,
 					ObjectProvider<AuthoritiesExtractor> authoritiesExtractor,
 					ObjectProvider<PrincipalExtractor> principalExtractor) {
 				this.sso = sso;
-				this.connectionFactory = connectionFactoryProvider.getIfAvailable();
+				this.connectionFactory = connectionFactory.getIfAvailable();
 				this.restTemplate = restTemplateFactory.getUserInfoRestTemplate();
 				this.authoritiesExtractor = authoritiesExtractor.getIfAvailable();
 				this.principalExtractor = principalExtractor.getIfAvailable();
@@ -225,9 +224,9 @@ public class ResourceServerTokenServicesConfiguration {
 		private final List<JwtAccessTokenConverterConfigurer> configurers;
 
 		public JwtTokenServicesConfiguration(ResourceServerProperties resource,
-				ObjectProvider<List<JwtAccessTokenConverterConfigurer>> configurersProvider) {
+				ObjectProvider<List<JwtAccessTokenConverterConfigurer>> configurers) {
 			this.resource = resource;
-			this.configurers = configurersProvider.getIfAvailable();
+			this.configurers = configurers.getIfAvailable();
 		}
 
 		@Bean

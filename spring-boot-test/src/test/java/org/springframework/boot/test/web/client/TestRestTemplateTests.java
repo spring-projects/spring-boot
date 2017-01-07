@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.test.web.client;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.util.List;
 
@@ -47,6 +48,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class TestRestTemplateTests {
 
@@ -93,6 +95,9 @@ public class TestRestTemplateTests {
 					throws IllegalArgumentException, IllegalAccessException {
 				Method equivalent = ReflectionUtils.findMethod(TestRestTemplate.class,
 						method.getName(), method.getParameterTypes());
+				assertThat(equivalent).as("Method %s not found", method).isNotNull();
+				assertThat(Modifier.isPublic(equivalent.getModifiers()))
+						.as("Method %s should have been public", equivalent).isTrue();
 				try {
 					equivalent.invoke(restTemplate,
 							mockArguments(method.getParameterTypes()));
@@ -129,6 +134,12 @@ public class TestRestTemplateTests {
 				return mock(type);
 			}
 
+		}, new ReflectionUtils.MethodFilter() {
+			@Override
+			public boolean matches(Method method) {
+				return Modifier.isPublic(method.getModifiers());
+			}
+
 		});
 
 	}
@@ -149,16 +160,15 @@ public class TestRestTemplateTests {
 						.isInstanceOf(CustomHttpComponentsClientHttpRequestFactory.class);
 		assertThat(basicAuthTemplate.getRestTemplate().getUriTemplateHandler())
 				.isSameAs(originalTemplate.getRestTemplate().getUriTemplateHandler());
-		assertThat(basicAuthTemplate.getRestTemplate().getInterceptors())
-				.containsExactlyElementsOf(
-						originalTemplate.getRestTemplate().getInterceptors());
+		assertThat(basicAuthTemplate.getRestTemplate().getInterceptors()).hasSize(1);
 		assertBasicAuthorizationInterceptorCredentials(basicAuthTemplate, "user",
 				"password");
 	}
 
 	@Test
 	public void withBasicAuthReplacesBasicAuthInterceptorWhenAlreadyPresent() {
-		TestRestTemplate original = new TestRestTemplate("foo", "bar");
+		TestRestTemplate original = new TestRestTemplate("foo", "bar")
+				.withBasicAuth("replace", "replace");
 		TestRestTemplate basicAuth = original.withBasicAuth("user", "password");
 		assertThat(basicAuth.getRestTemplate().getMessageConverters())
 				.containsExactlyElementsOf(
@@ -170,8 +180,7 @@ public class TestRestTemplateTests {
 						.isInstanceOf(CustomHttpComponentsClientHttpRequestFactory.class);
 		assertThat(basicAuth.getRestTemplate().getUriTemplateHandler())
 				.isSameAs(original.getRestTemplate().getUriTemplateHandler());
-		assertThat(basicAuth.getRestTemplate().getInterceptors())
-				.containsExactlyElementsOf(original.getRestTemplate().getInterceptors());
+		assertThat(basicAuth.getRestTemplate().getInterceptors()).hasSize(1);
 		assertBasicAuthorizationInterceptorCredentials(basicAuth, "user", "password");
 	}
 
@@ -201,4 +210,5 @@ public class TestRestTemplateTests {
 				.isEqualTo(password);
 
 	}
+
 }

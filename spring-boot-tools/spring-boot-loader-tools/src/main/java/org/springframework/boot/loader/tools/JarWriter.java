@@ -359,6 +359,7 @@ public class JarWriter implements LoaderClassesWriter {
 		public boolean hasZipHeader() {
 			return Arrays.equals(this.header, ZIP_HEADER);
 		}
+
 	}
 
 	/**
@@ -399,6 +400,7 @@ public class JarWriter implements LoaderClassesWriter {
 			entry.setCrc(this.crc.getValue());
 			entry.setMethod(ZipEntry.STORED);
 		}
+
 	}
 
 	/**

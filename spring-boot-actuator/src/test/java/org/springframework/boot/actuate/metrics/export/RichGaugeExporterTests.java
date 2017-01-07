@@ -20,7 +20,7 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.metrics.Iterables;
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
+import org.springframework.boot.actuate.metrics.repository.InMemoryMultiMetricRepository;
 import org.springframework.boot.actuate.metrics.rich.InMemoryRichGaugeRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +34,7 @@ public class RichGaugeExporterTests {
 
 	private final InMemoryRichGaugeRepository reader = new InMemoryRichGaugeRepository();
 
-	private final InMemoryMetricRepository writer = new InMemoryMetricRepository();
+	private final InMemoryMultiMetricRepository writer = new InMemoryMultiMetricRepository();
 
 	private final RichGaugeExporter exporter = new RichGaugeExporter(this.reader,
 			this.writer);

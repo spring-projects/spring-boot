@@ -18,7 +18,6 @@ package org.springframework.boot.configurationprocessor.metadata;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JsonMarshallerTests {
 
 	@Test
-	public void marshallAndUnmarshal() throws IOException {
+	public void marshallAndUnmarshal() throws Exception {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		metadata.add(ItemMetadata.newProperty("a", "b", StringBuffer.class.getName(),
 				InputStream.class.getName(), "sourceMethod", "desc", "x",

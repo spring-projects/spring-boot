@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package sample.secure.oauth2;
 
 import java.util.Map;
@@ -54,10 +55,10 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 public class SampleSecureOAuth2ApplicationTests {
 
 	@Autowired
-	WebApplicationContext context;
+	private WebApplicationContext context;
 
 	@Autowired
-	FilterChainProxy filterChain;
+	private FilterChainProxy filterChain;
 
 	private MockMvc mvc;
 

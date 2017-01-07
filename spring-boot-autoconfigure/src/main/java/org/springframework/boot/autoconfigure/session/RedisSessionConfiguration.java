@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure.session;
-
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -45,8 +40,6 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisHt
 @Conditional(SessionCondition.class)
 class RedisSessionConfiguration {
 
-	private static final Log logger = LogFactory.getLog(RedisSessionConfiguration.class);
-
 	@Configuration
 	public static class SpringBootRedisHttpSessionConfiguration
 			extends RedisHttpSessionConfiguration {
@@ -63,14 +56,6 @@ class RedisSessionConfiguration {
 			SessionProperties.Redis redis = this.sessionProperties.getRedis();
 			setRedisNamespace(redis.getNamespace());
 			setRedisFlushMode(redis.getFlushMode());
-		}
-
-		@PostConstruct
-		public void validate() {
-			if (this.sessionProperties.getStoreType() == null) {
-				logger.warn("Spring Session store type is mandatory: set "
-						+ "'spring.session.store-type=redis' in your configuration");
-			}
 		}
 
 	}

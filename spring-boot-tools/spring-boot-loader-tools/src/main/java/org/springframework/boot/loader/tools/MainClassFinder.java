@@ -372,7 +372,7 @@ public abstract class MainClassFinder {
 
 		/**
 		 * Handle the specified main class.
-		 * @param mainClass the mainClass
+		 * @param mainClass the main class
 		 * @return a non-null value if processing should end or {@code null} to continue
 		 */
 		T doWith(MainClass mainClass);
@@ -392,7 +392,6 @@ public abstract class MainClassFinder {
 		 * Creates a new {@code MainClass} rather represents the main class with the given
 		 * {@code name}. The class is annotated with the annotations with the given
 		 * {@code annotationNames}.
-		 *
 		 * @param name the name of the class
 		 * @param annotationNames the names of the annotations on the class
 		 */

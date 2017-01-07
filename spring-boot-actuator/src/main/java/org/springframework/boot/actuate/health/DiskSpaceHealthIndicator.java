@@ -61,4 +61,5 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 				.withDetail("free", diskFreeInBytes)
 				.withDetail("threshold", this.properties.getThreshold());
 	}
+
 }

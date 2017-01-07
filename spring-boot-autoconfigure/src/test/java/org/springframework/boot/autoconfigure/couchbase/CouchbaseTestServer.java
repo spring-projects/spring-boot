@@ -117,6 +117,7 @@ public class CouchbaseTestServer implements TestRule {
 				}
 			}
 		}
+
 	}
 
 	private static class SkipStatement extends Statement {

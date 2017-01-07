@@ -19,9 +19,6 @@ package sample.metrics.dropwizard;
 import java.util.Collections;
 import java.util.Map;
 
-import org.hibernate.validator.constraints.NotBlank;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.context.annotation.Description;
 import org.springframework.stereotype.Controller;
@@ -32,32 +29,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Description("A controller for handling requests for hello messages")
 public class SampleController {
 
-	@Autowired
-	private HelloWorldService helloWorldService;
+	private final HelloWorldProperties helloWorldProperties;
 
-	@Autowired
-	private GaugeService gauges;
+	private final GaugeService gauges;
+
+	public SampleController(HelloWorldProperties helloWorldProperties,
+			GaugeService gauges) {
+		this.helloWorldProperties = helloWorldProperties;
+		this.gauges = gauges;
+	}
 
 	@GetMapping("/")
 	@ResponseBody
 	public Map<String, String> hello() {
 		this.gauges.submit("timer.test.value", Math.random() * 1000 + 1000);
 		return Collections.singletonMap("message",
-				this.helloWorldService.getHelloMessage());
-	}
-
-	protected static class Message {
-
-		@NotBlank(message = "Message value cannot be empty")
-		private String value;
-
-		public String getValue() {
-			return this.value;
-		}
-
-		public void setValue(String value) {
-			this.value = value;
-		}
+				"Hello " + this.helloWorldProperties.getName());
 	}
 
 }

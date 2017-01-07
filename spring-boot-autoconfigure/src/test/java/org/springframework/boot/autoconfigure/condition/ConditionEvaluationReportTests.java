@@ -278,6 +278,7 @@ public class ConditionEvaluationReportTests {
 			}
 
 		}
+
 	}
 
 	static class TestMatchCondition extends SpringBootCondition

@@ -125,4 +125,5 @@ public class GsonTester<T> extends AbstractJsonMarshalTester<T> {
 		}
 
 	}
+
 }

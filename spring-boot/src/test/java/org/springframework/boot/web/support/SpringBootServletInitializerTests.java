@@ -25,6 +25,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.support.SpringBootServletInitializer.ErrorPageFilterConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
@@ -58,15 +59,15 @@ public class SpringBootServletInitializerTests {
 	public void withConfigurationAnnotation() throws Exception {
 		new WithConfigurationAnnotation()
 				.createRootApplicationContext(this.servletContext);
-		assertThat(this.application.getSources())
-				.containsOnly(WithConfigurationAnnotation.class, ErrorPageFilter.class);
+		assertThat(this.application.getSources()).containsOnly(
+				WithConfigurationAnnotation.class, ErrorPageFilterConfiguration.class);
 	}
 
 	@Test
 	public void withConfiguredSource() throws Exception {
 		new WithConfiguredSource().createRootApplicationContext(this.servletContext);
 		assertThat(this.application.getSources()).containsOnly(Config.class,
-				ErrorPageFilter.class);
+				ErrorPageFilterConfiguration.class);
 	}
 
 	@Test
@@ -126,10 +127,12 @@ public class SpringBootServletInitializerTests {
 				SpringApplicationBuilder application) {
 			return application.sources(Config.class);
 		}
+
 	}
 
 	@Configuration
 	public class WithConfigurationAnnotation extends MockSpringBootServletInitializer {
+
 	}
 
 	public class WithConfiguredSource extends MockSpringBootServletInitializer {

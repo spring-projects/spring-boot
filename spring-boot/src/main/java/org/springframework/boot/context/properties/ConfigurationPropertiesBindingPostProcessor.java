@@ -35,6 +35,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
+import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -400,7 +401,9 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 		public Validator run(ApplicationContext applicationContext) {
 			LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+			MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory();
 			validator.setApplicationContext(applicationContext);
+			validator.setMessageInterpolator(interpolatorFactory.getObject());
 			validator.afterPropertiesSet();
 			return validator;
 		}

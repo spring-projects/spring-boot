@@ -46,6 +46,11 @@ public class JestProperties {
 	private String password;
 
 	/**
+	 * Enable connection requests from multiple execution threads.
+	 */
+	private boolean multiThreaded = true;
+
+	/**
 	 * Connection timeout in milliseconds.
 	 */
 	private int connectionTimeout = 3000;
@@ -82,6 +87,14 @@ public class JestProperties {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public boolean isMultiThreaded() {
+		return this.multiThreaded;
+	}
+
+	public void setMultiThreaded(boolean multiThreaded) {
+		this.multiThreaded = multiThreaded;
 	}
 
 	public int getConnectionTimeout() {

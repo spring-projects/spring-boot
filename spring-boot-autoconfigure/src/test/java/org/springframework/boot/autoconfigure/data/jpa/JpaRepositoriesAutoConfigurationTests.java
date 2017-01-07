@@ -112,4 +112,5 @@ public class JpaRepositoriesAutoConfigurationTests {
 	protected static class SortOfInvalidCustomConfiguration {
 
 	}
+
 }

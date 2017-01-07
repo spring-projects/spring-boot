@@ -90,7 +90,6 @@ public class OpenTsdbGaugeWriter implements GaugeWriter {
 	/**
 	 * Creates a new {@code OpenTsdbGaugeWriter} with the given millisecond
 	 * {@code connectTimeout} and {@code readTimeout}.
-	 *
 	 * @param connectTimeout the connect timeout in milliseconds
 	 * @param readTimeout the read timeout in milliseconds
 	 */

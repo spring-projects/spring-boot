@@ -59,9 +59,9 @@ public class MailSenderAutoConfiguration {
 	private final Session session;
 
 	public MailSenderAutoConfiguration(MailProperties properties,
-			ObjectProvider<Session> sessionProvider) {
+			ObjectProvider<Session> session) {
 		this.properties = properties;
-		this.session = sessionProvider.getIfAvailable();
+		this.session = session.getIfAvailable();
 	}
 
 	@Bean
@@ -110,10 +110,12 @@ public class MailSenderAutoConfiguration {
 
 		@ConditionalOnProperty(prefix = "spring.mail", name = "host")
 		static class HostProperty {
+
 		}
 
 		@ConditionalOnProperty(prefix = "spring.mail", name = "jndi-name")
 		static class JndiNameProperty {
+
 		}
 
 	}

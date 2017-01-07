@@ -161,20 +161,31 @@ public class EnableAutoConfigurationImportSelector
 
 	private void checkExcludedClasses(List<String> configurations,
 			Set<String> exclusions) {
-		StringBuilder message = new StringBuilder();
+		List<String> invalidExcludes = new ArrayList<String>();
 		for (String exclusion : exclusions) {
 			if (ClassUtils.isPresent(exclusion, getClass().getClassLoader())
 					&& !configurations.contains(exclusion)) {
-				message.append("\t- ").append(exclusion).append(String.format("%n"));
+				invalidExcludes.add(exclusion);
 			}
 		}
-		if (!message.toString().isEmpty()) {
-			throw new IllegalStateException(String.format(
-					"The following classes could not be excluded because they are"
-							+ " not auto-configuration classes:%n%s",
-					message.toString()));
+		if (!invalidExcludes.isEmpty()) {
+			handleInvalidExcludes(invalidExcludes);
 		}
+	}
 
+	/**
+	 * Handle any invalid excludes that have been specified.
+	 * @param invalidExcludes the list of invalid excludes (will always have at least one
+	 * element)
+	 */
+	protected void handleInvalidExcludes(List<String> invalidExcludes) {
+		StringBuilder message = new StringBuilder();
+		for (String exclude : invalidExcludes) {
+			message.append("\t- ").append(exclude).append(String.format("%n"));
+		}
+		throw new IllegalStateException(String
+				.format("The following classes could not be excluded because they are"
+						+ " not auto-configuration classes:%n%s", message));
 	}
 
 	/**

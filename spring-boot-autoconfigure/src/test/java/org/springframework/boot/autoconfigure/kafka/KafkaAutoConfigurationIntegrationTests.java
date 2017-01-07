@@ -67,7 +67,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 				.getBean(KafkaTemplate.class);
 		template.send(TEST_TOPIC, "foo", "bar");
 		Listener listener = this.context.getBean(Listener.class);
-		assertThat(listener.latch.await(10, TimeUnit.SECONDS)).isTrue();
+		assertThat(listener.latch.await(30, TimeUnit.SECONDS)).isTrue();
 		assertThat(listener.key).isEqualTo("foo");
 		assertThat(listener.received).isEqualTo("bar");
 	}

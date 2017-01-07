@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 package org.springframework.boot.gradle.dependencymanagement;
 
-import groovy.lang.Closure;
-import io.spring.gradle.dependencymanagement.DependencyManagementExtension;
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
+import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension;
+import io.spring.gradle.dependencymanagement.dsl.ImportsHandler;
+import org.gradle.api.Action;
 import org.gradle.api.Project;
 
 import org.springframework.boot.gradle.PluginFeatures;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link PluginFeatures} to configure dependency management.
@@ -44,18 +44,11 @@ public class DependencyManagementPluginFeatures implements PluginFeatures {
 		project.getPlugins().apply(DependencyManagementPlugin.class);
 		DependencyManagementExtension dependencyManagement = project.getExtensions()
 				.findByType(DependencyManagementExtension.class);
-		dependencyManagement.imports(new Closure<Void>(this) {
+		dependencyManagement.imports(new Action<ImportsHandler>() {
 
 			@Override
-			public Void call(Object... args) {
-				try {
-					ReflectionUtils.findMethod(getDelegate().getClass(), "mavenBom",
-							String.class).invoke(getDelegate(), SPRING_BOOT_BOM);
-					return null;
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException(ex);
-				}
+			public void execute(ImportsHandler importsHandler) {
+				importsHandler.mavenBom(SPRING_BOOT_BOM);
 			}
 
 		});

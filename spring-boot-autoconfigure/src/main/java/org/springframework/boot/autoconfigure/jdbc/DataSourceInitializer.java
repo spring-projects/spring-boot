@@ -124,8 +124,8 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 		runScripts(scripts, username, password);
 	}
 
-	private List<Resource> getScripts(String propertyName,
-			List<String> resources, String fallback) {
+	private List<Resource> getScripts(String propertyName, List<String> resources,
+			String fallback) {
 		if (resources != null) {
 			return getResources(propertyName, resources, true);
 		}
@@ -136,8 +136,8 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 		return getResources(propertyName, fallbackResources, false);
 	}
 
-	private List<Resource> getResources(String propertyName,
-			List<String> locations, boolean validate) {
+	private List<Resource> getResources(String propertyName, List<String> locations,
+			boolean validate) {
 		List<Resource> resources = new ArrayList<Resource>();
 		for (String location : locations) {
 			for (Resource resource : doGetResources(location)) {

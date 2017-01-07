@@ -50,4 +50,5 @@ public class ConfigFileApplicationContextInitializerTests {
 	public static class Config {
 
 	}
+
 }

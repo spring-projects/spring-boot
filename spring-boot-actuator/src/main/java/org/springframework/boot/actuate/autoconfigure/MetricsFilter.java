@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -145,7 +145,8 @@ final class MetricsFilter extends OncePerRequestFilter {
 				suffix);
 	}
 
-	private String determineMetricNameSuffix(HttpServletRequest request, String path, int status) {
+	private String determineMetricNameSuffix(HttpServletRequest request, String path,
+			int status) {
 		Object bestMatchingPattern = request
 				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 		if (bestMatchingPattern != null) {

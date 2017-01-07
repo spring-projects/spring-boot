@@ -24,13 +24,18 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Variant of {@link EnableAutoConfigurationImportSelector} for
@@ -59,47 +64,27 @@ class ImportAutoConfigurationImportSelector
 	@Override
 	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata,
 			AnnotationAttributes attributes) {
-		try {
-			return getCandidateConfigurations(
-					ClassUtils.forName(metadata.getClassName(), null));
+		List<String> candidates = new ArrayList<String>();
+		Map<Class<?>, List<Annotation>> annotations = getAnnotations(metadata);
+		for (Map.Entry<Class<?>, List<Annotation>> entry : annotations.entrySet()) {
+			collectCandidateConfigurations(entry.getKey(), entry.getValue(), candidates);
 		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
+		return candidates;
 	}
 
-	private List<String> getCandidateConfigurations(Class<?> source) {
-		Set<String> candidates = new LinkedHashSet<String>();
-		collectCandidateConfigurations(source, candidates, new HashSet<Class<?>>());
-		return new ArrayList<String>(candidates);
-	}
-
-	private void collectCandidateConfigurations(Class<?> source, Set<String> candidates,
-			Set<Class<?>> seen) {
-		if (source != null && seen.add(source)) {
-			for (Annotation annotation : source.getDeclaredAnnotations()) {
-				if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
-					collectCandidateConfigurations(source, annotation, candidates, seen);
-				}
-			}
-			collectCandidateConfigurations(source.getSuperclass(), candidates, seen);
-		}
-	}
-
-	private void collectCandidateConfigurations(Class<?> source, Annotation annotation,
-			Set<String> candidates, Set<Class<?>> seen) {
-		if (ANNOTATION_NAMES.contains(annotation.annotationType().getName())) {
+	private void collectCandidateConfigurations(Class<?> source,
+			List<Annotation> annotations, List<String> candidates) {
+		for (Annotation annotation : annotations) {
 			candidates.addAll(getConfigurationsForAnnotation(source, annotation));
 		}
-		collectCandidateConfigurations(annotation.annotationType(), candidates, seen);
 	}
 
 	private Collection<String> getConfigurationsForAnnotation(Class<?> source,
 			Annotation annotation) {
-		String[] value = (String[]) AnnotationUtils
-				.getAnnotationAttributes(annotation, true).get("value");
-		if (value.length > 0) {
-			return Arrays.asList(value);
+		String[] classes = (String[]) AnnotationUtils
+				.getAnnotationAttributes(annotation, true).get("classes");
+		if (classes.length > 0) {
+			return Arrays.asList(classes);
 		}
 		return SpringFactoriesLoader.loadFactoryNames(source,
 				getClass().getClassLoader());
@@ -108,12 +93,62 @@ class ImportAutoConfigurationImportSelector
 	@Override
 	protected Set<String> getExclusions(AnnotationMetadata metadata,
 			AnnotationAttributes attributes) {
-		return Collections.emptySet();
+		Set<String> exclusions = new LinkedHashSet<String>();
+		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), null);
+		for (String annotationName : ANNOTATION_NAMES) {
+			AnnotationAttributes merged = AnnotatedElementUtils
+					.getMergedAnnotationAttributes(source, annotationName);
+			Class<?>[] exclude = (merged == null ? null
+					: merged.getClassArray("exclude"));
+			if (exclude != null) {
+				for (Class<?> excludeClass : exclude) {
+					exclusions.add(excludeClass.getName());
+				}
+			}
+		}
+		for (List<Annotation> annotations : getAnnotations(metadata).values()) {
+			for (Annotation annotation : annotations) {
+				String[] exclude = (String[]) AnnotationUtils
+						.getAnnotationAttributes(annotation, true).get("exclude");
+				if (!ObjectUtils.isEmpty(exclude)) {
+					exclusions.addAll(Arrays.asList(exclude));
+				}
+			}
+		}
+		return exclusions;
+	}
+
+	private Map<Class<?>, List<Annotation>> getAnnotations(AnnotationMetadata metadata) {
+		MultiValueMap<Class<?>, Annotation> annotations = new LinkedMultiValueMap<Class<?>, Annotation>();
+		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), null);
+		collectAnnotations(source, annotations, new HashSet<Class<?>>());
+		return Collections.unmodifiableMap(annotations);
+	}
+
+	private void collectAnnotations(Class<?> source,
+			MultiValueMap<Class<?>, Annotation> annotations, HashSet<Class<?>> seen) {
+		if (source != null && seen.add(source)) {
+			for (Annotation annotation : source.getDeclaredAnnotations()) {
+				if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
+					if (ANNOTATION_NAMES
+							.contains(annotation.annotationType().getName())) {
+						annotations.add(source, annotation);
+					}
+					collectAnnotations(annotation.annotationType(), annotations, seen);
+				}
+			}
+			collectAnnotations(source.getSuperclass(), annotations, seen);
+		}
 	}
 
 	@Override
 	public int getOrder() {
 		return super.getOrder() - 1;
+	}
+
+	@Override
+	protected void handleInvalidExcludes(List<String> invalidExcludes) {
+		// Ignore for test
 	}
 
 }

@@ -119,6 +119,14 @@ public class SysVinitLaunchScriptIT {
 	}
 
 	@Test
+	public void forceStopWhenStopped() throws Exception {
+		String output = doTest("force-stop-when-stopped.sh");
+		assertThat(output).contains("Status: 0");
+		assertThat(output)
+				.has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
+	}
+
+	@Test
 	public void startWhenStarted() throws Exception {
 		String output = doTest("start-when-started.sh");
 		assertThat(output).contains("Status: 0");

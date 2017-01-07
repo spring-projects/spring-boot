@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsUtils;
@@ -38,7 +39,8 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  */
 class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 
-	protected final Log logger = LogFactory.getLog(getClass());
+	private static final Log logger = LogFactory
+			.getLog(CloudFoundrySecurityInterceptor.class);
 
 	private final TokenValidator tokenValidator;
 
@@ -56,7 +58,7 @@ class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-			Object o) throws Exception {
+			Object handler) throws Exception {
 		if (CorsUtils.isPreFlightRequest(request)) {
 			return true;
 		}
@@ -69,12 +71,16 @@ class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 				throw new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
 						"Cloud controller URL is not available");
 			}
-			HandlerMethod handlerMethod = (HandlerMethod) o;
+			HandlerMethod handlerMethod = (HandlerMethod) handler;
+			if (HttpMethod.OPTIONS.matches(request.getMethod())
+					&& !(handlerMethod.getBean() instanceof MvcEndpoint)) {
+				return true;
+			}
 			MvcEndpoint mvcEndpoint = (MvcEndpoint) handlerMethod.getBean();
 			check(request, mvcEndpoint);
 		}
 		catch (CloudFoundryAuthorizationException ex) {
-			this.logger.error(ex);
+			logger.error(ex);
 			response.setContentType(MediaType.APPLICATION_JSON.toString());
 			response.getWriter()
 					.write("{\"security_error\":\"" + ex.getMessage() + "\"}");

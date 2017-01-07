@@ -50,7 +50,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.stereotype.Component;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.util.StringUtils;
 
@@ -62,7 +61,6 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Jean-Pierre Bergamin
  */
-@Component
 public class JobLauncherCommandLineRunner
 		implements CommandLineRunner, ApplicationEventPublisherAware {
 

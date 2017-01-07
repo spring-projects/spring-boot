@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -224,9 +224,8 @@ final class AsciiBytes {
 	}
 
 	public static int hashCode(int hash, String string) {
-		char[] chars = string.toCharArray();
-		for (int i = 0; i < chars.length; i++) {
-			hash = 31 * hash + chars[i];
+		for (int i = 0; i < string.length(); i++) {
+			hash = 31 * hash + string.charAt(i);
 		}
 		return hash;
 	}

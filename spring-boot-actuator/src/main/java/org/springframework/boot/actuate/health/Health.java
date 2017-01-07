@@ -299,6 +299,7 @@ public final class Health {
 		public Health build() {
 			return new Health(this);
 		}
+
 	}
 
 }

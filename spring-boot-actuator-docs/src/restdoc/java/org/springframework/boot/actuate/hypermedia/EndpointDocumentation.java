@@ -65,7 +65,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = SpringBootHypermediaApplication.class, loader = SpringBootContextLoader.class)
 @WebAppConfiguration
 @TestPropertySource(properties = { "spring.jackson.serialization.indent_output=true",
-		"endpoints.health.sensitive=true", "endpoints.actuator.enabled=false" })
+		"endpoints.health.sensitive=true", "endpoints.actuator.enabled=false",
+		"management.security.enabled=false" })
 @DirtiesContext
 @AutoConfigureRestDocs(EndpointDocumentation.RESTDOCS_OUTPUT_DIR)
 @AutoConfigureMockMvc(print = MockMvcPrint.NONE)
@@ -76,7 +77,8 @@ public class EndpointDocumentation {
 	static final File LOG_FILE = new File("target/logs/spring.log");
 
 	private static final Set<String> SKIPPED = Collections.<String>unmodifiableSet(
-			new HashSet<String>(Arrays.asList("/docs", "/logfile", "/heapdump")));
+			new HashSet<String>(Arrays.asList("/docs", "/logfile", "/heapdump",
+					"/auditevents")));
 
 	@Autowired
 	private MvcEndpoints mvcEndpoints;
@@ -124,6 +126,33 @@ public class EndpointDocumentation {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("{\"configuredLevel\": \"DEBUG\"}"))
 				.andExpect(status().isOk()).andDo(document("set-logger"));
+	}
+
+	@Test
+	public void auditEvents() throws Exception {
+		this.mockMvc.perform(get("/auditevents")
+						.param("after", "2016-11-01T10:00:00+0000")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andDo(document("auditevents"));
+	}
+
+	@Test
+	public void auditEventsByPrincipal() throws Exception {
+		this.mockMvc.perform(get("/auditevents").param("principal", "admin")
+						.param("after", "2016-11-01T10:00:00+0000")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("auditevents/filter-by-principal"));
+	}
+
+	@Test
+	public void auditEventsByPrincipalAndType() throws Exception {
+		this.mockMvc.perform(get("/auditevents").param("principal", "admin")
+						.param("after", "2016-11-01T10:00:00+0000")
+						.param("type", "AUTHENTICATION_SUCCESS")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("auditevents/filter-by-principal-and-type"));
 	}
 
 	@Test

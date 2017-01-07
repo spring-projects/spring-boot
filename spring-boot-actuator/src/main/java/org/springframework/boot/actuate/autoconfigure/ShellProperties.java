@@ -38,7 +38,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Stephane Nicoll
- * @deprecated as of 1.5
+ * @deprecated as of 1.5 since CRaSH is not actively maintained
  */
 @ConfigurationProperties(prefix = ShellProperties.SHELL_PREFIX, ignoreUnknownFields = true)
 @Deprecated
@@ -329,6 +329,7 @@ public class ShellProperties {
 		public void setAuthTimeout(Integer authTimeout) {
 			this.authTimeout = authTimeout;
 		}
+
 	}
 
 	/**
@@ -524,7 +525,7 @@ public class ShellProperties {
 		/**
 		 * Comma-separated list of required roles to login to the CRaSH console.
 		 */
-		private String[] roles = new String[] { "ADMIN" };
+		private String[] roles = new String[] { "ACTUATOR" };
 
 		@Override
 		protected void applyToCrshShellConfig(Properties config) {

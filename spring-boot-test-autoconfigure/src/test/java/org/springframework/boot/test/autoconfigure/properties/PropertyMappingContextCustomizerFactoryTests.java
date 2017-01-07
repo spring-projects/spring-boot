@@ -115,6 +115,7 @@ public class PropertyMappingContextCustomizerFactoryTests {
 
 	@NoMappingAnnotation
 	static class NoMapping {
+
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
@@ -124,6 +125,7 @@ public class PropertyMappingContextCustomizerFactoryTests {
 
 	@TypeMappingAnnotation
 	static class TypeMapping {
+
 	}
 
 	@Configuration
@@ -142,10 +144,12 @@ public class PropertyMappingContextCustomizerFactoryTests {
 
 	@AttributeMappingAnnotation
 	static class AttributeMapping {
+
 	}
 
 	@AttributeMappingAnnotation("Other")
 	static class OtherMapping {
+
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)

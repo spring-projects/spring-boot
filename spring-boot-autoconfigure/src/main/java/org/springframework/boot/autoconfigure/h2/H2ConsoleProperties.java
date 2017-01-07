@@ -95,4 +95,5 @@ public class H2ConsoleProperties {
 		}
 
 	}
+
 }

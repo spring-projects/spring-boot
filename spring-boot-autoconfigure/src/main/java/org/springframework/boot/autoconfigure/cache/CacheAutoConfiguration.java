@@ -16,9 +16,12 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -67,10 +70,17 @@ import org.springframework.util.Assert;
 @AutoConfigureBefore(HibernateJpaAutoConfiguration.class)
 @AutoConfigureAfter({ CouchbaseAutoConfiguration.class, HazelcastAutoConfiguration.class,
 		RedisAutoConfiguration.class })
-@Import({ CacheManagerCustomizers.class, CacheConfigurationImportSelector.class })
+@Import(CacheConfigurationImportSelector.class)
 public class CacheAutoConfiguration {
 
 	static final String VALIDATOR_BEAN_NAME = "cacheAutoConfigurationValidator";
+
+	@Bean
+	@ConditionalOnMissingBean
+	public CacheManagerCustomizers cacheManagerCustomizers(
+			ObjectProvider<List<CacheManagerCustomizer<?>>> customizers) {
+		return new CacheManagerCustomizers(customizers.getIfAvailable());
+	}
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
@@ -101,6 +111,7 @@ public class CacheAutoConfiguration {
 	 * instantiation.
 	 */
 	static class CacheManagerValidatorPostProcessor implements BeanFactoryPostProcessor {
+
 		@Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
 				throws BeansException {
@@ -120,6 +131,7 @@ public class CacheAutoConfiguration {
 			result[result.length - 1] = value;
 			return result;
 		}
+
 	}
 
 	/**
@@ -141,6 +153,7 @@ public class CacheAutoConfiguration {
 							+ "be auto-configured, check your configuration (caching "
 							+ "type is '" + this.cacheProperties.getType() + "')");
 		}
+
 	}
 
 	/**
