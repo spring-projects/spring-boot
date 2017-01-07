@@ -72,6 +72,16 @@ public class DefaultLaunchScriptTests {
 	}
 
 	@Test
+	public void initInfoDefaultStartCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("initInfoDefaultStart");
+	}
+
+	@Test
+	public void initInfoDefaultStopCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("initInfoDefaultStop");
+	}
+
+	@Test
 	public void initInfoShortDescriptionCanBeReplaced() throws Exception {
 		assertThatPlaceholderCanBeReplaced("initInfoShortDescription");
 	}
