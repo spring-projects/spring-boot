@@ -802,7 +802,7 @@ public class SpringApplicationTests {
 		this.context = application.run();
 		assertThat(this.context.getEnvironment())
 				.isNotInstanceOf(StandardServletEnvironment.class);
-		assertThat(this.context.getEnvironment().getProperty("foo"));
+		assertThat(this.context.getEnvironment().getProperty("foo")).isEqualTo("bar");
 		assertThat(this.context.getEnvironment().getPropertySources().iterator().next()
 				.getName()).isEqualTo(
 						TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
