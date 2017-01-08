@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2016 the original author or authors.
+ * Copyright 2016-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * Adapter to expose {@link LoggersEndpoint} as an {@link MvcEndpoint}.
  *
  * @author Ben Hale
+ * @author Kazuki Shimizu
  * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "endpoints.loggers")
@@ -71,7 +72,7 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 			return getDisabledResponse();
 		}
 		String level = configuration.get("configuredLevel");
-		this.delegate.setLogLevel(name, level == null ? null : LogLevel.valueOf(level));
+		this.delegate.setLogLevel(name, level == null ? null : LogLevel.valueOf(level.toUpperCase()));
 		return HttpEntity.EMPTY;
 	}
 
