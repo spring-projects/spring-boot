@@ -85,8 +85,8 @@ public class MongoHealthIndicatorTests {
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(((String) health.getDetails().get("error"))
-				.contains("Connection failed"));
+		assertThat((String) health.getDetails().get("error"))
+				.contains("Connection failed");
 		verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");
 	}
 
