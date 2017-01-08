@@ -1686,7 +1686,7 @@ The auto-configuration adds the following features on top of Spring's defaults:
 * Support for `HttpMessageConverters` (see below).
 * Automatic registration of `MessageCodesResolver` (see below).
 * Static `index.html` support.
-* Custom `Favicon` support.
+* Custom `Favicon` support (see below).
 * Automatic use of a `ConfigurableWebBindingInitializer` bean (see below).
 
 If you want to keep Spring Boot MVC features, and
@@ -1883,6 +1883,14 @@ This feature has been thoroughly described in a dedicated
 https://spring.io/blog/2014/07/24/spring-framework-4-1-handling-static-web-resources[blog post]
 and in Spring Framework's {spring-reference}/#mvc-config-static-resources[reference documentation].
 ====
+
+
+
+[[boot-features-spring-mvc-favicon]]
+==== Custom Favicon
+Spring Boot looks for a `favicon.ico` in the configured static content locations and the
+root of the classpath (in that order). If such file is present, it is automatically used
+as the favicon of the application.
 
 
 
