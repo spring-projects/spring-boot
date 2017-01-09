@@ -50,9 +50,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-data-elasticsearch[spring-boot-sample-data-elasticsearch]
 | Stores data using Spring Data Elasticsearch
 
-| link:spring-boot-sample-data-gemfire[spring-boot-sample-data-gemfire]
-| Stores data using Spring Data GemFire
-
 | link:spring-boot-sample-data-jpa[spring-boot-sample-data-jpa]
 | Stores data using Spring Data JPA with Hibernate
 
