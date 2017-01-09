@@ -4659,7 +4659,7 @@ for more of the supported options.
 
 
 [[boot-features-kafka-sending-a-message]]
-=== Sending a Message
+==== Sending a Message
 Spring's `KafkaTemplate` is auto-configured and you can autowire them directly in your own
 beans:
 
@@ -4683,7 +4683,7 @@ public class MyBean {
 
 
 [[boot-features-kafka-receiving-a-message]]
-=== Receiving a Message
+==== Receiving a Message
 When the Apache Kafka infrastructure is present, any bean can be annotated with
 `@KafkaListener` to create a listener endpoint. If no `KafkaListenerContainerFactory`
 has been defined, a default one is configured automatically with keys defined in
@@ -4707,7 +4707,7 @@ The following component creates a listener endpoint on the `someTopic` topic:
 
 
 [[boot-features-kafka-extra-props]]
-=== Additional Kafka Properties
+==== Additional Kafka Properties
 The properties supported by auto configuration are shown in
 <<common-application-properties>>. Note that these properties (hyphenated or camelCase)
 map directly to the Apache Kafka dotted properties for the most part, refer to the Apache
