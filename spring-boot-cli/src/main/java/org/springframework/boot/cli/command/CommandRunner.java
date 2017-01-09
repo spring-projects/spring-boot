@@ -185,7 +185,8 @@ public class CommandRunner implements Iterable<Command> {
 	}
 
 	private String[] removeDebugFlags(String[] args) {
-		List<String> argsWithoutDebugFlags = new ArrayList<String>(args.length);
+		String[] argsWithoutDebugFlags = new String[args.length];
+		int index = 0;
 		boolean appArgsDetected = false;
 		for (String arg : args) {
 			// Allow apps to have a -d argument
@@ -193,19 +194,19 @@ public class CommandRunner implements Iterable<Command> {
 			if (isDebugArgTogetherWithAppArg(arg, appArgsDetected)) {
 				continue;
 			}
-			argsWithoutDebugFlags.add(arg);
+			argsWithoutDebugFlags[index++] = arg;
 		}
-		return argsWithoutDebugFlags.toArray(new String[argsWithoutDebugFlags.size()]);
+		return argsWithoutDebugFlags;
 	}
-	
+
 	private boolean isAppArg(String arg) {
-		return "--".equals(arg);	
+		return "--".equals(arg);
 	}
-	
+
 	private boolean isDebugArgTogetherWithAppArg(String arg, boolean appArgsDetected) {
-		return (isDebugArg(arg) && !appArgsDetected);	
+		return (isDebugArg(arg) && !appArgsDetected);
 	}
-	
+
 	private boolean isDebugArg(String arg) {
 		return ("-d".equals(arg) || "--debug".equals(arg));
 	}
