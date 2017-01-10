@@ -78,7 +78,7 @@ public class Neo4jDataAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(Neo4jOperations.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(Neo4jTransactionManager.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(OpenSessionInViewInterceptor.class))
-				.isEmpty();
+				.hasSize(1);
 	}
 
 	@Test
@@ -131,10 +131,10 @@ public class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void openSessionInViewInterceptorCanBeEnabled() {
-		load(null, "spring.data.neo4j.open-in-view=true");
+	public void openSessionInViewInterceptorCanBeDisabled() {
+		load(null, "spring.data.neo4j.open-in-view:false");
 		assertThat(this.context.getBeansOfType(OpenSessionInViewInterceptor.class))
-				.hasSize(1);
+				.isEmpty();
 	}
 
 	@Test

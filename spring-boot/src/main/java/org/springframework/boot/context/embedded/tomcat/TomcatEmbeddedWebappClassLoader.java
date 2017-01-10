@@ -46,35 +46,28 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 	@Override
 	public synchronized Class<?> loadClass(String name, boolean resolve)
 			throws ClassNotFoundException {
-		Class<?> resultClass = null;
-
-		// Check local class caches
-		resultClass = (resultClass == null ? findLoadedClass0(name) : resultClass);
-		resultClass = (resultClass == null ? findLoadedClass(name) : resultClass);
-		if (resultClass != null) {
-			return resolveIfNecessary(resultClass, resolve);
-		}
-
-		// Check security
-		checkPackageAccess(name);
-
-		// Perform the actual load
-		boolean delegateLoad = (this.delegate || filter(name, true));
-
-		if (delegateLoad) {
-			resultClass = (resultClass == null ? loadFromParent(name) : resultClass);
-		}
-		resultClass = (resultClass == null ? findClassIgnoringNotFound(name)
-				: resultClass);
-		if (!delegateLoad) {
-			resultClass = (resultClass == null ? loadFromParent(name) : resultClass);
-		}
-
-		if (resultClass == null) {
+		Class<?> result = findExistingLoadedClass(name);
+		result = (result == null ? doLoadClass(name) : result);
+		if (result == null) {
 			throw new ClassNotFoundException(name);
 		}
+		return resolveIfNecessary(result, resolve);
+	}
 
-		return resolveIfNecessary(resultClass, resolve);
+	private Class<?> findExistingLoadedClass(String name) {
+		Class<?> resultClass = findLoadedClass0(name);
+		resultClass = (resultClass == null ? findLoadedClass(name) : resultClass);
+		return resultClass;
+	}
+
+	private Class<?> doLoadClass(String name) throws ClassNotFoundException {
+		checkPackageAccess(name);
+		if ((this.delegate || filter(name, true))) {
+			Class<?> result = loadFromParent(name);
+			return (result == null ? findClassIgnoringNotFound(name) : result);
+		}
+		Class<?> result = findClassIgnoringNotFound(name);
+		return (result == null ? loadFromParent(name) : result);
 	}
 
 	private Class<?> resolveIfNecessary(Class<?> resultClass, boolean resolve) {
