@@ -2479,7 +2479,7 @@ To configure IntelliJ IDEA correctly you can use the `idea` Gradle plugin:
 		repositories { jcenter() }
 		dependencies {
 			classpath "org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}"
-			classpath 'org.springframework:springloaded:1.2.0.RELEASE'
+			classpath 'org.springframework:springloaded:1.2.6.RELEASE'
 		}
 	}
 
