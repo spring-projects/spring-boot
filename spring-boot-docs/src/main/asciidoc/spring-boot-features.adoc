@@ -2733,7 +2733,7 @@ Java's `javax.sql.DataSource` interface provides a standard method of working wi
 database connections. Traditionally a DataSource uses a `URL` along with some
 credentials to establish a database connection.
 
-TIP: Check also <<the '`How-to`' section,howto.adoc#howto-configure-a-datasource] for more
+TIP: Check also <<howto.adoc#howto-configure-a-datasource,the '`How-to`' section>> for more
 advanced examples, typically to take full control over the configuration of the
 DataSource.
 
