@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.HostDistance;
 import org.junit.After;
 import org.junit.Test;
 
@@ -78,6 +79,30 @@ public class CassandraAutoConfigurationTests {
 		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
 		Cluster cluster = this.context.getBean(Cluster.class);
 		assertThat(cluster.getClusterName()).isEqualTo("overridden-name");
+	}
+
+	@Test
+	public void heartbeatInterval() {
+		load("spring.data.cassandra.heartbeat-interval-seconds=60");
+		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
+		Cluster cluster = this.context.getBean(Cluster.class);
+		assertThat(cluster.getConfiguration().getPoolingOptions().getHeartbeatIntervalSeconds()).isEqualTo(60);
+	}
+
+	@Test
+	public void maxQueueSize() {
+		load("spring.data.cassandra.max-queue-size=1024");
+		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
+		Cluster cluster = this.context.getBean(Cluster.class);
+		assertThat(cluster.getConfiguration().getPoolingOptions().getMaxQueueSize()).isEqualTo(1024);
+	}
+
+	@Test
+	public void maxRequestsPerConnection() {
+		load("spring.data.cassandra.max-requests-per-connection.local=100");
+		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
+		Cluster cluster = this.context.getBean(Cluster.class);
+		assertThat(cluster.getConfiguration().getPoolingOptions().getMaxRequestsPerConnection(HostDistance.LOCAL)).isEqualTo(100);
 	}
 
 	private void load(String... environment) {
