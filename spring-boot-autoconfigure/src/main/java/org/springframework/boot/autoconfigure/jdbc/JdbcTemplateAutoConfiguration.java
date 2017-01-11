@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -63,8 +64,14 @@ public class JdbcTemplateAutoConfiguration {
 	@Bean
 	@Primary
 	@ConditionalOnMissingBean(NamedParameterJdbcOperations.class)
-	public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
-		return new NamedParameterJdbcTemplate(this.dataSource);
+	public NamedParameterJdbcTemplate namedParameterJdbcTemplate(ObjectProvider<JdbcOperations> jdbcOperationsProvider) {
+		JdbcOperations jdbcOperations = jdbcOperationsProvider.getIfUnique();
+		if (jdbcOperations != null) {
+			return new NamedParameterJdbcTemplate(jdbcOperations);
+		}
+		else {
+			return new NamedParameterJdbcTemplate(this.dataSource);
+		}
 	}
 
 }

@@ -30,6 +30,7 @@ import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
@@ -135,6 +136,28 @@ public class JdbcTemplateAutoConfigurationTests {
 				.isEqualTo(this.context.getBean("customNamedParameterJdbcOperations"));
 	}
 
+	@Test
+	public void testMultipleCustomJdbcTemplateWithPrimary() throws Exception {
+		this.context.register(MultipleCustomJdbcTemplateWithPrimaryConfiguration.class,
+			DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		NamedParameterJdbcOperations operations = this.context.getBean(NamedParameterJdbcOperations.class);
+		JdbcTemplate jdbcTemplate = JdbcTemplate.class.cast(operations.getJdbcOperations());
+		assertThat(jdbcTemplate.getFetchSize()).isEqualTo(200);
+	}
+
+	@Test
+	public void testMultipleCustomJdbcTemplateWithoutPrimary() throws Exception {
+		this.context.register(MultipleCustomJdbcTemplateWithoutPrimaryConfiguration.class,
+			DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		NamedParameterJdbcOperations operations = this.context.getBean(NamedParameterJdbcOperations.class);
+		JdbcTemplate jdbcTemplate = JdbcTemplate.class.cast(operations.getJdbcOperations());
+		assertThat(jdbcTemplate.getFetchSize()).isEqualTo(-1);
+	}
+
 	@Configuration
 	static class CustomConfiguration {
 
@@ -157,6 +180,45 @@ public class JdbcTemplateAutoConfigurationTests {
 		@Bean
 		public DataSource dataSource() {
 			return new TestDataSource("overridedb");
+		}
+
+	}
+
+	@Configuration
+	static class MultipleCustomJdbcTemplateWithPrimaryConfiguration {
+
+		@Bean
+		public JdbcTemplate fooJdbcTemplate(DataSource dataSource) {
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+			jdbcTemplate.setFetchSize(100);
+			return jdbcTemplate;
+		}
+
+		@Bean
+		@Primary
+		public JdbcTemplate barJdbcTemplate(DataSource dataSource) {
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+			jdbcTemplate.setFetchSize(200);
+			return jdbcTemplate;
+		}
+
+	}
+
+	@Configuration
+	static class MultipleCustomJdbcTemplateWithoutPrimaryConfiguration {
+
+		@Bean
+		public JdbcTemplate fooJdbcTemplate(DataSource dataSource) {
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+			jdbcTemplate.setFetchSize(100);
+			return jdbcTemplate;
+		}
+
+		@Bean
+		public JdbcTemplate barJdbcTemplate(DataSource dataSource) {
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+			jdbcTemplate.setFetchSize(200);
+			return jdbcTemplate;
 		}
 
 	}
