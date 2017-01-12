@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,9 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.config.ResourceNotFoundException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.config.SortedResourcesFactoryBean;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
@@ -45,6 +44,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Kazuki Shimizu
  * @since 1.1.0
  * @see DataSourceAutoConfiguration
  */
@@ -52,15 +52,18 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 
 	private static final Log logger = LogFactory.getLog(DataSourceInitializer.class);
 
-	@Autowired
-	private ConfigurableApplicationContext applicationContext;
+	private final DataSourceProperties properties;
+
+	private final ApplicationContext applicationContext;
 
 	private DataSource dataSource;
 
-	@Autowired
-	private DataSourceProperties properties;
-
 	private boolean initialized = false;
+
+	DataSourceInitializer(DataSourceProperties properties, ApplicationContext applicationContext) {
+		this.properties = properties;
+		this.applicationContext = applicationContext;
+	}
 
 	@PostConstruct
 	public void init() {
