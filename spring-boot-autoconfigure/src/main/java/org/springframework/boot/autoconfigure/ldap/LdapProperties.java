@@ -108,7 +108,6 @@ public class LdapProperties {
 	}
 
 	private int determinePort(Environment environment) {
-		Assert.state(environment != null, "No local LDAP port configured");
 		String localPort = environment.getProperty("local.ldap.port");
 		if (localPort != null) {
 			return Integer.valueOf(localPort);
