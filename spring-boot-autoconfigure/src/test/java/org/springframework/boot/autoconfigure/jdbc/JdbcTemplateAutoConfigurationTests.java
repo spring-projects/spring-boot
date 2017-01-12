@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,6 +72,27 @@ public class JdbcTemplateAutoConfigurationTests {
 		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
 		assertThat(jdbcTemplate).isNotNull();
 		assertThat(jdbcTemplate.getDataSource()).isNotNull();
+		assertThat(jdbcTemplate.getFetchSize()).isEqualTo(-1);
+		assertThat(jdbcTemplate.getQueryTimeout()).isEqualTo(-1);
+		assertThat(jdbcTemplate.getMaxRows()).isEqualTo(-1);
+	}
+
+	@Test
+	public void testJdbcTemplateWithCustomProperties() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+			"spring.jdbc.template.fetch-size:100",
+			"spring.jdbc.template.query-timeout:60",
+			"spring.jdbc.template.max-rows:1000");
+		this.context.register(DataSourceAutoConfiguration.class,
+			JdbcTemplateAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
+		assertThat(jdbcTemplate).isNotNull();
+		assertThat(jdbcTemplate.getDataSource()).isNotNull();
+		assertThat(jdbcTemplate.getFetchSize()).isEqualTo(100);
+		assertThat(jdbcTemplate.getQueryTimeout()).isEqualTo(60);
+		assertThat(jdbcTemplate.getMaxRows()).isEqualTo(1000);
 	}
 
 	@Test
