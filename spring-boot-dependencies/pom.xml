@@ -2148,6 +2148,11 @@
 				<version>${spring-plugin.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework.plugin</groupId>
+				<artifactId>spring-plugin-metadata</artifactId>
+				<version>${spring-plugin.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.springframework.restdocs</groupId>
 				<artifactId>spring-restdocs-core</artifactId>
 				<version>${spring-restdocs.version}</version>
