@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -46,6 +47,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 @ConditionalOnClass({ DataSource.class, JdbcTemplate.class })
 @ConditionalOnSingleCandidate(DataSource.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
+@EnableConfigurationProperties(JdbcProperties.class)
 public class JdbcTemplateAutoConfiguration {
 
 	@Configuration
@@ -53,15 +55,30 @@ public class JdbcTemplateAutoConfiguration {
 
 		private final DataSource dataSource;
 
-		JdbcTemplateConfiguration(DataSource dataSource) {
+		private final JdbcProperties properties;
+
+		JdbcTemplateConfiguration(DataSource dataSource, JdbcProperties properties) {
 			this.dataSource = dataSource;
+			this.properties = properties;
 		}
 
 		@Bean
 		@Primary
 		@ConditionalOnMissingBean(JdbcOperations.class)
 		public JdbcTemplate jdbcTemplate() {
-			return new JdbcTemplate(this.dataSource);
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(this.dataSource);
+			JdbcProperties.Template template = this.properties.getTemplate();
+			if (template.getFetchSize() != null) {
+				jdbcTemplate.setFetchSize(template.getFetchSize());
+			}
+			if (template.getQueryTimeout() != null) {
+				jdbcTemplate.setQueryTimeout(template.getQueryTimeout());
+			}
+			if (template.getMaxRows() != null) {
+				jdbcTemplate.setMaxRows(template.getMaxRows());
+			}
+			return jdbcTemplate;
+
 		}
 
 	}
