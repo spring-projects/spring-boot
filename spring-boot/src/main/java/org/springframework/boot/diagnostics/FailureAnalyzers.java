@@ -122,7 +122,7 @@ public final class FailureAnalyzers {
 				}
 			}
 			catch (Throwable ex) {
-				log.debug("FailureAnalyzer " + analyzer + " failed", ex);
+				logger.debug("FailureAnalyzer " + analyzer + " failed", ex);
 			}
 		}
 		return null;
