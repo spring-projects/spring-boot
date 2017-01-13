@@ -62,9 +62,16 @@ public class FailureAnalyzersTests {
 	}
 
 	@Test
-	public void brokenAnalyzerDoesNotPreventOtherAnalyzersFromBeingCalled() {
+	public void analyzerThatFailsDuringInitializationDoesNotPreventOtherAnalyzersFromBeingCalled() {
 		RuntimeException failure = new RuntimeException();
-		analyzeAndReport("broken.factories", failure);
+		analyzeAndReport("broken-initialization.factories", failure);
+		verify(failureAnalyzer, times(1)).analyze(failure);
+	}
+
+	@Test
+	public void analyzerThatFailsDuringAnalysisDoesNotPreventOtherAnalyzersFromBeingCalled() {
+		RuntimeException failure = new RuntimeException();
+		analyzeAndReport("broken-analysis.factories", failure);
 		verify(failureAnalyzer, times(1)).analyze(failure);
 	}
 
@@ -83,7 +90,7 @@ public class FailureAnalyzersTests {
 
 	}
 
-	static class BrokenFailureAnalyzer implements FailureAnalyzer {
+	static class BrokenInitializationFailureAnalyzer implements FailureAnalyzer {
 
 		static {
 			Object foo = null;
@@ -93,6 +100,15 @@ public class FailureAnalyzersTests {
 		@Override
 		public FailureAnalysis analyze(Throwable failure) {
 			return null;
+		}
+
+	}
+
+	static class BrokenAnalysisFailureAnalyzer implements FailureAnalyzer {
+
+		@Override
+		public FailureAnalysis analyze(Throwable failure) {
+			throw new NoClassDefFoundError();
 		}
 
 	}
