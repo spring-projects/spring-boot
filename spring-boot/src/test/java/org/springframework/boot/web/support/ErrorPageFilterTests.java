@@ -262,7 +262,7 @@ public class ErrorPageFilterTests {
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE))
 				.isEqualTo("BAD");
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE))
-				.isEqualTo(RuntimeException.class.getName());
+				.isEqualTo(RuntimeException.class);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI))
 				.isEqualTo("/test/path");
 		assertThat(this.response.isCommitted()).isTrue();
@@ -319,7 +319,7 @@ public class ErrorPageFilterTests {
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE))
 				.isEqualTo("BAD");
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE))
-				.isEqualTo(IllegalStateException.class.getName());
+				.isEqualTo(IllegalStateException.class);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI))
 				.isEqualTo("/test/path");
 		assertThat(this.response.isCommitted()).isTrue();
@@ -493,7 +493,7 @@ public class ErrorPageFilterTests {
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE))
 				.isEqualTo("BAD");
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE))
-				.isEqualTo(RuntimeException.class.getName());
+				.isEqualTo(RuntimeException.class);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI))
 				.isEqualTo("/test/path");
 		assertThat(this.response.isCommitted()).isTrue();
