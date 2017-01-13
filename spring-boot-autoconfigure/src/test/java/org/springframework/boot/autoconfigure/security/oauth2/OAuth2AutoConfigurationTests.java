@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,12 +49,15 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.annotation.Jsr250MethodSecurityMetadataSource;
 import org.springframework.security.access.annotation.SecuredAnnotationSecurityMetadataSource;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource;
 import org.springframework.security.access.method.MethodSecurityMetadataSource;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreInvocationAuthorizationAdvice;
 import org.springframework.security.access.prepost.PrePostAnnotationSecurityMetadataSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -96,6 +99,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Verify Spring Security OAuth2 auto-configuration secures end points properly, accepts
@@ -139,6 +143,39 @@ public class OAuth2AutoConfigurationTests {
 		verifyAuthentication(config);
 		assertThat(this.context.getBeanNamesForType(OAuth2RestOperations.class))
 				.isEmpty();
+	}
+
+	@Test
+	public void methodSecurityExpressionHandlerIsConfiguredWithRoleHierarchyFromTheContext() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(RoleHierarchyConfiguration.class,
+				AuthorizationAndResourceServerConfiguration.class,
+				MinimalSecureWebApplication.class);
+		this.context.refresh();
+		PreInvocationAuthorizationAdvice advice = this.context
+				.getBean(PreInvocationAuthorizationAdvice.class);
+		MethodSecurityExpressionHandler expressionHandler = (MethodSecurityExpressionHandler) ReflectionTestUtils
+				.getField(advice, "expressionHandler");
+		RoleHierarchy roleHierarchy = (RoleHierarchy) ReflectionTestUtils
+				.getField(expressionHandler, "roleHierarchy");
+		assertThat(roleHierarchy).isSameAs(this.context.getBean(RoleHierarchy.class));
+	}
+
+	@Test
+	public void methodSecurityExpressionHandlerIsConfiguredWithPermissionEvaluatorFromTheContext() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(PermissionEvaluatorConfiguration.class,
+				AuthorizationAndResourceServerConfiguration.class,
+				MinimalSecureWebApplication.class);
+		this.context.refresh();
+		PreInvocationAuthorizationAdvice advice = this.context
+				.getBean(PreInvocationAuthorizationAdvice.class);
+		MethodSecurityExpressionHandler expressionHandler = (MethodSecurityExpressionHandler) ReflectionTestUtils
+				.getField(advice, "expressionHandler");
+		PermissionEvaluator permissionEvaluator = (PermissionEvaluator) ReflectionTestUtils
+				.getField(expressionHandler, "permissionEvaluator");
+		assertThat(permissionEvaluator)
+				.isSameAs(this.context.getBean(PermissionEvaluator.class));
 	}
 
 	@Test
@@ -567,6 +604,26 @@ public class OAuth2AutoConfigurationTests {
 		@Override
 		protected MethodSecurityExpressionHandler createExpressionHandler() {
 			return new OAuth2MethodSecurityExpressionHandler();
+		}
+
+	}
+
+	@Configuration
+	protected static class RoleHierarchyConfiguration {
+
+		@Bean
+		public RoleHierarchy roleHierarchy() {
+			return mock(RoleHierarchy.class);
+		}
+
+	}
+
+	@Configuration
+	protected static class PermissionEvaluatorConfiguration {
+
+		@Bean
+		public PermissionEvaluator permissionEvaluator() {
+			return mock(PermissionEvaluator.class);
 		}
 
 	}
