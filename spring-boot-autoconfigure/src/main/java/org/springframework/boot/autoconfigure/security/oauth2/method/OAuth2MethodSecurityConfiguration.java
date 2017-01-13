@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
@@ -98,10 +97,6 @@ public class OAuth2MethodSecurityConfiguration
 					AuthenticationTrustResolver.class);
 			if (trustResolver != null) {
 				handler.setTrustResolver(trustResolver);
-			}
-			PermissionEvaluator permissions = findInContext(PermissionEvaluator.class);
-			if (permissions != null) {
-				handler.setPermissionEvaluator(permissions);
 			}
 			handler.setExpressionParser(bean.getExpressionParser());
 			return handler;
