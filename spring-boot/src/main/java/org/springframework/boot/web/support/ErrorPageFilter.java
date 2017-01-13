@@ -177,7 +177,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		}
 		setErrorAttributes(request, 500, ex.getMessage());
 		request.setAttribute(ERROR_EXCEPTION, ex);
-		request.setAttribute(ERROR_EXCEPTION_TYPE, ex.getClass().getName());
+		request.setAttribute(ERROR_EXCEPTION_TYPE, ex.getClass());
 		response.reset();
 		response.sendError(500, ex.getMessage());
 		request.getRequestDispatcher(path).forward(request, response);
