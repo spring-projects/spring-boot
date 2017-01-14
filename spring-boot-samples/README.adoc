@@ -38,6 +38,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-cache[spring-boot-sample-cache]
 | Web application that uses Spring's cache abstraction
 
+| link:spring-boot-sample-custom-layout[spring-boot-sample-custom-layout]
+| Creates custom Jar Layout
+
 | link:spring-boot-sample-data-cassandra[spring-boot-sample-data-cassandra]
 | Stores data using Spring Data Cassandra
 
@@ -47,11 +50,11 @@ The following sample applications are provided:
 | link:spring-boot-sample-data-elasticsearch[spring-boot-sample-data-elasticsearch]
 | Stores data using Spring Data Elasticsearch
 
-| link:spring-boot-sample-data-gemfire[spring-boot-sample-data-gemfire]
-| Stores data using Spring Data GemFire
-
 | link:spring-boot-sample-data-jpa[spring-boot-sample-data-jpa]
 | Stores data using Spring Data JPA with Hibernate
+
+| link:spring-boot-sample-data-ldap[spring-boot-sample-data-ldap]
+| Stores data using Spring Data LDAP
 
 | link:spring-boot-sample-data-mongodb[spring-boot-sample-data-mongodb]
 | Stores data using Spring Data MongoDB
@@ -87,6 +90,9 @@ The following sample applications are provided:
 | Demonstrates Actuator's hypermedia support alongside Spring Data JPA and Spring Data
   REST
 
+| link:spring-boot-sample-hypermedia-ui-secure[spring-boot-sample-hypermedia-ui-secure]
+| Demonstrates Actuator's hypermedia support alongside a static secure web UI
+
 | link:spring-boot-sample-hypermedia-ui[spring-boot-sample-hypermedia-ui]
 | Demonstrates Actuator's hypermedia support alongside a static web UI
 
@@ -116,6 +122,9 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-jetty92[spring-boot-sample-jetty92]
 | Embedded Jetty 9.2
+
+| link:spring-boot-sample-jetty93[spring-boot-sample-jetty93]
+| Embedded Jetty 9.3
 
 | link:spring-boot-sample-jooq[spring-boot-sample-jooq]
 | Stores data using jOOQ
@@ -161,6 +170,9 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-secure[spring-boot-sample-secure]
 | Non-web application that uses Spring Security
+
+| link:spring-boot-sample-secure-oauth2-actuator[spring-boot-sample-secure-oauth2-actuator]
+| RESTful service secured using OAuth2 and Actuator
 
 | link:spring-boot-sample-secure-oauth2[spring-boot-sample-secure-oauth2]
 | RESTful service secured using OAuth2
@@ -246,6 +258,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-web-static[spring-boot-sample-web-static]
 | Web application that serves static files
 
+| link:spring-boot-sample-web-thymeleaf3[spring-boot-sample-web-thymeleaf3]
+| Web application with a basic UI built using thymeleaf 3.x
+
 | link:spring-boot-sample-web-ui[spring-boot-sample-web-ui]
 | Web application with a basic UI built using Bootstrap and JQuery
 
@@ -254,6 +269,9 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-websocket-jetty[spring-boot-sample-websocket-jetty]
 | WebSocket application that uses Jetty
+
+| link:spring-boot-sample-websocket-jetty93[spring-boot-sample-websocket-jetty93]
+| WebSocket application that uses Jetty 9.3
 
 | link:spring-boot-sample-websocket-tomcat[spring-boot-sample-websocket-tomcat]
 | WebSocket application that uses Tomcat
