@@ -57,7 +57,7 @@ public abstract class LoggingSystem {
 	private static final Map<String, String> SYSTEMS;
 
 	static {
-		Map<String, String> systems = new LinkedHashMap<String, String>();
+		Map<String, String> systems = new LinkedHashMap<>();
 		systems.put("ch.qos.logback.core.Appender",
 				"org.springframework.boot.logging.logback.LogbackLoggingSystem");
 		systems.put("org.apache.logging.log4j.core.impl.Log4jContextFactory",
@@ -165,9 +165,10 @@ public abstract class LoggingSystem {
 
 	private static LoggingSystem get(ClassLoader classLoader, String loggingSystemClass) {
 		try {
-			Class<?> systemClass = ClassUtils.forName(loggingSystemClass, classLoader);
-			return (LoggingSystem) systemClass.getConstructor(ClassLoader.class)
-					.newInstance(classLoader);
+			Class<? extends LoggingSystem> systemClass = ClassUtils
+					.forName(loggingSystemClass, classLoader)
+					.asSubclass(LoggingSystem.class);
+			return systemClass.getConstructor(ClassLoader.class).newInstance(classLoader);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);

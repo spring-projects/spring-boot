@@ -32,6 +32,7 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -73,8 +74,12 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Before
 	public void setup() {
-		this.loggingSystem.cleanUp();
 		this.logger = LogManager.getLogger(getClass());
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		this.loggingSystem.cleanUp();
 	}
 
 	@Test
@@ -220,7 +225,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void springConfigLocations() throws Exception {
 		String[] locations = getSpringConfigLocations(this.loggingSystem);
-		assertThat(locations).isEqualTo(new String[] { "log4j2-spring.xml" });
+		assertThat(locations).isEqualTo(new String[] { "log4j2-spring.properties", "log4j2-spring.xml" });
 	}
 
 	@Test
@@ -236,10 +241,11 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void beforeInitializeFilterDisablesErrorLogging() throws Exception {
+	public void beforeInitializeWarningsAreDisabled() throws Exception {
 		this.loggingSystem.beforeInitialize();
-		assertThat(this.logger.isErrorEnabled()).isFalse();
+		assertThat(this.logger.isWarnEnabled()).isFalse();
 		this.loggingSystem.initialize(null, null, getLogFile(null, tmpDir()));
+		assertThat(this.logger.isWarnEnabled()).isTrue();
 	}
 
 	@Test
@@ -279,7 +285,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.cleanUp();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
-		verify(listener, times(4)).propertyChange(any(PropertyChangeEvent.class));
+		verify(listener, times(3)).propertyChange(any(PropertyChangeEvent.class));
 	}
 
 	private static class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
