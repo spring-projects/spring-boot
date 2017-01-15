@@ -3060,6 +3060,16 @@ Hibernate autoconfig is active because the `ddl-auto` settings are more fine-gra
 
 
 
+[[boot-features-jpa-in-web-environment]]
+==== Open EntityManager in View
+If you are running a web application, Spring Boot will by default register
+{spring-javadoc}/orm/jpa/support/OpenEntityManagerInViewInterceptor.html[`OpenEntityManagerInViewInterceptor`]
+to apply the "Open EntityManager in View" pattern, i.e. to allow for lazy loading in web
+views. If you don't want this behavior you should set `spring.jpa.open-in-view` to
+`false` in your `application.properties`.
+
+
+
 [[boot-features-sql-h2-console]]
 === Using H2's web console
 The http://www.h2database.com[H2 database] provides a
