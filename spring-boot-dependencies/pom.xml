@@ -160,11 +160,12 @@
 		<spring-integration.version>4.3.6.RELEASE</spring-integration.version>
 		<spring-integration-java-dsl.version>1.2.1.RELEASE</spring-integration-java-dsl.version>
 		<spring-kafka.version>1.1.2.RELEASE</spring-kafka.version>
+		<spring-ldap.version>2.3.0.BUILD-SNAPSHOT</spring-ldap.version>
 		<spring-loaded.version>1.2.6.RELEASE</spring-loaded.version>
 		<spring-mobile.version>1.1.5.RELEASE</spring-mobile.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-restdocs.version>1.1.2.RELEASE</spring-restdocs.version>
-		<spring-retry.version>1.2.0.RC1</spring-retry.version>
+		<spring-retry.version>1.2.0.RELEASE</spring-retry.version>
 		<spring-security.version>4.2.1.RELEASE</spring-security.version>
 		<spring-security-jwt.version>1.0.7.RELEASE</spring-security-jwt.version>
 		<spring-security-oauth.version>2.0.12.RELEASE</spring-security-oauth.version>
@@ -2202,6 +2203,36 @@
 				<version>${spring-integration-java-dsl.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework.ldap</groupId>
+				<artifactId>spring-ldap-core</artifactId>
+				<version>${spring-ldap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.ldap</groupId>
+				<artifactId>spring-ldap-core-tiger</artifactId>
+				<version>${spring-ldap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.ldap</groupId>
+				<artifactId>spring-ldap-ldif-batch</artifactId>
+				<version>${spring-ldap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.ldap</groupId>
+				<artifactId>spring-ldap-ldif-core</artifactId>
+				<version>${spring-ldap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.ldap</groupId>
+				<artifactId>spring-ldap-odm</artifactId>
+				<version>${spring-ldap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.ldap</groupId>
+				<artifactId>spring-ldap-test</artifactId>
+				<version>${spring-ldap.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.springframework.mobile</groupId>
 				<artifactId>spring-mobile-device</artifactId>
 				<version>${spring-mobile.version}</version>
@@ -2209,6 +2240,11 @@
 			<dependency>
 				<groupId>org.springframework.plugin</groupId>
 				<artifactId>spring-plugin-core</artifactId>
+				<version>${spring-plugin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.plugin</groupId>
+				<artifactId>spring-plugin-metadata</artifactId>
 				<version>${spring-plugin.version}</version>
 			</dependency>
 			<dependency>

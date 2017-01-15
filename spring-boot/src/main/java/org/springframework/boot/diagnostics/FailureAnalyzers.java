@@ -115,9 +115,14 @@ public final class FailureAnalyzers {
 
 	private FailureAnalysis analyze(Throwable failure, List<FailureAnalyzer> analyzers) {
 		for (FailureAnalyzer analyzer : analyzers) {
-			FailureAnalysis analysis = analyzer.analyze(failure);
-			if (analysis != null) {
-				return analysis;
+			try {
+				FailureAnalysis analysis = analyzer.analyze(failure);
+				if (analysis != null) {
+					return analysis;
+				}
+			}
+			catch (Throwable ex) {
+				logger.debug("FailureAnalyzer " + analyzer + " failed", ex);
 			}
 		}
 		return null;

@@ -41,22 +41,20 @@ public class InMemoryRichGaugeRepository implements RichGaugeRepository {
 
 	@Override
 	public void set(Metric<?> metric) {
-
 		final String name = metric.getName();
 		final double value = metric.getValue().doubleValue();
 		this.repository.update(name, new Callback<RichGauge>() {
+
 			@Override
 			public RichGauge modify(RichGauge current) {
 				if (current == null) {
-					current = new RichGauge(name, value);
+					return new RichGauge(name, value);
 				}
-				else {
-					current.set(value);
-				}
+				current.set(value);
 				return current;
 			}
-		});
 
+		});
 	}
 
 	@Override
