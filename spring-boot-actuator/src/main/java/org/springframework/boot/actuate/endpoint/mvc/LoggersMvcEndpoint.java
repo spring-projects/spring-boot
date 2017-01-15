@@ -72,7 +72,8 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 			return getDisabledResponse();
 		}
 		String level = configuration.get("configuredLevel");
-		this.delegate.setLogLevel(name, level == null ? null : LogLevel.valueOf(level.toUpperCase()));
+		LogLevel logLevel = level == null ? null : LogLevel.valueOf(level.toUpperCase());
+		this.delegate.setLogLevel(name, logLevel);
 		return HttpEntity.EMPTY;
 	}
 
