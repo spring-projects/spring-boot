@@ -1112,6 +1112,7 @@ content into your application; rather pick only the properties that you need.
 	management.health.elasticsearch.indices= # Comma-separated index names.
 	management.health.elasticsearch.response-timeout=100 # The time, in milliseconds, to wait for a response from the cluster.
 	management.health.jms.enabled=true # Enable JMS health check.
+	management.health.ldap.enabled=true # Enable LDAP health check.
 	management.health.mail.enabled=true # Enable Mail health check.
 	management.health.mongo.enabled=true # Enable MongoDB health check.
 	management.health.rabbit.enabled=true # Enable RabbitMQ health check.
