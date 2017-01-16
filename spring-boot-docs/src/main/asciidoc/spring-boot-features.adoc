@@ -2555,14 +2555,15 @@ which suits most providers and matches the spec, but if you need to change it yo
 [[boot-features-security-custom-user-info]]
 === Customizing the User Info RestTemplate
 If you have a `user-info-uri`, the resource server features use an `OAuth2RestTemplate`
-internally to fetch user details for authentication. This is provided as a qualified
-`@Bean` with id `userInfoRestTemplate`, but you shouldn't need to know that to just
-use it. The default should be fine for most providers, but occasionally you might need to
-add additional interceptors, or change the request authenticator (which is how the token
-gets attached to outgoing requests). To add a customization just create a bean of type
-`UserInfoRestTemplateCustomizer` - it has a single method that will be called after the
-bean is created but before it is initialized. The rest template that is being customized
-here is _only_ used internally to carry out authentication.
+internally to fetch user details for authentication. This is provided as a `@Bean` of
+type `UserInfoRestTemplateFactory`. The default should be fine for most providers, but
+occasionally you might need to add additional interceptors, or change the request
+authenticator (which is how the token gets attached to outgoing requests). To add a
+customization just create a bean of type `UserInfoRestTemplateCustomizer` - it has a
+single method that will be called after the bean is created but before it is initialized.
+The rest template that is being customized here is _only_ used internally to carry out
+authentication. Alternatively, you could define your own `UserInfoRestTemplateFactory`
+`@Bean` to take full control.
 
 [TIP]
 ====
