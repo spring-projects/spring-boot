@@ -1950,6 +1950,10 @@ If you need to provide additional customization, you should use a
 {spring-data-rest-javadoc}/webmvc/config/RepositoryRestConfigurer.{dc-ext}[`RepositoryRestConfigurer`]
 bean.
 
+NOTE: If you don't specify any order on your custom `RepositoryRestConfigurer` it will run
+after the one Spring Boot uses internally. If you need to specify an order, make sure it
+is higher than 0.
+
 
 
 [[howto-configure-a-component-that-is-used-by-JPA]]
