@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,12 @@ import java.lang.annotation.Target;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 
 /**
- * {@link ImportAutoConfiguration Auto-configuration imports} for typical Data Mongo tests.
- * Most tests should consider using {@link DataMongoTest @DataMongoTest} rather than using
- * this annotation directly.
+ * {@link ImportAutoConfiguration Auto-configuration imports} for typical Data MongoDB
+ * tests. Most tests should consider using {@link DataMongoTest @DataMongoTest} rather
+ * than using this annotation directly.
  *
  * @author Michael J. Simons
+ * @since 1.5.0
  * @see DataMongoTest
  */
 @Target(ElementType.TYPE)

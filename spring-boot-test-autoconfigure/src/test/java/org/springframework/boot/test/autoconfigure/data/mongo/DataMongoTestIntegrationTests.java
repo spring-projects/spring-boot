@@ -66,4 +66,5 @@ public class DataMongoTestIntegrationTests {
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.applicationContext.getBean(ExampleService.class);
 	}
+
 }

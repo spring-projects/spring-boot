@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,17 +35,17 @@ import org.springframework.test.context.BootstrapWith;
 
 /**
  * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
- * for a typical Spring Data MongoDB test. Can be used when a test focuses
- * <strong>only</strong> on Data MongoDB components, i.e. the MongoTemplate and MongoRepositories.
+ * for a typical MongoDB test. Can be used when a test focuses
+ * <strong>only</strong> on MongoDB components.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
- * configuration relevant to Spring Data MongoDB tests.
+ * configuration relevant to MongoDB tests.
  * <p>
  * By default, tests annotated with {@code @DataMongoTest} will use an embedded in-memory
- * Mongod process if "de.flapdoodle.embed:de.flapdoodle.embed.mongo" is on the
- * classpath and thus replacing the default connection to a MongoDB.
+ * MongoDB process (if available).
  *
  * @author Michael J. Simons
+ * @author Stephane Nicoll
  * @since 1.5.0
  */
 @Target(ElementType.TYPE)

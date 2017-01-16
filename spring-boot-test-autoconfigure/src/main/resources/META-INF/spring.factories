@@ -13,6 +13,13 @@ org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 
+# AutoConfigureDataMongo auto-configuration imports
+org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo=\
+org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
+org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
+
 # AutoConfigureJdbc auto-configuration imports
 org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureJdbc=\
 org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,\
@@ -101,10 +108,3 @@ org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListen
 org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener
-
-# AutoConfigureDataMongo auto-configuration imports
-org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo=\
-org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
-org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration,\
-org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration,\
-org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
