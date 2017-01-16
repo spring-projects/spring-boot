@@ -27,9 +27,12 @@ import org.springframework.util.Assert;
  * {@link HealthIndicator} for configured LDAP server(s).
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  * @version 1.5.0
  */
 public class LdapHealthIndicator extends AbstractHealthIndicator {
+
+	private static final ContextExecutor<String> versionContextExecutor = new VersionContextExecutor();
 
 	private final LdapOperations ldapOperations;
 
@@ -40,13 +43,20 @@ public class LdapHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		String version = (String) this.ldapOperations.executeReadOnly(new ContextExecutor<Object>() {
-			@Override
-			public Object executeWithContext(DirContext ctx) throws NamingException {
-				return ctx.getEnvironment().get("java.naming.ldap.version");
-			}
-		});
+		String version = this.ldapOperations.executeReadOnly(versionContextExecutor);
 		builder.up().withDetail("version", version);
+	}
+
+	private static class VersionContextExecutor implements ContextExecutor<String> {
+
+		@Override
+		public String executeWithContext(DirContext ctx) throws NamingException {
+			Object version = ctx.getEnvironment().get("java.naming.ldap.version");
+			if (version != null) {
+				return (String) version;
+			}
+			return null;
+		}
 	}
 
 }

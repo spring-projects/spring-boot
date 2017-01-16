@@ -59,13 +59,16 @@ public class LdapHealthIndicatorTests {
 
 	@Test
 	public void indicatorExist() {
-		this.context.register(LdapAutoConfiguration.class, LdapDataAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class, EndpointAutoConfiguration.class,
+		this.context.register(LdapAutoConfiguration.class,
+				LdapDataAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				EndpointAutoConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
 		LdapTemplate ldapTemplate = this.context.getBean(LdapTemplate.class);
 		assertThat(ldapTemplate).isNotNull();
-		LdapHealthIndicator healthIndicator = this.context.getBean(LdapHealthIndicator.class);
+		LdapHealthIndicator healthIndicator = this.context.getBean(
+				LdapHealthIndicator.class);
 		assertThat(healthIndicator).isNotNull();
 	}
 
@@ -84,7 +87,8 @@ public class LdapHealthIndicatorTests {
 	public void ldapIsDown() {
 		LdapTemplate ldapTemplate = mock(LdapTemplate.class);
 		given(ldapTemplate.executeReadOnly(any(ContextExecutor.class)))
-				.willThrow(new CommunicationException(new javax.naming.CommunicationException("Connection failed")));
+				.willThrow(new CommunicationException(
+						new javax.naming.CommunicationException("Connection failed")));
 		LdapHealthIndicator healthIndicator = new LdapHealthIndicator(ldapTemplate);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);

@@ -641,8 +641,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 		@Bean
 		public LdapOperations ldapOperations() {
-			LdapOperations operations = mock(LdapOperations.class);
-			return operations;
+			return mock(LdapOperations.class);
 		}
 
 	}
