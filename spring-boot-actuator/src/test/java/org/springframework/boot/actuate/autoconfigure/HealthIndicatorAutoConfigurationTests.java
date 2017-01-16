@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.boot.actuate.health.ElasticsearchJestHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.JmsHealthIndicator;
+import org.springframework.boot.actuate.health.LdapHealthIndicator;
 import org.springframework.boot.actuate.health.MailHealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
 import org.springframework.boot.actuate.health.RabbitHealthIndicator;
@@ -63,6 +64,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
+import org.springframework.ldap.core.LdapOperations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -535,6 +537,35 @@ public class HealthIndicatorAutoConfigurationTests {
 				.isEqualTo(ApplicationHealthIndicator.class);
 	}
 
+	@Test
+	public void ldapHealthIndicator() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.health.diskspace.enabled:false");
+		this.context.register(LdapConfiguration.class,
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertThat(beans.size()).isEqualTo(1);
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(LdapHealthIndicator.class);
+	}
+
+	@Test
+	public void notLdapHealthIndicator() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.health.diskspace.enabled:false",
+				"management.health.ldap.enabled:false");
+		this.context.register(LdapConfiguration.class,
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertThat(beans.size()).isEqualTo(1);
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(ApplicationHealthIndicator.class);
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	protected static class DataSourceConfig {
@@ -601,6 +632,16 @@ public class HealthIndicatorAutoConfigurationTests {
 		@Bean
 		public JestClient jestClient() {
 			return mock(JestClient.class);
+		}
+
+	}
+
+	@Configuration
+	protected static class LdapConfiguration {
+
+		@Bean
+		public LdapOperations ldapOperations() {
+			return mock(LdapOperations.class);
 		}
 
 	}
