@@ -106,8 +106,8 @@ do as they were designed before this was clarified.
 | https://cxf.apache.org/docs/springboot.html[Apache CXF]
 | https://github.com/apache/cxf
 
-| LDAP
-| https://github.com/eddumelendez/ldap-spring-boot
+| http://infinispan.org/[Infinispan]
+| https://github.com/infinispan/infinispan-spring-boot
 
 | http://restfb.com/[RestFB] Messenger
 | https://github.com/marsbits/restfbmessenger
