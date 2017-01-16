@@ -146,6 +146,10 @@
     "description": "Config file locations."
   },
   {
+    "name": "spring.jta.atomikos.properties.console-log-level",
+    "defaultValue": "warn"
+  },
+  {
     "name": "spring.main.banner-mode",
     "type": "org.springframework.boot.Banner$Mode",
     "sourceType": "org.springframework.boot.SpringApplication",
