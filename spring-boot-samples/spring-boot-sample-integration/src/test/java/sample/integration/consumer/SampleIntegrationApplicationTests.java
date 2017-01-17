@@ -61,7 +61,7 @@ public class SampleIntegrationApplicationTests {
 				if (FileSystemUtils.deleteRecursively(directory)) {
 					return;
 				}
-				Thread.sleep(100);
+				Thread.sleep(500);
 			}
 			throw new IllegalStateException("Failed to delete '" + directory + "'");
 		}
