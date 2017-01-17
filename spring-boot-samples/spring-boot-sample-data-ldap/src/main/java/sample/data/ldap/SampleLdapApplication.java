@@ -44,12 +44,6 @@ public class SampleLdapApplication implements CommandLineRunner {
 		System.out.println("Person found with findByPhone('+46 555-123456'):");
 		System.out.println("--------------------------------");
 		System.out.println(this.repository.findByPhone("+46 555-123456"));
-		//
-		// System.out.println("Customers found with findByLastName('Smith'):");
-		// System.out.println("--------------------------------");
-		// for (Customer customer : this.repository.findByLastName("Smith")) {
-		// System.out.println(customer);
-		// }
 	}
 
 	public static void main(String[] args) throws Exception {

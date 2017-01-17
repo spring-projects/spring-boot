@@ -30,7 +30,7 @@ import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.util.ClassUtils;
 
 /**
- * {@link ObjectFactory} that can be used to create a {@link MessageInterpolatorFactory}.
+ * {@link ObjectFactory} that can be used to create a {@link MessageInterpolator}.
  * Attempts to pick the most appropriate {@link MessageInterpolator} based on the
  * classpath.
  *

@@ -58,7 +58,7 @@ public class LdapHealthIndicatorTests {
 	}
 
 	@Test
-	public void indicatorExist() {
+	public void indicatorExists() {
 		this.context.register(LdapAutoConfiguration.class,
 				LdapDataAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
