@@ -28,7 +28,7 @@ import org.springframework.data.ldap.repository.LdapRepository;
 import org.springframework.data.ldap.repository.support.LdapRepositoryFactoryBean;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Couchbase
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's LDAP
  * Repositories.
  *
  * @author Eddú Meléndez

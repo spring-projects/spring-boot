@@ -43,7 +43,7 @@ public class SampleHypermediaUiSecureApplicationTests {
 	}
 
 	@Test
-	public void testInSecureNestedPath() throws Exception {
+	public void testInsecureNestedPath() throws Exception {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/env",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
