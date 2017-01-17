@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
-		"endpoints.env.sensitive=false" })
+		"endpoints.env.sensitive=false", "foo=bar" })
 public class SampleHypermediaUiSecureApplicationTests {
 
 	@Autowired
@@ -47,10 +47,10 @@ public class SampleHypermediaUiSecureApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/env",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		ResponseEntity<String> user = this.restTemplate.getForEntity("/env/user",
+		ResponseEntity<String> user = this.restTemplate.getForEntity("/env/foo",
 				String.class);
 		assertThat(user.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(user.getBody()).contains("{\"user\":");
+		assertThat(user.getBody()).contains("{\"foo\":");
 	}
 
 	@Test
