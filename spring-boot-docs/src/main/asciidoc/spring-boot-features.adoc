@@ -3888,11 +3888,11 @@ implementation.
 [[boot-features-ldap]]
 === LDAP
 https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol[LDAP] (Lightweight
-Directory Access Protocol) is an is an open, vendor-neutral, industry standard application
+Directory Access Protocol) is an open, vendor-neutral, industry standard application
 protocol for accessing and maintaining distributed directory information services over an
 IP network. Spring Boot offers auto-configuration for any compliant LDAP server as well
 as support for the embedded in-memory LDAP server from
-https://www.ldap.com/unboundid-ldap-sdk-for-java[Unbounded].
+https://www.ldap.com/unboundid-ldap-sdk-for-java[UnboundID].
 
 LDAP abstractions are provided by
 https://github.com/spring-projects/spring-data-ldap[Spring Data LDAP].
@@ -3951,7 +3951,7 @@ other Spring Bean.
 [[boot-features-ldap-embedded]]
 ==== Embedded in-memory LDAP server
 For testing purposes Spring Boot supports auto-configuration of an in-memory LDAP server
-from https://www.ldap.com/unboundid-ldap-sdk-for-java[Unbounded]. To configure the server
+from https://www.ldap.com/unboundid-ldap-sdk-for-java[UnboundID]. To configure the server
 add a dependency to `com.unboundid:unboundid-ldapsdk` and declare a `base-dn` property:
 
 [source,properties,indent=0]
@@ -3959,8 +3959,8 @@ add a dependency to `com.unboundid:unboundid-ldapsdk` and declare a `base-dn` pr
 	spring.ldap.embedded.base-dn=dc=spring,dc=io
 ----
 
-By default the server will start on a random port and the trigger the regular LDAP support
-(there is not need to specify a `spring.ldap.urls` property).
+By default the server will start on a random port and they trigger the regular LDAP support
+(there is no need to specify a `spring.ldap.urls` property).
 
 If there is a `schema.ldif` file on your classpath it will be used to initialize the
 server. You can also use the `spring.ldap.embedded.ldif` property if you want to load
