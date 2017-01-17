@@ -45,7 +45,7 @@
 		</developer>
 	</developers>
 	<properties>
-		<!-- Dependency verisons -->
+		<!-- Dependency versions -->
 		<activemq.version>5.14.3</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
 		<appengine-sdk.version>1.9.48</appengine-sdk.version>
