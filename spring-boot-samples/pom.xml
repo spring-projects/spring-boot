@@ -114,7 +114,6 @@
 		<module>spring-boot-sample-websocket-undertow</module>
 		<module>spring-boot-sample-webservices</module>
 		<module>spring-boot-sample-xml</module>
-		<module>spring-boot-sample-hypermedia-ui-secure</module>
 	</modules>
 	<!-- No dependencies - otherwise the samples won't work if you change the
 		parent -->
