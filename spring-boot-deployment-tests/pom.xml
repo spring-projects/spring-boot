@@ -27,6 +27,7 @@
 		<module>spring-boot-deployment-test-tomee</module>
 		<module>spring-boot-deployment-test-tomcat</module>
 		<module>spring-boot-deployment-test-wildfly</module>
+		<module>spring-boot-deployment-test-wlp</module>
 	</modules>
 	<build>
 		<pluginManagement>
