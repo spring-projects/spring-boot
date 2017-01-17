@@ -36,7 +36,7 @@ public class LdapProperties {
 	private static final int DEFAULT_PORT = 389;
 
 	/**
-	 * LDAP urls.
+	 * LDAP URLs.
 	 */
 	private String[] urls;
 
@@ -56,7 +56,7 @@ public class LdapProperties {
 	private String password;
 
 	/**
-	 * LDAP custom environment properties.
+	 * LDAP specification settings.
 	 */
 	private Map<String, String> baseEnvironment = new HashMap<String, String>();
 
