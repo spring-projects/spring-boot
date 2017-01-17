@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,19 +24,32 @@ import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 
 /**
  * In memory implementation of {@link MetricWriter} and {@link RichGaugeReader}. When you
- * set a metric value (using {@link MetricWriter#set(Metric)}) it is used to update a rich
- * gauge (increment is a no-op). Gauge values can then be read out using the reader
- * operations.
+ * {@link MetricWriter#set(Metric) set} or {@link MetricWriter#increment(Delta) increment}
+ * a metric value it is used to update a {@link RichGauge}. Gauge values can then be read
+ * out using the reader operations.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class InMemoryRichGaugeRepository implements RichGaugeRepository {
 
 	private final SimpleInMemoryRepository<RichGauge> repository = new SimpleInMemoryRepository<RichGauge>();
 
 	@Override
-	public void increment(Delta<?> delta) {
-		// No-op
+	public void increment(final Delta<?> delta) {
+		this.repository.update(delta.getName(), new Callback<RichGauge>() {
+
+			@Override
+			public RichGauge modify(RichGauge current) {
+				double value = ((Number) delta.getValue()).doubleValue();
+				if (current == null) {
+					return new RichGauge(delta.getName(), value);
+				}
+				current.set(current.getValue() + value);
+				return current;
+			}
+
+		});
 	}
 
 	@Override
