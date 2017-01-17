@@ -50,9 +50,21 @@ public class SampleIntegrationApplicationTests {
 	private ConfigurableApplicationContext context;
 
 	@Before
-	public void deleteOutput() {
-		FileSystemUtils.deleteRecursively(new File("target/input"));
-		FileSystemUtils.deleteRecursively(new File("target/output"));
+	public void deleteInputAndOutput() throws InterruptedException {
+		deleteIfExists(new File("target/input"));
+		deleteIfExists(new File("target/output"));
+	}
+
+	private void deleteIfExists(File directory) throws InterruptedException {
+		if (directory.exists()) {
+			for (int i = 0; i < 10; i++) {
+				if (FileSystemUtils.deleteRecursively(directory)) {
+					return;
+				}
+				Thread.sleep(100);
+			}
+			throw new IllegalStateException("Failed to delete '" + directory + "'");
+		}
 	}
 
 	@After
