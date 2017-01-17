@@ -18,6 +18,7 @@ package sample.integration.consumer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -57,13 +58,7 @@ public class SampleIntegrationApplicationTests {
 
 	private void deleteIfExists(File directory) throws InterruptedException {
 		if (directory.exists()) {
-			for (int i = 0; i < 10; i++) {
-				if (FileSystemUtils.deleteRecursively(directory)) {
-					return;
-				}
-				Thread.sleep(500);
-			}
-			throw new IllegalStateException("Failed to delete '" + directory + "'");
+			assertThat(FileSystemUtils.deleteRecursively(directory)).isTrue();
 		}
 	}
 
@@ -102,8 +97,14 @@ public class SampleIntegrationApplicationTests {
 						}
 						StringBuilder builder = new StringBuilder();
 						for (Resource resource : resources) {
-							builder.append(new String(StreamUtils
-									.copyToByteArray(resource.getInputStream())));
+							InputStream inputStream = resource.getInputStream();
+							try {
+								builder.append(new String(
+										StreamUtils.copyToByteArray(inputStream)));
+							}
+							finally {
+								inputStream.close();
+							}
 						}
 						return builder.toString();
 					}
