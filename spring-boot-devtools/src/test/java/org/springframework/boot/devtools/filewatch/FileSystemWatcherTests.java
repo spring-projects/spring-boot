@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,10 +155,12 @@ public class FileSystemWatcherTests {
 
 	@Test
 	public void waitsForPollingInterval() throws Exception {
-		setupWatcher(100, 1);
+		setupWatcher(10, 1);
 		File folder = startWithNewFolder();
 		touch(new File(folder, "test1.txt"));
-		Thread.sleep(200);
+		while (this.changes.size() != 1) {
+			Thread.sleep(10);
+		}
 		touch(new File(folder, "test2.txt"));
 		this.watcher.stopAfter(1);
 		assertThat(this.changes.size()).isEqualTo(2);
