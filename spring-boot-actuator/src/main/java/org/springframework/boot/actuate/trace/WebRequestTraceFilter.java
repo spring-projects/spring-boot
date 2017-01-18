@@ -20,9 +20,11 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -49,6 +51,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * @author Wallace Wadge
  * @author Andy Wilkinson
  * @author Venil Noronha
+ * @author Madhura Bhave
  */
 public class WebRequestTraceFilter extends OncePerRequestFilter implements Ordered {
 
@@ -151,8 +154,18 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	private Map<String, Object> getRequestHeaders(HttpServletRequest request) {
 		Map<String, Object> headers = new LinkedHashMap<String, Object>();
 		Enumeration<String> names = request.getHeaderNames();
+		Set<String> excludedHeaders = new HashSet<String>();
+		if (!isIncluded(Include.COOKIES)) {
+			excludedHeaders.add("cookie");
+		}
+		if (!isIncluded(Include.AUTHORIZATION_HEADER)) {
+			excludedHeaders.add("authorization");
+		}
 		while (names.hasMoreElements()) {
 			String name = names.nextElement();
+			if (excludedHeaders.contains(name.toLowerCase())) {
+				continue;
+			}
 			List<String> values = Collections.list(request.getHeaders(name));
 			Object value = values;
 			if (values.size() == 1) {
@@ -162,9 +175,6 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 				value = "";
 			}
 			headers.put(name, value);
-		}
-		if (!isIncluded(Include.COOKIES)) {
-			headers.remove("Cookie");
 		}
 		postProcessRequestHeaders(headers);
 		return headers;
