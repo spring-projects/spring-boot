@@ -109,4 +109,7 @@ do as they were designed before this was clarified.
 | http://infinispan.org/[Infinispan]
 | https://github.com/infinispan/infinispan-spring-boot
 
+| http://square.github.io/okhttp/[OkHttp]
+| https://github.com/freefair/okhttp-spring-boot
+
 |===
