@@ -62,31 +62,33 @@ public class LdapHealthIndicatorTests {
 		this.context.register(LdapAutoConfiguration.class,
 				LdapDataAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				EndpointAutoConfiguration.class,
-				HealthIndicatorAutoConfiguration.class);
+				EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
 		LdapTemplate ldapTemplate = this.context.getBean(LdapTemplate.class);
 		assertThat(ldapTemplate).isNotNull();
-		LdapHealthIndicator healthIndicator = this.context.getBean(
-				LdapHealthIndicator.class);
+		LdapHealthIndicator healthIndicator = this.context
+				.getBean(LdapHealthIndicator.class);
 		assertThat(healthIndicator).isNotNull();
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void ldapIsUp() {
 		LdapTemplate ldapTemplate = mock(LdapTemplate.class);
-		given(ldapTemplate.executeReadOnly(any(ContextExecutor.class))).willReturn("3");
+		given(ldapTemplate.executeReadOnly((ContextExecutor<String>) any()))
+				.willReturn("3");
 		LdapHealthIndicator healthIndicator = new LdapHealthIndicator(ldapTemplate);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("version")).isEqualTo("3");
-		verify(ldapTemplate).executeReadOnly(any(ContextExecutor.class));
+		verify(ldapTemplate).executeReadOnly((ContextExecutor<String>) any());
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void ldapIsDown() {
 		LdapTemplate ldapTemplate = mock(LdapTemplate.class);
-		given(ldapTemplate.executeReadOnly(any(ContextExecutor.class)))
+		given(ldapTemplate.executeReadOnly((ContextExecutor<String>) any()))
 				.willThrow(new CommunicationException(
 						new javax.naming.CommunicationException("Connection failed")));
 		LdapHealthIndicator healthIndicator = new LdapHealthIndicator(ldapTemplate);
@@ -94,7 +96,7 @@ public class LdapHealthIndicatorTests {
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error"))
 				.contains("Connection failed");
-		verify(ldapTemplate).executeReadOnly(any(ContextExecutor.class));
+		verify(ldapTemplate).executeReadOnly((ContextExecutor<String>) any());
 	}
 
 }

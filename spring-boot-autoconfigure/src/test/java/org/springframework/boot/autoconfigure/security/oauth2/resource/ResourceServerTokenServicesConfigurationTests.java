@@ -220,7 +220,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 				"security.oauth2.resource.userInfoUri:http://example.com");
 		this.context = new SpringApplicationBuilder(
 				CustomUserInfoRestTemplateFactory.class, ResourceConfiguration.class)
-				.environment(this.environment).web(false).run();
+						.environment(this.environment).web(false).run();
 		assertThat(this.context.getBeansOfType(UserInfoRestTemplateFactory.class))
 				.hasSize(1);
 		assertThat(this.context.getBean(UserInfoRestTemplateFactory.class))
@@ -331,8 +331,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 	protected static class CustomUserInfoRestTemplateFactory
 			implements UserInfoRestTemplateFactory {
 
-		private final OAuth2RestTemplate restTemplate =
-				new OAuth2RestTemplate(new AuthorizationCodeResourceDetails());
+		private final OAuth2RestTemplate restTemplate = new OAuth2RestTemplate(
+				new AuthorizationCodeResourceDetails());
 
 		@Override
 		public OAuth2RestTemplate getUserInfoRestTemplate() {

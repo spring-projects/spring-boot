@@ -541,8 +541,8 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void ldapHealthIndicator() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.diskspace.enabled:false");
-		this.context.register(LdapConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
+		this.context.register(LdapConfiguration.class, ManagementServerProperties.class,
+				HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -556,8 +556,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.diskspace.enabled:false",
 				"management.health.ldap.enabled:false");
-		this.context.register(LdapConfiguration.class,
-				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
+		this.context.register(LdapConfiguration.class, ManagementServerProperties.class,
+				HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);

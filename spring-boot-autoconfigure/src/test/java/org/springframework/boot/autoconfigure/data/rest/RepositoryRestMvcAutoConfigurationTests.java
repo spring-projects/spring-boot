@@ -222,13 +222,16 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	}
 
 	static class TestRepositoryRestConfigurer extends RepositoryRestConfigurerAdapter {
+
 		@Override
-		public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
+		public void configureRepositoryRestConfiguration(
+				RepositoryRestConfiguration config) {
 			config.setRepositoryDetectionStrategy(RepositoryDetectionStrategies.ALL);
-			config.setDefaultMediaType(MediaType.parseMediaType(
-					"application/my-custom-json"));
+			config.setDefaultMediaType(
+					MediaType.parseMediaType("application/my-custom-json"));
 			config.setMaxPageSize(78);
 		}
+
 	}
 
 }
