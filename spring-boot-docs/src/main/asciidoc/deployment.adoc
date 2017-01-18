@@ -604,6 +604,13 @@ The following property substitutions are supported with the default script:
 |`initInfoRequiredStop`
 |The `Required-Stop` section of "`INIT INFO`". Defaults to `$remote_fs $syslog $network`.
 
+
+|`initInfoDefaultStart`
+|The `Default-Start` section of "`INIT INFO`". Defaults to `2 3 4 5`.
+
+|`initInfoDefaultStop`
+|The `Default-Stop` section of "`INIT INFO`". Defaults to `0 1 6`.
+
 |`initInfoShortDescription`
 |The `Short-Description` section of "`INIT INFO`". Defaults to `Spring Boot Application`
 for Gradle and to `${project.name}` for Maven.
