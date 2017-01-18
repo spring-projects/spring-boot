@@ -766,6 +766,12 @@
 					<name>m2e.version</name>
 				</property>
 			</activation>
+			<properties>
+				<m2e.jaxrs.activation>false</m2e.jaxrs.activation>
+				<m2e.jpa.activation>false</m2e.jpa.activation>
+				<m2e.jsf.activation>false</m2e.jsf.activation>
+				<m2e.cdi.activation>false</m2e.cdi.activation>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
