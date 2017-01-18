@@ -34,8 +34,6 @@ import org.junit.runners.Parameterized.Parameters;
 import org.springframework.boot.gradle.ProjectCreator;
 import org.springframework.boot.gradle.Versions;
 
-import static org.junit.Assert.fail;
-
 /**
  * Tests for the various starter projects to check that they don't pull in unwanted
  * transitive dependencies when used with Gradle
@@ -109,11 +107,7 @@ public class StarterDependenciesIntegrationTests {
 			project.newBuild().forTasks(task).withArguments(this.buildArguments).run();
 		}
 		catch (BuildException ex) {
-			Throwable root = ex;
-			while (root.getCause() != null) {
-				root = root.getCause();
-			}
-			fail(root.getMessage());
+			throw new RuntimeException(ex);
 		}
 	}
 
