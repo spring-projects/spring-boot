@@ -139,7 +139,7 @@
 		<neo4j-ogm.version>2.1.0</neo4j-ogm.version>
 		<postgresql.version>9.4.1212.jre7</postgresql.version>
 		<querydsl.version>4.1.4</querydsl.version>
-		<reactor.version>3.0.4.RELEASE</reactor.version>
+		<reactor-bom.version>Aluminium-RELEASE</reactor-bom.version>
 		<selenium.version>2.53.1</selenium.version>
 		<selenium-htmlunit.version>2.21</selenium-htmlunit.version>
 		<sendgrid.version>2.2.2</sendgrid.version>
@@ -808,23 +808,10 @@
 			</dependency>
 			<dependency>
 				<groupId>io.projectreactor</groupId>
-				<artifactId>reactor-core</artifactId>
-				<version>${reactor.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.projectreactor.addons</groupId>
-				<artifactId>reactor-adapter</artifactId>
-				<version>${reactor.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.projectreactor.addons</groupId>
-				<artifactId>reactor-logback</artifactId>
-				<version>${reactor.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.projectreactor.addons</groupId>
-				<artifactId>reactor-test</artifactId>
-				<version>${reactor.version}</version>
+				<artifactId>reactor-bom</artifactId>
+				<version>${reactor-bom.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
 			</dependency>
 			<dependency>
 				<groupId>io.searchbox</groupId>
