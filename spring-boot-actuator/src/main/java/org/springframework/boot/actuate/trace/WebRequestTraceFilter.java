@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,7 +153,19 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 
 	private Map<String, Object> getRequestHeaders(HttpServletRequest request) {
 		Map<String, Object> headers = new LinkedHashMap<String, Object>();
+		Set<String> excludedHeaders = getExcludeHeaders();
 		Enumeration<String> names = request.getHeaderNames();
+		while (names.hasMoreElements()) {
+			String name = names.nextElement();
+			if (!excludedHeaders.contains(name.toLowerCase())) {
+				headers.put(name, getHeaderValue(request, name));
+			}
+		}
+		postProcessRequestHeaders(headers);
+		return headers;
+	}
+
+	private Set<String> getExcludeHeaders() {
 		Set<String> excludedHeaders = new HashSet<String>();
 		if (!isIncluded(Include.COOKIES)) {
 			excludedHeaders.add("cookie");
@@ -161,23 +173,18 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		if (!isIncluded(Include.AUTHORIZATION_HEADER)) {
 			excludedHeaders.add("authorization");
 		}
-		while (names.hasMoreElements()) {
-			String name = names.nextElement();
-			if (excludedHeaders.contains(name.toLowerCase())) {
-				continue;
-			}
-			List<String> values = Collections.list(request.getHeaders(name));
-			Object value = values;
-			if (values.size() == 1) {
-				value = values.get(0);
-			}
-			else if (values.isEmpty()) {
-				value = "";
-			}
-			headers.put(name, value);
+		return excludedHeaders;
+	}
+
+	private Object getHeaderValue(HttpServletRequest request, String name) {
+		List<String> value = Collections.list(request.getHeaders(name));
+		if (value.size() == 1) {
+			return value.get(0);
 		}
-		postProcessRequestHeaders(headers);
-		return headers;
+		if (value.isEmpty()) {
+			return "";
+		}
+		return value;
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,33 +177,39 @@ public class WebRequestTraceFilterTests {
 		request.addHeader("Authorization", "my-auth-header");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		this.filter.doFilterInternal(request, response, new FilterChain() {
+
 			@Override
 			public void doFilter(ServletRequest request, ServletResponse response)
 					throws IOException, ServletException {
 			}
+
 		});
 		Map<String, Object> info = this.repository.findAll().iterator().next().getInfo();
 		Map<String, Object> headers = (Map<String, Object>) info.get("headers");
-		assertThat(((Map) headers.get("request"))).hasSize(0);
+		assertThat(((Map<Object, Object>) headers.get("request"))).hasSize(0);
 	}
 
 	@Test
 	@SuppressWarnings({ "unchecked" })
 	public void filterAddsAuthorizationHeaderWhenAuthorizationHeaderIncluded()
 			throws ServletException, IOException {
-		this.properties.setInclude(EnumSet.of(Include.REQUEST_HEADERS, Include.AUTHORIZATION_HEADER));
+		this.properties.setInclude(
+				EnumSet.of(Include.REQUEST_HEADERS, Include.AUTHORIZATION_HEADER));
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		request.addHeader("Authorization", "my-auth-header");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		this.filter.doFilterInternal(request, response, new FilterChain() {
+
 			@Override
 			public void doFilter(ServletRequest request, ServletResponse response)
 					throws IOException, ServletException {
 			}
+
 		});
 		Map<String, Object> info = this.repository.findAll().iterator().next().getInfo();
 		Map<String, Object> headers = (Map<String, Object>) info.get("headers");
-		assertThat(((Map) headers.get("request"))).containsKey("Authorization");
+		assertThat(((Map<Object, Object>) headers.get("request")))
+				.containsKey("Authorization");
 	}
 
 	@Test
