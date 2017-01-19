@@ -32,6 +32,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -90,6 +91,7 @@ public class BindFailureAnalyzerTests {
 	}
 
 	@ConfigurationProperties("test.foo")
+	@Validated
 	static class ValidationFailureProperties {
 
 		@NotNull
