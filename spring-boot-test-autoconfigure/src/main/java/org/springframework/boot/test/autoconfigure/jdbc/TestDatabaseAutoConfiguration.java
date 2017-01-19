@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -193,9 +193,10 @@ public class TestDatabaseAutoConfiguration {
 				connection = EmbeddedDatabaseConnection.get(getClass().getClassLoader());
 			}
 			Assert.state(connection != EmbeddedDatabaseConnection.NONE,
-					"Cannot determine embedded database for tests. If you want "
-							+ "an embedded database please put a supported one "
-							+ "on the classpath.");
+					"Failed to replace DataSource with an embedded database for tests. If "
+							+ "you want an embedded database please put a supported one "
+							+ "on the classpath or tune the replace attribute of "
+							+ "@AutoconfigureTestDatabase.");
 			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
 					.setType(connection.getType()).build();
 		}
