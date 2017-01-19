@@ -54,7 +54,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Phillip Webb
  * @since 1.4.0
  */
-@ConfigurationProperties("endpoints.heapdump")
+@ConfigurationProperties(prefix = "endpoints.heapdump")
 @HypermediaDisabled
 public class HeapdumpMvcEndpoint extends AbstractNamedMvcEndpoint {
 

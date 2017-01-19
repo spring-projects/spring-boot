@@ -27,7 +27,7 @@ import org.springframework.util.MimeType;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-@ConfigurationProperties("spring.thymeleaf")
+@ConfigurationProperties(prefix = "spring.thymeleaf")
 public class ThymeleafProperties {
 
 	private static final Charset DEFAULT_ENCODING = Charset.forName("UTF-8");

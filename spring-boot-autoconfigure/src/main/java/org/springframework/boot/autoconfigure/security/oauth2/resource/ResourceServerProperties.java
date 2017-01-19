@@ -37,7 +37,7 @@ import org.springframework.validation.Validator;
  * @author Dave Syer
  * @since 1.3.0
  */
-@ConfigurationProperties("security.oauth2.resource")
+@ConfigurationProperties(prefix = "security.oauth2.resource")
 public class ResourceServerProperties implements Validator, BeanFactoryAware {
 
 	@JsonIgnore

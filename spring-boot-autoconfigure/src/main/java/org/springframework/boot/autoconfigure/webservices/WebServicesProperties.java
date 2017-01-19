@@ -31,7 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@ConfigurationProperties("spring.webservices")
+@ConfigurationProperties(prefix = "spring.webservices")
 public class WebServicesProperties {
 
 	/**

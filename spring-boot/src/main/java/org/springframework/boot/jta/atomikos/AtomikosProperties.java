@@ -33,7 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 1.2.0
  * @see #asProperties()
  */
-@ConfigurationProperties("spring.jta.atomikos.properties")
+@ConfigurationProperties(prefix = "spring.jta.atomikos.properties")
 public class AtomikosProperties {
 
 	private final Map<String, String> values = new TreeMap<String, String>();

@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Phillip Webb
  * @since 1.4.0
  */
-@ConfigurationProperties("endpoints.metrics.filter")
+@ConfigurationProperties(prefix = "endpoints.metrics.filter")
 public class MetricFilterProperties {
 
 	/**

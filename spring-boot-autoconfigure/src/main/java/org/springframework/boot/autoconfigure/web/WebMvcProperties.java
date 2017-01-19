@@ -33,7 +33,7 @@ import org.springframework.validation.DefaultMessageCodesResolver;
  * @author Eddú Meléndez
  * @since 1.1
  */
-@ConfigurationProperties("spring.mvc")
+@ConfigurationProperties(prefix = "spring.mvc")
 public class WebMvcProperties {
 
 	/**

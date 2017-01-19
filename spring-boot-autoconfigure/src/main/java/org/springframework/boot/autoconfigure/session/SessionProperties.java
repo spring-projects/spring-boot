@@ -30,7 +30,7 @@ import org.springframework.session.hazelcast.HazelcastFlushMode;
  * @author Vedran Pavic
  * @since 1.4.0
  */
-@ConfigurationProperties("spring.session")
+@ConfigurationProperties(prefix = "spring.session")
 public class SessionProperties {
 
 	/**

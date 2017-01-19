@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Christian Dupuis
  * @since 1.2.0
  */
-@ConfigurationProperties("management.health.status")
+@ConfigurationProperties(prefix = "management.health.status")
 public class HealthIndicatorProperties {
 
 	/**

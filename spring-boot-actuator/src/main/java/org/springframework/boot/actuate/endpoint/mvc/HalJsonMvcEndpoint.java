@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-@ConfigurationProperties("endpoints.actuator")
+@ConfigurationProperties(prefix = "endpoints.actuator")
 public class HalJsonMvcEndpoint extends AbstractNamedMvcEndpoint {
 
 	private final ManagementServletContext managementServletContext;

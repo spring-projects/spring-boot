@@ -71,7 +71,7 @@ class BitronixJtaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConfigurationProperties("spring.jta.bitronix.properties")
+	@ConfigurationProperties(prefix = "spring.jta.bitronix.properties")
 	public bitronix.tm.Configuration bitronixConfiguration() {
 		bitronix.tm.Configuration config = TransactionManagerServices.getConfiguration();
 		if (StringUtils.hasText(this.jtaProperties.getTransactionManagerId())) {

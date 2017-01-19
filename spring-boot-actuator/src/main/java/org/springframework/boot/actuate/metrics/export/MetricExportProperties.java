@@ -32,7 +32,7 @@ import org.springframework.util.PatternMatchUtils;
  * @author Simon Buettner
  * @since 1.3.0
  */
-@ConfigurationProperties("spring.metrics.export")
+@ConfigurationProperties(prefix = "spring.metrics.export")
 public class MetricExportProperties extends TriggerProperties {
 
 	/**

@@ -27,7 +27,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
  * @author Dave Syer
  * @since 1.3.0
  */
-@ConfigurationProperties("endpoints.docs")
+@ConfigurationProperties(prefix = "endpoints.docs")
 public class DocsMvcEndpoint extends AbstractNamedMvcEndpoint {
 
 	private static final String DOCS_LOCATION = "classpath:/META-INF/resources/spring-boot-actuator/docs/";
