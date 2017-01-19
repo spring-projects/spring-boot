@@ -66,11 +66,13 @@ public class DefaultUserInfoRestTemplateFactory implements UserInfoRestTemplateF
 		this.oauth2ClientContext = oauth2ClientContext.getIfAvailable();
 	}
 
+	@Override
 	public OAuth2RestTemplate getUserInfoRestTemplate() {
 		if (this.oauth2RestTemplate == null) {
 			this.oauth2RestTemplate = createOAuth2RestTemplate(
 					this.details == null ? DEFAULT_RESOURCE_DETAILS : this.details);
-			this.oauth2RestTemplate.getInterceptors().add(new AcceptJsonRequestInterceptor());
+			this.oauth2RestTemplate.getInterceptors()
+					.add(new AcceptJsonRequestInterceptor());
 			AuthorizationCodeAccessTokenProvider accessTokenProvider = new AuthorizationCodeAccessTokenProvider();
 			accessTokenProvider.setTokenRequestEnhancer(new AcceptJsonRequestEnhancer());
 			this.oauth2RestTemplate.setAccessTokenProvider(accessTokenProvider);

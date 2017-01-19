@@ -244,7 +244,8 @@ public class HealthIndicatorAutoConfiguration {
 
 		private final Map<String, LdapOperations> ldapOperations;
 
-		public LdapHealthIndicatorConfiguration(Map<String, LdapOperations> ldapOperations) {
+		public LdapHealthIndicatorConfiguration(
+				Map<String, LdapOperations> ldapOperations) {
 			this.ldapOperations = ldapOperations;
 		}
 

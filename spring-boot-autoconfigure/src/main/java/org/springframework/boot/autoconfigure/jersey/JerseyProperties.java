@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-@ConfigurationProperties("spring.jersey")
+@ConfigurationProperties(prefix = "spring.jersey")
 public class JerseyProperties {
 
 	/**

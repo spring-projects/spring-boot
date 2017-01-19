@@ -45,6 +45,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
@@ -61,6 +62,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /**
@@ -362,8 +364,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			return this.validator;
 		}
 		if (this.localValidator == null && isJsr303Present()) {
-			this.localValidator = new LocalValidatorFactory()
-					.run(this.applicationContext);
+			this.localValidator = new ValidatedLocalValidatorFactoryBean(
+					this.applicationContext);
 		}
 		return this.localValidator;
 	}
@@ -394,18 +396,38 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	/**
-	 * Factory to create JSR 303 LocalValidatorFactoryBean. Inner class to prevent class
-	 * loader issues.
+	 * {@link LocalValidatorFactoryBean} supports classes annotated with
+	 * {@link Validated @Validated}.
 	 */
-	private static class LocalValidatorFactory {
+	private static class ValidatedLocalValidatorFactoryBean
+			extends LocalValidatorFactoryBean {
 
-		public Validator run(ApplicationContext applicationContext) {
-			LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
-			MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory();
-			validator.setApplicationContext(applicationContext);
-			validator.setMessageInterpolator(interpolatorFactory.getObject());
-			validator.afterPropertiesSet();
-			return validator;
+		private static final Log logger = LogFactory
+				.getLog(ConfigurationPropertiesBindingPostProcessor.class);
+
+		ValidatedLocalValidatorFactoryBean(ApplicationContext applicationContext) {
+			setApplicationContext(applicationContext);
+			setMessageInterpolator(new MessageInterpolatorFactory().getObject());
+			afterPropertiesSet();
+		}
+
+		@Override
+		public boolean supports(Class<?> type) {
+			if (!super.supports(type)) {
+				return false;
+			}
+			if (AnnotatedElementUtils.isAnnotated(type, Validated.class)) {
+				return true;
+			}
+			if (type.getPackage().getName().startsWith("org.springframework.boot")) {
+				return false;
+			}
+			if (getConstraintsForClass(type).isBeanConstrained()) {
+				logger.warn("The @ConfigurationProperties bean " + type
+						+ " contains validation constraints but had not been annotated "
+						+ "with @Validated.");
+			}
+			return true;
 		}
 
 	}

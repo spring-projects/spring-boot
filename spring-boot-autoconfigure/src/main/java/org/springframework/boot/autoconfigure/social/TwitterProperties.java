@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-@ConfigurationProperties("spring.social.twitter")
+@ConfigurationProperties(prefix = "spring.social.twitter")
 public class TwitterProperties extends SocialProperties {
 
 }

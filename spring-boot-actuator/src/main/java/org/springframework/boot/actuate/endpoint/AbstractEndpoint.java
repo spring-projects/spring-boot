@@ -16,11 +16,13 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import java.util.regex.Pattern;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
+import org.springframework.util.Assert;
 
 /**
  * Abstract base for {@link Endpoint} implementations.
@@ -31,14 +33,14 @@ import org.springframework.core.env.Environment;
  */
 public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAware {
 
+	private static final Pattern ID_PATTERN = Pattern.compile("\\w+");
+
 	private Environment environment;
 
 	/**
 	 * Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped
 	 * to a URL (e.g. 'foo' is mapped to '/foo').
 	 */
-	@NotNull
-	@Pattern(regexp = "\\w+", message = "ID must only contains letters, numbers and '_'")
 	private String id;
 
 	private final boolean sensitiveDefault;
@@ -52,6 +54,13 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	 * Enable the endpoint.
 	 */
 	private Boolean enabled;
+
+	@PostConstruct
+	private void validate() {
+		Assert.notNull(this.id, "Id must not be null");
+		Assert.isTrue(ID_PATTERN.matcher(this.id).matches(),
+				"ID must only contains letters, numbers and '_'");
+	}
 
 	/**
 	 * Create a new sensitive endpoint instance. The endpoint will enabled flag will be

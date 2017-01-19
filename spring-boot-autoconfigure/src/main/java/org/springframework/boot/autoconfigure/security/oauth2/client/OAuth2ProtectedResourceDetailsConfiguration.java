@@ -31,7 +31,7 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 class OAuth2ProtectedResourceDetailsConfiguration {
 
 	@Bean
-	@ConfigurationProperties("security.oauth2.client")
+	@ConfigurationProperties(prefix = "security.oauth2.client")
 	@Primary
 	public AuthorizationCodeResourceDetails oauth2RemoteResource() {
 		return new AuthorizationCodeResourceDetails();

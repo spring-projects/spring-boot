@@ -57,6 +57,7 @@ public class LdapHealthIndicator extends AbstractHealthIndicator {
 			}
 			return null;
 		}
+
 	}
 
 }

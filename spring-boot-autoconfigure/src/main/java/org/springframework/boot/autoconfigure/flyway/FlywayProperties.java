@@ -37,10 +37,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class FlywayProperties {
 
 	/**
-	 * Locations of migrations scripts. Can contain the special "{vendor}" placeholder
-	 * to use vendor-specific locations.
+	 * Locations of migrations scripts. Can contain the special "{vendor}" placeholder to
+	 * use vendor-specific locations.
 	 */
-	private List<String> locations = new ArrayList<String>(Collections.singletonList("db/migration"));
+	private List<String> locations = new ArrayList<String>(
+			Collections.singletonList("db/migration"));
 
 	/**
 	 * Check that migration scripts location exists.

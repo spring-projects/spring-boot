@@ -28,7 +28,7 @@ import org.springframework.core.io.Resource;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@ConfigurationProperties("spring.info")
+@ConfigurationProperties(prefix = "spring.info")
 public class ProjectInfoProperties {
 
 	private final Build build = new Build();

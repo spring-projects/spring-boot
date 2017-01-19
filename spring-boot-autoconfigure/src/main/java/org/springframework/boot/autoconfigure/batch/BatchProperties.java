@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Vedran Pavic
  * @since 1.2.0
  */
-@ConfigurationProperties("spring.batch")
+@ConfigurationProperties(prefix = "spring.batch")
 public class BatchProperties {
 
 	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"

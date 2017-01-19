@@ -88,7 +88,8 @@ public class ResourceServerTokenServicesConfiguration {
 			ObjectProvider<List<UserInfoRestTemplateCustomizer>> customizers,
 			ObjectProvider<OAuth2ProtectedResourceDetails> details,
 			ObjectProvider<OAuth2ClientContext> oauth2ClientContext) {
-		return new DefaultUserInfoRestTemplateFactory(customizers, details, oauth2ClientContext);
+		return new DefaultUserInfoRestTemplateFactory(customizers, details,
+				oauth2ClientContext);
 	}
 
 	@Configuration

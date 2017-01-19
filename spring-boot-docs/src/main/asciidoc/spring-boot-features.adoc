@@ -1090,13 +1090,16 @@ only rely on custom converters qualified with `@ConfigurationPropertiesBinding`.
 
 [[boot-features-external-config-validation]]
 ==== @ConfigurationProperties Validation
-Spring Boot will attempt to validate external configuration, by default using JSR-303
-(if it is on the classpath). You can simply add JSR-303 `javax.validation` constraint
-annotations to your `@ConfigurationProperties` class:
+Spring Boot will attempt to validate `@ConfigurationProperties` classes whenever they
+annotated with Spring's `@Validated` annotation. You can use JSR-303 `javax.validation`
+constraint annotations directly on your configuration class. Simply ensure that a
+compliant JSR-303 implementation is on your classpath, then add constraint annotations to
+your fields:
 
 [source,java,indent=0]
 ----
 	@ConfigurationProperties(prefix="foo")
+	@Validated
 	public class FooProperties {
 
 		@NotNull
@@ -1114,6 +1117,7 @@ as `@Valid` to trigger its validation. For example, building upon the above
 [source,java,indent=0]
 ----
 	@ConfigurationProperties(prefix="connection")
+	@Validated
 	public class FooProperties {
 
 		@NotNull
