@@ -46,6 +46,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
+import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 /**
@@ -74,15 +75,19 @@ public class OAuth2AuthorizationServerConfiguration
 
 	private final TokenStore tokenStore;
 
+	private final AccessTokenConverter tokenConverter;
+
 	private final AuthorizationServerProperties properties;
 
 	public OAuth2AuthorizationServerConfiguration(BaseClientDetails details,
 			AuthenticationManager authenticationManager,
 			ObjectProvider<TokenStore> tokenStore,
+			ObjectProvider<AccessTokenConverter> tokenConverter,
 			AuthorizationServerProperties properties) {
 		this.details = details;
 		this.authenticationManager = authenticationManager;
 		this.tokenStore = tokenStore.getIfAvailable();
+		this.tokenConverter = tokenConverter.getIfAvailable();
 		this.properties = properties;
 	}
 
@@ -120,6 +125,9 @@ public class OAuth2AuthorizationServerConfiguration
 	@Override
 	public void configure(AuthorizationServerEndpointsConfigurer endpoints)
 			throws Exception {
+		if (this.tokenConverter != null)  {
+			endpoints.accessTokenConverter(this.tokenConverter);
+		}
 		if (this.tokenStore != null) {
 			endpoints.tokenStore(this.tokenStore);
 		}
