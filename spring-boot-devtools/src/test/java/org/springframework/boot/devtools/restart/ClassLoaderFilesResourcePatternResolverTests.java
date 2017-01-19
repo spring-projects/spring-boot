@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,17 +31,21 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.context.support.ServletContextResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ClassLoaderFilesResourcePatternResolver}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class ClassLoaderFilesResourcePatternResolverTests {
 
@@ -109,6 +113,27 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 		Resource[] resources = this.resolver
 				.getResources("file:" + folder.getAbsolutePath() + "/**");
 		assertThat(resources).isEmpty();
+	}
+
+	@Test
+	public void customResourceLoaderIsUsedInNonWebApplication() throws Exception {
+		GenericApplicationContext context = new GenericApplicationContext();
+		ResourceLoader resourceLoader = mock(ResourceLoader.class);
+		context.setResourceLoader(resourceLoader);
+		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
+		this.resolver.getResource("foo.txt");
+		verify(resourceLoader).getResource("foo.txt");
+	}
+
+	@Test
+	public void customResourceLoaderIsUsedInWebApplication() throws Exception {
+		GenericWebApplicationContext context = new GenericWebApplicationContext(
+				new MockServletContext());
+		ResourceLoader resourceLoader = mock(ResourceLoader.class);
+		context.setResourceLoader(resourceLoader);
+		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
+		this.resolver.getResource("foo.txt");
+		verify(resourceLoader).getResource("foo.txt");
 	}
 
 	private File createFile(File folder, String name) throws IOException {
