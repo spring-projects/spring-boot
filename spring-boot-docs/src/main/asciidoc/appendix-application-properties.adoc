@@ -391,13 +391,13 @@ content into your application; rather pick only the properties that you need.
 	spring.resources.static-locations=classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/ # Locations of static resources.
 
 	# SPRING SESSION ({sc-spring-boot-autoconfigure}/session/SessionProperties.{sc-ext}[SessionProperties])
-	spring.session.hazelcast.flush-mode= # Sessions flush mode.
+	spring.session.hazelcast.flush-mode=on-save # Sessions flush mode.
 	spring.session.hazelcast.map-name=spring:session:sessions # Name of the map used to store sessions.
 	spring.session.jdbc.initializer.enabled= # Create the required session tables on startup if necessary. Enabled automatically if the default table name is set or a custom schema is configured.
 	spring.session.jdbc.schema=classpath:org/springframework/session/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.session.jdbc.table-name=SPRING_SESSION # Name of database table used to store sessions.
 	spring.session.mongo.collection-name=sessions # Collection name used to store sessions.
-	spring.session.redis.flush-mode= # Sessions flush mode.
+	spring.session.redis.flush-mode=on-save # Sessions flush mode.
 	spring.session.redis.namespace= # Namespace for keys used to store sessions.
 	spring.session.store-type= # Session store type.
 
@@ -453,7 +453,7 @@ content into your application; rather pick only the properties that you need.
 	security.headers.content-security-policy-mode=default # Content security policy mode.
 	security.headers.content-type=true # Enable "X-Content-Type-Options" header.
 	security.headers.frame=true # Enable "X-Frame-Options" header.
-	security.headers.hsts= # HTTP Strict Transport Security (HSTS) mode (none, domain, all).
+	security.headers.hsts=all # HTTP Strict Transport Security (HSTS) mode (none, domain, all).
 	security.headers.xss=true # Enable cross site scripting (XSS) protection.
 	security.ignored= # Comma-separated list of paths to exclude from the default secured paths.
 	security.require-ssl=false # Enable secure channel for all requests.
@@ -547,7 +547,7 @@ content into your application; rather pick only the properties that you need.
 
 	# CASSANDRA ({sc-spring-boot-autoconfigure}/cassandra/CassandraProperties.{sc-ext}[CassandraProperties])
 	spring.data.cassandra.cluster-name= # Name of the Cassandra cluster.
-	spring.data.cassandra.compression= # Compression supported by the Cassandra binary protocol.
+	spring.data.cassandra.compression=none # Compression supported by the Cassandra binary protocol.
 	spring.data.cassandra.connect-timeout-millis= # Socket option: connection time out.
 	spring.data.cassandra.consistency-level= # Queries consistency level.
 	spring.data.cassandra.contact-points=localhost # Comma-separated list of cluster node addresses.
@@ -707,7 +707,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.atomikos.properties.console-file-count=1 # Number of debug logs files that can be created.
 	spring.jta.atomikos.properties.console-file-limit=-1 # How many bytes can be stored at most in debug logs files.
 	spring.jta.atomikos.properties.console-file-name=tm.out # Debug logs file name.
-	spring.jta.atomikos.properties.console-log-level= # Console log level.
+	spring.jta.atomikos.properties.console-log-level=warn # Console log level.
 	spring.jta.atomikos.properties.default-jta-timeout=10000 # Default timeout for JTA transactions.
 	spring.jta.atomikos.properties.enable-logging=true # Enable disk logging.
 	spring.jta.atomikos.properties.force-shutdown-on-vm-exit=false # Specify if a VM shutdown should trigger forced shutdown of the transaction core.
@@ -925,7 +925,7 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.addresses= # Comma-separated list of addresses to which the client should connect.
 	spring.rabbitmq.cache.channel.checkout-timeout= # Number of milliseconds to wait to obtain a channel if the cache size has been reached.
 	spring.rabbitmq.cache.channel.size= # Number of channels to retain in the cache.
-	spring.rabbitmq.cache.connection.mode=CHANNEL # Connection factory cache mode.
+	spring.rabbitmq.cache.connection.mode=channel # Connection factory cache mode.
 	spring.rabbitmq.cache.connection.size= # Number of connections to cache.
 	spring.rabbitmq.connection-timeout= # Connection timeout, in milliseconds; zero for infinite.
 	spring.rabbitmq.dynamic=true # Create an AmqpAdmin bean.
