@@ -5383,6 +5383,10 @@ providing a `@...Test` annotation that loads the `ApplicationContext` and one or
 more `@AutoConfigure...` annotations that can be used to customize auto-configuration
 settings.
 
+NOTE: Each slice loads a very restricted set of auto-configuration classes. If you need to
+exclude one of them, most `@...Test` annotation provide an `excludeAutoConfiguration`
+attribute. Alternatively, you can use `@ImportAutoConfiguration#exclude`.
+
 TIP: It's also possible to use the `@AutoConfigure...` annotations with the standard
 `@SpringBootTest` annotation. You can use this combination if you're not interested
  in '`slicing`' your application but you want some of the auto-configured test beans.
