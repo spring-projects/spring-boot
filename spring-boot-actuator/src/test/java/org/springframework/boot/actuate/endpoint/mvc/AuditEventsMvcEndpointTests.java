@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -47,6 +49,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -68,6 +71,21 @@ public class AuditEventsMvcEndpointTests {
 	public void setUp() {
 		this.context.getBean(AuditEventsMvcEndpoint.class).setEnabled(true);
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+	}
+
+	@Test
+	public void contentTypeDefaultsToActuatorV1Json() throws Exception {
+		this.mvc.perform(get("/auditevents")).andExpect(status().isOk())
+				.andExpect(header().string("Content-Type",
+						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+	}
+
+	@Test
+	public void contentTypeCanBeApplicationJson() throws Exception {
+		this.mvc.perform(get("/auditevents").header(HttpHeaders.ACCEPT,
+				MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
+				.andExpect(header().string("Content-Type",
+						MediaType.APPLICATION_JSON_UTF8_VALUE));
 	}
 
 	@Test

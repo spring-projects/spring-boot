@@ -16,30 +16,28 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.MediaType;
 
 /**
- * Adapter class to expose {@link Endpoint}s as {@link MvcEndpoint}s.
+ * {@link MediaType MediaTypes} that can be consumed and produced by Actuator endpoints.
  *
- * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class EndpointMvcAdapter extends AbstractEndpointMvcAdapter<Endpoint<?>> {
+public final class ActuatorMediaTypes {
 
 	/**
-	 * Create a new {@link EndpointMvcAdapter}.
-	 * @param delegate the underlying {@link Endpoint} to adapt.
+	 * {@link String} equivalent of {@link #APPLICATION_ACTUATOR_V1_JSON}.
 	 */
-	public EndpointMvcAdapter(Endpoint<?> delegate) {
-		super(delegate);
-	}
+	public static final String APPLICATION_ACTUATOR_V1_JSON_VALUE = "application/vnd.spring-boot.actuator.v1+json";
 
-	@Override
-	@ActuatorGetMapping
-	@ResponseBody
-	public Object invoke() {
-		return super.invoke();
+	/**
+	 * The {@code application/vnd.spring-boot.actuator.v1+json} media type.
+	 */
+	public static final MediaType APPLICATION_ACTUATOR_V1_JSON = MediaType
+			.valueOf(APPLICATION_ACTUATOR_V1_JSON_VALUE);
+
+	private ActuatorMediaTypes() {
+
 	}
 
 }

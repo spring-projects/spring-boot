@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,17 +61,13 @@ public class HealthMvcEndpointTests {
 
 	private MockEnvironment environment;
 
-	private HttpServletRequest user = createAuthenticationToken(
-			"ROLE_USER");
+	private HttpServletRequest user = createAuthenticationToken("ROLE_USER");
 
-	private HttpServletRequest actuator = createAuthenticationToken(
-			"ROLE_ACTUATOR");
+	private HttpServletRequest actuator = createAuthenticationToken("ROLE_ACTUATOR");
 
-	private HttpServletRequest hero = createAuthenticationToken(
-			"ROLE_HERO");
+	private HttpServletRequest hero = createAuthenticationToken("ROLE_HERO");
 
-	private HttpServletRequest createAuthenticationToken(
-			String role) {
+	private HttpServletRequest createAuthenticationToken(String role) {
 		MockServletContext servletContext = new MockServletContext();
 		servletContext.declareRoles(role);
 		return new MockHttpServletRequest(servletContext);

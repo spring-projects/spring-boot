@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,8 @@ import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -49,7 +47,7 @@ public class AuditEventsMvcEndpoint extends AbstractNamedMvcEndpoint {
 		this.auditEventRepository = auditEventRepository;
 	}
 
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	@ActuatorGetMapping
 	@ResponseBody
 	public ResponseEntity<?> findByPrincipalAndAfterAndType(
 			@RequestParam(required = false) String principal,

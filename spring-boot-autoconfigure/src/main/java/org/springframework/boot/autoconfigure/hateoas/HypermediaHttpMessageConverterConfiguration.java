@@ -16,7 +16,8 @@
 
 package org.springframework.boot.autoconfigure.hateoas;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -29,9 +30,9 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
@@ -72,10 +73,14 @@ public class HypermediaHttpMessageConverterConfiguration {
 					for (HttpMessageConverter<?> converter : handlerAdapter
 							.getMessageConverters()) {
 						if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-							((TypeConstrainedMappingJackson2HttpMessageConverter) converter)
-									.setSupportedMediaTypes(
-											Arrays.asList(MediaTypes.HAL_JSON,
-													MediaType.APPLICATION_JSON));
+							List<MediaType> supportedMediaTypes = new ArrayList<MediaType>(
+									converter.getSupportedMediaTypes());
+							if (!supportedMediaTypes
+									.contains(MediaType.APPLICATION_JSON)) {
+								supportedMediaTypes.add(MediaType.APPLICATION_JSON);
+							}
+							((AbstractHttpMessageConverter<?>) converter)
+									.setSupportedMediaTypes(supportedMediaTypes);
 						}
 					}
 

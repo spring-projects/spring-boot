@@ -30,11 +30,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -123,7 +121,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		this.statusMapping.put(statusCode, httpStatus);
 	}
 
-	@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	@ActuatorGetMapping
 	@ResponseBody
 	public Object invoke(HttpServletRequest request) {
 		if (!getDelegate().isEnabled()) {

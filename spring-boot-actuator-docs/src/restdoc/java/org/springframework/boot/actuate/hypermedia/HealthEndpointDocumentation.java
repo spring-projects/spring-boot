@@ -20,10 +20,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.mvc.ActuatorMediaTypes;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootContextLoader;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -50,7 +50,9 @@ public class HealthEndpointDocumentation {
 
 	@Test
 	public void health() throws Exception {
-		this.mockMvc.perform(get("/health").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc
+				.perform(get("/health")
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
 				.andExpect(status().isOk()).andDo(document("health/insensitive"));
 	}
 

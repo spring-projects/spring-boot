@@ -39,6 +39,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -55,6 +56,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -129,8 +131,31 @@ public class LoggersMvcEndpointTests {
 	}
 
 	@Test
-	public void setLoggerShouldSetLogLevel() throws Exception {
+	public void contentTypeForGetDefaultsToActuatorV1Json() throws Exception {
+		this.mvc.perform(get("/loggers")).andExpect(status().isOk())
+				.andExpect(header().string("Content-Type",
+						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+	}
+
+	@Test
+	public void contentTypeForGetCanBeApplicationJson() throws Exception {
+		this.mvc.perform(get("/loggers").header(HttpHeaders.ACCEPT,
+				MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
+				.andExpect(header().string("Content-Type",
+						MediaType.APPLICATION_JSON_UTF8_VALUE));
+	}
+
+	@Test
+	public void setLoggerUsingApplicationJsonShouldSetLogLevel() throws Exception {
 		this.mvc.perform(post("/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"configuredLevel\":\"debug\"}")).andExpect(status().isOk());
+		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
+	}
+
+	@Test
+	public void setLoggerUsingActuatorV1JsonShouldSetLogLevel() throws Exception {
+		this.mvc.perform(post("/loggers/ROOT")
+				.contentType(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON)
 				.content("{\"configuredLevel\":\"debug\"}")).andExpect(status().isOk());
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
