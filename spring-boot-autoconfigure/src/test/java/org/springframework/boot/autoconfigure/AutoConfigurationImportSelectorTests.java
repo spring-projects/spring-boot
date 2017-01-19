@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,15 +39,15 @@ import org.springframework.mock.env.MockEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link EnableAutoConfigurationImportSelector}
+ * Tests for {@link AutoConfigurationImportSelector}
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Madhura Bhave
  */
-public class EnableAutoConfigurationImportSelectorTests {
+public class AutoConfigurationImportSelectorTests {
 
-	private final EnableAutoConfigurationImportSelector importSelector = new EnableAutoConfigurationImportSelector();
+	private final AutoConfigurationImportSelector importSelector = new AutoConfigurationImportSelector();
 
 	private final ConfigurableListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
@@ -191,7 +191,7 @@ public class EnableAutoConfigurationImportSelectorTests {
 			throws Exception {
 		this.environment.setProperty("spring.autoconfigure.exclude",
 				"org.springframework.boot.autoconfigure."
-						+ "EnableAutoConfigurationImportSelectorTests.TestConfiguration");
+						+ "AutoConfigurationImportSelectorTests.TestConfiguration");
 		this.expected.expect(IllegalStateException.class);
 		selectImports(BasicEnableAutoConfiguration.class);
 	}
@@ -252,7 +252,7 @@ public class EnableAutoConfigurationImportSelectorTests {
 
 	}
 
-	@EnableAutoConfiguration(excludeName = "org.springframework.boot.autoconfigure.EnableAutoConfigurationImportSelectorTests.TestConfiguration")
+	@EnableAutoConfiguration(excludeName = "org.springframework.boot.autoconfigure.AutoConfigurationImportSelectorTests.TestConfiguration")
 	private class EnableAutoConfigurationWithFaultyClassNameExclude {
 
 	}
