@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,12 +79,15 @@ public class AuditEventTests {
 
 	@Test
 	public void jsonFormat() throws Exception {
-		AuditEvent event = new AuditEvent("johannes", "UNKNOWN", Collections.singletonMap("type", (Object) "BadCredentials"));
-
-		String json = Jackson2ObjectMapperBuilder.json().build().writeValueAsString(event);
+		AuditEvent event = new AuditEvent("johannes", "UNKNOWN",
+				Collections.singletonMap("type", (Object) "BadCredentials"));
+		String json = Jackson2ObjectMapperBuilder.json().build()
+				.writeValueAsString(event);
+		System.out.println(json);
 		JSONObject jsonObject = new JSONObject(json);
-
 		assertThat(jsonObject.getString("type")).isEqualTo("UNKNOWN");
+		assertThat(jsonObject.getJSONObject("data").getString("type"))
+				.isEqualTo("BadCredentials");
 	}
 
 }
