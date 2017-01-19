@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,7 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  * @since 1.4.0
  * @see ContextConfiguration
  */
@@ -124,6 +125,13 @@ public @interface SpringBootTest {
 		 * {@link LocalServerPort} injected field on the test.
 		 */
 		RANDOM_PORT(true),
+
+		/**
+		 * Creates an {@link EmbeddedWebApplicationContext} and sets
+		 * {@code server.port=0} and {@code management.port=0} {@link Environment}
+		 * properties.
+		 */
+		RANDOM_SERVER_AND_MANAGEMENT_PORT(true),
 
 		/**
 		 * Creates an {@link EmbeddedWebApplicationContext} without defining any

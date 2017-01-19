@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  * @since 1.4.0
  * @see SpringBootTest
  * @see TestConfiguration
@@ -237,6 +238,10 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		if (getWebEnvironment(testClass) == WebEnvironment.RANDOM_PORT) {
 			propertySourceProperties.add("server.port=0");
 		}
+		else if (getWebEnvironment(testClass) == WebEnvironment.RANDOM_SERVER_AND_MANAGEMENT_PORT) {
+			propertySourceProperties.add("server.port=0");
+			propertySourceProperties.add("management.port=0");
+		}
 	}
 
 	/**
@@ -267,7 +272,8 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		SpringBootTest springBootTest = getAnnotation(testClass);
 		if (springBootTest != null
 				&& (springBootTest.webEnvironment() == WebEnvironment.DEFINED_PORT
-						|| springBootTest.webEnvironment() == WebEnvironment.RANDOM_PORT)
+						|| springBootTest.webEnvironment() == WebEnvironment.RANDOM_PORT
+						|| springBootTest.webEnvironment() == WebEnvironment.RANDOM_SERVER_AND_MANAGEMENT_PORT)
 				&& getAnnotation(WebAppConfiguration.class, testClass) != null) {
 			throw new IllegalStateException("@WebAppConfiguration should only be used "
 					+ "with @SpringBootTest when @SpringBootTest is configured with a "
