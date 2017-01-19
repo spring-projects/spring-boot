@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,9 @@ import org.springframework.core.annotation.AliasFor;
  * Import and apply the specified auto-configuration classes. Applies the same ordering
  * rules as {@code @EnableAutoConfiguration} but restricts the auto-configuration classes
  * to the specified set, rather than consulting {@code spring.factories}.
+ * <p>
+ * Can also be used to {@link #exclude()} specific auto-configuration classes such that
+ * they will never be applied.
  * <p>
  * Generally, {@code @EnableAutoConfiguration} should be used in preference to this
  * annotation, however, {@code @ImportAutoConfiguration} can be useful in some situations
