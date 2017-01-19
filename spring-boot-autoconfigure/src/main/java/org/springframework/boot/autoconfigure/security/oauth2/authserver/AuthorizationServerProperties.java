@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  * @since 1.3.0
  */
-@ConfigurationProperties("security.oauth2.authorization")
+@ConfigurationProperties(prefix = "security.oauth2.authorization")
 public class AuthorizationServerProperties {
 
 	/**

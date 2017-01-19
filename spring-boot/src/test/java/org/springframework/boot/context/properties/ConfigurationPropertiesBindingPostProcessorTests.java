@@ -46,6 +46,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -456,6 +457,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@ConfigurationProperties(prefix = "test")
+	@Validated
 	public static class PropertyWithJSR303 extends PropertyWithoutJSR303 {
 
 		@NotNull

@@ -267,8 +267,9 @@ public class PropertiesConfigurationFactory<T>
 				relaxedTargetNames);
 		dataBinder.bind(propertyValues);
 		if (this.validator != null) {
-			validate(dataBinder);
+			dataBinder.validate();
 		}
+		checkForBindingErrors(dataBinder);
 	}
 
 	private Iterable<String> getRelaxedTargetNames() {
@@ -338,8 +339,8 @@ public class PropertiesConfigurationFactory<T>
 		return this.target != null && Map.class.isAssignableFrom(this.target.getClass());
 	}
 
-	private void validate(RelaxedDataBinder dataBinder) throws BindException {
-		dataBinder.validate();
+	private void checkForBindingErrors(RelaxedDataBinder dataBinder)
+			throws BindException {
 		BindingResult errors = dataBinder.getBindingResult();
 		if (errors.hasErrors()) {
 			logger.error("Properties configuration failed validation");

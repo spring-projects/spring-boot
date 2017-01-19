@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@ConfigurationProperties("spring.hazelcast")
+@ConfigurationProperties(prefix = "spring.hazelcast")
 public class HazelcastProperties {
 
 	/**

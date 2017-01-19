@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-@ConfigurationProperties("spring.social.linkedin")
+@ConfigurationProperties(prefix = "spring.social.linkedin")
 public class LinkedInProperties extends SocialProperties {
 
 }

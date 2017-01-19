@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-@ConfigurationProperties("spring.mobile.devicedelegatingviewresolver")
+@ConfigurationProperties(prefix = "spring.mobile.devicedelegatingviewresolver")
 public class DeviceDelegatingViewResolverProperties {
 
 	/**

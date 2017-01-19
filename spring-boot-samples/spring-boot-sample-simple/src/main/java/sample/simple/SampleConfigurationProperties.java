@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure;
+package sample.simple;
 
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
-/**
- * Configuration properties for some health properties.
- *
- * @author Christian Dupuis
- * @since 1.2.0
- */
-@ConfigurationProperties(prefix = "management.health.status")
-public class HealthIndicatorProperties {
+@Component
+@ConfigurationProperties(prefix = "sample")
+public class SampleConfigurationProperties {
 
-	/**
-	 * Comma-separated list of health statuses in order of severity.
-	 */
-	private List<String> order = null;
+	@NotNull
+	private String name;
 
-	public List<String> getOrder() {
-		return this.order;
+	public String getName() {
+		return this.name;
 	}
 
-	public void setOrder(List<String> statusOrder) {
-		if (statusOrder != null && !statusOrder.isEmpty()) {
-			this.order = statusOrder;
-		}
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

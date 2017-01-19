@@ -27,7 +27,7 @@ import org.springframework.http.MediaType;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@ConfigurationProperties("spring.data.rest")
+@ConfigurationProperties(prefix = "spring.data.rest")
 public class RepositoryRestProperties {
 
 	/**

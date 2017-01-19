@@ -50,7 +50,7 @@ abstract class DataSourceConfiguration {
 	static class Tomcat extends DataSourceConfiguration {
 
 		@Bean
-		@ConfigurationProperties("spring.datasource.tomcat")
+		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
 		public org.apache.tomcat.jdbc.pool.DataSource dataSource(
 				DataSourceProperties properties) {
 			org.apache.tomcat.jdbc.pool.DataSource dataSource = createDataSource(
@@ -75,7 +75,7 @@ abstract class DataSourceConfiguration {
 	static class Hikari extends DataSourceConfiguration {
 
 		@Bean
-		@ConfigurationProperties("spring.datasource.hikari")
+		@ConfigurationProperties(prefix = "spring.datasource.hikari")
 		public HikariDataSource dataSource(DataSourceProperties properties) {
 			return createDataSource(properties, HikariDataSource.class);
 		}
@@ -93,7 +93,7 @@ abstract class DataSourceConfiguration {
 	static class Dbcp extends DataSourceConfiguration {
 
 		@Bean
-		@ConfigurationProperties("spring.datasource.dbcp")
+		@ConfigurationProperties(prefix = "spring.datasource.dbcp")
 		public org.apache.commons.dbcp.BasicDataSource dataSource(
 				DataSourceProperties properties) {
 			org.apache.commons.dbcp.BasicDataSource dataSource = createDataSource(
@@ -118,7 +118,7 @@ abstract class DataSourceConfiguration {
 	static class Dbcp2 extends DataSourceConfiguration {
 
 		@Bean
-		@ConfigurationProperties("spring.datasource.dbcp2")
+		@ConfigurationProperties(prefix = "spring.datasource.dbcp2")
 		public org.apache.commons.dbcp2.BasicDataSource dataSource(
 				DataSourceProperties properties) {
 			return createDataSource(properties,

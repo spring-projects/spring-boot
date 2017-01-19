@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@ConfigurationProperties("spring.elasticsearch.jest")
+@ConfigurationProperties(prefix = "spring.elasticsearch.jest")
 public class JestProperties {
 
 	/**

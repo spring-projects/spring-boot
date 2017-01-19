@@ -62,9 +62,11 @@ public class LiquibaseEndpoint extends AbstractEndpoint<List<LiquibaseReport>> {
 		for (Map.Entry<String, SpringLiquibase> entry : this.liquibases.entrySet()) {
 			try {
 				DataSource dataSource = entry.getValue().getDataSource();
-				JdbcConnection connection = new JdbcConnection(dataSource.getConnection());
+				JdbcConnection connection = new JdbcConnection(
+						dataSource.getConnection());
 				try {
-					Database database = factory.findCorrectDatabaseImplementation(connection);
+					Database database = factory
+							.findCorrectDatabaseImplementation(connection);
 					reports.add(new LiquibaseReport(entry.getKey(),
 							service.queryDatabaseChangeLogTable(database)));
 				}

@@ -174,7 +174,7 @@ public class OAuth2AuthorizationServerConfiguration
 		}
 
 		@Bean
-		@ConfigurationProperties("security.oauth2.client")
+		@ConfigurationProperties(prefix = "security.oauth2.client")
 		public BaseClientDetails oauth2ClientDetails() {
 			BaseClientDetails details = new BaseClientDetails();
 			if (this.client.getClientId() == null) {

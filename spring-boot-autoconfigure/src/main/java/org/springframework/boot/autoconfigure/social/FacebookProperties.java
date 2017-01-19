@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-@ConfigurationProperties("spring.social.facebook")
+@ConfigurationProperties(prefix = "spring.social.facebook")
 public class FacebookProperties extends SocialProperties {
 
 }
