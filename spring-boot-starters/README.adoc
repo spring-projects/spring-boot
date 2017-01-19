@@ -118,4 +118,7 @@ do as they were designed before this was clarified.
 | http://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot
 
+| GraphQL
+| https://github.com/merapar/spring-boot-starter-graphql
+
 |===
