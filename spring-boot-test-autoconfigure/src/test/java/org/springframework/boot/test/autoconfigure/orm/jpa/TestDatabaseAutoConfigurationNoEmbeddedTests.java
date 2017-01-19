@@ -75,8 +75,8 @@ public class TestDatabaseAutoConfigurationNoEmbeddedTests {
 	public void applyNoReplace() {
 		load(ExistingDataSourceConfiguration.class, "spring.test.database.replace=NONE");
 		assertThat(this.context.getBeansOfType(DataSource.class)).hasSize(1);
-		assertThat(this.context.getBean(DataSource.class)).isSameAs(
-				this.context.getBean("myCustomDataSource"));
+		assertThat(this.context.getBean(DataSource.class))
+				.isSameAs(this.context.getBean("myCustomDataSource"));
 	}
 
 	public void load(Class<?> config, String... environment) {
