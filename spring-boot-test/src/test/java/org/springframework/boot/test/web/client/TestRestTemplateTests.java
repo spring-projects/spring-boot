@@ -131,6 +131,7 @@ public class TestRestTemplateTests {
 				return arguments;
 			}
 
+			@SuppressWarnings("rawtypes")
 			private Object mockArgument(Class<?> type) throws Exception {
 				if (String.class.equals(type)) {
 					return "String";
@@ -148,8 +149,7 @@ public class TestRestTemplateTests {
 					return Object.class;
 				}
 				if (RequestEntity.class.equals(type)) {
-					return new RequestEntity<>(HttpMethod.GET,
-							new URI("http://localhost"));
+					return new RequestEntity(HttpMethod.GET, new URI("http://localhost"));
 				}
 				return mock(type);
 			}
@@ -237,7 +237,8 @@ public class TestRestTemplateTests {
 			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
 					URI relativeUri) {
 				testRestTemplate.exchange(
-						new RequestEntity<>(HttpMethod.GET, relativeUri), String.class);
+						new RequestEntity<String>(HttpMethod.GET, relativeUri),
+						String.class);
 			}
 
 		});
@@ -252,7 +253,7 @@ public class TestRestTemplateTests {
 			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
 					URI relativeUri) {
 				testRestTemplate.exchange(
-						new RequestEntity<>(HttpMethod.GET, relativeUri),
+						new RequestEntity<String>(HttpMethod.GET, relativeUri),
 						new ParameterizedTypeReference<String>() {
 				});
 			}
@@ -428,7 +429,8 @@ public class TestRestTemplateTests {
 		request.setResponse(new MockClientHttpResponse(new byte[0], HttpStatus.OK));
 		URI relativeUri = URI.create("a/b/c.txt");
 		URI absoluteUri = URI.create("http://localhost:8080/" + relativeUri.toString());
-		given(requestFactory.createRequest(eq(absoluteUri), any())).willReturn(request);
+		given(requestFactory.createRequest(eq(absoluteUri), (HttpMethod) any()))
+				.willReturn(request);
 		RestTemplate delegate = new RestTemplate();
 		TestRestTemplate template = new TestRestTemplate(delegate);
 		delegate.setRequestFactory(requestFactory);
@@ -437,7 +439,7 @@ public class TestRestTemplateTests {
 				.willReturn(absoluteUri);
 		template.setUriTemplateHandler(uriTemplateHandler);
 		callback.doWithTestRestTemplate(template, relativeUri);
-		verify(requestFactory).createRequest(eq(absoluteUri), any());
+		verify(requestFactory).createRequest(eq(absoluteUri), (HttpMethod) any());
 	}
 
 	private void assertBasicAuthorizationInterceptorCredentials(
@@ -456,7 +458,7 @@ public class TestRestTemplateTests {
 
 	}
 
-	private static interface TestRestTemplateCallback {
+	private interface TestRestTemplateCallback {
 
 		void doWithTestRestTemplate(TestRestTemplate testRestTemplate, URI relativeUri);
 
