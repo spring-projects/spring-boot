@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -137,7 +136,6 @@ public class AuditEvent implements Serializable {
 	 * Returns the event data.
 	 * @return the event data
 	 */
-	@JsonAnyGetter
 	public Map<String, Object> getData() {
 		return this.data;
 	}
