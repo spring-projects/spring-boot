@@ -729,7 +729,6 @@ and specify:
 	}
 
 	compileJava.dependsOn(processResources)
-}
 ----
 
 NOTE: You need to add `compileJava.dependsOn(processResources)` to your build to ensure
