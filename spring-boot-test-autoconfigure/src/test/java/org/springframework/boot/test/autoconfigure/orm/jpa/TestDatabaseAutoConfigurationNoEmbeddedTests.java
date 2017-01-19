@@ -23,9 +23,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.boot.junit.runner.classpath.ClassPathExclusions;
+import org.springframework.boot.junit.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.boot.testutil.ClassPathExclusions;
-import org.springframework.boot.testutil.FilteredClassPathRunner;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -40,7 +41,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-@RunWith(FilteredClassPathRunner.class)
+@RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions({ "h2-*.jar", "hsqldb-*.jar", "derby-*.jar" })
 public class TestDatabaseAutoConfigurationNoEmbeddedTests {
 
