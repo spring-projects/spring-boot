@@ -496,12 +496,19 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.accept-count", "10");
 		bindProperties(map);
-		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(
+				0);
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
 				.getEmbeddedServletContainer();
-		assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
-				.getProtocolHandler()).getBacklog()).isEqualTo(10);
+		embeddedContainer.start();
+		try {
+			assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
+					.getProtocolHandler()).getBacklog()).isEqualTo(10);
+		}
+		finally {
+			embeddedContainer.stop();
+		}
 	}
 
 	@Test
@@ -509,12 +516,19 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.max-connections", "5");
 		bindProperties(map);
-		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(
+				0);
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
 				.getEmbeddedServletContainer();
-		assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
-				.getProtocolHandler()).getMaxConnections()).isEqualTo(5);
+		embeddedContainer.start();
+		try {
+			assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
+					.getProtocolHandler()).getMaxConnections()).isEqualTo(5);
+		}
+		finally {
+			embeddedContainer.stop();
+		}
 	}
 
 	@Test
@@ -522,12 +536,19 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.max-http-post-size", "10000");
 		bindProperties(map);
-		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(
+				0);
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
 				.getEmbeddedServletContainer();
-		assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize())
-				.isEqualTo(10000);
+		embeddedContainer.start();
+		try {
+			assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize())
+					.isEqualTo(10000);
+		}
+		finally {
+			embeddedContainer.stop();
+		}
 	}
 
 	@Test
@@ -536,12 +557,19 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.max-http-post-size", "2000");
 		bindProperties(map);
-		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(
+				0);
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
 				.getEmbeddedServletContainer();
-		assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize())
-				.isEqualTo(2000);
+		embeddedContainer.start();
+		try {
+			assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize())
+					.isEqualTo(2000);
+		}
+		finally {
+			embeddedContainer.stop();
+		}
 	}
 
 	@Test
