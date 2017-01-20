@@ -39,6 +39,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -49,6 +51,7 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -74,6 +77,36 @@ public class EnvironmentMvcEndpointTests {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 		EnvironmentTestUtils.addEnvironment((ConfigurableApplicationContext) this.context,
 				"foo:bar", "fool:baz");
+	}
+
+	@Test
+	public void homeContentTypeDefaultsToActuatorV1Json() throws Exception {
+		this.mvc.perform(get("/env")).andExpect(status().isOk())
+				.andExpect(header().string("Content-Type",
+						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+	}
+
+	@Test
+	public void homeContentTypeCanBeApplicationJson() throws Exception {
+		this.mvc.perform(
+				get("/env").header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk()).andExpect(header().string("Content-Type",
+						MediaType.APPLICATION_JSON_UTF8_VALUE));
+	}
+
+	@Test
+	public void subContentTypeDefaultsToActuatorV1Json() throws Exception {
+		this.mvc.perform(get("/env/foo")).andExpect(status().isOk())
+				.andExpect(header().string("Content-Type",
+						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+	}
+
+	@Test
+	public void subContentTypeCanBeApplicationJson() throws Exception {
+		this.mvc.perform(get("/env/foo").header(HttpHeaders.ACCEPT,
+				MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
+				.andExpect(header().string("Content-Type",
+						MediaType.APPLICATION_JSON_UTF8_VALUE));
 	}
 
 	@Test

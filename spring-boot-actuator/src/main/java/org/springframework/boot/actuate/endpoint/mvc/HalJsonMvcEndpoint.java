@@ -18,9 +18,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.hateoas.ResourceSupport;
-import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -49,7 +47,7 @@ public class HalJsonMvcEndpoint extends AbstractNamedMvcEndpoint {
 		return "/actuator";
 	}
 
-	@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	@ActuatorGetMapping
 	@ResponseBody
 	public ResourceSupport links() {
 		return new ResourceSupport();
