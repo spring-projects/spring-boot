@@ -3446,6 +3446,9 @@ property. To use a randomly allocated free port use a value of zero. The `MongoC
 created by `MongoAutoConfiguration` will be automatically configured to use the randomly
 allocated port.
 
+NOTE: If you do not configure a custom port, the embedded support will use a random port
+by default (rather than 27017).
+
 If you have SLF4J on the classpath, output produced by Mongo will be automatically routed
 to a logger named `org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongo`.
 
