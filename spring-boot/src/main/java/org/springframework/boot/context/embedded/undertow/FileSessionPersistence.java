@@ -96,13 +96,9 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 
 	private Map<String, PersistentSession> load(File file, ClassLoader classLoader)
 			throws IOException, ClassNotFoundException {
-		ObjectInputStream stream = new ConfigurableObjectInputStream(
-				new FileInputStream(file), classLoader);
-		try {
+		try (ObjectInputStream stream = new ConfigurableObjectInputStream(
+				new FileInputStream(file), classLoader)) {
 			return load(stream);
-		}
-		finally {
-			stream.close();
 		}
 	}
 

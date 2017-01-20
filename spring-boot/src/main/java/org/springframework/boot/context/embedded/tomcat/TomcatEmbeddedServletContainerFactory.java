@@ -827,16 +827,10 @@ public class TomcatEmbeddedServletContainerFactory
 		}
 
 		private String getEmptyWebXml() {
-			InputStream stream = TomcatEmbeddedServletContainerFactory.class
-					.getResourceAsStream("empty-web.xml");
-			Assert.state(stream != null, "Unable to read empty web.xml");
-			try {
-				try {
-					return StreamUtils.copyToString(stream, Charset.forName("UTF-8"));
-				}
-				finally {
-					stream.close();
-				}
+			try (InputStream stream = TomcatEmbeddedServletContainerFactory.class
+					.getResourceAsStream("empty-web.xml")) {
+				Assert.state(stream != null, "Unable to read empty web.xml");
+				return StreamUtils.copyToString(stream, Charset.forName("UTF-8"));
 			}
 			catch (IOException ex) {
 				throw new IllegalStateException(ex);

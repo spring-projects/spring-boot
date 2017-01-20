@@ -144,21 +144,13 @@ public class HeapdumpMvcEndpoint extends AbstractNamedMvcEndpoint {
 		response.setContentType("application/octet-stream");
 		response.setHeader("Content-Disposition",
 				"attachment; filename=\"" + (heapDumpFile.getName() + ".gz") + "\"");
-		try {
-			InputStream in = new FileInputStream(heapDumpFile);
+		try (InputStream in = new FileInputStream(heapDumpFile)) {
 			try {
 				GZIPOutputStream out = new GZIPOutputStream(response.getOutputStream());
 				StreamUtils.copy(in, out);
 				out.finish();
 			}
 			catch (NullPointerException ex) {
-			}
-			finally {
-				try {
-					in.close();
-				}
-				catch (Throwable ex) {
-				}
 			}
 		}
 		catch (FileNotFoundException ex) {

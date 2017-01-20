@@ -88,12 +88,8 @@ public class InfinispanCacheConfiguration {
 		Resource location = this.cacheProperties
 				.resolveConfigLocation(this.cacheProperties.getInfinispan().getConfig());
 		if (location != null) {
-			InputStream in = location.getInputStream();
-			try {
+			try (InputStream in = location.getInputStream()) {
 				return new DefaultCacheManager(in);
-			}
-			finally {
-				in.close();
 			}
 		}
 		return new DefaultCacheManager();
