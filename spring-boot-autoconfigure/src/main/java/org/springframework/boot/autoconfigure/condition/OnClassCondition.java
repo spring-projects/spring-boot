@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,7 +111,7 @@ class OnClassCondition extends SpringBootCondition {
 
 			@Override
 			public boolean matches(String className, ConditionContext context) {
-				return ClassUtils.isPresent(className, context.getClassLoader());
+				return isPresent(className, context.getClassLoader());
 			}
 
 		},
@@ -120,10 +120,31 @@ class OnClassCondition extends SpringBootCondition {
 
 			@Override
 			public boolean matches(String className, ConditionContext context) {
-				return !ClassUtils.isPresent(className, context.getClassLoader());
+				return !isPresent(className, context.getClassLoader());
 			}
 
 		};
+
+		private static boolean isPresent(String className, ClassLoader classLoader) {
+			if (classLoader == null) {
+				classLoader = ClassUtils.getDefaultClassLoader();
+			}
+			try {
+				forName(className, classLoader);
+				return true;
+			}
+			catch (Throwable ex) {
+				return false;
+			}
+		}
+
+		private static Class<?> forName(String className, ClassLoader classLoader)
+				throws ClassNotFoundException {
+			if (classLoader != null) {
+				return classLoader.loadClass(className);
+			}
+			return Class.forName(className);
+		}
 
 		public abstract boolean matches(String className, ConditionContext context);
 
