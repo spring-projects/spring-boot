@@ -1220,6 +1220,10 @@ metric updates every 5 seconds (configured via `spring.metrics.export.delay-mill
 In addition, any `MetricReader` that you define and mark as `@ExportMetricReader` will
 have its values exported by the default exporter.
 
+NOTE: This feature is enabling scheduling in your application (`@EnableScheduling`) which
+can be a problem if you run an integration tests as your own scheduled tasks will start.
+You can disable this behaviour by setting `spring.metrics.export.enabled` to `false`.
+
 The default exporter is a `MetricCopyExporter` which tries to optimize itself by not
 copying values that haven't changed since it was last called (the optimization can be
 switched off using a flag `spring.metrics.export.send-latest`). Note also that the
