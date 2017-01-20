@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,10 @@ import org.springframework.boot.web.support.ServletContextApplicationContextInit
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.Ordered;
 import org.springframework.core.SpringVersion;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -187,6 +189,10 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 				.getContextInitializerClasses()) {
 			initializers.add(BeanUtils.instantiateClass(initializerClass));
 		}
+		if (config.getParent() != null) {
+			initializers.add(new ParentContextApplicationContextInitializer(
+					config.getParentApplicationContext()));
+		}
 		return initializers;
 	}
 
@@ -291,6 +297,23 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
 			this.contextCustomizer.customizeContext(applicationContext, this.config);
+		}
+
+	}
+
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	private static class ParentContextApplicationContextInitializer
+			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+		private final ApplicationContext parent;
+
+		ParentContextApplicationContextInitializer(ApplicationContext parent) {
+			this.parent = parent;
+		}
+
+		@Override
+		public void initialize(ConfigurableApplicationContext applicationContext) {
+			applicationContext.setParent(this.parent);
 		}
 
 	}
