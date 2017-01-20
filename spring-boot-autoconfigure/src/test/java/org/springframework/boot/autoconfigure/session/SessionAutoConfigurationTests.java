@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	public void mongoSessionStore() {
 		load(Arrays.asList(EmbeddedMongoAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class),
-				"spring.session.store-type=mongo", "spring.data.mongodb.port=0");
+				"spring.session.store-type=mongo");
 		validateSessionRepository(MongoOperationsSessionRepository.class);
 	}
 
@@ -108,7 +108,7 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	public void mongoSessionStoreWithCustomizations() {
 		load(Arrays.asList(EmbeddedMongoAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class),
-				"spring.session.store-type=mongo", "spring.data.mongodb.port=0",
+				"spring.session.store-type=mongo",
 				"spring.session.mongo.collection-name=foobar");
 		MongoOperationsSessionRepository repository = validateSessionRepository(
 				MongoOperationsSessionRepository.class);
