@@ -2104,6 +2104,15 @@ in external properties.
 There is a {github-code}/spring-boot-samples/spring-boot-sample-flyway[Flyway sample] so
 you can see how to set things up.
 
+You can also use Flyway to provide data for specific scenarios. For example, you can
+place test-specific migrations in `src/test/resources` and they will only be run when your
+application starts for testing. If you want to be more sophisticated you can use
+profile-specific configuration to customize `flyway.locations` so that certain migrations
+will only run when a particular profile is active. For example, in
+`application-dev.properties` you could set `flyway.locations` to
+`classpath:/db/migration, claspath:/dev/db/migration` and migrations in `dev/db/migration`
+will only run when the `dev` profile is active.
+
 
 
 [[howto-execute-liquibase-database-migrations-on-startup]]
