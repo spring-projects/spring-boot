@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -591,6 +591,26 @@ public class RepackagerTests {
 		JarFile jarFile = new JarFile(source);
 		assertThat(jarFile.getEntry("test")).isNull();
 		jarFile.close();
+	}
+
+	@Test
+	public void metaInfAopXmlIsMovedBeneathBootInfClassesWhenRepackaged()
+			throws Exception {
+		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
+		this.testJarFile.addFile("META-INF/aop.xml",
+				this.temporaryFolder.newFile("aop.xml"));
+		File source = this.testJarFile.getFile();
+		File dest = this.temporaryFolder.newFile("dest.jar");
+		Repackager repackager = new Repackager(source);
+		repackager.repackage(dest, NO_LIBRARIES);
+		JarFile jarFile = new JarFile(dest);
+		try {
+			assertThat(jarFile.getEntry("META-INF/aop.xml")).isNull();
+			assertThat(jarFile.getEntry("BOOT-INF/classes/META-INF/aop.xml")).isNotNull();
+		}
+		finally {
+			jarFile.close();
+		}
 	}
 
 	private boolean hasLauncherClasses(File file) throws IOException {
