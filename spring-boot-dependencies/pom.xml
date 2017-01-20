@@ -166,7 +166,7 @@
 		<spring-security.version>4.2.1.RELEASE</spring-security.version>
 		<spring-security-jwt.version>1.0.7.RELEASE</spring-security-jwt.version>
 		<spring-security-oauth.version>2.0.12.RELEASE</spring-security-oauth.version>
-		<spring-session.version>1.3.0.RELEASE</spring-session.version>
+		<spring-session.version>2.0.0.BUILD-SNAPSHOT</spring-session.version>
 		<spring-social.version>2.0.0.M1</spring-social.version>
 		<spring-social-facebook.version>3.0.0.M1</spring-social-facebook.version>
 		<spring-social-linkedin.version>2.0.0.M1</spring-social-linkedin.version>
