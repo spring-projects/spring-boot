@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Collections;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactory;
@@ -161,7 +162,7 @@ public class MongoDataAutoConfiguration {
 		}
 
 		@Override
-		public DB getDb() throws DataAccessException {
+		public MongoDatabase getDb() throws DataAccessException {
 			String gridFsDatabase = this.properties.getGridFsDatabase();
 			if (StringUtils.hasText(gridFsDatabase)) {
 				return this.mongoDbFactory.getDb(gridFsDatabase);
@@ -170,13 +171,18 @@ public class MongoDataAutoConfiguration {
 		}
 
 		@Override
-		public DB getDb(String dbName) throws DataAccessException {
+		public MongoDatabase getDb(String dbName) throws DataAccessException {
 			return this.mongoDbFactory.getDb(dbName);
 		}
 
 		@Override
 		public PersistenceExceptionTranslator getExceptionTranslator() {
 			return this.mongoDbFactory.getExceptionTranslator();
+		}
+
+		@Override
+		public DB getLegacyDb() {
+			return this.mongoDbFactory.getLegacyDb();
 		}
 
 	}

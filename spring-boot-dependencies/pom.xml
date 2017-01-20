@@ -132,6 +132,7 @@
 		<mariadb.version>1.5.6</mariadb.version>
 		<mssql-jdbc.version>6.1.0.jre8</mssql-jdbc.version>
 		<mockito.version>2.5.4</mockito.version>
+		<mongo-driver-reactivestreams.version>1.2.0</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.4.1</mongodb.version>
 		<mysql.version>5.1.40</mysql.version>
 		<narayana.version>5.5.0.Final</narayana.version>
@@ -153,7 +154,7 @@
 		<spring-amqp.version>2.0.0.BUILD-SNAPSHOT</spring-amqp.version>
 		<spring-cloud-connectors.version>1.2.3.RELEASE</spring-cloud-connectors.version>
 		<spring-batch.version>4.0.0.BUILD-SNAPSHOT</spring-batch.version>
-		<spring-data-releasetrain.version>Ingalls-BUILD-SNAPSHOT</spring-data-releasetrain.version>
+		<spring-data-releasetrain.version>Kay-BUILD-SNAPSHOT</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.23.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>5.0.0.M2</spring-integration.version>
 		<spring-kafka.version>1.1.2.RELEASE</spring-kafka.version>
@@ -1763,6 +1764,11 @@
 				<groupId>org.mongodb</groupId>
 				<artifactId>mongodb-driver-core</artifactId>
 				<version>${mongodb.version}</version>
+			</dependency>
+			<dependency>
+		 		<groupId>org.mongodb</groupId>
+				<artifactId>mongodb-driver-reactivestreams</artifactId>
+				<version>${mongo-driver-reactivestreams.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mongodb</groupId>
