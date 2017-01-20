@@ -154,12 +154,8 @@ public class EmbeddedLdapAutoConfiguration {
 			try {
 				Resource resource = this.applicationContext.getResource(location);
 				if (resource.exists()) {
-					InputStream inputStream = resource.getInputStream();
-					try {
+					try (InputStream inputStream = resource.getInputStream()) {
 						this.server.importFromLDIF(true, new LDIFReader(inputStream));
-					}
-					finally {
-						inputStream.close();
 					}
 				}
 			}
