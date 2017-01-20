@@ -96,10 +96,11 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * &#064;EnableAutoConfiguration
  * public class MyApplication  {
  *
- * // ... Bean definitions
+ *   // ... Bean definitions
  *
- * public static void main(String[] args) throws Exception {
- *   SpringApplication.run(MyApplication.class, args);
+ *   public static void main(String[] args) throws Exception {
+ *     SpringApplication.run(MyApplication.class, args);
+ *   }
  * }
  * </pre>
  *
