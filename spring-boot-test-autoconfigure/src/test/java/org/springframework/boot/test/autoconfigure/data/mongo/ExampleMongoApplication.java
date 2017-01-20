@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package sample.data.mongo;
+package org.springframework.boot.test.autoconfigure.data.mongo;
 
-import java.util.List;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
-
-public interface CustomerRepository extends MongoRepository<Customer, String> {
-
-	Customer findByFirstName(String firstName);
-
-	List<Customer> findByLastName(String lastName);
+/**
+ * Example {@link SpringBootApplication} used with {@link DataMongoTest} tests.
+ *
+ * @author Michael J. Simons
+ */
+@SpringBootApplication
+public class ExampleMongoApplication {
 
 }
