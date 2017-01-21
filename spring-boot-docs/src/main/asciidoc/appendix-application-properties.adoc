@@ -119,6 +119,9 @@ content into your application; rather pick only the properties that you need.
 	spring.messages.encoding=UTF-8 # Message bundles encoding.
 	spring.messages.fallback-to-system-locale=true # Set whether to fall back to the system Locale if no files for a specific Locale have been found.
 
+	# REACTOR
+	spring.reactor.stacktrace-mode.enabled=true # Set whether Reactor should collect stacktrace information at runtime.
+
 	# OUTPUT
 	spring.output.ansi.enabled=detect # Configure the ANSI output.
 
