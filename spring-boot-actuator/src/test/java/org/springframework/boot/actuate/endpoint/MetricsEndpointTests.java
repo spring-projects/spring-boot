@@ -111,4 +111,5 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 		}
 
 	}
+
 }

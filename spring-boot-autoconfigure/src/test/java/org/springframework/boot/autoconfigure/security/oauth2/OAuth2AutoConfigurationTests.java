@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.authserver.OAuth2AuthorizationServerConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.method.OAuth2MethodSecurityConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerConfiguration;
@@ -43,18 +44,22 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.annotation.Jsr250MethodSecurityMetadataSource;
 import org.springframework.security.access.annotation.SecuredAnnotationSecurityMetadataSource;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource;
 import org.springframework.security.access.method.MethodSecurityMetadataSource;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreInvocationAuthorizationAdvice;
 import org.springframework.security.access.prepost.PrePostAnnotationSecurityMetadataSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -96,6 +101,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Verify Spring Security OAuth2 auto-configuration secures end points properly, accepts
@@ -142,6 +148,39 @@ public class OAuth2AutoConfigurationTests {
 	}
 
 	@Test
+	public void methodSecurityExpressionHandlerIsConfiguredWithRoleHierarchyFromTheContext() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(RoleHierarchyConfiguration.class,
+				AuthorizationAndResourceServerConfiguration.class,
+				MinimalSecureWebApplication.class);
+		this.context.refresh();
+		PreInvocationAuthorizationAdvice advice = this.context
+				.getBean(PreInvocationAuthorizationAdvice.class);
+		MethodSecurityExpressionHandler expressionHandler = (MethodSecurityExpressionHandler) ReflectionTestUtils
+				.getField(advice, "expressionHandler");
+		RoleHierarchy roleHierarchy = (RoleHierarchy) ReflectionTestUtils
+				.getField(expressionHandler, "roleHierarchy");
+		assertThat(roleHierarchy).isSameAs(this.context.getBean(RoleHierarchy.class));
+	}
+
+	@Test
+	public void methodSecurityExpressionHandlerIsConfiguredWithPermissionEvaluatorFromTheContext() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(PermissionEvaluatorConfiguration.class,
+				AuthorizationAndResourceServerConfiguration.class,
+				MinimalSecureWebApplication.class);
+		this.context.refresh();
+		PreInvocationAuthorizationAdvice advice = this.context
+				.getBean(PreInvocationAuthorizationAdvice.class);
+		MethodSecurityExpressionHandler expressionHandler = (MethodSecurityExpressionHandler) ReflectionTestUtils
+				.getField(advice, "expressionHandler");
+		PermissionEvaluator permissionEvaluator = (PermissionEvaluator) ReflectionTestUtils
+				.getField(expressionHandler, "permissionEvaluator");
+		assertThat(permissionEvaluator)
+				.isSameAs(this.context.getBean(PermissionEvaluator.class));
+	}
+
+	@Test
 	public void testEnvironmentalOverrides() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -183,6 +222,42 @@ public class OAuth2AutoConfigurationTests {
 		assertThat(countBeans(RESOURCE_SERVER_CONFIG)).isEqualTo(0);
 		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG)).isEqualTo(0);
 		// Scoped target and proxy:
+		assertThat(countBeans(OAuth2ClientContext.class)).isEqualTo(2);
+	}
+
+	@Test
+	public void testCanUseClientCredentials() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(TestSecurityConfiguration.class,
+				MinimalSecureWebApplication.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"security.oauth2.client.clientId=client",
+				"security.oauth2.client.grantType=client_credentials");
+		this.context.refresh();
+		OAuth2ClientContext bean = this.context.getBean(OAuth2ClientContext.class);
+		assertThat(bean.getAccessTokenRequest()).isNotNull();
+		assertThat(countBeans(ClientCredentialsResourceDetails.class)).isEqualTo(1);
+		assertThat(countBeans(OAuth2ClientContext.class)).isEqualTo(1);
+	}
+
+	@Test
+	public void testCanUseClientCredentialsWithEnableOAuth2Client() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(ClientConfiguration.class,
+				MinimalSecureWebApplication.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"security.oauth2.client.clientId=client",
+				"security.oauth2.client.grantType=client_credentials");
+		this.context.refresh();
+		// The primary context is fine (not session scoped):
+		OAuth2ClientContext bean = this.context.getBean(OAuth2ClientContext.class);
+		assertThat(bean.getAccessTokenRequest()).isNotNull();
+		assertThat(countBeans(ClientCredentialsResourceDetails.class)).isEqualTo(1);
+		// Kind of a bug (should ideally be 1), but the cause is in Spring OAuth2 (there
+		// is no need for the extra session-scoped bean). What this test proves is that
+		// even if the user screws up and does @EnableOAuth2Client for client credentials,
+		// it will still just about work (because of the @Primary annotation on the
+		// Boot-created instance of OAuth2ClientContext).
 		assertThat(countBeans(OAuth2ClientContext.class)).isEqualTo(2);
 	}
 
@@ -401,6 +476,7 @@ public class OAuth2AutoConfigurationTests {
 	}
 
 	@Configuration
+	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	protected static class TestSecurityConfiguration
 			extends WebSecurityConfigurerAdapter {
 
@@ -425,6 +501,7 @@ public class OAuth2AutoConfigurationTests {
 	@Configuration
 	@EnableOAuth2Client
 	protected static class ClientConfiguration extends TestSecurityConfiguration {
+
 	}
 
 	@Configuration
@@ -566,6 +643,26 @@ public class OAuth2AutoConfigurationTests {
 		@Override
 		protected MethodSecurityExpressionHandler createExpressionHandler() {
 			return new OAuth2MethodSecurityExpressionHandler();
+		}
+
+	}
+
+	@Configuration
+	protected static class RoleHierarchyConfiguration {
+
+		@Bean
+		public RoleHierarchy roleHierarchy() {
+			return mock(RoleHierarchy.class);
+		}
+
+	}
+
+	@Configuration
+	protected static class PermissionEvaluatorConfiguration {
+
+		@Bean
+		public PermissionEvaluator permissionEvaluator() {
+			return mock(PermissionEvaluator.class);
 		}
 
 	}

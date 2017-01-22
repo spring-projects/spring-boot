@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint;
 import java.util.Collections;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -43,6 +44,12 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 
 	public EnvironmentEndpointTests() {
 		super(Config.class, EnvironmentEndpoint.class, "env", true, "endpoints.env");
+	}
+
+	@Override
+	@After
+	public void close() {
+		System.clearProperty("VCAP_SERVICES");
 	}
 
 	@Test
@@ -197,4 +204,5 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		}
 
 	}
+
 }

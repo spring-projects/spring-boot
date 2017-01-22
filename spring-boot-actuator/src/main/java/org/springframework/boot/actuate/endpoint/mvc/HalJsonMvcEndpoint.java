@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.hateoas.ResourceSupport;
-import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -31,7 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-@ConfigurationProperties("endpoints.actuator")
+@ConfigurationProperties(prefix = "endpoints.actuator")
 public class HalJsonMvcEndpoint extends AbstractNamedMvcEndpoint {
 
 	private final ManagementServletContext managementServletContext;
@@ -49,7 +47,7 @@ public class HalJsonMvcEndpoint extends AbstractNamedMvcEndpoint {
 		return "/actuator";
 	}
 
-	@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	@ActuatorGetMapping
 	@ResponseBody
 	public ResourceSupport links() {
 		return new ResourceSupport();
@@ -58,4 +56,5 @@ public class HalJsonMvcEndpoint extends AbstractNamedMvcEndpoint {
 	protected final ManagementServletContext getManagementServletContext() {
 		return this.managementServletContext;
 	}
+
 }

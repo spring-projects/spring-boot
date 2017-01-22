@@ -32,6 +32,7 @@ import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.BootstrapWith;
 
 /**
@@ -89,5 +90,12 @@ public @interface JsonTest {
 	 * @return exclude filters to apply
 	 */
 	Filter[] excludeFilters() default {};
+
+	/**
+	 * Auto-configuration exclusions that should be applied for this test.
+	 * @return auto-configuration exclusions to apply
+	 */
+	@AliasFor(annotation = ImportAutoConfiguration.class, attribute = "exclude")
+	Class<?>[] excludeAutoConfiguration() default {};
 
 }

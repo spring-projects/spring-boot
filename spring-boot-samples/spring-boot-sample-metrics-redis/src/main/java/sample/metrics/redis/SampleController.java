@@ -31,14 +31,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Description("A controller for handling requests for hello messages")
 public class SampleController {
 
+	private final HelloWorldProperties helloWorldProperties;
+
 	@Autowired
-	private HelloWorldService helloWorldService;
+	public SampleController(HelloWorldProperties helloWorldProperties) {
+		this.helloWorldProperties = helloWorldProperties;
+	}
 
 	@GetMapping("/")
 	@ResponseBody
 	public Map<String, String> hello() {
-		return Collections.singletonMap("message",
-				this.helloWorldService.getHelloMessage());
+		return Collections.singletonMap("message", "Hello " +
+				this.helloWorldProperties.getName());
 	}
 
 	protected static class Message {

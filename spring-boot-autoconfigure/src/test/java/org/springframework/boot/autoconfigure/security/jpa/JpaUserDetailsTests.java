@@ -59,6 +59,7 @@ public class JpaUserDetailsTests {
 			PropertyPlaceholderAutoConfiguration.class, SecurityAutoConfiguration.class })
 	@ComponentScan(basePackageClasses = SecurityConfig.class)
 	public static class Main {
+
 	}
 
 }

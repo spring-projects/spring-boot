@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
+import org.junit.runner.notification.Failure;
 
 import org.springframework.boot.junit.runner.classpath.ClassPathOverrides;
 import org.springframework.boot.junit.runner.classpath.ModifiedClassPathRunner;
@@ -47,6 +48,9 @@ public class Mockito22Tests {
 
 	private void runTests(Class<?> testClass) {
 		Result result = new JUnitCore().run(testClass);
+		for (Failure failure : result.getFailures()) {
+			System.err.println(failure.getTrace());
+		}
 		assertThat(result.getFailureCount()).isEqualTo(0);
 		assertThat(result.getRunCount()).isGreaterThan(0);
 	}

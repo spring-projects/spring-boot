@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.validation.BindException;
+import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -170,6 +171,17 @@ public class EnableConfigurationPropertiesTests {
 				"name:foo");
 		this.thrown.expectCause(Matchers.<Throwable>instanceOf(BindException.class));
 		this.context.refresh();
+	}
+
+	@Test
+	public void testNoExceptionOnValidationWithoutValidated() {
+		this.context.register(IgnoredIfInvalidButNotValidatedTestConfiguration.class);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"name:foo");
+		this.context.refresh();
+		IgnoredIfInvalidButNotValidatedTestProperties bean = this.context
+				.getBean(IgnoredIfInvalidButNotValidatedTestProperties.class);
+		assertThat(bean.getDescription()).isNull();
 	}
 
 	@Test
@@ -433,6 +445,12 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Configuration
+	@EnableConfigurationProperties(IgnoredIfInvalidButNotValidatedTestProperties.class)
+	protected static class IgnoredIfInvalidButNotValidatedTestConfiguration {
+
+	}
+
+	@Configuration
 	@EnableConfigurationProperties(NoExceptionIfInvalidTestProperties.class)
 	protected static class NoExceptionIfInvalidTestConfiguration {
 
@@ -658,6 +676,7 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@ConfigurationProperties
+	@Validated
 	protected static class ExceptionIfInvalidTestProperties extends TestProperties {
 
 		@NotNull
@@ -673,7 +692,25 @@ public class EnableConfigurationPropertiesTests {
 
 	}
 
+	@ConfigurationProperties
+	protected static class IgnoredIfInvalidButNotValidatedTestProperties
+			extends TestProperties {
+
+		@NotNull
+		private String description;
+
+		public String getDescription() {
+			return this.description;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
+		}
+
+	}
+
 	@ConfigurationProperties(exceptionIfInvalid = false)
+	@Validated
 	protected static class NoExceptionIfInvalidTestProperties extends TestProperties {
 
 		@NotNull
@@ -699,6 +736,7 @@ public class EnableConfigurationPropertiesTests {
 		}
 
 		// No getter - you should be able to bind to a write-only bean
+
 	}
 
 	// No annotation

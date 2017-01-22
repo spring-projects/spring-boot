@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package org.springframework.boot.autoconfigure.h2;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.annotation.PostConstruct;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
 
 /**
  * Configuration properties for H2's console.
@@ -35,8 +35,6 @@ public class H2ConsoleProperties {
 	/**
 	 * Path at which the console will be available.
 	 */
-	@NotNull
-	@Pattern(regexp = "/[^?#]*", message = "Path must start with /")
 	private String path = "/h2-console";
 
 	/**
@@ -45,6 +43,13 @@ public class H2ConsoleProperties {
 	private boolean enabled = false;
 
 	private final Settings settings = new Settings();
+
+	@PostConstruct
+	private void validate() {
+		Assert.notNull(this.path, "Path must not be null");
+		Assert.isTrue(this.path.length() == 0 || this.path.startsWith("/"),
+				"Path must start with / or be empty");
+	}
 
 	public String getPath() {
 		return this.path;
@@ -95,4 +100,5 @@ public class H2ConsoleProperties {
 		}
 
 	}
+
 }

@@ -456,6 +456,7 @@ public class JacksonAutoConfigurationTests {
 		public MyDateFormat() {
 			super("yyyy-MM-dd HH:mm:ss");
 		}
+
 	}
 
 	@Configuration
@@ -568,6 +569,7 @@ public class JacksonAutoConfigurationTests {
 		public void setPropertyName(String propertyName) {
 			this.propertyName = propertyName;
 		}
+
 	}
 
 	@JsonComponent

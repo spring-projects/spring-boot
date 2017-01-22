@@ -225,6 +225,7 @@ public class CliTester implements TestRule {
 				throw new IllegalStateException(ex);
 			}
 		}
+
 	}
 
 }

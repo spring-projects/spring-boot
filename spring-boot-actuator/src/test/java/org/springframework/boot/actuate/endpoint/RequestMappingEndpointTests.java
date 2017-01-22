@@ -126,6 +126,7 @@ public class RequestMappingEndpointTests {
 
 	@Configuration
 	protected static class MappingConfiguration {
+
 		@Bean
 		@Lazy
 		@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -134,5 +135,7 @@ public class RequestMappingEndpointTests {
 			mapping.setUrlMap(Collections.singletonMap("/foo", new Object()));
 			return mapping;
 		}
+
 	}
+
 }

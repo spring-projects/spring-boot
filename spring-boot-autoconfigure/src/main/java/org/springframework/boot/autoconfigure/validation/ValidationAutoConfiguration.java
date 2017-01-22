@@ -16,13 +16,25 @@
 
 package org.springframework.boot.autoconfigure.validation;
 
+import javax.validation.Validation;
 import javax.validation.Validator;
+import javax.validation.executable.ExecutableValidator;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 /**
@@ -32,14 +44,46 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  * @author Stephane Nicoll
  * @since 1.5.0
  */
-@ConditionalOnClass({ Validator.class })
+@ConditionalOnClass(ExecutableValidator.class)
+@ConditionalOnResource(resources = "classpath:META-INF/services/javax.validation.spi.ValidationProvider")
+@Conditional(ValidationAutoConfiguration.OnValidatorAvailableCondition.class)
 public class ValidationAutoConfiguration {
 
 	@Bean
-	@ConditionalOnResource(resources = "META-INF/services/javax.validation.spi.ValidationProvider")
 	@ConditionalOnMissingBean
-	public MethodValidationPostProcessor methodValidationPostProcessor() {
-		return new MethodValidationPostProcessor();
+	public Validator validator() {
+		LocalValidatorFactoryBean factoryBean = new LocalValidatorFactoryBean();
+		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory();
+		factoryBean.setMessageInterpolator(interpolatorFactory.getObject());
+		return factoryBean;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public MethodValidationPostProcessor methodValidationPostProcessor(
+			Validator validator) {
+		MethodValidationPostProcessor processor = new MethodValidationPostProcessor();
+		processor.setValidator(validator);
+		return processor;
+	}
+
+	@Order(Ordered.LOWEST_PRECEDENCE)
+	static class OnValidatorAvailableCondition extends SpringBootCondition {
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition(getClass().getName());
+			try {
+				Validation.buildDefaultValidatorFactory().getValidator();
+				return ConditionOutcome.match(message.available("JSR-303 provider"));
+			}
+			catch (Exception ex) {
+				return ConditionOutcome.noMatch(message.notAvailable("JSR-303 provider"));
+			}
+		}
+
 	}
 
 }

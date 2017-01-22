@@ -84,6 +84,7 @@ public class AutoConfigurationReportEndpointTests
 		public AutoConfigurationReportEndpoint endpoint() {
 			return new AutoConfigurationReportEndpoint();
 		}
+
 	}
 
 }

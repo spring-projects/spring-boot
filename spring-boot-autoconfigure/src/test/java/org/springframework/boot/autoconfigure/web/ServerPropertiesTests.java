@@ -35,6 +35,7 @@ import javax.servlet.SessionTrackingMode;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
+import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.junit.Before;
@@ -58,8 +59,8 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -153,6 +154,48 @@ public class ServerPropertiesTests {
 		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 		assertThat(this.properties.getServletMapping()).isEqualTo("/foo/*");
 		assertThat(this.properties.getServletPrefix()).isEqualTo("/foo");
+	}
+
+	@Test
+	public void tomcatAccessLogIsDisabledByDefault() {
+		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(tomcatContainer);
+		assertThat(tomcatContainer.getEngineValves()).isEmpty();
+	}
+
+	@Test
+	public void tomcatAccessLogCanBeEnabled() {
+		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.accesslog.enabled", "true");
+		bindProperties(map);
+		this.properties.customize(tomcatContainer);
+		assertThat(tomcatContainer.getEngineValves()).hasSize(1);
+		assertThat(tomcatContainer.getEngineValves()).first()
+				.isInstanceOf(AccessLogValve.class);
+	}
+
+	@Test
+	public void tomcatAccessLogIsBufferedByDefault() {
+		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.accesslog.enabled", "true");
+		bindProperties(map);
+		this.properties.customize(tomcatContainer);
+		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next())
+				.isBuffered()).isTrue();
+	}
+
+	@Test
+	public void tomcatAccessLogBufferingCanBeDisabled() {
+		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.accesslog.enabled", "true");
+		map.put("server.tomcat.accesslog.buffered", "false");
+		bindProperties(map);
+		this.properties.customize(tomcatContainer);
+		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next())
+				.isBuffered()).isFalse();
 	}
 
 	@Test
@@ -440,10 +483,8 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.port-header", "x-my-forward-port");
 		map.put("server.tomcat.protocol-header-https-value", "On");
 		bindProperties(map);
-
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
-
 		assertThat(container.getEngineValves()).hasSize(1);
 		Valve valve = container.getEngineValves().iterator().next();
 		assertThat(valve).isInstanceOf(RemoteIpValve.class);
@@ -460,13 +501,19 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.accept-count", "10");
 		bindProperties(map);
-
-		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(
+				0);
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
 				.getEmbeddedServletContainer();
-		assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
-				.getProtocolHandler()).getBacklog()).isEqualTo(10);
+		embeddedContainer.start();
+		try {
+			assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
+					.getProtocolHandler()).getBacklog()).isEqualTo(10);
+		}
+		finally {
+			embeddedContainer.stop();
+		}
 	}
 
 	@Test
@@ -474,13 +521,19 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.max-connections", "5");
 		bindProperties(map);
-
-		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(
+				0);
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
 				.getEmbeddedServletContainer();
-		assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
-				.getProtocolHandler()).getMaxConnections()).isEqualTo(5);
+		embeddedContainer.start();
+		try {
+			assertThat(((AbstractProtocol<?>) embeddedContainer.getTomcat().getConnector()
+					.getProtocolHandler()).getMaxConnections()).isEqualTo(5);
+		}
+		finally {
+			embeddedContainer.stop();
+		}
 	}
 
 	@Test
@@ -488,13 +541,19 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.max-http-post-size", "10000");
 		bindProperties(map);
-
-		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(
+				0);
 		this.properties.customize(container);
 		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
 				.getEmbeddedServletContainer();
-		assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize())
-				.isEqualTo(10000);
+		embeddedContainer.start();
+		try {
+			assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize())
+					.isEqualTo(10000);
+		}
+		finally {
+			embeddedContainer.stop();
+		}
 	}
 
 	@Test
@@ -507,7 +566,6 @@ public class ServerPropertiesTests {
 		map.put("server.undertow.accesslog.dir", "test-logs");
 		map.put("server.undertow.accesslog.rotate", "false");
 		bindProperties(map);
-
 		UndertowEmbeddedServletContainerFactory container = spy(
 				new UndertowEmbeddedServletContainerFactory());
 		this.properties.getUndertow().customizeUndertow(this.properties, container);

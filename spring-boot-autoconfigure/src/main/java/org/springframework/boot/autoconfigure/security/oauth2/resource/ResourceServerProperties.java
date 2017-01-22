@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
@@ -36,7 +37,7 @@ import org.springframework.validation.Validator;
  * @author Dave Syer
  * @since 1.3.0
  */
-@ConfigurationProperties("security.oauth2.resource")
+@ConfigurationProperties(prefix = "security.oauth2.resource")
 public class ResourceServerProperties implements Validator, BeanFactoryAware {
 
 	@JsonIgnore
@@ -76,6 +77,12 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 	private String tokenType = DefaultOAuth2AccessToken.BEARER_TYPE;
 
 	private Jwt jwt = new Jwt();
+
+	/**
+	 * The order of the filter chain used to authenticate tokens. Default puts it after
+	 * the actuator endpoints and before the default HTTP basic filter chain (catchall).
+	 */
+	private int filterOrder = SecurityProperties.ACCESS_OVERRIDE_ORDER - 1;
 
 	public ResourceServerProperties() {
 		this(null, null);
@@ -157,6 +164,14 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 
 	public String getClientSecret() {
 		return this.clientSecret;
+	}
+
+	public int getFilterOrder() {
+		return this.filterOrder;
+	}
+
+	public void setFilterOrder(int filterOrder) {
+		this.filterOrder = filterOrder;
 	}
 
 	@Override
@@ -251,6 +266,7 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 			}
 			return null;
 		}
+
 	}
 
 }

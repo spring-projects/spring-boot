@@ -34,7 +34,7 @@ public class ExampleDataJpaApplication {
 	@Bean
 	public DataSource dataSource() {
 		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
-				.setType(EmbeddedDatabaseType.HSQL);
+				.generateUniqueName(true).setType(EmbeddedDatabaseType.HSQL);
 		return builder.build();
 	}
 

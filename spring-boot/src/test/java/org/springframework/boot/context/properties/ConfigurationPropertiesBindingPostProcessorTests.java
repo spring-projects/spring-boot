@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -456,6 +457,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@ConfigurationProperties(prefix = "test")
+	@Validated
 	public static class PropertyWithJSR303 extends PropertyWithoutJSR303 {
 
 		@NotNull
@@ -499,6 +501,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		public void setFoo(String foo) {
 			this.foo = foo;
 		}
+
 	}
 
 	public static class CustomPropertyValidator implements Validator {
@@ -577,7 +580,9 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	enum FooEnum {
+
 		FOO, BAZ, BAR
+
 	}
 
 	@Configuration

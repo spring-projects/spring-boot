@@ -111,4 +111,5 @@ public class ConditionalOnClassTests {
 	protected static class CombinedXmlConfiguration {
 
 	}
+
 }

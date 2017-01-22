@@ -38,7 +38,7 @@ import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.filter.GenericFilterBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.isA;
+import static org.mockito.ArgumentMatchers.isA;
 
 /**
  * Tests for {@link DelegatingFilterProxyRegistrationBean}.

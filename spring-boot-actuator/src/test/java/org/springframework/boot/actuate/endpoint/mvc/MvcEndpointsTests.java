@@ -101,6 +101,7 @@ public class MvcEndpointsTests {
 		public String invoke() {
 			return "foo";
 		}
+
 	}
 
 	private static class TestMvcEndpoint extends EndpointMvcAdapter {
@@ -108,6 +109,7 @@ public class MvcEndpointsTests {
 		TestMvcEndpoint(Endpoint<?> delegate) {
 			super(delegate);
 		}
+
 	}
 
 	private static class OtherTestMvcEndpoint extends EndpointMvcAdapter {
@@ -115,6 +117,7 @@ public class MvcEndpointsTests {
 		OtherTestMvcEndpoint(Endpoint<?> delegate) {
 			super(delegate);
 		}
+
 	}
 
 }

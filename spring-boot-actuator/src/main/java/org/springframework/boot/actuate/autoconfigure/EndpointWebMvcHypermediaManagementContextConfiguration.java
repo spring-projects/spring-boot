@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcHypermediaManagementContextConfiguration.EndpointHypermediaEnabledCondition;
 import org.springframework.boot.actuate.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.ActuatorMediaTypes;
 import org.springframework.boot.actuate.endpoint.mvc.DocsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HalBrowserMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
@@ -64,7 +66,9 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.UriTemplate;
 import org.springframework.hateoas.hal.CurieProvider;
 import org.springframework.hateoas.hal.DefaultCurieProvider;
+import org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.server.ServerHttpRequest;
@@ -221,12 +225,32 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	 */
 	@ConditionalOnProperty(prefix = "endpoints.hypermedia", name = "enabled", matchIfMissing = false)
 	@ControllerAdvice(assignableTypes = MvcEndpoint.class)
-	public static class MvcEndpointAdvice implements ResponseBodyAdvice<Object> {
+	static class MvcEndpointAdvice implements ResponseBodyAdvice<Object> {
 
-		@Autowired
-		private List<RequestMappingHandlerAdapter> handlerAdapters;
+		private final List<RequestMappingHandlerAdapter> handlerAdapters;
 
 		private final Map<MediaType, HttpMessageConverter<?>> converterCache = new ConcurrentHashMap<MediaType, HttpMessageConverter<?>>();
+
+		MvcEndpointAdvice(List<RequestMappingHandlerAdapter> handlerAdapters) {
+			this.handlerAdapters = handlerAdapters;
+		}
+
+		@PostConstruct
+		public void configureHttpMessageConverters() {
+			for (RequestMappingHandlerAdapter handlerAdapter : this.handlerAdapters) {
+				for (HttpMessageConverter<?> messageConverter : handlerAdapter
+						.getMessageConverters()) {
+					if (messageConverter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
+						List<MediaType> supportedMediaTypes = new ArrayList<MediaType>(
+								messageConverter.getSupportedMediaTypes());
+						supportedMediaTypes
+								.add(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON);
+						((AbstractHttpMessageConverter<?>) messageConverter)
+								.setSupportedMediaTypes(supportedMediaTypes);
+					}
+				}
+			}
+		}
 
 		@Override
 		public boolean supports(MethodParameter returnType,

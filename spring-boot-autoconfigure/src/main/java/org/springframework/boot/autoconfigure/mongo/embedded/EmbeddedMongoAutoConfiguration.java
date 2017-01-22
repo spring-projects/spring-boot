@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,8 +106,9 @@ public class EmbeddedMongoAutoConfiguration {
 	@ConditionalOnMissingBean
 	public MongodExecutable embeddedMongoServer(IMongodConfig mongodConfig)
 			throws IOException {
-		if (getPort() == 0) {
-			publishPortInfo(mongodConfig.net().getPort());
+		Integer configuredPort = this.properties.getPort();
+		if (configuredPort == null || configuredPort == 0) {
+			setEmbeddedPort(mongodConfig.net().getPort());
 		}
 		MongodStarter mongodStarter = getMongodStarter(this.runtimeConfig);
 		return mongodStarter.prepare(mongodConfig);
@@ -136,8 +137,9 @@ public class EmbeddedMongoAutoConfiguration {
 									? this.embeddedProperties.getStorage().getOplogSize()
 									: 0));
 		}
-		if (getPort() > 0) {
-			builder.net(new Net(getHost().getHostAddress(), getPort(),
+		Integer configuredPort = this.properties.getPort();
+		if (configuredPort != null && configuredPort > 0) {
+			builder.net(new Net(getHost().getHostAddress(), configuredPort,
 					Network.localhostIsIPv6()));
 		}
 		else {
@@ -145,13 +147,6 @@ public class EmbeddedMongoAutoConfiguration {
 					Network.getFreeServerPort(getHost()), Network.localhostIsIPv6()));
 		}
 		return builder.build();
-	}
-
-	private int getPort() {
-		if (this.properties.getPort() == null) {
-			return MongoProperties.DEFAULT_PORT;
-		}
-		return this.properties.getPort();
 	}
 
 	private InetAddress getHost() throws UnknownHostException {
@@ -162,7 +157,8 @@ public class EmbeddedMongoAutoConfiguration {
 		return InetAddress.getByName(this.properties.getHost());
 	}
 
-	private void publishPortInfo(int port) {
+	private void setEmbeddedPort(int port) {
+		this.properties.setPort(port);
 		setPortProperty(this.context, port);
 	}
 

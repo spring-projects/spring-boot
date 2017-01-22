@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.core.annotation.AliasFor;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * Annotation for externalized configuration. Add this to a class definition or a
@@ -80,9 +81,10 @@ public @interface ConfigurationProperties {
 	boolean ignoreUnknownFields() default true;
 
 	/**
-	 * Flag to indicate that an exception should be raised if a Validator is available and
-	 * validation fails. If it is set to false, validation errors will be swallowed. They
-	 * will be logged, but not propagated to the caller.
+	 * Flag to indicate that an exception should be raised if a Validator is available,
+	 * the class is annotated with {@link Validated @Validated} and validation fails. If
+	 * it is set to false, validation errors will be swallowed. They will be logged, but
+	 * not propagated to the caller.
 	 * @return the flag value (default true)
 	 */
 	boolean exceptionIfInvalid() default true;

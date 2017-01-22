@@ -49,7 +49,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -107,7 +107,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		this.container = factory.getEmbeddedServletContainer();
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (UndertowBuilderCustomizer customizer : customizers) {
-			ordered.verify(customizer).customize((Builder) anyObject());
+			ordered.verify(customizer).customize((Builder) any());
 		}
 	}
 
@@ -140,7 +140,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		this.container = factory.getEmbeddedServletContainer();
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (UndertowDeploymentInfoCustomizer customizer : customizers) {
-			ordered.verify(customizer).customize((DeploymentInfo) anyObject());
+			ordered.verify(customizer).customize((DeploymentInfo) any());
 		}
 	}
 

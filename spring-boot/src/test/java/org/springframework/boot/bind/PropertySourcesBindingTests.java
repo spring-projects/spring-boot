@@ -96,10 +96,12 @@ public class PropertySourcesBindingTests {
 	@PropertySources({ @PropertySource("classpath:/override.properties"),
 			@PropertySource("classpath:/some.properties") })
 	public static class SomeConfig {
+
 	}
 
 	@ConfigurationProperties
 	public static class Wrapper {
+
 		private String foo;
 
 		private String bar;
@@ -139,6 +141,7 @@ public class PropertySourcesBindingTests {
 		public void setTheName(String theName) {
 			this.theName = theName;
 		}
+
 	}
 
 }

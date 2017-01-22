@@ -40,11 +40,14 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.jdbc.support.JdbcUtils;
+import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.Assert;
@@ -90,15 +93,14 @@ public class FlywayAutoConfiguration {
 		private final FlywayMigrationStrategy migrationStrategy;
 
 		public FlywayConfiguration(FlywayProperties properties,
-				ResourceLoader resourceLoader,
-				ObjectProvider<DataSource> dataSourceProvider,
-				@FlywayDataSource ObjectProvider<DataSource> flywayDataSourceProvider,
-				ObjectProvider<FlywayMigrationStrategy> migrationStrategyProvider) {
+				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
+				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
+				ObjectProvider<FlywayMigrationStrategy> migrationStrategy) {
 			this.properties = properties;
 			this.resourceLoader = resourceLoader;
-			this.dataSource = dataSourceProvider.getIfUnique();
-			this.flywayDataSource = flywayDataSourceProvider.getIfAvailable();
-			this.migrationStrategy = migrationStrategyProvider.getIfAvailable();
+			this.dataSource = dataSource.getIfUnique();
+			this.flywayDataSource = flywayDataSource.getIfAvailable();
+			this.migrationStrategy = migrationStrategy.getIfAvailable();
 		}
 
 		@PostConstruct
@@ -126,7 +128,7 @@ public class FlywayAutoConfiguration {
 		@Bean
 		@ConfigurationProperties(prefix = "flyway")
 		public Flyway flyway() {
-			Flyway flyway = new Flyway();
+			Flyway flyway = new SpringBootFlyway();
 			if (this.properties.isCreateDataSource()) {
 				flyway.setDataSource(this.properties.getUrl(), this.properties.getUser(),
 						this.properties.getPassword(),
@@ -178,6 +180,42 @@ public class FlywayAutoConfiguration {
 
 		public FlywayJpaDependencyConfiguration() {
 			super("flyway");
+		}
+
+	}
+
+	private static class SpringBootFlyway extends Flyway {
+
+		private static final String VENDOR_PLACEHOLDER = "{vendor}";
+
+		@Override
+		public void setLocations(String... locations) {
+			if (usesVendorLocation(locations)) {
+				try {
+					String url = (String) JdbcUtils
+							.extractDatabaseMetaData(getDataSource(), "getURL");
+					DatabaseDriver vendor = DatabaseDriver.fromJdbcUrl(url);
+					if (vendor != DatabaseDriver.UNKNOWN) {
+						for (int i = 0; i < locations.length; i++) {
+							locations[i] = locations[i].replace(VENDOR_PLACEHOLDER,
+									vendor.getId());
+						}
+					}
+				}
+				catch (MetaDataAccessException ex) {
+					throw new IllegalStateException(ex);
+				}
+			}
+			super.setLocations(locations);
+		}
+
+		private boolean usesVendorLocation(String... locations) {
+			for (String location : locations) {
+				if (location.contains(VENDOR_PLACEHOLDER)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 	}

@@ -153,6 +153,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>com.unboundid</groupId>
+			<artifactId>unboundid-ldapsdk</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 			<optional>true</optional>
@@ -620,6 +625,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-ldap</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -732,7 +742,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-junit-runners</artifactId>
+			<artifactId>spring-boot-test-support</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

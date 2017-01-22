@@ -52,7 +52,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource(properties = "management.contextPath:/admin")
+@TestPropertySource(properties = { "management.contextPath:/admin",
+		"management.security.enabled=false" })
 @DirtiesContext
 public class HalBrowserMvcEndpointManagementContextPathIntegrationTests {
 

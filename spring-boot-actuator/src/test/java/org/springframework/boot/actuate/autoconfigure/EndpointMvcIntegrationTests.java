@@ -56,6 +56,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,6 +74,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
+@TestPropertySource(properties = "management.security.enabled=false")
 public class EndpointMvcIntegrationTests {
 
 	@LocalServerPort
@@ -82,7 +84,7 @@ public class EndpointMvcIntegrationTests {
 	private TestInterceptor interceptor;
 
 	@Test
-	public void envEndpointHidden() throws InterruptedException {
+	public void envEndpointNotHidden() throws InterruptedException {
 		String body = new TestRestTemplate().getForObject(
 				"http://localhost:" + this.port + "/env/user.dir", String.class);
 		assertThat(body).isNotNull().contains("spring-boot-actuator");
@@ -101,15 +103,14 @@ public class EndpointMvcIntegrationTests {
 	@MinimalWebConfiguration
 	@Import({ ManagementServerPropertiesAutoConfiguration.class,
 			JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class })
+			EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class })
 	@RestController
 	protected static class Application {
 
 		private final List<HttpMessageConverter<?>> converters;
 
-		public Application(
-				ObjectProvider<List<HttpMessageConverter<?>>> convertersProvider) {
-			this.converters = convertersProvider.getIfAvailable();
+		public Application(ObjectProvider<List<HttpMessageConverter<?>>> converters) {
+			this.converters = converters.getIfAvailable();
 		}
 
 		@RequestMapping("/{name}/{env}/{bar}")
@@ -137,7 +138,7 @@ public class EndpointMvcIntegrationTests {
 
 				@Override
 				public void customize(EndpointHandlerMapping mapping) {
-					mapping.setInterceptors(new Object[] { interceptor() });
+					mapping.setInterceptors(interceptor());
 				}
 
 			};

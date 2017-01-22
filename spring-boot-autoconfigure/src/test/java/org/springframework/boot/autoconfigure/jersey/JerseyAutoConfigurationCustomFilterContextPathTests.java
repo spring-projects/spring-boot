@@ -100,6 +100,7 @@ public class JerseyAutoConfigurationCustomFilterContextPathTests {
 			ServerPropertiesAutoConfiguration.class, JerseyAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
+
 	}
 
 }

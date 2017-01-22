@@ -20,7 +20,7 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.export.RichGaugeExporter;
-import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
+import org.springframework.boot.actuate.metrics.repository.InMemoryMultiMetricRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,10 +31,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MultiMetricRichGaugeReaderTests {
 
-	private InMemoryMetricRepository repository = new InMemoryMetricRepository();
+	private InMemoryMultiMetricRepository repository = new InMemoryMultiMetricRepository();
+
 	private MultiMetricRichGaugeReader reader = new MultiMetricRichGaugeReader(
 			this.repository);
+
 	private InMemoryRichGaugeRepository data = new InMemoryRichGaugeRepository();
+
 	private RichGaugeExporter exporter = new RichGaugeExporter(this.data,
 			this.repository);
 
@@ -44,7 +47,7 @@ public class MultiMetricRichGaugeReaderTests {
 		this.data.set(new Metric<Integer>("foo", 1));
 		this.exporter.export();
 		// Check the exporter worked
-		assertThat(this.repository.count()).isEqualTo(6);
+		assertThat(this.repository.countGroups()).isEqualTo(1);
 		assertThat(this.reader.count()).isEqualTo(1);
 		RichGauge one = this.reader.findOne("foo");
 		assertThat(one).isNotNull();

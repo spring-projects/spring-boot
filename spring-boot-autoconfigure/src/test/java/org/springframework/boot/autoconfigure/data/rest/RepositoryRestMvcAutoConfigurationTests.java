@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.core.mapping.RepositoryDetectionStrategy.RepositoryDetectionStrategies;
 import org.springframework.data.rest.webmvc.BaseUri;
+import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -54,6 +55,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Rob Winch
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class RepositoryRestMvcAutoConfigurationTests {
 
@@ -119,6 +121,22 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	}
 
 	@Test
+	public void testWithCustomConfigurer() {
+		load(TestConfigurationWithConfigurer.class,
+				"spring.data.rest.detection-strategy=visibility",
+				"spring.data.rest.default-media-type:application/my-json");
+		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class))
+				.isNotNull();
+		RepositoryRestConfiguration bean = this.context
+				.getBean(RepositoryRestConfiguration.class);
+		assertThat(bean.getRepositoryDetectionStrategy())
+				.isEqualTo(RepositoryDetectionStrategies.ALL);
+		assertThat(bean.getDefaultMediaType())
+				.isEqualTo(MediaType.parseMediaType("application/my-custom-json"));
+		assertThat(bean.getMaxPageSize()).isEqualTo(78);
+	}
+
+	@Test
 	public void backOffWithCustomConfiguration() {
 		load(TestConfigurationWithRestMvcConfig.class, "spring.data.rest.base-path:foo");
 		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class))
@@ -179,6 +197,11 @@ public class RepositoryRestMvcAutoConfigurationTests {
 
 	}
 
+	@Import({ TestConfiguration.class, TestRepositoryRestConfigurer.class })
+	protected static class TestConfigurationWithConfigurer {
+
+	}
+
 	@Import({ TestConfiguration.class, RepositoryRestMvcConfiguration.class })
 	protected static class TestConfigurationWithRestMvcConfig {
 
@@ -194,6 +217,19 @@ public class RepositoryRestMvcAutoConfigurationTests {
 			Jackson2ObjectMapperBuilder objectMapperBuilder = new Jackson2ObjectMapperBuilder();
 			objectMapperBuilder.simpleDateFormat("yyyy-MM");
 			return objectMapperBuilder;
+		}
+
+	}
+
+	static class TestRepositoryRestConfigurer extends RepositoryRestConfigurerAdapter {
+
+		@Override
+		public void configureRepositoryRestConfiguration(
+				RepositoryRestConfiguration config) {
+			config.setRepositoryDetectionStrategy(RepositoryDetectionStrategies.ALL);
+			config.setDefaultMediaType(
+					MediaType.parseMediaType("application/my-custom-json"));
+			config.setMaxPageSize(78);
 		}
 
 	}

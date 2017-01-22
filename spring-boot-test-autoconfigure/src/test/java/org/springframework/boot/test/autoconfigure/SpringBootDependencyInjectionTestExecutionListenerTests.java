@@ -76,6 +76,7 @@ public class SpringBootDependencyInjectionTestExecutionListenerTests {
 	@Configuration
 	@ImportAutoConfiguration(JacksonAutoConfiguration.class)
 	static class Config {
+
 	}
 
 }

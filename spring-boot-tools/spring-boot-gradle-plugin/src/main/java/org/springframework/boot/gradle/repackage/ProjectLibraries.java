@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,8 +127,11 @@ class ProjectLibraries implements Libraries {
 			}
 			else if (dependency instanceof ProjectDependency) {
 				ProjectDependency projectDependency = (ProjectDependency) dependency;
-				libraries.addAll(getLibrariesForFileDependencies(
-						projectDependency.getProjectConfiguration(), scope));
+				Configuration dependencyConfiguration = projectDependency
+						.getDependencyProject().getConfigurations()
+						.getByName(projectDependency.getConfiguration());
+				libraries.addAll(
+						getLibrariesForFileDependencies(dependencyConfiguration, scope));
 			}
 		}
 		return libraries;
@@ -233,6 +236,7 @@ class ProjectLibraries implements Libraries {
 		public String toString() {
 			return getFile().getAbsolutePath();
 		}
+
 	}
 
 	/**

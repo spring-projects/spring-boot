@@ -86,6 +86,30 @@
     "description": "Arbitrary properties to add to the info endpoint."
   },
   {
+    "name": "management.cloudfoundry.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable extended Cloud Foundry actuator endpoints.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.cloudfoundry.skip-ssl-validation",
+    "type": "java.lang.Boolean",
+    "description": "Skip SSL verification for Cloud Foundry actuator endpoint security calls.",
+    "defaultValue": false
+  },
+  {
+    "name": "management.health.cassandra.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable cassandra health check.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.health.couchbase.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable couchbase health check.",
+    "defaultValue": true
+  },
+  {
     "name": "management.health.db.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable database health check.",
@@ -113,6 +137,12 @@
     "name": "management.health.jms.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable JMS health check.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.health.ldap.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable LDAP health check.",
     "defaultValue": true
   },
   {
@@ -168,6 +198,14 @@
     "type": "java.lang.Boolean",
     "description": "Enable git info.",
     "defaultValue": true
+  },
+  {
+    "name": "management.info.git.mode",
+    "defaultValue": "simple"
+  },
+  {
+    "name": "management.security.sessions",
+    "defaultValue": "stateless"
   },
   {
     "name": "spring.git.properties",

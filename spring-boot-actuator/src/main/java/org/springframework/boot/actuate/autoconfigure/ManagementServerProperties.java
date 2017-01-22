@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpSession;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.boot.autoconfigure.security.SecurityPrerequisite;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -45,7 +46,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	/**
 	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
 	 * authentication for management endpoints. If you want to add your own authentication
-	 * for all or some of those endpoints the best thing to do is add your own
+	 * for all or some of those endpoints the best thing to do is to add your own
 	 * WebSecurityConfigurerAdapter with lower order, for instance by using
 	 * {@code ACCESS_OVERRIDE_ORDER}.
 	 */
@@ -78,7 +79,6 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	/**
 	 * Management endpoint context-path.
 	 */
-	@NotNull
 	private String contextPath = "";
 
 	/**
@@ -87,6 +87,11 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	private boolean addApplicationContextHeader = true;
 
 	private final Security security = new Security();
+
+	@PostConstruct
+	private void validate() {
+		Assert.notNull(this.contextPath, "ContextPath must not be null");
+	}
 
 	/**
 	 * Returns the management port or {@code null} if the
@@ -168,7 +173,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		/**
 		 * Comma-separated list of roles that can access the management endpoint.
 		 */
-		private List<String> roles = Arrays.asList("ADMIN");
+		private List<String> roles = Arrays.asList("ACTUATOR");
 
 		/**
 		 * Session creating policy for security use (always, never, if_required,

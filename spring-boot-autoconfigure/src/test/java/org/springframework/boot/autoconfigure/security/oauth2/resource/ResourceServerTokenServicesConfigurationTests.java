@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
+import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.social.connect.ConnectionFactoryLocator;
@@ -213,6 +214,19 @@ public class ResourceServerTokenServicesConfigurationTests {
 		assertThat(services).isNotNull();
 	}
 
+	@Test
+	public void customUserInfoRestTemplateFactory() {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"security.oauth2.resource.userInfoUri:http://example.com");
+		this.context = new SpringApplicationBuilder(
+				CustomUserInfoRestTemplateFactory.class, ResourceConfiguration.class)
+						.environment(this.environment).web(false).run();
+		assertThat(this.context.getBeansOfType(UserInfoRestTemplateFactory.class))
+				.hasSize(1);
+		assertThat(this.context.getBean(UserInfoRestTemplateFactory.class))
+				.isInstanceOf(CustomUserInfoRestTemplateFactory.class);
+	}
+
 	@Configuration
 	@Import({ ResourceServerTokenServicesConfiguration.class,
 			ResourceServerPropertiesConfiguration.class,
@@ -309,6 +323,20 @@ public class ResourceServerTokenServicesConfigurationTests {
 				}
 
 			});
+		}
+
+	}
+
+	@Component
+	protected static class CustomUserInfoRestTemplateFactory
+			implements UserInfoRestTemplateFactory {
+
+		private final OAuth2RestTemplate restTemplate = new OAuth2RestTemplate(
+				new AuthorizationCodeResourceDetails());
+
+		@Override
+		public OAuth2RestTemplate getUserInfoRestTemplate() {
+			return this.restTemplate;
 		}
 
 	}

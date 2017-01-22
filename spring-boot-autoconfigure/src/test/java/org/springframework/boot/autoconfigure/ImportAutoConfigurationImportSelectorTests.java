@@ -29,6 +29,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
@@ -70,6 +71,15 @@ public class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
+	public void importsAreSelectedUsingClassesAttribute() throws Exception {
+		AnnotationMetadata annotationMetadata = new SimpleMetadataReaderFactory()
+				.getMetadataReader(ImportFreeMarkerUsingClassesAttribute.class.getName())
+				.getAnnotationMetadata();
+		String[] imports = this.importSelector.selectImports(annotationMetadata);
+		assertThat(imports).containsExactly(FreeMarkerAutoConfiguration.class.getName());
+	}
+
+	@Test
 	public void propertyExclusionsAreNotApplied() throws Exception {
 		AnnotationMetadata annotationMetadata = new SimpleMetadataReaderFactory()
 				.getMetadataReader(ImportFreeMarker.class.getName())
@@ -97,8 +107,41 @@ public class ImportAutoConfigurationImportSelectorTests {
 		assertThat(imports).containsOnly(ThymeleafAutoConfiguration.class.getName());
 	}
 
+	@Test
+	public void exclusionsAreApplied() throws Exception {
+		AnnotationMetadata annotationMetadata = new SimpleMetadataReaderFactory()
+				.getMetadataReader(MultipleImportsWithExclusion.class.getName())
+				.getAnnotationMetadata();
+		String[] imports = this.importSelector.selectImports(annotationMetadata);
+		assertThat(imports).containsOnly(FreeMarkerAutoConfiguration.class.getName());
+	}
+
+	@Test
+	public void exclusionsWithoutImport() throws Exception {
+		AnnotationMetadata annotationMetadata = new SimpleMetadataReaderFactory()
+				.getMetadataReader(ExclusionWithoutImport.class.getName())
+				.getAnnotationMetadata();
+		String[] imports = this.importSelector.selectImports(annotationMetadata);
+		assertThat(imports).containsOnly(FreeMarkerAutoConfiguration.class.getName());
+	}
+
+	@Test
+	public void exclusionsAliasesAreApplied() throws Exception {
+		AnnotationMetadata annotationMetadata = new SimpleMetadataReaderFactory()
+				.getMetadataReader(
+						ImportWithSelfAnnotatingAnnotationExclude.class.getName())
+				.getAnnotationMetadata();
+		String[] imports = this.importSelector.selectImports(annotationMetadata);
+		assertThat(imports).isEmpty();
+	}
+
 	@ImportAutoConfiguration(FreeMarkerAutoConfiguration.class)
 	static class ImportFreeMarker {
+
+	}
+
+	@ImportAutoConfiguration(classes = FreeMarkerAutoConfiguration.class)
+	static class ImportFreeMarkerUsingClassesAttribute {
 
 	}
 
@@ -108,8 +151,26 @@ public class ImportAutoConfigurationImportSelectorTests {
 
 	}
 
+	@ImportOne
+	@ImportTwo
+	@ImportAutoConfiguration(exclude = ThymeleafAutoConfiguration.class)
+	static class MultipleImportsWithExclusion {
+
+	}
+
+	@ImportOne
+	@ImportAutoConfiguration(exclude = ThymeleafAutoConfiguration.class)
+	static class ExclusionWithoutImport {
+
+	}
+
 	@SelfAnnotating
 	static class ImportWithSelfAnnotatingAnnotation {
+
+	}
+
+	@SelfAnnotating(excludeAutoConfiguration = ThymeleafAutoConfiguration.class)
+	static class ImportWithSelfAnnotatingAnnotationExclude {
 
 	}
 
@@ -129,6 +190,9 @@ public class ImportAutoConfigurationImportSelectorTests {
 	@ImportAutoConfiguration(ThymeleafAutoConfiguration.class)
 	@SelfAnnotating
 	static @interface SelfAnnotating {
+
+		@AliasFor(annotation = ImportAutoConfiguration.class, attribute = "exclude")
+		Class<?>[] excludeAutoConfiguration() default {};
 
 	}
 

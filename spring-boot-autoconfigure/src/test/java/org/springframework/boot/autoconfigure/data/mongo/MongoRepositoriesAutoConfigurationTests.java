@@ -127,4 +127,5 @@ public class MongoRepositoriesAutoConfigurationTests {
 	protected static class SortOfInvalidCustomConfiguration {
 
 	}
+
 }

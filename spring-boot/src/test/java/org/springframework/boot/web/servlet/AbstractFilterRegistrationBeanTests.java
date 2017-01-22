@@ -35,10 +35,10 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -68,7 +68,7 @@ public abstract class AbstractFilterRegistrationBeanTests {
 	@Before
 	public void setupMocks() {
 		MockitoAnnotations.initMocks(this);
-		given(this.servletContext.addFilter(anyString(), (Filter) anyObject()))
+		given(this.servletContext.addFilter(anyString(), (Filter) any()))
 				.willReturn(this.registration);
 	}
 

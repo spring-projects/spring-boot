@@ -87,8 +87,10 @@ public class OverrideSourcesTests {
 	}
 
 	protected static class Service {
+
 		@Autowired
 		private TestBean bean;
+
 	}
 
 	protected static class TestBean {
@@ -100,4 +102,5 @@ public class OverrideSourcesTests {
 		}
 
 	}
+
 }

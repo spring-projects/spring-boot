@@ -77,10 +77,10 @@ public class GroovyTemplateAutoConfiguration {
 
 		public GroovyMarkupConfiguration(ApplicationContext applicationContext,
 				GroovyTemplateProperties properties,
-				ObjectProvider<MarkupTemplateEngine> templateEngineProvider) {
+				ObjectProvider<MarkupTemplateEngine> templateEngine) {
 			this.applicationContext = applicationContext;
 			this.properties = properties;
-			this.templateEngine = templateEngineProvider.getIfAvailable();
+			this.templateEngine = templateEngine.getIfAvailable();
 		}
 
 		@PostConstruct

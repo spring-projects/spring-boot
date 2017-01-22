@@ -42,6 +42,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 import org.springframework.boot.jta.XADataSourceWrapper;
@@ -69,6 +70,7 @@ import static org.mockito.Mockito.mock;
  * @author Josh Long
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  */
 public class JtaAutoConfigurationTests {
 
@@ -245,6 +247,36 @@ public class JtaAutoConfigurationTests {
 		assertThat(dataSource.getMaxPoolSize()).isEqualTo(10);
 	}
 
+	@Test
+	public void atomikosCustomizeJtaTransactionManagerUsingProperties() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.transaction.default-timeout:30",
+				"spring.transaction.rollback-on-commit-failure:true");
+		this.context.register(AtomikosJtaConfiguration.class,
+				TransactionAutoConfiguration.class);
+		this.context.refresh();
+		JtaTransactionManager transactionManager = this.context
+				.getBean(JtaTransactionManager.class);
+		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
+		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
+	}
+
+	@Test
+	public void bitronixCustomizeJtaTransactionManagerUsingProperties() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.transaction.default-timeout:30",
+				"spring.transaction.rollback-on-commit-failure:true");
+		this.context.register(BitronixJtaConfiguration.class,
+				TransactionAutoConfiguration.class);
+		this.context.refresh();
+		JtaTransactionManager transactionManager = this.context
+				.getBean(JtaTransactionManager.class);
+		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
+		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
+	}
+
 	@Configuration
 	@EnableConfigurationProperties(JtaProperties.class)
 	public static class JtaPropertiesConfiguration {
@@ -284,6 +316,7 @@ public class JtaAutoConfigurationTests {
 			XADataSource dataSource = mock(XADataSource.class);
 			return wrapper.wrapDataSource(dataSource);
 		}
+
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.annotation.PostConstruct;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EndpointProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
@@ -41,8 +41,6 @@ public abstract class AbstractMvcEndpoint extends WebMvcConfigurerAdapter
 	/**
 	 * Endpoint URL path.
 	 */
-	@NotNull
-	@Pattern(regexp = "/.*|^$", message = "Path must start with / or be empty")
 	private String path;
 
 	/**
@@ -66,6 +64,13 @@ public abstract class AbstractMvcEndpoint extends WebMvcConfigurerAdapter
 		this.path = path;
 		this.sensitiveDefault = sensitive;
 		this.enabled = enabled;
+	}
+
+	@PostConstruct
+	private void validate() {
+		Assert.notNull(this.path, "Path must not be null");
+		Assert.isTrue(this.path.length() == 0 || this.path.startsWith("/"),
+				"Path must start with / or be empty");
 	}
 
 	@Override

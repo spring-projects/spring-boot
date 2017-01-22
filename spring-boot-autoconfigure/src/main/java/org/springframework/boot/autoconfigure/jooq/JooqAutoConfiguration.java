@@ -83,7 +83,7 @@ public class JooqAutoConfiguration {
 
 		private final JooqProperties properties;
 
-		private final ConnectionProvider connectionProvider;
+		private final ConnectionProvider connection;
 
 		private final TransactionProvider transactionProvider;
 
@@ -99,21 +99,20 @@ public class JooqAutoConfiguration {
 
 		public DslContextConfiguration(JooqProperties properties,
 				ConnectionProvider connectionProvider,
-				ObjectProvider<TransactionProvider> transactionProviderProvider,
-				ObjectProvider<RecordMapperProvider> recordMapperProviderProvider,
-				ObjectProvider<Settings> settingsProvider,
-				ObjectProvider<RecordListenerProvider[]> recordListenerProvidersProvider,
+				ObjectProvider<TransactionProvider> transactionProvider,
+				ObjectProvider<RecordMapperProvider> recordMapperProvider,
+				ObjectProvider<Settings> settings,
+				ObjectProvider<RecordListenerProvider[]> recordListenerProviders,
 				ExecuteListenerProvider[] executeListenerProviders,
-				ObjectProvider<VisitListenerProvider[]> visitListenerProvidersProvider) {
+				ObjectProvider<VisitListenerProvider[]> visitListenerProviders) {
 			this.properties = properties;
-			this.connectionProvider = connectionProvider;
-			this.transactionProvider = transactionProviderProvider.getIfAvailable();
-			this.recordMapperProvider = recordMapperProviderProvider.getIfAvailable();
-			this.settings = settingsProvider.getIfAvailable();
-			this.recordListenerProviders = recordListenerProvidersProvider
-					.getIfAvailable();
+			this.connection = connectionProvider;
+			this.transactionProvider = transactionProvider.getIfAvailable();
+			this.recordMapperProvider = recordMapperProvider.getIfAvailable();
+			this.settings = settings.getIfAvailable();
+			this.recordListenerProviders = recordListenerProviders.getIfAvailable();
 			this.executeListenerProviders = executeListenerProviders;
-			this.visitListenerProviders = visitListenerProvidersProvider.getIfAvailable();
+			this.visitListenerProviders = visitListenerProviders.getIfAvailable();
 		}
 
 		@Bean
@@ -128,7 +127,7 @@ public class JooqAutoConfiguration {
 			if (this.properties.getSqlDialect() != null) {
 				configuration.set(this.properties.getSqlDialect());
 			}
-			configuration.set(this.connectionProvider);
+			configuration.set(this.connection);
 			if (this.transactionProvider != null) {
 				configuration.set(this.transactionProvider);
 			}

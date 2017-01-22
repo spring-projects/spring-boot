@@ -117,6 +117,7 @@ public class PropertiesConfigurationFactoryMapTests {
 
 	// Foo needs to be public and to have setters for all properties
 	public static class Foo {
+
 		private Map<String, Object> map = new HashMap<String, Object>();
 
 		public Map<String, Object> getMap() {
@@ -126,6 +127,7 @@ public class PropertiesConfigurationFactoryMapTests {
 		public void setMap(Map<String, Object> map) {
 			this.map = map;
 		}
+
 	}
 
 }

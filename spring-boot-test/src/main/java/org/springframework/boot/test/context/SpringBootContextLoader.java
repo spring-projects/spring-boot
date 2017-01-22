@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,19 +21,27 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.web.support.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.Ordered;
 import org.springframework.core.SpringVersion;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySources;
+import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.test.context.ContextConfigurationAttributes;
@@ -65,6 +73,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @see SpringBootTest
  */
 public class SpringBootContextLoader extends AbstractContextLoader {
@@ -143,7 +152,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		// JMX bean names will clash if the same bean is used in multiple contexts
 		disableJmx(properties);
 		properties.addAll(Arrays.asList(config.getPropertySourceProperties()));
-		if (!isEmbeddedWebEnvironment(config)) {
+		if (!isEmbeddedWebEnvironment(config) && !hasCustomServerPort(properties)) {
 			properties.add("server.port=-1");
 		}
 		return properties.toArray(new String[properties.size()]);
@@ -151,6 +160,22 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 
 	private void disableJmx(List<String> properties) {
 		properties.add("spring.jmx.enabled=false");
+	}
+
+	private boolean hasCustomServerPort(List<String> properties) {
+		PropertySources sources = convertToPropertySources(properties);
+		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
+				new PropertySourcesPropertyResolver(sources), "server.");
+		return resolver.containsProperty("port");
+	}
+
+	private PropertySources convertToPropertySources(List<String> properties) {
+		Map<String, Object> source = TestPropertySourceUtils
+				.convertInlinedPropertiesToMap(
+						properties.toArray(new String[properties.size()]));
+		MutablePropertySources sources = new MutablePropertySources();
+		sources.addFirst(new MapPropertySource("inline", source));
+		return sources;
 	}
 
 	private List<ApplicationContextInitializer<?>> getInitializers(
@@ -163,6 +188,10 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : config
 				.getContextInitializerClasses()) {
 			initializers.add(BeanUtils.instantiateClass(initializerClass));
+		}
+		if (config.getParent() != null) {
+			initializers.add(new ParentContextApplicationContextInitializer(
+					config.getParentApplicationContext()));
 		}
 		return initializers;
 	}
@@ -268,6 +297,23 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
 			this.contextCustomizer.customizeContext(applicationContext, this.config);
+		}
+
+	}
+
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	private static class ParentContextApplicationContextInitializer
+			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+		private final ApplicationContext parent;
+
+		ParentContextApplicationContextInitializer(ApplicationContext parent) {
+			this.parent = parent;
+		}
+
+		@Override
+		public void initialize(ConfigurableApplicationContext applicationContext) {
+			applicationContext.setParent(this.parent);
 		}
 
 	}

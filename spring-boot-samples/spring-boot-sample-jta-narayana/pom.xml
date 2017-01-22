@@ -14,6 +14,7 @@
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
 	<dependencies>
+		<!-- Compile -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jms</artifactId>
@@ -44,6 +45,7 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 		</dependency>
+		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

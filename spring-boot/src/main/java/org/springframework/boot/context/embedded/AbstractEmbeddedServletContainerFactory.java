@@ -115,7 +115,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	private File getCommonDocumentRoot() {
 		for (String commonDocRoot : COMMON_DOC_ROOTS) {
 			File root = new File(commonDocRoot);
-			if (root != null && root.exists() && root.isDirectory()) {
+			if (root.exists() && root.isDirectory()) {
 				return root.getAbsoluteFile();
 			}
 		}

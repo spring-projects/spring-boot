@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentCaptor;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -78,10 +79,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -273,10 +272,12 @@ public class SpringApplicationTests {
 		final AtomicReference<SpringApplication> reference = new AtomicReference<SpringApplication>();
 		class ApplicationReadyEventListener
 				implements ApplicationListener<ApplicationReadyEvent> {
+
 			@Override
 			public void onApplicationEvent(ApplicationReadyEvent event) {
 				reference.set(event.getSpringApplication());
 			}
+
 		}
 		application.addListeners(new ApplicationReadyEventListener());
 		this.context = application.run("--foo=bar");
@@ -289,10 +290,12 @@ public class SpringApplicationTests {
 		application.setWebEnvironment(false);
 		final AtomicReference<ApplicationContext> reference = new AtomicReference<ApplicationContext>();
 		class InitializerListener implements ApplicationListener<ContextRefreshedEvent> {
+
 			@Override
 			public void onApplicationEvent(ContextRefreshedEvent event) {
 				reference.set(event.getApplicationContext());
 			}
+
 		}
 		application.setListeners(Arrays.asList(new InitializerListener()));
 		this.context = application.run("--foo=bar");
@@ -309,10 +312,12 @@ public class SpringApplicationTests {
 		final List<ApplicationEvent> events = new ArrayList<ApplicationEvent>();
 		class ApplicationRunningEventListener
 				implements ApplicationListener<ApplicationEvent> {
+
 			@Override
 			public void onApplicationEvent(ApplicationEvent event) {
 				events.add((event));
 			}
+
 		}
 		application.addListeners(new ApplicationRunningEventListener());
 		this.context = application.run();
@@ -638,7 +643,11 @@ public class SpringApplicationTests {
 		}
 		catch (RuntimeException ex) {
 		}
-		verify(handler).registerLoggedException(any(RefreshFailureException.class));
+		ArgumentCaptor<RuntimeException> exceptionCaptor = ArgumentCaptor
+				.forClass(RuntimeException.class);
+		verify(handler).registerLoggedException(exceptionCaptor.capture());
+		assertThat(exceptionCaptor.getValue())
+				.hasCauseInstanceOf(RefreshFailureException.class);
 		assertThat(this.output.toString()).doesNotContain("NullPointerException");
 	}
 
@@ -716,8 +725,8 @@ public class SpringApplicationTests {
 	private void verifyTestListenerEvents() {
 		ApplicationListener<ApplicationEvent> listener = this.context
 				.getBean("testApplicationListener", ApplicationListener.class);
-		verify(listener).onApplicationEvent(argThat(isA(ContextRefreshedEvent.class)));
-		verify(listener).onApplicationEvent(argThat(isA(ApplicationReadyEvent.class)));
+		verify(listener).onApplicationEvent(isA(ContextRefreshedEvent.class));
+		verify(listener).onApplicationEvent(isA(ApplicationReadyEvent.class));
 		verifyNoMoreInteractions(listener);
 	}
 
@@ -793,7 +802,7 @@ public class SpringApplicationTests {
 		this.context = application.run();
 		assertThat(this.context.getEnvironment())
 				.isNotInstanceOf(StandardServletEnvironment.class);
-		assertThat(this.context.getEnvironment().getProperty("foo"));
+		assertThat(this.context.getEnvironment().getProperty("foo")).isEqualTo("bar");
 		assertThat(this.context.getEnvironment().getPropertySources().iterator().next()
 				.getName()).isEqualTo(
 						TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
@@ -1047,6 +1056,7 @@ public class SpringApplicationTests {
 		public void fail() {
 			throw new RefreshFailureException();
 		}
+
 	}
 
 	static class ExitStatusException extends RuntimeException

@@ -29,6 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Wallace Wadge
  * @author Phillip Webb
  * @author Venil Noronha
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "management.trace")
@@ -78,6 +79,11 @@ public class TraceProperties {
 		 * Include "Cookie" in request and "Set-Cookie" in response headers.
 		 */
 		COOKIES,
+
+		/**
+		 * Include authorization header (if any).
+		 */
+		AUTHORIZATION_HEADER,
 
 		/**
 		 * Include errors (if any).

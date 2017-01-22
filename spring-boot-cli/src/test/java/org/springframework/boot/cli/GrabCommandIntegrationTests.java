@@ -85,4 +85,5 @@ public class GrabCommandIntegrationTests {
 		assertThat(new File("target/repository/javax/ejb/ejb-api/3.0").isDirectory())
 				.isTrue();
 	}
+
 }

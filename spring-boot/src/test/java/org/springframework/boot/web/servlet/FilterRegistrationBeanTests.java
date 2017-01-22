@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import org.springframework.boot.testutil.MockFilter;
 
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 /**

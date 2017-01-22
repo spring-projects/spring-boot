@@ -92,4 +92,5 @@ public class YamlJavaBeanPropertyConstructor extends Constructor {
 		}
 
 	}
+
 }

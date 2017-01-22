@@ -166,6 +166,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 			}
 			return names.toArray(new String[0]);
 		}
+
 	}
 
 }

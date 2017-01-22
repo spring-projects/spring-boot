@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.aop.framework.autoproxy.AutoProxyUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -82,20 +82,14 @@ import org.springframework.web.util.HtmlUtils;
 @EnableConfigurationProperties(ResourceProperties.class)
 public class ErrorMvcAutoConfiguration {
 
-	private final ApplicationContext applicationContext;
-
 	private final ServerProperties serverProperties;
 
-	private final ResourceProperties resourceProperties;
+	private final List<ErrorViewResolver> errorViewResolvers;
 
-	@Autowired(required = false)
-	private List<ErrorViewResolver> errorViewResolvers;
-
-	public ErrorMvcAutoConfiguration(ApplicationContext applicationContext,
-			ServerProperties serverProperties, ResourceProperties resourceProperties) {
-		this.applicationContext = applicationContext;
+	public ErrorMvcAutoConfiguration(ServerProperties serverProperties,
+			ObjectProvider<List<ErrorViewResolver>> errorViewResolversProvider) {
 		this.serverProperties = serverProperties;
-		this.resourceProperties = resourceProperties;
+		this.errorViewResolvers = errorViewResolversProvider.getIfAvailable();
 	}
 
 	@Bean
@@ -117,16 +111,31 @@ public class ErrorMvcAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBean(DispatcherServlet.class)
-	@ConditionalOnMissingBean
-	public DefaultErrorViewResolver conventionErrorViewResolver() {
-		return new DefaultErrorViewResolver(this.applicationContext,
-				this.resourceProperties);
-	}
-
-	@Bean
 	public static PreserveErrorControllerTargetClassPostProcessor preserveErrorControllerTargetClassPostProcessor() {
 		return new PreserveErrorControllerTargetClassPostProcessor();
+	}
+
+	@Configuration
+	static class DefaultErrorViewResolverConfiguration {
+
+		private final ApplicationContext applicationContext;
+
+		private final ResourceProperties resourceProperties;
+
+		DefaultErrorViewResolverConfiguration(ApplicationContext applicationContext,
+				ResourceProperties resourceProperties) {
+			this.applicationContext = applicationContext;
+			this.resourceProperties = resourceProperties;
+		}
+
+		@Bean
+		@ConditionalOnBean(DispatcherServlet.class)
+		@ConditionalOnMissingBean
+		public DefaultErrorViewResolver conventionErrorViewResolver() {
+			return new DefaultErrorViewResolver(this.applicationContext,
+					this.resourceProperties);
+		}
+
 	}
 
 	@Configuration

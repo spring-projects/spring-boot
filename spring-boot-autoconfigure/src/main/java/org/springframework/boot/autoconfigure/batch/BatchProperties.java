@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Vedran Pavic
  * @since 1.2.0
  */
-@ConfigurationProperties("spring.batch")
+@ConfigurationProperties(prefix = "spring.batch")
 public class BatchProperties {
 
 	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
@@ -54,20 +54,20 @@ public class BatchProperties {
 		this.schema = schema;
 	}
 
-	public Initializer getInitializer() {
-		return this.initializer;
-	}
-
-	public Job getJob() {
-		return this.job;
+	public String getTablePrefix() {
+		return this.tablePrefix;
 	}
 
 	public void setTablePrefix(String tablePrefix) {
 		this.tablePrefix = tablePrefix;
 	}
 
-	public String getTablePrefix() {
-		return this.tablePrefix;
+	public Initializer getInitializer() {
+		return this.initializer;
+	}
+
+	public Job getJob() {
+		return this.job;
 	}
 
 	public class Initializer {
@@ -111,4 +111,5 @@ public class BatchProperties {
 		}
 
 	}
+
 }

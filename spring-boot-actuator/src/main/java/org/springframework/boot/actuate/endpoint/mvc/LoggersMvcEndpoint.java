@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,8 @@ import org.springframework.boot.actuate.endpoint.LoggersEndpoint.LoggerLevels;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -35,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * Adapter to expose {@link LoggersEndpoint} as an {@link MvcEndpoint}.
  *
  * @author Ben Hale
+ * @author Kazuki Shimizu
  * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "endpoints.loggers")
@@ -47,7 +45,7 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 		this.delegate = delegate;
 	}
 
-	@GetMapping(value = "/{name:.*}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ActuatorGetMapping("/{name:.*}")
 	@ResponseBody
 	@HypermediaDisabled
 	public Object get(@PathVariable String name) {
@@ -60,7 +58,7 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 		return (levels == null ? ResponseEntity.notFound().build() : levels);
 	}
 
-	@PostMapping(value = "/{name:.*}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ActuatorPostMapping("/{name:.*}")
 	@ResponseBody
 	@HypermediaDisabled
 	public Object set(@PathVariable String name,
@@ -71,7 +69,8 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 			return getDisabledResponse();
 		}
 		String level = configuration.get("configuredLevel");
-		this.delegate.setLogLevel(name, level == null ? null : LogLevel.valueOf(level));
+		LogLevel logLevel = level == null ? null : LogLevel.valueOf(level.toUpperCase());
+		this.delegate.setLogLevel(name, logLevel);
 		return HttpEntity.EMPTY;
 	}
 

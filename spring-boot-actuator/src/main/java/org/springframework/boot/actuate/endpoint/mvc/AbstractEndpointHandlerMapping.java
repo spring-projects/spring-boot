@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,14 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.context.ApplicationContext;
@@ -30,6 +33,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsUtils;
+import org.springframework.web.servlet.HandlerExecutionChain;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -56,6 +62,8 @@ public abstract class AbstractEndpointHandlerMapping<E extends MvcEndpoint>
 		extends RequestMappingHandlerMapping {
 
 	private final Set<E> endpoints;
+
+	private HandlerInterceptor securityInterceptor;
 
 	private final CorsConfiguration corsConfiguration;
 
@@ -173,6 +181,45 @@ public abstract class AbstractEndpointHandlerMapping<E extends MvcEndpoint>
 				mapping.getParamsCondition(), mapping.getHeadersCondition(),
 				mapping.getConsumesCondition(), mapping.getProducesCondition(),
 				mapping.getCustomCondition());
+	}
+
+	@Override
+	protected HandlerExecutionChain getHandlerExecutionChain(Object handler,
+			HttpServletRequest request) {
+		HandlerExecutionChain chain = super.getHandlerExecutionChain(handler, request);
+		if (this.securityInterceptor == null || CorsUtils.isCorsRequest(request)) {
+			return chain;
+		}
+		return addSecurityInterceptor(chain);
+	}
+
+	@Override
+	protected HandlerExecutionChain getCorsHandlerExecutionChain(
+			HttpServletRequest request, HandlerExecutionChain chain,
+			CorsConfiguration config) {
+		chain = super.getCorsHandlerExecutionChain(request, chain, config);
+		if (this.securityInterceptor == null) {
+			return chain;
+		}
+		return addSecurityInterceptor(chain);
+	}
+
+	private HandlerExecutionChain addSecurityInterceptor(HandlerExecutionChain chain) {
+		List<HandlerInterceptor> interceptors = new ArrayList<HandlerInterceptor>();
+		if (chain.getInterceptors() != null) {
+			interceptors.addAll(Arrays.asList(chain.getInterceptors()));
+		}
+		interceptors.add(this.securityInterceptor);
+		return new HandlerExecutionChain(chain.getHandler(),
+				interceptors.toArray(new HandlerInterceptor[interceptors.size()]));
+	}
+
+	/**
+	 * Set the handler interceptor that will be used for security.
+	 * @param securityInterceptor the security handler interceptor
+	 */
+	public void setSecurityInterceptor(HandlerInterceptor securityInterceptor) {
+		this.securityInterceptor = securityInterceptor;
 	}
 
 	/**

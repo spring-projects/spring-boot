@@ -359,6 +359,7 @@ public class ArtemisAutoConfigurationTests {
 				}
 			});
 		}
+
 	}
 
 	@Configuration
@@ -386,6 +387,7 @@ public class ArtemisAutoConfigurationTests {
 			topicConfiguration.setBindings("/topic/1");
 			return topicConfiguration;
 		}
+
 	}
 
 	@Configuration
@@ -400,6 +402,7 @@ public class ArtemisAutoConfigurationTests {
 			config.getQueueConfigurations().add(jmsQueueConfiguration);
 			return config;
 		}
+
 	}
 
 	@Configuration

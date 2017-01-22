@@ -22,9 +22,10 @@ import com.couchbase.client.java.Bucket;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +42,8 @@ import org.springframework.data.couchbase.repository.CouchbaseRepository;
  */
 @Configuration
 @ConditionalOnClass({ Bucket.class, CouchbaseRepository.class })
-@AutoConfigureAfter(CouchbaseAutoConfiguration.class)
+@AutoConfigureAfter({ CouchbaseAutoConfiguration.class,
+		ValidationAutoConfiguration.class })
 @EnableConfigurationProperties(CouchbaseDataProperties.class)
 @Import({ CouchbaseConfigurerAdapterConfiguration.class,
 		SpringBootCouchbaseDataConfiguration.class })
@@ -52,7 +54,7 @@ public class CouchbaseDataAutoConfiguration {
 	public static class ValidationConfiguration {
 
 		@Bean
-		@ConditionalOnBean(Validator.class)
+		@ConditionalOnSingleCandidate(Validator.class)
 		public ValidatingCouchbaseEventListener validationEventListener(
 				Validator validator) {
 			return new ValidatingCouchbaseEventListener(validator);

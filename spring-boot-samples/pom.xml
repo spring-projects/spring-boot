@@ -32,11 +32,12 @@
 		<module>spring-boot-sample-atmosphere</module>
 		<module>spring-boot-sample-batch</module>
 		<module>spring-boot-sample-cache</module>
+		<module>spring-boot-sample-custom-layout</module>
 		<module>spring-boot-sample-data-cassandra</module>
 		<module>spring-boot-sample-data-couchbase</module>
 		<module>spring-boot-sample-data-elasticsearch</module>
-		<module>spring-boot-sample-data-gemfire</module>
 		<module>spring-boot-sample-data-jpa</module>
+		<module>spring-boot-sample-data-ldap</module>
 		<module>spring-boot-sample-data-mongodb</module>
 		<module>spring-boot-sample-data-neo4j</module>
 		<module>spring-boot-sample-data-redis</module>
@@ -45,12 +46,11 @@
 		<module>spring-boot-sample-devtools</module>
 		<module>spring-boot-sample-flyway</module>
 		<module>spring-boot-sample-hateoas</module>
-		<module>spring-boot-sample-hibernate4</module>
-		<module>spring-boot-sample-hibernate52</module>
 		<module>spring-boot-sample-hypermedia</module>
 		<module>spring-boot-sample-hypermedia-gson</module>
 		<module>spring-boot-sample-hypermedia-jpa</module>
 		<module>spring-boot-sample-hypermedia-ui</module>
+		<module>spring-boot-sample-hypermedia-ui-secure</module>
 		<module>spring-boot-sample-integration</module>
 		<module>spring-boot-sample-jersey</module>
 		<module>spring-boot-sample-jersey1</module>
@@ -60,6 +60,7 @@
 		<module>spring-boot-sample-jetty8</module>
 		<module>spring-boot-sample-jetty8-ssl</module>
 		<module>spring-boot-sample-jetty92</module>
+		<module>spring-boot-sample-jetty93</module>
 		<module>spring-boot-sample-jooq</module>
 		<module>spring-boot-sample-jpa</module>
 		<module>spring-boot-sample-jta-atomikos</module>
@@ -76,6 +77,7 @@
 		<module>spring-boot-sample-property-validation</module>
 		<module>spring-boot-sample-secure</module>
 		<module>spring-boot-sample-secure-oauth2</module>
+		<module>spring-boot-sample-secure-oauth2-actuator</module>
 		<module>spring-boot-sample-secure-oauth2-resource</module>
 		<module>spring-boot-sample-servlet</module>
 		<module>spring-boot-sample-session-redis</module>
@@ -107,6 +109,7 @@
 		<module>spring-boot-sample-web-thymeleaf3</module>
 		<module>spring-boot-sample-web-ui</module>
 		<module>spring-boot-sample-websocket-jetty</module>
+		<module>spring-boot-sample-websocket-jetty93</module>
 		<module>spring-boot-sample-websocket-tomcat</module>
 		<module>spring-boot-sample-websocket-undertow</module>
 		<module>spring-boot-sample-webservices</module>

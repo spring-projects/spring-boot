@@ -100,4 +100,5 @@ final class SpringBootConfigurationFinder {
 		}
 
 	}
+
 }

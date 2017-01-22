@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -45,6 +47,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -94,6 +97,35 @@ public class OAuth2ResourceServerConfiguration {
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
 			http.authorizeRequests().anyRequest().authenticated();
+		}
+
+	}
+
+	@Component
+	public static class ResourceServerFilterChainOrderProcessor
+			implements BeanPostProcessor {
+
+		private final ResourceServerProperties resource;
+
+		public ResourceServerFilterChainOrderProcessor(
+				ResourceServerProperties resource) {
+			this.resource = resource;
+		}
+
+		@Override
+		public Object postProcessBeforeInitialization(Object bean, String beanName)
+				throws BeansException {
+			return bean;
+		}
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean, String beanName)
+				throws BeansException {
+			if (bean instanceof ResourceServerConfiguration) {
+				ResourceServerConfiguration config = (ResourceServerConfiguration) bean;
+				config.setOrder(this.resource.getFilterOrder());
+			}
+			return bean;
 		}
 
 	}

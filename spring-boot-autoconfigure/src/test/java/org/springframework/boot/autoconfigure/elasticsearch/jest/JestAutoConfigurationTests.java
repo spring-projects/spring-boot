@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import io.searchbox.client.JestClient;
+import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.client.http.JestHttpClient;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
@@ -39,6 +40,7 @@ import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,6 +84,15 @@ public class JestAutoConfigurationTests {
 		load(CustomGson.class, "spring.elasticsearch.jest.uris=http://localhost:9200");
 		JestHttpClient client = (JestHttpClient) this.context.getBean(JestClient.class);
 		assertThat(client.getGson()).isSameAs(this.context.getBean("customGson"));
+	}
+
+	@Test
+	public void customizerOverridesAutoConfig() {
+		load(BuilderCustomizer.class,
+				"spring.elasticsearch.jest.uris=http://localhost:9200");
+		JestHttpClient client = (JestHttpClient) this.context.getBean(JestClient.class);
+		assertThat(client.getGson())
+				.isSameAs(this.context.getBean(BuilderCustomizer.class).getGson());
 	}
 
 	@Test
@@ -143,6 +154,30 @@ public class JestAutoConfigurationTests {
 		@Bean
 		public Gson customGson() {
 			return new Gson();
+		}
+
+	}
+
+	@Configuration
+	@Import(CustomGson.class)
+	static class BuilderCustomizer {
+
+		private final Gson gson = new Gson();
+
+		@Bean
+		public HttpClientConfigBuilderCustomizer customizer() {
+			return new HttpClientConfigBuilderCustomizer() {
+
+				@Override
+				public void customize(HttpClientConfig.Builder builder) {
+					builder.gson(BuilderCustomizer.this.gson);
+				}
+
+			};
+		}
+
+		Gson getGson() {
+			return this.gson;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -30,15 +33,22 @@ import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfigurati
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.jpa.vendor.Database;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link HibernateJpaAutoConfiguration}.
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 public class CustomHibernateJpaAutoConfigurationTests {
 
@@ -54,7 +64,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 		// Set up environment so we get a MySQL database but don't require server to be
 		// running...
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.driverClassName:com.mysql.jdbc.Driver",
+				"spring.datasource.database:mysql",
 				"spring.datasource.url:jdbc:mysql://localhost/nonexistent",
 				"spring.datasource.initialize:false", "spring.jpa.database:MYSQL");
 		this.context.register(TestConfiguration.class, DataSourceAutoConfiguration.class,
@@ -101,9 +111,44 @@ public class CustomHibernateJpaAutoConfigurationTests {
 		assertThat(hibernateProperties.get("hibernate.ejb.naming_strategy")).isNull();
 	}
 
+	@Test
+	public void testDefaultDatabaseForH2() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.url:jdbc:h2:mem:testdb",
+				"spring.datasource.initialize:false");
+		this.context.register(TestConfiguration.class, DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				HibernateJpaAutoConfiguration.class);
+		this.context.refresh();
+		HibernateJpaVendorAdapter bean = this.context
+				.getBean(HibernateJpaVendorAdapter.class);
+		Database database = (Database) ReflectionTestUtils.getField(bean, "database");
+		assertThat(database).isEqualTo(Database.H2);
+	}
+
 	@Configuration
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfiguration {
 
 	}
+
+	@Configuration
+	protected static class MockDataSourceConfiguration {
+
+		@Bean
+		public DataSource dataSource() {
+			DataSource dataSource = mock(DataSource.class);
+			try {
+				given(dataSource.getConnection()).willReturn(mock(Connection.class));
+				given(dataSource.getConnection().getMetaData())
+						.willReturn(mock(DatabaseMetaData.class));
+			}
+			catch (SQLException e) {
+				// Do nothing
+			}
+			return dataSource;
+		}
+
+	}
+
 }

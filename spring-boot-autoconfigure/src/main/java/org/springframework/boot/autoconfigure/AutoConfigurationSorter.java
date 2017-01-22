@@ -127,6 +127,7 @@ class AutoConfigurationSorter {
 			}
 			return rtn;
 		}
+
 	}
 
 	private static class AutoConfigurationClass {

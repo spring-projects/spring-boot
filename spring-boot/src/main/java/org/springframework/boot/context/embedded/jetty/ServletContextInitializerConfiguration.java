@@ -96,6 +96,7 @@ public class ServletContextInitializerConfiguration extends AbstractConfiguratio
 				// Not available on Jetty 8
 			}
 		}
+
 	}
 
 }

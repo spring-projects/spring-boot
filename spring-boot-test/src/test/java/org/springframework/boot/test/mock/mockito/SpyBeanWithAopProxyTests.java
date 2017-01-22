@@ -16,10 +16,12 @@
 
 package org.springframework.boot.test.mock.mockito;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
@@ -32,10 +34,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -58,8 +60,32 @@ public class SpyBeanWithAopProxyTests {
 		Long d2 = this.dateService.getDate(false);
 		assertThat(d1).isEqualTo(d2);
 		verify(this.dateService, times(1)).getDate(false);
-		verify(this.dateService, times(1)).getDate(eq(false));
-		verify(this.dateService, times(1)).getDate(anyBoolean());
+		verify(this.dateService, times(1)).getDate(matchesFalse());
+		verify(this.dateService, times(1)).getDate(matchesAnyBoolean());
+	}
+
+	private boolean matchesFalse() {
+		if (isTestingMockito1()) {
+			Method method = ReflectionUtils.findMethod(
+					ClassUtils.resolveClassName("org.mockito.Matchers", null), "eq",
+					Boolean.TYPE);
+			return (boolean) ReflectionUtils.invokeMethod(method, null, false);
+		}
+		return ArgumentMatchers.eq(false);
+	}
+
+	private boolean matchesAnyBoolean() {
+		if (isTestingMockito1()) {
+			Method method = ReflectionUtils.findMethod(
+					ClassUtils.resolveClassName("org.mockito.Matchers", null),
+					"anyBoolean");
+			return (boolean) ReflectionUtils.invokeMethod(method, null);
+		}
+		return ArgumentMatchers.anyBoolean();
+	}
+
+	private boolean isTestingMockito1() {
+		return ClassUtils.isPresent("org.mockito.ReturnValues", null);
 	}
 
 	@Configuration

@@ -177,12 +177,12 @@ element):
 
 [source,xml,indent=0]
 ----
-    <resources>
-        <resource>
-            <directory>src/main/resources</directory>
-            <filtering>true</filtering>
-        </resource>
-    </resources>
+	<resources>
+		<resource>
+			<directory>src/main/resources</directory>
+			<filtering>true</filtering>
+		</resource>
+	</resources>
 ----
 
 and (inside `<plugins/>`):
@@ -1332,8 +1332,8 @@ source code for more details.
 [[howto-multipart-file-upload-configuration]]
 === Handling Multipart File Uploads
 Spring Boot embraces the Servlet 3 `javax.servlet.http.Part` API to support uploading
-files. By default Spring Boot configures Spring MVC with a maximum file of 1Mb per
-file and a maximum of 10Mb of file data in a single request. You may override these
+files. By default Spring Boot configures Spring MVC with a maximum file of 1MB per
+file and a maximum of 10MB of file data in a single request. You may override these
 values, as well as the location to which intermediate data is stored (e.g., to the `/tmp`
 directory) and the threshold past which data is flushed to disk by using the properties
 exposed in the `MultipartProperties` class. If you want to specify that files be
@@ -1797,27 +1797,30 @@ annotation, e.g.
 === Configure JPA properties
 Spring Data JPA already provides some vendor-independent configuration options (e.g.
 for SQL logging) and Spring Boot exposes those, and a few more for hibernate as external
-configuration properties. The most common options to set are:
+configuration properties. Some of them are automatically detected according to the context
+so you shouldn't have to set them.
+
+The `spring.jpa.hibernate.ddl-auto` is a special case in that it has different defaults
+depending on whether you are using an embedded database (`create-drop`) or not (`none`).
+The dialect to use is also automatically detected based on the current `DataSource` but
+you can set `spring.jpa.database` yourself if you want to be explicit and bypass that
+check on startup.
+
+The most common options to set are:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.jpa.hibernate.ddl-auto=create-drop
 	spring.jpa.hibernate.naming.physical-strategy=com.example.MyPhysicalNamingStrategy
-	spring.jpa.database=H2
 	spring.jpa.show-sql=true
 ----
 
-The `ddl-auto` setting is a special case in that it has different defaults depending on
-whether you are using an embedded database (`create-drop`) or not (`none`). In addition
-all properties in `+spring.jpa.properties.*+` are passed through as normal JPA properties
-(with the prefix stripped) when the local `EntityManagerFactory` is created.
+In addition all properties in `+spring.jpa.properties.*+` are passed through as normal JPA
+properties (with the prefix stripped) when the local `EntityManagerFactory` is created.
 
-Spring Boot provides a consistent naming strategy regardless of the Hibernate generation
-that you are using. If you are using Hibernate 4, you can customize it using
-`spring.jpa.hibernate.naming.strategy`; Hibernate 5 defines a `Physical` and `Implicit`
-naming strategies: Spring Boot configures `SpringPhysicalNamingStrategy` by default. This
-implementation provides the same table structure as Hibernate 4. If you'd rather use
-Hibernate 5's default instead, set the following property:
+Hibernate defines `Physical` and `Implicit` naming strategies: Spring Boot configures
+`SpringPhysicalNamingStrategy` by default. This implementation provides the same
+table structure as Hibernate 4. If you'd rather use Hibernate 5's default instead, set
+the following property:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1947,6 +1950,10 @@ If you need to provide additional customization, you should use a
 {spring-data-rest-javadoc}/webmvc/config/RepositoryRestConfigurer.{dc-ext}[`RepositoryRestConfigurer`]
 bean.
 
+NOTE: If you don't specify any order on your custom `RepositoryRestConfigurer` it will run
+after the one Spring Boot uses internally. If you need to specify an order, make sure it
+is higher than 0.
+
 
 
 [[howto-configure-a-component-that-is-used-by-JPA]]
@@ -2062,9 +2069,20 @@ To automatically run Flyway database migrations on startup, add the
 
 The migrations are scripts in the form `V<VERSION>__<NAME>.sql` (with `<VERSION>` an
 underscore-separated version, e.g. '`1`' or '`2_1`'). By default they live in a folder
-`classpath:db/migration` but you can modify that using `flyway.locations` (a list). See
-the Flyway class from flyway-core for details of available settings like schemas etc. In
-addition Spring Boot provides a small set of properties in
+`classpath:db/migration` but you can modify that using `flyway.locations`. You can also
+add a special `{vendor}` placeholder to use vendor-specific scripts. Assume the following:
+
+[source,properties,indent=0]
+----
+	flyway.locations=db/migration/{vendor}
+----
+
+Rather than using `db/migration`, this configuration will set the folder to use according
+to the type of the database (i.e. `db/migration/mysql` for MySQL). The list of supported
+database are available in {sc-spring-boot}/jdbc/DatabaseDriver.{sc-ext}[`DatabaseDriver`].
+
+See also the Flyway class from flyway-core for details of available settings like schemas
+etc. In addition Spring Boot provides a small set of properties in
 {sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[`FlywayProperties`]
 that can be used to disable the migrations, or switch off the location checking. Spring
 Boot will call `Flyway.migrate()` to perform the database migration. If you would like
@@ -2083,6 +2101,15 @@ in external properties.
 
 There is a {github-code}/spring-boot-samples/spring-boot-sample-flyway[Flyway sample] so
 you can see how to set things up.
+
+You can also use Flyway to provide data for specific scenarios. For example, you can
+place test-specific migrations in `src/test/resources` and they will only be run when your
+application starts for testing. If you want to be more sophisticated you can use
+profile-specific configuration to customize `flyway.locations` so that certain migrations
+will only run when a particular profile is active. For example, in
+`application-dev.properties` you could set `flyway.locations` to
+`classpath:/db/migration, claspath:/dev/db/migration` and migrations in `dev/db/migration`
+will only run when the `dev` profile is active.
 
 
 
@@ -2415,7 +2442,7 @@ Spring Boot plugin declaration, e.g.
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>springloaded</artifactId>
-				<version>1.2.0.RELEASE</version>
+				<version>1.2.6.RELEASE</version>
 			</dependency>
 		</dependencies>
 	</plugin>
@@ -2441,7 +2468,7 @@ To configure IntelliJ IDEA correctly you can use the `idea` Gradle plugin:
 		repositories { jcenter() }
 		dependencies {
 			classpath "org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}"
-			classpath 'org.springframework:springloaded:1.2.0.RELEASE'
+			classpath 'org.springframework:springloaded:1.2.6.RELEASE'
 		}
 	}
 
@@ -2737,7 +2764,10 @@ Often if you have an executable and a non-executable jar as build products, the 
 version will have additional configuration files that are not needed in a library jar.
 E.g. the `application.yml` configuration file might excluded from the non-executable JAR.
 
-Here's how to do that in Maven:
+The `maven-jar-plugin` used to expose a `forceCreation` attribute that allows you to
+create the jar _again_ once the `repackage` goal has ran. Arguably, this was a bit fragile
+anyway since it was relying on the order of plugin executions. In Maven, the executable
+jar must be the main artifact and you can add a classified jar for the library:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -2746,31 +2776,18 @@ Here's how to do that in Maven:
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<classifier>exec</classifier>
-				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>exec</id>
+						<id>lib</id>
 						<phase>package</phase>
 						<goals>
 							<goal>jar</goal>
 						</goals>
 						<configuration>
-							<classifier>exec</classifier>
-						</configuration>
-					</execution>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<!-- Need this to ensure application.yml is excluded -->
-							<forceCreation>true</forceCreation>
+							<classifier>lib</classifier>
 							<excludes>
 								<exclude>application.yml</exclude>
 							</excludes>
