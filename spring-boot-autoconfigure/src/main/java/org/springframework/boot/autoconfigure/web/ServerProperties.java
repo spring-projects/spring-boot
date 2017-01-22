@@ -17,14 +17,20 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -34,10 +40,14 @@ import javax.validation.constraints.NotNull;
 
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowOptions;
+import io.undertow.servlet.api.DeploymentInfo;
+
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
@@ -50,7 +60,9 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Session.Cookie;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Undertow.Accesslog.PurgeProperties;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
@@ -66,6 +78,7 @@ import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomize
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowBuilderCustomizer;
+import org.springframework.boot.context.embedded.undertow.UndertowDeploymentInfoCustomizer;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
@@ -74,6 +87,7 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -91,6 +105,7 @@ import org.springframework.util.StringUtils;
  * @author Quinten De Swaef
  * @author Venil Noronha
  * @author Aurélien Leboulanger
+ * @author Matheus Góes
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties
@@ -1400,6 +1415,11 @@ public class ServerProperties
 				customizeConnectionTimeout(factory,
 						serverProperties.getConnectionTimeout());
 			}
+
+			if (Boolean.TRUE.equals(this.accesslog.enabled) && this.accesslog.isRotate()
+					&& this.accesslog.purge.isEnabled()) {
+				customizeAccessLogPurge(factory);
+			}
 		}
 
 		private void customizeConnectionTimeout(
@@ -1442,6 +1462,13 @@ public class ServerProperties
 			});
 		}
 
+		private void customizeAccessLogPurge(
+				final UndertowEmbeddedServletContainerFactory factory) {
+			this.accesslog.getPurge().afterPropertiesSet();
+			factory.addDeploymentInfoCustomizers(
+					new PurgeableAccessLogDeploymentInfoCustomizer(this.accesslog));
+		}
+
 		public static class Accesslog {
 
 			/**
@@ -1473,6 +1500,11 @@ public class ServerProperties
 			 * Enable access log rotation.
 			 */
 			private boolean rotate = true;
+
+			/**
+			 * Access log purge configuration.
+			 */
+			private PurgeProperties purge = new PurgeProperties();
 
 			public Boolean getEnabled() {
 				return this.enabled;
@@ -1520,6 +1552,257 @@ public class ServerProperties
 
 			public void setRotate(boolean rotate) {
 				this.rotate = rotate;
+			}
+
+			public PurgeProperties getPurge() {
+				return this.purge;
+			}
+
+			public void setPurge(final PurgeProperties purge) {
+				this.purge = purge;
+			}
+
+			public static class PurgeProperties implements InitializingBean {
+
+				/**
+				 * Allowed units for executionIntervalUnit and maxHistoryUnit properties.
+				 */
+				private static final EnumSet<TimeUnit> ALLOWED_UNITS = EnumSet.of(
+						TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS,
+						TimeUnit.DAYS);
+
+				/**
+				 * Enable access log purge.
+				 */
+				private boolean enabled;
+				/**
+				 * Enable execution at startup.
+				 */
+				private boolean executeOnStartup;
+				/**
+				 * Purge execution interval.
+				 */
+				private long executionInterval = 24;
+				/**
+				 * File max history allowed.
+				 */
+				private long maxHistory = 30;
+				/**
+				 * Execution interval unit.
+				 */
+				private TimeUnit executionIntervalUnit = TimeUnit.HOURS;
+				/**
+				 * Max history unit.
+				 */
+				private TimeUnit maxHistoryUnit = TimeUnit.DAYS;
+
+				@Override
+				public void afterPropertiesSet() {
+					Assert.isTrue(this.executionInterval > 0,
+							"'executionInterval' must be greater than 0");
+					Assert.isTrue(this.maxHistory > 0,
+							"'maxHistory' must be greater than 0");
+					Assert.isTrue(ALLOWED_UNITS.contains(this.executionIntervalUnit),
+							"'executionIntervalUnit' must be one of the following units: SECONDS, MINUTES, HOURS, DAYS");
+					Assert.isTrue(ALLOWED_UNITS.contains(this.maxHistoryUnit),
+							"'maxHistoryUnit' must be one of the following units: SECONDS, MINUTES, HOURS, DAYS");
+				}
+
+				public boolean isEnabled() {
+					return this.enabled;
+				}
+
+				public void setEnabled(final boolean enabled) {
+					this.enabled = enabled;
+				}
+
+				public boolean isExecuteOnStartup() {
+					return this.executeOnStartup;
+				}
+
+				public void setExecuteOnStartup(final boolean executeOnStartup) {
+					this.executeOnStartup = executeOnStartup;
+				}
+
+				public long getExecutionInterval() {
+					return this.executionInterval;
+				}
+
+				public void setExecutionInterval(final long executionInterval) {
+					this.executionInterval = executionInterval;
+				}
+
+				public long getMaxHistory() {
+					return this.maxHistory;
+				}
+
+				public void setMaxHistory(final long maxHistory) {
+					this.maxHistory = maxHistory;
+				}
+
+				public TimeUnit getExecutionIntervalUnit() {
+					return this.executionIntervalUnit;
+				}
+
+				public void setExecutionIntervalUnit(
+						final TimeUnit executionIntervalUnit) {
+					this.executionIntervalUnit = executionIntervalUnit;
+				}
+
+				public TimeUnit getMaxHistoryUnit() {
+					return this.maxHistoryUnit;
+				}
+
+				public void setMaxHistoryUnit(final TimeUnit maxHistoryUnit) {
+					this.maxHistoryUnit = maxHistoryUnit;
+				}
+			}
+		}
+
+		public static class PurgeableAccessLogDeploymentInfoCustomizer
+				implements UndertowDeploymentInfoCustomizer {
+
+			private final Accesslog accesslog;
+			private final PurgeProperties purgeProperties;
+
+			public PurgeableAccessLogDeploymentInfoCustomizer(final Accesslog accesslog) {
+				this.accesslog = accesslog;
+				this.purgeProperties = accesslog.getPurge();
+			}
+
+			/**
+			 * Creates a scheduled thread pool and schedules the purge task according to
+			 * the properties. If executeOnStartup property is false, then the task is
+			 * scheduled to midnight of the next day.
+			 *
+			 * @param deploymentInfo the {@code DeploymentInfo} to customize
+			 */
+			@Override
+			public void customize(final DeploymentInfo deploymentInfo) {
+				long initialDelay = 0;
+				if (!this.purgeProperties.isExecuteOnStartup()) {
+					final Calendar baseDate = Calendar.getInstance();
+					baseDate.set(Calendar.HOUR_OF_DAY, 0);
+					baseDate.set(Calendar.MINUTE, 0);
+					baseDate.set(Calendar.SECOND, 0);
+					baseDate.set(Calendar.MILLISECOND, 0);
+					baseDate.add(Calendar.DAY_OF_MONTH, 1);
+
+					final long midnight = baseDate.getTimeInMillis();
+					final long now = new Date().getTime();
+
+					initialDelay = midnight - now;
+				}
+				final PurgeTask purgeTask = new PurgeTask(this.purgeProperties,
+						this.accesslog);
+				final long executionInterval = this.purgeProperties
+						.getExecutionInterval();
+				final TimeUnit executionIntervalUnit = this.purgeProperties
+						.getExecutionIntervalUnit();
+				Executors
+						.newScheduledThreadPool(
+								Runtime.getRuntime().availableProcessors())
+						.scheduleWithFixedDelay(purgeTask, initialDelay,
+								executionInterval, executionIntervalUnit);
+			}
+
+		}
+
+		public static class PurgeTask implements Runnable {
+
+			private static final Log logger = LogFactory.getLog(PurgeTask.class);
+			private static final String ANY_CHARACTER_PATTERN = ".*";
+
+			private final PurgeProperties purgeProperties;
+			private final File accessLogDir;
+			private final String currentLogFileName;
+			private final String pattern;
+
+			public PurgeTask(final PurgeProperties purgeProperties,
+					final Accesslog accesslog) {
+				this.purgeProperties = purgeProperties;
+				this.accessLogDir = accesslog.getDir();
+				this.currentLogFileName = accesslog.getPrefix() + accesslog.getSuffix();
+				this.pattern = this.buildPattern(accesslog);
+			}
+
+			/**
+			 * Lists all files from access log directory and checks if they are eligible
+			 * for purge.
+			 */
+			@Override
+			public void run() {
+				final File[] files = this.accessLogDir.listFiles(new FilenameFilter() {
+					@Override
+					public boolean accept(final File dir, final String name) {
+						return isPurgeable(dir, name);
+					}
+				});
+				if (files != null) {
+					for (final File file : files) {
+						this.purge(file);
+					}
+				}
+			}
+
+			/**
+			 * Checks if this file is not the current access log file and if it is
+			 * eligible for purge according to the last modified time.
+			 * @param file File from access log directory.
+			 * @param fileName Filename from access log directory.
+			 * @return A boolean indicating if this file is eligible, or not, for purge.
+			 */
+			private boolean isPurgeable(final File file, final String fileName) {
+				boolean purgeable = false;
+				if (!this.currentLogFileName.equals(fileName)
+						&& fileName.matches(this.pattern)) {
+					final TimeUnit maxHistoryUnit = this.purgeProperties
+							.getMaxHistoryUnit();
+					final long lastModified = maxHistoryUnit.convert(file.lastModified(),
+							TimeUnit.MILLISECONDS);
+					final long now = maxHistoryUnit.convert(new Date().getTime(),
+							TimeUnit.MILLISECONDS);
+					final long between = now - lastModified;
+					purgeable = between > this.purgeProperties.getMaxHistory();
+				}
+				return purgeable;
+			}
+
+			/**
+			 * Deletes the eligible access log file.
+			 * @param accessLogFile The file that will be deleted.
+			 */
+			private void purge(final File accessLogFile) {
+				try {
+					accessLogFile.delete();
+				}
+				catch (final SecurityException e) {
+					logger.warn(e.getMessage(), e);
+				}
+			}
+
+			/**
+			 * Builds the filename pattern from access log prefix and suffix to check if
+			 * the file is eligible for purge.
+			 * @param accesslog The access log configuration properties.
+			 * @return The filename pattern.
+			 */
+			private String buildPattern(final Accesslog accesslog) {
+				return new StringBuilder()
+						.append(this.escapeDotCharacter(accesslog.getPrefix()))
+						.append(ANY_CHARACTER_PATTERN)
+						.append(this.escapeDotCharacter(accesslog.getSuffix()))
+						.append(ANY_CHARACTER_PATTERN).toString();
+			}
+
+			/**
+			 * Escapes all dot characters from the text.
+			 *
+			 * @param text String that must be escaped.
+			 * @return The escaped String.
+			 */
+			private String escapeDotCharacter(final String text) {
+				return text.replace(".", "\\.");
 			}
 		}
 
