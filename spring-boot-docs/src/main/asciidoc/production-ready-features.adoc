@@ -1448,10 +1448,12 @@ replaced with a `DropwizardMetricServices`, which is a wrapper around the `Metri
 [[production-ready-metrics-message-channel-integration]]
 === Message channel integration
 If a `MessageChannel` bean called `metricsChannel` exists, then a `MetricWriter` will be
-created that writes metrics to that channel. The writer is automatically hooked up to an
-exporter (as for all writers), so all metric values will appear on the channel, and
-additional analysis or actions can be taken by subscribers (it's up to you to provide the
-channel and any subscribers you need).
+created that writes metrics to that channel. Each message sent to the channel will contain
+a {dc-spring-boot-actuator}/metrics/writer/Delta.{dc-ext}[`Delta`] or
+{dc-spring-boot-actuator}/metrics/Metric.{dc-ext}[`Metric`] payload and have a `metricName`
+header. The writer is automatically hooked up to an exporter (as for all writers), so all
+metric values will appear on the channel, and additional analysis or actions can be taken
+by subscribers (it's up to you to provide the channel and any subscribers you need).
 
 
 
