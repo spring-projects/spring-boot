@@ -185,6 +185,7 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
+	@Deprecated
 	public void testNoExceptionOnValidation() {
 		this.context.register(NoExceptionIfInvalidTestConfiguration.class);
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
@@ -452,6 +453,7 @@ public class EnableConfigurationPropertiesTests {
 
 	@Configuration
 	@EnableConfigurationProperties(NoExceptionIfInvalidTestProperties.class)
+	@Deprecated
 	protected static class NoExceptionIfInvalidTestConfiguration {
 
 	}
@@ -711,6 +713,7 @@ public class EnableConfigurationPropertiesTests {
 
 	@ConfigurationProperties(exceptionIfInvalid = false)
 	@Validated
+	@Deprecated
 	protected static class NoExceptionIfInvalidTestProperties extends TestProperties {
 
 		@NotNull

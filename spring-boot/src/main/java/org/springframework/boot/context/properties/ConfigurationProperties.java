@@ -86,7 +86,10 @@ public @interface ConfigurationProperties {
 	 * it is set to false, validation errors will be swallowed. They will be logged, but
 	 * not propagated to the caller.
 	 * @return the flag value (default true)
+	 * @deprecated as of 1.5 since validation only kicks in when {@code @Validated} is
+	 * present
 	 */
+	@Deprecated
 	boolean exceptionIfInvalid() default true;
 
 }

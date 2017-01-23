@@ -186,7 +186,10 @@ public class PropertiesConfigurationFactory<T>
 	 * Set a flag to indicate that an exception should be raised if a Validator is
 	 * available and validation fails.
 	 * @param exceptionIfInvalid the flag to set
+	 * @deprecated as of 1.5, do not specify a {@link Validator} if validation should not
+	 * occur
 	 */
+	@Deprecated
 	public void setExceptionIfInvalid(boolean exceptionIfInvalid) {
 		this.exceptionIfInvalid = exceptionIfInvalid;
 	}
