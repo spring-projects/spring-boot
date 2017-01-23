@@ -393,8 +393,11 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			}
 			// Any pre-existing active profiles set via property sources (e.g. System
 			// properties) take precedence over those added in config files.
-			Set<Profile> activeProfiles = bindSpringProfiles(
-					this.environment.getPropertySources()).getActiveProfiles();
+			SpringProfiles springProfiles = bindSpringProfiles(
+					this.environment.getPropertySources());
+			Set<Profile> activeProfiles = new LinkedHashSet<Profile>(
+					springProfiles.getActiveProfiles());
+			activeProfiles.addAll(springProfiles.getIncludeProfiles());
 			maybeActivateProfiles(activeProfiles);
 			return activeProfiles;
 		}

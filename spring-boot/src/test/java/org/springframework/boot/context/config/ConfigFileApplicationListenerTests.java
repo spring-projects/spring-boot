@@ -837,6 +837,18 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(environment.acceptsProfiles("customdefault")).isTrue();
 	}
 
+	@Test
+	public void additionalProfilesCanBeIncludedFromAnyPropertySource() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		this.context = application.run("--spring.profiles.active=myprofile",
+				"--spring.profiles.include=dev");
+		String property = this.context.getEnvironment().getProperty("my.property");
+		assertThat(property).isEqualTo("fromdevpropertiesfile");
+		assertThat(this.context.getEnvironment().containsProperty("customdefault"))
+				.isFalse();
+	}
+
 	private Condition<ConfigurableEnvironment> matchingPropertySource(
 			final String sourceName) {
 		return new Condition<ConfigurableEnvironment>(
