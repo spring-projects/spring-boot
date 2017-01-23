@@ -16,8 +16,11 @@
 
 package org.springframework.boot.autoconfigure;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,6 +28,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.MockitoAnnotations;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
@@ -52,6 +58,8 @@ public class AutoConfigurationImportSelectorTests {
 	private final ConfigurableListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
 	private final MockEnvironment environment = new MockEnvironment();
+
+	private List<AutoConfigurationImportFilter> filters = new ArrayList<AutoConfigurationImportFilter>();
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
@@ -191,6 +199,26 @@ public class AutoConfigurationImportSelectorTests {
 						"org.springframework.boot.autoconfigure.DoesNotExist2");
 	}
 
+	@Test
+	public void filterShouldFilterImports() throws Exception {
+		String[] defaultImports = selectImports(BasicEnableAutoConfiguration.class);
+		this.filters.add(new TestAutoConfigurationImportFilter(defaultImports, 1));
+		this.filters.add(new TestAutoConfigurationImportFilter(defaultImports, 3, 4));
+		String[] filtered = selectImports(BasicEnableAutoConfiguration.class);
+		assertThat(filtered).hasSize(defaultImports.length - 3);
+		assertThat(filtered).doesNotContain(defaultImports[1], defaultImports[3],
+				defaultImports[4]);
+	}
+
+	@Test
+	public void filterShouldSupportAware() throws Exception {
+		TestAutoConfigurationImportFilter filter = new TestAutoConfigurationImportFilter(
+				new String[] {});
+		this.filters.add(filter);
+		selectImports(BasicEnableAutoConfiguration.class);
+		assertThat(filter.getBeanFactory()).isEqualTo(this.beanFactory);
+	}
+
 	private String[] selectImports(Class<?> source) {
 		return this.importSelector.selectImports(new StandardAnnotationMetadata(source));
 	}
@@ -200,10 +228,15 @@ public class AutoConfigurationImportSelectorTests {
 				getClass().getClassLoader());
 	}
 
-	private static class TestAutoConfigurationImportSelector
+	private class TestAutoConfigurationImportSelector
 			extends AutoConfigurationImportSelector {
 
 		private AutoConfigurationImportEvent lastEvent;
+
+		@Override
+		protected List<AutoConfigurationImportFilter> getAutoConfigurationImportFilters() {
+			return AutoConfigurationImportSelectorTests.this.filters;
+		}
 
 		@Override
 		protected List<AutoConfigurationImportListener> getAutoConfigurationImportListeners() {
@@ -221,6 +254,40 @@ public class AutoConfigurationImportSelectorTests {
 
 		public AutoConfigurationImportEvent getLastEvent() {
 			return this.lastEvent;
+		}
+
+	}
+
+	private static class TestAutoConfigurationImportFilter
+			implements AutoConfigurationImportFilter, BeanFactoryAware {
+
+		private final Set<String> nonMatching = new HashSet<String>();
+
+		private BeanFactory beanFactory;
+
+		TestAutoConfigurationImportFilter(String[] configurations, int... nonMatching) {
+			for (int i : nonMatching) {
+				this.nonMatching.add(configurations[i]);
+			}
+		}
+
+		@Override
+		public boolean[] match(String[] autoConfigurationClasses,
+				AutoConfigurationMetadata autoConfigurationMetadata) {
+			boolean[] result = new boolean[autoConfigurationClasses.length];
+			for (int i = 0; i < result.length; i++) {
+				result[i] = !this.nonMatching.contains(autoConfigurationClasses[i]);
+			}
+			return result;
+		}
+
+		@Override
+		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+			this.beanFactory = beanFactory;
+		}
+
+		public BeanFactory getBeanFactory() {
+			return this.beanFactory;
 		}
 
 	}

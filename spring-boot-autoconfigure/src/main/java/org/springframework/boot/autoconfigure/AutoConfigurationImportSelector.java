@@ -24,6 +24,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.Aware;
@@ -67,6 +71,9 @@ public class AutoConfigurationImportSelector
 
 	private static final String[] NO_IMPORTS = {};
 
+	private static final Log logger = LogFactory
+			.getLog(AutoConfigurationImportSelector.class);
+
 	private ConfigurableListableBeanFactory beanFactory;
 
 	private Environment environment;
@@ -91,6 +98,7 @@ public class AutoConfigurationImportSelector
 			Set<String> exclusions = getExclusions(annotationMetadata, attributes);
 			checkExcludedClasses(configurations, exclusions);
 			configurations.removeAll(exclusions);
+			configurations = filter(configurations, autoConfigurationMetadata);
 			fireAutoConfigurationImportListeners(configurations, exclusions);
 			return configurations.toArray(new String[configurations.size()]);
 		}
@@ -233,6 +241,45 @@ public class AutoConfigurationImportSelector
 		return configurations;
 	}
 
+	private List<String> filter(List<String> configurations,
+			AutoConfigurationMetadata autoConfigurationMetadata) {
+		long startTime = System.nanoTime();
+		String[] candidates = configurations.toArray(new String[configurations.size()]);
+		boolean[] skip = new boolean[candidates.length];
+		boolean skipped = false;
+		for (AutoConfigurationImportFilter filter : getAutoConfigurationImportFilters()) {
+			invokeAwareMethods(filter);
+			boolean[] match = filter.match(candidates, autoConfigurationMetadata);
+			for (int i = 0; i < match.length; i++) {
+				if (!match[i]) {
+					skip[i] = true;
+					skipped = true;
+				}
+			}
+		}
+		if (!skipped) {
+			return configurations;
+		}
+		List<String> result = new ArrayList<String>(candidates.length);
+		for (int i = 0; i < candidates.length; i++) {
+			if (!skip[i]) {
+				result.add(candidates[i]);
+			}
+		}
+		if (logger.isTraceEnabled()) {
+			int numberFiltered = configurations.size() - result.size();
+			logger.trace("Filtered " + numberFiltered + " auto configuration class in "
+					+ TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
+					+ " ms");
+		}
+		return new ArrayList<String>(result);
+	}
+
+	protected List<AutoConfigurationImportFilter> getAutoConfigurationImportFilters() {
+		return SpringFactoriesLoader.loadFactories(AutoConfigurationImportFilter.class,
+				this.beanClassLoader);
+	}
+
 	private MetadataReaderFactory getMetadataReaderFactory() {
 		try {
 			return getBeanFactory().getBean(
@@ -271,20 +318,20 @@ public class AutoConfigurationImportSelector
 				this.beanClassLoader);
 	}
 
-	private void invokeAwareMethods(AutoConfigurationImportListener listener) {
-		if (listener instanceof Aware) {
-			if (listener instanceof BeanClassLoaderAware) {
-				((BeanClassLoaderAware) listener)
+	private void invokeAwareMethods(Object instance) {
+		if (instance instanceof Aware) {
+			if (instance instanceof BeanClassLoaderAware) {
+				((BeanClassLoaderAware) instance)
 						.setBeanClassLoader(this.beanClassLoader);
 			}
-			if (listener instanceof BeanFactoryAware) {
-				((BeanFactoryAware) listener).setBeanFactory(this.beanFactory);
+			if (instance instanceof BeanFactoryAware) {
+				((BeanFactoryAware) instance).setBeanFactory(this.beanFactory);
 			}
-			if (listener instanceof EnvironmentAware) {
-				((EnvironmentAware) listener).setEnvironment(this.environment);
+			if (instance instanceof EnvironmentAware) {
+				((EnvironmentAware) instance).setEnvironment(this.environment);
 			}
-			if (listener instanceof ResourceLoaderAware) {
-				((ResourceLoaderAware) listener).setResourceLoader(this.resourceLoader);
+			if (instance instanceof ResourceLoaderAware) {
+				((ResourceLoaderAware) instance).setResourceLoader(this.resourceLoader);
 			}
 		}
 	}
