@@ -65,8 +65,6 @@ public class PropertiesConfigurationFactory<T>
 
 	private boolean ignoreInvalidFields;
 
-	private boolean exceptionIfInvalid = true;
-
 	private PropertySources propertySources;
 
 	private final T target;
@@ -183,15 +181,6 @@ public class PropertiesConfigurationFactory<T>
 	}
 
 	/**
-	 * Set a flag to indicate that an exception should be raised if a Validator is
-	 * available and validation fails.
-	 * @param exceptionIfInvalid the flag to set
-	 */
-	public void setExceptionIfInvalid(boolean exceptionIfInvalid) {
-		this.exceptionIfInvalid = exceptionIfInvalid;
-	}
-
-	/**
 	 * Flag to indicate that placeholders should be replaced during binding. Default is
 	 * true.
 	 * @param resolvePlaceholders flag value
@@ -228,22 +217,12 @@ public class PropertiesConfigurationFactory<T>
 
 	public void bindPropertiesToTarget() throws BindException {
 		Assert.state(this.propertySources != null, "PropertySources should not be null");
-		try {
-			if (logger.isTraceEnabled()) {
-				logger.trace("Property Sources: " + this.propertySources);
+		if (logger.isTraceEnabled()) {
+			logger.trace("Property Sources: " + this.propertySources);
 
-			}
-			this.hasBeenBound = true;
-			doBindPropertiesToTarget();
 		}
-		catch (BindException ex) {
-			if (this.exceptionIfInvalid) {
-				throw ex;
-			}
-			PropertiesConfigurationFactory.logger
-					.error("Failed to load Properties validation bean. "
-							+ "Your Properties may be invalid.", ex);
-		}
+		this.hasBeenBound = true;
+		doBindPropertiesToTarget();
 	}
 
 	private void doBindPropertiesToTarget() throws BindException {
@@ -351,9 +330,7 @@ public class PropertiesConfigurationFactory<T>
 										Locale.getDefault()) + " (" + error + ")"
 								: error);
 			}
-			if (this.exceptionIfInvalid) {
-				throw new BindException(errors);
-			}
+			throw new BindException(errors);
 		}
 	}
 

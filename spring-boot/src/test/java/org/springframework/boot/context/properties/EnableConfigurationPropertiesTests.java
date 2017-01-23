@@ -185,18 +185,6 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void testNoExceptionOnValidation() {
-		this.context.register(NoExceptionIfInvalidTestConfiguration.class);
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"name=foo");
-		this.context.refresh();
-		assertThat(this.context
-				.getBeanNamesForType(NoExceptionIfInvalidTestProperties.class))
-						.hasSize(1);
-		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
-	}
-
-	@Test
 	public void testNestedPropertiesBinding() {
 		this.context.register(NestedConfiguration.class);
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
@@ -451,12 +439,6 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Configuration
-	@EnableConfigurationProperties(NoExceptionIfInvalidTestProperties.class)
-	protected static class NoExceptionIfInvalidTestConfiguration {
-
-	}
-
-	@Configuration
 	@EnableConfigurationProperties(DerivedProperties.class)
 	protected static class DerivedConfiguration {
 
@@ -695,23 +677,6 @@ public class EnableConfigurationPropertiesTests {
 	@ConfigurationProperties
 	protected static class IgnoredIfInvalidButNotValidatedTestProperties
 			extends TestProperties {
-
-		@NotNull
-		private String description;
-
-		public String getDescription() {
-			return this.description;
-		}
-
-		public void setDescription(String description) {
-			this.description = description;
-		}
-
-	}
-
-	@ConfigurationProperties(exceptionIfInvalid = false)
-	@Validated
-	protected static class NoExceptionIfInvalidTestProperties extends TestProperties {
 
 		@NotNull
 		private String description;

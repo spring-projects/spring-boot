@@ -48,7 +48,6 @@ public class YamlConfigurationFactoryTests {
 		YamlConfigurationFactory<Foo> factory = new YamlConfigurationFactory<Foo>(
 				Foo.class);
 		factory.setYaml(yaml);
-		factory.setExceptionIfInvalid(true);
 		factory.setPropertyAliases(this.aliases);
 		factory.setValidator(this.validator);
 		factory.setMessageSource(new StaticMessageSource());
@@ -60,7 +59,6 @@ public class YamlConfigurationFactoryTests {
 		YamlConfigurationFactory<Jee> factory = new YamlConfigurationFactory<Jee>(
 				Jee.class);
 		factory.setYaml(yaml);
-		factory.setExceptionIfInvalid(true);
 		factory.setPropertyAliases(this.aliases);
 		factory.setValidator(this.validator);
 		factory.setMessageSource(new StaticMessageSource());

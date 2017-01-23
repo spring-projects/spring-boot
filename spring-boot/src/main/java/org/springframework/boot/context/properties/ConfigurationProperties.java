@@ -23,7 +23,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.core.annotation.AliasFor;
-import org.springframework.validation.annotation.Validated;
 
 /**
  * Annotation for externalized configuration. Add this to a class definition or a
@@ -79,14 +78,5 @@ public @interface ConfigurationProperties {
 	 * @return the flag value (default true)
 	 */
 	boolean ignoreUnknownFields() default true;
-
-	/**
-	 * Flag to indicate that an exception should be raised if a Validator is available,
-	 * the class is annotated with {@link Validated @Validated} and validation fails. If
-	 * it is set to false, validation errors will be swallowed. They will be logged, but
-	 * not propagated to the caller.
-	 * @return the flag value (default true)
-	 */
-	boolean exceptionIfInvalid() default true;
 
 }

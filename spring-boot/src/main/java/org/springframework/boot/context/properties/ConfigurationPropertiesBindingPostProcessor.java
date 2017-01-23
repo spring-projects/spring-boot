@@ -304,6 +304,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		return bean;
 	}
 
+	@SuppressWarnings("deprecation")
 	private void postProcessBeforeInitialization(Object bean, String beanName,
 			ConfigurationProperties annotation) {
 		Object target = bean;
@@ -318,7 +319,6 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		if (annotation != null) {
 			factory.setIgnoreInvalidFields(annotation.ignoreInvalidFields());
 			factory.setIgnoreUnknownFields(annotation.ignoreUnknownFields());
-			factory.setExceptionIfInvalid(annotation.exceptionIfInvalid());
 			factory.setIgnoreNestedProperties(annotation.ignoreNestedProperties());
 			if (StringUtils.hasLength(annotation.prefix())) {
 				factory.setTargetName(annotation.prefix());
