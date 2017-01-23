@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -186,9 +186,8 @@ public class ResourceProperties implements ResourceLoaderAware {
 		 * settings are present.
 		 */
 		public Boolean getEnabled() {
-			Boolean strategyEnabled = getStrategy().getFixed().isEnabled()
-					|| getStrategy().getContent().isEnabled();
-			return (strategyEnabled ? Boolean.TRUE : this.enabled);
+			return getEnabled(getStrategy().getFixed().isEnabled(),
+					getStrategy().getContent().isEnabled(), this.enabled);
 		}
 
 		public void setEnabled(boolean enabled) {
@@ -221,6 +220,11 @@ public class ResourceProperties implements ResourceLoaderAware {
 
 		public void setGzipped(boolean gzipped) {
 			this.gzipped = gzipped;
+		}
+
+		static Boolean getEnabled(boolean fixedEnabled, boolean contentEnabled,
+				Boolean chainEnabled) {
+			return (fixedEnabled || contentEnabled ? Boolean.TRUE : chainEnabled);
 		}
 
 	}
