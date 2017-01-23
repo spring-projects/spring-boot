@@ -166,7 +166,7 @@ public class AutoConfigurationImportSelector
 
 	private void checkExcludedClasses(List<String> configurations,
 			Set<String> exclusions) {
-		List<String> invalidExcludes = new ArrayList<String>();
+		List<String> invalidExcludes = new ArrayList<String>(exclusions.size());
 		for (String exclusion : exclusions) {
 			if (ClassUtils.isPresent(exclusion, getClass().getClassLoader())
 					&& !configurations.contains(exclusion)) {
