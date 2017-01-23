@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,6 +122,14 @@ public class YamlConfigurationFactory<T>
 		this.validator = validator;
 	}
 
+	/**
+	 * Set a flag to indicate that an exception should be raised if a Validator is
+	 * available and validation fails.
+	 * @param exceptionIfInvalid the flag to set
+	 * @deprecated as of 1.5, do not specify a {@link Validator} if validation should not
+	 * occur
+	 */
+	@Deprecated
 	public void setExceptionIfInvalid(boolean exceptionIfInvalid) {
 		this.exceptionIfInvalid = exceptionIfInvalid;
 	}
