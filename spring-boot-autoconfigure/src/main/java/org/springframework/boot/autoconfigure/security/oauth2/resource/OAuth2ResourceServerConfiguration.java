@@ -47,7 +47,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -79,6 +78,12 @@ public class OAuth2ResourceServerConfiguration {
 		return new ResourceSecurityConfigurer(this.resource);
 	}
 
+	@Bean
+	public static ResourceServerFilterChainOrderProcessor resourceServerFilterChainOrderProcessor(
+			ResourceServerProperties properties) {
+		return new ResourceServerFilterChainOrderProcessor(properties);
+	}
+
 	protected static class ResourceSecurityConfigurer
 			extends ResourceServerConfigurerAdapter {
 
@@ -101,15 +106,14 @@ public class OAuth2ResourceServerConfiguration {
 
 	}
 
-	@Component
-	public static class ResourceServerFilterChainOrderProcessor
+	private static class ResourceServerFilterChainOrderProcessor
 			implements BeanPostProcessor {
 
-		private final ResourceServerProperties resource;
+		private final ResourceServerProperties properties;
 
-		public ResourceServerFilterChainOrderProcessor(
-				ResourceServerProperties resource) {
-			this.resource = resource;
+		private ResourceServerFilterChainOrderProcessor(
+				ResourceServerProperties properties) {
+			this.properties = properties;
 		}
 
 		@Override
@@ -123,7 +127,7 @@ public class OAuth2ResourceServerConfiguration {
 				throws BeansException {
 			if (bean instanceof ResourceServerConfiguration) {
 				ResourceServerConfiguration config = (ResourceServerConfiguration) bean;
-				config.setOrder(this.resource.getFilterOrder());
+				config.setOrder(this.properties.getFilterOrder());
 			}
 			return bean;
 		}
