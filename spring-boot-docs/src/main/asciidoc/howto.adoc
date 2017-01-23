@@ -1690,16 +1690,17 @@ a| `log4j2.json` +
 
 
 [[howto-configure-a-datasource]]
-=== Configure a DataSource
-To override the default settings just define a `@Bean` of your own of type `DataSource`.
-As explained in
-<<spring-boot-features.adoc#boot-features-external-config-3rd-party-configuration>> you
-can easily bind it to a set of `Environment` properties:
+=== Configure a custom DataSource
+To configure your own `DataSource` define a `@Bean` of that type in your configuration.
+Spring Boot will reuse your `DataSource` anywhere one is required, including database
+initialization. If you need to externalize some settings, you can easily bind your
+`DataSource` to the environment (see
+<<spring-boot-features.adoc#boot-features-external-config-3rd-party-configuration>>).
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
-	@ConfigurationProperties(prefix="datasource.fancy")
+	@ConfigurationProperties(prefix="app.datasource")
 	public DataSource dataSource() {
 		return new FancyDataSource();
 	}
@@ -1707,82 +1708,157 @@ can easily bind it to a set of `Environment` properties:
 
 [source,properties,indent=0]
 ----
-	datasource.fancy.jdbcUrl=jdbc:h2:mem:mydb
-	datasource.fancy.username=sa
-	datasource.fancy.poolSize=30
+	app.datasource.url=jdbc:h2:mem:mydb
+	app.datasource.username=sa
+	app.datasource.pool-size=30
 ----
 
-Spring Boot also provides a utility builder class `DataSourceBuilder` that can be used
-to create one of the standard data sources (if it is on the classpath), or you can just
-create your own. If you want to reuse the customizations of `DataSourceProperties`, you
-can easily initialize a `DataSourceBuilder` from it:
+Assuming that your `FancyDataSource` has regular JavaBean properties for the url, the
+username and the pool size, these settings will be bound automatically before the
+`DataSource` is made available to other components. The regular
+<<howto-initialize-a-database-using-spring-jdbc,database initialization>> will also happen
+(so the relevant sub-set of `spring.datasource.*` can still be used with your custom
+configuration).
+
+You can apply the same principle if you are configuring a custom JNDI `DataSource`:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Bean
-	@ConfigurationProperties(prefix="datasource.mine")
-	public DataSource dataSource(DataSourceProperties properties) {
-		return properties.initializeDataSourceBuilder()
-				// additional customizations
-				.build();
+	@Bean(destroyMethod="")
+	@ConfigurationProperties(prefix="app.datasource")
+	public DataSource dataSource() throws Exception {
+		JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
+		return dataSourceLookup.getDataSource("java:comp/env/jdbc/YourDS");
 	}
 ----
 
-[source,properties,indent=0]
+
+Spring Boot also provides a utility builder class `DataSourceBuilder` that can be used
+to create one of the standard data sources (if it is on the classpath). The builder can
+detect the one to use based on the ones available on the classpath and it also auto
+detects the driver based on the JDBC url.
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.datasource.url=jdbc:h2:mem:mydb
-	spring.datasource.username=sa
-	datasource.mine.poolSize=30
+include::{code-examples}/jdbc/BasicDataSourceExample.java[tag=configuration]
 ----
 
-In this scenario, you keep the standard properties exposed by Spring Boot with your
-custom `DataSource` arrangement. By adding `@ConfigurationProperties`, you can also
-expose additional implementation-specific settings in a dedicated namespace.
+To run an app with that `DataSource`, all that is needed really is the connection
+information; pool-specific settings can also be provided, check the implementation that
+is going to be used at runtime for more details.
+
+[source,properties,indent=0]
+----
+	app.datasource.url=jdbc:mysql://localhost/test
+	app.datasource.username=dbuser
+	app.datasource.password=dbpass
+	app.datasource.pool-size=30
+----
+
+There is a catch however. Because the actual type of the connection pool is not exposed,
+no keys are generated in the metadata for your custom `DataSource` and no completion is
+available in your IDE (The `DataSource` interface doesn't expose any property). Also, if
+you happen to _only_ have Hikari on the classpath, this basic setup will not work because
+Hikari has no `url` parameter (but a `jdbcUrl` parameter). You should have to rewrite
+your configuration as follows:
+
+[source,properties,indent=0]
+----
+	app.datasource.jdbc-url=jdbc:mysql://localhost/test
+	app.datasource.username=dbuser
+	app.datasource.password=dbpass
+	app.datasource.maximum-pool-size=30
+----
+
+You can fix that by forcing the connection pool to use and return a dedicated
+implementation rather than `DataSource`. You won't be able to change the implementation
+at runtime but the list of options will be explicit.
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+include::{code-examples}/jdbc/SimpleDataSourceExample.java[tag=configuration]
+----
+
+You can even go further by leveraging what `DataSourceProperties` does for you, that is
+providing a default embedded database if no url is provided with a sensible username and
+password for it. You can easily initialize a `DataSourceBuilder` from the state of any
+`DataSourceProperties` so you could just as well inject the one Spring Boot creates
+automatically. However, that would split your configuration in two namespaces: url,
+username, password, type and driver on `spring.datasource` and the rest on your custom
+namespace (`app.datasource`). To avoid that, you can redefine a custom
+`DataSourceProperties` on your custom namespace:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+include::{code-examples}/jdbc/ConfigurableDataSourceExample.java[tag=configuration]
+----
+
+This setup puts you _in pair_ with what Spring Boot does for you by default, except that
+a dedicated connection pool is chosen (in code) and its settings are exposed in the same
+namespace. Because `DataSourceProperties` is taking care of the `url`/`jdbcUrl`
+translation for you, you can configure it like this:
+
+[source,properties,indent=0]
+----
+	app.datasource.url=jdbc:mysql://localhost/test
+	app.datasource.username=dbuser
+	app.datasource.password=dbpass
+	app.datasource.maximum-pool-size=30
+----
+
+NOTE: Because your custom configuration chooses to go with Hikari, `app.datasource.type`
+will have no effect. In practice the builder will be initialized with whatever value you
+might set there and then overridden by the call to `.type()``.
 
 See _<<spring-boot-features.adoc#boot-features-configure-datasource>>_ in the
 '`Spring Boot features`' section and the
 {sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[`DataSourceAutoConfiguration`]
 class for more details.
 
-[TIP]
-====
-You could also do that if you want to configure a JNDI data-source.
-
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
-----
-	@Bean(destroyMethod="")
-	@ConfigurationProperties(prefix="datasource.mine")
-	public DataSource dataSource() throws Exception {
-		JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
-		return dataSourceLookup.getDataSource("java:comp/env/jdbc/YourDS");
-	}
-----
-====
-
 
 
 [[howto-two-datasources]]
 === Configure Two DataSources
-Creating more than one data source works the same as creating the first one. You might
-want to mark one of them as `@Primary` if you are using the default auto-configuration for
-JDBC or JPA (then that one will be picked up by any `@Autowired` injections).
+If you need to configure multiple data sources, you can apply the same tricks that are
+described in the previous section. You must, however, mark one of the `DataSource`
+`@Primary` as various auto-configurations down the road expect to be able to get one by
+type.
+
+If you create your own `DataSource`, the auto-configuration will back off. In the example
+below, we provide the _exact_ same features set than what the auto-configuration provides
+on the primary data source:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Bean
-	@Primary
-	@ConfigurationProperties(prefix="datasource.primary")
-	public DataSource primaryDataSource() {
-		return DataSourceBuilder.create().build();
-	}
-
-	@Bean
-	@ConfigurationProperties(prefix="datasource.secondary")
-	public DataSource secondaryDataSource() {
-		return DataSourceBuilder.create().build();
-	}
+include::{code-examples}/jdbc/SimpleTwoDataSourcesExample.java[tag=configuration]
 ----
 
+TIP: `fooDataSourceProperties` has to be flagged `@Primary` so that the database
+initializer feature uses your copy (should you use that).
+
+Both data sources are also bound for advanced customizations. For instance you could
+configure them as follows:
+
+[source,properties,indent=0]
+----
+	app.datasource.foo.type=com.zaxxer.hikari.HikariDataSource
+	app.datasource.foo.maximum-pool-size=30
+
+	app.datasource.bar.url=jdbc:mysql://localhost/test
+	app.datasource.bar.username=dbuser
+	app.datasource.bar.password=dbpass
+	app.datasource.bar.max-total=30
+----
+
+Of course, you can apply the same concept to the secondary `DataSource` as well:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+include::{code-examples}/jdbc/CompleteTwoDataSourcesExample.java[tag=configuration]
+----
+
+This final example configures two data sources on custom namespaces with the same logic
+than what Spring Boot would do in auto-configuration.
 
 
 [[howto-use-spring-data-repositories]]
