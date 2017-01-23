@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample.secure.oauth2.resource;
+package sample.secure.oauth2.actuator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class SampleSecureOAuth2ResourceApplicationTests {
+public class SampleSecureOAuth2ActuatorApplicationTests {
 
 	@Autowired
 	private WebApplicationContext context;
