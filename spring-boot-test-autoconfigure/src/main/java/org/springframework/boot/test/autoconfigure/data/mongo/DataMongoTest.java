@@ -35,8 +35,8 @@ import org.springframework.test.context.BootstrapWith;
 
 /**
  * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
- * for a typical MongoDB test. Can be used when a test focuses
- * <strong>only</strong> on MongoDB components.
+ * for a typical MongoDB test. Can be used when a test focuses <strong>only</strong> on
+ * MongoDB components.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to MongoDB tests.
@@ -44,7 +44,7 @@ import org.springframework.test.context.BootstrapWith;
  * By default, tests annotated with {@code @DataMongoTest} will use an embedded in-memory
  * MongoDB process (if available).
  *
- * @author Michael J. Simons
+ * @author Michael Simons
  * @author Stephane Nicoll
  * @since 1.5.0
  */
@@ -62,9 +62,8 @@ public @interface DataMongoTest {
 
 	/**
 	 * Determines if default filtering should be used with
-	 * {@link SpringBootApplication @SpringBootApplication}. By default no beans
-	 * are included.
-	 *
+	 * {@link SpringBootApplication @SpringBootApplication}. By default no beans are
+	 * included.
 	 * @see #includeFilters()
 	 * @see #excludeFilters()
 	 * @return if default filters should be used
@@ -72,17 +71,15 @@ public @interface DataMongoTest {
 	boolean useDefaultFilters() default true;
 
 	/**
-	 * A set of include filters which can be used to add otherwise filtered
-	 * beans to the application context.
-	 *
+	 * A set of include filters which can be used to add otherwise filtered beans to the
+	 * application context.
 	 * @return include filters to apply
 	 */
 	Filter[] includeFilters() default {};
 
 	/**
-	 * A set of exclude filters which can be used to filter beans that would
-	 * otherwise be added to the application context.
-	 *
+	 * A set of exclude filters which can be used to filter beans that would otherwise be
+	 * added to the application context.
 	 * @return exclude filters to apply
 	 */
 	Filter[] excludeFilters() default {};
@@ -93,4 +90,5 @@ public @interface DataMongoTest {
 	 */
 	@AliasFor(annotation = ImportAutoConfiguration.class, attribute = "exclude")
 	Class<?>[] excludeAutoConfiguration() default {};
+
 }

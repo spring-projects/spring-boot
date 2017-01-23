@@ -48,7 +48,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 	/**
 	 * Alias for {@link RequestMapping#value}.
-	 *
 	 * @return the value
 	 */
 	@AliasFor(annotation = RequestMapping.class)

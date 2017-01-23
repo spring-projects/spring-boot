@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,8 @@
 package org.springframework.boot.autoconfigure.hateoas;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
@@ -63,28 +62,32 @@ public class HypermediaHttpMessageConverterConfiguration {
 		private volatile BeanFactory beanFactory;
 
 		@PostConstruct
-		public void customizedSupportedMediaTypes() {
+		public void configureHttpMessageConverters() {
 			if (this.beanFactory instanceof ListableBeanFactory) {
-				Map<String, RequestMappingHandlerAdapter> handlerAdapters = ((ListableBeanFactory) this.beanFactory)
-						.getBeansOfType(RequestMappingHandlerAdapter.class);
-				for (Entry<String, RequestMappingHandlerAdapter> entry : handlerAdapters
-						.entrySet()) {
-					RequestMappingHandlerAdapter handlerAdapter = entry.getValue();
-					for (HttpMessageConverter<?> converter : handlerAdapter
-							.getMessageConverters()) {
-						if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-							List<MediaType> supportedMediaTypes = new ArrayList<MediaType>(
-									converter.getSupportedMediaTypes());
-							if (!supportedMediaTypes
-									.contains(MediaType.APPLICATION_JSON)) {
-								supportedMediaTypes.add(MediaType.APPLICATION_JSON);
-							}
-							((AbstractHttpMessageConverter<?>) converter)
-									.setSupportedMediaTypes(supportedMediaTypes);
-						}
-					}
+				configureHttpMessageConverters(((ListableBeanFactory) this.beanFactory)
+						.getBeansOfType(RequestMappingHandlerAdapter.class).values());
+			}
+		}
 
+		private void configureHttpMessageConverters(
+				Collection<RequestMappingHandlerAdapter> handlerAdapters) {
+			for (RequestMappingHandlerAdapter handlerAdapter : handlerAdapters) {
+				for (HttpMessageConverter<?> messageConverter : handlerAdapter
+						.getMessageConverters()) {
+					configureHttpMessageConverter(messageConverter);
 				}
+			}
+		}
+
+		private void configureHttpMessageConverter(HttpMessageConverter<?> converter) {
+			if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
+				List<MediaType> supportedMediaTypes = new ArrayList<MediaType>(
+						converter.getSupportedMediaTypes());
+				if (!supportedMediaTypes.contains(MediaType.APPLICATION_JSON)) {
+					supportedMediaTypes.add(MediaType.APPLICATION_JSON);
+				}
+				((AbstractHttpMessageConverter<?>) converter)
+						.setSupportedMediaTypes(supportedMediaTypes);
 			}
 		}
 

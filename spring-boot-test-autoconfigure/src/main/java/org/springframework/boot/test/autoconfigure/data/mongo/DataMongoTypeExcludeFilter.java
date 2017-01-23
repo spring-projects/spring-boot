@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 /**
  * {@link TypeExcludeFilter} for {@link DataMongoTest @DataMongoTest}.
  *
- * @author Michael J. Simons
+ * @author Michael Simons
  */
 class DataMongoTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 
@@ -49,12 +49,12 @@ class DataMongoTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter
 	@Override
 	protected Filter[] getFilters(final FilterType type) {
 		switch (type) {
-			case INCLUDE:
-				return this.annotation.includeFilters();
-			case EXCLUDE:
-				return this.annotation.excludeFilters();
-			default:
-				throw new IllegalStateException("Unsupported type " + type);
+		case INCLUDE:
+			return this.annotation.includeFilters();
+		case EXCLUDE:
+			return this.annotation.excludeFilters();
+		default:
+			throw new IllegalStateException("Unsupported type " + type);
 		}
 	}
 

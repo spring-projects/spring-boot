@@ -82,8 +82,8 @@ public class EmbeddedMongoAutoConfigurationTests {
 		load();
 		assertThat(this.context.getBeansOfType(MongoClient.class)).hasSize(1);
 		MongoClient client = this.context.getBean(MongoClient.class);
-		Integer mongoPort = Integer.valueOf(
-				this.context.getEnvironment().getProperty("local.mongo.port"));
+		Integer mongoPort = Integer
+				.valueOf(this.context.getEnvironment().getProperty("local.mongo.port"));
 		assertThat(client.getAddress().getPort()).isEqualTo(mongoPort);
 	}
 
@@ -92,8 +92,8 @@ public class EmbeddedMongoAutoConfigurationTests {
 		load("spring.data.mongodb.port=0");
 		assertThat(this.context.getBeansOfType(MongoClient.class)).hasSize(1);
 		MongoClient client = this.context.getBean(MongoClient.class);
-		Integer mongoPort = Integer.valueOf(
-				this.context.getEnvironment().getProperty("local.mongo.port"));
+		Integer mongoPort = Integer
+				.valueOf(this.context.getEnvironment().getProperty("local.mongo.port"));
 		assertThat(client.getAddress().getPort()).isEqualTo(mongoPort);
 	}
 
@@ -101,8 +101,8 @@ public class EmbeddedMongoAutoConfigurationTests {
 	public void randomlyAllocatedPortIsAvailableWhenCreatingMongoClient() {
 		load(MongoClientConfiguration.class);
 		MongoClient client = this.context.getBean(MongoClient.class);
-		Integer mongoPort = Integer.valueOf(
-				this.context.getEnvironment().getProperty("local.mongo.port"));
+		Integer mongoPort = Integer
+				.valueOf(this.context.getEnvironment().getProperty("local.mongo.port"));
 		assertThat(client.getAddress().getPort()).isEqualTo(mongoPort);
 	}
 
@@ -187,8 +187,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 			ctx.register(config);
 		}
 		EnvironmentTestUtils.addEnvironment(ctx, environment);
-		ctx.register(EmbeddedMongoAutoConfiguration.class,
-				MongoAutoConfiguration.class,
+		ctx.register(EmbeddedMongoAutoConfiguration.class, MongoAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;

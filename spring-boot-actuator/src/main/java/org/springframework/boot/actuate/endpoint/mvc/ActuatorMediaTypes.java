@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
  * {@link MediaType MediaTypes} that can be consumed and produced by Actuator endpoints.
  *
  * @author Andy Wilkinson
+ * @since 1.5.0
  */
 public final class ActuatorMediaTypes {
 

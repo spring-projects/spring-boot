@@ -30,7 +30,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
  * tests. Most tests should consider using {@link DataMongoTest @DataMongoTest} rather
  * than using this annotation directly.
  *
- * @author Michael J. Simons
+ * @author Michael Simons
  * @since 1.5.0
  * @see DataMongoTest
  */
@@ -40,4 +40,5 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 @Inherited
 @ImportAutoConfiguration
 public @interface AutoConfigureDataMongo {
+
 }
