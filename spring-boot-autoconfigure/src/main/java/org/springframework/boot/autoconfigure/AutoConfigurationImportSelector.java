@@ -76,19 +76,21 @@ public class AutoConfigurationImportSelector
 	private ResourceLoader resourceLoader;
 
 	@Override
-	public String[] selectImports(AnnotationMetadata metadata) {
-		if (!isEnabled(metadata)) {
+	public String[] selectImports(AnnotationMetadata annotationMetadata) {
+		if (!isEnabled(annotationMetadata)) {
 			return NO_IMPORTS;
 		}
 		try {
-			AnnotationAttributes attributes = getAttributes(metadata);
-			List<String> configurations = getCandidateConfigurations(metadata,
+			AutoConfigurationMetadata autoConfigurationMetadata = AutoConfigurationMetadataLoader
+					.loadMetadata(this.beanClassLoader);
+			AnnotationAttributes attributes = getAttributes(annotationMetadata);
+			List<String> configurations = getCandidateConfigurations(annotationMetadata,
 					attributes);
 			configurations = removeDuplicates(configurations);
-			Set<String> exclusions = getExclusions(metadata, attributes);
+			configurations = sort(configurations, autoConfigurationMetadata);
+			Set<String> exclusions = getExclusions(annotationMetadata, attributes);
 			checkExcludedClasses(configurations, exclusions);
 			configurations.removeAll(exclusions);
-			configurations = sort(configurations);
 			fireAutoConfigurationImportListeners(configurations, exclusions);
 			return configurations.toArray(new String[configurations.size()]);
 		}
@@ -224,9 +226,10 @@ public class AutoConfigurationImportSelector
 		return (Arrays.asList(exclude == null ? new String[0] : exclude));
 	}
 
-	private List<String> sort(List<String> configurations) throws IOException {
-		configurations = new AutoConfigurationSorter(getMetadataReaderFactory())
-				.getInPriorityOrder(configurations);
+	private List<String> sort(List<String> configurations,
+			AutoConfigurationMetadata autoConfigurationMetadata) throws IOException {
+		configurations = new AutoConfigurationSorter(getMetadataReaderFactory(),
+				autoConfigurationMetadata).getInPriorityOrder(configurations);
 		return configurations;
 	}
 
