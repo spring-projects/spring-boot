@@ -7,6 +7,10 @@ org.springframework.boot.autoconfigure.logging.AutoConfigurationReportLoggingIni
 org.springframework.context.ApplicationListener=\
 org.springframework.boot.autoconfigure.BackgroundPreinitializer
 
+# Auto Configuration Import Listeners
+org.springframework.boot.autoconfigure.AutoConfigurationImportListener=\
+org.springframework.boot.autoconfigure.condition.ConditionEvaluationReportAutoConfigurationImportListener
+
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration,\

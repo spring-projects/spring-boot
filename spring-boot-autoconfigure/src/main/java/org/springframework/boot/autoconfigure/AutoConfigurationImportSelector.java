@@ -19,18 +19,17 @@ package org.springframework.boot.autoconfigure;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.Aware;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.bind.PropertySourcesPropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -89,7 +88,7 @@ public class AutoConfigurationImportSelector
 			checkExcludedClasses(configurations, exclusions);
 			configurations.removeAll(exclusions);
 			configurations = sort(configurations);
-			recordWithConditionEvaluationReport(configurations, exclusions);
+			fireAutoConfigurationImportListeners(configurations, exclusions);
 			return configurations.toArray(new String[configurations.size()]);
 		}
 		catch (IOException ex) {
@@ -98,11 +97,6 @@ public class AutoConfigurationImportSelector
 	}
 
 	protected boolean isEnabled(AnnotationMetadata metadata) {
-		if (getClass().equals(AutoConfigurationImportSelector.class)) {
-			return this.environment.getProperty(
-					EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY, Boolean.class,
-					true);
-		}
 		return true;
 	}
 
@@ -236,14 +230,6 @@ public class AutoConfigurationImportSelector
 		}
 	}
 
-	private void recordWithConditionEvaluationReport(List<String> configurations,
-			Collection<String> exclusions) throws IOException {
-		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get(getBeanFactory());
-		report.recordEvaluationCandidates(configurations);
-		report.recordExclusions(exclusions);
-	}
-
 	protected final <T> List<T> removeDuplicates(List<T> list) {
 		return new ArrayList<T>(new LinkedHashSet<T>(list));
 	}
@@ -251,6 +237,42 @@ public class AutoConfigurationImportSelector
 	protected final List<String> asList(AnnotationAttributes attributes, String name) {
 		String[] value = attributes.getStringArray(name);
 		return Arrays.asList(value == null ? new String[0] : value);
+	}
+
+	private void fireAutoConfigurationImportListeners(List<String> configurations,
+			Set<String> exclusions) {
+		List<AutoConfigurationImportListener> listeners = getAutoConfigurationImportListeners();
+		if (!listeners.isEmpty()) {
+			AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this,
+					configurations, exclusions);
+			for (AutoConfigurationImportListener listener : listeners) {
+				invokeAwareMethods(listener);
+				listener.onAutoConfigurationImportEvent(event);
+			}
+		}
+	}
+
+	protected List<AutoConfigurationImportListener> getAutoConfigurationImportListeners() {
+		return SpringFactoriesLoader.loadFactories(AutoConfigurationImportListener.class,
+				this.beanClassLoader);
+	}
+
+	private void invokeAwareMethods(AutoConfigurationImportListener listener) {
+		if (listener instanceof Aware) {
+			if (listener instanceof BeanClassLoaderAware) {
+				((BeanClassLoaderAware) listener)
+						.setBeanClassLoader(this.beanClassLoader);
+			}
+			if (listener instanceof BeanFactoryAware) {
+				((BeanFactoryAware) listener).setBeanFactory(this.beanFactory);
+			}
+			if (listener instanceof EnvironmentAware) {
+				((EnvironmentAware) listener).setEnvironment(this.environment);
+			}
+			if (listener instanceof ResourceLoaderAware) {
+				((ResourceLoaderAware) listener).setResourceLoader(this.resourceLoader);
+			}
+		}
 	}
 
 	@Override
