@@ -106,7 +106,7 @@ public class OAuth2ResourceServerConfiguration {
 
 	}
 
-	private static class ResourceServerFilterChainOrderProcessor
+	private static final class ResourceServerFilterChainOrderProcessor
 			implements BeanPostProcessor {
 
 		private final ResourceServerProperties properties;
