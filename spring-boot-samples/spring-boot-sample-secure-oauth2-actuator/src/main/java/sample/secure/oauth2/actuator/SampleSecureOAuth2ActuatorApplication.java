@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample.secure.oauth2.resource;
+package sample.secure.oauth2.actuator;
 
 import java.util.UUID;
 
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @SpringBootApplication
 @EnableResourceServer
 @RestController
-public class SampleSecureOAuth2ResourceApplication {
+public class SampleSecureOAuth2ActuatorApplication {
 
 	@GetMapping("/")
 	public Message home() {
@@ -35,27 +35,27 @@ public class SampleSecureOAuth2ResourceApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(SampleSecureOAuth2ResourceApplication.class, args);
+		SpringApplication.run(SampleSecureOAuth2ActuatorApplication.class, args);
 	}
 
-}
+	class Message {
 
-class Message {
+		private String id = UUID.randomUUID().toString();
 
-	private String id = UUID.randomUUID().toString();
+		private String value;
 
-	private String value;
+		public Message(String value) {
+			this.value = value;
+		}
 
-	public Message(String value) {
-		this.value = value;
-	}
+		public String getId() {
+			return this.id;
+		}
 
-	public String getId() {
-		return id;
-	}
+		public String getValue() {
+			return this.value;
+		}
 
-	public String getValue() {
-		return value;
 	}
 
 }
