@@ -23,7 +23,6 @@ import org.apache.tomcat.util.scan.StandardJarScanFilter;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -37,24 +36,15 @@ import org.springframework.util.StringUtils;
  */
 class SkipPatternJarScanner extends StandardJarScanner {
 
-	private static final String JAR_SCAN_FILTER_CLASS = "org.apache.tomcat.JarScanFilter";
-
 	private final JarScanner jarScanner;
-
-	private final Set<String> patterns;
 
 	SkipPatternJarScanner(JarScanner jarScanner, Set<String> patterns) {
 		Assert.notNull(jarScanner, "JarScanner must not be null");
 		Assert.notNull(jarScanner, "Patterns must not be null");
 		this.jarScanner = jarScanner;
-		this.patterns = patterns;
-		setPatternToTomcat8SkipFilter();
-	}
-
-	private void setPatternToTomcat8SkipFilter() {
-		if (ClassUtils.isPresent(JAR_SCAN_FILTER_CLASS, null)) {
-			new Tomcat8TldSkipSetter(this).setSkipPattern(this.patterns);
-		}
+		StandardJarScanFilter filter = new StandardJarScanFilter();
+		filter.setTldSkip(StringUtils.collectionToCommaDelimitedString(patterns));
+		this.jarScanner.setJarScanFilter(filter);
 	}
 
 	/**
@@ -66,25 +56,6 @@ class SkipPatternJarScanner extends StandardJarScanner {
 		SkipPatternJarScanner scanner = new SkipPatternJarScanner(context.getJarScanner(),
 				patterns);
 		context.setJarScanner(scanner);
-	}
-
-	/**
-	 * Tomcat 8 specific logic to setup the scanner.
-	 */
-	private static class Tomcat8TldSkipSetter {
-
-		private final StandardJarScanner jarScanner;
-
-		Tomcat8TldSkipSetter(StandardJarScanner jarScanner) {
-			this.jarScanner = jarScanner;
-		}
-
-		public void setSkipPattern(Set<String> patterns) {
-			StandardJarScanFilter filter = new StandardJarScanFilter();
-			filter.setTldSkip(StringUtils.collectionToCommaDelimitedString(patterns));
-			this.jarScanner.setJarScanFilter(filter);
-		}
-
 	}
 
 }

@@ -207,12 +207,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-tomcat-ssl[spring-boot-sample-tomcat-ssl]
 | Web application that uses Tomcat configured with SSL
 
-| link:spring-boot-sample-tomcat7-jsp[spring-boot-sample-tomcat7-jsp]
-| Web application that uses JSP templates with Tomcat 7
-
-| link:spring-boot-sample-tomcat7-ssl[spring-boot-sample-tomcat7-ssl]
-| Web application that uses Tomcat 7 configured with SSL
-
 | link:spring-boot-sample-tomcat80-ssl[spring-boot-sample-tomcat80-ssl]
 | Web application that uses Tomcat 8.0 configured with SSL
 
