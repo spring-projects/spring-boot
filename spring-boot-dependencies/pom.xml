@@ -111,7 +111,7 @@
 		<jedis.version>2.9.0</jedis.version>
 		<jersey.version>2.25</jersey.version>
 		<jest.version>2.0.4</jest.version>
-		<jetty.version>9.4.0.v20161208</jetty.version>
+		<jetty.version>9.4.1.v20170120</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jetty-el.version>8.0.33</jetty-el.version>
 		<jmustache.version>1.13</jmustache.version>
