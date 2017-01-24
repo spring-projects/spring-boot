@@ -359,7 +359,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private String getProperty(String propertyKey, String manifestKey) throws Exception {
 		if (manifestKey == null) {
-			manifestKey = propertyKey.replace(".", "-");
+			manifestKey = propertyKey.replace('.', '-');
 			manifestKey = toCamelCase(manifestKey);
 		}
 		String property = SystemPropertyUtils.getProperty(propertyKey);

@@ -52,7 +52,7 @@ public class RestartClassLoaderTests {
 	private static final String PACKAGE = RestartClassLoaderTests.class.getPackage()
 			.getName();
 
-	private static final String PACKAGE_PATH = PACKAGE.replace(".", "/");
+	private static final String PACKAGE_PATH = PACKAGE.replace('.', '/');
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 

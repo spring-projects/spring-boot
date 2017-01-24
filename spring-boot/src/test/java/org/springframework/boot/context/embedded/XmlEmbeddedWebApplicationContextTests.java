@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 public class XmlEmbeddedWebApplicationContextTests {
 
 	private static final String PATH = XmlEmbeddedWebApplicationContextTests.class
-			.getPackage().getName().replace(".", "/") + "/";
+			.getPackage().getName().replace('.', '/') + "/";
 
 	private static final String FILE = "exampleEmbeddedWebApplicationConfiguration.xml";
 

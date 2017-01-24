@@ -212,7 +212,7 @@ public class DefaultErrorViewResolverTests {
 	private void setResourceLocation(String path) {
 		String packageName = getClass().getPackage().getName();
 		this.resourceProperties.setStaticLocations(new String[] {
-				"classpath:" + packageName.replace(".", "/") + path + "/" });
+				"classpath:" + packageName.replace('.', '/') + path + "/" });
 	}
 
 	private MockHttpServletResponse render(ModelAndView modelAndView) throws Exception {

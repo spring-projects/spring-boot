@@ -161,7 +161,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		protected Class<?> createClass(byte[] code, ClassNode classNode) {
 			Class<?> createdClass = super.createClass(code, classNode);
 			ExtendedGroovyClassLoader.this.classResources
-					.put(classNode.getName().replace(".", "/") + ".class", code);
+					.put(classNode.getName().replace('.', '/') + ".class", code);
 			return createdClass;
 		}
 

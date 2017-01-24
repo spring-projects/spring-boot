@@ -50,7 +50,7 @@ class CacheCondition extends SpringBootCondition {
 		}
 		CacheType cacheType = CacheConfigurations
 				.getType(((AnnotationMetadata) metadata).getClassName());
-		String value = resolver.getProperty("type").replace("-", "_").toUpperCase();
+		String value = resolver.getProperty("type").replace('-', '_').toUpperCase();
 		if (value.equals(cacheType.name())) {
 			return ConditionOutcome.match(message.because(value + " cache type"));
 		}

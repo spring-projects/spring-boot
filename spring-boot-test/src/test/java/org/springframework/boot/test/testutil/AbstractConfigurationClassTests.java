@@ -65,7 +65,7 @@ public abstract class AbstractConfigurationClassTests {
 	private Set<AnnotationMetadata> findConfigurationClasses() throws IOException {
 		Set<AnnotationMetadata> configurationClasses = new HashSet<AnnotationMetadata>();
 		Resource[] resources = this.resolver.getResources("classpath*:"
-				+ getClass().getPackage().getName().replace(".", "/") + "/**/*.class");
+				+ getClass().getPackage().getName().replace('.', '/') + "/**/*.class");
 		for (Resource resource : resources) {
 			if (!isTestClass(resource)) {
 				MetadataReader metadataReader = new SimpleMetadataReaderFactory()

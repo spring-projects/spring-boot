@@ -172,7 +172,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	protected final String getPackagedConfigFile(String fileName) {
 		String defaultPath = ClassUtils.getPackageName(getClass());
-		defaultPath = defaultPath.replace(".", "/");
+		defaultPath = defaultPath.replace('.', '/');
 		defaultPath = defaultPath + "/" + fileName;
 		defaultPath = "classpath:" + defaultPath;
 		return defaultPath;

@@ -132,8 +132,8 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
 				@Override
 				public Object run() throws ClassNotFoundException {
-					String packageEntryName = packageName.replace(".", "/") + "/";
-					String classEntryName = className.replace(".", "/") + ".class";
+					String packageEntryName = packageName.replace('.', '/') + "/";
+					String classEntryName = className.replace('.', '/') + ".class";
 					for (URL url : getURLs()) {
 						try {
 							URLConnection connection = url.openConnection();

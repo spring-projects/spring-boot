@@ -262,7 +262,7 @@ public abstract class MainClassFinder {
 	}
 
 	private static String convertToClassName(String name, String prefix) {
-		name = name.replace("/", ".");
+		name = name.replace('/', '.');
 		name = name.replace('\\', '.');
 		name = name.substring(0, name.length() - DOT_CLASS.length());
 		if (prefix != null) {

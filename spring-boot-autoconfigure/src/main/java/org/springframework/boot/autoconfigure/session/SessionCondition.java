@@ -45,7 +45,7 @@ class SessionCondition extends SpringBootCondition {
 			return ConditionOutcome.noMatch(
 					message.didNotFind("spring.session.store-type property").atAll());
 		}
-		String value = resolver.getProperty("store-type").replace("-", "_").toUpperCase();
+		String value = resolver.getProperty("store-type").replace('-', '_').toUpperCase();
 		if (value.equals(sessionStoreType.name())) {
 			return ConditionOutcome.match(message
 					.found("spring.session.store-type property").items(sessionStoreType));
