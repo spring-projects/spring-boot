@@ -50,13 +50,9 @@ The following embedded servlet containers are supported out of the box:
 |===
 |Name |Servlet Version |Java Version
 
-|Tomcat 8
+|Tomcat 8.5
 |3.1
 |Java 7+
-
-|Tomcat 7
-|3.0
-|Java 6+
 
 |Jetty 9.3
 |3.1

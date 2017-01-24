@@ -18,8 +18,6 @@ package org.springframework.boot.context.embedded.tomcat;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +32,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
@@ -74,7 +71,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
-import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -217,7 +213,6 @@ public class TomcatEmbeddedServletContainerFactory
 		if (shouldRegisterJspServlet()) {
 			addJspServlet(context);
 			addJasperInitializer(context);
-			context.addLifecycleListener(new StoreMergedWebXmlListener());
 		}
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
 		configureContext(context, initializersToUse);
@@ -800,49 +795,6 @@ public class TomcatEmbeddedServletContainerFactory
 	 */
 	public void setBackgroundProcessorDelay(int delay) {
 		this.backgroundProcessorDelay = delay;
-	}
-
-	/**
-	 * {@link LifecycleListener} that stores an empty merged web.xml. This is critical for
-	 * Jasper on Tomcat 7 to prevent warnings about missing web.xml files and to enable
-	 * EL.
-	 */
-	private static class StoreMergedWebXmlListener implements LifecycleListener {
-
-		private static final String MERGED_WEB_XML = "org.apache.tomcat.util.scan.MergedWebXml";
-
-		@Override
-		public void lifecycleEvent(LifecycleEvent event) {
-			if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
-				onStart((Context) event.getLifecycle());
-			}
-		}
-
-		private void onStart(Context context) {
-			ServletContext servletContext = context.getServletContext();
-			if (servletContext.getAttribute(MERGED_WEB_XML) == null) {
-				servletContext.setAttribute(MERGED_WEB_XML, getEmptyWebXml());
-			}
-			TomcatResources.get(context).addClasspathResources();
-		}
-
-		private String getEmptyWebXml() {
-			InputStream stream = TomcatEmbeddedServletContainerFactory.class
-					.getResourceAsStream("empty-web.xml");
-			Assert.state(stream != null, "Unable to read empty web.xml");
-			try {
-				try {
-					return StreamUtils.copyToString(stream, Charset.forName("UTF-8"));
-				}
-				finally {
-					stream.close();
-				}
-			}
-			catch (IOException ex) {
-				throw new IllegalStateException(ex);
-			}
-		}
-
 	}
 
 	/**
