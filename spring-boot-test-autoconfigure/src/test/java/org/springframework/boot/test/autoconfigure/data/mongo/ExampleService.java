@@ -22,10 +22,11 @@ import org.springframework.stereotype.Service;
 /**
  * Example service used with {@link DataMongoTest} tests.
  *
- * @author Michael J. Simons
+ * @author Michael Simons
  */
 @Service
 public class ExampleService {
+
 	private final MongoTemplate mongoTemplate;
 
 	public ExampleService(MongoTemplate mongoTemplate) {

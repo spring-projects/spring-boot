@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -240,15 +240,19 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 			for (RequestMappingHandlerAdapter handlerAdapter : this.handlerAdapters) {
 				for (HttpMessageConverter<?> messageConverter : handlerAdapter
 						.getMessageConverters()) {
-					if (messageConverter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-						List<MediaType> supportedMediaTypes = new ArrayList<MediaType>(
-								messageConverter.getSupportedMediaTypes());
-						supportedMediaTypes
-								.add(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON);
-						((AbstractHttpMessageConverter<?>) messageConverter)
-								.setSupportedMediaTypes(supportedMediaTypes);
-					}
+					configureHttpMessageConverter(messageConverter);
 				}
+			}
+		}
+
+		private void configureHttpMessageConverter(
+				HttpMessageConverter<?> messageConverter) {
+			if (messageConverter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
+				List<MediaType> supportedMediaTypes = new ArrayList<MediaType>(
+						messageConverter.getSupportedMediaTypes());
+				supportedMediaTypes.add(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON);
+				((AbstractHttpMessageConverter<?>) messageConverter)
+						.setSupportedMediaTypes(supportedMediaTypes);
 			}
 		}
 
