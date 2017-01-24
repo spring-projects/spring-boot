@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,15 +33,13 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.boot.configurationprocessor.TestCompiler.TestCompilationTask;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.NestedConfigurationProperty;
+import org.springframework.boot.junit.compiler.TestCompiler;
+import org.springframework.boot.junit.compiler.TestCompiler.TestCompilationTask;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
-
-import static org.springframework.boot.configurationprocessor.TestCompiler.ORIGINAL_SOURCE_FOLDER;
-import static org.springframework.boot.configurationprocessor.TestCompiler.sourcePathFor;
 
 /**
  * A TestProject contains a copy of a subset of test sample code.
@@ -96,7 +94,7 @@ public class TestProject {
 	}
 
 	public File getSourceFile(Class<?> type) {
-		return new File(this.sourceFolder, sourcePathFor(type));
+		return new File(this.sourceFolder, TestCompiler.sourcePathFor(type));
 	}
 
 	public ConfigurationMetadata fullBuild() {
@@ -192,7 +190,7 @@ public class TestProject {
 	 * code.
 	 */
 	private File getOriginalSourceFile(Class<?> type) {
-		return new File(ORIGINAL_SOURCE_FOLDER, sourcePathFor(type));
+		return new File(TestCompiler.SOURCE_FOLDER, TestCompiler.sourcePathFor(type));
 	}
 
 	private static void putContents(File targetFile, String contents)

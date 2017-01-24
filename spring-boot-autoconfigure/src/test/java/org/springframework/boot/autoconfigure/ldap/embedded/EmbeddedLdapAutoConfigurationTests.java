@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.ldap.LdapDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,8 +42,6 @@ import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.MethodCallback;
 import org.springframework.util.StringUtils;
 
 /**
@@ -347,33 +344,23 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 				AnnotatedTypeMetadata metadata, final List<String> beanTypes) {
 			if (metadata instanceof MethodMetadata
 					&& metadata.isAnnotated(Bean.class.getName())) {
-				addDeducedBeanTypeForBeanMethod(context, metadata, beanTypes,
-						(MethodMetadata) metadata);
+				addDeducedBeanTypeForBeanMethod(context, (MethodMetadata) metadata,
+						beanTypes);
 			}
 		}
 
 		private void addDeducedBeanTypeForBeanMethod(ConditionContext context,
-				AnnotatedTypeMetadata metadata, final List<String> beanTypes,
-				final MethodMetadata methodMetadata) {
+				MethodMetadata metadata, final List<String> beanTypes) {
 			try {
 				// We should be safe to load at this point since we are in the
 				// REGISTER_BEAN phase
-				Class<?> configClass = ClassUtils.forName(
-						methodMetadata.getDeclaringClassName(), context.getClassLoader());
-				ReflectionUtils.doWithMethods(configClass, new MethodCallback() {
-					@Override
-					public void doWith(Method method)
-							throws IllegalArgumentException, IllegalAccessException {
-						if (methodMetadata.getMethodName().equals(method.getName())) {
-							beanTypes.add(method.getReturnType().getName());
-						}
-					}
-				});
+				Class<?> returnType = ClassUtils.forName(metadata.getReturnTypeName(),
+						context.getClassLoader());
+				beanTypes.add(returnType.getName());
 			}
 			catch (Throwable ex) {
-				throw new BeanTypeDeductionException(
-						methodMetadata.getDeclaringClassName(),
-						methodMetadata.getMethodName(), ex);
+				throw new BeanTypeDeductionException(metadata.getDeclaringClassName(),
+						metadata.getMethodName(), ex);
 			}
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationprocessor;
+package org.springframework.boot.junit.compiler;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +40,10 @@ import org.junit.rules.TemporaryFolder;
  */
 public class TestCompiler {
 
-	public static final File ORIGINAL_SOURCE_FOLDER = new File("src/test/java");
+	/**
+	 * The default source folder.
+	 */
+	public static final File SOURCE_FOLDER = new File("src/test/java");
 
 	private final JavaCompiler compiler;
 
@@ -100,7 +103,7 @@ public class TestCompiler {
 	}
 
 	protected File getSourceFolder() {
-		return ORIGINAL_SOURCE_FOLDER;
+		return SOURCE_FOLDER;
 	}
 
 	/**
