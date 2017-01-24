@@ -270,12 +270,8 @@ public class CacheStatisticsAutoConfigurationTests {
 		@Bean
 		public EmbeddedCacheManager embeddedCacheManager() throws IOException {
 			Resource resource = new ClassPathResource("cache/test-infinispan.xml");
-			InputStream in = resource.getInputStream();
-			try {
+			try (InputStream in = resource.getInputStream()) {
 				return new DefaultCacheManager(in);
-			}
-			finally {
-				in.close();
 			}
 		}
 

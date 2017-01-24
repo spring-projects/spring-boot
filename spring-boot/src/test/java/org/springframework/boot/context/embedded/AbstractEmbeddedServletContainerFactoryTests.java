@@ -1155,13 +1155,9 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			NoSuchAlgorithmException, CertificateException {
 		KeyStore keyStore = KeyStore.getInstance("JKS");
 		Resource resource = new ClassPathResource("test.jks");
-		InputStream inputStream = resource.getInputStream();
-		try {
+		try (InputStream inputStream = resource.getInputStream()) {
 			keyStore.load(inputStream, "secret".toCharArray());
 			return keyStore;
-		}
-		finally {
-			inputStream.close();
 		}
 	}
 

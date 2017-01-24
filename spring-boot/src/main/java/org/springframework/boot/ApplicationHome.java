@@ -72,19 +72,11 @@ public class ApplicationHome {
 
 	private Class<?> getStartClass(Enumeration<URL> manifestResources) {
 		while (manifestResources.hasMoreElements()) {
-			try {
-				InputStream inputStream = manifestResources.nextElement().openStream();
-				try {
-					Manifest manifest = new Manifest(inputStream);
-					String startClass = manifest.getMainAttributes()
-							.getValue("Start-Class");
-					if (startClass != null) {
-						return ClassUtils.forName(startClass,
-								getClass().getClassLoader());
-					}
-				}
-				finally {
-					inputStream.close();
+			try (InputStream inputStream = manifestResources.nextElement().openStream()) {
+				Manifest manifest = new Manifest(inputStream);
+				String startClass = manifest.getMainAttributes().getValue("Start-Class");
+				if (startClass != null) {
+					return ClassUtils.forName(startClass, getClass().getClassLoader());
 				}
 			}
 			catch (Exception ex) {
