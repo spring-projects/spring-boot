@@ -77,6 +77,12 @@ public class FlywayAutoConfiguration {
 		return new StringOrNumberToMigrationVersionConverter();
 	}
 
+	@Bean
+	@ConfigurationPropertiesBinding
+	public IntegerToMigrationVersionConverter integerToMigrationVersionConverter() {
+		return new IntegerToMigrationVersionConverter();
+	}
+
 	@Configuration
 	@ConditionalOnMissingBean(Flyway.class)
 	@EnableConfigurationProperties(FlywayProperties.class)
@@ -245,6 +251,19 @@ public class FlywayAutoConfiguration {
 				TypeDescriptor targetType) {
 			String value = ObjectUtils.nullSafeToString(source);
 			return MigrationVersion.fromVersion(value);
+		}
+
+	}
+
+	/**
+	 * Convert an Integer to a {@link MigrationVersion}.
+	 */
+	private static class IntegerToMigrationVersionConverter
+			implements Converter<Integer, MigrationVersion> {
+
+		@Override
+		public MigrationVersion convert(Integer source) {
+			return MigrationVersion.fromVersion(source.toString());
 		}
 
 	}
