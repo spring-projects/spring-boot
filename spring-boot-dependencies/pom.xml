@@ -83,7 +83,6 @@
 		<h2.version>1.4.193</h2.version>
 		<hamcrest.version>1.3</hamcrest.version>
 		<hazelcast.version>3.7.4</hazelcast.version>
-		<hazelcast-hibernate4.version>3.7.1</hazelcast-hibernate4.version>
 		<hazelcast-hibernate5.version>1.1.3</hazelcast-hibernate5.version>
 		<hibernate.version>5.2.5.Final</hibernate.version>
 		<hibernate-validator.version>5.3.4.Final</hibernate-validator.version>
@@ -656,7 +655,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.hazelcast</groupId>
-				<artifactId>hazelcast-hibernate5</artifactId>
+				<artifactId>hazelcast-hibernate52</artifactId>
 				<version>${hazelcast-hibernate5.version}</version>
 			</dependency>
 			<dependency>
