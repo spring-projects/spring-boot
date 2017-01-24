@@ -131,7 +131,7 @@
 		<log4j2.version>2.7</log4j2.version>
 		<logback.version>1.1.9</logback.version>
 		<lombok.version>1.16.12</lombok.version>
-		<mariadb.version>1.5.6</mariadb.version>
+		<mariadb.version>1.5.7</mariadb.version>
 		<mssql-jdbc.version>6.1.0.jre7</mssql-jdbc.version>
 		<mockito.version>1.10.19</mockito.version>
 		<mongodb.version>3.4.1</mongodb.version>
