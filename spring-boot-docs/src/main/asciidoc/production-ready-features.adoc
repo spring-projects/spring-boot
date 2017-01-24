@@ -1045,25 +1045,6 @@ beans are gathered by the endpoint. You can easily change that by defining your 
 
 
 
-[[production-ready-metric-repositories]]
-=== Special features with Java 8
-The default implementation of `GaugeService` and `CounterService` provided by Spring Boot
-depends on the version of Java that you are using. With Java 8 (or better) the
-implementation switches to a high-performance version optimized for fast writes, backed by
-atomic in-memory buffers, rather than by the immutable but relatively expensive
-`Metric<?>` type (counters are approximately 5 times faster and gauges approximately twice
-as fast as the repository-based implementations). The Dropwizard metrics services (see
-below) are also very efficient even for Java 7 (they have backports of some of the Java 8
-concurrency libraries), but they do not record timestamps for metric values. If
-performance of metric gathering is a concern then it is always advisable to use one of the
-high-performance options, and also to only read metrics infrequently, so that the writes
-are buffered locally and only read when needed.
-
-NOTE: The old `MetricRepository` and its `InMemoryMetricRepository` implementation are not
-used by default if you are on Java 8 or if you are using Dropwizard metrics.
-
-
-
 [[production-ready-metric-writers]]
 === Metric writers, exporters and aggregation
 Spring Boot provides a couple of implementations of a marker interface called `Exporter`

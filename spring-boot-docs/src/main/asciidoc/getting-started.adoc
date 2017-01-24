@@ -36,31 +36,26 @@ diverge from the defaults.
 
 [[getting-started-system-requirements]]
 == System Requirements
-By default, Spring Boot {spring-boot-version} requires http://www.java.com[Java 7] and
-Spring Framework {spring-version} or above. You can use Spring Boot with Java 6 with some
-additional configuration. See <<howto.adoc#howto-use-java-6>> for more details. Explicit
-build support is provided for Maven (3.2+), and Gradle 2 (2.9 or later) and 3.
+Spring Boot {spring-boot-version} requires http://www.java.com[Java 8] and Spring
+Framework {spring-version} or above. Explicit build support is provided for Maven
+(3.2+), and Gradle 2 (2.9 or later) and 3.
 
-TIP: Although you can use Spring Boot with Java 6 or 7, we generally recommend Java 8 if
-at all possible.
 
+[[getting-started-system-requirements-servlet-containers]]
 === Servlet containers
 The following embedded servlet containers are supported out of the box:
 
 |===
-|Name |Servlet Version |Java Version
+|Name |Servlet Version |
 
 |Tomcat 8.5
 |3.1
-|Java 7+
 
 |Jetty 9.4
 |3.1
-|Java 8+
 
 |Undertow 1.3
 |3.1
-|Java 7+
 |===
 
 You can also deploy Spring Boot applications to any Servlet 3.0+ compatible container.
@@ -70,7 +65,7 @@ You can also deploy Spring Boot applications to any Servlet 3.0+ compatible cont
 [[getting-started-installing-spring-boot]]
 == Installing Spring Boot
 Spring Boot can be used with "`classic`" Java development tools or installed as a command
-line tool. Regardless, you will need http://www.java.com[Java SDK v1.6] or higher. You
+line tool. Regardless, you will need http://www.java.com[Java SDK v1.8] or higher. You
 should check your current Java installation before you begin:
 
 [indent=0]
@@ -81,9 +76,6 @@ should check your current Java installation before you begin:
 If you are new to Java development, or if you just want to experiment with Spring Boot
 you might want to try the <<getting-started-installing-the-cli, Spring Boot CLI>> first,
 otherwise, read on for "`classic`" installation instructions.
-
-TIP: Although Spring Boot is compatible with Java 1.6, if possible, you should consider
-using the latest version of Java.
 
 
 
@@ -460,17 +452,17 @@ installed.
 [indent=0]
 ----
 	$ java -version
-	java version "1.7.0_51"
-	Java(TM) SE Runtime Environment (build 1.7.0_51-b13)
-	Java HotSpot(TM) 64-Bit Server VM (build 24.51-b03, mixed mode)
+	java version "1.8.0_102"
+	Java(TM) SE Runtime Environment (build 1.8.0_102-b14)
+	Java HotSpot(TM) 64-Bit Server VM (build 25.102-b14, mixed mode)
 ----
 
 [indent=0]
 ----
 	$ mvn -v
-	Apache Maven 3.2.3 (33f8c3e1027c3ddde99d3cdebad2656a31e8fdf4; 2014-08-11T13:58:10-07:00)
-	Maven home: /Users/user/tools/apache-maven-3.1.1
-	Java version: 1.7.0_51, vendor: Oracle Corporation
+	Apache Maven 3.3.9 (bb52d8502b132ec0a5a3f4c09453c07478323dc5; 2015-11-10T16:41:47+00:00)
+	Maven home: /usr/local/Cellar/maven/3.3.9/libexec
+	Java version: 1.8.0_102, vendor: Oracle Corporation
 ----
 
 NOTE: This sample needs to be created in its own folder. Subsequent instructions assume

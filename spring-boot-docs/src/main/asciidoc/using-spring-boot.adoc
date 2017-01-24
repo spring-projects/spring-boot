@@ -54,7 +54,7 @@ Framework so we **highly** recommend you to not specify its version on your own.
 Maven users can inherit from the `spring-boot-starter-parent` project to obtain sensible
 defaults. The parent project provides the following features:
 
-* Java 1.6 as the default compiler level.
+* Java 1.8 as the default compiler level.
 * UTF-8 source encoding.
 * A <<using-boot-dependency-management,Dependency Management section>>, allowing you to
   omit `<version>` tags for common dependencies, inherited from the
@@ -165,21 +165,6 @@ following to your `pom.xml`.
 
 NOTE: In the example above, we specify a _BOM_ but any dependency type can be overridden
 that way.
-
-
-
-[[using-boot-maven-java-version]]
-==== Changing the Java version
-The `spring-boot-starter-parent` chooses fairly conservative Java compatibility. If you
-want to follow our recommendation and use a later Java version you can add a
-`java.version` property:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<properties>
-		<java.version>1.8</java.version>
-	</properties>
-----
 
 
 
@@ -693,7 +678,7 @@ You might also want to use the useful operating system environment variable:
 
 [indent=0,subs="attributes"]
 ----
-	$ export MAVEN_OPTS=-Xmx1024m -XX:MaxPermSize=128M
+	$ export MAVEN_OPTS=-Xmx1024m
 ----
 
 
@@ -713,7 +698,7 @@ You might also want to use this useful operating system environment variable:
 
 [indent=0,subs="attributes"]
 ----
-	$ export JAVA_OPTS=-Xmx1024m -XX:MaxPermSize=128M
+	$ export JAVA_OPTS=-Xmx1024m
 ----
 
 
