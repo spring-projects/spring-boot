@@ -100,7 +100,7 @@
 		<javax-mail.version>1.5.6</javax-mail.version>
 		<javax-transaction.version>1.2</javax-transaction.version>
 		<jaxen.version>1.1.6</jaxen.version>
-		<jaybird.version>2.2.11</jaybird.version>
+		<jaybird.version>2.2.12</jaybird.version>
 		<jboss-logging.version>3.3.0.Final</jboss-logging.version>
 		<jboss-transaction-spi.version>7.3.4.Final</jboss-transaction-spi.version>
 		<jdom2.version>2.0.6</jdom2.version>
