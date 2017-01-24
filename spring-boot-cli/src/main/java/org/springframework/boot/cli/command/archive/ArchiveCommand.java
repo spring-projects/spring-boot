@@ -264,7 +264,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 			if (classLoader == null) {
 				classLoader = Thread.currentThread().getContextClassLoader();
 			}
-			String name = sourceClass.replace(".", "/") + ".class";
+			String name = sourceClass.replace('.', '/') + ".class";
 			InputStream stream = classLoader.getResourceAsStream(name);
 			writer.writeEntry(this.layout.getClassesLocation() + name, stream);
 		}

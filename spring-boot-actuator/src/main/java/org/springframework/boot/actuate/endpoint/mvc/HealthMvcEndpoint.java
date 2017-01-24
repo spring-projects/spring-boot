@@ -139,7 +139,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 	private HttpStatus getStatus(Health health) {
 		String code = health.getStatus().getCode();
 		if (code != null) {
-			code = code.toLowerCase().replace("_", "-");
+			code = code.toLowerCase().replace('_', '-');
 			for (String candidate : RelaxedNames.forCamelCase(code)) {
 				HttpStatus status = this.statusMapping.get(candidate);
 				if (status != null) {

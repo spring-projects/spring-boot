@@ -184,11 +184,11 @@ public abstract class SystemPropertyUtils {
 			}
 			if (propVal == null) {
 				// Try with underscores.
-				propVal = System.getenv(key.replace(".", "_"));
+				propVal = System.getenv(key.replace('.', '_'));
 			}
 			if (propVal == null) {
 				// Try uppercase with underscores as well.
-				propVal = System.getenv(key.toUpperCase().replace(".", "_"));
+				propVal = System.getenv(key.toUpperCase().replace('.', '_'));
 			}
 			if (propVal != null) {
 				return propVal;

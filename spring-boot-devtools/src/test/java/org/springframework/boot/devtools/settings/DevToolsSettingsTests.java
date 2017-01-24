@@ -37,7 +37,7 @@ public class DevToolsSettingsTests {
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	private static final String ROOT = DevToolsSettingsTests.class.getPackage().getName()
-			.replace(".", "/") + "/";
+			.replace('.', '/') + "/";
 
 	@Test
 	public void includePatterns() throws Exception {
