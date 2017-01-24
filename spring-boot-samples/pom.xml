@@ -57,10 +57,6 @@
 		<module>spring-boot-sample-jetty</module>
 		<module>spring-boot-sample-jetty-jsp</module>
 		<module>spring-boot-sample-jetty-ssl</module>
-		<module>spring-boot-sample-jetty8</module>
-		<module>spring-boot-sample-jetty8-ssl</module>
-		<module>spring-boot-sample-jetty92</module>
-		<module>spring-boot-sample-jetty93</module>
 		<module>spring-boot-sample-jooq</module>
 		<module>spring-boot-sample-jpa</module>
 		<module>spring-boot-sample-jta-atomikos</module>
@@ -107,7 +103,6 @@
 		<module>spring-boot-sample-web-thymeleaf3</module>
 		<module>spring-boot-sample-web-ui</module>
 		<module>spring-boot-sample-websocket-jetty</module>
-		<module>spring-boot-sample-websocket-jetty93</module>
 		<module>spring-boot-sample-websocket-tomcat</module>
 		<module>spring-boot-sample-websocket-undertow</module>
 		<module>spring-boot-sample-webservices</module>

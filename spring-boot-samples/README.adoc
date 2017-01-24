@@ -114,18 +114,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-jetty-jsp[spring-boot-sample-jetty-jsp]
 | Web application that uses JSP templates with Jetty
 
-| link:spring-boot-sample-jetty8[spring-boot-sample-jetty8]
-| Embedded Jetty 8
-
-| link:spring-boot-sample-jetty8-ssl[spring-boot-sample-jetty8-ssl]
-| Embedded Jetty 8 SSL
-
-| link:spring-boot-sample-jetty92[spring-boot-sample-jetty92]
-| Embedded Jetty 9.2
-
-| link:spring-boot-sample-jetty93[spring-boot-sample-jetty93]
-| Embedded Jetty 9.3
-
 | link:spring-boot-sample-jooq[spring-boot-sample-jooq]
 | Stores data using jOOQ
 
@@ -263,9 +251,6 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-websocket-jetty[spring-boot-sample-websocket-jetty]
 | WebSocket application that uses Jetty
-
-| link:spring-boot-sample-websocket-jetty93[spring-boot-sample-websocket-jetty93]
-| WebSocket application that uses Jetty 9.3
 
 | link:spring-boot-sample-websocket-tomcat[spring-boot-sample-websocket-tomcat]
 | WebSocket application that uses Tomcat
