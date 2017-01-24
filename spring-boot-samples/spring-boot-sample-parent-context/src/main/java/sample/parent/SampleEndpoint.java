@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package sample.parent;
 import java.io.File;
 import java.io.FileInputStream;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.util.StreamUtils;
@@ -29,7 +28,6 @@ public class SampleEndpoint {
 
 	private final HelloWorldService helloWorldService;
 
-	@Autowired
 	public SampleEndpoint(HelloWorldService helloWorldService) {
 		this.helloWorldService = helloWorldService;
 	}
