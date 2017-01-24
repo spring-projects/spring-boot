@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,28 +133,27 @@ public class JpaPropertiesTests {
 	@Test
 	public void determineDatabaseWithKnownUrl() {
 		JpaProperties properties = load();
-		Database database = properties.determineDatabase(
-				mockDataSource("jdbc:h2:mem:testdb"));
+		Database database = properties
+				.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
 		assertThat(database).isEqualTo(Database.H2);
 	}
 
 	@Test
 	public void determineDatabaseWithKnownUrlAndUserConfig() {
 		JpaProperties properties = load("spring.jpa.database=mysql");
-		Database database = properties.determineDatabase(
-				mockDataSource("jdbc:h2:mem:testdb"));
+		Database database = properties
+				.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
 		assertThat(database).isEqualTo(Database.MYSQL);
 	}
 
 	@Test
 	public void determineDatabaseWithUnknownUrl() {
 		JpaProperties properties = load();
-		Database database = properties.determineDatabase(
-				mockDataSource("jdbc:unknown://localhost"));
+		Database database = properties
+				.determineDatabase(mockDataSource("jdbc:unknown://localhost"));
 		assertThat(database).isEqualTo(Database.DEFAULT);
 	}
 
-	@SuppressWarnings("unchecked")
 	private DataSource mockStandaloneDataSource() throws SQLException {
 		DataSource ds = mock(DataSource.class);
 		given(ds.getConnection()).willThrow(SQLException.class);
@@ -171,7 +170,7 @@ public class JpaPropertiesTests {
 			given(ds.getConnection()).willReturn(connection);
 		}
 		catch (SQLException e) {
-			//Do nothing
+			// Do nothing
 		}
 		return ds;
 	}
