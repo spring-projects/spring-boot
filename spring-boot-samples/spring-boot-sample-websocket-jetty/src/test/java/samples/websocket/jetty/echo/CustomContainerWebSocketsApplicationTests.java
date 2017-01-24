@@ -22,11 +22,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.jetty.websocket.jsr356.ClientContainer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import samples.websocket.jetty.SampleJettyWebSocketsApplication;
-import samples.websocket.jetty.client.FixedClientContainer;
 import samples.websocket.jetty.client.GreetingService;
 import samples.websocket.jetty.client.SimpleClientWebSocketHandler;
 import samples.websocket.jetty.client.SimpleGreetingService;
@@ -125,18 +123,18 @@ public class CustomContainerWebSocketsApplicationTests {
 		}
 
 		@Bean
-		public WebSocketConnectionManager wsConnectionManager() throws Exception {
+		public WebSocketConnectionManager wsConnectionManager() {
+
 			WebSocketConnectionManager manager = new WebSocketConnectionManager(client(),
 					handler(), this.webSocketUri);
 			manager.setAutoStartup(true);
+
 			return manager;
 		}
 
 		@Bean
-		public StandardWebSocketClient client() throws Exception {
-			ClientContainer container = new FixedClientContainer();
-			container.start();
-			return new StandardWebSocketClient(container);
+		public StandardWebSocketClient client() {
+			return new StandardWebSocketClient();
 		}
 
 		@Bean
