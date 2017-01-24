@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
@@ -108,13 +109,13 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		List<ApplicationContextInitializer<?>> initializers = getInitializers(config,
 				application);
 		if (config instanceof WebMergedContextConfiguration) {
-			application.setWebEnvironment(true);
+			application.setWebApplicationType(WebApplicationType.SERVLET);
 			if (!isEmbeddedWebEnvironment(config)) {
 				new WebConfigurer().configure(config, application, initializers);
 			}
 		}
 		else {
-			application.setWebEnvironment(false);
+			application.setWebApplicationType(WebApplicationType.NONE);
 		}
 		application.setInitializers(initializers);
 		ConfigurableApplicationContext context = application.run();

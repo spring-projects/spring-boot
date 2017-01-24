@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -203,7 +204,7 @@ public class SpringApplicationBuilderTests {
 	public void parentFirstCreationWithProfileAndDefaultArgs() throws Exception {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).profiles("node").properties("transport=redis")
-						.child(ChildConfig.class).web(false);
+						.child(ChildConfig.class).web(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(this.context.getEnvironment().acceptsProfiles("node")).isTrue();
 		assertThat(this.context.getEnvironment().getProperty("transport"))
@@ -220,7 +221,8 @@ public class SpringApplicationBuilderTests {
 	public void parentFirstWithDifferentProfile() throws Exception {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).profiles("node").properties("transport=redis")
-						.child(ChildConfig.class).profiles("admin").web(false);
+						.child(ChildConfig.class).profiles("admin")
+						.web(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"))
 				.isTrue();
@@ -233,7 +235,7 @@ public class SpringApplicationBuilderTests {
 		SpringApplicationBuilder shared = new SpringApplicationBuilder(
 				ExampleConfig.class).profiles("node").properties("transport=redis");
 		SpringApplicationBuilder application = shared.child(ChildConfig.class)
-				.profiles("admin").web(false);
+				.profiles("admin").web(WebApplicationType.NONE);
 		shared.profiles("parent");
 		this.context = application.run();
 		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"))
@@ -249,7 +251,8 @@ public class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).environment(new StandardEnvironment())
 						.profiles("node").properties("transport=redis")
-						.child(ChildConfig.class).profiles("admin").web(false);
+						.child(ChildConfig.class).profiles("admin")
+						.web(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"))
 				.isTrue();
@@ -273,7 +276,7 @@ public class SpringApplicationBuilderTests {
 	@Test
 	public void initializersCreatedOnce() throws Exception {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
-				ExampleConfig.class).web(false);
+				ExampleConfig.class).web(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(application.application().getInitializers()).hasSize(4);
 	}
@@ -281,7 +284,7 @@ public class SpringApplicationBuilderTests {
 	@Test
 	public void initializersCreatedOnceForChild() throws Exception {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
-				ExampleConfig.class).child(ChildConfig.class).web(false);
+				ExampleConfig.class).child(ChildConfig.class).web(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(application.application().getInitializers()).hasSize(5);
 	}
@@ -289,7 +292,7 @@ public class SpringApplicationBuilderTests {
 	@Test
 	public void initializersIncludeDefaults() throws Exception {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
-				ExampleConfig.class).web(false).initializers(
+				ExampleConfig.class).web(WebApplicationType.NONE).initializers(
 						new ApplicationContextInitializer<ConfigurableApplicationContext>() {
 							@Override
 							public void initialize(

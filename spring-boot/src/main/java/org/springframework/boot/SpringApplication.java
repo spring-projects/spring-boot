@@ -222,7 +222,7 @@ public class SpringApplication {
 
 	private Class<? extends ConfigurableApplicationContext> applicationContextClass;
 
-	private boolean webEnvironment;
+	private WebApplicationType webApplicationType;
 
 	private boolean headless = true;
 
@@ -269,20 +269,20 @@ public class SpringApplication {
 		if (sources != null && sources.length > 0) {
 			this.sources.addAll(Arrays.asList(sources));
 		}
-		this.webEnvironment = deduceWebEnvironment();
+		this.webApplicationType = deduceWebApplication();
 		setInitializers((Collection) getSpringFactoriesInstances(
 				ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
-	private boolean deduceWebEnvironment() {
+	private WebApplicationType deduceWebApplication() {
 		for (String className : WEB_ENVIRONMENT_CLASSES) {
 			if (!ClassUtils.isPresent(className, null)) {
-				return false;
+				return WebApplicationType.NONE;
 			}
 		}
-		return true;
+		return WebApplicationType.SERVLET;
 	}
 
 	private Class<?> deduceMainApplicationClass() {
@@ -349,7 +349,8 @@ public class SpringApplication {
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		listeners.environmentPrepared(environment);
-		if (isWebEnvironment(environment) && !this.webEnvironment) {
+		if (isWebEnvironment(environment)
+				&& this.webApplicationType == WebApplicationType.NONE) {
 			environment = convertToStandardEnvironment(environment);
 		}
 		return environment;
@@ -446,7 +447,7 @@ public class SpringApplication {
 		if (this.environment != null) {
 			return this.environment;
 		}
-		if (this.webEnvironment) {
+		if (this.webApplicationType == WebApplicationType.SERVLET) {
 			return new StandardServletEnvironment();
 		}
 		return new StandardEnvironment();
@@ -566,7 +567,8 @@ public class SpringApplication {
 	 * @param environment the environment to bind
 	 */
 	protected void bindToSpringApplication(ConfigurableEnvironment environment) {
-		PropertiesConfigurationFactory<SpringApplication> binder = new PropertiesConfigurationFactory<>(this);
+		PropertiesConfigurationFactory<SpringApplication> binder = new PropertiesConfigurationFactory<>(
+				this);
 		ConversionService conversionService = new DefaultConversionService();
 		binder.setTargetName("spring.main");
 		binder.setConversionService(conversionService);
@@ -604,8 +606,9 @@ public class SpringApplication {
 		Class<?> contextClass = this.applicationContextClass;
 		if (contextClass == null) {
 			try {
-				contextClass = Class.forName(this.webEnvironment
-						? DEFAULT_WEB_CONTEXT_CLASS : DEFAULT_CONTEXT_CLASS);
+				contextClass = Class
+						.forName(this.webApplicationType == WebApplicationType.SERVLET
+								? DEFAULT_WEB_CONTEXT_CLASS : DEFAULT_CONTEXT_CLASS);
 			}
 			catch (ClassNotFoundException ex) {
 				throw new IllegalStateException(
@@ -953,18 +956,44 @@ public class SpringApplication {
 	 * Returns whether this {@link SpringApplication} is running within a web environment.
 	 * @return {@code true} if running within a web environment, otherwise {@code false}.
 	 * @see #setWebEnvironment(boolean)
+	 * @deprecated since 2.0.0 in favor of {@link #getWebApplicationType()}
 	 */
+	@Deprecated
 	public boolean isWebEnvironment() {
-		return this.webEnvironment;
+		return this.webApplicationType == WebApplicationType.SERVLET;
+	}
+
+	/**
+	 * Returns the type of web application that is being run.
+	 * @return the type of web application
+	 * @since 2.0.0
+	 */
+	public WebApplicationType getWebApplicationType() {
+		return this.webApplicationType;
 	}
 
 	/**
 	 * Sets if this application is running within a web environment. If not specified will
 	 * attempt to deduce the environment based on the classpath.
 	 * @param webEnvironment if the application is running in a web environment
+	 * @deprecated since 2.0.0 in favor of
+	 * {@link #setWebApplicationType(WebApplicationType)}
 	 */
+	@Deprecated
 	public void setWebEnvironment(boolean webEnvironment) {
-		this.webEnvironment = webEnvironment;
+		this.webApplicationType = webEnvironment ? WebApplicationType.SERVLET
+				: WebApplicationType.NONE;
+	}
+
+	/**
+	 * Sets the type of web application to be run. If not explicity set the type of web
+	 * application will be deduced based on the classpath.
+	 * @param webApplicationType the web application type
+	 * @since 2.0.0
+	 */
+	public void setWebApplicationType(WebApplicationType webApplicationType) {
+		Assert.notNull(webApplicationType, "WebApplicationType must not be null");
+		this.webApplicationType = webApplicationType;
 	}
 
 	/**
@@ -1113,7 +1142,7 @@ public class SpringApplication {
 			Class<? extends ConfigurableApplicationContext> applicationContextClass) {
 		this.applicationContextClass = applicationContextClass;
 		if (!isWebApplicationContext(applicationContextClass)) {
-			this.webEnvironment = false;
+			this.webApplicationType = WebApplicationType.NONE;
 		}
 	}
 

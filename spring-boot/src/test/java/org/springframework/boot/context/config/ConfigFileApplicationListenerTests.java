@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.config.ConfigFileApplicationListener.ConfigurationPropertySources;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
@@ -619,7 +620,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void propertySourceAnnotation() throws Exception {
 		SpringApplication application = new SpringApplication(WithPropertySource.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("the.property");
 		assertThat(property).isEqualTo("fromspecificlocation");
@@ -637,7 +638,7 @@ public class ConfigFileApplicationListenerTests {
 		SpringApplication application = new SpringApplication(
 				WithPropertySourcePlaceholders.class);
 		application.setEnvironment(this.environment);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("the.property");
 		assertThat(property).isEqualTo("fromspecificlocation");
@@ -650,7 +651,7 @@ public class ConfigFileApplicationListenerTests {
 	public void propertySourceAnnotationWithName() throws Exception {
 		SpringApplication application = new SpringApplication(
 				WithPropertySourceAndName.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("the.property");
 		assertThat(property).isEqualTo("fromspecificlocation");
@@ -662,7 +663,7 @@ public class ConfigFileApplicationListenerTests {
 	public void propertySourceAnnotationInProfile() throws Exception {
 		SpringApplication application = new SpringApplication(
 				WithPropertySourceInProfile.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext context = application
 				.run("--spring.profiles.active=myprofile");
 		String property = context.getEnvironment().getProperty("the.property");
@@ -678,7 +679,7 @@ public class ConfigFileApplicationListenerTests {
 	public void propertySourceAnnotationAndNonActiveProfile() throws Exception {
 		SpringApplication application = new SpringApplication(
 				WithPropertySourceAndProfile.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property).isEqualTo("fromapplicationproperties");
@@ -691,7 +692,7 @@ public class ConfigFileApplicationListenerTests {
 	public void propertySourceAnnotationMultipleLocations() throws Exception {
 		SpringApplication application = new SpringApplication(
 				WithPropertySourceMultipleLocations.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("the.property");
 		assertThat(property).isEqualTo("frommorepropertiesfile");
@@ -704,7 +705,7 @@ public class ConfigFileApplicationListenerTests {
 	public void propertySourceAnnotationMultipleLocationsAndName() throws Exception {
 		SpringApplication application = new SpringApplication(
 				WithPropertySourceMultipleLocationsAndName.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("the.property");
 		assertThat(property).isEqualTo("frommorepropertiesfile");
@@ -715,7 +716,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void activateProfileFromProfileSpecificProperties() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.profiles.active=includeprofile");
 		ConfigurableEnvironment environment = this.context.getEnvironment();
 		assertThat(environment).has(matchingProfile("includeprofile"));
@@ -729,7 +730,7 @@ public class ConfigFileApplicationListenerTests {
 	public void profileSubDocumentInSameProfileSpecificFile() throws Exception {
 		// gh-340
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application
 				.run("--spring.profiles.active=activeprofilewithsubdoc");
 		String property = this.context.getEnvironment().getProperty("foobar");
@@ -740,7 +741,7 @@ public class ConfigFileApplicationListenerTests {
 	public void profileSubDocumentInDifferentProfileSpecificFile() throws Exception {
 		// gh-4132
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run(
 				"--spring.profiles.active=activeprofilewithdifferentsubdoc,activeprofilewithdifferentsubdoc2");
 		String property = this.context.getEnvironment().getProperty("foobar");
@@ -762,7 +763,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void customDefaultProfile() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.profiles.default=customdefault");
 		String property = this.context.getEnvironment().getProperty("customdefault");
 		assertThat(property).isEqualTo("true");
@@ -771,7 +772,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void customDefaultProfileAndActive() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.profiles.default=customdefault",
 				"--spring.profiles.active=dev");
 		String property = this.context.getEnvironment().getProperty("my.property");
@@ -784,7 +785,7 @@ public class ConfigFileApplicationListenerTests {
 	public void customDefaultProfileAndActiveFromFile() throws Exception {
 		// gh-5998
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.config.name=customprofile",
 				"--spring.profiles.default=customdefault");
 		ConfigurableEnvironment environment = this.context.getEnvironment();
@@ -797,7 +798,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void additionalProfilesCanBeIncludedFromAnyPropertySource() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.profiles.active=myprofile",
 				"--spring.profiles.include=dev");
 		String property = this.context.getEnvironment().getProperty("my.property");

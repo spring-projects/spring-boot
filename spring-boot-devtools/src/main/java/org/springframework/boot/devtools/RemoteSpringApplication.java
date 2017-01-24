@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.List;
 import org.springframework.boot.Banner;
 import org.springframework.boot.ResourceBanner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.config.AnsiOutputApplicationListener;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.boot.devtools.remote.client.RemoteClientConfiguration;
@@ -55,7 +56,7 @@ public final class RemoteSpringApplication {
 		Restarter.initialize(args, RestartInitializer.NONE);
 		SpringApplication application = new SpringApplication(
 				RemoteClientConfiguration.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setBanner(getBanner());
 		application.setInitializers(getInitializers());
 		application.setListeners(getListeners());
