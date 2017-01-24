@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigureprocessor;
 import java.io.OutputStream;
 
 /**
- * Test configuration with an annoated method.
+ * Test configuration with an annotated method.
  *
  * @author Madhura Bhave
  */

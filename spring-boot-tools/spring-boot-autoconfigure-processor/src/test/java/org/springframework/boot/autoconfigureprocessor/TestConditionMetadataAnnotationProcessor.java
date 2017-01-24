@@ -35,12 +35,12 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureBefore",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureAfter",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureOrder" })
-public class TestConditionMetdataAnnotationProcessor
+public class TestConditionMetadataAnnotationProcessor
 		extends AutoConfigureAnnotationProcessor {
 
 	private final File outputLocation;
 
-	public TestConditionMetdataAnnotationProcessor(File outputLocation) {
+	public TestConditionMetadataAnnotationProcessor(File outputLocation) {
 		this.outputLocation = outputLocation;
 	}
 

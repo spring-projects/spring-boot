@@ -2184,7 +2184,7 @@ application starts for testing. If you want to be more sophisticated you can use
 profile-specific configuration to customize `flyway.locations` so that certain migrations
 will only run when a particular profile is active. For example, in
 `application-dev.properties` you could set `flyway.locations` to
-`classpath:/db/migration, claspath:/dev/db/migration` and migrations in `dev/db/migration`
+`classpath:/db/migration, classpath:/dev/db/migration` and migrations in `dev/db/migration`
 will only run when the `dev` profile is active.
 
 

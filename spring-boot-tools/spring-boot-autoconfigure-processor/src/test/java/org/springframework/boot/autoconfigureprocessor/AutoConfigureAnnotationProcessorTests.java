@@ -108,7 +108,7 @@ public class AutoConfigureAnnotationProcessorTests {
 	}
 
 	private Properties compile(Class<?>... types) throws IOException {
-		TestConditionMetdataAnnotationProcessor processor = new TestConditionMetdataAnnotationProcessor(
+		TestConditionMetadataAnnotationProcessor processor = new TestConditionMetadataAnnotationProcessor(
 				this.compiler.getOutputLocation());
 		this.compiler.getTask(types).call(processor);
 		return processor.getWrittenProperties();
