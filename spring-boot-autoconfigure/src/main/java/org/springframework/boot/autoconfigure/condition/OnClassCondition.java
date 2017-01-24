@@ -196,10 +196,10 @@ class OnClassCondition extends SpringBootCondition
 		}
 	}
 
-	private List<String> getMatches(Collection<String> candiates, MatchType matchType,
+	private List<String> getMatches(Collection<String> candidates, MatchType matchType,
 			ClassLoader classLoader) {
-		List<String> matches = new ArrayList<String>(candiates.size());
-		for (String candidate : candiates) {
+		List<String> matches = new ArrayList<String>(candidates.size());
+		for (String candidate : candidates) {
 			if (matchType.matches(candidate, classLoader)) {
 				matches.add(candidate);
 			}
