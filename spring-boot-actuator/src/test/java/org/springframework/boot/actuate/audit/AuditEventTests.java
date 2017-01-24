@@ -83,7 +83,6 @@ public class AuditEventTests {
 				Collections.singletonMap("type", (Object) "BadCredentials"));
 		String json = Jackson2ObjectMapperBuilder.json().build()
 				.writeValueAsString(event);
-		System.out.println(json);
 		JSONObject jsonObject = new JSONObject(json);
 		assertThat(jsonObject.getString("type")).isEqualTo("UNKNOWN");
 		assertThat(jsonObject.getJSONObject("data").getString("type"))

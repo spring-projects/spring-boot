@@ -1579,7 +1579,7 @@ it's loaded too early. You need to either use `logback-spring.xml` or define a
 WARNING: The extensions cannot be used with Logback's
 http://logback.qos.ch/manual/configuration.html#autoScan[configuration scanning]. If you
 attempt to do so, making changes to the configuration file will result in an error similar
-to once of the following being logged:
+to one of the following being logged:
 
 ----
 ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProperty], current ElementPath is [[configuration][springProperty]]
