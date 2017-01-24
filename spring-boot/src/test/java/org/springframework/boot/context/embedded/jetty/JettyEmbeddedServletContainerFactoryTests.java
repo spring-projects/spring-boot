@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.http.HttpHeaders;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -84,7 +84,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		this.container = factory.getEmbeddedServletContainer();
 		InOrder ordered = inOrder((Object[]) configurations);
 		for (Configuration configuration : configurations) {
-			ordered.verify(configuration).configure((WebAppContext) anyObject());
+			ordered.verify(configuration).configure(any(WebAppContext.class));
 		}
 	}
 
@@ -100,7 +100,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		this.container = factory.getEmbeddedServletContainer();
 		InOrder ordered = inOrder((Object[]) configurations);
 		for (JettyServerCustomizer configuration : configurations) {
-			ordered.verify(configuration).customize((Server) anyObject());
+			ordered.verify(configuration).customize(any(Server.class));
 		}
 	}
 

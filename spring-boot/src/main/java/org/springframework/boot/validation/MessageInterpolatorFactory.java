@@ -76,7 +76,7 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 
 	private MessageInterpolator getFallback(String fallback) {
 		Class<?> interpolatorClass = ClassUtils.resolveClassName(fallback, null);
-		Object interpolator = BeanUtils.instantiate(interpolatorClass);
+		Object interpolator = BeanUtils.instantiateClass(interpolatorClass);
 		return (MessageInterpolator) interpolator;
 	}
 
