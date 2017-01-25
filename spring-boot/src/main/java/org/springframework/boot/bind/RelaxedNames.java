@@ -127,7 +127,7 @@ public final class RelaxedNames implements Iterable<String> {
 
 			@Override
 			public String apply(String value) {
-				return value.indexOf('-') != -1 ? value.replace("-", "_") : value;
+				return value.indexOf('-') != -1 ? value.replace('-', '_') : value;
 			}
 
 		},
@@ -136,7 +136,7 @@ public final class RelaxedNames implements Iterable<String> {
 
 			@Override
 			public String apply(String value) {
-				return value.indexOf('_') != -1 ? value.replace("_", ".") : value;
+				return value.indexOf('_') != -1 ? value.replace('_', '.') : value;
 			}
 
 		},
@@ -145,7 +145,7 @@ public final class RelaxedNames implements Iterable<String> {
 
 			@Override
 			public String apply(String value) {
-				return value.indexOf('.') != -1 ? value.replace(".", "_") : value;
+				return value.indexOf('.') != -1 ? value.replace('.', '_') : value;
 			}
 
 		},

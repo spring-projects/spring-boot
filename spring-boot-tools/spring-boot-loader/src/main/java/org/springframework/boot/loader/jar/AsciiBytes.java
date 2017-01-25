@@ -121,7 +121,7 @@ final class AsciiBytes {
 	}
 
 	public AsciiBytes append(String string) {
-		if (string == null || string.length() == 0) {
+		if (string == null || string.isEmpty()) {
 			return this;
 		}
 		return append(string.getBytes(UTF_8));

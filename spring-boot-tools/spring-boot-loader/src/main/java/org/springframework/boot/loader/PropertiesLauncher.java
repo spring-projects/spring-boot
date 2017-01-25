@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -359,7 +359,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private String getProperty(String propertyKey, String manifestKey) throws Exception {
 		if (manifestKey == null) {
-			manifestKey = propertyKey.replace(".", "-");
+			manifestKey = propertyKey.replace('.', '-');
 			manifestKey = toCamelCase(manifestKey);
 		}
 		String property = SystemPropertyUtils.getProperty(propertyKey);

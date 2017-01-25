@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -161,7 +161,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		protected Class<?> createClass(byte[] code, ClassNode classNode) {
 			Class<?> createdClass = super.createClass(code, classNode);
 			ExtendedGroovyClassLoader.this.classResources
-					.put(classNode.getName().replace(".", "/") + ".class", code);
+					.put(classNode.getName().replace('.', '/') + ".class", code);
 			return createdClass;
 		}
 

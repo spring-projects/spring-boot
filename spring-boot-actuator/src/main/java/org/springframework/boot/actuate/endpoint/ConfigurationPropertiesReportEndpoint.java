@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -234,7 +234,7 @@ public class ConfigurationPropertiesReportEndpoint
 	private Map<String, Object> sanitize(String prefix, Map<String, Object> map) {
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
 			String key = entry.getKey();
-			String qualifiedKey = (prefix.length() == 0 ? prefix : prefix + ".") + key;
+			String qualifiedKey = (prefix.isEmpty() ? prefix : prefix + ".") + key;
 			Object value = entry.getValue();
 			if (value instanceof Map) {
 				map.put(key, sanitize(qualifiedKey, (Map<String, Object>) value));

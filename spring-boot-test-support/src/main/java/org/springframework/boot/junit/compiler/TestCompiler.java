@@ -99,7 +99,7 @@ public class TestCompiler {
 	}
 
 	public static String sourcePathFor(Class<?> type) {
-		return type.getName().replace(".", "/") + ".java";
+		return type.getName().replace('.', '/') + ".java";
 	}
 
 	protected File getSourceFolder() {
