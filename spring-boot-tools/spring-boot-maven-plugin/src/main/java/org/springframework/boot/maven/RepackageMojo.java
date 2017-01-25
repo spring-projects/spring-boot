@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -236,6 +236,10 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		repackager.setMainClass(this.mainClass);
 		if (this.layout != null) {
 			getLog().info("Layout: " + this.layout);
+			if (this.layout == LayoutType.MODULE) {
+				getLog().warn("Module layout is deprecated. Please use a custom"
+						+ " LayoutFactory instead.");
+			}
 			repackager.setLayout(this.layout.layout());
 		}
 		return repackager;
@@ -344,8 +348,9 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 		/**
 		 * Module Layout.
+		 * @deprecated since 1.5 in favour of a custom {@link LayoutFactory}
 		 */
-		MODULE(new Layouts.Module()),
+		@Deprecated MODULE(new Layouts.Module()),
 
 		/**
 		 * No Layout.
