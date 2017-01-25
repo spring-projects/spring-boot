@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -940,6 +940,24 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		EmbeddedServletOptions options = (EmbeddedServletOptions) ReflectionTestUtils
 				.getField(jspServlet, "options");
 		assertThat(options.getDevelopment()).isEqualTo(false);
+	}
+
+	@Test
+	public void explodedWarFileDocumentRootWhenRunningFromExplodedWar() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		File webInfClasses = this.temporaryFolder.newFolder("test.war", "WEB-INF", "lib",
+				"spring-boot.jar");
+		File documentRoot = factory.getExplodedWarFileDocumentRoot(webInfClasses);
+		assertThat(documentRoot)
+				.isEqualTo(webInfClasses.getParentFile().getParentFile().getParentFile());
+	}
+
+	@Test
+	public void explodedWarFileDocumentRootWhenRunningFromPackagedWar() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		File codeSourceFile = this.temporaryFolder.newFile("test.war");
+		File documentRoot = factory.getExplodedWarFileDocumentRoot(codeSourceFile);
+		assertThat(documentRoot).isNull();
 	}
 
 	protected abstract void addConnector(int port,
