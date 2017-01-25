@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,7 +158,9 @@ public final class Layouts {
 
 	/**
 	 * Module layout (designed to be used as a "plug-in").
+	 * @deprecated since 1.5 in favour of a custom {@link LayoutFactory}
 	 */
+	@Deprecated
 	public static class Module implements Layout {
 
 		private static final Set<LibraryScope> LIB_DESTINATION_SCOPES = new HashSet<LibraryScope>(
