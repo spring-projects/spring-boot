@@ -798,9 +798,9 @@ content into your application; rather pick only the properties that you need.
 
 	# EMBEDDED MONGODB ({sc-spring-boot-autoconfigure}/mongo/embedded/EmbeddedMongoProperties.{sc-ext}[EmbeddedMongoProperties])
 	spring.mongodb.embedded.features=SYNC_DELAY # Comma-separated list of features to enable.
-	spring.mongodb.embedded.storage.databaseDir= # Directory used for data storage.
-	spring.mongodb.embedded.storage.oplogSize= # Maximum size of the oplog in megabytes.
-	spring.mongodb.embedded.storage.replSetName= # Name of the replica set.
+	spring.mongodb.embedded.storage.database-dir= # Directory used for data storage.
+	spring.mongodb.embedded.storage.oplog-size= # Maximum size of the oplog in megabytes.
+	spring.mongodb.embedded.storage.repl-set-name= # Name of the replica set.
 	spring.mongodb.embedded.version=2.6.10 # Version of Mongo to use.
 
 	# REDIS ({sc-spring-boot-autoconfigure}/data/redis/RedisProperties.{sc-ext}[RedisProperties])
