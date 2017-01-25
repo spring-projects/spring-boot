@@ -293,7 +293,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		}
 
 		private String decode(String source) {
-			if (source.length() == 0 || (source.indexOf('%') < 0)) {
+			if (source.isEmpty() || (source.indexOf('%') < 0)) {
 				return source;
 			}
 			ByteArrayOutputStream bos = new ByteArrayOutputStream(source.length());
@@ -347,7 +347,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		}
 
 		public boolean isEmpty() {
-			return this.name.length() == 0;
+			return this.name.isEmpty();
 		}
 
 		public String getContentType() {

@@ -770,7 +770,7 @@ public class RabbitProperties {
 			int hostIndex = input.indexOf("/");
 			if (hostIndex >= 0) {
 				this.virtualHost = input.substring(hostIndex + 1);
-				if (this.virtualHost.length() == 0) {
+				if (this.virtualHost.isEmpty()) {
 					this.virtualHost = "/";
 				}
 				input = input.substring(0, hostIndex);

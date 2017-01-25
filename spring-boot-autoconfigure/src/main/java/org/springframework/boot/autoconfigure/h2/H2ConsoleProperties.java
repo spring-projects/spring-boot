@@ -47,7 +47,7 @@ public class H2ConsoleProperties {
 	@PostConstruct
 	private void validate() {
 		Assert.notNull(this.path, "Path must not be null");
-		Assert.isTrue(this.path.length() == 0 || this.path.startsWith("/"),
+		Assert.isTrue(this.path.isEmpty() || this.path.startsWith("/"),
 				"Path must start with / or be empty");
 	}
 
