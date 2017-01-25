@@ -100,7 +100,6 @@
 		<module>spring-boot-sample-web-secure-github</module>
 		<module>spring-boot-sample-web-secure-jdbc</module>
 		<module>spring-boot-sample-web-static</module>
-		<module>spring-boot-sample-web-thymeleaf3</module>
 		<module>spring-boot-sample-web-ui</module>
 		<module>spring-boot-sample-websocket-jetty</module>
 		<module>spring-boot-sample-websocket-tomcat</module>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.thymeleaf.templateresolver.TemplateResolver;
+import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
@@ -93,16 +93,16 @@ public class LocalDevToolsAutoConfigurationTests {
 	@Test
 	public void thymeleafCacheIsFalse() throws Exception {
 		this.context = initializeAndRun(Config.class);
-		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
-		resolver.initialize();
+		SpringResourceTemplateResolver resolver = this.context
+				.getBean(SpringResourceTemplateResolver.class);
 		assertThat(resolver.isCacheable()).isFalse();
 	}
 
 	@Test
 	public void defaultPropertyCanBeOverriddenFromCommandLine() throws Exception {
 		this.context = initializeAndRun(Config.class, "--spring.thymeleaf.cache=true");
-		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
-		resolver.initialize();
+		SpringResourceTemplateResolver resolver = this.context
+				.getBean(SpringResourceTemplateResolver.class);
 		assertThat(resolver.isCacheable()).isTrue();
 	}
 
@@ -113,8 +113,8 @@ public class LocalDevToolsAutoConfigurationTests {
 				new File("src/test/resources/user-home").getAbsolutePath());
 		try {
 			this.context = initializeAndRun(Config.class);
-			TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
-			resolver.initialize();
+			SpringResourceTemplateResolver resolver = this.context
+					.getBean(SpringResourceTemplateResolver.class);
 			assertThat(resolver.isCacheable()).isTrue();
 		}
 		finally {

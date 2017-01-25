@@ -216,7 +216,7 @@ number empty:
 ----
 	dependencies {
 		compile("org.springframework.boot:spring-boot-starter-web")
-		compile("org.thymeleaf:thymeleaf-spring4")
+		compile("org.thymeleaf:thymeleaf-spring5")
 		compile("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
 	}
 ----

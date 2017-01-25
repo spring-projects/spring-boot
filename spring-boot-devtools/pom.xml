@@ -159,7 +159,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.thymeleaf</groupId>
-			<artifactId>thymeleaf-spring4</artifactId>
+			<artifactId>thymeleaf-spring5</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

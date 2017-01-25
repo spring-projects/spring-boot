@@ -424,7 +424,7 @@ content into your application; rather pick only the properties that you need.
 	spring.thymeleaf.enabled=true # Enable MVC Thymeleaf view resolution.
 	spring.thymeleaf.encoding=UTF-8 # Template encoding.
 	spring.thymeleaf.excluded-view-names= # Comma-separated list of view names that should be excluded from resolution.
-	spring.thymeleaf.mode=HTML5 # Template mode to be applied to templates. See also StandardTemplateModeHandlers.
+	spring.thymeleaf.mode=HTML # Template mode to be applied to templates. See also org.thymeleaf.templatemode.TemplateMode.
 	spring.thymeleaf.prefix=classpath:/templates/ # Prefix that gets prepended to view names when building a URL.
 	spring.thymeleaf.suffix=.html # Suffix that gets appended to view names when building a URL.
 	spring.thymeleaf.template-resolver-order= # Order of the template resolver in the chain.

@@ -240,9 +240,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-web-static[spring-boot-sample-web-static]
 | Web application that serves static files
 
-| link:spring-boot-sample-web-thymeleaf3[spring-boot-sample-web-thymeleaf3]
-| Web application with a basic UI built using thymeleaf 3.x
-
 | link:spring-boot-sample-web-ui[spring-boot-sample-web-ui]
 | Web application with a basic UI built using Bootstrap and JQuery
 

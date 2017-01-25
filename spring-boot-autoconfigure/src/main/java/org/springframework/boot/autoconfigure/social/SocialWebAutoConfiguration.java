@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.social;
 
 import java.util.List;
 
-import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;

@@ -1248,42 +1248,6 @@ Check out {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`W
 
 
 
-[[howto-use-thymeleaf-3]]
-=== Use Thymeleaf 3
-By default, `spring-boot-starter-thymeleaf` uses Thymeleaf 2.1. If you are using the
-`spring-boot-starter-parent`, you can use Thymeleaf 3 by overriding the
-`thymeleaf.version` and `thymeleaf-layout-dialect.version` properties, for example:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<properties>
-		<thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
-		<thymeleaf-layout-dialect.version>2.1.1</thymeleaf-layout-dialect.version>
-	</properties>
-----
-
-NOTE: if you are managing dependencies yourself, look at `spring-boot-dependencies` for
-the list of artifacts that are related to those two versions.
-
-To avoid a warning message about the HTML 5 template mode being deprecated and the HTML
-template mode being used instead, you may also want to explicitly configure
-`spring.thymeleaf.mode` to be `HTML`, for example:
-
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
-----
-	spring.thymeleaf.mode: HTML
-----
-
-Please refer to the
-{github-code}/spring-boot-samples/spring-boot-sample-web-thymeleaf3[Thymeleaf 3 sample] to
-see this in action.
-
-If you are using any of the other auto-configured Thymeleaf Extras (Spring Security,
-Data Attribute, or Java 8 Time) you should also override each of their versions to one
-that is compatible with Thymeleaf 3.0.
-
-
-
 [[howto-http-clients]]
 == HTTP clients
 
