@@ -34,7 +34,6 @@ import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.boot.loader.tools.Layout;
-import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.boot.loader.tools.Repackager;
 import org.springframework.boot.loader.tools.Repackager.MainClassTimeoutWarningListener;
 import org.springframework.util.FileCopyUtils;
@@ -209,7 +208,6 @@ public class RepackageTask extends DefaultTask {
 			return task.equals(withJarTask) || task.getName().equals(withJarTask);
 		}
 
-		@SuppressWarnings("deprecation")
 		private void repackage(File file) {
 			File outputFile = RepackageTask.this.outputFile;
 			if (outputFile != null && !file.equals(outputFile)) {
@@ -223,10 +221,6 @@ public class RepackageTask extends DefaultTask {
 			setMainClass(repackager);
 			Layout layout = this.extension.convertLayout();
 			if (layout != null) {
-				if (layout instanceof Layouts.Module) {
-					getLogger().warn("Module layout is deprecated. Please use a custom"
-							+ " LayoutFactory instead.");
-				}
 				repackager.setLayout(layout);
 			}
 			repackager.setBackupSource(this.extension.isBackupSource());

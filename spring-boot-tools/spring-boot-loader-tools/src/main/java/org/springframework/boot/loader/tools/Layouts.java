@@ -17,12 +17,9 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Common {@link Layout}s.
@@ -152,42 +149,6 @@ public final class Layouts {
 		@Override
 		public boolean isExecutable() {
 			return true;
-		}
-
-	}
-
-	/**
-	 * Module layout (designed to be used as a "plug-in").
-	 * @deprecated since 1.5 in favour of a custom {@link LayoutFactory}
-	 */
-	@Deprecated
-	public static class Module implements Layout {
-
-		private static final Set<LibraryScope> LIB_DESTINATION_SCOPES = new HashSet<LibraryScope>(
-				Arrays.asList(LibraryScope.COMPILE, LibraryScope.RUNTIME,
-						LibraryScope.CUSTOM));
-
-		@Override
-		public String getLauncherClassName() {
-			return null;
-		}
-
-		@Override
-		public String getLibraryDestination(String libraryName, LibraryScope scope) {
-			if (LIB_DESTINATION_SCOPES.contains(scope)) {
-				return "lib/";
-			}
-			return null;
-		}
-
-		@Override
-		public String getClassesLocation() {
-			return "";
-		}
-
-		@Override
-		public boolean isExecutable() {
-			return false;
 		}
 
 	}
