@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,6 +38,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
@@ -75,6 +77,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
@@ -98,6 +101,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Stephane Nicoll
  * @author Jeremy Rickard
  * @author Craig Burke
+ * @author Madhura Bhave
  */
 public class SpringApplicationTests {
 
@@ -126,6 +130,7 @@ public class SpringApplicationTests {
 
 	@After
 	public void reinstateHeadlessProperty() {
+		System.clearProperty("spring.main.banner-mode");
 		if (this.headlessProperty == null) {
 			System.clearProperty("java.awt.headless");
 		}
@@ -229,6 +234,48 @@ public class SpringApplicationTests {
 		this.context = application.run("--spring.main.banner-mode=log");
 		verify(application, atLeastOnce()).setBannerMode(Banner.Mode.LOG);
 		assertThat(this.output.toString()).contains("o.s.boot.SpringApplication");
+	}
+
+	@Test
+	public void setIgnoreBeanInfoPropertyByDefault() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		this.context = application.run();
+		String property = System
+				.getProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME);
+		assertThat(property).isEqualTo("true");
+	}
+
+	@Test
+	public void disableIgnoreBeanInfoProperty() throws Exception {
+		System.setProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME, "false");
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		this.context = application.run();
+		String property = System
+				.getProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME);
+		assertThat(property).isEqualTo("false");
+	}
+
+	@Test
+	public void triggersConfigFileApplicationListenereBeforeBinding() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		this.context = application.run("--spring.config.name=bindtoapplication");
+		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
+		field.setAccessible(true);
+		assertThat((Banner.Mode) field.get(application)).isEqualTo(Banner.Mode.OFF);
+	}
+
+	@Test
+	public void bindsSystemPropertyToSpringApplication() throws Exception {
+		System.setProperty("spring.main.banner-mode", "off");
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		this.context = application.run();
+		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
+		field.setAccessible(true);
+		assertThat((Banner.Mode) field.get(application)).isEqualTo(Banner.Mode.OFF);
 	}
 
 	@Test

@@ -34,11 +34,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.boot.Banner.Mode;
+import org.springframework.boot.bind.PropertiesConfigurationFactory;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.diagnostics.FailureAnalyzers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -52,6 +55,8 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -71,6 +76,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
@@ -132,6 +138,12 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * resolve to a {@link Resource} that exists it will be considered a {@link Package}.</li>
  * </ul>
  *
+ * Configuration properties are also bound to the {@link SpringApplication}. This makes it
+ * possible to set {@link SpringApplication} properties dynamically, like the sources
+ * ("spring.main.sources" - a CSV list) the flag to indicate a web environment
+ * ("spring.main.web_environment=true") or the flag to switch off the banner
+ * ("spring.main.show_banner=false").
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
@@ -140,6 +152,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Jeremy Rickard
  * @author Craig Burke
  * @author Michael Simons
+ * @author Madhura Bhave
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)
@@ -306,6 +319,8 @@ public class SpringApplication {
 					args);
 			ConfigurableEnvironment environment = prepareEnvironment(listeners,
 					applicationArguments);
+			configureIgnoreBeanInfo(environment);
+			bindToSpringApplication(environment);
 			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
 			analyzers = new FailureAnalyzers(context);
@@ -533,6 +548,35 @@ public class SpringApplication {
 		Set<String> profiles = new LinkedHashSet<String>(this.additionalProfiles);
 		profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
 		environment.setActiveProfiles(profiles.toArray(new String[profiles.size()]));
+	}
+
+	private void configureIgnoreBeanInfo(ConfigurableEnvironment environment) {
+		if (System.getProperty(
+				CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME) == null) {
+			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
+					"spring.beaninfo.");
+			Boolean ignore = resolver.getProperty("ignore", Boolean.class, Boolean.TRUE);
+			System.setProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME,
+					ignore.toString());
+		}
+	}
+
+	/**
+	 * Bind the environment to the {@link SpringApplication}.
+	 * @param environment the environment to bind
+	 */
+	protected void bindToSpringApplication(ConfigurableEnvironment environment) {
+		PropertiesConfigurationFactory<SpringApplication> binder = new PropertiesConfigurationFactory<>(this);
+		ConversionService conversionService = new DefaultConversionService();
+		binder.setTargetName("spring.main");
+		binder.setConversionService(conversionService);
+		binder.setPropertySources(environment.getPropertySources());
+		try {
+			binder.bindPropertiesToTarget();
+		}
+		catch (BindException ex) {
+			throw new IllegalStateException("Cannot bind to SpringApplication", ex);
+		}
 	}
 
 	private Banner printBanner(ConfigurableEnvironment environment) {

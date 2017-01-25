@@ -19,7 +19,6 @@ package org.springframework.boot.context.config;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,7 +38,6 @@ import org.junit.rules.ExpectedException;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.CachedIntrospectionResults;
-import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigFileApplicationListener.ConfigurationPropertySources;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -63,7 +61,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.support.TestPropertySourceUtils;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -740,26 +737,6 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
-	public void bindsToSpringApplication() throws Exception {
-		// gh-346
-		this.initializer.setSearchNames("bindtoapplication");
-		this.initializer.postProcessEnvironment(this.environment, this.application);
-		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
-		field.setAccessible(true);
-		assertThat((Banner.Mode) field.get(this.application)).isEqualTo(Banner.Mode.OFF);
-	}
-
-	@Test
-	public void bindsSystemPropertyToSpringApplication() throws Exception {
-		// gh-951
-		System.setProperty("spring.main.banner-mode", "off");
-		this.initializer.postProcessEnvironment(this.environment, this.application);
-		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
-		field.setAccessible(true);
-		assertThat((Banner.Mode) field.get(this.application)).isEqualTo(Banner.Mode.OFF);
-	}
-
-	@Test
 	public void profileSubDocumentInDifferentProfileSpecificFile() throws Exception {
 		// gh-4132
 		SpringApplication application = new SpringApplication(Config.class);
@@ -768,26 +745,6 @@ public class ConfigFileApplicationListenerTests {
 				"--spring.profiles.active=activeprofilewithdifferentsubdoc,activeprofilewithdifferentsubdoc2");
 		String property = this.context.getEnvironment().getProperty("foobar");
 		assertThat(property).isEqualTo("baz");
-	}
-
-	@Test
-	public void setIgnoreBeanInfoPropertyByDefault() throws Exception {
-		this.initializer.setSearchNames("testproperties");
-		this.initializer.postProcessEnvironment(this.environment, this.application);
-		String property = System
-				.getProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME);
-		assertThat(property).isEqualTo("true");
-	}
-
-	@Test
-	public void disableIgnoreBeanInfoProperty() throws Exception {
-		this.initializer.setSearchNames("testproperties");
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				"spring.beaninfo.ignore=false");
-		this.initializer.postProcessEnvironment(this.environment, this.application);
-		String property = System
-				.getProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME);
-		assertThat(property).isEqualTo("false");
 	}
 
 	@Test
