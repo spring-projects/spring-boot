@@ -32,6 +32,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Primary;
 
 /**
@@ -72,6 +73,7 @@ public class CouchbaseAutoConfiguration {
 
 		@Bean
 		@Primary
+		@DependsOn("couchbaseClient")
 		public ClusterInfo couchbaseClusterInfo() throws Exception {
 			return couchbaseCluster()
 					.clusterManager(this.properties.getBucket().getName(),
