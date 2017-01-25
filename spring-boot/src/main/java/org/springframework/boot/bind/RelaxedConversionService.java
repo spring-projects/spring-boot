@@ -120,7 +120,7 @@ class RelaxedConversionService implements ConversionService {
 
 			@Override
 			public T convert(String source) {
-				if (source.length() == 0) {
+				if (source.isEmpty()) {
 					// It's an empty enum identifier: reset the enum value to null.
 					return null;
 				}

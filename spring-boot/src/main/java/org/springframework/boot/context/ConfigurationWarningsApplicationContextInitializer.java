@@ -206,14 +206,14 @@ public class ConfigurationWarningsApplicationContextInitializer
 		}
 
 		private boolean isProblematicPackage(String scannedPackage) {
-			if (scannedPackage == null || scannedPackage.length() == 0) {
+			if (scannedPackage == null || scannedPackage.isEmpty()) {
 				return true;
 			}
 			return PROBLEM_PACKAGES.contains(scannedPackage);
 		}
 
 		private String getDisplayName(String scannedPackage) {
-			if (scannedPackage == null || scannedPackage.length() == 0) {
+			if (scannedPackage == null || scannedPackage.isEmpty()) {
 				return "the default package";
 			}
 			return "'" + scannedPackage + "'";

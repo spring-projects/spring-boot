@@ -234,7 +234,7 @@ public class ConfigurationPropertiesReportEndpoint
 	private Map<String, Object> sanitize(String prefix, Map<String, Object> map) {
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
 			String key = entry.getKey();
-			String qualifiedKey = (prefix.length() == 0 ? prefix : prefix + ".") + key;
+			String qualifiedKey = (prefix.isEmpty() ? prefix : prefix + ".") + key;
 			Object value = entry.getValue();
 			if (value instanceof Map) {
 				map.put(key, sanitize(qualifiedKey, (Map<String, Object>) value));
