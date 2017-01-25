@@ -1329,6 +1329,13 @@ public class ServerProperties
 		 */
 		private Boolean directBuffers;
 
+		/**
+		 * Time in milliseconds that a shutdown will wait for in progress HTTP request to complete before
+		 * closing all the connections. When not set it defaults to 30000 ms.  Use a value of -1 to indicate no
+		 * (i.e. infinite) timeout.
+		 */
+		private Long gracefulShutdownTimeout;
+
 		private final Accesslog accesslog = new Accesslog();
 
 		public long getMaxHttpPostSize() {
@@ -1401,6 +1408,10 @@ public class ServerProperties
 			if (this.accesslog.enabled != null) {
 				factory.setAccessLogEnabled(this.accesslog.enabled);
 			}
+			if (this.gracefulShutdownTimeout != null) {
+				factory.setGracefulShutdownTimeout(this.gracefulShutdownTimeout);
+			}
+
 			factory.setAccessLogDirectory(this.accesslog.dir);
 			factory.setAccessLogPattern(this.accesslog.pattern);
 			factory.setAccessLogPrefix(this.accesslog.prefix);

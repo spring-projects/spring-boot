@@ -33,6 +33,7 @@ import io.undertow.predicate.Predicate;
 import io.undertow.predicate.Predicates;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.GracefulShutdownHandler;
 import io.undertow.server.handlers.encoding.ContentEncodingRepository;
 import io.undertow.server.handlers.encoding.EncodingHandler;
 import io.undertow.server.handlers.encoding.GzipEncodingProvider;
@@ -85,10 +86,13 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	private final Compression compression;
 
 	private final String serverHeader;
+	private final long gracefulShutdownTimeout;
 
 	private Undertow undertow;
 
 	private boolean started = false;
+
+	private GracefulShutdownHandler shutdownHander;
 
 	/**
 	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
@@ -116,7 +120,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 			String contextPath, boolean useForwardHeaders, boolean autoStart,
 			Compression compression) {
 		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression,
-				null);
+				null, 30000);
 	}
 
 	/**
@@ -128,10 +132,11 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
 	 * @param serverHeader string to be used in HTTP header
+	 * @param gracefulShutdownTimeout shutdown timeout
 	 */
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
 			String contextPath, boolean useForwardHeaders, boolean autoStart,
-			Compression compression, String serverHeader) {
+			Compression compression, String serverHeader, long gracefulShutdownTimeout) {
 		this.builder = builder;
 		this.manager = manager;
 		this.contextPath = contextPath;
@@ -139,6 +144,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		this.autoStart = autoStart;
 		this.compression = compression;
 		this.serverHeader = serverHeader;
+		this.gracefulShutdownTimeout = gracefulShutdownTimeout;
 	}
 
 	@Override
@@ -192,6 +198,16 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		if (StringUtils.hasText(this.serverHeader)) {
 			httpHandler = Handlers.header(httpHandler, "Server", this.serverHeader);
 		}
+
+		if (this.gracefulShutdownTimeout == 0) {
+			// don't need a shutdown handler if we are not going to wait for graceful shutdown.
+			this.shutdownHander = null;
+		}
+		else {
+			this.shutdownHander = new GracefulShutdownHandler(httpHandler);
+			httpHandler = this.shutdownHander;
+		}
+
 		this.builder.setHandler(httpHandler);
 		return this.builder.build();
 	}
@@ -308,6 +324,15 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 			if (this.started) {
 				try {
 					this.started = false;
+					if (this.shutdownHander != null) {
+						this.shutdownHander.shutdown();
+						if (this.gracefulShutdownTimeout == -1) {
+							this.shutdownHander.awaitShutdown();
+						}
+						else {
+							this.shutdownHander.awaitShutdown(this.gracefulShutdownTimeout);
+						}
+					}
 					this.manager.stop();
 					this.undertow.stop();
 				}
