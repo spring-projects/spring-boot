@@ -21,7 +21,6 @@
 		<Logger name="org.eclipse.jetty.util.component.AbstractLifeCycle" level="error" />
 		<Logger name="org.hibernate.validator.internal.util.Version" level="warn" />
 		<logger name="org.springframework.boot.actuate.endpoint.jmx" level="warn"/>
-		<logger name="org.thymeleaf" level="warn"/>
 		<Root level="info">
 			<AppenderRef ref="Console" />
 		</Root>
