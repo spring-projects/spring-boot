@@ -4,9 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-parent</artifactId>
+		<artifactId>spring-boot-tools</artifactId>
 		<version>2.0.0.BUILD-SNAPSHOT</version>
-		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-test-support</artifactId>
 	<name>Spring Boot Testing Support</name>
@@ -17,7 +16,7 @@
 		<url>http://www.spring.io</url>
 	</organization>
 	<properties>
-		<main.basedir>${basedir}/..</main.basedir>
+		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
 	<dependencies>
 		<!-- Provided -->
