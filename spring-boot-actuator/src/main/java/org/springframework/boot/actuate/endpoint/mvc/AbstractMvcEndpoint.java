@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EndpointProperties;
 import org.springframework.context.EnvironmentAware;
@@ -56,21 +54,14 @@ public abstract class AbstractMvcEndpoint extends WebMvcConfigurerAdapter
 	private final boolean sensitiveDefault;
 
 	public AbstractMvcEndpoint(String path, boolean sensitive) {
-		this.path = path;
+		setPath(path);
 		this.sensitiveDefault = sensitive;
 	}
 
 	public AbstractMvcEndpoint(String path, boolean sensitive, boolean enabled) {
-		this.path = path;
+		setPath(path);
 		this.sensitiveDefault = sensitive;
 		this.enabled = enabled;
-	}
-
-	@PostConstruct
-	private void validate() {
-		Assert.notNull(this.path, "Path must not be null");
-		Assert.isTrue(this.path.isEmpty() || this.path.startsWith("/"),
-				"Path must start with / or be empty");
 	}
 
 	@Override
@@ -88,6 +79,9 @@ public abstract class AbstractMvcEndpoint extends WebMvcConfigurerAdapter
 	}
 
 	public void setPath(String path) {
+		Assert.notNull(path, "Path must not be null");
+		Assert.isTrue(path.isEmpty() || path.startsWith("/"),
+				"Path must start with / or be empty");
 		this.path = path;
 	}
 

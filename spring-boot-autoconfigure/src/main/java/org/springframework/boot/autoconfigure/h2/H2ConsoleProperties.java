@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.h2;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -44,18 +42,14 @@ public class H2ConsoleProperties {
 
 	private final Settings settings = new Settings();
 
-	@PostConstruct
-	private void validate() {
-		Assert.notNull(this.path, "Path must not be null");
-		Assert.isTrue(this.path.isEmpty() || this.path.startsWith("/"),
-				"Path must start with / or be empty");
-	}
-
 	public String getPath() {
 		return this.path;
 	}
 
 	public void setPath(String path) {
+		Assert.notNull(path, "Path must not be null");
+		Assert.isTrue(path.isEmpty() || path.startsWith("/"),
+				"Path must start with / or be empty");
 		this.path = path;
 	}
 

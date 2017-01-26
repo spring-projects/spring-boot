@@ -18,8 +18,6 @@ package org.springframework.boot.actuate.endpoint;
 
 import java.util.regex.Pattern;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
@@ -55,13 +53,6 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	 */
 	private Boolean enabled;
 
-	@PostConstruct
-	private void validate() {
-		Assert.notNull(this.id, "Id must not be null");
-		Assert.isTrue(ID_PATTERN.matcher(this.id).matches(),
-				"ID must only contains letters, numbers and '_'");
-	}
-
 	/**
 	 * Create a new sensitive endpoint instance. The endpoint will enabled flag will be
 	 * based on the spring {@link Environment} unless explicitly set.
@@ -78,7 +69,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	 * @param sensitive if the endpoint is sensitive by default
 	 */
 	public AbstractEndpoint(String id, boolean sensitive) {
-		this.id = id;
+		setId(id);
 		this.sensitiveDefault = sensitive;
 	}
 
@@ -89,7 +80,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	 * @param enabled if the endpoint is enabled or not.
 	 */
 	public AbstractEndpoint(String id, boolean sensitive, boolean enabled) {
-		this.id = id;
+		setId(id);
 		this.sensitiveDefault = sensitive;
 		this.enabled = enabled;
 	}
@@ -109,6 +100,9 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	}
 
 	public void setId(String id) {
+		Assert.notNull(id, "Id must not be null");
+		Assert.isTrue(ID_PATTERN.matcher(id).matches(),
+				"Id must only contains letters, numbers and '_'");
 		this.id = id;
 	}
 
