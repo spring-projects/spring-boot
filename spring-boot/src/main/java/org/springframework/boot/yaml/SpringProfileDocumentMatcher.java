@@ -144,8 +144,8 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	}
 
 	/**
-	 * {@link ProfilesMatcher} that matches when a value in {@code spring.profiles} is also
-	 * in {@code spring.profiles.active}.
+	 * {@link ProfilesMatcher} that matches when a value in {@code spring.profiles} is
+	 * also in {@code spring.profiles.active}.
 	 */
 	private static class ActiveProfilesMatcher extends ProfilesMatcher {
 

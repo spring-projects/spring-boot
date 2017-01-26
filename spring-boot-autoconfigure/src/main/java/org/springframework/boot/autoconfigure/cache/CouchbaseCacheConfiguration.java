@@ -60,8 +60,9 @@ public class CouchbaseCacheConfiguration {
 	public CouchbaseCacheManager cacheManager() {
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		CouchbaseCacheManager cacheManager = new CouchbaseCacheManager(
-				CacheBuilder.newInstance(this.bucket).withExpiration(
-						this.cacheProperties.getCouchbase().getExpirationSeconds()),
+				CacheBuilder.newInstance(this.bucket)
+						.withExpiration(this.cacheProperties.getCouchbase()
+								.getExpirationSeconds()),
 				cacheNames.toArray(new String[cacheNames.size()]));
 		return this.customizers.customize(cacheManager);
 	}

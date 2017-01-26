@@ -66,8 +66,9 @@ public class CassandraAutoConfigurationTests {
 	public void createCustomizeCluster() {
 		load(MockCustomizerConfig.class);
 		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
-		assertThat(this.context.getBeanNamesForType(ClusterBuilderCustomizer.class).length)
-				.isEqualTo(1);
+		assertThat(
+				this.context.getBeanNamesForType(ClusterBuilderCustomizer.class).length)
+						.isEqualTo(1);
 	}
 
 	@Test
