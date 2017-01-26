@@ -125,20 +125,20 @@ public class ServerPropertiesTests {
 	public void testServletPathAsMapping() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
 		binder.bind(new MutablePropertyValues(
-				Collections.singletonMap("server.servletPath", "/foo/*")));
+				Collections.singletonMap("server.servlet.path", "/foo/*")));
 		assertThat(binder.getBindingResult().hasErrors()).isFalse();
-		assertThat(this.properties.getServletMapping()).isEqualTo("/foo/*");
-		assertThat(this.properties.getServletPrefix()).isEqualTo("/foo");
+		assertThat(this.properties.getServlet().getServletMapping()).isEqualTo("/foo/*");
+		assertThat(this.properties.getServlet().getServletPrefix()).isEqualTo("/foo");
 	}
 
 	@Test
 	public void testServletPathAsPrefix() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
 		binder.bind(new MutablePropertyValues(
-				Collections.singletonMap("server.servletPath", "/foo")));
+				Collections.singletonMap("server.servlet.path", "/foo")));
 		assertThat(binder.getBindingResult().hasErrors()).isFalse();
-		assertThat(this.properties.getServletMapping()).isEqualTo("/foo/*");
-		assertThat(this.properties.getServletPrefix()).isEqualTo("/foo");
+		assertThat(this.properties.getServlet().getServletMapping()).isEqualTo("/foo/*");
+		assertThat(this.properties.getServlet().getServletPrefix()).isEqualTo("/foo");
 	}
 
 	@Test
@@ -238,15 +238,15 @@ public class ServerPropertiesTests {
 	@Test
 	public void testTrailingSlashOfContextPathIsRemoved() {
 		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
-				Collections.singletonMap("server.contextPath", "/foo/")));
-		assertThat(this.properties.getContextPath()).isEqualTo("/foo");
+				Collections.singletonMap("server.servlet.contextPath", "/foo/")));
+		assertThat(this.properties.getServlet().getContextPath()).isEqualTo("/foo");
 	}
 
 	@Test
 	public void testSlashOfContextPathIsDefaultValue() {
 		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
-				Collections.singletonMap("server.contextPath", "/")));
-		assertThat(this.properties.getContextPath()).isEqualTo("");
+				Collections.singletonMap("server.servlet.contextPath", "/")));
+		assertThat(this.properties.getServlet().getContextPath()).isEqualTo("");
 	}
 
 	@Test

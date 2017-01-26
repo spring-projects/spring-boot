@@ -152,8 +152,6 @@ content into your application; rather pick only the properties that you need.
 	server.compression.mime-types= # Comma-separated list of MIME types that should be compressed. For instance `text/html,text/css,application/json`
 	server.compression.min-response-size= # Minimum response size that is required for compression to be performed. For instance 2048
 	server.connection-timeout= # Time in milliseconds that connectors will wait for another HTTP request before closing the connection. When not set, the connector's container-specific default will be used. Use a value of -1 to indicate no (i.e. infinite) timeout.
-	server.context-parameters.*= # Servlet context init parameters. For instance `server.context-parameters.a=alpha`
-	server.context-path= # Context path of the application.
 	server.display-name=application # Display name of the application.
 	server.max-http-header-size=0 # Maximum size in bytes of the HTTP message header.
 	server.error.include-stacktrace=never # When to include a "stacktrace" attribute.
@@ -162,12 +160,14 @@ content into your application; rather pick only the properties that you need.
 	server.jetty.acceptors= # Number of acceptor threads to use.
 	server.jetty.max-http-post-size=0 # Maximum size in bytes of the HTTP post or put content.
 	server.jetty.selectors= # Number of selector threads to use.
-	server.jsp-servlet.class-name=org.apache.jasper.servlet.JspServlet # The class name of the JSP servlet.
-	server.jsp-servlet.init-parameters.*= # Init parameters used to configure the JSP servlet
-	server.jsp-servlet.registered=true # Whether or not the JSP servlet is registered
 	server.port=8080 # Server HTTP port.
 	server.server-header= # Value to use for the Server response header (no header is sent if empty)
-	server.servlet-path=/ # Path of the main dispatcher servlet.
+	server.servlet.context-parameters.*= # Servlet context init parameters. For instance `server.servlet.context-parameters.a=alpha`
+	server.servlet.context-path= # Context path of the application.
+	server.servlet.jsp.class-name=org.apache.jasper.servlet.JspServlet # The class name of the JSP servlet.
+	server.servlet.jsp.init-parameters.*= # Init parameters used to configure the JSP servlet
+	server.servlet.jsp.registered=true # Whether or not the JSP servlet is registered
+	server.servlet.path=/ # Path of the main dispatcher servlet.
 	server.use-forward-headers= # If X-Forwarded-* headers should be applied to the HttpRequest.
 	server.session.cookie.comment= # Comment for the session cookie.
 	server.session.cookie.domain= # Domain for the session cookie.

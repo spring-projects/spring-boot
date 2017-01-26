@@ -309,7 +309,7 @@ public class ErrorMvcAutoConfiguration {
 
 		@Override
 		public void registerErrorPages(ErrorPageRegistry errorPageRegistry) {
-			ErrorPage errorPage = new ErrorPage(this.properties.getServletPrefix()
+			ErrorPage errorPage = new ErrorPage(this.properties.getServlet().getServletPrefix()
 					+ this.properties.getError().getPath());
 			errorPageRegistry.addErrorPages(errorPage);
 		}

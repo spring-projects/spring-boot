@@ -634,7 +634,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void disableJspServletRegistration() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		factory.getJspServlet().setRegistered(false);
+		factory.getJsp().setRegistered(false);
 		this.container = factory.getEmbeddedServletContainer();
 		assertThat(getJspServlet()).isNull();
 	}
@@ -941,7 +941,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		Map<String, String> initParameters = new HashMap<String, String>();
 		initParameters.put("a", "alpha");
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		factory.getJspServlet().setInitParameters(initParameters);
+		factory.getJsp().setInitParameters(initParameters);
 		this.container = factory.getEmbeddedServletContainer();
 		Assume.assumeThat(getJspServlet(), notNullValue());
 		JspServlet jspServlet = getJspServlet();

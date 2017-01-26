@@ -423,9 +423,9 @@ public class JettyEmbeddedServletContainerFactory
 		Assert.notNull(context, "Context must not be null");
 		ServletHolder holder = new ServletHolder();
 		holder.setName("jsp");
-		holder.setClassName(getJspServlet().getClassName());
+		holder.setClassName(getJsp().getClassName());
 		holder.setInitParameter("fork", "false");
-		holder.setInitParameters(getJspServlet().getInitParameters());
+		holder.setInitParameters(getJsp().getInitParameters());
 		holder.setInitOrder(3);
 		context.getServletHandler().addServlet(holder);
 		ServletMapping mapping = new ServletMapping();

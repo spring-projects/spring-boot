@@ -54,7 +54,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"spring.jersey.type=filter", "server.contextPath=/app" })
+		"spring.jersey.type=filter", "server.servlet.contextPath=/app" })
 @DirtiesContext
 public class JerseyAutoConfigurationCustomFilterContextPathTests {
 

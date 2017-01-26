@@ -23,9 +23,9 @@ import java.util.Map;
  * Configuration for the container's JSP servlet.
  *
  * @author Andy Wilkinson
- * @since 1.3.0
+ * @since 2.0.0
  */
-public class JspServlet {
+public class Jsp {
 
 	/**
 	 * The class name of the servlet to use for JSPs. If registered is true and this class
@@ -46,7 +46,7 @@ public class JspServlet {
 	 */
 	private boolean registered = true;
 
-	public JspServlet() {
+	public Jsp() {
 		this.initParameters.put("development", "false");
 	}
 

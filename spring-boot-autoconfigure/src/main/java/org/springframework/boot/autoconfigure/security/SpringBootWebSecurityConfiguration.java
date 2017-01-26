@@ -200,7 +200,7 @@ public class SpringBootWebSecurityConfiguration {
 			if (this.errorController != null) {
 				ignored.add(normalizePath(this.errorController.getErrorPath()));
 			}
-			String[] paths = this.server.getPathsArray(ignored);
+			String[] paths = this.server.getServlet().getPathsArray(ignored);
 			List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
 			if (!ObjectUtils.isEmpty(paths)) {
 				for (String pattern : paths) {

@@ -38,7 +38,7 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 
 	private final String scheme;
 
-	private RelaxedPropertyResolver serverPropertyResolver;
+	private RelaxedPropertyResolver servletPropertyResolver;
 
 	/**
 	 * Create a new {@code LocalHostUriTemplateHandler} that will generate {@code http}
@@ -63,13 +63,13 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 		Assert.notNull(scheme, "Scheme must not be null");
 		this.environment = environment;
 		this.scheme = scheme;
-		this.serverPropertyResolver = new RelaxedPropertyResolver(environment, "server.");
+		this.servletPropertyResolver = new RelaxedPropertyResolver(environment, "server.servlet.");
 	}
 
 	@Override
 	public String getRootUri() {
 		String port = this.environment.getProperty("local.server.port", "8080");
-		String contextPath = this.serverPropertyResolver.getProperty("context-path", "");
+		String contextPath = this.servletPropertyResolver.getProperty("context-path", "");
 		return this.scheme + "://localhost:" + port + contextPath;
 	}
 

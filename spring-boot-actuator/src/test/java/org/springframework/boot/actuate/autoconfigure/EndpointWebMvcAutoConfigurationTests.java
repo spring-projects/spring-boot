@@ -127,7 +127,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
 				"management.context-path=",
 				"management.security.enabled=false",
-				"server.context-path=",
+				"server.servlet.context-path=",
 				"server.port=" + ports.get().server);
 	}
 
@@ -233,7 +233,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Test
 	public void onDifferentPortAndMainContext() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"server.context-path=/spring",
+				"server.servlet.context-path=/spring",
 				"management.port=" + ports.get().management,
 				"management.context-path=/admin");
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,

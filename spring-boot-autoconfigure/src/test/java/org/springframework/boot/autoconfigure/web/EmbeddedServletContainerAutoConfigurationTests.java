@@ -122,7 +122,8 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 	public void initParametersAreConfiguredOnTheServletContext() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"server.context_parameters.a:alpha", "server.context_parameters.b:bravo");
+				"server.servlet.context_parameters.a:alpha",
+				"server.servlet.context_parameters.b:bravo");
 		this.context.register(BaseConfiguration.class);
 		this.context.refresh();
 

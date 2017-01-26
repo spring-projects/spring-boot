@@ -20,10 +20,7 @@ import java.io.File;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -57,7 +54,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomi
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.InitParameterConfiguringServletContextInitializer;
-import org.springframework.boot.context.embedded.JspServlet;
+import org.springframework.boot.context.embedded.Servlet;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.jetty.JettyServerCustomizer;
@@ -73,7 +70,6 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
-import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -107,27 +103,12 @@ public class ServerProperties
 	private InetAddress address;
 
 	/**
-	 * Context path of the application.
-	 */
-	private String contextPath;
-
-	/**
 	 * Display name of the application.
 	 */
 	private String displayName = "application";
 
 	@NestedConfigurationProperty
 	private ErrorProperties error = new ErrorProperties();
-
-	/**
-	 * Path of the main dispatcher servlet.
-	 */
-	private String servletPath = "/";
-
-	/**
-	 * ServletContext parameters.
-	 */
-	private final Map<String, String> contextParameters = new HashMap<String, String>();
 
 	/**
 	 * If X-Forwarded-* headers should be applied to the HttpRequest.
@@ -160,7 +141,7 @@ public class ServerProperties
 	private Compression compression = new Compression();
 
 	@NestedConfigurationProperty
-	private JspServlet jspServlet;
+	private Servlet servlet = new Servlet();
 
 	private final Tomcat tomcat = new Tomcat();
 
@@ -188,8 +169,8 @@ public class ServerProperties
 		if (getAddress() != null) {
 			container.setAddress(getAddress());
 		}
-		if (getContextPath() != null) {
-			container.setContextPath(getContextPath());
+		if (getServlet().getContextPath() != null) {
+			container.setContextPath(getServlet().getContextPath());
 		}
 		if (getDisplayName() != null) {
 			container.setDisplayName(getDisplayName());
@@ -202,8 +183,8 @@ public class ServerProperties
 		if (getSsl() != null) {
 			container.setSsl(getSsl());
 		}
-		if (getJspServlet() != null) {
-			container.setJspServlet(getJspServlet());
+		if (getServlet().getJsp() != null) {
+			container.setJsp(getServlet().getJsp());
 		}
 		if (getCompression() != null) {
 			container.setCompression(getCompression());
@@ -224,57 +205,7 @@ public class ServerProperties
 		}
 		container.addInitializers(new SessionConfiguringInitializer(this.session));
 		container.addInitializers(new InitParameterConfiguringServletContextInitializer(
-				getContextParameters()));
-	}
-
-	public String getServletMapping() {
-		if (this.servletPath.equals("") || this.servletPath.equals("/")) {
-			return "/";
-		}
-		if (this.servletPath.contains("*")) {
-			return this.servletPath;
-		}
-		if (this.servletPath.endsWith("/")) {
-			return this.servletPath + "*";
-		}
-		return this.servletPath + "/*";
-	}
-
-	public String getPath(String path) {
-		String prefix = getServletPrefix();
-		if (!path.startsWith("/")) {
-			path = "/" + path;
-		}
-		return prefix + path;
-	}
-
-	public String getServletPrefix() {
-		String result = this.servletPath;
-		if (result.contains("*")) {
-			result = result.substring(0, result.indexOf("*"));
-		}
-		if (result.endsWith("/")) {
-			result = result.substring(0, result.length() - 1);
-		}
-		return result;
-	}
-
-	public String[] getPathsArray(Collection<String> paths) {
-		String[] result = new String[paths.size()];
-		int i = 0;
-		for (String path : paths) {
-			result[i++] = getPath(path);
-		}
-		return result;
-	}
-
-	public String[] getPathsArray(String[] paths) {
-		String[] result = new String[paths.length];
-		int i = 0;
-		for (String path : paths) {
-			result[i++] = getPath(path);
-		}
-		return result;
+				getServlet().getContextParameters()));
 	}
 
 	public void setLoader(String value) {
@@ -297,40 +228,12 @@ public class ServerProperties
 		this.address = address;
 	}
 
-	public String getContextPath() {
-		return this.contextPath;
-	}
-
-	public void setContextPath(String contextPath) {
-		this.contextPath = cleanContextPath(contextPath);
-	}
-
-	private String cleanContextPath(String contextPath) {
-		if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
-			return contextPath.substring(0, contextPath.length() - 1);
-		}
-		return contextPath;
-	}
-
 	public String getDisplayName() {
 		return this.displayName;
 	}
 
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
-	}
-
-	public String getServletPath() {
-		return this.servletPath;
-	}
-
-	public void setServletPath(String servletPath) {
-		Assert.notNull(servletPath, "ServletPath must not be null");
-		this.servletPath = servletPath;
-	}
-
-	public Map<String, String> getContextParameters() {
-		return this.contextParameters;
 	}
 
 	public Boolean isUseForwardHeaders() {
@@ -397,12 +300,12 @@ public class ServerProperties
 		return this.compression;
 	}
 
-	public JspServlet getJspServlet() {
-		return this.jspServlet;
+	public Servlet getServlet() {
+		return this.servlet;
 	}
 
-	public void setJspServlet(JspServlet jspServlet) {
-		this.jspServlet = jspServlet;
+	public void setServlet(Servlet servlet) {
+		this.servlet = servlet;
 	}
 
 	public Tomcat getTomcat() {

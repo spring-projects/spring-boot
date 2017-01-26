@@ -131,7 +131,7 @@ public class UndertowEmbeddedServletContainerFactory
 	 */
 	public UndertowEmbeddedServletContainerFactory() {
 		super();
-		getJspServlet().setRegistered(false);
+		getJsp().setRegistered(false);
 	}
 
 	/**
@@ -141,7 +141,7 @@ public class UndertowEmbeddedServletContainerFactory
 	 */
 	public UndertowEmbeddedServletContainerFactory(int port) {
 		super(port);
-		getJspServlet().setRegistered(false);
+		getJsp().setRegistered(false);
 	}
 
 	/**
@@ -152,7 +152,7 @@ public class UndertowEmbeddedServletContainerFactory
 	 */
 	public UndertowEmbeddedServletContainerFactory(String contextPath, int port) {
 		super(contextPath, port);
-		getJspServlet().setRegistered(false);
+		getJsp().setRegistered(false);
 	}
 
 	/**

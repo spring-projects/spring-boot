@@ -257,9 +257,9 @@ public class TomcatEmbeddedServletContainerFactory
 	private void addJspServlet(Context context) {
 		Wrapper jspServlet = context.createWrapper();
 		jspServlet.setName("jsp");
-		jspServlet.setServletClass(getJspServlet().getClassName());
+		jspServlet.setServletClass(getJsp().getClassName());
 		jspServlet.addInitParameter("fork", "false");
-		for (Entry<String, String> initParameter : getJspServlet().getInitParameters()
+		for (Entry<String, String> initParameter : getJsp().getInitParameters()
 				.entrySet()) {
 			jspServlet.addInitParameter(initParameter.getKey(), initParameter.getValue());
 		}

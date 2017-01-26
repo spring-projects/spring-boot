@@ -161,9 +161,9 @@ public interface ConfigurableEmbeddedServletContainer extends ErrorPageRegistry 
 
 	/**
 	 * Sets the configuration that will be applied to the container's JSP servlet.
-	 * @param jspServlet the JSP servlet configuration
+	 * @param jsp the JSP servlet configuration
 	 */
-	void setJspServlet(JspServlet jspServlet);
+	void setJsp(Jsp jsp);
 
 	/**
 	 * Sets the compression configuration that will be applied to the container's default
