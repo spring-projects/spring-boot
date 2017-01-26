@@ -337,7 +337,7 @@ public class EndpointMBeanExporterTests {
 			extends AbstractEndpoint<Map<String, Object>> {
 
 		public JsonMapConversionEndpoint() {
-			super("json-map-conversion");
+			super("json_map_conversion");
 		}
 
 		@Override
@@ -353,7 +353,7 @@ public class EndpointMBeanExporterTests {
 			extends AbstractEndpoint<List<Object>> {
 
 		public JsonListConversionEndpoint() {
-			super("json-list-conversion");
+			super("json_list_conversion");
 		}
 
 		@Override
