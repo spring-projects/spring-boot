@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,15 @@
 
 package org.springframework.boot.autoconfigure.validation;
 
-import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.executable.ExecutableValidator;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionMessage;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
-import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
@@ -46,7 +37,6 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  */
 @ConditionalOnClass(ExecutableValidator.class)
 @ConditionalOnResource(resources = "classpath:META-INF/services/javax.validation.spi.ValidationProvider")
-@Conditional(ValidationAutoConfiguration.OnValidatorAvailableCondition.class)
 public class ValidationAutoConfiguration {
 
 	@Bean
@@ -65,25 +55,6 @@ public class ValidationAutoConfiguration {
 		MethodValidationPostProcessor processor = new MethodValidationPostProcessor();
 		processor.setValidator(validator);
 		return processor;
-	}
-
-	@Order(Ordered.LOWEST_PRECEDENCE)
-	static class OnValidatorAvailableCondition extends SpringBootCondition {
-
-		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition(getClass().getName());
-			try {
-				Validation.buildDefaultValidatorFactory().getValidator();
-				return ConditionOutcome.match(message.available("JSR-303 provider"));
-			}
-			catch (Exception ex) {
-				return ConditionOutcome.noMatch(message.notAvailable("JSR-303 provider"));
-			}
-		}
-
 	}
 
 }
