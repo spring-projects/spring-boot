@@ -44,9 +44,9 @@ import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfigura
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.EmbeddedWebServer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.web.servlet.ErrorPage;
@@ -68,7 +68,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
  * Configuration triggered from {@link EndpointWebMvcAutoConfiguration} when a new
- * {@link EmbeddedServletContainer} running on a different port is required.
+ * {@link EmbeddedWebServer} running on a different port is required.
  *
  * @author Dave Syer
  * @author Stephane Nicoll

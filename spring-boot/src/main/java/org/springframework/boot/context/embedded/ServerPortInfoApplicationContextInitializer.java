@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link ApplicationContextInitializer} that sets {@link Environment} properties for the
- * ports that {@link EmbeddedServletContainer} servers are actually listening on. The
+ * ports that {@link EmbeddedWebServer} servers are actually listening on. The
  * property {@literal "local.server.port"} can be injected directly into tests using
  * {@link Value @Value} or obtained via the {@link Environment}.
  * <p>

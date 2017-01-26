@@ -27,9 +27,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.boot.context.embedded.EmbeddedWebServer;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
@@ -120,7 +120,7 @@ public class EmbeddedServerPortFileWriterTests {
 	private EmbeddedServletContainerInitializedEvent mockEvent(String name, int port) {
 		EmbeddedWebApplicationContext applicationContext = mock(
 				EmbeddedWebApplicationContext.class);
-		EmbeddedServletContainer source = mock(EmbeddedServletContainer.class);
+		EmbeddedWebServer source = mock(EmbeddedWebServer.class);
 		given(applicationContext.getNamespace()).willReturn(name);
 		given(source.getPort()).willReturn(port);
 		EmbeddedServletContainerInitializedEvent event = new EmbeddedServletContainerInitializedEvent(

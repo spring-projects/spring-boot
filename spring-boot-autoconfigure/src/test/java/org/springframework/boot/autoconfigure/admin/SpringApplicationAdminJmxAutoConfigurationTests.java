@@ -128,7 +128,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 		assertThat(this.mBeanServer.getAttribute(createDefaultObjectName(),
 				"EmbeddedWebApplication")).isEqualTo(Boolean.TRUE);
 		int expected = ((EmbeddedWebApplicationContext) this.context)
-				.getEmbeddedServletContainer().getPort();
+				.getEmbeddedWebServer().getPort();
 		String actual = getProperty(createDefaultObjectName(), "local.server.port");
 		assertThat(actual).isEqualTo(String.valueOf(expected));
 	}

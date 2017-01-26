@@ -55,7 +55,7 @@ public class MockEmbeddedServletContainerFactory
 	private MockEmbeddedServletContainer container;
 
 	@Override
-	public EmbeddedServletContainer getEmbeddedServletContainer(
+	public EmbeddedWebServer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
 		this.container = spy(new MockEmbeddedServletContainer(
 				mergeInitializers(initializers), getPort()));
@@ -80,7 +80,7 @@ public class MockEmbeddedServletContainerFactory
 				: getContainer().getRegisteredFilters().get(index);
 	}
 
-	public static class MockEmbeddedServletContainer implements EmbeddedServletContainer {
+	public static class MockEmbeddedServletContainer implements EmbeddedWebServer {
 
 		private ServletContext servletContext;
 
@@ -167,7 +167,7 @@ public class MockEmbeddedServletContainerFactory
 		}
 
 		@Override
-		public void start() throws EmbeddedServletContainerException {
+		public void start() throws EmbeddedWebServerException {
 		}
 
 		@Override

@@ -23,7 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
+import org.springframework.boot.context.embedded.EmbeddedWebServer;
 import org.springframework.boot.context.embedded.ExampleServlet;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -66,7 +66,7 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory(
 				0);
 		factory.setSsl(getSsl("password", "classpath:test.jks"));
-		EmbeddedServletContainer container = factory.getEmbeddedServletContainer(
+		EmbeddedWebServer container = factory.getEmbeddedServletContainer(
 				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
 		container.start();
 		return "https://localhost:" + container.getPort() + "/hello";

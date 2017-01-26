@@ -50,7 +50,7 @@ import org.mockito.InOrder;
 
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.embedded.EmbeddedWebServerException;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -335,7 +335,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 					TomcatEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
-				catch (EmbeddedServletContainerException ex) {
+				catch (EmbeddedWebServerException ex) {
 					// Ignore
 				}
 			}

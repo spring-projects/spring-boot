@@ -16,7 +16,7 @@
 
 /**
  * Support for Tomcat
- * {@link org.springframework.boot.context.embedded.EmbeddedServletContainer
+ * {@link org.springframework.boot.context.embedded.EmbeddedWebServer
  * EmbeddedServletContainers}.
  *
  * @see org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory

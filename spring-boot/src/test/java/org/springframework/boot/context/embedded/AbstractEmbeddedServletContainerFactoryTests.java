@@ -128,7 +128,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Rule
 	public InternalOutputCapture output = new InternalOutputCapture();
 
-	protected EmbeddedServletContainer container;
+	protected EmbeddedWebServer container;
 
 	private final HttpClientContext httpClientContext = HttpClientContext.create();
 

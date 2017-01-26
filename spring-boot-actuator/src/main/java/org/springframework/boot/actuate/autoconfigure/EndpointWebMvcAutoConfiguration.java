@@ -148,7 +148,7 @@ public class EndpointWebMvcAutoConfiguration
 		if (managementPort == ManagementServerPort.DIFFERENT) {
 			if (this.applicationContext instanceof EmbeddedWebApplicationContext
 					&& ((EmbeddedWebApplicationContext) this.applicationContext)
-							.getEmbeddedServletContainer() != null) {
+							.getEmbeddedWebServer() != null) {
 				createChildManagementContext();
 			}
 			else {

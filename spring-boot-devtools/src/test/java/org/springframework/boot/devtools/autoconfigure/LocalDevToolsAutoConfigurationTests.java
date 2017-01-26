@@ -246,7 +246,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	public void devToolsSwitchesJspServletToDevelopmentMode() {
 		this.context = initializeAndRun(Config.class);
 		TomcatEmbeddedServletContainer tomcatContainer = (TomcatEmbeddedServletContainer) ((EmbeddedWebApplicationContext) this.context)
-				.getEmbeddedServletContainer();
+				.getEmbeddedWebServer();
 		Container context = tomcatContainer.getTomcat().getHost().findChildren()[0];
 		StandardWrapper jspServletWrapper = (StandardWrapper) context.findChild("jsp");
 		EmbeddedServletOptions options = (EmbeddedServletOptions) ReflectionTestUtils

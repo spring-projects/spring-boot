@@ -399,7 +399,7 @@ public class OAuth2AutoConfigurationTests {
 
 	private void verifyAuthentication(ClientDetails config, HttpStatus finalStatus) {
 		String baseUrl = "http://localhost:"
-				+ this.context.getEmbeddedServletContainer().getPort();
+				+ this.context.getEmbeddedWebServer().getPort();
 		TestRestTemplate rest = new TestRestTemplate();
 		// First, verify the web endpoint can't be reached
 		assertEndpointUnauthorized(baseUrl, rest);

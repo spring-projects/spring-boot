@@ -18,7 +18,7 @@ package org.springframework.boot.context.embedded.tomcat;
 
 import org.apache.catalina.connector.Connector;
 
-import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.embedded.EmbeddedWebServerException;
 
 /**
  * A {@code ConnectorStartFailedException} is thrown when a Tomcat {@link Connector} fails
@@ -27,7 +27,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerExcepti
  * @author Andy Wilkinson
  * @since 1.4.1
  */
-public class ConnectorStartFailedException extends EmbeddedServletContainerException {
+public class ConnectorStartFailedException extends EmbeddedWebServerException {
 
 	private final int port;
 

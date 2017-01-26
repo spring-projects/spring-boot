@@ -57,9 +57,9 @@ import org.apache.tomcat.util.net.SSLHostConfig;
 
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.Compression;
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.EmbeddedWebServer;
+import org.springframework.boot.context.embedded.EmbeddedWebServerException;
 import org.springframework.boot.context.embedded.MimeMappings;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.Ssl.ClientAuth;
@@ -156,7 +156,7 @@ public class TomcatEmbeddedServletContainerFactory
 	}
 
 	@Override
-	public EmbeddedServletContainer getEmbeddedServletContainer(
+	public EmbeddedWebServer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
 		Tomcat tomcat = new Tomcat();
 		File baseDir = (this.baseDirectory != null ? this.baseDirectory
@@ -414,7 +414,7 @@ public class TomcatEmbeddedServletContainerFactory
 			protocol.setKeystoreFile(ResourceUtils.getURL(ssl.getKeyStore()).toString());
 		}
 		catch (FileNotFoundException ex) {
-			throw new EmbeddedServletContainerException(
+			throw new EmbeddedWebServerException(
 					"Could not load key store: " + ex.getMessage(), ex);
 		}
 		if (ssl.getKeyStoreType() != null) {
@@ -433,7 +433,7 @@ public class TomcatEmbeddedServletContainerFactory
 						ResourceUtils.getURL(ssl.getTrustStore()).toString());
 			}
 			catch (FileNotFoundException ex) {
-				throw new EmbeddedServletContainerException(
+				throw new EmbeddedWebServerException(
 						"Could not load trust store: " + ex.getMessage(), ex);
 			}
 		}

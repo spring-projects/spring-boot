@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link EmbeddedWebApplicationContext} and
- * {@link EmbeddedServletContainer}s running Spring MVC.
+ * {@link EmbeddedWebServer}s running Spring MVC.
  *
  * @author Phillip Webb
  * @author Ivan Sopov
@@ -98,7 +98,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
 		ClientHttpRequest request = clientHttpRequestFactory.createRequest(
 				new URI("http://localhost:"
-						+ context.getEmbeddedServletContainer().getPort() + resourcePath),
+						+ context.getEmbeddedWebServer().getPort() + resourcePath),
 				HttpMethod.GET);
 		ClientHttpResponse response = request.execute();
 		try {

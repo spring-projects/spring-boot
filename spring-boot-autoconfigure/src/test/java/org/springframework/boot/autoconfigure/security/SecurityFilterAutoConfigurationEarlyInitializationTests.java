@@ -64,7 +64,7 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 					"security.user.password:password");
 			context.register(Config.class);
 			context.refresh();
-			int port = context.getEmbeddedServletContainer().getPort();
+			int port = context.getEmbeddedWebServer().getPort();
 			new TestRestTemplate("user", "password")
 					.getForEntity("http://localhost:" + port, Object.class);
 			// If early initialization occurred a ConverterNotFoundException is thrown

@@ -20,7 +20,7 @@ import org.springframework.context.ApplicationEvent;
 
 /**
  * Event to be published after the context is refreshed and the
- * {@link EmbeddedServletContainer} is ready. Useful for obtaining the local port of a
+ * {@link EmbeddedWebServer} is ready. Useful for obtaining the local port of a
  * running server. Normally it will have been started, but listeners are free to inspect
  * the server and stop and start it if they want to.
  *
@@ -33,26 +33,26 @@ public class EmbeddedServletContainerInitializedEvent extends ApplicationEvent {
 
 	public EmbeddedServletContainerInitializedEvent(
 			EmbeddedWebApplicationContext applicationContext,
-			EmbeddedServletContainer source) {
+			EmbeddedWebServer source) {
 		super(source);
 		this.applicationContext = applicationContext;
 	}
 
 	/**
-	 * Access the {@link EmbeddedServletContainer}.
+	 * Access the {@link EmbeddedWebServer}.
 	 * @return the embedded servlet container
 	 */
-	public EmbeddedServletContainer getEmbeddedServletContainer() {
+	public EmbeddedWebServer getEmbeddedServletContainer() {
 		return getSource();
 	}
 
 	/**
-	 * Access the source of the event (an {@link EmbeddedServletContainer}).
+	 * Access the source of the event (an {@link EmbeddedWebServer}).
 	 * @return the embedded servlet container
 	 */
 	@Override
-	public EmbeddedServletContainer getSource() {
-		return (EmbeddedServletContainer) super.getSource();
+	public EmbeddedWebServer getSource() {
+		return (EmbeddedWebServer) super.getSource();
 	}
 
 	/**

@@ -62,10 +62,10 @@ import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfi
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
+import org.springframework.boot.context.embedded.EmbeddedWebServer;
+import org.springframework.boot.context.embedded.EmbeddedWebServerException;
 import org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
@@ -351,7 +351,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 			this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 					BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 					ErrorMvcAutoConfiguration.class);
-			this.thrown.expect(EmbeddedServletContainerException.class);
+			this.thrown.expect(EmbeddedWebServerException.class);
 			this.applicationContext.refresh();
 		}
 		finally {
@@ -887,7 +887,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 		private ApplicationContext rootContext;
 
-		private EmbeddedServletContainer servletContainer;
+		private EmbeddedWebServer servletContainer;
 
 		GrabManagementPort(ApplicationContext rootContext) {
 			this.rootContext = rootContext;
@@ -900,7 +900,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 			}
 		}
 
-		public EmbeddedServletContainer getServletContainer() {
+		public EmbeddedWebServer getServletContainer() {
 			return this.servletContainer;
 		}
 

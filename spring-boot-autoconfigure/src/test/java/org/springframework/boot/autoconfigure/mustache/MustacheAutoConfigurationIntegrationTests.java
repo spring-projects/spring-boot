@@ -64,7 +64,7 @@ public class MustacheAutoConfigurationIntegrationTests {
 
 	@Before
 	public void init() {
-		this.port = this.context.getEmbeddedServletContainer().getPort();
+		this.port = this.context.getEmbeddedWebServer().getPort();
 	}
 
 	@Test

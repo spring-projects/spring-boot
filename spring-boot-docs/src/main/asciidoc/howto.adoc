@@ -571,7 +571,7 @@ To scan for a free port (using OS natives to prevent clashes) use `server.port=0
 [[howto-discover-the-http-port-at-runtime]]
 === Discover the HTTP port at runtime
 You can access the port the server is running on from log output or from the
-`EmbeddedWebApplicationContext` via its `EmbeddedServletContainer`. The best way to get
+`EmbeddedWebApplicationContext` via its `EmbeddedWebServer`. The best way to get
 that and be sure that it has initialized is to add a `@Bean` of type
 `ApplicationListener<EmbeddedServletContainerInitializedEvent>` and pull the container
 out of the event when it is published.

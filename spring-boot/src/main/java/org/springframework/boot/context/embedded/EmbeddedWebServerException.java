@@ -22,9 +22,9 @@ package org.springframework.boot.context.embedded;
  * @author Phillip Webb
  */
 @SuppressWarnings("serial")
-public class EmbeddedServletContainerException extends RuntimeException {
+public class EmbeddedWebServerException extends RuntimeException {
 
-	public EmbeddedServletContainerException(String message, Throwable cause) {
+	public EmbeddedWebServerException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
