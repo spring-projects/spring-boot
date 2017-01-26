@@ -305,129 +305,42 @@ The options include :
 * AWS Cloud Formation
 * AWS Container Registry
 
-Each has different features and pricing model, here we will describe only the simplest option : AWS Elastic Beanstalk
+Each has different features and pricing model, here we will describe only the simplest option : AWS Elastic Beanstalk.
 
+==== AWS Elastic Beanstalk
 
-==== Briefly about Elastic Beanstalk
+As described in the http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_Java.html[official]
+Elastic Beanstalk java guide, there are two main options to deploy a Java application.
 
-AWS consists of more than 70 services (and the number is still growing), for a new starter it can be
-quite confusing to do simple things like deploying an application to a server or creating multiple
-environments. Elastic Beanstalk is an umbrella service, calling other services so we don’t have to
-do deal with the inner details of AWS (but we can if we want to). What it does :
+===== Using the Tomcat platform
+This option applies to Spring Boot projects producing a war file. There is no any special configuration required, just follow the official guide.
 
-* Automatically provisioning infrastructure including EC2 servers, load balancers, security groups, auto scaling groups, CName
-* Manages environments (dev, staging, prod, etc)
-* Manages code deployment across multiple servers including multiple update strategies
-* It has a easy to use web console and CLI that can handle most needs.
-
-Those who want to access the advanced features can directly access the underlying infrastructure components and modify them just
-like they would be created manually. Elastic Beanstalk’s default deployment process consists of the following stages :
-
-. upload code to AWS
-. compile code
-. deploy artifacts to EC2 servers
-
-For a java project there is no reason to share source code with AWS, or rely on AWS building it.
-Instead it is better and cleaner to manage the build process by a dedicated build tool or CI server
-and upload only the artifact, may it be a war or jar file. Our process will look like this :
-
-. Build artifact locally or through a CI tool
-. upload artifact to AWS
-. deploy artifacts to EC2 servers
-
-
-==== Setting things up
-* Download the Elastic Beanstalk CLI tool from http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install.html[here]
-* You will need an AWS user's access id and secret key. For security reasons don't use the master user,
-instead create a new IAM user as described http://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console[here]
-
-==== Initializing an Elastic Beanstalk project
-Once EB CLI is installed, in your project directory type
+===== Using the Java SE platform
+This option applies to Spring Boot projects producing a jar file and running an embedded web container.
+Elastic Beanstalk environments run an nginx instance on port 80 to proxy the actual
+application, running on port 5000. To configure it add the below to *application.properties*
 ----
-eb init
+server.port=5000
 ----
 
-When prompted, select region and application name. For platform, you are presented with the following options
+===== Best practices
 
-----
-Select a platform.
-1) Node.js
-2) PHP
-3) Python
-4) Ruby
-5) Tomcat
-6) IIS
-7) Docker
-8) Multi-container Docker
-9) GlassFish
-10) Go
-11) Java
-(default is 1):
-----
-
-* If your project is compiled into a jar file and runs with embedded web server (the default behaviour of Spring Boot) then choose option 11) Java
-* If your project is a war file choose 5) Tomcat
-* If your project is built with docker then choose 7) Docker
-
-For this example we assume you selected 11) Java, then continue with the setup, select java version
-and create a keypair. Once this is done you will see the .elasticbeanstalk/config.yml file created. Add the following lines to ensure it uploads the artifact, not the sources
+====== Uploading binaries instead of sources
+By default Elastic Beanstalk uploads sources and compile them in AWS. To upload the binaries instead,
+add the below to the *.elasticbeanstalk/config.yml* file
 
 ----
 deploy:
   artifact: target/demo-0.0.1-SNAPSHOT.jar
 ----
 
-(change the name to match your application's build artifact name)
-
-==== Creating environments
-Elastic Beanstalk has a concept of environment. It is possible to create multiple environments like
-dev, staging, prod, etc. To deploy the code, at least one environment has to be created.
-This can be done either from the web console or from command line, but before that the code needs
-to be compiled to generate the deployment artifact. Depending on your build tool do one of the below
-
+====== Reduce costs by setting the environment type
+By default an Elastic Beanstalk environment is load balanced. The load balancer has a cost perspective,
+to avoid it, set the environment type to "Single instance" as decribed http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-create-wizard.html#environments-create-wizard-capacity[here].
+Single instance environments can be created using the CLI as well using the below command:
 ----
-# for maven projects
-mvn clean install
-
-# for gradle projects
-gradle build
-----
-
-This is needed because in the next step will immediately upload the artifact to AWS. To create an environment run one of the below commands
-
-----
-# Create a load balancing, auto-scaling environment
-eb create
-
-# Create a single instance environment
 eb create -s
 ----
-TIP: A load balancer costs roughly 18 USD per month, A single instance environment is cheaper and
-it can be enough for development purposes
-
-Once it is completed open the console by
-
-----
-eb console
-----
-
-It shows an URL to the instance, open it and see that you get and nginx error page. The reason is
-that nginx runs on port 80 and it expects our application to run on port 5000 so it can proxy it. 
-The easiest solution is to change our application to listen on port 5000 by adding this to application.properties
-
-----
-server.port=5000
-----
-
-==== Updating application using EB CLI
-Updating the application is quite straightforward. Rebuild your application so changes take effect then
-
-----
-eb deploy
-----
-
-Once the application is redeployed with the correct port setting, it should finally work as expected,
-the application is running in AWS!
 
 ==== Summary
 This is one of the easiest way to get to AWS, but there are more things
