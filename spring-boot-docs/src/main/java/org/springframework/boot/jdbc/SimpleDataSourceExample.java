@@ -43,8 +43,7 @@ public class SimpleDataSourceExample {
 		@ConfigurationProperties("app.datasource")
 		public HikariDataSource dataSource() {
 			return (HikariDataSource) DataSourceBuilder.create()
-					.type(HikariDataSource.class)
-					.build();
+					.type(HikariDataSource.class).build();
 		}
 		// end::configuration[]
 

@@ -45,4 +45,5 @@ public class BasicDataSourceExample {
 		// end::configuration[]
 
 	}
+
 }

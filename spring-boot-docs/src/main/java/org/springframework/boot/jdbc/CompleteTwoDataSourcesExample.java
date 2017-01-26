@@ -25,8 +25,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 /**
- * Example configuration for configuring two data sources with what Spring Boot does
- * in auto-configuration.
+ * Example configuration for configuring two data sources with what Spring Boot does in
+ * auto-configuration.
  *
  * @author Stephane Nicoll
  */
@@ -50,9 +50,7 @@ public class CompleteTwoDataSourcesExample {
 		@Primary
 		@ConfigurationProperties("app.datasource.foo")
 		public DataSource fooDataSource() {
-			return fooDataSourceProperties()
-					.initializeDataSourceBuilder()
-					.build();
+			return fooDataSourceProperties().initializeDataSourceBuilder().build();
 		}
 
 		@Bean
@@ -61,13 +59,10 @@ public class CompleteTwoDataSourcesExample {
 			return new DataSourceProperties();
 		}
 
-
 		@Bean
 		@ConfigurationProperties("app.datasource.bar")
 		public DataSource barDataSource() {
-			return barDataSourceProperties()
-					.initializeDataSourceBuilder()
-					.build();
+			return barDataSourceProperties().initializeDataSourceBuilder().build();
 		}
 		// end::configuration[]
 
