@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jdbc;
-
-import javax.sql.DataSource;
-
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-
+package org.springframework.boot.env;
 /**
- * A sample {@link SpringBootConfiguration} that only enables the auto-configuration for
- * the {@link DataSource}.
- *
- * @author Stephane Nicoll
+ * @author pwebb
  */
-@SpringBootConfiguration
-@ImportAutoConfiguration(DataSourceAutoConfiguration.class)
-class SampleApp {
+public interface DunnoEnumerablePropertySource {
 
 }

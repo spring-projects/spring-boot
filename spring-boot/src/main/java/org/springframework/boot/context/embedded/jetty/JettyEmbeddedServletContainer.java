@@ -59,6 +59,8 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
 	private Connector[] connectors;
 
+	private volatile boolean started;
+
 	/**
 	 * Create a new {@link JettyEmbeddedServletContainer} instance.
 	 * @param server the underlying Jetty server
@@ -111,37 +113,43 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
 	@Override
 	public void start() throws EmbeddedServletContainerException {
-		this.server.setConnectors(this.connectors);
-		if (!this.autoStart) {
-			return;
-		}
-		try {
-			this.server.start();
-			for (Handler handler : this.server.getHandlers()) {
-				handleDeferredInitialize(handler);
+		synchronized (this.monitor) {
+			if (this.started) {
+				return;
 			}
-			Connector[] connectors = this.server.getConnectors();
-			for (Connector connector : connectors) {
-				try {
-					connector.start();
+			this.server.setConnectors(this.connectors);
+			if (!this.autoStart) {
+				return;
+			}
+			try {
+				this.server.start();
+				for (Handler handler : this.server.getHandlers()) {
+					handleDeferredInitialize(handler);
 				}
-				catch (BindException ex) {
-					if (connector instanceof NetworkConnector) {
-						throw new PortInUseException(
-								((NetworkConnector) connector).getPort());
+				Connector[] connectors = this.server.getConnectors();
+				for (Connector connector : connectors) {
+					try {
+						connector.start();
 					}
-					throw ex;
+					catch (BindException ex) {
+						if (connector instanceof NetworkConnector) {
+							throw new PortInUseException(
+									((NetworkConnector) connector).getPort());
+						}
+						throw ex;
+					}
 				}
+				this.started = true;
+				JettyEmbeddedServletContainer.logger
+						.info("Jetty started on port(s) " + getActualPortsDescription());
 			}
-			JettyEmbeddedServletContainer.logger
-					.info("Jetty started on port(s) " + getActualPortsDescription());
-		}
-		catch (EmbeddedServletContainerException ex) {
-			throw ex;
-		}
-		catch (Exception ex) {
-			throw new EmbeddedServletContainerException(
-					"Unable to start embedded Jetty servlet container", ex);
+			catch (EmbeddedServletContainerException ex) {
+				throw ex;
+			}
+			catch (Exception ex) {
+				throw new EmbeddedServletContainerException(
+						"Unable to start embedded Jetty servlet container", ex);
+			}
 		}
 	}
 
@@ -197,6 +205,10 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	@Override
 	public void stop() {
 		synchronized (this.monitor) {
+			if (!this.started) {
+				return;
+			}
+			this.started = false;
 			try {
 				this.server.stop();
 			}

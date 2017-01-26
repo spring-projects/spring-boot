@@ -1489,11 +1489,10 @@ You can apply the same principle if you are configuring a custom JNDI `DataSourc
 	}
 ----
 
-
-Spring Boot also provides a utility builder class `DataSourceBuilder` that can be used
-to create one of the standard data sources (if it is on the classpath). The builder can
-detect the one to use based on the ones available on the classpath and it also auto
-detects the driver based on the JDBC url.
+Spring Boot also provides a utility builder class `DataSourceBuilder` that can be used to
+create one of the standard data sources (if it is on the classpath). The builder can
+detect the one to use based on what's available on the classpath. It also auto detects the
+driver based on the JDBC url.
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1516,7 +1515,7 @@ There is a catch however. Because the actual type of the connection pool is not 
 no keys are generated in the metadata for your custom `DataSource` and no completion is
 available in your IDE (The `DataSource` interface doesn't expose any property). Also, if
 you happen to _only_ have Hikari on the classpath, this basic setup will not work because
-Hikari has no `url` parameter (but a `jdbcUrl` parameter). You should have to rewrite
+Hikari has no `url` parameter (but a `jdbcUrl` parameter). You will have to rewrite
 your configuration as follows:
 
 [source,properties,indent=0]
@@ -1616,6 +1615,7 @@ include::{code-examples}/jdbc/CompleteTwoDataSourcesExample.java[tag=configurati
 
 This final example configures two data sources on custom namespaces with the same logic
 than what Spring Boot would do in auto-configuration.
+
 
 
 [[howto-use-spring-data-repositories]]

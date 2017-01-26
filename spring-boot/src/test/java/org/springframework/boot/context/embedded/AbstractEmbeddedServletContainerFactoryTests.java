@@ -82,6 +82,7 @@ import org.mockito.InOrder;
 import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.ApplicationTemp;
 import org.springframework.boot.context.embedded.Ssl.ClientAuth;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.web.servlet.ErrorPage;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
@@ -124,6 +125,9 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
+	@Rule
+	public InternalOutputCapture output = new InternalOutputCapture();
+
 	protected EmbeddedServletContainer container;
 
 	private final HttpClientContext httpClientContext = HttpClientContext.create();
@@ -155,6 +159,19 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
+	}
+
+	@Test
+	public void startCalledTwice() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory
+				.getEmbeddedServletContainer(exampleServletRegistration());
+		this.container.start();
+		int port = this.container.getPort();
+		this.container.start();
+		assertThat(this.container.getPort()).isEqualTo(port);
+		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
+		assertThat(this.output.toString()).containsOnlyOnce("started on port");
 	}
 
 	@Test
