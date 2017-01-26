@@ -20,7 +20,6 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.boot.autoconfigure.security.SecurityPrerequisite;
@@ -88,11 +87,6 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 
 	private final Security security = new Security();
 
-	@PostConstruct
-	private void validate() {
-		Assert.notNull(this.contextPath, "ContextPath must not be null");
-	}
-
 	/**
 	 * Returns the management port or {@code null} if the
 	 * {@link ServerProperties#getPort() server port} should be used.
@@ -138,6 +132,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	}
 
 	public void setContextPath(String contextPath) {
+		Assert.notNull(contextPath, "ContextPath must not be null");
 		this.contextPath = cleanContextPath(contextPath);
 	}
 

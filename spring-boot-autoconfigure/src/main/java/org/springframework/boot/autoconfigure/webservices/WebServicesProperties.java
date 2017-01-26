@@ -19,8 +19,6 @@ package org.springframework.boot.autoconfigure.webservices;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -41,18 +39,14 @@ public class WebServicesProperties {
 
 	private final Servlet servlet = new Servlet();
 
-	@PostConstruct
-	private void validate() {
-		Assert.notNull(this.path, "Path must not be null");
-		Assert.isTrue(this.path.isEmpty() || this.path.startsWith("/"),
-				"Path must start with / or be empty");
-	}
-
 	public String getPath() {
 		return this.path;
 	}
 
 	public void setPath(String path) {
+		Assert.notNull(path, "Path must not be null");
+		Assert.isTrue(path.isEmpty() || path.startsWith("/"),
+				"Path must start with / or be empty");
 		this.path = path;
 	}
 

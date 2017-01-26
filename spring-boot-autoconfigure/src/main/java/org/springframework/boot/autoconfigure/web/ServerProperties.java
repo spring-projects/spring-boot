@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.SessionCookieConfig;
@@ -170,11 +169,6 @@ public class ServerProperties
 	private final Undertow undertow = new Undertow();
 
 	private Environment environment;
-
-	@PostConstruct
-	private void validate() {
-		Assert.notNull(this.servletPath, "ServletPath must not be null");
-	}
 
 	@Override
 	public int getOrder() {
@@ -331,6 +325,7 @@ public class ServerProperties
 	}
 
 	public void setServletPath(String servletPath) {
+		Assert.notNull(servletPath, "ServletPath must not be null");
 		this.servletPath = servletPath;
 	}
 

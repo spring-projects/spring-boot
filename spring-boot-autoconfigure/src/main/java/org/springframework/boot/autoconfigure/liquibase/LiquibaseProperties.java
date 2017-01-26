@@ -19,8 +19,6 @@ package org.springframework.boot.autoconfigure.liquibase;
 import java.io.File;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import liquibase.integration.spring.SpringLiquibase;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -96,16 +94,12 @@ public class LiquibaseProperties {
 	 */
 	private File rollbackFile;
 
-	@PostConstruct
-	private void validate() {
-		Assert.notNull(this.changeLog, "ChangeLog must not be null");
-	}
-
 	public String getChangeLog() {
 		return this.changeLog;
 	}
 
 	public void setChangeLog(String changeLog) {
+		Assert.notNull(changeLog, "ChangeLog must not be null");
 		this.changeLog = changeLog;
 	}
 
