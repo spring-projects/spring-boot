@@ -71,8 +71,8 @@ public class DataSourceAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DataSourceInitializer dataSourceInitializer(
-		DataSourceProperties properties, ApplicationContext applicationContext) {
+	public DataSourceInitializer dataSourceInitializer(DataSourceProperties properties,
+			ApplicationContext applicationContext) {
 		return new DataSourceInitializer(properties, applicationContext);
 	}
 

@@ -60,7 +60,8 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 
 	private boolean initialized = false;
 
-	DataSourceInitializer(DataSourceProperties properties, ApplicationContext applicationContext) {
+	DataSourceInitializer(DataSourceProperties properties,
+			ApplicationContext applicationContext) {
 		this.properties = properties;
 		this.applicationContext = applicationContext;
 	}

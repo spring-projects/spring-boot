@@ -39,8 +39,8 @@ public class SampleController {
 	@GetMapping("/")
 	@ResponseBody
 	public Map<String, String> hello() {
-		return Collections.singletonMap("message", "Hello " +
-				this.helloWorldProperties.getName());
+		return Collections.singletonMap("message",
+				"Hello " + this.helloWorldProperties.getName());
 	}
 
 	protected static class Message {

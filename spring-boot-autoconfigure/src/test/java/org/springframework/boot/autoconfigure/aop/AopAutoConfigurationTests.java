@@ -107,7 +107,6 @@ public class AopAutoConfigurationTests {
 		this.context = ctx;
 	}
 
-
 	@EnableAspectJAutoProxy(proxyTargetClass = true)
 	@Configuration
 	@Import(TestConfiguration.class)

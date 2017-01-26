@@ -184,24 +184,24 @@ public class JpaPropertiesTests {
 	@Test
 	public void determineDatabaseWithKnownUrl() {
 		JpaProperties properties = load(HibernateVersion.V5);
-		Database database = properties.determineDatabase(
-				mockDataSource("jdbc:h2:mem:testdb"));
+		Database database = properties
+				.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
 		assertThat(database).isEqualTo(Database.H2);
 	}
 
 	@Test
 	public void determineDatabaseWithKnownUrlAndUserConfig() {
 		JpaProperties properties = load(HibernateVersion.V5, "spring.jpa.database=mysql");
-		Database database = properties.determineDatabase(
-				mockDataSource("jdbc:h2:mem:testdb"));
+		Database database = properties
+				.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));
 		assertThat(database).isEqualTo(Database.MYSQL);
 	}
 
 	@Test
 	public void determineDatabaseWithUnknownUrl() {
 		JpaProperties properties = load(HibernateVersion.V5);
-		Database database = properties.determineDatabase(
-				mockDataSource("jdbc:unknown://localhost"));
+		Database database = properties
+				.determineDatabase(mockDataSource("jdbc:unknown://localhost"));
 		assertThat(database).isEqualTo(Database.DEFAULT);
 	}
 
@@ -222,7 +222,7 @@ public class JpaPropertiesTests {
 			given(ds.getConnection()).willReturn(connection);
 		}
 		catch (SQLException e) {
-			//Do nothing
+			// Do nothing
 		}
 		return ds;
 	}
