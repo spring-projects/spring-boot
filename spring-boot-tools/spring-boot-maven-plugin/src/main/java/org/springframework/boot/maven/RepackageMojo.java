@@ -348,7 +348,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 		/**
 		 * Module Layout.
-		 * @deprecated since 1.5 in favour of a custom {@link LayoutFactory}
+		 * @deprecated as of 1.5 in favor of a custom {@link LayoutFactory}
 		 */
 		@Deprecated MODULE(new Layouts.Module()),
 

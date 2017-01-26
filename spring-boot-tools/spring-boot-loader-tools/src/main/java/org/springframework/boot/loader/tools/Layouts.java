@@ -158,7 +158,7 @@ public final class Layouts {
 
 	/**
 	 * Module layout (designed to be used as a "plug-in").
-	 * @deprecated since 1.5 in favour of a custom {@link LayoutFactory}
+	 * @deprecated as of 1.5 in favor of a custom {@link LayoutFactory}
 	 */
 	@Deprecated
 	public static class Module implements Layout {
