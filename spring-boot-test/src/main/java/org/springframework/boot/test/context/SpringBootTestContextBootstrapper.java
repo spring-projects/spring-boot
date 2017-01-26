@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.env.Environment;
@@ -58,6 +59,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Brian Clozel
  * @since 1.4.0
  * @see SpringBootTest
  * @see TestConfiguration
@@ -66,6 +68,12 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
+
+	private static final String REACTIVE_WEB_ENVIRONMENT_CLASS = "org.springframework."
+			+ "web.reactive.DispatcherHandler";
+
+	private static final String MVC_WEB_ENVIRONMENT_CLASS = "org.springframework."
+			+ "web.servlet.DispatcherServlet";
 
 	private static final String ACTIVATE_SERVLET_LISTENER = "org.springframework.test."
 			+ "context.web.ServletTestExecutionListener.activateListener";
@@ -78,7 +86,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		TestContext context = super.buildTestContext();
 		verifyConfiguration(context.getTestClass());
 		WebEnvironment webEnvironment = getWebEnvironment(context.getTestClass());
-		if (webEnvironment == WebEnvironment.MOCK && hasWebEnvironmentClasses()) {
+		if (webEnvironment == WebEnvironment.MOCK && deduceWebApplication() == WebApplicationType.SERVLET) {
 			context.setAttribute(ACTIVATE_SERVLET_LISTENER, true);
 		}
 		else if (webEnvironment != null && webEnvironment.isEmbedded()) {
@@ -138,8 +146,8 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 						.toArray(new String[propertySourceProperties.size()]));
 		WebEnvironment webEnvironment = getWebEnvironment(mergedConfig.getTestClass());
 		if (webEnvironment != null) {
-			if (webEnvironment.isEmbedded() || (webEnvironment == WebEnvironment.MOCK
-					&& hasWebEnvironmentClasses())) {
+			if (deduceWebApplication() == WebApplicationType.SERVLET &&
+					(webEnvironment.isEmbedded() || webEnvironment == WebEnvironment.MOCK)) {
 				WebAppConfiguration webAppConfiguration = AnnotatedElementUtils
 						.findMergedAnnotation(mergedConfig.getTestClass(),
 								WebAppConfiguration.class);
@@ -152,13 +160,17 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		return mergedConfig;
 	}
 
-	private boolean hasWebEnvironmentClasses() {
+	private WebApplicationType deduceWebApplication() {
+		if (ClassUtils.isPresent(REACTIVE_WEB_ENVIRONMENT_CLASS, null)
+				&& !ClassUtils.isPresent(MVC_WEB_ENVIRONMENT_CLASS, null)) {
+			return WebApplicationType.REACTIVE;
+		}
 		for (String className : WEB_ENVIRONMENT_CLASSES) {
 			if (!ClassUtils.isPresent(className, null)) {
-				return false;
+				return WebApplicationType.NONE;
 			}
 		}
-		return true;
+		return WebApplicationType.SERVLET;
 	}
 
 	protected Class<?>[] getOrFindConfigurationClasses(

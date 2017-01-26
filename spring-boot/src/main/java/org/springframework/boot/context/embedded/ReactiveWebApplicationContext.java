@@ -14,34 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
+package org.springframework.boot.context.embedded;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
- * An enumeration of possible types of web application.
- *
- * @author Andy Wilkinson
+ * A {@link AnnotationConfigApplicationContext} that can be used to bootstrap itself from a contained
+ * embedded web server factory bean.
  * @author Brian Clozel
  * @since 2.0.0
  */
-public enum WebApplicationType {
-
-	/**
-	 * The application should not run as a web application and should not start an
-	 * embedded web container.
-	 */
-	NONE,
-
-	/**
-	 * The application should run as a servlet-based web application and should start an
-	 * embedded servlet container.
-	 */
-	SERVLET,
-
-	/**
-	 * The application should run as a reactive web application and should start
-	 * an embedded web container.
-	 */
-	REACTIVE;
-
-
+public class ReactiveWebApplicationContext extends AnnotationConfigApplicationContext {
 }

@@ -153,6 +153,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Craig Burke
  * @author Michael Simons
  * @author Madhura Bhave
+ * @author Brian Clozel
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)
@@ -175,6 +176,19 @@ public class SpringApplication {
 
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
+
+	/**
+	 * The class name of application context that will be used by default for
+	 * reactive web environments.
+	 */
+	public static final String DEFAULT_REACTIVE_WEB_CONTEXT_CLASS = "org.springframework."
+			+ "boot.context.embedded.ReactiveWebApplicationContext";
+
+	private static final String REACTIVE_WEB_ENVIRONMENT_CLASS = "org.springframework."
+			+ "web.reactive.DispatcherHandler";
+
+	private static final String MVC_WEB_ENVIRONMENT_CLASS = "org.springframework."
+			+ "web.servlet.DispatcherServlet";
 
 	/**
 	 * Default banner location.
@@ -277,6 +291,10 @@ public class SpringApplication {
 	}
 
 	private WebApplicationType deduceWebApplication() {
+		if (ClassUtils.isPresent(REACTIVE_WEB_ENVIRONMENT_CLASS, null)
+				&& !ClassUtils.isPresent(MVC_WEB_ENVIRONMENT_CLASS, null)) {
+			return WebApplicationType.REACTIVE;
+		}
 		for (String className : WEB_ENVIRONMENT_CLASSES) {
 			if (!ClassUtils.isPresent(className, null)) {
 				return WebApplicationType.NONE;
@@ -606,9 +624,16 @@ public class SpringApplication {
 		Class<?> contextClass = this.applicationContextClass;
 		if (contextClass == null) {
 			try {
-				contextClass = Class
-						.forName(this.webApplicationType == WebApplicationType.SERVLET
-								? DEFAULT_WEB_CONTEXT_CLASS : DEFAULT_CONTEXT_CLASS);
+				switch (this.webApplicationType) {
+					case SERVLET:
+						contextClass = Class.forName(DEFAULT_WEB_CONTEXT_CLASS);
+						break;
+					case REACTIVE:
+						contextClass = Class.forName(DEFAULT_REACTIVE_WEB_CONTEXT_CLASS);
+						break;
+					default:
+						contextClass = Class.forName(DEFAULT_CONTEXT_CLASS);
+				}
 			}
 			catch (ClassNotFoundException ex) {
 				throw new IllegalStateException(

@@ -43,6 +43,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.context.embedded.ReactiveWebApplicationContext;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
@@ -102,6 +103,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Jeremy Rickard
  * @author Craig Burke
  * @author Madhura Bhave
+ * @author Brian Clozel
  */
 public class SpringApplicationTests {
 
@@ -393,6 +395,15 @@ public class SpringApplicationTests {
 		this.context = application.run();
 		assertThat(this.context)
 				.isInstanceOf(AnnotationConfigEmbeddedWebApplicationContext.class);
+	}
+
+	@Test
+	public void defaultApplicationContextForReactiveWeb() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleWebConfig.class);
+		application.setWebApplicationType(WebApplicationType.REACTIVE);
+		this.context = application.run();
+		assertThat(this.context)
+				.isInstanceOf(ReactiveWebApplicationContext.class);
 	}
 
 	@Test
