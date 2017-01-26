@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ManagementContextConfigurationsImportSelector}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class ManagementContextConfigurationsImportSelectorTests {
 
@@ -37,7 +38,7 @@ public class ManagementContextConfigurationsImportSelectorTests {
 		String[] imports = new TestManagementContextConfigurationsImportSelector()
 				.selectImports(null);
 		assertThat(imports).containsExactly(A.class.getName(), B.class.getName(),
-				C.class.getName());
+				C.class.getName(), D.class.getName());
 	}
 
 	private static class TestManagementContextConfigurationsImportSelector
@@ -45,7 +46,8 @@ public class ManagementContextConfigurationsImportSelectorTests {
 
 		@Override
 		protected List<String> loadFactoryNames() {
-			return Arrays.asList(C.class.getName(), A.class.getName(), B.class.getName());
+			return Arrays.asList(C.class.getName(), A.class.getName(), D.class.getName(),
+					B.class.getName());
 		}
 
 	}
@@ -62,6 +64,10 @@ public class ManagementContextConfigurationsImportSelectorTests {
 
 	@Order(3)
 	private static class C {
+
+	}
+
+	static class D {
 
 	}
 
