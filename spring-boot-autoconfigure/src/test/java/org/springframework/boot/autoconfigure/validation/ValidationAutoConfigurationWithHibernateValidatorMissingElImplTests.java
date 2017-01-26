@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,12 +49,12 @@ public class ValidationAutoConfigurationWithHibernateValidatorMissingElImplTests
 	}
 
 	@Test
-	public void validationIsDisabled() {
+	public void missingElDependencyIsTolerated() {
 		this.context = new AnnotationConfigApplicationContext(
 				ValidationAutoConfiguration.class);
-		assertThat(this.context.getBeansOfType(Validator.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class))
-				.isEmpty();
+				.hasSize(1);
 	}
 
 }
