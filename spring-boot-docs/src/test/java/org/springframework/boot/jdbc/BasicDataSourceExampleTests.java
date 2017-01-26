@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for {@link BasicDataSourceExample}.
+ *
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)

@@ -52,10 +52,10 @@ public class ConfigurableDataSourceExample {
 		@ConfigurationProperties("app.datasource")
 		public HikariDataSource dataSource(DataSourceProperties properties) {
 			return (HikariDataSource) properties.initializeDataSourceBuilder()
-					.type(HikariDataSource.class)
-					.build();
+					.type(HikariDataSource.class).build();
 		}
 		// end::configuration[]
 
 	}
+
 }

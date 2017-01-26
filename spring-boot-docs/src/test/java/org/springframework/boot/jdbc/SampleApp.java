@@ -23,8 +23,8 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 /**
- * A sample {@link SpringBootConfiguration} that only enables the auto-configuration
- * for the {@link DataSource}.
+ * A sample {@link SpringBootConfiguration} that only enables the auto-configuration for
+ * the {@link DataSource}.
  *
  * @author Stephane Nicoll
  */
