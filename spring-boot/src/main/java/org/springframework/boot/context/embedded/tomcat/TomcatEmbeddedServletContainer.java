@@ -62,6 +62,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 	private final boolean autoStart;
 
+	private volatile boolean started;
+
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainer} instance.
 	 * @param tomcat the underlying Tomcat server
@@ -174,28 +176,34 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 	@Override
 	public void start() throws EmbeddedServletContainerException {
-		try {
-			addPreviouslyRemovedConnectors();
-			Connector connector = this.tomcat.getConnector();
-			if (connector != null && this.autoStart) {
-				startConnector(connector);
+		synchronized (this.monitor) {
+			if (this.started) {
+				return;
 			}
-			checkThatConnectorsHaveStarted();
-			TomcatEmbeddedServletContainer.logger
-					.info("Tomcat started on port(s): " + getPortsDescription(true));
-		}
-		catch (ConnectorStartFailedException ex) {
-			stopSilently();
-			throw ex;
-		}
-		catch (Exception ex) {
-			throw new EmbeddedServletContainerException(
-					"Unable to start embedded Tomcat servlet container", ex);
-		}
-		finally {
-			Context context = findContext();
-			ContextBindings.unbindClassLoader(context, getNamingToken(context),
-					getClass().getClassLoader());
+			try {
+				addPreviouslyRemovedConnectors();
+				Connector connector = this.tomcat.getConnector();
+				if (connector != null && this.autoStart) {
+					startConnector(connector);
+				}
+				checkThatConnectorsHaveStarted();
+				this.started = true;
+				TomcatEmbeddedServletContainer.logger
+						.info("Tomcat started on port(s): " + getPortsDescription(true));
+			}
+			catch (ConnectorStartFailedException ex) {
+				stopSilently();
+				throw ex;
+			}
+			catch (Exception ex) {
+				throw new EmbeddedServletContainerException(
+						"Unable to start embedded Tomcat servlet container", ex);
+			}
+			finally {
+				Context context = findContext();
+				ContextBindings.unbindClassLoader(context, getNamingToken(context),
+						getClass().getClassLoader());
+			}
 		}
 	}
 
@@ -271,7 +279,11 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 	@Override
 	public void stop() throws EmbeddedServletContainerException {
 		synchronized (this.monitor) {
+			if (!this.started) {
+				return;
+			}
 			try {
+				this.started = false;
 				try {
 					stopTomcat();
 					this.tomcat.destroy();

@@ -88,7 +88,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	private Undertow undertow;
 
-	private boolean started = false;
+	private volatile boolean started = false;
 
 	/**
 	 * Create a new {@link UndertowEmbeddedServletContainer} instance.
@@ -201,6 +201,9 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	@Override
 	public void start() throws EmbeddedServletContainerException {
 		synchronized (this.monitor) {
+			if (this.started) {
+				return;
+			}
 			try {
 				if (!this.autoStart) {
 					return;
@@ -362,16 +365,17 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	@Override
 	public void stop() throws EmbeddedServletContainerException {
 		synchronized (this.monitor) {
-			if (this.started) {
-				try {
-					this.started = false;
-					this.manager.stop();
-					this.undertow.stop();
-				}
-				catch (Exception ex) {
-					throw new EmbeddedServletContainerException("Unable to stop undertow",
-							ex);
-				}
+			if (!this.started) {
+				return;
+			}
+			this.started = false;
+			try {
+				this.manager.stop();
+				this.undertow.stop();
+			}
+			catch (Exception ex) {
+				throw new EmbeddedServletContainerException("Unable to stop undertow",
+						ex);
 			}
 		}
 	}
