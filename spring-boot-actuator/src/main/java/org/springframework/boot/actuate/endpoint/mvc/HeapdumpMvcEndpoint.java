@@ -168,6 +168,7 @@ public class HeapdumpMvcEndpoint extends AbstractNamedMvcEndpoint {
 	/**
 	 * Strategy interface used to dump the heap to a file.
 	 */
+	@FunctionalInterface
 	protected interface HeapDumper {
 
 		/**
