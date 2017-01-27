@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.boot.context.annotation.DeterminableImports;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -44,7 +45,8 @@ import org.springframework.util.ObjectUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelector {
+class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelector
+		implements DeterminableImports {
 
 	private static final Set<String> ANNOTATION_NAMES;
 
@@ -53,6 +55,14 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 		names.add(ImportAutoConfiguration.class.getName());
 		names.add("org.springframework.boot.autoconfigure.test.ImportAutoConfiguration");
 		ANNOTATION_NAMES = Collections.unmodifiableSet(names);
+	}
+
+	@Override
+	public Set<Object> determineImports(AnnotationMetadata metadata) {
+		Set<String> result = new LinkedHashSet<String>();
+		result.addAll(getCandidateConfigurations(metadata, null));
+		result.removeAll(getExclusions(metadata, null));
+		return Collections.<Object>unmodifiableSet(result);
 	}
 
 	@Override
@@ -85,6 +95,10 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 		if (classes.length > 0) {
 			return Arrays.asList(classes);
 		}
+		return loadFactoryNames(source);
+	}
+
+	protected Collection<String> loadFactoryNames(Class<?> source) {
 		return SpringFactoriesLoader.loadFactoryNames(source,
 				getClass().getClassLoader());
 	}
@@ -117,7 +131,8 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 		return exclusions;
 	}
 
-	private Map<Class<?>, List<Annotation>> getAnnotations(AnnotationMetadata metadata) {
+	protected final Map<Class<?>, List<Annotation>> getAnnotations(
+			AnnotationMetadata metadata) {
 		MultiValueMap<Class<?>, Annotation> annotations = new LinkedMultiValueMap<Class<?>, Annotation>();
 		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), null);
 		collectAnnotations(source, annotations, new HashSet<Class<?>>());
