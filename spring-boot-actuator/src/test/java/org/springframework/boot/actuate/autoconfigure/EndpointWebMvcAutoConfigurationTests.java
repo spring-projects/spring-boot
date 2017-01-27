@@ -736,7 +736,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ PropertyPlaceholderAutoConfiguration.class,
+	@Import({PropertyPlaceholderAutoConfiguration.class,
 			EmbeddedServletContainerAutoConfiguration.class,
 			JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,

@@ -40,6 +40,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.hateoas.HypermediaHttpMessageConverterConfiguration;
+import org.springframework.boot.autoconfigure.web.DefaultServletContainerCustomizer;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -182,6 +183,8 @@ public class EndpointWebMvcChildContextConfiguration {
 
 		private ServerProperties server;
 
+		private DefaultServletContainerCustomizer serverCustomizer;
+
 		@Override
 		public int getOrder() {
 			return 0;
@@ -195,10 +198,12 @@ public class EndpointWebMvcChildContextConfiguration {
 								ManagementServerProperties.class);
 				this.server = BeanFactoryUtils.beanOfTypeIncludingAncestors(
 						this.beanFactory, ServerProperties.class);
+				this.serverCustomizer = BeanFactoryUtils.beanOfTypeIncludingAncestors(
+						this.beanFactory, DefaultServletContainerCustomizer.class);
 			}
 			// Customize as per the parent context first (so e.g. the access logs go to
 			// the same place)
-			this.server.customize(container);
+			this.serverCustomizer.customize(container);
 			// Then reset the error pages
 			container.setErrorPages(Collections.<ErrorPage>emptySet());
 			// and the context path

@@ -35,10 +35,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
@@ -281,7 +279,6 @@ public class LocalDevToolsAutoConfigurationTests {
 	@Configuration
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			LocalDevToolsAutoConfiguration.class, ThymeleafAutoConfiguration.class })
-	@EnableConfigurationProperties(ServerProperties.class)
 	public static class Config {
 
 	}
@@ -289,7 +286,6 @@ public class LocalDevToolsAutoConfigurationTests {
 	@Configuration
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			LocalDevToolsAutoConfiguration.class, ThymeleafAutoConfiguration.class })
-	@EnableConfigurationProperties(ServerProperties.class)
 	public static class ConfigWithMockLiveReload {
 
 		@Bean
@@ -302,7 +298,6 @@ public class LocalDevToolsAutoConfigurationTests {
 	@Configuration
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			LocalDevToolsAutoConfiguration.class, ResourceProperties.class })
-	@EnableConfigurationProperties(ServerProperties.class)
 	public static class WebResourcesConfig {
 
 	}
