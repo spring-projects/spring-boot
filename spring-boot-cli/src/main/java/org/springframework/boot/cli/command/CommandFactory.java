@@ -25,6 +25,7 @@ import java.util.ServiceLoader;
  *
  * @author Dave Syer
  */
+@FunctionalInterface
 public interface CommandFactory {
 
 	/**

@@ -22,6 +22,7 @@ package org.springframework.boot.actuate.metrics.opentsdb;
  * @author Dave Syer
  * @since 1.3.0
  */
+@FunctionalInterface
 public interface OpenTsdbNamingStrategy {
 
 	/**

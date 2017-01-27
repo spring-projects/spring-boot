@@ -404,6 +404,7 @@ public class Repackager {
 	 * Callback interface used to present a warning when finding the main class takes too
 	 * long.
 	 */
+	@FunctionalInterface
 	public interface MainClassTimeoutWarningListener {
 
 		/**

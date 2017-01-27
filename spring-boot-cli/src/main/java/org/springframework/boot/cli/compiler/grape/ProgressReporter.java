@@ -21,6 +21,7 @@ package org.springframework.boot.cli.compiler.grape;
  *
  * @author Andy Wilkinson
  */
+@FunctionalInterface
 interface ProgressReporter {
 
 	/**

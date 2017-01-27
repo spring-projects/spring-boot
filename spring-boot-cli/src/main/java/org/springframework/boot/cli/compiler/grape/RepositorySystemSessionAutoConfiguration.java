@@ -25,6 +25,7 @@ import org.eclipse.aether.RepositorySystem;
  *
  * @author Andy Wilkinson
  */
+@FunctionalInterface
 public interface RepositorySystemSessionAutoConfiguration {
 
 	/**

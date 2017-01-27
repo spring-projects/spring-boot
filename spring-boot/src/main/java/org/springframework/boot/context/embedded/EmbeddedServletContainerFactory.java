@@ -33,6 +33,7 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
  * @see JettyEmbeddedServletContainerFactory
  * @see TomcatEmbeddedServletContainerFactory
  */
+@FunctionalInterface
 public interface EmbeddedServletContainerFactory {
 
 	/**

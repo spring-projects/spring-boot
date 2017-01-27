@@ -114,6 +114,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 	/**
 	 * A single check that can be applied.
 	 */
+	@FunctionalInterface
 	protected interface Check {
 
 		/**

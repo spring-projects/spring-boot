@@ -24,6 +24,7 @@ import org.apache.catalina.Context;
  * @author Dave Syer
  * @see TomcatEmbeddedServletContainerFactory
  */
+@FunctionalInterface
 public interface TomcatContextCustomizer {
 
 	/**
