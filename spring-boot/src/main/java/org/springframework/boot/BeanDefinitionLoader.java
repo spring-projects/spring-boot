@@ -326,7 +326,8 @@ class BeanDefinitionLoader {
 	/**
 	 * Source for Bean definitions defined in Groovy.
 	 */
-	interface GroovyBeanDefinitionSource {
+	@FunctionalInterface
+	protected interface GroovyBeanDefinitionSource {
 
 		Closure<?> getBeans();
 
