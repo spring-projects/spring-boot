@@ -42,7 +42,9 @@ public class DataSourceBeanCreationFailureAnalyzerTests {
 	public void failureAnalysisIsPerformed() {
 		FailureAnalysis failureAnalysis = performAnalysis(TestConfiguration.class);
 		assertThat(failureAnalysis.getDescription()).isEqualTo(
-				"Cannot determine embedded database driver class for database type NONE");
+				"Could not determine driver class for database type NONE based on the " +
+						"provided datasource URL. If a datasource URL was not provided, " +
+						"an embedded database was attempted; it also failed.");
 		assertThat(failureAnalysis.getAction()).isEqualTo("If you want an embedded "
 				+ "database please put a supported one on the classpath. If you have "
 				+ "database settings to be loaded from a particular profile you may "

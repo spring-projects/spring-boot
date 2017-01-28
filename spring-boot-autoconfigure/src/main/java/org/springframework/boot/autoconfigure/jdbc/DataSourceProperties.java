@@ -516,8 +516,9 @@ public class DataSourceProperties
 		private static String getMessage(EmbeddedDatabaseConnection connection,
 				Environment environment, String property) {
 			StringBuilder message = new StringBuilder();
-			message.append("Cannot determine embedded database " + property
-					+ " for database type " + connection + ". ");
+			message.append("Could not determine " + property
+					+ " for database type " + connection + " based on the provided datasource URL. ");
+			message.append("If a datasource URL was not provided, an embedded database was attempted; it also failed. ");
 			message.append("If you want an embedded database please put a supported "
 					+ "one on the classpath. ");
 			message.append("If you have database settings to be loaded from a "

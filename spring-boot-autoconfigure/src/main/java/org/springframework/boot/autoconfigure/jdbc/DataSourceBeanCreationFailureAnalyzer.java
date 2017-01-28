@@ -29,13 +29,27 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 class DataSourceBeanCreationFailureAnalyzer
 		extends AbstractFailureAnalyzer<DataSourceBeanCreationException> {
 
+	private static final String[] EMTPY_MESSAGE = {};
+
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure,
 			DataSourceBeanCreationException cause) {
-		String message = cause.getMessage();
-		String description = message.substring(0, message.indexOf(".")).trim();
-		String action = message.substring(message.indexOf(".") + 1).trim();
-		return new FailureAnalysis(description, action, cause);
+		String[] splitMessage = getPeriodSepatatedMessage((cause != null) ? cause.getMessage() : null);
+		if (splitMessage.length == 4) {
+			String description = (splitMessage[0] + splitMessage[1]).trim();
+			String action = (splitMessage[2] + splitMessage[3]).trim();
+			return new FailureAnalysis(description, action, cause);
+		}
+		else {
+			return new FailureAnalysis("", "", cause);
+		}
+
 	}
+
+	private String[] getPeriodSepatatedMessage(String exceptionMessage) {
+		return (exceptionMessage != null) ?  exceptionMessage.split("(?<=[.])") : EMTPY_MESSAGE;
+	}
+
+
 
 }
