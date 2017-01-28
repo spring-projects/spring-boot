@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test.autoconfigure.data.mongo;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
@@ -24,8 +23,6 @@ import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.test.autoconfigure.filter.AnnotationCustomizableTypeExcludeFilter;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.type.classreading.MetadataReader;
-import org.springframework.core.type.classreading.MetadataReaderFactory;
 
 /**
  * {@link TypeExcludeFilter} for {@link DataMongoTest @DataMongoTest}.
@@ -64,13 +61,12 @@ class DataMongoTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter
 	}
 
 	@Override
-	protected boolean defaultInclude(final MetadataReader metadataReader,
-			final MetadataReaderFactory metadataReaderFactory) throws IOException {
-		return false;
+	protected Set<Class<?>> getDefaultIncludes() {
+		return Collections.emptySet();
 	}
 
 	@Override
-	protected Set<Class<?>> getDefaultIncludes() {
+	protected Set<Class<?>> getComponentIncludes() {
 		return Collections.emptySet();
 	}
 

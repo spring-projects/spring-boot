@@ -36,7 +36,9 @@ import org.springframework.core.type.filter.TypeFilter;
  * </pre>
  * <p>
  * Implementations should provide a subclass registered with {@link BeanFactory} and
- * override the {@link #match(MetadataReader, MetadataReaderFactory)} method.
+ * override the {@link #match(MetadataReader, MetadataReaderFactory)} method. They should
+ * also implement a valid {@link #hashCode() hashCode} and {@link #equals(Object) equals}
+ * methods so that they can be used as part of Spring test's application context caches.
  * <p>
  * Note that {@code TypeExcludeFilters} are initialized very early in the application
  * lifecycle, they should generally not have dependencies on any other beans. They are
@@ -68,6 +70,18 @@ public class TypeExcludeFilter implements TypeFilter, BeanFactoryAware {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		throw new IllegalStateException(
+				"TypeExcludeFilter " + getClass() + " has not implemented equals");
+	}
+
+	@Override
+	public int hashCode() {
+		throw new IllegalStateException(
+				"TypeExcludeFilter " + getClass() + " has not implemented hashCode");
 	}
 
 }

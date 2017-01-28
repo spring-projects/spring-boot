@@ -287,6 +287,88 @@ run the app.
 
 
 
+[[cloud-deployment-aws]]
+=== Amazon Web Services (AWS)
+Amazon Web Services offers multiple ways to install Spring Boot based applications, either
+as traditional web applications (war) or as executable jar files with an embedded web
+server. Options include :
+
+* AWS Elastic Beanstalk
+* AWS Code Deploy
+* AWS OPS Works
+* AWS Cloud Formation
+* AWS Container Registry
+
+Each has different features and pricing model, here we will describe only the simplest
+option : AWS Elastic Beanstalk.
+
+
+
+==== AWS Elastic Beanstalk
+As described in the official http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_Java.html[Elastic
+Beanstalk Java guide], there are two main options to deploy a Java application; You can
+either us the "`Tomcat Platform`" or the "`Java SE platform`".
+
+
+
+===== Using the Tomcat platform
+This option applies to Spring Boot projects producing a war file. There is no any special
+configuration required, just follow the official guide.
+
+
+
+===== Using the Java SE platform
+This option applies to Spring Boot projects producing a jar file and running an embedded
+web container. Elastic Beanstalk environments run an nginx instance on port 80 to proxy
+the actual application, running on port 5000. To configure it, add the following to your
+`application.properties`:
+
+[indent=0]
+----
+	server.port=5000
+----
+
+
+
+===== Best practices
+
+====== Uploading binaries instead of sources
+By default Elastic Beanstalk uploads sources and compile them in AWS. To upload the
+binaries instead, add the following to your `.elasticbeanstalk/config.yml` file:
+
+
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	deploy:
+		artifact: target/demo-0.0.1-SNAPSHOT.jar
+----
+
+
+
+====== Reduce costs by setting the environment type
+By default an Elastic Beanstalk environment is load balanced. The load balancer has a cost
+perspective, to avoid it, set the environment type to "`Single instance`" as described
+http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-create-wizard.html#environments-create-wizard-capacity[in the Amazon documentation].
+Single instance environments can be created using the CLI as well using the following
+command:
+
+[indent=0]
+----
+	eb create -s
+----
+
+
+
+==== Summary
+This is one of the easiest way to get to AWS, but there are more things
+to cover, e.g.: how to integrate Elastic Beanstalk into any CI / CD tool, using the
+Elastic Beanstalk maven plugin instead of the CLI, etc. There is a
+https://exampledriven.wordpress.com/2017/01/09/spring-boot-aws-elastic-beanstalk-example/[blog]
+covering these topics more in detail.
+
+
+
 [[cloud-deployment-boxfuse]]
 === Boxfuse and Amazon Web Services
 https://boxfuse.com/[Boxfuse] works by turning your Spring Boot executable jar or war

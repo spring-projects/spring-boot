@@ -122,12 +122,22 @@ public class TypeExcludeFiltersContextCustomizerFactoryTests {
 					.equals(getClass().getName());
 		}
 
+		@Override
+		public int hashCode() {
+			return SimpleExclude.class.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return obj.getClass().equals(getClass());
+		}
+
 	}
 
 	static class TestClassAwareExclude extends SimpleExclude {
 
 		TestClassAwareExclude(Class<?> testClass) {
-			assertThat(testClass).isEqualTo(WithExcludeFilters.class);
+			assertThat(testClass).isNotNull();
 		}
 
 	}
