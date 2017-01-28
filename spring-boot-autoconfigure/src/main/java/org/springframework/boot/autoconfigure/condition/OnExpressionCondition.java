@@ -51,8 +51,9 @@ class OnExpressionCondition extends SpringBootCondition {
 		if (resolver == null) {
 			resolver = new StandardBeanExpressionResolver();
 		}
-		boolean result = (Boolean) resolver.evaluate(expression, expressionContext);
-		return new ConditionOutcome(result, ConditionMessage
+		Object result = resolver.evaluate(expression, expressionContext);
+		boolean match = result == null ? false : (boolean) result;
+		return new ConditionOutcome(match, ConditionMessage
 				.forCondition(ConditionalOnExpression.class, "(" + rawExpression + ")")
 				.resultedIn(result));
 	}
