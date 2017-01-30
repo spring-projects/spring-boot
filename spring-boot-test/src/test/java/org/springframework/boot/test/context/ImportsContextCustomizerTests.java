@@ -56,11 +56,6 @@ public class ImportsContextCustomizerTests {
 	}
 
 	@Test
-	public void importAutoConfigurationCanIgnoreAdditionalAnnotations() throws Exception {
-
-	}
-
-	@Test
 	public void customizersForTestClassesWithDifferentKotlinMetadataAreEqual() {
 		assertThat(new ImportsContextCustomizer(FirstKotlinAnnotatedTestClass.class))
 				.isEqualTo(new ImportsContextCustomizer(
