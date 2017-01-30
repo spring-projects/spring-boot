@@ -1952,8 +1952,12 @@ Boot will call `Flyway.migrate()` to perform the database migration. If you woul
 more control, provide a `@Bean` that implements
 {sc-spring-boot-autoconfigure}/flyway/FlywayMigrationStrategy.{sc-ext}[`FlywayMigrationStrategy`].
 
-TIP: If you want to make use of http://flywaydb.org/documentation/callbacks.html[Flyway
-callbacks], those scripts should also live in the `classpath:db/migration` folder.
+Flyway supports SQL and Java http://flywaydb.org/documentation/callbacks.html[callbacks].
+To use SQL-based callbacks, place the callback scripts in the `classpath:db/migration`
+folder. To use Java-based callbacks, create one or more beans that implement
+`FlywayCallback` or, preferably, extend `BaseFlywayCallback`. Any such beans will be
+automatically registered with `Flyway`. They can be ordered using `@Order` or by
+implementing `Ordered`.
 
 By default Flyway will autowire the (`@Primary`) `DataSource` in your context and
 use that for migrations. If you like to use a different `DataSource` you can create
