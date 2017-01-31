@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.MockitoAnnotations;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -46,7 +45,6 @@ public class EnableAutoConfigurationImportSelectorTests {
 
 	@Before
 	public void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.importSelector.setBeanFactory(this.beanFactory);
 		this.importSelector.setEnvironment(this.environment);
 		this.importSelector.setResourceLoader(new DefaultResourceLoader());

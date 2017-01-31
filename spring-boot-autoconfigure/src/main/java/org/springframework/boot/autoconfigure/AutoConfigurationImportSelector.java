@@ -99,7 +99,7 @@ public class AutoConfigurationImportSelector
 			checkExcludedClasses(configurations, exclusions);
 			configurations.removeAll(exclusions);
 			configurations = filter(configurations, autoConfigurationMetadata);
-			fireAutoConfigurationImportListeners(configurations, exclusions);
+			fireAutoConfigurationImportEvents(configurations, exclusions);
 			return configurations.toArray(new String[configurations.size()]);
 		}
 		catch (IOException ex) {
@@ -300,7 +300,7 @@ public class AutoConfigurationImportSelector
 		return Arrays.asList(value == null ? new String[0] : value);
 	}
 
-	private void fireAutoConfigurationImportListeners(List<String> configurations,
+	private void fireAutoConfigurationImportEvents(List<String> configurations,
 			Set<String> exclusions) {
 		List<AutoConfigurationImportListener> listeners = getAutoConfigurationImportListeners();
 		if (!listeners.isEmpty()) {

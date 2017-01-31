@@ -33,7 +33,7 @@ public class ExampleService {
 		this.mongoTemplate = mongoTemplate;
 	}
 
-	public boolean hasCollection(final String collectionName) {
+	public boolean hasCollection(String collectionName) {
 		return this.mongoTemplate.collectionExists(collectionName);
 	}
 

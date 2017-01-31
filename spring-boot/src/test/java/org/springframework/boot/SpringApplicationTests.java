@@ -258,7 +258,7 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void triggersConfigFileApplicationListenereBeforeBinding() throws Exception {
+	public void triggersConfigFileApplicationListenerBeforeBinding() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
 		this.context = application.run("--spring.config.name=bindtoapplication");

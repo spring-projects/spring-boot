@@ -1126,7 +1126,7 @@ IDEA suspend the entire VM rather than only suspending the thread that hit the
 breakpoint. This has the unwanted side-effect of suspending the thread that manages the
 remote debug tunnel, causing your debugging session to freeze. When using the remote
 debug tunnel with IntelliJ IDEA, all breakpoints should be configured to suspend the
-thread rather than the VM. Please set
+thread rather than the VM. Please see
 https://youtrack.jetbrains.com/issue/IDEA-165769[IDEA-165769] for further details.
 
 

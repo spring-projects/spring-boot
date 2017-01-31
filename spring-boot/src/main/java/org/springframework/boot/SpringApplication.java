@@ -986,7 +986,7 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Sets the type of web application to be run. If not explicity set the type of web
+	 * Sets the type of web application to be run. If not explicitly set the type of web
 	 * application will be deduced based on the classpath.
 	 * @param webApplicationType the web application type
 	 * @since 2.0.0
