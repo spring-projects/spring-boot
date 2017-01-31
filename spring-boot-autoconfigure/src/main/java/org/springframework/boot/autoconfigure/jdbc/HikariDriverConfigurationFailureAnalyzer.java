@@ -28,8 +28,8 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 class HikariDriverConfigurationFailureAnalyzer
 		extends AbstractFailureAnalyzer<IllegalStateException> {
 
-	private static final String EXPECTED_MESSAGE = "both driverClassName and "
-			+ "dataSourceClassName are specified, one or the other should be used";
+	private static final String EXPECTED_MESSAGE = "cannot use driverClassName and "
+			+ "dataSourceClassName together.";
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure,
