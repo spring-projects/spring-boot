@@ -1091,7 +1091,7 @@ only rely on custom converters qualified with `@ConfigurationPropertiesBinding`.
 [[boot-features-external-config-validation]]
 ==== @ConfigurationProperties Validation
 Spring Boot will attempt to validate `@ConfigurationProperties` classes whenever they
-annotated with Spring's `@Validated` annotation. You can use JSR-303 `javax.validation`
+are annotated with Spring's `@Validated` annotation. You can use JSR-303 `javax.validation`
 constraint annotations directly on your configuration class. Simply ensure that a
 compliant JSR-303 implementation is on your classpath, then add constraint annotations to
 your fields:
@@ -5394,7 +5394,7 @@ more `@AutoConfigure...` annotations that can be used to customize auto-configur
 settings.
 
 NOTE: Each slice loads a very restricted set of auto-configuration classes. If you need to
-exclude one of them, most `@...Test` annotation provide an `excludeAutoConfiguration`
+exclude one of them, most `@...Test` annotations provide an `excludeAutoConfiguration`
 attribute. Alternatively, you can use `@ImportAutoConfiguration#exclude`.
 
 TIP: It's also possible to use the `@AutoConfigure...` annotations with the standard
@@ -5720,7 +5720,7 @@ for `@Document` classes and configure Spring Data MongoDB repositories. Regular
 
 In-memory embedded MongoDB generally works well for tests since it is fast and doesn't
 require any developer installation. If, however, you prefer to run tests against a real
-MongoDB server you should exclude the embedded mongodb auto-configuration:
+MongoDB server you should exclude the embedded MongoDB auto-configuration:
 
 [source,java,indent=0]
 ----
