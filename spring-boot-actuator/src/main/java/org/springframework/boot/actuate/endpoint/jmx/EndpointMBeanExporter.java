@@ -283,13 +283,15 @@ public class EndpointMBeanExporter extends MBeanExporter
 			String beanKey) {
 		if (applicationContext.getParent() != null) {
 			try {
-				this.applicationContext.getParent().getBean(beanKey, Endpoint.class);
-				return true;
+				Object bean = this.applicationContext.getParent().getBean(beanKey);
+				if (bean instanceof Endpoint || bean instanceof JmxEndpoint) {
+					return true;
+				}
 			}
 			catch (BeansException ex) {
-				return parentContextContainsSameBean(applicationContext.getParent(),
-						beanKey);
+				// Ignore and continue
 			}
+			return parentContextContainsSameBean(applicationContext.getParent(), beanKey);
 		}
 		return false;
 	}
