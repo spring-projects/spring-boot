@@ -191,8 +191,7 @@ public class TestEntityManagerTests {
 	public void getIdForTypeWhenTypeIsWrongShouldThrowException() throws Exception {
 		TestEntity entity = new TestEntity();
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
-		this.thrown.expectMessage("ID mismatch Object of class [java.lang.Integer] "
-				+ "must be an instance of class java.lang.Long");
+		this.thrown.expectMessage("ID mismatch: java.lang.Integer");
 		this.testEntityManager.getId(entity, Long.class);
 	}
 
