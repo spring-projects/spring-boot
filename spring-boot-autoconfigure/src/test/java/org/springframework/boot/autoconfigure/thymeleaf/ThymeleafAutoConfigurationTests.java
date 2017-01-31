@@ -255,6 +255,25 @@ public class ThymeleafAutoConfigurationTests {
 		assertThat(templateResolver.isCacheable()).isFalse();
 	}
 
+	@Test
+	public void rootViewDefaults() throws Exception {
+		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+		context.register(ThymeleafAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		MockServletContext servletContext = new MockServletContext();
+		context.setServletContext(servletContext);
+		context.refresh();
+		ThymeleafView view = (ThymeleafView) context.getBean(ThymeleafViewResolver.class)
+				.resolveViewName(ThymeleafProperties.DEFAULT_ROOT_VIEW, Locale.US);
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setAttribute(RequestContext.WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
+		view.render(Collections.emptyMap(), request, response);
+		String result = response.getContentAsString();
+		assertThat(result).isEqualTo("<html lang=\"en\"><body>Index</body></html>");
+		context.close();
+	}
+
 	@Configuration
 	@ImportAutoConfiguration({ ThymeleafAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
