@@ -52,6 +52,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MimeType;
+import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 
 /**
@@ -62,6 +65,8 @@ import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
  * @author Stephane Nicoll
  * @author Brian Clozel
  * @author Eddú Meléndez
+ * @author Bruce Brouwer
+ *
  */
 @Configuration
 @EnableConfigurationProperties(ThymeleafProperties.class)
@@ -258,4 +263,28 @@ public class ThymeleafAutoConfiguration {
 
 	}
 
+	@Configuration
+	@ConditionalOnWebApplication
+	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
+	protected static class ThymeleafRootViewConfiguration extends WebMvcConfigurerAdapter {
+		private final ThymeleafProperties properties;
+		private final ApplicationContext applicationContext;
+
+		public ThymeleafRootViewConfiguration(final ThymeleafProperties properties,
+				final ApplicationContext applicationContext) {
+			this.properties = properties;
+			this.applicationContext = applicationContext;
+		}
+
+		@Override
+		public void addViewControllers(final ViewControllerRegistry registry) {
+			if (StringUtils.hasText(properties.getRootView())) {
+				final String rootLocation = properties.getPrefix() + properties.getRootView() + properties.getSuffix();
+				final TemplateLocation location = new TemplateLocation(rootLocation);
+				if (location.exists(applicationContext)) {
+					registry.addViewController("/").setViewName(properties.getRootView());
+				}
+			}
+		}
+	}
 }
