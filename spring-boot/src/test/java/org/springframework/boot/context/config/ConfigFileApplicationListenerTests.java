@@ -37,7 +37,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.config.ConfigFileApplicationListener.ConfigurationPropertySources;
@@ -98,14 +97,12 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@After
-	public void cleanup() {
+	public void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
 		}
 		System.clearProperty("the.property");
 		System.clearProperty("spring.config.location");
-		System.clearProperty("spring.main.banner-mode");
-		System.clearProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME);
 	}
 
 	@Test
