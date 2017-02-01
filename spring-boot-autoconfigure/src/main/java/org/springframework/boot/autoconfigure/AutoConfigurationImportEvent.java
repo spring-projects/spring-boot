@@ -44,7 +44,7 @@ public class AutoConfigurationImportEvent extends EventObject {
 	/**
 	 * Return the auto-configuration candidate configurations that are going to be
 	 * imported.
-	 * @return the configurations the auto-configuration candidates
+	 * @return the auto-configuration candidates
 	 */
 	public List<String> getCandidateConfigurations() {
 		return this.candidateConfigurations;
@@ -52,7 +52,7 @@ public class AutoConfigurationImportEvent extends EventObject {
 
 	/**
 	 * Return the exclusions that were applied.
-	 * @return the exclusions the exclusions applied
+	 * @return the exclusions applied
 	 */
 	public Set<String> getExclusions() {
 		return this.exclusions;

@@ -1221,7 +1221,7 @@ In addition, any `MetricReader` that you define and mark as `@ExportMetricReader
 have its values exported by the default exporter.
 
 NOTE: This feature is enabling scheduling in your application (`@EnableScheduling`) which
-can be a problem if you run an integration tests as your own scheduled tasks will start.
+can be a problem if you run an integration test as your own scheduled tasks will start.
 You can disable this behaviour by setting `spring.metrics.export.enabled` to `false`.
 
 The default exporter is a `MetricCopyExporter` which tries to optimize itself by not

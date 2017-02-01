@@ -72,11 +72,11 @@ public class TestDatabaseAutoConfigurationTests {
 		}
 	}
 
-	public void load(Class<?> config, String... environment) {
+	private void load(Class<?> config, String... environment) {
 		this.context = doLoad(config, environment);
 	}
 
-	public ConfigurableApplicationContext doLoad(Class<?> config, String... environment) {
+	private ConfigurableApplicationContext doLoad(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		if (config != null) {
 			ctx.register(config);

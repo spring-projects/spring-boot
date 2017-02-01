@@ -3080,7 +3080,7 @@ application's main class to extend `SpringBootServletInitializer`:
 
 The next step is to update your build configuration so that your project produces a war file
 rather than a jar file. If you're using Maven and using `spring-boot-starter-parent` (which
-configures Maven's war plugin for you) all you need to do is modify `pom.xml` to change the
+configures Maven's war plugin for you) all you need to do is to modify `pom.xml` to change the
 packaging to war:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]

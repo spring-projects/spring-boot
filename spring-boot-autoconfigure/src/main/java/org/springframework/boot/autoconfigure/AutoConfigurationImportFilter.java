@@ -31,8 +31,8 @@ import org.springframework.context.ResourceLoaderAware;
  * methods will be called prior to {@link #match}:
  * <ul>
  * <li>{@link EnvironmentAware}</li>
- * <li>{@link BeanFactoryAware }</li>
- * <li>{@link BeanClassLoaderAware }</li>
+ * <li>{@link BeanFactoryAware}</li>
+ * <li>{@link BeanClassLoaderAware}</li>
  * <li>{@link ResourceLoaderAware}</li>
  * </ul>
  *

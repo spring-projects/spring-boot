@@ -39,7 +39,7 @@ public class DataMongoTestWithIncludeFilterIntegrationTests {
 	private ExampleService service;
 
 	@Test
-	public void testRepository() {
+	public void testService() {
 		assertThat(this.service.hasCollection("foobar")).isFalse();
 	}
 
