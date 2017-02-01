@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfigura
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -38,10 +37,9 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import({ EmbeddedServletContainerAutoConfiguration.class,
-		ServerPropertiesAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-		WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-		ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
-		SecurityAutoConfiguration.class })
+		DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+		HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+		PropertyPlaceholderAutoConfiguration.class, SecurityAutoConfiguration.class })
 public @interface MinimalSecureWebConfiguration {
 
 }

@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -57,8 +56,7 @@ public class NonAutoConfigurationSampleTomcatApplicationTests {
 
 	@Configuration
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	@ComponentScan(basePackageClasses = { SampleController.class,

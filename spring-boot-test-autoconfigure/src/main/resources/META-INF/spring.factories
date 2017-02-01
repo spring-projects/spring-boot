@@ -83,7 +83,6 @@ org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration
 
 # DefaultTestExecutionListenersPostProcessors

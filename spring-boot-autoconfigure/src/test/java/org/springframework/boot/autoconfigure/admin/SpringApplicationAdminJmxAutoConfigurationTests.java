@@ -37,7 +37,6 @@ import org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
@@ -121,7 +120,6 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 	public void registerWithSimpleWebApp() throws Exception {
 		this.context = new SpringApplicationBuilder()
 				.sources(EmbeddedServletContainerAutoConfiguration.class,
-						ServerPropertiesAutoConfiguration.class,
 						DispatcherServletAutoConfiguration.class,
 						JmxAutoConfiguration.class,
 						SpringApplicationAdminJmxAutoConfiguration.class)

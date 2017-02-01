@@ -21,8 +21,6 @@ import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,13 +40,6 @@ public class SampleActuatorUiApplication {
 	@RequestMapping("/foo")
 	public String foo() {
 		throw new RuntimeException("Expected exception in controller");
-	}
-
-	@Bean
-	public SecurityProperties securityProperties() {
-		SecurityProperties security = new SecurityProperties();
-		security.getBasic().setPath(""); // empty so home page is insecured
-		return security;
 	}
 
 	public static void main(String[] args) throws Exception {

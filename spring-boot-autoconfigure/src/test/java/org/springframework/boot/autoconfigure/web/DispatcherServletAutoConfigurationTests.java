@@ -59,8 +59,7 @@ public class DispatcherServletAutoConfigurationTests {
 	@Test
 	public void registrationProperties() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(ServerPropertiesAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class);
+		this.context.register(DispatcherServletAutoConfiguration.class);
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
 		assertThat(this.context.getBean(DispatcherServlet.class)).isNotNull();
@@ -73,7 +72,6 @@ public class DispatcherServletAutoConfigurationTests {
 	public void registrationNonServletBean() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(NonServletConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
@@ -89,7 +87,6 @@ public class DispatcherServletAutoConfigurationTests {
 	public void registrationOverrideWithDispatcherServletWrongName() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(CustomDispatcherServletWrongName.class,
-				ServerPropertiesAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
@@ -105,7 +102,6 @@ public class DispatcherServletAutoConfigurationTests {
 	public void registrationOverrideWithAutowiredServlet() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(CustomAutowiredRegistration.class,
-				ServerPropertiesAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
@@ -121,8 +117,7 @@ public class DispatcherServletAutoConfigurationTests {
 	public void servletPath() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(ServerPropertiesAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class);
+		this.context.register(DispatcherServletAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "server.servlet_path:/spring");
 		this.context.refresh();
 		assertThat(this.context.getBean(DispatcherServlet.class)).isNotNull();
@@ -137,7 +132,6 @@ public class DispatcherServletAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(MultipartConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
 		this.context.refresh();
 		ServletRegistrationBean registration = this.context
@@ -150,7 +144,6 @@ public class DispatcherServletAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(MultipartResolverConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
 		this.context.refresh();
 		DispatcherServlet dispatcherServlet = this.context
@@ -164,8 +157,7 @@ public class DispatcherServletAutoConfigurationTests {
 	public void dispatcherServletDefaultConfig() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(ServerPropertiesAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class);
+		this.context.register(DispatcherServletAutoConfiguration.class);
 		this.context.refresh();
 		DispatcherServlet bean = this.context.getBean(DispatcherServlet.class);
 		assertThat(bean).extracting("throwExceptionIfNoHandlerFound")
@@ -181,8 +173,7 @@ public class DispatcherServletAutoConfigurationTests {
 	public void dispatcherServletCustomConfig() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(ServerPropertiesAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class);
+		this.context.register(DispatcherServletAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.mvc.throw-exception-if-no-handler-found:true",
 				"spring.mvc.dispatch-options-request:false",

@@ -85,7 +85,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 @Configuration
-@EnableConfigurationProperties
+@EnableConfigurationProperties(ServerProperties.class)
 @ConditionalOnClass({ EnableWebSecurity.class, AuthenticationEntryPoint.class })
 @ConditionalOnMissingBean(WebSecurityConfiguration.class)
 @ConditionalOnWebApplication

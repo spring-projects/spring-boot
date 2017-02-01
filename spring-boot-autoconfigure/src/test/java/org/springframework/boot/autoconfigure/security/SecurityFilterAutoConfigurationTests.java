@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfigu
 import org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfigurationEarlyInitializationTests.JacksonModuleBean;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -64,7 +63,6 @@ public class SecurityFilterAutoConfigurationTests {
 			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebSecurity.class,
 			SecurityFilterAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	static class Config {
 

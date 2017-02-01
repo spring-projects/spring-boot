@@ -89,7 +89,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass({ EnableWebSecurity.class })
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
 @AutoConfigureBefore(FallbackWebSecurityAutoConfiguration.class)
-@EnableConfigurationProperties
+@EnableConfigurationProperties(ManagementServerProperties.class)
 public class ManagementWebSecurityAutoConfiguration {
 
 	private static final String[] NO_PATHS = new String[0];
@@ -189,6 +189,7 @@ public class ManagementWebSecurityAutoConfiguration {
 	@Configuration
 	@ConditionalOnMissingBean({ ManagementWebSecurityConfigurerAdapter.class })
 	@ConditionalOnProperty(prefix = "management.security", name = "enabled", matchIfMissing = true)
+	@EnableConfigurationProperties(SecurityProperties.class)
 	@Order(ManagementServerProperties.BASIC_AUTH_ORDER)
 	protected static class ManagementWebSecurityConfigurerAdapter
 			extends WebSecurityConfigurerAdapter {

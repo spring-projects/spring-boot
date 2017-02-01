@@ -35,7 +35,6 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -210,7 +209,6 @@ public class WebSocketMessagingAutoConfigurationTests {
 	@EnableWebSocketMessageBroker
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
 			EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
 			WebSocketMessagingAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class })
 	static class WebSocketMessagingConfiguration

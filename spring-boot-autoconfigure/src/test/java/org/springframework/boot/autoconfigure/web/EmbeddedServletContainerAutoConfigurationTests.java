@@ -147,8 +147,7 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 	@Configuration
 	@Import({ EmbeddedContainerConfiguration.class,
 			EmbeddedServletContainerAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class })
+			DispatcherServletAutoConfiguration.class })
 	protected static class BaseConfiguration {
 
 	}

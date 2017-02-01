@@ -88,8 +88,7 @@ public class FilterOrderingIntegrationTests {
 				"spring.session.store-type=hash-map");
 		this.context.register(MockEmbeddedServletContainerConfiguration.class,
 				TestRedisConfiguration.class, WebMvcAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class, SecurityAutoConfiguration.class,
-				SessionAutoConfiguration.class,
+				SecurityAutoConfiguration.class, SessionAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				HttpEncodingAutoConfiguration.class);

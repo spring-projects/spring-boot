@@ -72,7 +72,6 @@ public class JolokiaAutoConfigurationTests {
 				"jolokia.config[key2]:value2");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
@@ -86,7 +85,6 @@ public class JolokiaAutoConfigurationTests {
 				"endpoints.jolokia.path=/foo/bar");
 		this.context.register(EndpointsConfig.class, WebMvcAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
@@ -118,7 +116,6 @@ public class JolokiaAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, pairs);
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
@@ -130,7 +127,6 @@ public class JolokiaAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, pairs);
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();

@@ -78,6 +78,7 @@ public class H2ConsoleAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(WebSecurityConfigurerAdapter.class)
 	@ConditionalOnBean(ObjectPostProcessor.class)
+	@EnableConfigurationProperties(SecurityProperties.class)
 	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", matchIfMissing = true)
 	static class H2ConsoleSecurityConfiguration {
 

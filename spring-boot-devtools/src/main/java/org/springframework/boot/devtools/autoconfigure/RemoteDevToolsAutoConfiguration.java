@@ -68,7 +68,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 @ConditionalOnProperty(prefix = "spring.devtools.remote", name = "secret")
 @ConditionalOnClass({ Filter.class, ServerHttpRequest.class })
-@EnableConfigurationProperties(DevToolsProperties.class)
+@EnableConfigurationProperties({ ServerProperties.class, DevToolsProperties.class })
 public class RemoteDevToolsAutoConfiguration {
 
 	private static final Log logger = LogFactory

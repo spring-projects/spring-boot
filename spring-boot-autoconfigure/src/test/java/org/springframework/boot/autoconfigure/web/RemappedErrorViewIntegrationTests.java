@@ -70,8 +70,7 @@ public class RemappedErrorViewIntegrationTests {
 
 	@Configuration
 	@Import({ PropertyPlaceholderAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
+			WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			EmbeddedServletContainerAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, ErrorMvcAutoConfiguration.class })
 	@Controller

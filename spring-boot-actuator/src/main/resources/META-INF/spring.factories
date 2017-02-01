@@ -7,7 +7,6 @@ org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.InfoContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.MetricFilterAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.MetricRepositoryAutoConfiguration,\

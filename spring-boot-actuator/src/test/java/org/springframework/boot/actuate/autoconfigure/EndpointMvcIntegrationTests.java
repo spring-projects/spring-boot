@@ -45,7 +45,6 @@ import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfigura
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -101,8 +100,7 @@ public class EndpointMvcIntegrationTests {
 
 	@Configuration
 	@MinimalWebConfiguration
-	@Import({ ManagementServerPropertiesAutoConfiguration.class,
-			JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
+	@Import({ JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
 			EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class })
 	@RestController
 	protected static class Application {
@@ -155,7 +153,6 @@ public class EndpointMvcIntegrationTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			JacksonAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })

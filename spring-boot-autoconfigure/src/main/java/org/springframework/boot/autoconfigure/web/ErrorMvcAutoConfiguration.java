@@ -79,7 +79,7 @@ import org.springframework.web.util.HtmlUtils;
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 // Load before the main WebMvcAutoConfiguration so that the error View is available
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
-@EnableConfigurationProperties(ResourceProperties.class)
+@EnableConfigurationProperties({ ServerProperties.class, ResourceProperties.class })
 public class ErrorMvcAutoConfiguration {
 
 	private final ServerProperties serverProperties;

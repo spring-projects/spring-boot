@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
@@ -141,8 +140,7 @@ public class EnvironmentMvcEndpointTests {
 	@Configuration
 	@Import({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class })
+			EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class })
 	public static class TestConfiguration {
 
 		@Bean

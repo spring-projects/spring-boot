@@ -22,7 +22,6 @@ import org.junit.runner.RunWith;
 
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -90,7 +89,6 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
 			EndpointWebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
 	@Configuration
 	static class TestConfiguration {

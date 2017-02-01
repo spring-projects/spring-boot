@@ -19,18 +19,19 @@ package org.springframework.boot.actuate.autoconfigure;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ManagementServerPropertiesAutoConfiguration}.
+ * Tests for {@link ManagementServerProperties}.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class ManagementServerPropertiesAutoConfigurationTests {
+public class ManagementServerPropertiesTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -87,10 +88,15 @@ public class ManagementServerPropertiesAutoConfigurationTests {
 	public ManagementServerProperties load(String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(ctx, environment);
-		ctx.register(ManagementServerPropertiesAutoConfiguration.class);
+		ctx.register(Config.class);
 		ctx.refresh();
 		this.context = ctx;
 		return this.context.getBean(ManagementServerProperties.class);
+	}
+
+	@EnableConfigurationProperties(ManagementServerProperties.class)
+	protected static class Config {
+
 	}
 
 }

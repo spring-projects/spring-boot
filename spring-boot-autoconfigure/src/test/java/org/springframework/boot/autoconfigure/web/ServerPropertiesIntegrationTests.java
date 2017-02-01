@@ -34,8 +34,8 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,12 +44,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link ServerPropertiesAutoConfiguration}.
+ * Integration tests for {@link ServerProperties}.
  *
  * @author Dave Syer
  * @author Ivan Sopov
  */
-public class ServerPropertiesAutoConfigurationTests {
+public class ServerPropertiesIntegrationTests {
 
 	private static AbstractEmbeddedServletContainerFactory containerFactory;
 
@@ -73,8 +73,7 @@ public class ServerPropertiesAutoConfigurationTests {
 	@Test
 	public void createFromConfigClass() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(Config.class, PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "server.port:9000");
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
@@ -87,8 +86,7 @@ public class ServerPropertiesAutoConfigurationTests {
 	public void tomcatProperties() throws Exception {
 		containerFactory = mock(TomcatEmbeddedServletContainerFactory.class);
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(Config.class, PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"server.tomcat.basedir:target/foo", "server.port:9000");
 		this.context.refresh();
@@ -102,7 +100,6 @@ public class ServerPropertiesAutoConfigurationTests {
 	public void customizeWithJettyContainerFactory() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(CustomJettyContainerConfig.class,
-				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		containerFactory = this.context
@@ -118,7 +115,6 @@ public class ServerPropertiesAutoConfigurationTests {
 	public void customizeWithUndertowContainerFactory() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(CustomUndertowContainerConfig.class,
-				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		containerFactory = this.context
@@ -133,7 +129,6 @@ public class ServerPropertiesAutoConfigurationTests {
 		containerFactory = mock(TomcatEmbeddedServletContainerFactory.class);
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, CustomizeConfig.class,
-				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
@@ -143,23 +138,13 @@ public class ServerPropertiesAutoConfigurationTests {
 		verify(containerFactory).setPort(3000);
 	}
 
-	@Test
-	public void testAccidentalMultipleServerPropertiesBeans() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, MultiServerPropertiesBeanConfig.class,
-				ServerPropertiesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.thrown.expect(ApplicationContextException.class);
-		this.thrown.expectMessage("Multiple ServerProperties");
-		this.context.refresh();
-	}
-
 	@Configuration
+	@EnableConfigurationProperties(ServerProperties.class)
 	protected static class Config {
 
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {
-			return ServerPropertiesAutoConfigurationTests.containerFactory;
+			return ServerPropertiesIntegrationTests.containerFactory;
 		}
 
 		@Bean
@@ -170,6 +155,7 @@ public class ServerPropertiesAutoConfigurationTests {
 	}
 
 	@Configuration
+	@EnableConfigurationProperties(ServerProperties.class)
 	protected static class CustomJettyContainerConfig {
 
 		@Bean
@@ -187,6 +173,7 @@ public class ServerPropertiesAutoConfigurationTests {
 	}
 
 	@Configuration
+	@EnableConfigurationProperties(ServerProperties.class)
 	protected static class CustomUndertowContainerConfig {
 
 		@Bean
@@ -216,21 +203,6 @@ public class ServerPropertiesAutoConfigurationTests {
 				}
 
 			};
-		}
-
-	}
-
-	@Configuration
-	protected static class MultiServerPropertiesBeanConfig {
-
-		@Bean
-		public ServerProperties serverPropertiesOne() {
-			return new ServerProperties();
-		}
-
-		@Bean
-		public ServerProperties serverPropertiesTwo() {
-			return new ServerProperties();
 		}
 
 	}

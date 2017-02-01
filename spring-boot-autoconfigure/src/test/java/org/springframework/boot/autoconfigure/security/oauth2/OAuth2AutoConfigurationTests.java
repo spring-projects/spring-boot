@@ -33,7 +33,6 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2Res
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -462,9 +461,9 @@ public class OAuth2AutoConfigurationTests {
 
 	@Configuration
 	@Import({ UseFreePortEmbeddedContainerConfiguration.class,
-			SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, OAuth2AutoConfiguration.class,
-			WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
+			SecurityAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+			OAuth2AutoConfiguration.class, WebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class })
 	protected static class MinimalSecureWebApplication {
 
 	}

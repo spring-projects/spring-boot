@@ -258,8 +258,7 @@ public class MultipartAutoConfigurationTests {
 
 	@Configuration
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, MultipartAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class })
+			DispatcherServletAutoConfiguration.class, MultipartAutoConfiguration.class })
 	@EnableConfigurationProperties(MultipartProperties.class)
 	protected static class BaseConfiguration {
 
