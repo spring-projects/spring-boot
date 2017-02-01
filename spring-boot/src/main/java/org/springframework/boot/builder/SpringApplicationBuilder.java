@@ -306,7 +306,7 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-	 * Flag to explicity request a specific type of web application. Auto-detected based
+	 * Flag to explicitly request a specific type of web application. Auto-detected based
 	 * on the classpath if not set.
 	 * @param webApplication the type of web application
 	 * @return the current builder
