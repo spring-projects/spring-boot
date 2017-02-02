@@ -5839,11 +5839,16 @@ code by annotating `@Configuration` classes or individual `@Bean` methods.
 [[boot-features-class-conditions]]
 ==== Class conditions
 The `@ConditionalOnClass` and `@ConditionalOnMissingClass` annotations allows
-configuration to be included based on the presence or absence of specific classes. Due to
-the fact that annotation metadata is parsed using http://asm.ow2.org/[ASM] you can
-actually use the `value` attribute to refer to the real class, even though that class
-might not actually appear on the running application classpath. You can also use the
-`name` attribute if you prefer to specify the class name using a `String` value.
+configuration to be included based on the presence or absence of specific classes.
+If you are using the `@ConditionalOnClass` annotation directly on the class you are conditionally
+registering, you can actually use the `value` attribute to refer to the real class,
+even though that class might not actually appear on the running application classpath.
+This is due to the fact that annotation metadata directly on a class is parsed
+using http://asm.ow2.org/[ASM]. You can also use the `name` attribute if you prefer to
+specify the class name using a `String` value, which is required if you are using
+`@ConditionalOnClass` or `@ConditionalOnMissingClass` as apart of a meta-annotation to
+compose your own composed annotations or in an `@Bean` method as neither of these cases
+are handled by ASM.
 
 
 

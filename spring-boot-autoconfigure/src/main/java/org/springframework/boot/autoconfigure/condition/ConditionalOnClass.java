@@ -36,9 +36,14 @@ import org.springframework.context.annotation.Conditional;
 public @interface ConditionalOnClass {
 
 	/**
+	 * <p>
 	 * The classes that must be present. Since this annotation parsed by loading class
 	 * bytecode it is safe to specify classes here that may ultimately not be on the
-	 * classpath.
+	 * classpath, only if this annotation is directly on the affected component and
+	 * <b>not</b> if this annotation is used as a composed, meta-annotation. If this
+	 * is used as a meta annotation and the given class is not available at runtime
+	 * then this {@link @Conditional} will effectively be ignored. In order to use
+	 * this annotation as a meta-annotation, only use the {@link #name} attribute.
 	 * @return the classes that must be present
 	 */
 	Class<?>[] value() default {};
