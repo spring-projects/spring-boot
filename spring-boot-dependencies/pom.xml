@@ -51,7 +51,7 @@
 		<appengine-sdk.version>1.9.48</appengine-sdk.version>
 		<artemis.version>1.5.2</artemis.version>
 		<aspectj.version>1.8.9</aspectj.version>
-		<assertj.version>2.6.0</assertj.version>
+		<assertj.version>3.6.2</assertj.version>
 		<atomikos.version>3.9.3</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
 		<byte-buddy.version>1.6.0</byte-buddy.version>
