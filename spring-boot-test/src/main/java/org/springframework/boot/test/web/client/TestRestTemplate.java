@@ -39,6 +39,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -217,7 +218,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#getForObject(java.net.URI, java.lang.Class)
 	 */
 	public <T> T getForObject(URI url, Class<T> responseType) throws RestClientException {
-		return this.restTemplate.getForObject(url.toString(), responseType);
+		return this.restTemplate.getForObject(applyRootUriIfNecessary(url), responseType);
 	}
 
 	/**
@@ -269,7 +270,7 @@ public class TestRestTemplate {
 	 */
 	public <T> ResponseEntity<T> getForEntity(URI url, Class<T> responseType)
 			throws RestClientException {
-		return this.restTemplate.getForEntity(url.toString(), responseType);
+		return this.restTemplate.getForEntity(applyRootUriIfNecessary(url), responseType);
 	}
 
 	/**
@@ -310,7 +311,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#headForHeaders(java.net.URI)
 	 */
 	public HttpHeaders headForHeaders(URI url) throws RestClientException {
-		return this.restTemplate.headForHeaders(url.toString());
+		return this.restTemplate.headForHeaders(applyRootUriIfNecessary(url));
 	}
 
 	/**
@@ -374,7 +375,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#postForLocation(java.net.URI, java.lang.Object)
 	 */
 	public URI postForLocation(URI url, Object request) throws RestClientException {
-		return this.restTemplate.postForLocation(url.toString(), request);
+		return this.restTemplate.postForLocation(applyRootUriIfNecessary(url), request);
 	}
 
 	/**
@@ -442,7 +443,8 @@ public class TestRestTemplate {
 	 */
 	public <T> T postForObject(URI url, Object request, Class<T> responseType)
 			throws RestClientException {
-		return this.restTemplate.postForObject(url.toString(), request, responseType);
+		return this.restTemplate.postForObject(applyRootUriIfNecessary(url), request,
+				responseType);
 	}
 
 	/**
@@ -511,7 +513,8 @@ public class TestRestTemplate {
 	 */
 	public <T> ResponseEntity<T> postForEntity(URI url, Object request,
 			Class<T> responseType) throws RestClientException {
-		return this.restTemplate.postForEntity(url.toString(), request, responseType);
+		return this.restTemplate.postForEntity(applyRootUriIfNecessary(url), request,
+				responseType);
 	}
 
 	/**
@@ -564,7 +567,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#put(java.net.URI, java.lang.Object)
 	 */
 	public void put(URI url, Object request) throws RestClientException {
-		this.restTemplate.put(url.toString(), request);
+		this.restTemplate.put(applyRootUriIfNecessary(url), request);
 	}
 
 	/**
@@ -630,7 +633,8 @@ public class TestRestTemplate {
 	 */
 	public <T> T patchForObject(URI url, Object request, Class<T> responseType)
 			throws RestClientException {
-		return this.restTemplate.patchForObject(url.toString(), request, responseType);
+		return this.restTemplate.patchForObject(applyRootUriIfNecessary(url), request,
+				responseType);
 
 	}
 
@@ -668,7 +672,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#delete(java.net.URI)
 	 */
 	public void delete(URI url) throws RestClientException {
-		this.restTemplate.delete(url.toString());
+		this.restTemplate.delete(applyRootUriIfNecessary(url));
 	}
 
 	/**
@@ -709,7 +713,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#optionsForAllow(java.net.URI)
 	 */
 	public Set<HttpMethod> optionsForAllow(URI url) throws RestClientException {
-		return this.restTemplate.optionsForAllow(url.toString());
+		return this.restTemplate.optionsForAllow(applyRootUriIfNecessary(url));
 	}
 
 	/**
@@ -777,8 +781,8 @@ public class TestRestTemplate {
 	public <T> ResponseEntity<T> exchange(URI url, HttpMethod method,
 			HttpEntity<?> requestEntity, Class<T> responseType)
 					throws RestClientException {
-		return this.restTemplate.exchange(url.toString(), method, requestEntity,
-				responseType);
+		return this.restTemplate.exchange(applyRootUriIfNecessary(url), method,
+				requestEntity, responseType);
 	}
 
 	/**
@@ -860,8 +864,8 @@ public class TestRestTemplate {
 	public <T> ResponseEntity<T> exchange(URI url, HttpMethod method,
 			HttpEntity<?> requestEntity, ParameterizedTypeReference<T> responseType)
 					throws RestClientException {
-		return this.restTemplate.exchange(url.toString(), method, requestEntity,
-				responseType);
+		return this.restTemplate.exchange(applyRootUriIfNecessary(url), method,
+				requestEntity, responseType);
 	}
 
 	/**
@@ -882,7 +886,7 @@ public class TestRestTemplate {
 	public <T> ResponseEntity<T> exchange(RequestEntity<?> requestEntity,
 			Class<T> responseType) throws RestClientException {
 		return this.restTemplate.exchange(
-				createRequestEntityWithExpandedUri(requestEntity), responseType);
+				createRequestEntityWithRootAppliedUri(requestEntity), responseType);
 	}
 
 	/**
@@ -905,7 +909,7 @@ public class TestRestTemplate {
 	public <T> ResponseEntity<T> exchange(RequestEntity<?> requestEntity,
 			ParameterizedTypeReference<T> responseType) throws RestClientException {
 		return this.restTemplate.exchange(
-				createRequestEntityWithExpandedUri(requestEntity), responseType);
+				createRequestEntityWithRootAppliedUri(requestEntity), responseType);
 	}
 
 	/**
@@ -972,8 +976,8 @@ public class TestRestTemplate {
 	 */
 	public <T> T execute(URI url, HttpMethod method, RequestCallback requestCallback,
 			ResponseExtractor<T> responseExtractor) throws RestClientException {
-		return this.restTemplate.execute(url.toString(), method, requestCallback,
-				responseExtractor);
+		return this.restTemplate.execute(applyRootUriIfNecessary(url), method,
+				requestCallback, responseExtractor);
 	}
 
 	/**
@@ -1008,12 +1012,21 @@ public class TestRestTemplate {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private RequestEntity<?> createRequestEntityWithExpandedUri(
+	private RequestEntity<?> createRequestEntityWithRootAppliedUri(
 			RequestEntity<?> requestEntity) {
-		URI expandedUri = this.restTemplate.getUriTemplateHandler()
-				.expand(requestEntity.getUrl().toString());
 		return new RequestEntity(requestEntity.getBody(), requestEntity.getHeaders(),
-				requestEntity.getMethod(), expandedUri, requestEntity.getType());
+				requestEntity.getMethod(),
+				applyRootUriIfNecessary(requestEntity.getUrl()), requestEntity.getType());
+	}
+
+	private URI applyRootUriIfNecessary(URI uri) {
+		UriTemplateHandler uriTemplateHandler = this.restTemplate.getUriTemplateHandler();
+		if ((uriTemplateHandler instanceof RootUriTemplateHandler)
+				&& uri.toString().startsWith("/")) {
+			return URI.create(((RootUriTemplateHandler) uriTemplateHandler).getRootUri()
+					+ uri.toString());
+		}
+		return uri;
 	}
 
 	/**
