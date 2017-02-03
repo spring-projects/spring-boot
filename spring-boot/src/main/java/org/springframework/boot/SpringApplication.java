@@ -352,6 +352,7 @@ public class SpringApplication {
 		if (isWebEnvironment(environment) && !this.webEnvironment) {
 			environment = convertToStandardEnvironment(environment);
 		}
+
 		return environment;
 	}
 
@@ -566,7 +567,8 @@ public class SpringApplication {
 	 * @param environment the environment to bind
 	 */
 	protected void bindToSpringApplication(ConfigurableEnvironment environment) {
-		PropertiesConfigurationFactory<SpringApplication> binder = new PropertiesConfigurationFactory<>(this);
+		PropertiesConfigurationFactory<SpringApplication> binder = new PropertiesConfigurationFactory<>(
+				this);
 		ConversionService conversionService = new DefaultConversionService();
 		binder.setTargetName("spring.main");
 		binder.setConversionService(conversionService);

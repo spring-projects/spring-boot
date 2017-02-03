@@ -16,43 +16,67 @@
  *
  */
 
-package org.springframework.boot.bind;
-
+package org.springframework.boot.env.fixme;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.runners.Parameterized.Parameter;
+import org.springframework.boot.env.fixme.PropertiesCanonicalPropertySource;
 
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link CanonicalSystemEnvironmentPropertySource}.
  * @author Madhura Bhave
  */
 @RunWith(Parameterized.class)
-public class CanonicalSystemEnvironmentPropertySourceTests {
+public class CanonicalPropertyFilePropertySourceTests {
 
-	private CanonicalSystemEnvironmentPropertySource propertySource;
-
-	@Parameter(0)
+	@Parameter
 	public NameValue input;
 
 	@Parameter(1)
 	public NameValue[] expected;
 
+	private PropertiesCanonicalPropertySource propertySource;
+
 	@Before
-	public void setUp() throws Exception {
-		this.propertySource = new CanonicalSystemEnvironmentPropertySource("test", input.asMap());
+	public void setup() {
+		Properties properties = new Properties();
+		properties.put(this.input.getName(), this.input.getValue());
+		this.propertySource = new PropertiesCanonicalPropertySource("test", properties);
+	}
+
+	@Parameters
+	public static Object[] parameters() {
+		List<Object> parameters = new ArrayList();
+		parameters.add(parameter("foo.bar=baz", "foo.bar=baz"));
+		parameters.add(parameter("foo.BAR=baz", "foo.bar=baz"));
+		parameters.add(parameter("foo.bar_blink=baz", "foo.barblink=baz"));
+		parameters.add(parameter("foo.bar-blink=baz", "foo.barblink=baz"));
+		parameters.add(parameter("foo.bar-blink.baz=bat", "foo.barblink.baz=bat"));
+		parameters.add(parameter("foo.bar[0]=baz", "foo.bar[0]=baz"));
+		parameters.add(parameter("foo.bar[1]=baz", "foo.bar[1]=baz"));
+		parameters.add(parameter("foo.bar[0][1]=baz", "foo.bar[0][1]=baz"));
+		parameters.add(parameter("foo.bar[]=baz,bling", "foo.bar[0]=baz", "foo.bar[1]=bling"));
+		return parameters.toArray();
+	}
+
+	private static Object[] parameter(String input, String... expected) {
+		Object[] parameter = new Object[2];
+		parameter[0] = NameValue.parse(input);
+		parameter[1] = NameValue.parse(expected);
+		return parameter;
 	}
 
 	@Test
@@ -83,41 +107,6 @@ public class CanonicalSystemEnvironmentPropertySourceTests {
 	public void getCanonicalPropertyNamesShouldContainOnlyExpectedNames() throws Exception {
 		String[] names = Arrays.stream(expected).map(NameValue::getName).toArray(size -> new String[size]);
 		assertThat(propertySource.getCanonicalPropertyNames()).containsExactlyInAnyOrder(names);
-	}
-
-	@Parameters
-	public static Object[] parameters() {
-		List<Object> parameters = new ArrayList<>();
-		parameters.add(parameter("FOO=bar", "foo=bar"));
-		parameters.add(parameter("FOO_BAR=baz", "foo.bar=baz"));
-		parameters.add(parameter("FOO_BAR_1_=baz", "foo.bar[1]=baz"));
-		parameters.add(parameter("FOO_BAR_1=baz", "foo.bar[1]=baz"));
-		parameters.add(parameter("FOO_BAR_1_BING=baz", "foo.bar[1].bing=baz"));
-		parameters.add(parameter("FOO_BAR_1_2_=baz", "foo.bar[1][2]=baz"));
-		parameters.add(parameter("FOO_BAR1_2_=baz", "foo.bar1[2]=baz"));
-		parameters.add(parameter("FOO_BAR_1_2=baz", "foo.bar[1][2]=baz"));
-		parameters.add(parameter("_BAR=baz", "bar=baz"));
-		parameters.add(parameter("__BAR=baz", "bar=baz"));
-		parameters.add(parameter("__BAR___=baz", "bar=baz"));
-		parameters.add(parameter("_1_2=baz", "[1][2]=baz"));
-		parameters.add(parameter("1_2=baz", "[1][2]=baz"));
-
-//		parameters.add(parameter("FOO__BAR__BING=baz", "foo[bar].bing=baz"));
-//		parameters.add(parameter("FOO__BAR_RAB__BING=baz", "foo[bar.rab].bing=baz"));
-//		parameters.add(parameter("FOO__BAR_RAB__BING__=baz", "foo[bar.rab].bing[0]=baz"));
-//		parameters.add(parameter("FOO__BAR_RAB__BING__=baz,boo", "foo[bar.rab].bing[0]=baz", "foo[bar.rab].bing[1]=boo"));
-//		parameters.add(parameter("FOO__BAR____RAB__BING=baz", "foo[bar][rab].bing=baz"));
-//		parameters.add(parameter("FOO_BAR__=baz", "foo.bar[0]=baz"));
-//		parameters.add(parameter("FOO_BAR__=baz,bat", "foo.bar[0]=baz", "foo.bar[1]=bat"));
-//		parameters.add(parameter("FOO_BAR1_2___=baz,boo", "foo.bar1[2][0]=baz", "foo.bar1[2][1]=boo"));
-		return parameters.toArray();
-	}
-
-	private static Object[] parameter(String input, String... expected) {
-		Object[] parameter = new Object[2];
-		parameter[0] = NameValue.parse(input);
-		parameter[1] = NameValue.parse(expected);
-		return parameter;
 	}
 
 	private static class NameValue {
@@ -152,11 +141,7 @@ public class CanonicalSystemEnvironmentPropertySourceTests {
 			return new NameValue(split[0], split[1]);
 		}
 
-		public Map<String,Object> asMap() {
-			return Collections.singletonMap(name,value);
-		}
 	}
-
 
 
 }

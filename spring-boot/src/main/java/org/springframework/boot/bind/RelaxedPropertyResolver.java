@@ -30,6 +30,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @see RelaxedNames
  */
+@Deprecated
 public class RelaxedPropertyResolver implements PropertyResolver {
 
 	private final PropertyResolver resolver;

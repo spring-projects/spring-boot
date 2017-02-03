@@ -50,6 +50,8 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 public class SpringApplicationJsonEnvironmentPostProcessor
 		implements EnvironmentPostProcessor, Ordered {
 
+	// FIXME another one to canonicalize
+
 	private static final String SERVLET_ENVIRONMENT_CLASS = "org.springframework.web."
 			+ "context.support.StandardServletEnvironment";
 

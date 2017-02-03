@@ -16,47 +16,49 @@
  *
  */
 
-package org.springframework.boot.bind;
+package org.springframework.boot.env.fixme;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.regex.Pattern;
 
-import org.springframework.core.env.PropertiesPropertySource;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.util.StringUtils;
 
 /**
  * @author Madhura Bhave
+ * @since 2.0.0
  */
-public class CanonicalPropertyFilePropertySource extends PropertiesPropertySource {
+public class PropertiesCanonicalPropertySource extends MapPropertySource {
 
 	private Map<String, Object> canonicalProperties = new HashMap<>();
 
-
-	public CanonicalPropertyFilePropertySource(String name, Properties properties) {
-		super(name, properties);
-		this.canonicalProperties = toCanonicalProperties(properties);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public PropertiesCanonicalPropertySource(String name, Properties source) {
+		super(name, (Map) source);
+		this.canonicalProperties = toCanonicalProperties(source);
 	}
 
+	@Override
 	public boolean containsProperty(String name) {
 		return super.containsProperty(name) || this.canonicalProperties.containsKey(name);
 	}
 
+	@Override
 	public Object getProperty(String name) {
 		if (super.containsProperty(name)) {
 			return super.getProperty(name);
 		}
-		return canonicalProperties.get(name);
+		return this.canonicalProperties.get(name);
 	}
 
 	public Set<String> getCanonicalPropertyNames() {
-		return canonicalProperties.keySet();
+		return this.canonicalProperties.keySet();
 	}
 
 	private Map<String, Object> toCanonicalProperties(Properties properties) {
-		Map<String,Object> map = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		for (Map.Entry entry : properties.entrySet()) {
 			String key = entry.getKey().toString();
 			String value = entry.getValue().toString();
@@ -71,7 +73,8 @@ public class CanonicalPropertyFilePropertySource extends PropertiesPropertySourc
 		return map;
 	}
 
-	private void addIndividualArrayElements(Map<String, Object> map, String key, String value) {
+	private void addIndividualArrayElements(Map<String, Object> map, String key,
+			String value) {
 		String keyPrefix = toCanonicalName(key);
 		String[] values = StringUtils.commaDelimitedListToStringArray(value);
 		for (int i = 0; i < values.length; i++) {
@@ -81,9 +84,9 @@ public class CanonicalPropertyFilePropertySource extends PropertiesPropertySourc
 
 	private String toCanonicalName(String key) {
 		StringBuilder result = new StringBuilder(key.length());
-		for (int i=0;i<key.length();i++) {
+		for (int i = 0; i < key.length(); i++) {
 			char c = key.charAt(i);
-			if(Character.isLetterOrDigit(c) || c == '.' || c == '[' || c == ']') {
+			if (Character.isLetterOrDigit(c) || c == '.' || c == '[' || c == ']') {
 				result.append(c);
 			}
 		}

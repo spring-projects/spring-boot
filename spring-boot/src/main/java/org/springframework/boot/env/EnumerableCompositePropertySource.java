@@ -33,8 +33,11 @@ import org.springframework.core.env.PropertySource;
  * @see PropertySource
  * @see EnumerablePropertySource
  */
+@Deprecated
 public class EnumerableCompositePropertySource
 		extends EnumerablePropertySource<Collection<PropertySource<?>>> {
+
+	// FIXME do we need this, is it the same as PropertySourcesPropertyResolver
 
 	private volatile String[] names;
 

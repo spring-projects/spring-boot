@@ -16,7 +16,7 @@
  *
  */
 
-package org.springframework.boot.bind;
+package org.springframework.boot.env.fixme;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,20 +26,24 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.boot.env.CanonicalPropertySource;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.util.StringUtils;
 
 /**
+ * {@link CanonicalPropertySource}
+ *
  * @author Madhura Bhave
  */
-public class CanonicalSystemEnvironmentPropertySource extends MapPropertySource {
+public class SystemEnvironmentCanonicalPropertySource extends MapPropertySource {
 
 	private final Map<String, String> canonicalMap;
 
-
-	public CanonicalSystemEnvironmentPropertySource(String name, Map<String, Object> source) {
+	public SystemEnvironmentCanonicalPropertySource(String name,
+			Map<String, Object> source) {
 		super(name, source);
-		this.canonicalMap = Collections.unmodifiableMap(source.keySet().stream().collect(Collectors.toMap(this::toCanonicalName, key -> key)));
+		this.canonicalMap = Collections.unmodifiableMap(source.keySet().stream()
+				.collect(Collectors.toMap(this::toCanonicalName, key -> key)));
 	}
 
 	@Override
@@ -47,18 +51,20 @@ public class CanonicalSystemEnvironmentPropertySource extends MapPropertySource 
 		if (super.containsProperty(name)) {
 			return super.getProperty(name);
 		}
-		String canonicalName = canonicalMap.get(name);
+		String canonicalName = this.canonicalMap.get(name);
 		return (canonicalName == null ? null : super.getProperty(canonicalName));
 	}
 
 	@Override
 	public boolean containsProperty(String name) {
-		return super.containsProperty(name) || canonicalMap.containsKey(name);
+		return super.containsProperty(name) || this.canonicalMap.containsKey(name);
 	}
 
 	private String toCanonicalName(String key) {
-		Stream<String> stream = Arrays.stream(StringUtils.delimitedListToStringArray(key.toLowerCase(), "_"));
-		List<String> elements = stream.filter(element -> !element.isEmpty()).collect(Collectors.toList());
+		Stream<String> stream = Arrays
+				.stream(StringUtils.delimitedListToStringArray(key.toLowerCase(), "_"));
+		List<String> elements = stream.filter(element -> !element.isEmpty())
+				.collect(Collectors.toList());
 		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < elements.size(); i++) {
 			if (isNumber(elements.get(i))) {
@@ -74,12 +80,13 @@ public class CanonicalSystemEnvironmentPropertySource extends MapPropertySource 
 		return result.toString();
 	}
 
-	//stream version
+	// stream version
 	private String toCanonicalName2(String key) {
-		return Arrays.stream(StringUtils.delimitedListToStringArray(key.toLowerCase(), "_"))
-					.filter(element -> !element.isEmpty())
-						.map(element -> isNumber(element) ? "[" + element + "]" : element)
-							.collect(Collectors.joining(".")).replace(".[", "[");
+		return Arrays
+				.stream(StringUtils.delimitedListToStringArray(key.toLowerCase(), "_"))
+				.filter(element -> !element.isEmpty())
+				.map(element -> isNumber(element) ? "[" + element + "]" : element)
+				.collect(Collectors.joining(".")).replace(".[", "[");
 	}
 
 	private boolean isNumber(String element) {
@@ -92,7 +99,7 @@ public class CanonicalSystemEnvironmentPropertySource extends MapPropertySource 
 	}
 
 	public Set<String> getCanonicalPropertyNames() {
-		return canonicalMap.keySet();
+		return this.canonicalMap.keySet();
 	}
 
 }

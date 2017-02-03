@@ -49,4 +49,6 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 		return null;
 	}
 
+	// FIXME load and track line number
+
 }

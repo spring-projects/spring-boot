@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.MutablePropertySources;
 
 @SpringBootApplication
 public class SampleSimpleApplication implements CommandLineRunner {
@@ -42,7 +44,12 @@ public class SampleSimpleApplication implements CommandLineRunner {
 	}
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleSimpleApplication.class, args);
+		ConfigurableApplicationContext context = SpringApplication
+				.run(SampleSimpleApplication.class, args);
+		MutablePropertySources propertySources = context.getEnvironment()
+				.getPropertySources();
+		System.out.println(propertySources);
+
 	}
 
 }
