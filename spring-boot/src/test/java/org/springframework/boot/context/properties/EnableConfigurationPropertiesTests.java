@@ -290,18 +290,24 @@ public class EnableConfigurationPropertiesTests {
 
 	@Test
 	public void testBindingWithParentContext() {
-		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
+		AnnotationConfigApplicationContext parent =
+				new AnnotationConfigApplicationContext();
 		parent.register(TestConfiguration.class);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(parent,
+				"name=parent");
 		parent.refresh();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"name=foo");
 		this.context.setParent(parent);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"name=child");
 		this.context.register(TestConfiguration.class, TestConsumer.class);
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(TestProperties.class).length)
+				.isEqualTo(0);
+		assertThat(parent.getBeanNamesForType(TestProperties.class).length)
 				.isEqualTo(1);
-		assertThat(parent.getBeanNamesForType(TestProperties.class).length).isEqualTo(1);
-		assertThat(this.context.getBean(TestConsumer.class).getName()).isEqualTo("foo");
+		assertThat(this.context.getBean(TestConsumer.class).getName())
+				.isEqualTo("parent");
+		parent.close();
 	}
 
 	@Test
