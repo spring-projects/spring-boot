@@ -131,6 +131,29 @@ public class EmbeddedLdapAutoConfigurationTests {
 		assertThat(ldapTemplate.list("ou=company1,c=Sweden,dc=spring,dc=org")).hasSize(4);
 	}
 
+	@Test
+	public void testDisableSchemaValidation() throws LDAPException {
+		load("spring.ldap.embedded.validation.enabled:false",
+				"spring.ldap.embedded.base-dn:dc=spring,dc=org");
+		InMemoryDirectoryServer server = this.context
+				.getBean(InMemoryDirectoryServer.class);
+		assertThat(server.getSchema()).isNull();
+	}
+
+	@Test
+	public void testCustomSchemaValidation() throws LDAPException {
+		load("spring.ldap.embedded.validation.schema:classpath:custom-schema.ldif",
+				"spring.ldap.embedded.ldif:classpath:custom-schema-sample.ldif",
+				"spring.ldap.embedded.base-dn:dc=spring,dc=org");
+		InMemoryDirectoryServer server = this.context
+				.getBean(InMemoryDirectoryServer.class);
+
+		assertThat(server.getSchema().getObjectClass("exampleAuxiliaryClass"))
+				.isNotNull();
+		assertThat(server.getSchema().getAttributeType("exampleAttributeName"))
+				.isNotNull();
+	}
+
 	private void load(String... properties) {
 		EnvironmentTestUtils.addEnvironment(this.context, properties);
 		this.context.register(EmbeddedLdapAutoConfiguration.class,
