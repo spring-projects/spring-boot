@@ -1550,7 +1550,7 @@ writes a PID file. Example:
 [indent=0]
 ----
 	org.springframework.context.ApplicationListener=\
-	org.springframework.boot.actuate.system.ApplicationPidFileWriter,\
+	org.springframework.boot.system.ApplicationPidFileWriter,\
 	org.springframework.boot.actuate.system.EmbeddedServerPortFileWriter
 ----
 
