@@ -125,7 +125,7 @@ content into your application; rather pick only the properties that you need.
 	# OUTPUT
 	spring.output.ansi.enabled=detect # Configure the ANSI output.
 
-	# PID FILE ({sc-spring-boot-actuator}/system/ApplicationPidFileWriter.{sc-ext}[ApplicationPidFileWriter])
+	# PID FILE ({sc-spring-boot}/system/ApplicationPidFileWriter.{sc-ext}[ApplicationPidFileWriter])
 	spring.pid.fail-on-write-error= # Fail if ApplicationPidFileWriter is used but it cannot write the PID file.
 	spring.pid.file= # Location of the PID file to write (if ApplicationPidFileWriter is used).
 
