@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
@@ -47,6 +48,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -330,6 +332,17 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 				"Multiple PropertySourcesPlaceholderConfigurer beans registered");
 	}
 
+	@Test
+	public void propertiesWithMap() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"test.map.foo=bar");
+		this.context.register(PropertiesWithMap.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(PropertiesWithMap.class).getMap())
+				.containsEntry("foo", "bar");
+	}
+
 	private void assertBindingFailure(int errorCount) {
 		try {
 			this.context.refresh();
@@ -604,6 +617,28 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		@Bean
 		public static PropertySourcesPlaceholderConfigurer configurer() {
 			return new PropertySourcesPlaceholderConfigurer();
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	public static class PropertiesWithMap {
+
+		@Bean
+		public Validator validator() {
+			return new LocalValidatorFactoryBean();
+		}
+
+		private Map<String, String> map;
+
+		public Map<String, String> getMap() {
+			return this.map;
+		}
+
+		public void setMap(Map<String, String> map) {
+			this.map = map;
 		}
 
 	}
