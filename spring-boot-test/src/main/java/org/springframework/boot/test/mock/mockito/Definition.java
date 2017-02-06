@@ -97,11 +97,11 @@ abstract class Definition {
 		}
 		Definition other = (Definition) obj;
 		boolean result = true;
-		result &= ObjectUtils.nullSafeEquals(this.name, other.name);
-		result &= ObjectUtils.nullSafeEquals(this.reset, other.reset);
-		result &= ObjectUtils.nullSafeEquals(this.proxyTargetAware,
+		result = result && ObjectUtils.nullSafeEquals(this.name, other.name);
+		result = result && ObjectUtils.nullSafeEquals(this.reset, other.reset);
+		result = result && ObjectUtils.nullSafeEquals(this.proxyTargetAware,
 				other.proxyTargetAware);
-		result &= ObjectUtils.nullSafeEquals(this.qualifier, other.qualifier);
+		result = result && ObjectUtils.nullSafeEquals(this.qualifier, other.qualifier);
 		return result;
 	}
 

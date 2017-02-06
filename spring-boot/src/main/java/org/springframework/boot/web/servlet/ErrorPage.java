@@ -125,10 +125,10 @@ public class ErrorPage {
 		if (obj instanceof ErrorPage) {
 			ErrorPage other = (ErrorPage) obj;
 			boolean rtn = true;
-			rtn &= ObjectUtils.nullSafeEquals(getExceptionName(),
+			rtn = rtn && ObjectUtils.nullSafeEquals(getExceptionName(),
 					other.getExceptionName());
-			rtn &= ObjectUtils.nullSafeEquals(this.path, other.path);
-			rtn &= this.status == other.status;
+			rtn = rtn && ObjectUtils.nullSafeEquals(this.path, other.path);
+			rtn = rtn && this.status == other.status;
 			return rtn;
 		}
 		return false;
