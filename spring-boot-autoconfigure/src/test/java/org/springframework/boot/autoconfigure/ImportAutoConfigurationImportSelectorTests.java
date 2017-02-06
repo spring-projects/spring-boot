@@ -157,7 +157,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 		Set<Object> set1 = this.importSelector.determineImports(
 				getAnnotationMetadata(ImportAutoConfigurationWithItemsOne.class));
 		Set<Object> set2 = this.importSelector.determineImports(
-				getAnnotationMetadata(ImportAutoConfigurationWithItemsOne.class));
+				getAnnotationMetadata(ImportAutoConfigurationWithItemsTwo.class));
 		assertThat(set1).isEqualTo(set2);
 	}
 
@@ -228,13 +228,13 @@ public class ImportAutoConfigurationImportSelectorTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@ImportAutoConfiguration(FreeMarkerAutoConfiguration.class)
-	static @interface ImportOne {
+	@interface ImportOne {
 
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@ImportAutoConfiguration(ThymeleafAutoConfiguration.class)
-	static @interface ImportTwo {
+	@interface ImportTwo {
 
 	}
 
@@ -269,7 +269,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@ImportAutoConfiguration(classes = ThymeleafAutoConfiguration.class)
-	@UnrelatedOne
+	@UnrelatedTwo
 	static class ImportAutoConfigurationWithItemsTwo {
 
 	}
@@ -288,7 +288,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 
 	@ImportAutoConfiguration
 	@Retention(RetentionPolicy.RUNTIME)
-	static @interface MetaImportAutoConfiguration {
+	@interface MetaImportAutoConfiguration {
 
 		@AliasFor(annotation = ImportAutoConfiguration.class, attribute = "exclude")
 		Class<?>[] exclude() default {};
@@ -296,19 +296,19 @@ public class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	static @interface UnrelatedOne {
+	@interface UnrelatedOne {
 
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	static @interface UnrelatedTwo {
+	@interface UnrelatedTwo {
 
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@ImportAutoConfiguration(ThymeleafAutoConfiguration.class)
 	@SelfAnnotating
-	static @interface SelfAnnotating {
+	@interface SelfAnnotating {
 
 		@AliasFor(annotation = ImportAutoConfiguration.class, attribute = "exclude")
 		Class<?>[] excludeAutoConfiguration() default {};
