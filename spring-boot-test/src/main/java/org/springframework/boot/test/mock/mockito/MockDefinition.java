@@ -119,10 +119,10 @@ class MockDefinition extends Definition {
 		}
 		MockDefinition other = (MockDefinition) obj;
 		boolean result = super.equals(obj);
-		result &= ObjectUtils.nullSafeEquals(this.typeToMock, other.typeToMock);
-		result &= ObjectUtils.nullSafeEquals(this.extraInterfaces, other.extraInterfaces);
-		result &= ObjectUtils.nullSafeEquals(this.answer, other.answer);
-		result &= this.serializable == other.serializable;
+		result = result && ObjectUtils.nullSafeEquals(this.typeToMock, other.typeToMock);
+		result = result && ObjectUtils.nullSafeEquals(this.extraInterfaces, other.extraInterfaces);
+		result = result && ObjectUtils.nullSafeEquals(this.answer, other.answer);
+		result = result && this.serializable == other.serializable;
 		return result;
 	}
 

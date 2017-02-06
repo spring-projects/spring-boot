@@ -142,17 +142,17 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 		}
 		AnnotationCustomizableTypeExcludeFilter other = (AnnotationCustomizableTypeExcludeFilter) obj;
 		boolean result = true;
-		result &= hasAnnotation() == other.hasAnnotation();
+		result = result && hasAnnotation() == other.hasAnnotation();
 		for (FilterType filterType : FilterType.values()) {
 			result &= ObjectUtils.nullSafeEquals(getFilters(filterType),
 					other.getFilters(filterType));
 		}
-		result &= isUseDefaultFilters() == other.isUseDefaultFilters();
-		result &= ObjectUtils.nullSafeEquals(getDefaultIncludes(),
+		result = result && isUseDefaultFilters() == other.isUseDefaultFilters();
+		result = result && ObjectUtils.nullSafeEquals(getDefaultIncludes(),
 				other.getDefaultIncludes());
-		result &= ObjectUtils.nullSafeEquals(getComponentIncludes(),
+		result = result && ObjectUtils.nullSafeEquals(getComponentIncludes(),
 				other.getComponentIncludes());
 		return result;
-	};
+	}
 
 }
