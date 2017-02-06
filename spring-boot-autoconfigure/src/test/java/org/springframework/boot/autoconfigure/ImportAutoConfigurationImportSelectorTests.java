@@ -157,7 +157,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 		Set<Object> set1 = this.importSelector.determineImports(
 				getAnnotationMetadata(ImportAutoConfigurationWithItemsOne.class));
 		Set<Object> set2 = this.importSelector.determineImports(
-				getAnnotationMetadata(ImportAutoConfigurationWithItemsOne.class));
+				getAnnotationMetadata(ImportAutoConfigurationWithItemsTwo.class));
 		assertThat(set1).isEqualTo(set2);
 	}
 
@@ -269,7 +269,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@ImportAutoConfiguration(classes = ThymeleafAutoConfiguration.class)
-	@UnrelatedOne
+	@UnrelatedTwo
 	static class ImportAutoConfigurationWithItemsTwo {
 
 	}
