@@ -65,7 +65,7 @@ class SpyDefinition extends Definition {
 		}
 		SpyDefinition other = (SpyDefinition) obj;
 		boolean result = super.equals(obj);
-		result &= ObjectUtils.nullSafeEquals(this.typeToSpy, other.typeToSpy);
+		result = result && ObjectUtils.nullSafeEquals(this.typeToSpy, other.typeToSpy);
 		return result;
 	}
 

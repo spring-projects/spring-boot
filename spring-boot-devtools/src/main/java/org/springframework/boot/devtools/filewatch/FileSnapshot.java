@@ -59,9 +59,9 @@ class FileSnapshot {
 		if (obj instanceof FileSnapshot) {
 			FileSnapshot other = (FileSnapshot) obj;
 			boolean equals = this.file.equals(other.file);
-			equals &= this.exists == other.exists;
-			equals &= this.length == other.length;
-			equals &= this.lastModified == other.lastModified;
+			equals = equals && this.exists == other.exists;
+			equals = equals && this.length == other.length;
+			equals = equals && this.lastModified == other.lastModified;
 			return equals;
 		}
 		return super.equals(obj);
