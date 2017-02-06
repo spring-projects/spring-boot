@@ -49,8 +49,6 @@
 		</plugins>
 	</build>
 	<profiles>
-		<!-- JCache API (JSR-107 support) -->
-		<!-- Include with any of the caching providers below using, e.g. `$mvn -P jcache,hazelcast spring-boot:run` -->
 		<profile>
 			<id>jcache</id>
 			<dependencies>
@@ -60,7 +58,6 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		<!-- mvn -P caffeine spring-boot:run -->
 		<profile>
 			<id>caffeine</id>
 			<dependencies>
@@ -70,8 +67,6 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		<!-- Start Couchbase server, then... -->
-		<!-- mvn -P couchbase spring-boot:run -->
 		<profile>
 			<id>couchbase</id>
 			<dependencies>
@@ -85,9 +80,8 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		<!-- mvn -P ehcache spring-boot:run -->
 		<profile>
-			<id>ehcache</id>
+			<id>ehcache2</id>
 			<dependencies>
 				<dependency>
 					<groupId>net.sf.ehcache</groupId>
@@ -95,29 +89,19 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		<!-- Start a Ehcache server, then... -->
-		<!-- mvn -P org-ehcache spring-boot:run -->
 		<profile>
-			<id>org-ehcache</id>
+			<id>ehcache</id>
 			<dependencies>
+				<dependency>
+					<groupId>javax.cache</groupId>
+					<artifactId>cache-api</artifactId>
+				</dependency>
 				<dependency>
 					<groupId>org.ehcache</groupId>
 					<artifactId>ehcache</artifactId>
 				</dependency>
 			</dependencies>
 		</profile>
-		<!-- mvn -P guava spring-boot:run -->
-		<profile>
-			<id>guava</id>
-			<dependencies>
-				<dependency>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-					<version>18.0</version>
-				</dependency>
-			</dependencies>
-		</profile>
-		<!-- mvn -P hazelcast spring-boot:run -->
 		<profile>
 			<id>hazelcast</id>
 			<dependencies>
@@ -131,7 +115,6 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		<!-- mvn -P infinispan spring-boot:run -->
 		<profile>
 			<id>infinispan</id>
 			<dependencies>
@@ -145,14 +128,22 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		<!-- Start a Redis Server ($. <redis-install>/src/redis-server), then... -->
-		<!-- mvn -P redis spring-boot:run -->
 		<profile>
 			<id>redis</id>
 			<dependencies>
 				<dependency>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-starter-data-redis</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>guava</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+					<version>18.0</version>
 				</dependency>
 			</dependencies>
 		</profile>
