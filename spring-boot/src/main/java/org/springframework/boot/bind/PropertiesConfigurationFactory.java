@@ -229,7 +229,8 @@ public class PropertiesConfigurationFactory<T>
 		RelaxedDataBinder dataBinder = (this.targetName != null
 				? new RelaxedDataBinder(this.target, this.targetName)
 				: new RelaxedDataBinder(this.target));
-		if (this.validator != null) {
+		if (this.validator != null
+				&& this.validator.supports(dataBinder.getTarget().getClass())) {
 			dataBinder.setValidator(this.validator);
 		}
 		if (this.conversionService != null) {
