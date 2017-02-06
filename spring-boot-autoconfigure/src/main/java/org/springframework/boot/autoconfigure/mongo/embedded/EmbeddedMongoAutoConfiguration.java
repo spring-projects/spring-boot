@@ -280,8 +280,8 @@ public class EmbeddedMongoAutoConfiguration {
 			if (getClass() == obj.getClass()) {
 				ToStringFriendlyFeatureAwareVersion other = (ToStringFriendlyFeatureAwareVersion) obj;
 				boolean equals = true;
-				equals &= this.features.equals(other.features);
-				equals &= this.version.equals(other.version);
+				equals = equals && this.features.equals(other.features);
+				equals = equals && this.version.equals(other.version);
 				return equals;
 			}
 			return super.equals(obj);

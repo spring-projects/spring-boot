@@ -99,10 +99,10 @@ public final class LoggerConfiguration {
 		if (obj instanceof LoggerConfiguration) {
 			LoggerConfiguration other = (LoggerConfiguration) obj;
 			boolean rtn = true;
-			rtn &= ObjectUtils.nullSafeEquals(this.name, other.name);
-			rtn &= ObjectUtils.nullSafeEquals(this.configuredLevel,
+			rtn = rtn && ObjectUtils.nullSafeEquals(this.name, other.name);
+			rtn = rtn && ObjectUtils.nullSafeEquals(this.configuredLevel,
 					other.configuredLevel);
-			rtn &= ObjectUtils.nullSafeEquals(this.effectiveLevel, other.effectiveLevel);
+			rtn = rtn && ObjectUtils.nullSafeEquals(this.effectiveLevel, other.effectiveLevel);
 			return rtn;
 		}
 		return super.equals(obj);
