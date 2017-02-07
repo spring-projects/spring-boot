@@ -91,7 +91,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
  */
 @ManagementContextConfiguration
 @ConditionalOnClass(Link.class)
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnBean(HttpMessageConverters.class)
 @Conditional(EndpointHypermediaEnabledCondition.class)
 @EnableConfigurationProperties({ ResourceProperties.class,
