@@ -17,12 +17,16 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -41,6 +45,9 @@ import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.beans.MutablePropertyValues;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Undertow.Accesslog;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Undertow.Accesslog.PurgeProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Undertow.PurgeableAccessLogDeploymentInfoCustomizer;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
@@ -70,6 +77,7 @@ import static org.mockito.Mockito.verify;
  * @author Eddú Meléndez
  * @author Quinten De Swaef
  * @author Venil Noronha
+ * @author Matheus Góes
  */
 public class ServerPropertiesTests {
 
@@ -78,9 +86,16 @@ public class ServerPropertiesTests {
 	@Captor
 	private ArgumentCaptor<ServletContextInitializer[]> initializersCaptor;
 
+	private static final String ACCESS_LOG_TEMP_DIR = "./target/purgeable_access_log_test";
+	private static final String ACCESS_LOG_FILE_NAME_PATTERN = "%s/%s%s-0%d.%s";
+	private static final int ACCESS_LOG_FILES_AMOUNT = 3;
+	private PurgeableAccessLogDeploymentInfoCustomizer accessLogDeploymentInfoCustomizer;
+	private Accesslog accesslog;
+
 	@Before
-	public void setup() {
+	public void setup() throws Exception {
 		MockitoAnnotations.initMocks(this);
+		this.setUpPurgeableAccessLogTests();
 	}
 
 	@Test
@@ -661,6 +676,87 @@ public class ServerPropertiesTests {
 	private void bindProperties(Map<String, String> map) {
 		new RelaxedDataBinder(this.properties, "server")
 				.bind(new MutablePropertyValues(map));
+	}
+
+	@Test
+	public void testCustomize() throws Exception {
+		this.accessLogDeploymentInfoCustomizer.customize(null);
+		final String[] fileNames = this.getFileNamesFromAccessLogDir();
+		assertThat(fileNames).isNotNull();
+		assertThat(fileNames.length).isEqualTo(ACCESS_LOG_FILES_AMOUNT + 1);
+	}
+
+	@Test
+	public void testCustomizeExecutingOnStartup() throws Exception {
+		this.accesslog.getPurge().setExecuteOnStartup(true);
+		this.accessLogDeploymentInfoCustomizer.customize(null);
+
+		String[] fileNames = this.getFileNamesFromAccessLogDir();
+		assertThat(fileNames).isNotNull();
+		assertThat(fileNames.length).isEqualTo(ACCESS_LOG_FILES_AMOUNT + 1);
+
+		TimeUnit.SECONDS.sleep(10);
+		fileNames = this.getFileNamesFromAccessLogDir();
+		assertThat(fileNames).isNotNull();
+		assertThat(fileNames.length).isEqualTo(1);
+
+		this.createAccessLogOldFiles();
+
+		TimeUnit.SECONDS.sleep(10);
+		fileNames = this.getFileNamesFromAccessLogDir();
+		assertThat(fileNames).isNotNull();
+		assertThat(fileNames.length).isEqualTo(1);
+	}
+
+	private void setUpPurgeableAccessLogTests() throws Exception {
+		this.resetAccessLogTestDir();
+
+		final PurgeProperties purgeProperties = new PurgeProperties();
+		purgeProperties.setEnabled(true);
+		purgeProperties.setExecutionInterval(2);
+		purgeProperties.setExecutionIntervalUnit(TimeUnit.SECONDS);
+		purgeProperties.setMaxHistory(5);
+		purgeProperties.setMaxHistoryUnit(TimeUnit.SECONDS);
+
+		this.accesslog = new Accesslog();
+		this.accesslog.setDir(new File(ACCESS_LOG_TEMP_DIR));
+		this.accesslog.setPurge(purgeProperties);
+
+		this.accessLogDeploymentInfoCustomizer = new PurgeableAccessLogDeploymentInfoCustomizer(
+				this.accesslog);
+		new File(ACCESS_LOG_TEMP_DIR + File.separator + this.accesslog.getPrefix()
+				+ this.accesslog.getSuffix()).createNewFile();
+
+		this.createAccessLogOldFiles();
+	}
+
+	private void resetAccessLogTestDir() {
+		final File testDir = new File(ACCESS_LOG_TEMP_DIR);
+		if (!testDir.exists()) {
+			testDir.mkdir();
+		}
+		else {
+			final File[] files = testDir.listFiles();
+			if (files != null) {
+				for (final File file : files) {
+					file.delete();
+				}
+			}
+		}
+	}
+
+	private void createAccessLogOldFiles() throws IOException {
+		final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+		for (int i = 0; i < ACCESS_LOG_FILES_AMOUNT; i++) {
+			final String fileName = String.format(ACCESS_LOG_FILE_NAME_PATTERN,
+					this.accesslog.getDir(), this.accesslog.getPrefix(),
+					format.format(new Date()), i + 1, this.accesslog.getSuffix());
+			new File(fileName).createNewFile();
+		}
+	}
+
+	private String[] getFileNamesFromAccessLogDir() {
+		return this.accesslog.getDir().list();
 	}
 
 }
