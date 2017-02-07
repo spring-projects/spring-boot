@@ -130,11 +130,15 @@ public class AutoConfigurationImportSelectorTests {
 		this.environment.setProperty("spring.autoconfigure.exclude",
 				FreeMarkerAutoConfiguration.class.getName() + ","
 						+ MustacheAutoConfiguration.class.getName());
-		String[] imports = selectImports(BasicEnableAutoConfiguration.class);
-		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 2);
-		assertThat(this.importSelector.getLastEvent().getExclusions()).contains(
-				FreeMarkerAutoConfiguration.class.getName(),
-				MustacheAutoConfiguration.class.getName());
+		testSeveralPropertyExclusionsAreApplied();
+	}
+
+	@Test
+	public void severalPropertyExclusionsAreAppliedWithExtraSpaces() {
+		this.environment.setProperty("spring.autoconfigure.exclude",
+				FreeMarkerAutoConfiguration.class.getName() + " , "
+						+ MustacheAutoConfiguration.class.getName() + " ");
+		testSeveralPropertyExclusionsAreApplied();
 	}
 
 	@Test
@@ -143,6 +147,10 @@ public class AutoConfigurationImportSelectorTests {
 				FreeMarkerAutoConfiguration.class.getName());
 		this.environment.setProperty("spring.autoconfigure.exclude[1]",
 				MustacheAutoConfiguration.class.getName());
+		testSeveralPropertyExclusionsAreApplied();
+	}
+
+	private void testSeveralPropertyExclusionsAreApplied() {
 		String[] imports = selectImports(BasicEnableAutoConfiguration.class);
 		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 2);
 		assertThat(this.importSelector.getLastEvent().getExclusions()).contains(
