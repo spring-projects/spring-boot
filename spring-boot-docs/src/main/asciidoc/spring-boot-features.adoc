@@ -4921,6 +4921,16 @@ namespace, see the
 {sc-spring-boot-autoconfigure}/mail/MailProperties.{sc-ext}[`MailProperties`] for more
 details.
 
+In particular, certain default timeout values are infinite and you may want to change that
+to avoid having a thread blocked by an unresponsive mail server:
+
+[source,properties,indent=0]
+----
+	spring.mail.properties.mail.smtp.connecttimeout=5000
+	spring.mail.properties.mail.smtp.timeout=3000
+	spring.mail.properties.mail.smtp.writetimeout=5000
+----
+
 
 
 [[boot-features-jta]]
