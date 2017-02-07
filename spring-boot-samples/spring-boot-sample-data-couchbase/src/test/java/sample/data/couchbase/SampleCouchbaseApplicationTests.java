@@ -17,7 +17,6 @@ package sample.data.couchbase;
 
 import java.net.ConnectException;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -33,7 +32,6 @@ public class SampleCouchbaseApplicationTests {
 	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
-	@Ignore("See #8200")
 	public void testDefaultSettings() throws Exception {
 		try {
 			new SpringApplicationBuilder(SampleCouchbaseApplication.class)

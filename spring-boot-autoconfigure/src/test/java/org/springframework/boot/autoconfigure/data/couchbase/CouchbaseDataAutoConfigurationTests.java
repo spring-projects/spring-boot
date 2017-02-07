@@ -17,11 +17,8 @@
 package org.springframework.boot.autoconfigure.data.couchbase;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
-import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.cluster.ClusterInfo;
 import org.junit.After;
 import org.junit.Test;
 
@@ -38,7 +35,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
+import org.springframework.data.couchbase.config.AbstractCouchbaseDataConfiguration;
 import org.springframework.data.couchbase.config.BeanNames;
 import org.springframework.data.couchbase.config.CouchbaseConfigurer;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
@@ -150,32 +147,7 @@ public class CouchbaseDataAutoConfigurationTests {
 	}
 
 	@Configuration
-	static class CustomCouchbaseConfiguration extends AbstractCouchbaseConfiguration {
-
-		@Override
-		protected List<String> getBootstrapHosts() {
-			return null;
-		}
-
-		@Override
-		protected String getBucketName() {
-			return null;
-		}
-
-		@Override
-		protected String getBucketPassword() {
-			return null;
-		}
-
-		@Override
-		public Cluster couchbaseCluster() throws Exception {
-			return couchbaseConfigurer().couchbaseCluster();
-		}
-
-		@Override
-		public ClusterInfo couchbaseClusterInfo() throws Exception {
-			return couchbaseConfigurer().couchbaseClusterInfo();
-		}
+	static class CustomCouchbaseConfiguration extends AbstractCouchbaseDataConfiguration {
 
 		@Override
 		protected CouchbaseConfigurer couchbaseConfigurer() {
