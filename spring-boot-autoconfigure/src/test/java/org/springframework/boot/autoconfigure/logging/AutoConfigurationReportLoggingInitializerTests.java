@@ -171,7 +171,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		}
 		// Just basic sanity check, test is for visual inspection
 		String l = this.debugLog.get(0);
-		assertThat(l).contains("not a web application (OnWebApplicationCondition)");
+		assertThat(l).contains(
+				"not a servlet web application (OnWebApplicationCondition)");
 	}
 
 	@Test

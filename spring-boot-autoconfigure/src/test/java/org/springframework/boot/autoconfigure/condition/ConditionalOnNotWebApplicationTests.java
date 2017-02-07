@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,56 +16,76 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.context.embedded.ReactiveWebApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link ConditionalOnNotWebApplication}.
  *
- * @author Dave Syer
+ * @author Dave Syer$
+ * @author Stephane Nicoll
  */
 public class ConditionalOnNotWebApplicationTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private ConfigurableApplicationContext context;
+
+	@After
+	public void closeContext() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
 
 	@Test
-	public void testWebApplication() {
-		this.context.register(BasicConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.containsBean("foo")).isTrue();
-		assertThat(this.context.getBean("foo")).isEqualTo("foo");
+	public void testNotWebApplicationWithServletContext() {
+		AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
+		ctx.register(NotWebApplicationConfiguration.class);
+		ctx.setServletContext(new MockServletContext());
+		ctx.refresh();
+
+		this.context = ctx;
+		assertThat(this.context.getBeansOfType(String.class)).isEmpty();
+	}
+
+	@Test
+	public void testNotWebApplicationWithReactiveContext() {
+		ReactiveWebApplicationContext ctx = new ReactiveWebApplicationContext();
+		ctx.register(NotWebApplicationConfiguration.class);
+		ctx.refresh();
+
+		this.context = ctx;
+		assertThat(this.context.getBeansOfType(String.class)).isEmpty();
 	}
 
 	@Test
 	public void testNotWebApplication() {
-		this.context.register(MissingConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.containsBean("foo")).isFalse();
-	}
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		ctx.register(NotWebApplicationConfiguration.class);
+		ctx.refresh();
 
-	@Configuration
-	@ConditionalOnWebApplication
-	protected static class MissingConfiguration {
-
-		@Bean
-		public String bar() {
-			return "bar";
-		}
-
+		this.context = ctx;
+		assertThat(this.context.getBeansOfType(String.class)).containsExactly(
+				entry("none", "none"));
 	}
 
 	@Configuration
 	@ConditionalOnNotWebApplication
-	protected static class BasicConfiguration {
+	protected static class NotWebApplicationConfiguration {
 
 		@Bean
-		public String foo() {
-			return "foo";
+		public String none() {
+			return "none";
 		}
 
 	}
