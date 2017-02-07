@@ -279,9 +279,6 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 	@Override
 	public void stop() throws EmbeddedServletContainerException {
 		synchronized (this.monitor) {
-			if (!this.started) {
-				return;
-			}
 			try {
 				this.started = false;
 				try {

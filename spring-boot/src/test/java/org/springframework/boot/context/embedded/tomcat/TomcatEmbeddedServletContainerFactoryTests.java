@@ -352,6 +352,16 @@ public class TomcatEmbeddedServletContainerFactoryTests
 				.doesNotContain("appears to have started a thread named [main]");
 	}
 
+	@Test
+	public void stopNoStart() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory
+				.getEmbeddedServletContainer(exampleServletRegistration());
+		this.container.stop();
+		Tomcat tomcat = ((TomcatEmbeddedServletContainer) this.container).getTomcat();
+		assertThat(tomcat.getServer().getState()).isSameAs(LifecycleState.DESTROYED);
+	}
+
 	@Override
 	protected void addConnector(int port,
 			AbstractEmbeddedServletContainerFactory factory) {
