@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -54,6 +55,8 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -101,6 +104,20 @@ public class ResourceServerTokenServicesConfigurationTests {
 				.environment(this.environment).web(WebApplicationType.NONE).run();
 		RemoteTokenServices services = this.context.getBean(RemoteTokenServices.class);
 		assertThat(services).isNotNull();
+	}
+
+	@Test
+	public void remoteTokenServicesUseExistingRestOperationsBean() throws ReflectiveOperationException {
+		this.context = new SpringApplicationBuilder(WithRestTemplateConfiguration.class)
+				.web(WebApplicationType.NONE).run();
+		RemoteTokenServices services = this.context.getBean(RemoteTokenServices.class);
+
+		// There is no RemoteTokenServices.getRestTemplate to perform verification
+		Field field = services.getClass().getDeclaredField("restTemplate");
+		field.setAccessible(true);
+		RestOperations remoteTokenServicesRestOperations = (RestOperations) field.get(services);
+
+		assertThat(remoteTokenServicesRestOperations).isSameAs(WithRestTemplateConfiguration.restTemplate);
 	}
 
 	@Test
@@ -237,6 +254,16 @@ public class ResourceServerTokenServicesConfigurationTests {
 	protected static class ResourceConfiguration {
 
 	}
+
+	@Configuration
+	protected static class WithRestTemplateConfiguration extends ResourceConfiguration {
+		static RestTemplate restTemplate = new RestTemplate();
+		@Bean
+		RestTemplate restTemplate() {
+			return restTemplate;
+		}
+	};
+
 
 	@Configuration
 	protected static class AuthoritiesConfiguration extends ResourceConfiguration {

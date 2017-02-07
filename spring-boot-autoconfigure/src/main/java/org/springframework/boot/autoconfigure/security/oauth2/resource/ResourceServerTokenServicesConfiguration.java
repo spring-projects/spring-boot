@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -67,6 +68,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -101,9 +103,15 @@ public class ResourceServerTokenServicesConfiguration {
 		protected static class TokenInfoServicesConfiguration {
 
 			private final ResourceServerProperties resource;
+			private RestOperations restOperations;
 
 			protected TokenInfoServicesConfiguration(ResourceServerProperties resource) {
 				this.resource = resource;
+			}
+
+			@Autowired(required = false)
+			public void setRestOperations(RestOperations restOperations) {
+				this.restOperations = restOperations;
 			}
 
 			@Bean
@@ -112,6 +120,9 @@ public class ResourceServerTokenServicesConfiguration {
 				services.setCheckTokenEndpointUrl(this.resource.getTokenInfoUri());
 				services.setClientId(this.resource.getClientId());
 				services.setClientSecret(this.resource.getClientSecret());
+				if (this.restOperations != null) {
+					services.setRestTemplate(this.restOperations);
+				}
 				return services;
 			}
 
