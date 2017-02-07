@@ -5204,6 +5204,13 @@ the following provided libraries:
 * https://github.com/skyscreamer/JSONassert[JSONassert] -- An assertion library for JSON.
 * https://github.com/jayway/JsonPath[JsonPath] -- XPath for JSON.
 
+
+[NOTE]
+====
+By default, Spring Boot uses Mockito 1.x. However it's also possible to use 2.x if you
+wish.
+====
+
 These are common libraries that we generally find useful when writing tests. You are free
 to add additional test dependencies of your own if these don't suit your needs.
 
