@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.social;
 
 import java.util.List;
 
-import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring4.resourceresolver.SpringResourceResourceResolver;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -164,7 +164,7 @@ public class SocialWebAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(SpringTemplateEngine.class)
+	@ConditionalOnClass(SpringResourceResourceResolver.class)
 	protected static class SpringSocialThymeleafConfig {
 
 		@Bean
