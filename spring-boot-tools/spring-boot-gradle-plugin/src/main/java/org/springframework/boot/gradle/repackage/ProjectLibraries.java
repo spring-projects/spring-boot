@@ -18,6 +18,7 @@ package org.springframework.boot.gradle.repackage;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -50,6 +51,8 @@ class ProjectLibraries implements Libraries {
 
 	private final boolean excludeDevtools;
 
+	private final TargetConfigurationResolver targetConfigurationResolver;
+
 	private String providedConfigurationName = "providedRuntime";
 
 	private String customConfigurationName = null;
@@ -65,6 +68,17 @@ class ProjectLibraries implements Libraries {
 		this.project = project;
 		this.extension = extension;
 		this.excludeDevtools = excludeDevTools;
+		this.targetConfigurationResolver = createTargetConfigurationResolver();
+	}
+
+	private static TargetConfigurationResolver createTargetConfigurationResolver() {
+		try {
+			return new Gradle3TargetConfigurationResolver(
+					ProjectDependency.class.getMethod("getTargetConfiguration"));
+		}
+		catch (Exception ex) {
+			return new Gradle2TargetConfigurationResolver();
+		}
 	}
 
 	/**
@@ -127,11 +141,11 @@ class ProjectLibraries implements Libraries {
 			}
 			else if (dependency instanceof ProjectDependency) {
 				ProjectDependency projectDependency = (ProjectDependency) dependency;
-				Configuration dependencyConfiguration = projectDependency
-						.getDependencyProject().getConfigurations()
-						.getByName(projectDependency.getConfiguration());
-				libraries.addAll(
-						getLibrariesForFileDependencies(dependencyConfiguration, scope));
+				libraries
+						.addAll(getLibrariesForFileDependencies(
+								this.targetConfigurationResolver
+										.resolveTargetConfiguration(projectDependency),
+								scope));
 			}
 		}
 		return libraries;
@@ -260,6 +274,49 @@ class ProjectLibraries implements Libraries {
 						.contains(id.getGroup() + ":" + id.getName());
 			}
 			return false;
+		}
+
+	}
+
+	private interface TargetConfigurationResolver {
+
+		Configuration resolveTargetConfiguration(ProjectDependency projectDependency);
+
+	}
+
+	private static final class Gradle2TargetConfigurationResolver
+			implements TargetConfigurationResolver {
+
+		@Override
+		public Configuration resolveTargetConfiguration(
+				ProjectDependency projectDependency) {
+			return projectDependency.getProjectConfiguration();
+		}
+
+	}
+
+	private static final class Gradle3TargetConfigurationResolver
+			implements TargetConfigurationResolver {
+
+		private final Method getTargetConfiguration;
+
+		private Gradle3TargetConfigurationResolver(Method getTargetConfiguration) {
+			this.getTargetConfiguration = getTargetConfiguration;
+		}
+
+		@Override
+		public Configuration resolveTargetConfiguration(
+				ProjectDependency projectDependency) {
+			try {
+				String configurationName = (String) this.getTargetConfiguration
+						.invoke(projectDependency);
+				return projectDependency.getDependencyProject().getConfigurations()
+						.getByName(configurationName == null
+								? Dependency.DEFAULT_CONFIGURATION : configurationName);
+			}
+			catch (Exception ex) {
+				throw new RuntimeException("Failed to get target configuration", ex);
+			}
 		}
 
 	}
