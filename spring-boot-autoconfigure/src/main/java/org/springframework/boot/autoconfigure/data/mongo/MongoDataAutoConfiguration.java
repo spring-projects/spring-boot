@@ -69,6 +69,7 @@ import org.springframework.util.StringUtils;
  * @author Josh Long
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  * @since 1.1.0
  */
 @Configuration
@@ -140,7 +141,7 @@ public class MongoDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CustomConversions customConversions() {
+	public CustomConversions mongoCustomConversions() {
 		return new CustomConversions(Collections.emptyList());
 	}
 
