@@ -16,12 +16,10 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.net.UnknownHostException;
-
 import javax.annotation.PreDestroy;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
+import com.mongodb.async.client.MongoClientSettings;
+import com.mongodb.reactivestreams.client.MongoClient;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -33,35 +31,32 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Mongo.
+ * {@link EnableAutoConfiguration Auto-configuration} for Reactive Mongo.
  *
- * @author Dave Syer
- * @author Oliver Gierke
- * @author Phillip Webb
  * @author Mark Paluch
+ * @since 2.0.0
  */
 @Configuration
 @ConditionalOnClass(MongoClient.class)
 @EnableConfigurationProperties(MongoProperties.class)
-@ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDbFactory")
-public class MongoAutoConfiguration {
+public class ReactiveMongoAutoConfiguration {
 
 	private final MongoProperties properties;
 
-	private final MongoClientOptions options;
+	private final MongoClientSettings settings;
 
 	private final Environment environment;
 
-	private final MongoClientFactory factory;
+	private final ReactiveMongoClientFactory factory;
 
 	private MongoClient mongo;
 
-	public MongoAutoConfiguration(MongoProperties properties,
-			ObjectProvider<MongoClientOptions> options, Environment environment) {
+	public ReactiveMongoAutoConfiguration(MongoProperties properties,
+			ObjectProvider<MongoClientSettings> settings, Environment environment) {
 		this.properties = properties;
-		this.options = options.getIfAvailable();
+		this.settings = settings.getIfAvailable();
 		this.environment = environment;
-		this.factory = new MongoClientFactory(properties);
+		this.factory = new ReactiveMongoClientFactory(properties);
 	}
 
 	@PreDestroy
@@ -73,8 +68,8 @@ public class MongoAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoClient mongo() throws UnknownHostException {
-		this.mongo = this.factory.createMongoClient(this.options, this.environment);
+	public MongoClient reactiveStreamsMongoClient() {
+		this.mongo = this.factory.createMongoClient(this.settings, this.environment);
 		return this.mongo;
 	}
 
