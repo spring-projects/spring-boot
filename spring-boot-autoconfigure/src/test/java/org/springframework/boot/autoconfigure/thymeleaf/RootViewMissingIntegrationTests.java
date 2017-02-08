@@ -33,13 +33,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Bruce Brouwer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes=TestConfig.class, properties="spring.thymeleaf.root-view=missingIndex")
+@SpringBootTest(classes = TestConfig.class, properties = "spring.thymeleaf.root-view=missingIndex")
 public class RootViewMissingIntegrationTests extends ThymeleafAutoConfigIntegrationTestBase {
 
-    @Test
-    public void index() throws Exception {
+	@Test
+	public void index() throws Exception {
 		this.mockMvc
 				.perform(get("/").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isNotFound());
-    }
+	}
 }

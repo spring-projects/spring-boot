@@ -23,7 +23,6 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -48,13 +47,12 @@ public class ThymeleafAutoConfigIntegrationTestBase {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 	}
 
-    @Configuration
-    @Import({ EmbeddedServletContainerAutoConfiguration.class,
-    	ServerPropertiesAutoConfiguration.class,
-    	DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-    	HttpMessageConvertersAutoConfiguration.class, ThymeleafAutoConfiguration.class,
-    	PropertyPlaceholderAutoConfiguration.class })
-    static class TestConfig {
-        // simplest configuration possible
-    }
+	@Configuration
+	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+		DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+		HttpMessageConvertersAutoConfiguration.class, ThymeleafAutoConfiguration.class,
+		PropertyPlaceholderAutoConfiguration.class })
+	static class TestConfig {
+		// simplest configuration possible
+	}
 }

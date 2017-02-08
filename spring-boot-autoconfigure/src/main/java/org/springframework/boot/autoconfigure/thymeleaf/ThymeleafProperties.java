@@ -100,7 +100,7 @@ public class ThymeleafProperties {
 	private String[] excludedViewNames;
 
 	/**
-	 * Template to use for the root view of an application
+	 * Template to use for the root view of an application.
 	 */
 	private String rootView = DEFAULT_ROOT_VIEW;
 
