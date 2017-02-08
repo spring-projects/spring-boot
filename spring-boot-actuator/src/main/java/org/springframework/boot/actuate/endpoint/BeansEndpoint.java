@@ -75,6 +75,9 @@ public class BeansEndpoint extends AbstractEndpoint<List<Object>>
 
 		@Override
 		public String getSnapshotAsJson() {
+			if (this.leafContext == null) {
+				return super.getSnapshotAsJson();
+			}
 			return generateJson(getContextHierarchy());
 		}
 
