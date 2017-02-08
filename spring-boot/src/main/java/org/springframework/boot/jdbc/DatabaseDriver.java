@@ -107,7 +107,7 @@ public enum DatabaseDriver {
 	/**
 	 * SQL Server.
 	 */
-	SQLSERVER("SQL SERVER", "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+	SQLSERVER("Microsoft SQL Server", "com.microsoft.sqlserver.jdbc.SQLServerDriver",
 			"com.microsoft.sqlserver.jdbc.SQLServerXADataSource", "SELECT 1"),
 
 	/**
