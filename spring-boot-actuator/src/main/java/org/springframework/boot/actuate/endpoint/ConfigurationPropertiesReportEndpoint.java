@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -239,6 +239,9 @@ public class ConfigurationPropertiesReportEndpoint
 			if (value instanceof Map) {
 				map.put(key, sanitize(qualifiedKey, (Map<String, Object>) value));
 			}
+			else if (value instanceof List) {
+				map.put(key, sanitize(qualifiedKey, (List<Object>) value));
+			}
 			else {
 				value = this.sanitizer.sanitize(key, value);
 				value = this.sanitizer.sanitize(qualifiedKey, value);
@@ -246,6 +249,24 @@ public class ConfigurationPropertiesReportEndpoint
 			}
 		}
 		return map;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Object> sanitize(String prefix, List<Object> list) {
+		List<Object> sanitized = new ArrayList<Object>();
+		for (Object item : list) {
+			if (item instanceof Map) {
+				sanitized.add(sanitize(prefix, (Map<String, Object>) item));
+			}
+			else if (item instanceof List) {
+				sanitize(prefix, (List<Object>) item);
+			}
+			else {
+				item = this.sanitizer.sanitize(prefix, item);
+				sanitized.add(this.sanitizer.sanitize(prefix, item));
+			}
+		}
+		return sanitized;
 	}
 
 	/**

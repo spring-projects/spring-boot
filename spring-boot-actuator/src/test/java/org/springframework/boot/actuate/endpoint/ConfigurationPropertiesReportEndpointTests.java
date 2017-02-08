@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -75,6 +77,19 @@ public class ConfigurationPropertiesReportEndpointTests
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testKeySanitization() throws Exception {
+		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
+		report.setKeysToSanitize("property");
+		Map<String, Object> properties = report.invoke();
+		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+				.get("testProperties")).get("properties");
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("dbPassword")).isEqualTo("123456");
+		assertThat(nestedProperties.get("myTestProperty")).isEqualTo("******");
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testKeySanitizationWithList() throws Exception {
 		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
 		report.setKeysToSanitize("property");
 		Map<String, Object> properties = report.invoke();
@@ -183,6 +198,20 @@ public class ConfigurationPropertiesReportEndpointTests
 		assertThat(nestedProperties.get("mixedBoolean")).isEqualTo(true);
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	public void listsAreSanitized() throws Exception {
+		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
+		Map<String, Object> properties = report.invoke();
+		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+				.get("testProperties")).get("properties");
+		assertThat(nestedProperties.get("listItems")).isInstanceOf(List.class);
+		List<Object> list = (List<Object>) nestedProperties.get("listItems");
+		assertThat(list).hasSize(1);
+		Map<String, Object> item = (Map<String, Object>) list.get(0);
+		assertThat(item.get("somePassword")).isEqualTo("******");
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	public static class Parent {
@@ -223,9 +252,12 @@ public class ConfigurationPropertiesReportEndpointTests
 
 		private Hidden hidden = new Hidden();
 
+		private List<ListItem> listItems = new ArrayList<ListItem>();
+
 		public TestProperties() {
 			this.secrets.put("mine", "myPrivateThing");
 			this.secrets.put("yours", "yourPrivateThing");
+			this.listItems.add(new ListItem());
 		}
 
 		public String getDbPassword() {
@@ -268,6 +300,14 @@ public class ConfigurationPropertiesReportEndpointTests
 			this.hidden = hidden;
 		}
 
+		public List<ListItem> getListItems() {
+			return this.listItems;
+		}
+
+		public void setListItems(List<ListItem> listItems) {
+			this.listItems = listItems;
+		}
+
 		public static class Hidden {
 
 			private String mine = "mySecret";
@@ -278,6 +318,20 @@ public class ConfigurationPropertiesReportEndpointTests
 
 			public void setMine(String mine) {
 				this.mine = mine;
+			}
+
+		}
+
+		public static class ListItem {
+
+			private String somePassword = "secret";
+
+			public String getSomePassword() {
+				return this.somePassword;
+			}
+
+			public void setSomePassword(String somePassword) {
+				this.somePassword = somePassword;
 			}
 
 		}
