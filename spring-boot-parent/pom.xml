@@ -40,6 +40,12 @@
 	</ciManagement>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-test-support</artifactId>
+				<version>1.5.2.BUILD-SNAPSHOT</version>
+			</dependency>
+
 			<!-- Additional Dependencies the consumers of spring-boot-dependencies
 				will generally not need -->
 			<dependency> <!-- deprecated but recent version required by 3rd party libs -->
