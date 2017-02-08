@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import ch.qos.logback.classic.BasicConfigurator;
@@ -802,6 +804,20 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(property).isEqualTo("fromdevpropertiesfile");
 		assertThat(this.context.getEnvironment().containsProperty("customdefault"))
 				.isFalse();
+	}
+
+	@Test
+	public void activeProfilesCanBeConfiguredUsingPlaceholdersResolvedAgainstTheEnvironment()
+			throws Exception {
+		Map<String, Object> source = new HashMap<String, Object>();
+		source.put("activeProfile", "testPropertySource");
+		org.springframework.core.env.PropertySource<?> propertySource = new MapPropertySource(
+				"test", source);
+		this.environment.getPropertySources().addLast(propertySource);
+		this.initializer.setSearchNames("testactiveprofiles");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getActiveProfiles())
+				.containsExactly("testPropertySource");
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(
