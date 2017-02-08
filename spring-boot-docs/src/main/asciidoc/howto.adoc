@@ -2442,6 +2442,13 @@ There are several options for hot reloading. The recommended approach is to use
 <<using-spring-boot.adoc#using-boot-devtools,`spring-boot-devtools`>> as it provides
 additional development-time features such as support for fast application restarts
 and LiveReload as well as sensible development-time configuration (e.g. template caching).
+Devtools works by monitoring the classpath for changes. This means that static resource
+changes must be "built" for the change to take affect. By default, this happens
+automatically in Eclipse when you save your changes. In IntelliJ IDEA, Make Project will
+trigger the necessary build. Due to the
+<<using-spring-boot.adoc#using-boot-devtools-restart-exclude, default restart
+exclusions>>, changes to static resources will not trigger a restart of your application.
+They will, however, trigger a live reload.
 
 Alternatively, running in an IDE (especially with debugging on) is a good way to do
 development (all modern IDEs allow reloading of static resources and usually also
@@ -2449,8 +2456,8 @@ hot-swapping of Java class changes).
 
 Finally, the <<build-tool-plugins.adoc#build-tool-plugins, Maven and Gradle plugins>> can
 be configured (see the `addResources` property) to support running from the command line
-with reloading of static files. You can use that with an external css/js compiler process
-if you are writing that code with higher level tools.
+with reloading of static files directly from source. You can use that with an external
+css/js compiler process if you are writing that code with higher level tools.
 
 
 
