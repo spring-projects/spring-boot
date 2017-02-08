@@ -35,15 +35,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Bruce Brouwer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes=TestConfig.class)
+@SpringBootTest(classes = TestConfig.class)
 public class RootViewDefaultIntegrationTests extends ThymeleafAutoConfigIntegrationTestBase {
 
-    @Test
-    public void index() throws Exception {
+	@Test
+	public void index() throws Exception {
 		MvcResult response = this.mockMvc
 				.perform(get("/").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isOk()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).isEqualTo("<html lang=\"en\"><body>Index</body></html>");
-    }
+	}
 }

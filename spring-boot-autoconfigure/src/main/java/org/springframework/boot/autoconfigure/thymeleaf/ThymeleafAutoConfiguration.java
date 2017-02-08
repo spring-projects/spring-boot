@@ -279,11 +279,12 @@ public class ThymeleafAutoConfiguration {
 
 		@Override
 		public void addViewControllers(final ViewControllerRegistry registry) {
-			if (StringUtils.hasText(properties.getRootView())) {
-				final String rootLocation = properties.getPrefix() + properties.getRootView() + properties.getSuffix();
+			if (StringUtils.hasText(this.properties.getRootView())) {
+				final String rootLocation = this.properties.getPrefix()
+						+ this.properties.getRootView() + this.properties.getSuffix();
 				final TemplateLocation location = new TemplateLocation(rootLocation);
-				if (location.exists(applicationContext)) {
-					registry.addViewController("/").setViewName(properties.getRootView());
+				if (location.exists(this.applicationContext)) {
+					registry.addViewController("/").setViewName(this.properties.getRootView());
 				}
 			}
 		}
