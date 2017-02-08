@@ -44,7 +44,7 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-test-support</artifactId>
-				<version>1.5.2.BUILD-SNAPSHOT</version>
+				<version>2.0.0.BUILD-SNAPSHOT</version>
 			</dependency>
 
 			<!-- Additional Dependencies the consumers of spring-boot-dependencies
