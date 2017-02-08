@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,21 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	 * @param propertySources a PropertySources instance
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources) {
+		this(propertySources, true);
+	}
+
+	/**
+	 * Create a new PropertyValues from the given PropertySources that will optionally
+	 * resolve placeholders.
+	 * @param propertySources a PropertySources instance
+	 * @param resolvePlaceholders {@code true} if placeholders should be resolved,
+	 * otherwise {@code false}
+	 * @since 1.5.2
+	 */
+	public PropertySourcesPropertyValues(PropertySources propertySources,
+			boolean resolvePlaceholders) {
 		this(propertySources, (Collection<String>) null, PropertyNamePatternsMatcher.ALL,
-				true);
+				resolvePlaceholders);
 	}
 
 	/**

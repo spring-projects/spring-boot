@@ -527,8 +527,18 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			SpringProfiles springProfiles = new SpringProfiles();
 			RelaxedDataBinder dataBinder = new RelaxedDataBinder(springProfiles,
 					"spring.profiles");
-			dataBinder.bind(new PropertySourcesPropertyValues(propertySources));
+			dataBinder.bind(new PropertySourcesPropertyValues(propertySources, false));
+			springProfiles.setActive(resolvePlaceholders(springProfiles.getActive()));
+			springProfiles.setInclude(resolvePlaceholders(springProfiles.getInclude()));
 			return springProfiles;
+		}
+
+		private List<String> resolvePlaceholders(List<String> values) {
+			List<String> resolved = new ArrayList<String>();
+			for (String value : values) {
+				resolved.add(this.environment.resolvePlaceholders(value));
+			}
+			return resolved;
 		}
 
 		private void maybeActivateProfiles(Set<Profile> profiles) {
