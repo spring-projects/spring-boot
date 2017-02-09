@@ -134,8 +134,8 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public FilterRegistrationBean requestContextFilter() {
-		FilterRegistrationBean registration = new FilterRegistrationBean();
+	public FilterRegistrationBean<RequestContextFilter> requestContextFilter() {
+		FilterRegistrationBean<RequestContextFilter> registration = new FilterRegistrationBean<RequestContextFilter>();
 		registration.setFilter(new RequestContextFilter());
 		registration.setOrder(this.jersey.getFilter().getOrder() - 1);
 		registration.setName("requestContextFilter");
@@ -145,8 +145,8 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyFilterRegistration")
 	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "filter")
-	public FilterRegistrationBean jerseyFilterRegistration() {
-		FilterRegistrationBean registration = new FilterRegistrationBean();
+	public FilterRegistrationBean<ServletContainer> jerseyFilterRegistration() {
+		FilterRegistrationBean<ServletContainer> registration = new FilterRegistrationBean<ServletContainer>();
 		registration.setFilter(new ServletContainer(this.config));
 		registration.setUrlPatterns(Arrays.asList(this.path));
 		registration.setOrder(this.jersey.getFilter().getOrder());
@@ -168,8 +168,8 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyServletRegistration")
 	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "servlet", matchIfMissing = true)
-	public ServletRegistrationBean jerseyServletRegistration() {
-		ServletRegistrationBean registration = new ServletRegistrationBean(
+	public ServletRegistrationBean<ServletContainer> jerseyServletRegistration() {
+		ServletRegistrationBean<ServletContainer> registration = new ServletRegistrationBean<ServletContainer>(
 				new ServletContainer(this.config), this.path);
 		addInitParameters(registration);
 		registration.setName(getServletRegistrationName());

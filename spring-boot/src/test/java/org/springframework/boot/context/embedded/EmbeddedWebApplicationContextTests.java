@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -232,7 +232,7 @@ public class EmbeddedWebApplicationContextTests {
 		addEmbeddedServletContainerFactoryBean();
 		OrderedFilter filter = new OrderedFilter();
 		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));
-		FilterRegistrationBean registration = new FilterRegistrationBean();
+		FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<Filter>();
 		registration.setFilter(mock(Filter.class));
 		registration.setOrder(100);
 		this.context.registerBeanDefinition("filterRegistrationBean",
@@ -391,8 +391,8 @@ public class EmbeddedWebApplicationContextTests {
 		addEmbeddedServletContainerFactoryBean();
 		Servlet servlet = mock(Servlet.class);
 		Filter filter = mock(Filter.class);
-		ServletRegistrationBean initializer = new ServletRegistrationBean(servlet,
-				"/foo");
+		ServletRegistrationBean<Servlet> initializer = new ServletRegistrationBean<Servlet>(
+				servlet, "/foo");
 		this.context.registerBeanDefinition("initializerBean",
 				beanDefinition(initializer));
 		this.context.registerBeanDefinition("servletBean", beanDefinition(servlet));
@@ -408,7 +408,8 @@ public class EmbeddedWebApplicationContextTests {
 	public void filterRegistrationBeansSkipsRegisteredFilters() throws Exception {
 		addEmbeddedServletContainerFactoryBean();
 		Filter filter = mock(Filter.class);
-		FilterRegistrationBean initializer = new FilterRegistrationBean(filter);
+		FilterRegistrationBean<Filter> initializer = new FilterRegistrationBean<Filter>(
+				filter);
 		this.context.registerBeanDefinition("initializerBean",
 				beanDefinition(initializer));
 		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ public class DispatcherServletAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
 		assertThat(this.context.getBean(DispatcherServlet.class)).isNotNull();
-		ServletRegistrationBean registration = this.context
+		ServletRegistrationBean<?> registration = this.context
 				.getBean(ServletRegistrationBean.class);
 		assertThat(registration.getUrlMappings().toString()).isEqualTo("[/]");
 	}
@@ -90,7 +90,7 @@ public class DispatcherServletAutoConfigurationTests {
 				DispatcherServletAutoConfiguration.class);
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
-		ServletRegistrationBean registration = this.context
+		ServletRegistrationBean<?> registration = this.context
 				.getBean(ServletRegistrationBean.class);
 		assertThat(registration.getUrlMappings().toString()).isEqualTo("[/]");
 		assertThat(registration.getServletName()).isEqualTo("dispatcherServlet");
@@ -105,7 +105,7 @@ public class DispatcherServletAutoConfigurationTests {
 				DispatcherServletAutoConfiguration.class);
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
-		ServletRegistrationBean registration = this.context
+		ServletRegistrationBean<?> registration = this.context
 				.getBean(ServletRegistrationBean.class);
 		assertThat(registration.getUrlMappings().toString()).isEqualTo("[/foo]");
 		assertThat(registration.getServletName()).isEqualTo("customDispatcher");
@@ -121,7 +121,7 @@ public class DispatcherServletAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "server.servlet_path:/spring");
 		this.context.refresh();
 		assertThat(this.context.getBean(DispatcherServlet.class)).isNotNull();
-		ServletRegistrationBean registration = this.context
+		ServletRegistrationBean<?> registration = this.context
 				.getBean(ServletRegistrationBean.class);
 		assertThat(registration.getUrlMappings().toString()).isEqualTo("[/spring/*]");
 		assertThat(registration.getMultipartConfig()).isNull();
@@ -134,7 +134,7 @@ public class DispatcherServletAutoConfigurationTests {
 		this.context.register(MultipartConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
 		this.context.refresh();
-		ServletRegistrationBean registration = this.context
+		ServletRegistrationBean<?> registration = this.context
 				.getBean(ServletRegistrationBean.class);
 		assertThat(registration.getMultipartConfig()).isNotNull();
 	}
@@ -217,9 +217,9 @@ public class DispatcherServletAutoConfigurationTests {
 	protected static class CustomAutowiredRegistration {
 
 		@Bean
-		public ServletRegistrationBean dispatcherServletRegistration(
+		public ServletRegistrationBean<?> dispatcherServletRegistration(
 				DispatcherServlet dispatcherServlet) {
-			ServletRegistrationBean registration = new ServletRegistrationBean(
+			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<DispatcherServlet>(
 					dispatcherServlet, "/foo");
 			registration.setName("customDispatcher");
 			return registration;

@@ -61,10 +61,10 @@ public class H2ConsoleAutoConfiguration {
 	}
 
 	@Bean
-	public ServletRegistrationBean h2Console() {
+	public ServletRegistrationBean<WebServlet> h2Console() {
 		String path = this.properties.getPath();
 		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
-		ServletRegistrationBean registration = new ServletRegistrationBean(
+		ServletRegistrationBean<WebServlet> registration = new ServletRegistrationBean<WebServlet>(
 				new WebServlet(), urlMapping);
 		H2ConsoleProperties.Settings settings = this.properties.getSettings();
 		if (settings.isTrace()) {
