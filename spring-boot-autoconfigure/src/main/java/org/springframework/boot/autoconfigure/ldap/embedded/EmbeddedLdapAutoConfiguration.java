@@ -114,14 +114,13 @@ public class EmbeddedLdapAutoConfiguration {
 			config.setSchema(null);
 		}
 		else if (this.embeddedProperties.getValidation().getSchema() != null) {
-			Resource schemaLocation = this.embeddedProperties.getValidation().getSchema();
 			try {
 				config.setSchema(Schema.mergeSchemas(Schema.getDefaultStandardSchema(),
-						Schema.getSchema(schemaLocation.getFile())));
+						Schema.getSchema(
+								this.embeddedProperties.getValidation().getSchema())));
 			}
 			catch (Exception ex) {
-				throw new IllegalStateException(
-						"Unable to load schema " + schemaLocation.getDescription(), ex);
+				throw new IllegalStateException("Unable to load Schema", ex);
 			}
 		}
 

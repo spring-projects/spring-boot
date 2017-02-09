@@ -130,7 +130,7 @@ public class EmbeddedLdapProperties {
 		/**
 		 * Path to the custom schema file
 		 */
-		private Resource schema;
+		private String schema;
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -140,11 +140,11 @@ public class EmbeddedLdapProperties {
 			this.enabled = enabled;
 		}
 
-		public Resource getSchema() {
+		public String getSchema() {
 			return this.schema;
 		}
 
-		public void setSchema(Resource schema) {
+		public void setSchema(String schema) {
 			this.schema = schema;
 		}
 
