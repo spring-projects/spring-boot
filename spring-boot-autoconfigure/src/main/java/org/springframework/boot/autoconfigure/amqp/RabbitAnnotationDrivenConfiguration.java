@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -40,11 +41,15 @@ class RabbitAnnotationDrivenConfiguration {
 
 	private final ObjectProvider<MessageConverter> messageConverter;
 
+	private final ObjectProvider<MessageRecoverer> messageRecoverer;
+
 	private final RabbitProperties properties;
 
 	RabbitAnnotationDrivenConfiguration(ObjectProvider<MessageConverter> messageConverter,
+			ObjectProvider<MessageRecoverer> messageRecoverer,
 			RabbitProperties properties) {
 		this.messageConverter = messageConverter;
+		this.messageRecoverer = messageRecoverer;
 		this.properties = properties;
 	}
 
@@ -53,6 +58,7 @@ class RabbitAnnotationDrivenConfiguration {
 	public SimpleRabbitListenerContainerFactoryConfigurer rabbitListenerContainerFactoryConfigurer() {
 		SimpleRabbitListenerContainerFactoryConfigurer configurer = new SimpleRabbitListenerContainerFactoryConfigurer();
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
+		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
 		configurer.setRabbitProperties(this.properties);
 		return configurer;
 	}

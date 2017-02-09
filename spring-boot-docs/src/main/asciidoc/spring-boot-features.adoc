@@ -4596,8 +4596,9 @@ the broker connection is lost. Retries are disabled by default.
 ==== Receiving a message
 When the Rabbit infrastructure is present, any bean can be annotated with
 `@RabbitListener` to create a listener endpoint. If no `RabbitListenerContainerFactory`
-has been defined, a default one is configured automatically.  If a `MessageConverter`
-beans is defined, it is associated automatically to the default factory.
+has been defined, a default one is configured automatically.  If a `MessageConverter` or
+`MessageRecoverer` beans are defined, they are associated automatically to the default
+factory.
 
 The following component creates a listener endpoint on the `someQueue` queue:
 
@@ -4660,9 +4661,11 @@ Then you can use in any `@RabbitListener`-annotated method as follows:
 	}
 ----
 
-You can enable retries to handle situations where your listener throws an exception.
-When retries are exhausted, the message will be rejected and either dropped or routed to a
-dead-letter exchange if the broker is configured so. Retries are disabled by default.
+You can enable retries to handle situations where your listener throws an exception. By
+default `RejectAndDontRequeueRecoverer` is used but you can define a `MessageRecoverer`
+of your own. When retries are exhausted, the message will be rejected and either dropped
+or routed to a dead-letter exchange if the broker is configured so. Retries are disabled
+by default.
 
 IMPORTANT: If retries are not enabled and the listener throws an exception, by default the
 delivery will be retried indefinitely. You can modify this behavior in two ways; set the
