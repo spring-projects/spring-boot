@@ -120,7 +120,7 @@ public class EmbeddedLdapProperties {
 
 	}
 
-	static class Validation {
+	public static class Validation {
 
 		/**
 		 * Enable LDAP schema validation
