@@ -202,11 +202,7 @@ public class MongoProperties {
 	public MongoClient createMongoClient(MongoClientOptions options,
 			Environment environment) throws UnknownHostException {
 		try {
-			if (hasCustomAddress() || hasCustomCredentials()) {
-				if (this.uri != null) {
-					throw new IllegalStateException("Invalid mongo configuration, "
-							+ "either uri or host/port/credentials must be specified");
-				}
+			if (this.uri == null) {
 				if (options == null) {
 					options = MongoClientOptions.builder().build();
 				}
@@ -229,10 +225,6 @@ public class MongoProperties {
 		finally {
 			clearPassword();
 		}
-	}
-
-	private boolean hasCustomAddress() {
-		return this.host != null || this.port != null;
 	}
 
 	private boolean hasCustomCredentials() {

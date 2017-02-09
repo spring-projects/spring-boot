@@ -128,27 +128,27 @@ public class MongoPropertiesTests {
 	}
 
 	@Test
-	public void uriCannotBeSetWithCredentials() throws UnknownHostException {
+	public void uriOverridesCredentials() throws UnknownHostException {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Invalid mongo configuration, "
-				+ "either uri or host/port/credentials must be specified");
-		properties.createMongoClient(null, null);
+		MongoClient client = properties.createMongoClient(null, null);
+		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		assertThat(allAddresses).hasSize(1);
+		assertServerAddress(allAddresses.get(0), "127.0.0.1", 1234);
 	}
 
 	@Test
-	public void uriCannotBeSetWithHostPort() throws UnknownHostException {
+	public void uriOverridesHostAndPort() throws UnknownHostException {
 		MongoProperties properties = new MongoProperties();
-		properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		properties.setHost("localhost");
-		properties.setPort(4567);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Invalid mongo configuration, "
-				+ "either uri or host/port/credentials must be specified");
-		properties.createMongoClient(null, null);
+		properties.setPort(27017);
+		properties.setUri("mongodb://mongo1.example.com:12345");
+		MongoClient client = properties.createMongoClient(null, null);
+		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		assertThat(allAddresses).hasSize(1);
+		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
 	}
 
 	@Test
