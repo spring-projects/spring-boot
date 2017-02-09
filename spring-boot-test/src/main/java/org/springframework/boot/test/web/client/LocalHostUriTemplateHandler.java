@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
-import org.springframework.web.util.DefaultUriTemplateHandler;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriTemplateHandler;
 
 /**
@@ -58,12 +58,13 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	 * @since 1.4.1
 	 */
 	public LocalHostUriTemplateHandler(Environment environment, String scheme) {
-		super(new DefaultUriTemplateHandler());
+		super(new DefaultUriBuilderFactory());
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.notNull(scheme, "Scheme must not be null");
 		this.environment = environment;
 		this.scheme = scheme;
-		this.servletPropertyResolver = new RelaxedPropertyResolver(environment, "server.servlet.");
+		this.servletPropertyResolver = new RelaxedPropertyResolver(environment,
+				"server.servlet.");
 	}
 
 	@Override
