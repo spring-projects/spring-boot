@@ -3299,7 +3299,8 @@ pooled connection factory by default.
 http://www.mongodb.com/[MongoDB] is an open-source NoSQL document database that uses a
 JSON-like schema instead of traditional table-based relational data. Spring Boot offers
 several conveniences for working with MongoDB, including the
-`spring-boot-starter-data-mongodb` '`Starter`'.
+`spring-boot-starter-data-mongodb` and `spring-boot-starter-data-mongodb-reactive`
+'`Starters`'.
 
 
 

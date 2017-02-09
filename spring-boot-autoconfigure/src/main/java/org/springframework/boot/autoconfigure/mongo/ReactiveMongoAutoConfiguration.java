@@ -34,6 +34,7 @@ import org.springframework.core.env.Environment;
  * {@link EnableAutoConfiguration Auto-configuration} for Reactive Mongo.
  *
  * @author Mark Paluch
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 @Configuration
@@ -41,11 +42,7 @@ import org.springframework.core.env.Environment;
 @EnableConfigurationProperties(MongoProperties.class)
 public class ReactiveMongoAutoConfiguration {
 
-	private final MongoProperties properties;
-
 	private final MongoClientSettings settings;
-
-	private final Environment environment;
 
 	private final ReactiveMongoClientFactory factory;
 
@@ -53,10 +50,8 @@ public class ReactiveMongoAutoConfiguration {
 
 	public ReactiveMongoAutoConfiguration(MongoProperties properties,
 			ObjectProvider<MongoClientSettings> settings, Environment environment) {
-		this.properties = properties;
 		this.settings = settings.getIfAvailable();
-		this.environment = environment;
-		this.factory = new ReactiveMongoClientFactory(properties);
+		this.factory = new ReactiveMongoClientFactory(properties, environment);
 	}
 
 	@PreDestroy
@@ -69,7 +64,7 @@ public class ReactiveMongoAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public MongoClient reactiveStreamsMongoClient() {
-		this.mongo = this.factory.createMongoClient(this.settings, this.environment);
+		this.mongo = this.factory.createMongoClient(this.settings);
 		return this.mongo;
 	}
 

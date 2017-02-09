@@ -39,6 +39,7 @@ import org.springframework.core.env.Environment;
  * @author Oliver Gierke
  * @author Phillip Webb
  * @author Mark Paluch
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnClass(MongoClient.class)
@@ -46,11 +47,7 @@ import org.springframework.core.env.Environment;
 @ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDbFactory")
 public class MongoAutoConfiguration {
 
-	private final MongoProperties properties;
-
 	private final MongoClientOptions options;
-
-	private final Environment environment;
 
 	private final MongoClientFactory factory;
 
@@ -58,10 +55,8 @@ public class MongoAutoConfiguration {
 
 	public MongoAutoConfiguration(MongoProperties properties,
 			ObjectProvider<MongoClientOptions> options, Environment environment) {
-		this.properties = properties;
 		this.options = options.getIfAvailable();
-		this.environment = environment;
-		this.factory = new MongoClientFactory(properties);
+		this.factory = new MongoClientFactory(properties, environment);
 	}
 
 	@PreDestroy
@@ -74,7 +69,7 @@ public class MongoAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public MongoClient mongo() throws UnknownHostException {
-		this.mongo = this.factory.createMongoClient(this.options, this.environment);
+		this.mongo = this.factory.createMongoClient(this.options);
 		return this.mongo;
 	}
 

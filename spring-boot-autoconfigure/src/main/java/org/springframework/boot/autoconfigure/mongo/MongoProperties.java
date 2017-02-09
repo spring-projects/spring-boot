@@ -135,15 +135,6 @@ public class MongoProperties {
 		this.fieldNamingStrategy = fieldNamingStrategy;
 	}
 
-	public void clearPassword() {
-		if (this.password == null) {
-			return;
-		}
-		for (int i = 0; i < this.password.length; i++) {
-			this.password[i] = 0;
-		}
-	}
-
 	public String getUri() {
 		return this.uri;
 	}

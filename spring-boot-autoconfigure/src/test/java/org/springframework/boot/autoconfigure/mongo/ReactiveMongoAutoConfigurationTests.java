@@ -57,7 +57,8 @@ public class ReactiveMongoAutoConfigurationTests {
 	@Test
 	public void clientExists() {
 		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class, ReactiveMongoAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class,
+				ReactiveMongoAutoConfiguration.class);
 		assertThat(this.context.getBeanNamesForType(MongoClient.class).length).isEqualTo(1);
 	}
 
@@ -67,10 +68,11 @@ public class ReactiveMongoAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.data.mongodb.host:localhost");
 		this.context.register(OptionsConfig.class,
-				PropertyPlaceholderAutoConfiguration.class, ReactiveMongoAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class,
+				ReactiveMongoAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(MongoClient.class).getSettings().getSocketSettings()
-				.getReadTimeout(TimeUnit.SECONDS)).isEqualTo(300);
+		assertThat(this.context.getBean(MongoClient.class).getSettings()
+				.getSocketSettings().getReadTimeout(TimeUnit.SECONDS)).isEqualTo(300);
 	}
 
 	@Test
@@ -79,10 +81,11 @@ public class ReactiveMongoAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.data.mongodb.uri:mongodb://localhost/test");
 		this.context.register(OptionsConfig.class,
-				PropertyPlaceholderAutoConfiguration.class, ReactiveMongoAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class,
+				ReactiveMongoAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(MongoClient.class).getSettings().getReadPreference())
-				.isEqualTo(ReadPreference.nearest());
+		assertThat(this.context.getBean(MongoClient.class).getSettings()
+				.getReadPreference()).isEqualTo(ReadPreference.nearest());
 	}
 
 	@Test
@@ -91,7 +94,8 @@ public class ReactiveMongoAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.data.mongodb.uri:mongodb://localhost/test");
 		this.context.register(SslOptionsConfig.class,
-				PropertyPlaceholderAutoConfiguration.class, ReactiveMongoAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class,
+				ReactiveMongoAutoConfiguration.class);
 		this.context.refresh();
 		MongoClient mongo = this.context.getBean(MongoClient.class);
 		MongoClientSettings settings = mongo.getSettings();

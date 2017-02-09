@@ -24,6 +24,16 @@
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-mongodb</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.mongodb</groupId>
+					<artifactId>mongo-java-driver</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver</artifactId>
 		</dependency>
@@ -38,16 +48,6 @@
 		<dependency>
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-mongodb</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.mongodb</groupId>
-					<artifactId>mongo-java-driver</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 	</dependencies>
 </project>

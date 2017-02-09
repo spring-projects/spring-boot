@@ -33,29 +33,37 @@ import org.springframework.core.env.Environment;
 /**
  * A factory for a blocking {@link MongoClient} that applies {@link MongoProperties}.
  *
+ * @author Dave Syer
+ * @author Phillip Webb
+ * @author Josh Long
+ * @author Andy Wilkinson
+ * @author Eddú Meléndez
+ * @author Stephane Nicoll
+ * @author Nasko Vasilev
  * @author Mark Paluch
  * @since 2.0.0
  */
 public class MongoClientFactory {
 
 	private final MongoProperties properties;
+	private final Environment environment;
 
-	public MongoClientFactory(MongoProperties properties) {
+	public MongoClientFactory(MongoProperties properties, Environment environment) {
 		this.properties = properties;
+		this.environment = environment;
 	}
 
 	/**
-	 * Creates a {@link MongoClient} using the given {@code options} and
-	 * {@code environment}. If the configured port is zero, the value of the
-	 * {@code local.mongo.port} property retrieved from the {@code environment} is used to
+	 * Creates a {@link MongoClient} using the given {@code options}. If the configured
+	 * port is zero, the value of the {@code local.mongo.port} property is used to
 	 * configure the client.
 	 * @param options the options
-	 * @param environment the environment
 	 * @return the Mongo client
 	 * @throws UnknownHostException if the configured host is unknown
 	 */
-	public MongoClient createMongoClient(MongoClientOptions options,
-			Environment environment) throws UnknownHostException {
+	public MongoClient createMongoClient(MongoClientOptions options)
+			throws UnknownHostException {
+
 		if (hasCustomAddress() || hasCustomCredentials()) {
 			if (this.properties.getUri() != null) {
 				throw new IllegalStateException("Invalid mongo configuration, "
@@ -75,7 +83,7 @@ public class MongoClientFactory {
 			}
 			String host = this.properties.getHost() == null ? "localhost"
 					: this.properties.getHost();
-			int port = determinePort(environment);
+			int port = determinePort();
 			return new MongoClient(
 					Collections.singletonList(new ServerAddress(host, port)),
 					credentials, options);
@@ -94,13 +102,13 @@ public class MongoClientFactory {
 				&& this.properties.getPassword() != null;
 	}
 
-	private int determinePort(Environment environment) {
+	private int determinePort() {
 		if (this.properties.getPort() == null) {
 			return MongoProperties.DEFAULT_PORT;
 		}
 		if (this.properties.getPort() == 0) {
-			if (environment != null) {
-				String localPort = environment.getProperty("local.mongo.port");
+			if (this.environment != null) {
+				String localPort = this.environment.getProperty("local.mongo.port");
 				if (localPort != null) {
 					return Integer.valueOf(localPort);
 				}
@@ -118,4 +126,5 @@ public class MongoClientFactory {
 		}
 		return MongoClientOptions.builder();
 	}
+
 }

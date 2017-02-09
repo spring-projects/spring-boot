@@ -39,27 +39,29 @@ import org.springframework.core.env.Environment;
  * A factory for a reactive {@link MongoClient} that applies {@link MongoProperties}.
  *
  * @author Mark Paluch
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 public class ReactiveMongoClientFactory {
 
 	private final MongoProperties properties;
 
-	public ReactiveMongoClientFactory(MongoProperties properties) {
+	private final Environment environment;
+
+	public ReactiveMongoClientFactory(MongoProperties properties,
+			Environment environment) {
 		this.properties = properties;
+		this.environment = environment;
 	}
 
 	/**
-	 * Creates a {@link MongoClient} using the given {@code options} and
-	 * {@code environment}. If the configured port is zero, the value of the
-	 * {@code local.mongo.port} property retrieved from the {@code environment} is used to
+	 * Creates a {@link MongoClient} using the given {@code options}. If the configured
+	 * port is zero, the value of the {@code local.mongo.port} property is used to
 	 * configure the client.
 	 * @param settings the settings
-	 * @param environment the environment
 	 * @return the Mongo client
 	 */
-	public MongoClient createMongoClient(MongoClientSettings settings,
-			Environment environment) {
+	public MongoClient createMongoClient(MongoClientSettings settings) {
 		if (hasCustomAddress() || hasCustomCredentials()) {
 			if (this.properties.getUri() != null) {
 				throw new IllegalStateException("Invalid mongo configuration, "
@@ -79,7 +81,7 @@ public class ReactiveMongoClientFactory {
 			}
 			String host = this.properties.getHost() == null ? "localhost"
 					: this.properties.getHost();
-			int port = determinePort(environment);
+			int port = determinePort();
 			ClusterSettings clusterSettings = ClusterSettings.builder()
 					.hosts(Collections.singletonList(new ServerAddress(host, port)))
 					.build();
@@ -134,13 +136,13 @@ public class ReactiveMongoClientFactory {
 				&& this.properties.getPassword() != null;
 	}
 
-	private int determinePort(Environment environment) {
+	private int determinePort() {
 		if (this.properties.getPort() == null) {
 			return MongoProperties.DEFAULT_PORT;
 		}
 		if (this.properties.getPort() == 0) {
-			if (environment != null) {
-				String localPort = environment.getProperty("local.mongo.port");
+			if (this.environment != null) {
+				String localPort = this.environment.getProperty("local.mongo.port");
 				if (localPort != null) {
 					return Integer.valueOf(localPort);
 				}

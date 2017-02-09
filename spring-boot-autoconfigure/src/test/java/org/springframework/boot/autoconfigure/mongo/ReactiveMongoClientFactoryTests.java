@@ -31,7 +31,7 @@ import org.junit.rules.ExpectedException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ReactiveMongoClientFactory} via {@link MongoProperties}.
+ * Tests for {@link ReactiveMongoClientFactory}.
  *
  * @author Mark Paluch
  */
@@ -44,8 +44,7 @@ public class ReactiveMongoClientFactoryTests {
 	public void portCanBeCustomized() throws UnknownHostException {
 		MongoProperties properties = new MongoProperties();
 		properties.setPort(12345);
-		MongoClient client = new ReactiveMongoClientFactory(properties).createMongoClient(null,
-				null);
+		MongoClient client = createMongoClient(properties);
 		List<ServerAddress> allAddresses = extractServerAddresses(client);
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "localhost", 12345);
@@ -55,8 +54,7 @@ public class ReactiveMongoClientFactoryTests {
 	public void hostCanBeCustomized() throws UnknownHostException {
 		MongoProperties properties = new MongoProperties();
 		properties.setHost("mongo.example.com");
-		MongoClient client = new ReactiveMongoClientFactory(properties).createMongoClient(null,
-				null);
+		MongoClient client = createMongoClient(properties);
 		List<ServerAddress> allAddresses = extractServerAddresses(client);
 		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "mongo.example.com", 27017);
@@ -67,8 +65,7 @@ public class ReactiveMongoClientFactoryTests {
 		MongoProperties properties = new MongoProperties();
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
-		MongoClient client = new ReactiveMongoClientFactory(properties).createMongoClient(null,
-				null);
+		MongoClient client = createMongoClient(properties);
 		assertMongoCredential(extractMongoCredentials(client).get(0), "user", "secret",
 				"test");
 	}
@@ -79,9 +76,9 @@ public class ReactiveMongoClientFactoryTests {
 		properties.setDatabase("foo");
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
-		MongoClient client = new ReactiveMongoClientFactory(properties).createMongoClient(null,
-				null);
-		assertMongoCredential(extractMongoCredentials(client).get(0), "user", "secret", "foo");
+		MongoClient client = createMongoClient(properties);
+		assertMongoCredential(extractMongoCredentials(client).get(0), "user", "secret",
+				"foo");
 	}
 
 	@Test
@@ -90,9 +87,9 @@ public class ReactiveMongoClientFactoryTests {
 		properties.setAuthenticationDatabase("foo");
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
-		MongoClient client = new ReactiveMongoClientFactory(properties).createMongoClient(null,
-				null);
-		assertMongoCredential(extractMongoCredentials(client).get(0), "user", "secret", "foo");
+		MongoClient client = createMongoClient(properties);
+		assertMongoCredential(extractMongoCredentials(client).get(0), "user", "secret",
+				"foo");
 	}
 
 	@Test
@@ -100,8 +97,7 @@ public class ReactiveMongoClientFactoryTests {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://user:secret@mongo1.example.com:12345,"
 				+ "mongo2.example.com:23456/test");
-		MongoClient client = new ReactiveMongoClientFactory(properties).createMongoClient(null,
-				null);
+		MongoClient client = createMongoClient(properties);
 		List<ServerAddress> allAddresses = extractServerAddresses(client);
 		assertThat(allAddresses).hasSize(2);
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
@@ -120,7 +116,7 @@ public class ReactiveMongoClientFactoryTests {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Invalid mongo configuration, "
 				+ "either uri or host/port/credentials must be specified");
-		new MongoClientFactory(properties).createMongoClient(null, null);
+		createMongoClient(properties);
 	}
 
 	@Test
@@ -132,7 +128,11 @@ public class ReactiveMongoClientFactoryTests {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Invalid mongo configuration, "
 				+ "either uri or host/port/credentials must be specified");
-		new MongoClientFactory(properties).createMongoClient(null, null);
+		createMongoClient(properties);
+	}
+
+	private MongoClient createMongoClient(MongoProperties properties) {
+		return new ReactiveMongoClientFactory(properties, null).createMongoClient(null);
 	}
 
 	private List<ServerAddress> extractServerAddresses(MongoClient client) {

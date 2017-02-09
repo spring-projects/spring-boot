@@ -17,9 +17,7 @@
 package org.springframework.boot.autoconfigure.data.mongo;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
@@ -36,9 +34,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ReactiveMongoDataAutoConfigurationTests {
 
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
-
 	private AnnotationConfigApplicationContext context;
 
 	@After
@@ -54,8 +49,8 @@ public class ReactiveMongoDataAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
 				MongoDataAutoConfiguration.class, ReactiveMongoAutoConfiguration.class,
 				ReactiveMongoDataAutoConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(ReactiveMongoTemplate.class).length)
-				.isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(ReactiveMongoTemplate.class))
+				.hasSize(1);
 	}
 
 }
