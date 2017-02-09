@@ -324,8 +324,8 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 		@Override
 		public boolean isIgnored(Annotation annotation) {
-			return annotation.annotationType().getName()
-					.startsWith("org.spockframework.");
+			return annotation.annotationType().getName().startsWith("org.spockframework.") ||
+				annotation.annotationType().getName().startsWith("spock.");
 		}
 
 	}
