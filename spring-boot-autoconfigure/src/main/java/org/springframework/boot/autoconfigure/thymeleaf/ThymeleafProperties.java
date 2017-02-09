@@ -25,7 +25,6 @@ import org.springframework.util.MimeType;
  * Properties for Thymeleaf.
  *
  * @author Stephane Nicoll
- * @author Bruce Brouwer
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.thymeleaf")
@@ -38,8 +37,6 @@ public class ThymeleafProperties {
 	public static final String DEFAULT_PREFIX = "classpath:/templates/";
 
 	public static final String DEFAULT_SUFFIX = ".html";
-
-	public static final String DEFAULT_ROOT_VIEW = "index";
 
 	/**
 	 * Check that the template exists before rendering it.
@@ -98,11 +95,6 @@ public class ThymeleafProperties {
 	 * Comma-separated list of view names that should be excluded from resolution.
 	 */
 	private String[] excludedViewNames;
-
-	/**
-	 * Template to use for the root view of an application.
-	 */
-	private String rootView = DEFAULT_ROOT_VIEW;
 
 	/**
 	 * Enable MVC Thymeleaf view resolution.
@@ -203,14 +195,6 @@ public class ThymeleafProperties {
 
 	public void setViewNames(String[] viewNames) {
 		this.viewNames = viewNames;
-	}
-
-	public String getRootView() {
-		return this.rootView;
-	}
-
-	public void setRootView(String rootView) {
-		this.rootView = rootView;
 	}
 
 }
