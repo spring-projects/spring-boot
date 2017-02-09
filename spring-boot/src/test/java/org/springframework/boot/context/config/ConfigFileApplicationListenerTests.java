@@ -852,6 +852,15 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void profileCanBeIncludedWithoutAnyBeingActive() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		this.context = application.run("--spring.profiles.include=dev");
+		String property = this.context.getEnvironment().getProperty("my.property");
+		assertThat(property).isEqualTo("fromdevpropertiesfile");
+	}
+
+	@Test
 	public void activeProfilesCanBeConfiguredUsingPlaceholdersResolvedAgainstTheEnvironment()
 			throws Exception {
 		Map<String, Object> source = new HashMap<String, Object>();
