@@ -18,9 +18,11 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
+import javax.servlet.http.HttpServletRequest;
 
 import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect;
 import nz.net.ultraq.thymeleaf.LayoutDialect;
@@ -51,11 +53,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MimeType;
 import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
+import org.springframework.web.servlet.mvc.ParameterizableViewController;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 
 /**
@@ -265,28 +270,50 @@ public class ThymeleafAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnWebApplication
-	@ConditionalOnProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
-	protected static class ThymeleafRootViewConfiguration extends WebMvcConfigurerAdapter {
-		private final ThymeleafProperties properties;
-		private final ApplicationContext applicationContext;
+	@ConditionalOnWebApplication(type = Type.SERVLET)
+	protected static class ThymeleafWelcomeTemplateConfiguration {
 
-		public ThymeleafRootViewConfiguration(final ThymeleafProperties properties,
+		@Bean
+		public WelcomeTemplateHandlerMapping welcomePageHandlerMapping(
+				final ThymeleafProperties properties,
 				final ApplicationContext applicationContext) {
-			this.properties = properties;
-			this.applicationContext = applicationContext;
+			final String path = properties.getPrefix() + "index" + properties.getSuffix();
+			return new WelcomeTemplateHandlerMapping(path, applicationContext);
+		}
+	}
+
+	static final class WelcomeTemplateHandlerMapping extends AbstractUrlHandlerMapping {
+		private static final Log logger = LogFactory
+				.getLog(WelcomeTemplateHandlerMapping.class);
+
+		private WelcomeTemplateHandlerMapping(final String path,
+				final ResourcePatternResolver resolver) {
+			final TemplateLocation welcome = new TemplateLocation(path);
+			if (welcome.exists(resolver)) {
+				logger.info("Adding Thymeleaf welcome template: " + path);
+				ParameterizableViewController controller = new ParameterizableViewController();
+				controller.setViewName("index");
+				setRootHandler(controller);
+				setOrder(-10);
+			}
 		}
 
 		@Override
-		public void addViewControllers(final ViewControllerRegistry registry) {
-			if (StringUtils.hasText(this.properties.getRootView())) {
-				final String rootLocation = this.properties.getPrefix()
-						+ this.properties.getRootView() + this.properties.getSuffix();
-				final TemplateLocation location = new TemplateLocation(rootLocation);
-				if (location.exists(this.applicationContext)) {
-					registry.addViewController("/").setViewName(this.properties.getRootView());
+		public Object getHandlerInternal(HttpServletRequest request) throws Exception {
+			for (MediaType mediaType : getAcceptedMediaTypes(request)) {
+				if (mediaType.includes(MediaType.TEXT_HTML)) {
+					return super.getHandlerInternal(request);
 				}
 			}
+			return null;
 		}
+
+		private List<MediaType> getAcceptedMediaTypes(HttpServletRequest request) {
+			String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
+			return MediaType.parseMediaTypes(
+					StringUtils.hasText(acceptHeader) ? acceptHeader : "*/*");
+		}
+
 	}
+
 }
