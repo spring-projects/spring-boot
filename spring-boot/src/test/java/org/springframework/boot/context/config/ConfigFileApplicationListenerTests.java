@@ -809,7 +809,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void profileCanBeIncludedWithoutAnyBeingActive() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.profiles.include=dev");
 		String property = this.context.getEnvironment().getProperty("my.property");
 		assertThat(property).isEqualTo("fromdevpropertiesfile");

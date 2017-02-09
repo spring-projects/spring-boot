@@ -295,7 +295,7 @@ public class RabbitAutoConfigurationTests {
 	@Test
 	public void testRabbitListenerContainerFactoryWithCustomSettings() {
 		load(new Class<?>[] { MessageConvertersConfiguration.class,
-						MessageRecoverersConfiguration.class },
+				MessageRecoverersConfiguration.class },
 				"spring.rabbitmq.listener.retry.enabled:true",
 				"spring.rabbitmq.listener.retry.maxAttempts:4",
 				"spring.rabbitmq.listener.retry.initialInterval:2000",
@@ -331,11 +331,11 @@ public class RabbitAutoConfigurationTests {
 		dfa = new DirectFieldAccessor(adviceChain[0]);
 		MessageRecoverer messageRecoverer = this.context.getBean("myMessageRecoverer",
 				MessageRecoverer.class);
-		MethodInvocationRecoverer mir = (MethodInvocationRecoverer) dfa
+		MethodInvocationRecoverer<?> mir = (MethodInvocationRecoverer<?>) dfa
 				.getPropertyValue("recoverer");
 		Message message = mock(Message.class);
 		Exception ex = new Exception("test");
-		mir.recover(new Object[]{"foo", message}, ex);
+		mir.recover(new Object[] { "foo", message }, ex);
 		verify(messageRecoverer).recover(message, ex);
 		RetryTemplate retryTemplate = (RetryTemplate) dfa
 				.getPropertyValue("retryOperations");
@@ -415,8 +415,7 @@ public class RabbitAutoConfigurationTests {
 		load(new Class<?>[] { config }, environment);
 	}
 
-	private void load(Class<?>[] configs,
-			String... environment) {
+	private void load(Class<?>[] configs, String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(configs);
 		applicationContext.register(RabbitAutoConfiguration.class);

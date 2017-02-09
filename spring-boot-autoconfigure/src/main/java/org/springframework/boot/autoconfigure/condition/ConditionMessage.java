@@ -301,9 +301,8 @@ public final class ConditionMessage {
 			if (StringUtils.isEmpty(reason)) {
 				return new ConditionMessage(ConditionMessage.this, this.condition);
 			}
-			return new ConditionMessage(ConditionMessage.this,
-					this.condition + (StringUtils.isEmpty(this.condition) ? "" : " ")
-							+ reason);
+			return new ConditionMessage(ConditionMessage.this, this.condition
+					+ (StringUtils.isEmpty(this.condition) ? "" : " ") + reason);
 		}
 
 	}

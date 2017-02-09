@@ -25,8 +25,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.FatalBeanException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -101,24 +99,17 @@ import org.springframework.web.servlet.DispatcherServlet;
 		RepositoryRestMvcAutoConfiguration.class, HypermediaAutoConfiguration.class,
 		HttpMessageConvertersAutoConfiguration.class })
 public class EndpointWebMvcAutoConfiguration
-		implements ApplicationContextAware, BeanFactoryAware, SmartInitializingSingleton {
+		implements ApplicationContextAware, SmartInitializingSingleton {
 
 	private static final Log logger = LogFactory
 			.getLog(EndpointWebMvcAutoConfiguration.class);
 
 	private ApplicationContext applicationContext;
 
-	private BeanFactory beanFactory;
-
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
 		this.applicationContext = applicationContext;
-	}
-
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
 	}
 
 	@Bean
@@ -339,8 +330,8 @@ public class EndpointWebMvcAutoConfiguration
 				return ConditionOutcome
 						.noMatch(message.because("non WebApplicationContext"));
 			}
-			ManagementServerPort port = ManagementServerPort.get(
-					context.getEnvironment());
+			ManagementServerPort port = ManagementServerPort
+					.get(context.getEnvironment());
 			if (port == ManagementServerPort.SAME) {
 				return ConditionOutcome.match(message.because("port is same"));
 			}
