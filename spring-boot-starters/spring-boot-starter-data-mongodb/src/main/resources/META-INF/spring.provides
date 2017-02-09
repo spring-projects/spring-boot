@@ -1,1 +1,1 @@
-provides: spring-data-mongodb
+provides: spring-data-mongodb,mongodb-driver

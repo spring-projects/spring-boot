@@ -113,6 +113,12 @@
     "defaultValue": true
   },
   {
+    "name": "spring.data.mongodb.reactive-repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Mongo reactive repositories.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.data.mongodb.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Mongo repositories.",
