@@ -342,7 +342,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		}
 
 		private Set<Profile> initializeActiveProfiles() {
-			if (!this.environment.containsProperty(ACTIVE_PROFILES_PROPERTY)) {
+			if (!this.environment.containsProperty(ACTIVE_PROFILES_PROPERTY)
+					&& !this.environment.containsProperty(INCLUDE_PROFILES_PROPERTY)) {
 				return Collections.emptySet();
 			}
 			// Any pre-existing active profiles set via property sources (e.g. System
