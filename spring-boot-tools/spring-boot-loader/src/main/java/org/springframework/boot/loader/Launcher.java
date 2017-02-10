@@ -84,18 +84,16 @@ public abstract class Launcher {
 	protected void launch(String[] args, String mainClass, ClassLoader classLoader)
 			throws Exception {
 		Thread.currentThread().setContextClassLoader(classLoader);
-		createMainMethodRunner(mainClass, args, classLoader).run();
+		createMainMethodRunner(mainClass, args).run();
 	}
 
 	/**
 	 * Create the {@code MainMethodRunner} used to launch the application.
 	 * @param mainClass the main class
 	 * @param args the incoming arguments
-	 * @param classLoader the classloader
 	 * @return the main method runner
 	 */
-	protected MainMethodRunner createMainMethodRunner(String mainClass, String[] args,
-			ClassLoader classLoader) {
+	protected MainMethodRunner createMainMethodRunner(String mainClass, String[] args) {
 		return new MainMethodRunner(mainClass, args);
 	}
 

@@ -123,7 +123,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private final File home;
 
-	private List<String> paths = new ArrayList<String>();
+	private List<String> paths = new ArrayList<>();
 
 	private final Properties properties = new Properties();
 
@@ -146,7 +146,7 @@ public class PropertiesLauncher extends Launcher {
 				.resolvePlaceholders(System.getProperty(HOME, "${user.dir}")));
 	}
 
-	private void initializeProperties() throws Exception, IOException {
+	private void initializeProperties() throws Exception {
 		String config = "classpath:BOOT-INF/classes/"
 				+ SystemPropertyUtils.resolvePlaceholders(
 						SystemPropertyUtils.getProperty(CONFIG_NAME, "application"))
@@ -421,7 +421,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private List<Archive> getClassPathArchives(String path) throws Exception {
 		String root = cleanupPath(stripFileUrlPrefix(path));
-		List<Archive> lib = new ArrayList<Archive>();
+		List<Archive> lib = new ArrayList<>();
 		File file = new File(root);
 		if (!isAbsolutePath(root)) {
 			file = new File(this.home, root);
@@ -477,17 +477,12 @@ public class PropertiesLauncher extends Launcher {
 		// directories, meaning we are running from an executable JAR. We add nested
 		// entries from there with low priority (i.e. at end).
 		try {
-			lib.addAll(this.parent.getNestedArchives(new EntryFilter() {
-
-				@Override
-				public boolean matches(Entry entry) {
-					if (entry.isDirectory()) {
-						return entry.getName().startsWith(JarLauncher.BOOT_INF_CLASSES);
-					}
-					return entry.getName().startsWith(JarLauncher.BOOT_INF_LIB);
-				}
-
-			}));
+			lib.addAll(this.parent.getNestedArchives(entry -> {
+                if (entry.isDirectory()) {
+                    return entry.getName().startsWith(JarLauncher.BOOT_INF_CLASSES);
+                }
+                return entry.getName().startsWith(JarLauncher.BOOT_INF_LIB);
+            }));
 		}
 		catch (IOException ex) {
 			// Ignore
@@ -618,13 +613,10 @@ public class PropertiesLauncher extends Launcher {
 		@Override
 		public List<Archive> getNestedArchives(final EntryFilter filter)
 				throws IOException {
-			return this.parent.getNestedArchives(new EntryFilter() {
-				@Override
-				public boolean matches(Entry entry) {
-					return FilteredArchive.this.filter.matches(entry)
-							&& filter.matches(entry);
-				}
-			});
+			return this
+					.parent
+					.getNestedArchives(
+							entry -> FilteredArchive.this.filter.matches(entry) && filter.matches(entry));
 		}
 
 	}
