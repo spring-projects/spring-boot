@@ -82,6 +82,7 @@ public class TokenTests {
 		assertThat(token.getExpiry()).isEqualTo(2147483647);
 		assertThat(token.getIssuer()).isEqualTo("http://localhost:8080/uaa/oauth/token");
 		assertThat(token.getSignatureAlgorithm()).isEqualTo("RS256");
+		assertThat(token.getKeyId()).isEqualTo("key-id");
 		assertThat(token.getContent()).isEqualTo(content.getBytes());
 		assertThat(token.getSignature())
 				.isEqualTo(Base64Utils.decodeFromString(signature));
@@ -100,12 +101,22 @@ public class TokenTests {
 
 	@Test
 	public void getIssuerWhenIssIsNullShouldThrowException() throws Exception {
-		String header = "{\"alg\": \"RS256\",  \"kid\": \"key-id\", \"typ\": \"JWT\"}";
+		String header = "{\"alg\": \"RS256\", \"kid\": \"key-id\", \"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647}";
 		Token token = createToken(header, claims);
 		this.thrown
 				.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_TOKEN));
 		token.getIssuer();
+	}
+
+	@Test
+	public void getKidWhenKidIsNullShouldThrowException() throws Exception {
+		String header = "{\"alg\": \"RS256\", \"typ\": \"JWT\"}";
+		String claims = "{\"exp\": 2147483647}";
+		Token token = createToken(header, claims);
+		this.thrown
+				.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_TOKEN));
+		token.getKeyId();
 	}
 
 	@Test
