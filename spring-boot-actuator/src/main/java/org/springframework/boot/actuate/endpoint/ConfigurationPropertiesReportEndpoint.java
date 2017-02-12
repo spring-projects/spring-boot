@@ -259,10 +259,9 @@ public class ConfigurationPropertiesReportEndpoint
 				sanitized.add(sanitize(prefix, (Map<String, Object>) item));
 			}
 			else if (item instanceof List) {
-				sanitize(prefix, (List<Object>) item);
+				sanitized.add(sanitize(prefix, (List<Object>) item));
 			}
 			else {
-				item = this.sanitizer.sanitize(prefix, item);
 				sanitized.add(this.sanitizer.sanitize(prefix, item));
 			}
 		}
