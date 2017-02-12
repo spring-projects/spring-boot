@@ -54,6 +54,7 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -62,6 +63,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ResourceServerTokenServicesConfiguration}.
  *
  * @author Dave Syer
+ * @author Eddú Meléndez
  */
 public class ResourceServerTokenServicesConfigurationTests {
 
@@ -229,6 +231,22 @@ public class ResourceServerTokenServicesConfigurationTests {
 				.isInstanceOf(CustomUserInfoRestTemplateFactory.class);
 	}
 
+	@Test
+	public void customRestTemplate() {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"security.oauth2.resource.userInfoUri:http://example.com",
+				"security.oauth2.resource.tokenInfoUri:http://example.com",
+				"security.oauth2.resource.preferTokenInfo:false");
+		this.context = new SpringApplicationBuilder(ResourceConfiguration.class,
+				RestTemplateCustomizer.class).environment(this.environment).web(WebApplicationType.NONE)
+				.run();
+		String[] restTemplateCustomizers = this.context.getBeanNamesForType(JwtAccessTokenConverterRestTemplateCustomizer.class);
+		UserInfoTokenServices services = this.context
+				.getBean(UserInfoTokenServices.class);
+		assertThat(restTemplateCustomizers).hasSize(1);
+		assertThat(services).isNotNull();
+	}
+
 	@Configuration
 	@Import({ ResourceServerTokenServicesConfiguration.class,
 			ResourceServerPropertiesConfiguration.class,
@@ -341,6 +359,23 @@ public class ResourceServerTokenServicesConfigurationTests {
 			return this.restTemplate;
 		}
 
+	}
+
+	@Component
+	protected static class RestTemplateCustomizer implements JwtAccessTokenConverterRestTemplateCustomizer {
+
+		@Override
+		public void customize(RestTemplate template) {
+			template.getInterceptors().add(new ClientHttpRequestInterceptor() {
+
+				@Override
+				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
+						ClientHttpRequestExecution execution) throws IOException {
+					return execution.execute(request, body);
+				}
+
+			});
+		}
 	}
 
 }

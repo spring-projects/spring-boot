@@ -73,6 +73,7 @@ import org.springframework.web.client.RestTemplate;
  * Configuration for an OAuth2 resource server.
  *
  * @author Dave Syer
+ * @author Eddú Meléndez
  * @since 1.3.0
  */
 @Configuration
@@ -218,16 +219,18 @@ public class ResourceServerTokenServicesConfiguration {
 	@Conditional(JwtTokenCondition.class)
 	protected static class JwtTokenServicesConfiguration {
 
-		private RestTemplate keyUriRestTemplate = new RestTemplate();
-
 		private final ResourceServerProperties resource;
 
 		private final List<JwtAccessTokenConverterConfigurer> configurers;
 
+		private final List<JwtAccessTokenConverterRestTemplateCustomizer> customizers;
+
 		public JwtTokenServicesConfiguration(ResourceServerProperties resource,
-				ObjectProvider<List<JwtAccessTokenConverterConfigurer>> configurers) {
+				ObjectProvider<List<JwtAccessTokenConverterConfigurer>> configurers,
+				ObjectProvider<List<JwtAccessTokenConverterRestTemplateCustomizer>> customizers) {
 			this.resource = resource;
 			this.configurers = configurers.getIfAvailable();
+			this.customizers = customizers.getIfAvailable();
 		}
 
 		@Bean
@@ -272,6 +275,10 @@ public class ResourceServerTokenServicesConfiguration {
 		}
 
 		private String getKeyFromServer() {
+			RestTemplate keyUriRestTemplate = new RestTemplate();
+			for (JwtAccessTokenConverterRestTemplateCustomizer customizer : this.customizers) {
+				customizer.customize(keyUriRestTemplate);
+			}
 			HttpHeaders headers = new HttpHeaders();
 			String username = this.resource.getClientId();
 			String password = this.resource.getClientSecret();
@@ -281,7 +288,7 @@ public class ResourceServerTokenServicesConfiguration {
 			}
 			HttpEntity<Void> request = new HttpEntity<Void>(headers);
 			String url = this.resource.getJwt().getKeyUri();
-			return (String) this.keyUriRestTemplate
+			return (String) keyUriRestTemplate
 					.exchange(url, HttpMethod.GET, request, Map.class).getBody()
 					.get("value");
 		}
