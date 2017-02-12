@@ -651,7 +651,7 @@ management server to be available via HTTP while the main application uses HTTPS
 	server.ssl.key-store=classpath:store.jks
 	server.ssl.key-password=secret
 	management.port=8080
-	management.ssl.enable=false
+	management.ssl.enabled=false
 ----
 
 Alternatively, both the main server and the management server can use SSL but with
@@ -664,7 +664,7 @@ different key stores:
 	server.ssl.key-store=classpath:main.jks
 	server.ssl.key-password=secret
 	management.port=8080
-	management.ssl.enable=true
+	management.ssl.enabled=true
 	management.ssl.key-store=classpath:management.jks
 	management.ssl.key-password=secret
 ----
