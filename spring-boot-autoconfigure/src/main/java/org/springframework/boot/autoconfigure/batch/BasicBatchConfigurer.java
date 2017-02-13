@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import org.springframework.boot.autoconfigure.transaction.TransactionManagerCust
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 import org.springframework.util.StringUtils;
 
 /**
@@ -162,14 +161,14 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	}
 
 	protected PlatformTransactionManager createTransactionManager() {
-		AbstractPlatformTransactionManager transactionManager = createAppropriateTransactionManager();
+		PlatformTransactionManager transactionManager = createAppropriateTransactionManager();
 		if (this.transactionManagerCustomizers != null) {
 			this.transactionManagerCustomizers.customize(transactionManager);
 		}
 		return transactionManager;
 	}
 
-	private AbstractPlatformTransactionManager createAppropriateTransactionManager() {
+	private PlatformTransactionManager createAppropriateTransactionManager() {
 		if (this.entityManagerFactory != null) {
 			return new JpaTransactionManager(this.entityManagerFactory);
 		}
