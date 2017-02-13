@@ -89,7 +89,7 @@ file so if you don't specify anything it will bootstrap on a hardcoded default. 
 can set the `spring.cache.infinispan.config` property to use the provided
 `infinispan.xml` configuration instead.
 
-TIP: Run sample cache application using Hazelcast with
+TIP: Run sample cache application using Infinispan with
 `$mvn spring-boot:run -Pinfinispan`.
 
 
@@ -98,7 +98,7 @@ TIP: Run sample cache application using Hazelcast with
 Add the `java-client` and `couchbase-spring-cache` dependencies and make sure that
 you have setup at least a `spring.couchbase.bootstrap-hosts` property.
 
-TIP: Run sample cache application using Hazelcast with
+TIP: Run sample cache application using Couchbase with
 `$mvn spring-boot:run -Pcouchbase`.
 
 
@@ -107,7 +107,7 @@ TIP: Run sample cache application using Hazelcast with
 Add the `spring-boot-starter-data-redis` and make sure it is configured properly (by
 default, a redis instance with the default settings is expected on your local box).
 
-TIP: Run sample cache application using Hazelcast with
+TIP: Run sample cache application using Redis with
 `$mvn spring-boot:run -Predis`.
 
 
@@ -117,7 +117,7 @@ Simply add the `com.github.ben-manes.caffeine:caffeine` dependency to enable sup
 for Caffeine. You can customize how caches are created in different ways, see
 `application.properties` for an example and the documentation for more details.
 
-TIP: Run sample cache application using Hazelcast with
+TIP: Run sample cache application using Caffeine with
 `$mvn spring-boot:run -Pcaffeine`.
 
 
@@ -128,5 +128,5 @@ add the `com.google.guava:guava` dependency with a version. You can customize ho
 caches are created in different ways, see `application.properties` for an example and
 the documentation for more details.
 
-TIP: Run sample cache application using Hazelcast with
+TIP: Run sample cache application using Guava with
 `$mvn spring-boot:run -Pguava`.
