@@ -2682,7 +2682,7 @@ https://plugins.gradle.org/plugin/com.gorylenko.gradle-git-properties[`gradle-gi
 [source,groovy,indent=0]
 ----
 	plugins {
-		id "com.gorylenko.gradle-git-properties" version "1.4.6"
+		id "com.gorylenko.gradle-git-properties" version "1.4.17"
 	}
 ----
 
