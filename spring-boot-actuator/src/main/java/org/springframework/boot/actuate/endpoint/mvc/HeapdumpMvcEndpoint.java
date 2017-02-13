@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  *
  * @author Lari Hotari
  * @author Phillip Webb
+ * @author rajakolli
  * @since 1.4.0
  */
 @ConfigurationProperties(prefix = "endpoints.heapdump")
@@ -144,16 +145,12 @@ public class HeapdumpMvcEndpoint extends AbstractNamedMvcEndpoint {
 		response.setContentType("application/octet-stream");
 		response.setHeader("Content-Disposition",
 				"attachment; filename=\"" + (heapDumpFile.getName() + ".gz") + "\"");
-		try (InputStream in = new FileInputStream(heapDumpFile)) {
-			try {
-				GZIPOutputStream out = new GZIPOutputStream(response.getOutputStream());
+		try (InputStream in = new FileInputStream(heapDumpFile);
+			GZIPOutputStream out = new GZIPOutputStream(response.getOutputStream())) {
 				StreamUtils.copy(in, out);
 				out.finish();
-			}
-			catch (NullPointerException ex) {
-			}
 		}
-		catch (FileNotFoundException ex) {
+		catch (NullPointerException | FileNotFoundException ex) {
 		}
 	}
 
