@@ -12,11 +12,14 @@
 		<name>Pivotal Software, Inc.</name>
 		<url>http://www.spring.io</url>
 	</organization>
+	<repositories>
 	<repository>              
           <id>central</id>
           <name>Central</name>
           <url>http://repo1.maven.org/maven2</url>
+		
 </repository>
+	</repositories>
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
