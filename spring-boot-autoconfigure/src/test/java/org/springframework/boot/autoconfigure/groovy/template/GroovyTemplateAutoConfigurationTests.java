@@ -27,15 +27,20 @@ import javax.servlet.http.HttpServletRequest;
 
 import groovy.text.markup.MarkupTemplateEngine;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfigurationTests.Config;
+import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
@@ -45,20 +50,20 @@ import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link GroovyTemplateAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Bruce Brouwer
  */
 public class GroovyTemplateAutoConfigurationTests {
+	private static final String WELCOME_CONTENT = "<html lang='en'><body>Index</body></html>";
 
-	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-
-	@Before
-	public void setupContext() {
-		this.context.setServletContext(new MockServletContext());
-	}
+	private AnnotationConfigEmbeddedWebApplicationContext context;
 
 	@After
 	public void close() {
@@ -101,10 +106,13 @@ public class GroovyTemplateAutoConfigurationTests {
 
 	@Test
 	public void disableViewResolution() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.groovy.template.enabled:false");
-		registerAndRefreshContext();
-		assertThat(this.context.getBeanNamesForType(ViewResolver.class)).isEmpty();
+		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, "spring.groovy.template.enabled:false");
+		context.register(GroovyTemplateAutoConfiguration.class);
+		context.refresh();
+		registerAndRefreshContext("spring.groovy.template.enabled:false");
+		assertThat(context.getBeanNamesForType(ViewResolver.class)).isEmpty();
+		context.close();
 	}
 
 	@Test
@@ -178,9 +186,30 @@ public class GroovyTemplateAutoConfigurationTests {
 				.isEqualTo(true);
 	}
 
+	@Test
+	public void welcomeTemplateExists()
+			throws Exception {
+		registerAndRefreshContext("spring.groovy.template.resource-loader-path:classpath:/welcome-templates/");
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isOk()).andExpect(content().string(WELCOME_CONTENT));
+	}
+
+	@Test
+	public void welcomeTemplateDoesNotExist()
+			throws Exception {
+		registerAndRefreshContext("spring.groovy.template.resource-loader-path:classpath:/no-welcome-template/");
+		MockMvcBuilders.webAppContextSetup(this.context).build()
+				.perform(get("/").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isNotFound());
+	}
+
 	private void registerAndRefreshContext(String... env) {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, env);
-		this.context.register(GroovyTemplateAutoConfiguration.class);
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				GroovyTemplateAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
 	}
 

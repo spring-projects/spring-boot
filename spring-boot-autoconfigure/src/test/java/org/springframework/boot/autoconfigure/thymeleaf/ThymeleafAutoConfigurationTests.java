@@ -37,7 +37,6 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration.WelcomeTemplateHandlerMapping;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfigurationTests.Config;
@@ -47,7 +46,6 @@ import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -72,6 +70,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Bruce Brouwer
  */
 public class ThymeleafAutoConfigurationTests {
 	private static final String WELCOME_CONTENT = "<html lang=\"en\"><body>Index</body></html>";
@@ -79,7 +78,7 @@ public class ThymeleafAutoConfigurationTests {
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
-	private AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
+	private AnnotationConfigEmbeddedWebApplicationContext context;
 
 	@After
 	public void close() {
@@ -90,8 +89,7 @@ public class ThymeleafAutoConfigurationTests {
 
 	@Test
 	public void createFromConfigClass() throws Exception {
-		load("spring.thymeleaf.mode:XHTML",
-				"spring.thymeleaf.suffix:");
+		registerAndRefreshContext("spring.thymeleaf.mode:XHTML", "spring.thymeleaf.suffix:");
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
 		String result = engine.process("template.txt", attrs);
@@ -100,7 +98,7 @@ public class ThymeleafAutoConfigurationTests {
 
 	@Test
 	public void overrideCharacterEncoding() throws Exception {
-		load("spring.thymeleaf.encoding:UTF-16");
+		registerAndRefreshContext("spring.thymeleaf.encoding:UTF-16");
 		ITemplateResolver resolver = this.context.getBean(ITemplateResolver.class);
 		assertThat(resolver instanceof SpringResourceTemplateResolver).isTrue();
 		assertThat(((SpringResourceTemplateResolver) resolver).getCharacterEncoding())
@@ -112,28 +110,28 @@ public class ThymeleafAutoConfigurationTests {
 
 	@Test
 	public void overrideTemplateResolverOrder() throws Exception {
-		load("spring.thymeleaf.templateResolverOrder:25");
+		registerAndRefreshContext("spring.thymeleaf.templateResolverOrder:25");
 		ITemplateResolver resolver = this.context.getBean(ITemplateResolver.class);
 		assertThat(resolver.getOrder()).isEqualTo(Integer.valueOf(25));
 	}
 
 	@Test
 	public void overrideViewNames() throws Exception {
-		load("spring.thymeleaf.viewNames:foo,bar");
+		registerAndRefreshContext("spring.thymeleaf.viewNames:foo,bar");
 		ThymeleafViewResolver views = this.context.getBean(ThymeleafViewResolver.class);
 		assertThat(views.getViewNames()).isEqualTo(new String[] { "foo", "bar" });
 	}
 
 	@Test
 	public void templateLocationDoesNotExist() throws Exception {
-		load("spring.thymeleaf.prefix:classpath:/no-such-directory/");
+		registerAndRefreshContext("spring.thymeleaf.prefix:classpath:/no-such-directory/");
 		this.output.expect(containsString("Cannot find template location"));
 	}
 
 	@Test
 	public void templateLocationEmpty() throws Exception {
 		new File("target/test-classes/templates/empty-directory").mkdir();
-		load("spring.thymeleaf.prefix:classpath:/templates/empty-directory/");
+		registerAndRefreshContext("spring.thymeleaf.prefix:classpath:/templates/empty-directory/");
 	}
 
 	@Test
@@ -158,7 +156,7 @@ public class ThymeleafAutoConfigurationTests {
 
 	@Test
 	public void useDataDialect() throws Exception {
-		load();
+		registerAndRefreshContext();
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
 		String result = engine.process("data-dialect", attrs);
@@ -167,7 +165,7 @@ public class ThymeleafAutoConfigurationTests {
 
 	@Test
 	public void useJava8TimeDialect() throws Exception {
-		load();
+		registerAndRefreshContext();
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
 		Context attrs = new Context(Locale.UK);
 		String result = engine.process("java8time-dialect", attrs);
@@ -176,7 +174,7 @@ public class ThymeleafAutoConfigurationTests {
 
 	@Test
 	public void renderTemplate() throws Exception {
-		load();
+		registerAndRefreshContext();
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
 		String result = engine.process("home", attrs);
@@ -203,7 +201,7 @@ public class ThymeleafAutoConfigurationTests {
 
 	@Test
 	public void registerResourceHandlingFilterDisabledByDefault() throws Exception {
-		load();
+		registerAndRefreshContext();
 		assertThat(this.context.getBeansOfType(ResourceUrlEncodingFilter.class))
 				.isEmpty();
 	}
@@ -211,13 +209,13 @@ public class ThymeleafAutoConfigurationTests {
 	@Test
 	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled()
 			throws Exception {
-		load("spring.resources.chain.enabled:true");
+		registerAndRefreshContext("spring.resources.chain.enabled:true");
 		assertThat(this.context.getBean(ResourceUrlEncodingFilter.class)).isNotNull();
 	}
 
 	@Test
 	public void layoutDialectCanBeCustomized() throws Exception {
-		load(LayoutDialectConfiguration.class);
+		registerAndRefreshContext(LayoutDialectConfiguration.class);
 		LayoutDialect layoutDialect = this.context.getBean(LayoutDialect.class);
 		assertThat(ReflectionTestUtils.getField(layoutDialect, "sortingStrategy"))
 				.isInstanceOf(GroupingStrategy.class);
@@ -225,7 +223,7 @@ public class ThymeleafAutoConfigurationTests {
 
 	@Test
 	public void cachingCanBeDisabled() {
-		load("spring.thymeleaf.cache:false");
+		registerAndRefreshContext("spring.thymeleaf.cache:false");
 		assertThat(this.context.getBean(ThymeleafViewResolver.class).isCache()).isFalse();
 		SpringResourceTemplateResolver templateResolver = this.context
 				.getBean(SpringResourceTemplateResolver.class);
@@ -233,61 +231,24 @@ public class ThymeleafAutoConfigurationTests {
 	}
 
 	@Test
-	public void welcomeTemplateMappingProducesNotFoundResponseWhenThereIsNoWelcomeTemplate()
+	public void welcomeTemplateExists()
 			throws Exception {
-		load("spring.thymeleaf.prefix:classpath:/no-welcome-template/");
-		assertThat(this.context.getBeansOfType(WelcomeTemplateHandlerMapping.class))
-				.hasSize(1);
+		registerAndRefreshContext("spring.thymeleaf.prefix:classpath:/welcome-templates/");
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isOk()).andExpect(content().string(WELCOME_CONTENT));
+	}
+
+	@Test
+	public void welcomeTemplateDoesNotExist()
+			throws Exception {
+		registerAndRefreshContext("spring.thymeleaf.prefix:classpath:/no-welcome-template/");
 		MockMvcBuilders.webAppContextSetup(this.context).build()
 				.perform(get("/").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isNotFound());
 	}
 
-	@Test
-	public void welcomePageMappingHandlesRequestsThatAcceptTextHtml() throws Exception {
-		load();
-		assertThat(this.context.getBeansOfType(WelcomeTemplateHandlerMapping.class))
-				.hasSize(1);
-		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		mockMvc.perform(get("/").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
-				.andExpect(content().string(WELCOME_CONTENT));
-		mockMvc.perform(get("/").accept("*/*")).andExpect(status().isOk())
-				.andExpect(content().string(WELCOME_CONTENT));
-	}
-
-	@Test
-	public void welcomePageMappingDoesNotHandleRequestsThatDoNotAcceptTextHtml()
-			throws Exception {
-		load();
-		assertThat(this.context.getBeansOfType(WelcomeTemplateHandlerMapping.class))
-				.hasSize(1);
-		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound());
-	}
-
-	@Test
-	public void welcomePageMappingHandlesRequestsWithNoAcceptHeader() throws Exception {
-		load();
-		assertThat(this.context.getBeansOfType(WelcomeTemplateHandlerMapping.class))
-				.hasSize(1);
-		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		mockMvc.perform(get("/")).andExpect(status().isOk())
-				.andExpect(content().string(WELCOME_CONTENT));
-	}
-
-	@Test
-	public void welcomePageMappingHandlesRequestsWithEmptyAcceptHeader()
-			throws Exception {
-		load();
-		assertThat(this.context.getBeansOfType(WelcomeTemplateHandlerMapping.class))
-				.hasSize(1);
-		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		mockMvc.perform(get("/").header(HttpHeaders.ACCEPT, ""))
-				.andExpect(status().isOk()).andExpect(content().string(WELCOME_CONTENT));
-	}
-
-	private void load(Class<?> config, String... environment) {
+	private void registerAndRefreshContext(Class<?> config, String... environment) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
 		List<Class<?>> configClasses = new ArrayList<Class<?>>();
@@ -296,14 +257,13 @@ public class ThymeleafAutoConfigurationTests {
 		}
 		configClasses.addAll(Arrays.asList(Config.class, WebMvcAutoConfiguration.class,
 				ThymeleafAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class));
+				HttpMessageConvertersAutoConfiguration.class));
 		this.context.register(configClasses.toArray(new Class<?>[configClasses.size()]));
 		this.context.refresh();
 	}
 
-	private void load(String... environment) {
-		load(null, environment);
+	private void registerAndRefreshContext(String... environment) {
+		registerAndRefreshContext(null, environment);
 	}
 
 

@@ -38,11 +38,14 @@ public class GroovyTemplateAvailabilityProvider implements TemplateAvailabilityP
 		if (ClassUtils.isPresent("groovy.text.TemplateEngine", classLoader)) {
 			PropertyResolver resolver = new RelaxedPropertyResolver(environment,
 					"spring.groovy.template.");
+			String loaderPath = resolver.getProperty("resource-loader-path",
+					GroovyTemplateProperties.DEFAULT_RESOURCE_LOADER_PATH);
 			String prefix = resolver.getProperty("prefix",
 					GroovyTemplateProperties.DEFAULT_PREFIX);
 			String suffix = resolver.getProperty("suffix",
 					GroovyTemplateProperties.DEFAULT_SUFFIX);
-			return resourceLoader.getResource(prefix + view + suffix).exists();
+			return resourceLoader.getResource(loaderPath + prefix + view + suffix)
+					.exists();
 		}
 		return false;
 	}

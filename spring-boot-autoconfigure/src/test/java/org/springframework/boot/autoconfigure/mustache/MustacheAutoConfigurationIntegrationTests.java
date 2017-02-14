@@ -30,9 +30,9 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -43,6 +43,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -69,8 +70,8 @@ public class MustacheAutoConfigurationIntegrationTests {
 
 	@Test
 	public void testHomePage() throws Exception {
-		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port,
-				String.class);
+		String body = new TestRestTemplate()
+				.getForObject("http://localhost:" + this.port + "/home", String.class);
 		assertThat(body.contains("Hello World")).isTrue();
 	}
 
@@ -81,12 +82,20 @@ public class MustacheAutoConfigurationIntegrationTests {
 		assertThat(body.contains("Hello World")).isTrue();
 	}
 
+	@Test
+	public void testWelcomePage()
+			throws Exception {
+		String body = new TestRestTemplate()
+				.getForObject("http://localhost:" + this.port + "/", String.class);
+		assertThat(body).isEqualTo("<html lang='en'><body>Index</body></html>");
+	}
+
 	@Configuration
 	@MinimalWebConfiguration
 	@Controller
 	public static class Application {
 
-		@RequestMapping("/")
+		@RequestMapping("/home")
 		public String home(Map<String, Object> model) {
 			model.put("time", new Date());
 			model.put("message", "Hello World");
@@ -111,10 +120,9 @@ public class MustacheAutoConfigurationIntegrationTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ MustacheAutoConfiguration.class,
-			EmbeddedServletContainerAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+		DispatcherServlet.class, WebMvcAutoConfiguration.class,
+		HttpMessageConvertersAutoConfiguration.class, MustacheAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 
 	}
