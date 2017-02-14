@@ -3052,6 +3052,12 @@ Java 6-compatible container. Both Tomcat 7 and Jetty 8 are Java 6 compatible. Se
 Jackson 2.7 and later requires Java 7. If you want to use Jackson with Java 6 you
 will have to downgrade to Jackson 2.6.
 
+Spring Boot uses the Jackson BOM that was introduced as of Jackson 2.7 so you can't just
+override the `jackson.version` property. In order to use Jackson 2.6, you will have to
+define the individual modules in the `dependencyManagement` section of your build, check
+https://github.com/{github-repo}/blob/0ffc7dc13f6de82c199a6d503354a88c7aaec2d9/spring-boot-dependencies/pom.xml#L523-L597[this
+example] for more details.
+
 
 
 [[how-to-use-java-6-jta-api]]
