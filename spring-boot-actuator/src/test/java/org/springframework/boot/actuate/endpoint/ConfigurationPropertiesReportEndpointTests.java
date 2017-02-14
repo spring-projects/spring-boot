@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -212,6 +213,23 @@ public class ConfigurationPropertiesReportEndpointTests
 		assertThat(item.get("somePassword")).isEqualTo("******");
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	public void listsOfListsAreSanitized() throws Exception {
+		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
+		Map<String, Object> properties = report.invoke();
+		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+				.get("testProperties")).get("properties");
+		assertThat(nestedProperties.get("listOfListItems")).isInstanceOf(List.class);
+		List<List<Object>> listOfLists = (List<List<Object>>) nestedProperties
+				.get("listOfListItems");
+		assertThat(listOfLists).hasSize(1);
+		List<Object> list = listOfLists.get(0);
+		assertThat(list).hasSize(1);
+		Map<String, Object> item = (Map<String, Object>) list.get(0);
+		assertThat(item.get("somePassword")).isEqualTo("******");
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	public static class Parent {
@@ -254,10 +272,13 @@ public class ConfigurationPropertiesReportEndpointTests
 
 		private List<ListItem> listItems = new ArrayList<ListItem>();
 
+		private List<List<ListItem>> listOfListItems = new ArrayList<List<ListItem>>();
+
 		public TestProperties() {
 			this.secrets.put("mine", "myPrivateThing");
 			this.secrets.put("yours", "yourPrivateThing");
 			this.listItems.add(new ListItem());
+			this.listOfListItems.add(Arrays.asList(new ListItem()));
 		}
 
 		public String getDbPassword() {
@@ -306,6 +327,14 @@ public class ConfigurationPropertiesReportEndpointTests
 
 		public void setListItems(List<ListItem> listItems) {
 			this.listItems = listItems;
+		}
+
+		public List<List<ListItem>> getListOfListItems() {
+			return this.listOfListItems;
+		}
+
+		public void setListOfListItems(List<List<ListItem>> listOfListItems) {
+			this.listOfListItems = listOfListItems;
 		}
 
 		public static class Hidden {
