@@ -86,10 +86,6 @@ import static org.mockito.Mockito.withSettings;
  */
 public class EmbeddedWebApplicationContextTests {
 
-	private static final EnumSet<DispatcherType> ASYNC_DISPATCHER_TYPES = EnumSet.of(
-			DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST,
-			DispatcherType.ASYNC);
-
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -311,10 +307,10 @@ public class EmbeddedWebApplicationContextTests {
 		verify(escf.getRegisteredServlet(0).getRegistration()).addMapping("/");
 		ordered.verify(escf.getServletContext()).addFilter("filterBean1", filter1);
 		ordered.verify(escf.getServletContext()).addFilter("filterBean2", filter2);
-		verify(escf.getRegisteredFilter(0).getRegistration())
-				.addMappingForUrlPatterns(ASYNC_DISPATCHER_TYPES, false, "/*");
-		verify(escf.getRegisteredFilter(1).getRegistration())
-				.addMappingForUrlPatterns(ASYNC_DISPATCHER_TYPES, false, "/*");
+		verify(escf.getRegisteredFilter(0).getRegistration()).addMappingForUrlPatterns(
+				EnumSet.of(DispatcherType.REQUEST), false, "/*");
+		verify(escf.getRegisteredFilter(1).getRegistration()).addMappingForUrlPatterns(
+				EnumSet.of(DispatcherType.REQUEST), false, "/*");
 	}
 
 	@Test

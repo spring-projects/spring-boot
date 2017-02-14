@@ -50,13 +50,6 @@ abstract class AbstractFilterRegistrationBean<T extends Filter> extends Registra
 
 	private final Log logger = LogFactory.getLog(getClass());
 
-	private static final EnumSet<DispatcherType> ASYNC_DISPATCHER_TYPES = EnumSet.of(
-			DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST,
-			DispatcherType.ASYNC);
-
-	private static final EnumSet<DispatcherType> NON_ASYNC_DISPATCHER_TYPES = EnumSet
-			.of(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
-
 	private static final String[] DEFAULT_URL_MAPPINGS = { "/*" };
 
 	private Set<ServletRegistrationBean<?>> servletRegistrationBeans = new LinkedHashSet<ServletRegistrationBean<?>>();
@@ -248,8 +241,7 @@ abstract class AbstractFilterRegistrationBean<T extends Filter> extends Registra
 		super.configure(registration);
 		EnumSet<DispatcherType> dispatcherTypes = this.dispatcherTypes;
 		if (dispatcherTypes == null) {
-			dispatcherTypes = (isAsyncSupported() ? ASYNC_DISPATCHER_TYPES
-					: NON_ASYNC_DISPATCHER_TYPES);
+			dispatcherTypes = EnumSet.of(DispatcherType.REQUEST);
 		}
 		Set<String> servletNames = new LinkedHashSet<String>();
 		for (ServletRegistrationBean<?> servletRegistrationBean : this.servletRegistrationBeans) {

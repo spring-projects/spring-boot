@@ -50,13 +50,6 @@ import static org.mockito.Mockito.verify;
  */
 public abstract class AbstractFilterRegistrationBeanTests {
 
-	private static final EnumSet<DispatcherType> ASYNC_DISPATCHER_TYPES = EnumSet.of(
-			DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST,
-			DispatcherType.ASYNC);
-
-	private static final EnumSet<DispatcherType> NON_ASYNC_DISPATCHER_TYPES = EnumSet
-			.of(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST);
-
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -79,8 +72,8 @@ public abstract class AbstractFilterRegistrationBeanTests {
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addFilter(eq("mockFilter"), getExpectedFilter());
 		verify(this.registration).setAsyncSupported(true);
-		verify(this.registration).addMappingForUrlPatterns(ASYNC_DISPATCHER_TYPES, false,
-				"/*");
+		verify(this.registration).addMappingForUrlPatterns(
+				EnumSet.of(DispatcherType.REQUEST), false, "/*");
 	}
 
 	@Test
@@ -105,10 +98,10 @@ public abstract class AbstractFilterRegistrationBeanTests {
 		expectedInitParameters.put("a", "b");
 		expectedInitParameters.put("c", "d");
 		verify(this.registration).setInitParameters(expectedInitParameters);
-		verify(this.registration).addMappingForUrlPatterns(NON_ASYNC_DISPATCHER_TYPES,
-				true, "/a", "/b", "/c");
-		verify(this.registration).addMappingForServletNames(NON_ASYNC_DISPATCHER_TYPES,
-				true, "s4", "s5", "s1", "s2", "s3");
+		verify(this.registration).addMappingForUrlPatterns(
+				EnumSet.of(DispatcherType.REQUEST), true, "/a", "/b", "/c");
+		verify(this.registration).addMappingForServletNames(
+				EnumSet.of(DispatcherType.REQUEST), true, "s4", "s5", "s1", "s2", "s3");
 	}
 
 	@Test
@@ -158,8 +151,8 @@ public abstract class AbstractFilterRegistrationBeanTests {
 		bean.setServletRegistrationBeans(new LinkedHashSet<ServletRegistrationBean<?>>(
 				Arrays.asList(mockServletRegistration("b"))));
 		bean.onStartup(this.servletContext);
-		verify(this.registration).addMappingForServletNames(ASYNC_DISPATCHER_TYPES, false,
-				"b");
+		verify(this.registration).addMappingForServletNames(
+				EnumSet.of(DispatcherType.REQUEST), false, "b");
 	}
 
 	@Test
