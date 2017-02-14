@@ -363,7 +363,8 @@ public class SecurityAutoConfigurationTests {
 		@SuppressWarnings("unchecked")
 		EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
 				.getField(bean, "dispatcherTypes");
-		assertThat(dispatcherTypes).isNull();
+		assertThat(dispatcherTypes).containsOnly(DispatcherType.ASYNC,
+				DispatcherType.ERROR, DispatcherType.REQUEST);
 	}
 
 	@Test
