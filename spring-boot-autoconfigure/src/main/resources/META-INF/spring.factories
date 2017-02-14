@@ -112,6 +112,7 @@ org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguratio
 org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration,\
+org.springframework.boot.autoconfigure.webflux.ReactiveWebServerAutoConfiguration,\
 org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration,\
 org.springframework.boot.autoconfigure.websocket.WebSocketMessagingAutoConfiguration,\
 org.springframework.boot.autoconfigure.webservices.WebServicesAutoConfiguration
