@@ -13,12 +13,11 @@
 		<url>http://www.spring.io</url>
 	</organization>
 	<repositories>
-	<repository>              
-          <id>central</id>
-          <name>Central</name>
-          <url>http://repo1.maven.org/maven2</url>
-		
-</repository>
+		<repository>              
+          		<id>central</id>
+          		<name>Central</name>
+          		<url>http://repo1.maven.org/maven2</url>
+		</repository>
 	</repositories>
 	<licenses>
 		<license>
