@@ -1882,6 +1882,11 @@ The dialect to use is also automatically detected based on the current `DataSour
 you can set `spring.jpa.database` yourself if you want to be explicit and bypass that
 check on startup.
 
+NOTE: Specifying a `database` leads to the configuration of a well-defined Hibernate
+dialect. Several databases have more than one `Dialect` and this may not suit your need.
+In that case, you can either set `spring.jpa.database` to `default` to let Hibernate figure
+things out or set the dialect using the `spring.jpa.database-platform` property.
+
 The most common options to set are:
 
 [indent=0,subs="verbatim,quotes,attributes"]
