@@ -60,6 +60,7 @@ import org.springframework.util.ObjectUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Ivan Sopov
+ * @author Brian Clozel
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
@@ -67,6 +68,13 @@ import org.springframework.util.ObjectUtils;
 @EnableConfigurationProperties(ServerProperties.class)
 @Import(BeanPostProcessorsRegistrar.class)
 public class EmbeddedServletContainerAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	public DefaultServletContainerCustomizer serverPropertiesServletContainerCustomizer(
+			ServerProperties serverProperties) {
+		return new DefaultServletContainerCustomizer(serverProperties);
+	}
 
 	/**
 	 * Nested configuration if Tomcat is being used.

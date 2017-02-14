@@ -291,7 +291,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		}
 		factory.setCompression(compression);
 		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new HttpServlet() {
+				new ServletRegistrationBean<HttpServlet>(new HttpServlet() {
 					@Override
 					protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 							throws ServletException, IOException {

@@ -56,14 +56,14 @@ public class WebServicesAutoConfiguration {
 	}
 
 	@Bean
-	public ServletRegistrationBean messageDispatcherServlet(
+	public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
 			ApplicationContext applicationContext) {
 		MessageDispatcherServlet servlet = new MessageDispatcherServlet();
 		servlet.setApplicationContext(applicationContext);
 		String path = this.properties.getPath();
 		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
-		ServletRegistrationBean registration = new ServletRegistrationBean(servlet,
-				urlMapping);
+		ServletRegistrationBean<MessageDispatcherServlet> registration = new ServletRegistrationBean<MessageDispatcherServlet>(
+				servlet, urlMapping);
 		WebServicesProperties.Servlet servletProperties = this.properties.getServlet();
 		registration.setLoadOnStartup(servletProperties.getLoadOnStartup());
 		for (Map.Entry<String, String> entry : servletProperties.getInit().entrySet()) {

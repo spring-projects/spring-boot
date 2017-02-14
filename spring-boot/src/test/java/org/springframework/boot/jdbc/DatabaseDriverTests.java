@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ public class DatabaseDriverTests {
 				.isEqualTo(DatabaseDriver.ORACLE);
 		assertThat(DatabaseDriver.fromProductName("PostgreSQL"))
 				.isEqualTo(DatabaseDriver.POSTGRESQL);
-		assertThat(DatabaseDriver.fromProductName("SQL SERVER"))
+		assertThat(DatabaseDriver.fromProductName("Microsoft SQL Server"))
 				.isEqualTo(DatabaseDriver.SQLSERVER);
 		assertThat(DatabaseDriver.fromProductName("DB2")).isEqualTo(DatabaseDriver.DB2);
 		assertThat(DatabaseDriver.fromProductName("Firebird 2.5.WI"))

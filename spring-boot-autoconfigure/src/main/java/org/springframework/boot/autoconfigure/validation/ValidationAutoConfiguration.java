@@ -53,6 +53,7 @@ public class ValidationAutoConfiguration {
 	public MethodValidationPostProcessor methodValidationPostProcessor(
 			Validator validator) {
 		MethodValidationPostProcessor processor = new MethodValidationPostProcessor();
+		processor.setProxyTargetClass(true);
 		processor.setValidator(validator);
 		return processor;
 	}

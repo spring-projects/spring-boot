@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,10 +85,6 @@ import static org.mockito.Mockito.withSettings;
  * @author Stephane Nicoll
  */
 public class EmbeddedWebApplicationContextTests {
-
-	private static final EnumSet<DispatcherType> ASYNC_DISPATCHER_TYPES = EnumSet.of(
-			DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST,
-			DispatcherType.ASYNC);
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -232,7 +228,7 @@ public class EmbeddedWebApplicationContextTests {
 		addEmbeddedServletContainerFactoryBean();
 		OrderedFilter filter = new OrderedFilter();
 		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));
-		FilterRegistrationBean registration = new FilterRegistrationBean();
+		FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<Filter>();
 		registration.setFilter(mock(Filter.class));
 		registration.setOrder(100);
 		this.context.registerBeanDefinition("filterRegistrationBean",
@@ -311,10 +307,10 @@ public class EmbeddedWebApplicationContextTests {
 		verify(escf.getRegisteredServlet(0).getRegistration()).addMapping("/");
 		ordered.verify(escf.getServletContext()).addFilter("filterBean1", filter1);
 		ordered.verify(escf.getServletContext()).addFilter("filterBean2", filter2);
-		verify(escf.getRegisteredFilter(0).getRegistration())
-				.addMappingForUrlPatterns(ASYNC_DISPATCHER_TYPES, false, "/*");
-		verify(escf.getRegisteredFilter(1).getRegistration())
-				.addMappingForUrlPatterns(ASYNC_DISPATCHER_TYPES, false, "/*");
+		verify(escf.getRegisteredFilter(0).getRegistration()).addMappingForUrlPatterns(
+				EnumSet.of(DispatcherType.REQUEST), false, "/*");
+		verify(escf.getRegisteredFilter(1).getRegistration()).addMappingForUrlPatterns(
+				EnumSet.of(DispatcherType.REQUEST), false, "/*");
 	}
 
 	@Test
@@ -391,8 +387,8 @@ public class EmbeddedWebApplicationContextTests {
 		addEmbeddedServletContainerFactoryBean();
 		Servlet servlet = mock(Servlet.class);
 		Filter filter = mock(Filter.class);
-		ServletRegistrationBean initializer = new ServletRegistrationBean(servlet,
-				"/foo");
+		ServletRegistrationBean<Servlet> initializer = new ServletRegistrationBean<Servlet>(
+				servlet, "/foo");
 		this.context.registerBeanDefinition("initializerBean",
 				beanDefinition(initializer));
 		this.context.registerBeanDefinition("servletBean", beanDefinition(servlet));
@@ -408,7 +404,8 @@ public class EmbeddedWebApplicationContextTests {
 	public void filterRegistrationBeansSkipsRegisteredFilters() throws Exception {
 		addEmbeddedServletContainerFactoryBean();
 		Filter filter = mock(Filter.class);
-		FilterRegistrationBean initializer = new FilterRegistrationBean(filter);
+		FilterRegistrationBean<Filter> initializer = new FilterRegistrationBean<Filter>(
+				filter);
 		this.context.registerBeanDefinition("initializerBean",
 				beanDefinition(initializer));
 		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));

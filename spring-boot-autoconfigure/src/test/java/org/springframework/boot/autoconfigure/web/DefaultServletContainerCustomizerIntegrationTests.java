@@ -44,12 +44,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Integration tests for {@link ServerProperties}.
+ * Integration tests for {@link DefaultServletContainerCustomizer}.
  *
  * @author Dave Syer
  * @author Ivan Sopov
  */
-public class ServerPropertiesIntegrationTests {
+public class DefaultServletContainerCustomizerIntegrationTests {
 
 	private static AbstractEmbeddedServletContainerFactory containerFactory;
 
@@ -143,8 +143,13 @@ public class ServerPropertiesIntegrationTests {
 	protected static class Config {
 
 		@Bean
+		public DefaultServletContainerCustomizer defaultServletContainerCustomizer(ServerProperties properties) {
+			return new DefaultServletContainerCustomizer(properties);
+		}
+
+		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {
-			return ServerPropertiesIntegrationTests.containerFactory;
+			return DefaultServletContainerCustomizerIntegrationTests.containerFactory;
 		}
 
 		@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ public class H2ConsoleAutoConfigurationTests {
 				"spring.h2.console.enabled:true");
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
-		ServletRegistrationBean registrationBean = this.context
+		ServletRegistrationBean<?> registrationBean = this.context
 				.getBean(ServletRegistrationBean.class);
 		assertThat(registrationBean.getUrlMappings()).contains("/h2-console/*");
 		assertThat(registrationBean.getInitParameters()).doesNotContainKey("trace");
@@ -95,8 +95,9 @@ public class H2ConsoleAutoConfigurationTests {
 				"spring.h2.console.enabled:true", "spring.h2.console.path:/custom/");
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
-		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
-				.contains("/custom/*");
+		ServletRegistrationBean<?> servletRegistrationBean = this.context
+				.getBean(ServletRegistrationBean.class);
+		assertThat(servletRegistrationBean.getUrlMappings()).contains("/custom/*");
 	}
 
 	@Test
@@ -106,8 +107,9 @@ public class H2ConsoleAutoConfigurationTests {
 				"spring.h2.console.enabled:true", "spring.h2.console.path:/custom");
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
-		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings())
-				.contains("/custom/*");
+		ServletRegistrationBean<?> servletRegistrationBean = this.context
+				.getBean(ServletRegistrationBean.class);
+		assertThat(servletRegistrationBean.getUrlMappings()).contains("/custom/*");
 	}
 
 	@Test
@@ -118,7 +120,7 @@ public class H2ConsoleAutoConfigurationTests {
 				"spring.h2.console.settings.webAllowOthers=true");
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
-		ServletRegistrationBean registrationBean = this.context
+		ServletRegistrationBean<?> registrationBean = this.context
 				.getBean(ServletRegistrationBean.class);
 		assertThat(registrationBean.getUrlMappings()).contains("/h2-console/*");
 		assertThat(registrationBean.getInitParameters()).containsEntry("trace", "");

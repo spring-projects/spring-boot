@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.validation;
 
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 import org.junit.After;
@@ -64,6 +65,17 @@ public class ValidationAutoConfigurationTests {
 	}
 
 	@Test
+	public void validationUsesCglibProxy() {
+		load(DefaultAnotherSampleService.class);
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
+		DefaultAnotherSampleService service = this.context
+				.getBean(DefaultAnotherSampleService.class);
+		service.doSomething(42);
+		this.thrown.expect(ConstraintViolationException.class);
+		service.doSomething(2);
+	}
+
+	@Test
 	public void userDefinedMethodValidationPostProcessorTakesPrecedence() {
 		load(SampleConfiguration.class);
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
@@ -95,6 +107,20 @@ public class ValidationAutoConfigurationTests {
 
 		}
 
+	}
+
+	interface AnotherSampleService {
+
+		void doSomething(@Min(42) Integer counter);
+	}
+
+	@Validated
+	static class DefaultAnotherSampleService implements AnotherSampleService {
+
+		@Override
+		public void doSomething(Integer counter) {
+
+		}
 	}
 
 	@Configuration

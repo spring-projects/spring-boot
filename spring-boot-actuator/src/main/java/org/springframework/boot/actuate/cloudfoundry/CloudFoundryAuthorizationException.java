@@ -63,6 +63,8 @@ class CloudFoundryAuthorizationException extends RuntimeException {
 
 		INVALID_ISSUER(HttpStatus.UNAUTHORIZED),
 
+		INVALID_KEY_ID(HttpStatus.UNAUTHORIZED),
+
 		INVALID_SIGNATURE(HttpStatus.UNAUTHORIZED),
 
 		INVALID_TOKEN(HttpStatus.UNAUTHORIZED),

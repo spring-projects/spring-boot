@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,8 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 				0);
 		factory.setSsl(getSsl("password", "classpath:test.jks"));
 		EmbeddedWebServer container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
+				new ServletRegistrationBean<ExampleServlet>(new ExampleServlet(),
+						"/hello"));
 		container.start();
 		return "https://localhost:" + container.getPort() + "/hello";
 	}

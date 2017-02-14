@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,14 +31,14 @@ package org.springframework.boot.context.embedded;
 public interface EmbeddedWebServer {
 
 	/**
-	 * Starts the embedded servlet container. Calling this method on an already started
+	 * Starts the embedded web server. Calling this method on an already started
 	 * container has no effect.
 	 * @throws EmbeddedWebServerException if the container cannot be started
 	 */
 	void start() throws EmbeddedWebServerException;
 
 	/**
-	 * Stops the embedded servlet container. Calling this method on an already stopped
+	 * Stops the embedded web server. Calling this method on an already stopped
 	 * container has no effect.
 	 * @throws EmbeddedWebServerException if the container cannot be stopped
 	 */

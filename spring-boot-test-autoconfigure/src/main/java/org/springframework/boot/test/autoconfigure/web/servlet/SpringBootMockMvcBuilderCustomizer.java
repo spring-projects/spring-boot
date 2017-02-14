@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,7 +109,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 				this.context);
 		for (ServletContextInitializer initializer : Initializers) {
 			if (initializer instanceof FilterRegistrationBean) {
-				addFilter(builder, (FilterRegistrationBean) initializer);
+				addFilter(builder, (FilterRegistrationBean<?>) initializer);
 			}
 			if (initializer instanceof DelegatingFilterProxyRegistrationBean) {
 				addFilter(builder, (DelegatingFilterProxyRegistrationBean) initializer);
@@ -118,7 +118,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	}
 
 	private void addFilter(ConfigurableMockMvcBuilder<?> builder,
-			FilterRegistrationBean registration) {
+			FilterRegistrationBean<?> registration) {
 		addFilter(builder, registration.getFilter(), registration.getUrlPatterns());
 	}
 

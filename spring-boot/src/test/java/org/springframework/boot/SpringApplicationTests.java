@@ -241,7 +241,7 @@ public class SpringApplicationTests {
 	@Test
 	public void setIgnoreBeanInfoPropertyByDefault() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		String property = System
 				.getProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME);
@@ -250,9 +250,10 @@ public class SpringApplicationTests {
 
 	@Test
 	public void disableIgnoreBeanInfoProperty() throws Exception {
-		System.setProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME, "false");
+		System.setProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME,
+				"false");
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		String property = System
 				.getProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME);
@@ -262,7 +263,7 @@ public class SpringApplicationTests {
 	@Test
 	public void triggersConfigFileApplicationListenerBeforeBinding() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.config.name=bindtoapplication");
 		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
 		field.setAccessible(true);
@@ -273,7 +274,7 @@ public class SpringApplicationTests {
 	public void bindsSystemPropertyToSpringApplication() throws Exception {
 		System.setProperty("spring.main.banner-mode", "off");
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
 		field.setAccessible(true);
@@ -402,8 +403,7 @@ public class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleWebConfig.class);
 		application.setWebApplicationType(WebApplicationType.REACTIVE);
 		this.context = application.run();
-		assertThat(this.context)
-				.isInstanceOf(ReactiveWebApplicationContext.class);
+		assertThat(this.context).isInstanceOf(ReactiveWebApplicationContext.class);
 	}
 
 	@Test

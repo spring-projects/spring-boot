@@ -17,7 +17,10 @@ org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo=\
 org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.mongo.ReactiveMongoDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.mongo.ReactiveMongoRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
+org.springframework.boot.autoconfigure.mongo.ReactiveMongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
 
 # AutoConfigureJdbc auto-configuration imports

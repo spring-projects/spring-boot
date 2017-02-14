@@ -40,7 +40,7 @@ class SkipPatternJarScanner extends StandardJarScanner {
 
 	SkipPatternJarScanner(JarScanner jarScanner, Set<String> patterns) {
 		Assert.notNull(jarScanner, "JarScanner must not be null");
-		Assert.notNull(jarScanner, "Patterns must not be null");
+		Assert.notNull(patterns, "Patterns must not be null");
 		this.jarScanner = jarScanner;
 		StandardJarScanFilter filter = new StandardJarScanFilter();
 		filter.setTldSkip(StringUtils.collectionToCommaDelimitedString(patterns));

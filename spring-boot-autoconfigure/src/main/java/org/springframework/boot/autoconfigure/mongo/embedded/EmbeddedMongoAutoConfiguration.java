@@ -53,6 +53,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.mongo.MongoClientDependsOnBeanFactoryPostProcessor;
+import org.springframework.boot.autoconfigure.data.mongo.ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -64,6 +65,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.data.mongodb.core.MongoClientFactoryBean;
+import org.springframework.data.mongodb.core.ReactiveMongoClientFactoryBean;
 import org.springframework.util.Assert;
 
 /**
@@ -72,6 +74,7 @@ import org.springframework.util.Assert;
  * @author Henryk Konsek
  * @author Andy Wilkinson
  * @author Yogesh Lonkar
+ * @author Mark Paluch
  * @since 1.3.0
  */
 @Configuration
@@ -221,6 +224,22 @@ public class EmbeddedMongoAutoConfiguration {
 			extends MongoClientDependsOnBeanFactoryPostProcessor {
 
 		public EmbeddedMongoDependencyConfiguration() {
+			super("embeddedMongoServer");
+		}
+
+	}
+
+	/**
+	 * Additional configuration to ensure that {@link MongoClient} beans depend on the
+	 * {@code embeddedMongoServer} bean.
+	 */
+	@Configuration
+	@ConditionalOnClass({ com.mongodb.reactivestreams.client.MongoClient.class,
+			ReactiveMongoClientFactoryBean.class })
+	protected static class EmbeddedReactiveMongoDependencyConfiguration extends
+			ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor {
+
+		public EmbeddedReactiveMongoDependencyConfiguration() {
 			super("embeddedMongoServer");
 		}
 

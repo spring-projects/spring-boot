@@ -736,7 +736,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ PropertyPlaceholderAutoConfiguration.class,
+	@Import({PropertyPlaceholderAutoConfiguration.class,
 			EmbeddedServletContainerAutoConfiguration.class,
 			JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
@@ -896,7 +896,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		@Override
 		public void onApplicationEvent(EmbeddedServletContainerInitializedEvent event) {
 			if (event.getApplicationContext() != this.rootContext) {
-				this.servletContainer = event.getEmbeddedServletContainer();
+				this.servletContainer = event.getEmbeddedWebServer();
 			}
 		}
 
