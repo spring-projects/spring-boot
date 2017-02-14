@@ -58,7 +58,8 @@ import org.springframework.util.Assert;
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HazelcastAutoConfiguration.class,
 		JdbcTemplateAutoConfiguration.class, MongoAutoConfiguration.class,
 		RedisAutoConfiguration.class })
-@Import({ SessionConfigurationImportSelector.class, SessionRepositoryValidator.class })
+@Import({ SessionConfigurationImportSelector.class, SessionRepositoryValidator.class,
+		SessionRepositoryFilterConfiguration.class })
 public class SessionAutoConfiguration {
 
 	/**
