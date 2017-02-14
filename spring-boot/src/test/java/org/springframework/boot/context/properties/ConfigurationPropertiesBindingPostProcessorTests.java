@@ -143,6 +143,18 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
+	public void testSuccessfulValidationWithInterface() {
+		MockEnvironment env = new MockEnvironment();
+		env.setProperty("test.foo", "bar");
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setEnvironment(env);
+		this.context.register(TestConfigurationWithValidationAndInterface.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(ValidatedPropertiesImpl.class).getFoo())
+				.isEqualTo("bar");
+	}
+
+	@Test
 	public void testInitializersSeeBoundProperties() {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("bar", "foo");
@@ -484,6 +496,39 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 			return this.bar;
 		}
 
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	public static class TestConfigurationWithValidationAndInterface {
+
+		@Bean
+		public ValidatedPropertiesImpl testProperties() {
+			return new ValidatedPropertiesImpl();
+		}
+
+	}
+
+	interface ValidatedProperties {
+
+		String getFoo();
+	}
+
+	@ConfigurationProperties("test")
+	@Validated
+	public static class ValidatedPropertiesImpl implements ValidatedProperties {
+
+		@NotNull
+		private String foo;
+
+		@Override
+		public String getFoo() {
+			return this.foo;
+		}
+
+		public void setFoo(String foo) {
+			this.foo = foo;
+		}
 	}
 
 	@Configuration
