@@ -13,6 +13,8 @@
 		<url>http://www.spring.io</url>
 	</organization>
 	<repositories>
+		
+		
 		<repository>              
           		<id>central</id>
           		<name>Central</name>
