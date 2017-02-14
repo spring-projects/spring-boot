@@ -28,11 +28,7 @@
 	<scm>
 		<url>https://github.com/spring-projects/spring-boot</url>
 	</scm>
-	
-	
-	
-	
-	
+
 	<developers>
 		<developer>
 			<id>pwebb</id>
