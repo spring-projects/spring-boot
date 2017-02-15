@@ -21,29 +21,34 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 
 /**
  * An {@link AbstractFailureAnalyzer} that performs analysis of failures caused by a
  * {@link BindException}.
  *
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, BindException cause) {
-		if (CollectionUtils.isEmpty(cause.getFieldErrors())) {
+		if (CollectionUtils.isEmpty(cause.getAllErrors())) {
 			return null;
 		}
 		StringBuilder description = new StringBuilder(
 				String.format("Binding to target %s failed:%n", cause.getTarget()));
-		for (FieldError fieldError : cause.getFieldErrors()) {
-			description.append(String.format("%n    Property: %s",
-					cause.getObjectName() + "." + fieldError.getField()));
+		for (ObjectError error : cause.getAllErrors()) {
+			if (error instanceof FieldError) {
+				FieldError fieldError = (FieldError) error;
+				description.append(String.format("%n    Property: %s",
+						cause.getObjectName() + "." + fieldError.getField()));
+				description.append(
+						String.format("%n    Value: %s", fieldError.getRejectedValue()));
+			}
 			description.append(
-					String.format("%n    Value: %s", fieldError.getRejectedValue()));
-			description.append(
-					String.format("%n    Reason: %s%n", fieldError.getDefaultMessage()));
+					String.format("%n    Reason: %s%n", error.getDefaultMessage()));
 		}
 		return new FailureAnalysis(description.toString(),
 				"Update your application's configuration", cause);
