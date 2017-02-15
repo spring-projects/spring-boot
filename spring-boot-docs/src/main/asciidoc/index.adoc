@@ -41,7 +41,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :spring-webservices-reference: http://docs.spring.io/spring-ws/docs/{spring-webservices-docs-version}/reference/htmlsingle
 :spring-javadoc: http://docs.spring.io/spring/docs/{spring-docs-version}/javadoc-api/org/springframework
 :spring-amqp-javadoc: http://docs.spring.io/spring-amqp/docs/current/api/org/springframework/amqp
-:spring-batch-javadoc:http://docs.spring.io/spring-batch/apidocs/org/springframework/batch
+:spring-batch-javadoc: http://docs.spring.io/spring-batch/apidocs/org/springframework/batch
 :spring-data-javadoc: http://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa
 :spring-data-commons-javadoc: http://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data
 :spring-data-mongo-javadoc: http://docs.spring.io/spring-data/mongodb/docs/current/api/org/springframework/data/mongodb
