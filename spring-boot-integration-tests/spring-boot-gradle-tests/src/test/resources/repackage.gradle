@@ -26,10 +26,17 @@ springBoot {
 	if (!project.hasProperty("noMainClass")) {
 		mainClass = 'foo.bar.Baz'
 	}
-	excludeDevtools = Boolean.valueOf(project.excludeDevtools)
+	if (project.hasProperty("excludeDevtoolsOnExtension")) {
+		excludeDevtools = Boolean.valueOf(project.excludeDevtoolsOnExtension)
+	}
 }
 
-bootRepackage.enabled = Boolean.valueOf(project.repackage)
+bootRepackage {
+	enabled = Boolean.valueOf(project.repackage)
+	if (project.hasProperty("excludeDevtoolsOnBootRepackage")) {
+		excludeDevtools = Boolean.valueOf(project.excludeDevtoolsOnBootRepackage)
+	}
+}
 
 task customJar(type: Jar) {
 	archiveName = 'custom.jar'
