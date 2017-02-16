@@ -21,8 +21,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.WebApplicationType;
@@ -62,6 +65,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ResourceServerTokenServicesConfiguration}.
  *
  * @author Dave Syer
+ * @author Madhura Bhave
  */
 public class ResourceServerTokenServicesConfigurationTests {
 
@@ -76,6 +80,9 @@ public class ResourceServerTokenServicesConfigurationTests {
 	private ConfigurableApplicationContext context;
 
 	private ConfigurableEnvironment environment = new StandardEnvironment();
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@After
 	public void close() {
@@ -188,6 +195,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 				.environment(this.environment).web(WebApplicationType.NONE).run();
 		DefaultTokenServices services = this.context.getBean(DefaultTokenServices.class);
 		assertThat(services).isNotNull();
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(RemoteTokenServices.class);
 	}
 
 	@Test
@@ -198,6 +207,18 @@ public class ResourceServerTokenServicesConfigurationTests {
 				.environment(this.environment).web(WebApplicationType.NONE).run();
 		DefaultTokenServices services = this.context.getBean(DefaultTokenServices.class);
 		assertThat(services).isNotNull();
+	}
+
+	@Test
+	public void jwkConfiguration() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"security.oauth2.resource.jwk.key-set-uri=http://my-auth-server/token_keys");
+		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
+				.environment(this.environment).web(false).run();
+		DefaultTokenServices services = this.context.getBean(DefaultTokenServices.class);
+		assertThat(services).isNotNull();
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(RemoteTokenServices.class);
 	}
 
 	@Test

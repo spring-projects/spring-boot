@@ -21,13 +21,21 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.validation.Errors;
+import org.springframework.web.context.support.StaticWebApplicationContext;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Tests for {@link ResourceServerProperties}.
  *
  * @author Dave Syer
  * @author Vedran Pavic
+ * @author Madhura Bhave
  */
 public class ResourceServerPropertiesTests {
 
@@ -59,4 +67,36 @@ public class ResourceServerPropertiesTests {
 				.isEqualTo("http://example.com/token_key");
 	}
 
+	@Test
+	public void validateWhenBothJwtAndJwtKeyConfigurationPresentShouldFail() throws Exception {
+		this.properties.getJwk().setKeySetUri("http://my-auth-server/token_keys");
+		this.properties.getJwt().setKeyUri("http://my-auth-server/token_key");
+		setListableBeanFactory();
+		Errors errors = mock(Errors.class);
+		this.properties.validate(this.properties, errors);
+		verify(errors).reject("ambiguous.keyUri", "Only one of jwt.keyUri (or jwt.keyValue) and jwk.keySetUri should be configured.");
+
+	}
+
+	@Test
+	public void validateWhenKeySetUriProvidedShouldSucceed() throws Exception {
+		this.properties.getJwk().setKeySetUri("http://my-auth-server/token_keys");
+		setListableBeanFactory();
+		Errors errors = mock(Errors.class);
+		this.properties.validate(this.properties, errors);
+		verifyZeroInteractions(errors);
+	}
+
+	private void setListableBeanFactory() {
+		ListableBeanFactory beanFactory = new StaticWebApplicationContext() {
+			@Override
+			public String[] getBeanNamesForType(Class<?> type, boolean includeNonSingletons, boolean allowEagerInit) {
+				if (type.isAssignableFrom(ResourceServerTokenServicesConfiguration.class)) {
+					return new String[]{"ResourceServerTokenServicesConfiguration"};
+				}
+				return new String[0];
+			}
+		};
+		this.properties.setBeanFactory(beanFactory);
+	}
 }

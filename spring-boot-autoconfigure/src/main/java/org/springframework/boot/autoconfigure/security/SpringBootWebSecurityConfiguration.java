@@ -143,17 +143,6 @@ public class SpringBootWebSecurityConfiguration {
 		}
 	}
 
-	public static List<String> getIgnored(SecurityProperties security) {
-		List<String> ignored = new ArrayList<String>(security.getIgnored());
-		if (ignored.isEmpty()) {
-			ignored.addAll(DEFAULT_IGNORED);
-		}
-		else if (ignored.contains("none")) {
-			ignored.remove("none");
-		}
-		return ignored;
-	}
-
 	// Get the ignored paths in early
 	@Order(SecurityProperties.IGNORED_ORDER)
 	private static class IgnoredPathsWebSecurityConfigurerAdapter
