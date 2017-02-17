@@ -2727,7 +2727,8 @@ to the home page at "/" and keep the default for everything else:
 If the Actuator is also in use, you will find:
 
 * The management endpoints are secure even if the application endpoints are insecure.
-* Security events are transformed into `AuditEvents` and published to the `AuditService`.
+* Security events are transformed into `AuditEvent` instances and published to the
+`AuditEventRepository`.
 * The default user will have the `ACTUATOR` role as well as the `USER` role.
 
 The Actuator security features can be modified using external properties
