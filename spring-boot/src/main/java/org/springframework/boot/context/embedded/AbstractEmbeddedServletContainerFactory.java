@@ -20,9 +20,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.security.CodeSource;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.jar.JarFile;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -84,6 +88,31 @@ public abstract class AbstractEmbeddedServletContainerFactory
 
 	private File getExplodedWarFileDocumentRoot() {
 		return getExplodedWarFileDocumentRoot(getCodeSourceArchive());
+	}
+
+	protected List<URL> getUrlsOfJarsWithMetaInfResources() {
+		ClassLoader classLoader = getClass().getClassLoader();
+		List<URL> staticResourceUrls = new ArrayList<URL>();
+		if (classLoader instanceof URLClassLoader) {
+			for (URL url : ((URLClassLoader) classLoader).getURLs()) {
+				try {
+					URLConnection connection = url.openConnection();
+					if (connection instanceof JarURLConnection) {
+						JarURLConnection jarConnection = (JarURLConnection) connection;
+						JarFile jar = jarConnection.getJarFile();
+						if (jar.getName().endsWith(".jar")
+								&& jar.getJarEntry("META-INF/resources") != null) {
+							staticResourceUrls.add(url);
+						}
+						jar.close();
+					}
+				}
+				catch (IOException ex) {
+					throw new IllegalStateException(ex);
+				}
+			}
+		}
+		return staticResourceUrls;
 	}
 
 	File getExplodedWarFileDocumentRoot(File codeSourceFile) {
