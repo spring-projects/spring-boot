@@ -187,7 +187,7 @@
 		<thymeleaf-extras-java8time.version>3.0.0.RELEASE</thymeleaf-extras-java8time.version>
 		<tomcat.version>8.5.11</tomcat.version>
 		<undertow.version>1.4.8.Final</undertow.version>
-		<unboundid-ldapsdk.version>3.2.0</unboundid-ldapsdk.version>
+		<unboundid-ldapsdk.version>3.2.1</unboundid-ldapsdk.version>
 		<webjars-hal-browser.version>9f96c74</webjars-hal-browser.version>
 		<webjars-locator.version>0.32</webjars-locator.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
