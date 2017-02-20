@@ -323,11 +323,13 @@ content into your application; rather pick only the properties that you need.
     spring.ldap.base-environment.*= # LDAP specification settings.
 
     # EMBEDDED LDAP ({sc-spring-boot-autoconfigure}/ldap/embedded/EmbeddedLdapProperties.{sc-ext}[EmbeddedLdapProperties])
-    spring.ldap.embedded.port= # Embedded LDAP port.
+    spring.ldap.embedded.base-dn= # The base DN
     spring.ldap.embedded.credential.username= # Embedded LDAP username.
     spring.ldap.embedded.credential.password= # Embedded LDAP password.
-    spring.ldap.embedded.base-dn= # The base DN
     spring.ldap.embedded.ldif=classpath:schema.ldif # Schema (LDIF) script resource reference.
+    spring.ldap.embedded.port= # Embedded LDAP port.
+    spring.ldap.embedded.validation.enabled=true # Enable LDAP schema validation.
+    spring.ldap.embedded.validation.schema= # Path to the custom schema.
 
 	# SPRING MOBILE DEVICE VIEWS ({sc-spring-boot-autoconfigure}/mobile/DeviceDelegatingViewResolverAutoConfiguration.{sc-ext}[DeviceDelegatingViewResolverAutoConfiguration])
 	spring.mobile.devicedelegatingviewresolver.enable-fallback=false # Enable support for fallback resolution.

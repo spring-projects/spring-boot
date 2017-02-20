@@ -3991,6 +3991,10 @@ If there is a `schema.ldif` file on your classpath it will be used to initialize
 server. You can also use the `spring.ldap.embedded.ldif` property if you want to load
 the initialization script from a different resource.
 
+By default, a standard schema will be used to validate `LDIF` files, you can turn off
+validation altogether using the `spring.ldap.embedded.validation.enabled` property. If
+you have custom attributes, you can use `spring.ldap.embedded.validation.schema` to define
+your custom attribute types or object classes.
 
 
 [[boot-features-caching]]

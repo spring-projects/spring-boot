@@ -50,7 +50,7 @@ public class EmbeddedLdapProperties {
 	private String ldif = "classpath:schema.ldif";
 
 	/**
-	 * Schema validation
+	 * Schema validation.
 	 */
 	private Validation validation = new Validation();
 
@@ -90,7 +90,7 @@ public class EmbeddedLdapProperties {
 		return this.validation;
 	}
 
-	static class Credential {
+	public static class Credential {
 
 		/**
 		 * Embedded LDAP username.
@@ -120,15 +120,15 @@ public class EmbeddedLdapProperties {
 
 	}
 
-	static class Validation {
+	public static class Validation {
 
 		/**
-		 * Enable LDAP schema validation
+		 * Enable LDAP schema validation.
 		 */
 		private boolean enabled = true;
 
 		/**
-		 * Path to the custom schema file
+		 * Path to the custom schema.
 		 */
 		private Resource schema;
 
