@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.xml.sax.InputSource;
 
 import org.springframework.util.FileCopyUtils;
 
-public class GradeIT {
+public class GradleIT {
 
 	@Test
 	public void sampleDefault() throws Exception {
@@ -60,7 +60,8 @@ public class GradeIT {
 		((DefaultGradleConnector) gradleConnector).embedded(true);
 		ProjectConnection project = gradleConnector.forProjectDirectory(projectDirectory)
 				.connect();
-		project.newBuild().forTasks("clean", "build")
+		project.newBuild().forTasks("clean", "build").setStandardOutput(System.out)
+				.setStandardError(System.err)
 				.withArguments("-PbootVersion=" + getBootVersion()).run();
 		Verify.verify(
 				new File("target/gradleit/" + name + "/build/libs/" + name + ".jar"),
@@ -69,7 +70,8 @@ public class GradeIT {
 
 	public static String getBootVersion() {
 		return evaluateExpression(
-				"/*[local-name()='project']/*[local-name()='version']" + "/text()");
+				"/*[local-name()='project']/*[local-name()='parent']/*[local-name()='version']"
+						+ "/text()");
 	}
 
 	private static String evaluateExpression(String expression) {
@@ -77,8 +79,7 @@ public class GradeIT {
 			XPathFactory xPathFactory = XPathFactory.newInstance();
 			XPath xpath = xPathFactory.newXPath();
 			XPathExpression expr = xpath.compile(expression);
-			String version = expr.evaluate(
-					new InputSource(new FileReader("target/dependencies-pom.xml")));
+			String version = expr.evaluate(new InputSource(new FileReader("pom.xml")));
 			return version;
 		}
 		catch (Exception ex) {
