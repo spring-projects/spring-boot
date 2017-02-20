@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -224,7 +224,7 @@ public class TestEntityManager {
 	@SuppressWarnings("unchecked")
 	public <T> T getId(Object entity, Class<T> idType) {
 		Object id = getId(entity);
-		Assert.isInstanceOf(idType, id, "ID mismatch");
+		Assert.isInstanceOf(idType, id, "ID mismatch:");
 		return (T) id;
 	}
 
