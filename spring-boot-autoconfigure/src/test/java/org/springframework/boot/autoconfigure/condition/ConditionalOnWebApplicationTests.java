@@ -18,13 +18,17 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.After;
 import org.junit.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.webflux.MockReactiveWebServerFactory;
 import org.springframework.boot.context.embedded.ReactiveWebApplicationContext;
+import org.springframework.boot.context.embedded.ReactiveWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -118,6 +122,15 @@ public class ConditionalOnWebApplicationTests {
 			return "reactive";
 		}
 
+		@Bean
+		public ReactiveWebServerFactory reactiveWebServerFactory() {
+			return new MockReactiveWebServerFactory();
+		}
+
+		@Bean
+		public HttpHandler httpHandler() {
+			return (request, response) -> Mono.empty();
+		}
 	}
 
 }

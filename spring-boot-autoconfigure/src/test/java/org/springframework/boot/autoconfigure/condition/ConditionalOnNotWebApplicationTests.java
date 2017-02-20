@@ -18,12 +18,16 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.After;
 import org.junit.Test;
+import reactor.core.publisher.Mono;
 
+import org.springframework.boot.autoconfigure.webflux.MockReactiveWebServerFactory;
 import org.springframework.boot.context.embedded.ReactiveWebApplicationContext;
+import org.springframework.boot.context.embedded.ReactiveWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -33,7 +37,7 @@ import static org.assertj.core.api.Assertions.entry;
 /**
  * Tests for {@link ConditionalOnNotWebApplication}.
  *
- * @author Dave Syer$
+ * @author Dave Syer
  * @author Stephane Nicoll
  */
 public class ConditionalOnNotWebApplicationTests {
@@ -61,7 +65,7 @@ public class ConditionalOnNotWebApplicationTests {
 	@Test
 	public void testNotWebApplicationWithReactiveContext() {
 		ReactiveWebApplicationContext ctx = new ReactiveWebApplicationContext();
-		ctx.register(NotWebApplicationConfiguration.class);
+		ctx.register(ReactiveApplicationConfig.class, NotWebApplicationConfiguration.class);
 		ctx.refresh();
 
 		this.context = ctx;
@@ -77,6 +81,20 @@ public class ConditionalOnNotWebApplicationTests {
 		this.context = ctx;
 		assertThat(this.context.getBeansOfType(String.class)).containsExactly(
 				entry("none", "none"));
+	}
+
+	@Configuration
+	protected static class ReactiveApplicationConfig {
+
+		@Bean
+		public ReactiveWebServerFactory reactiveWebServerFactory() {
+			return new MockReactiveWebServerFactory();
+		}
+
+		@Bean
+		public HttpHandler httpHandler() {
+			return (request, response) -> Mono.empty();
+		}
 	}
 
 	@Configuration

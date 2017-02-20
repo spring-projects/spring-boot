@@ -29,7 +29,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link ApplicationContextInitializer} that sets {@link Environment} properties for the
@@ -54,11 +53,11 @@ public class ServerPortInfoApplicationContextInitializer
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		applicationContext.addApplicationListener(
-				new ApplicationListener<EmbeddedServletContainerInitializedEvent>() {
+				new ApplicationListener<EmbeddedWebServerInitializedEvent>() {
 
 					@Override
 					public void onApplicationEvent(
-							EmbeddedServletContainerInitializedEvent event) {
+							EmbeddedWebServerInitializedEvent event) {
 						ServerPortInfoApplicationContextInitializer.this
 								.onApplicationEvent(event);
 					}
@@ -66,19 +65,12 @@ public class ServerPortInfoApplicationContextInitializer
 				});
 	}
 
-	protected void onApplicationEvent(EmbeddedServletContainerInitializedEvent event) {
-		String propertyName = getPropertyName(event.getApplicationContext());
+	protected void onApplicationEvent(EmbeddedWebServerInitializedEvent event) {
+		String propertyName =  "local." + event.getServerId() + ".port";
 		setPortProperty(event.getApplicationContext(), propertyName,
 				event.getEmbeddedWebServer().getPort());
 	}
 
-	protected String getPropertyName(EmbeddedWebApplicationContext context) {
-		String name = context.getNamespace();
-		if (StringUtils.isEmpty(name)) {
-			name = "server";
-		}
-		return "local." + name + ".port";
-	}
 
 	private void setPortProperty(ApplicationContext context, String propertyName,
 			int port) {
