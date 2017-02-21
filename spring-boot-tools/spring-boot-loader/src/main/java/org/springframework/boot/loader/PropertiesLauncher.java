@@ -142,48 +142,64 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	protected File getHomeDirectory() {
-		return new File(SystemPropertyUtils
-				.resolvePlaceholders(System.getProperty(HOME, "${user.dir}")));
+		try {
+			return new File(getPropertyWithDefault(HOME, "${user.dir}"));
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	private void initializeProperties() throws Exception, IOException {
-		String config = "classpath:BOOT-INF/classes/"
-				+ SystemPropertyUtils.resolvePlaceholders(
-						SystemPropertyUtils.getProperty(CONFIG_NAME, "application"))
-				+ ".properties";
-		config = SystemPropertyUtils.resolvePlaceholders(
-				SystemPropertyUtils.getProperty(CONFIG_LOCATION, config));
-		InputStream resource = getResource(config);
-		if (resource != null) {
-			log("Found: " + config);
-			try {
-				this.properties.load(resource);
-			}
-			finally {
-				resource.close();
-			}
-			for (Object key : Collections.list(this.properties.propertyNames())) {
-				String text = this.properties.getProperty((String) key);
-				String value = SystemPropertyUtils.resolvePlaceholders(this.properties,
-						text);
-				if (value != null) {
-					this.properties.put(key, value);
-				}
-			}
-			if (SystemPropertyUtils
-					.resolvePlaceholders("${" + SET_SYSTEM_PROPERTIES + ":false}")
-					.equals("true")) {
-				log("Adding resolved properties to System properties");
-				for (Object key : Collections.list(this.properties.propertyNames())) {
-					String value = this.properties.getProperty((String) key);
-					System.setProperty((String) key, value);
-				}
-			}
+		List<String> configs = new ArrayList<String>();
+		if (getProperty(CONFIG_LOCATION) != null) {
+			configs.add(getProperty(CONFIG_LOCATION));
 		}
 		else {
-			log("Not found: " + config);
+			String[] names = getPropertyWithDefault(CONFIG_NAME, "loader,application")
+					.split(",");
+			for (String name : names) {
+				configs.add("file:" + getHomeDirectory() + "/" + name + ".properties");
+				configs.add("classpath:" + name + ".properties");
+				configs.add("classpath:BOOT-INF/classes/" + name + ".properties");
+			}
 		}
-
+		for (String config : configs) {
+			InputStream resource = getResource(config);
+			if (resource != null) {
+				log("Found: " + config);
+				try {
+					this.properties.load(resource);
+				}
+				finally {
+					resource.close();
+				}
+				for (Object key : Collections.list(this.properties.propertyNames())) {
+					if (config.endsWith("application.properties")
+							&& ((String) key).startsWith("loader.")) {
+						warn("WARNING: use of application.properties for PropertiesLauncher is deprecated");
+					}
+					String text = this.properties.getProperty((String) key);
+					String value = SystemPropertyUtils
+							.resolvePlaceholders(this.properties, text);
+					if (value != null) {
+						this.properties.put(key, value);
+					}
+				}
+				if ("true".equals(getProperty(SET_SYSTEM_PROPERTIES))) {
+					log("Adding resolved properties to System properties");
+					for (Object key : Collections.list(this.properties.propertyNames())) {
+						String value = this.properties.getProperty((String) key);
+						System.setProperty((String) key, value);
+					}
+				}
+				// Load the first one we find
+				return;
+			}
+			else {
+				log("Not found: " + config);
+			}
+		}
 	}
 
 	private InputStream getResource(String config) throws Exception {
@@ -354,34 +370,50 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private String getProperty(String propertyKey) throws Exception {
-		return getProperty(propertyKey, null);
+		return getProperty(propertyKey, null, null);
 	}
 
 	private String getProperty(String propertyKey, String manifestKey) throws Exception {
+		return getProperty(propertyKey, manifestKey, null);
+	}
+
+	private String getPropertyWithDefault(String propertyKey, String defaultValue)
+			throws Exception {
+		return getProperty(propertyKey, null, defaultValue);
+	}
+
+	private String getProperty(String propertyKey, String manifestKey,
+			String defaultValue) throws Exception {
 		if (manifestKey == null) {
 			manifestKey = propertyKey.replace('.', '-');
 			manifestKey = toCamelCase(manifestKey);
 		}
 		String property = SystemPropertyUtils.getProperty(propertyKey);
 		if (property != null) {
-			String value = SystemPropertyUtils.resolvePlaceholders(property);
+			String value = SystemPropertyUtils.resolvePlaceholders(this.properties,
+					property);
 			log("Property '" + propertyKey + "' from environment: " + value);
 			return value;
 		}
 		if (this.properties.containsKey(propertyKey)) {
-			String value = SystemPropertyUtils
-					.resolvePlaceholders(this.properties.getProperty(propertyKey));
+			String value = SystemPropertyUtils.resolvePlaceholders(this.properties,
+					this.properties.getProperty(propertyKey));
 			log("Property '" + propertyKey + "' from properties: " + value);
 			return value;
 		}
 		try {
-			// Prefer home dir for MANIFEST if there is one
-			Manifest manifest = new ExplodedArchive(this.home, false).getManifest();
-			if (manifest != null) {
-				String value = manifest.getMainAttributes().getValue(manifestKey);
-				log("Property '" + manifestKey + "' from home directory manifest: "
-						+ value);
-				return value;
+			if (this.home != null) {
+				// Prefer home dir for MANIFEST if there is one
+				Manifest manifest = new ExplodedArchive(this.home, false).getManifest();
+				if (manifest != null) {
+					String value = manifest.getMainAttributes().getValue(manifestKey);
+					if (value != null) {
+						log("Property '" + manifestKey
+								+ "' from home directory manifest: " + value);
+						return SystemPropertyUtils.resolvePlaceholders(this.properties,
+								value);
+					}
+				}
 			}
 		}
 		catch (IllegalStateException ex) {
@@ -393,10 +425,11 @@ public class PropertiesLauncher extends Launcher {
 			String value = manifest.getMainAttributes().getValue(manifestKey);
 			if (value != null) {
 				log("Property '" + manifestKey + "' from archive manifest: " + value);
-				return value;
+				return SystemPropertyUtils.resolvePlaceholders(this.properties, value);
 			}
 		}
-		return null;
+		return defaultValue == null ? defaultValue
+				: SystemPropertyUtils.resolvePlaceholders(this.properties, defaultValue);
 	}
 
 	@Override
@@ -436,10 +469,10 @@ public class PropertiesLauncher extends Launcher {
 			log("Adding classpath entries from archive " + archive.getUrl() + root);
 			lib.add(archive);
 		}
-		Archive nested = getNestedArchive(root);
+		List<Archive> nested = getNestedArchive(root);
 		if (nested != null) {
-			log("Adding classpath entries from nested " + nested.getUrl() + root);
-			lib.add(nested);
+			log("Adding classpath entries from nested " + root);
+			lib.addAll(nested);
 		}
 		return lib;
 	}
@@ -457,19 +490,21 @@ public class PropertiesLauncher extends Launcher {
 		return null;
 	}
 
-	private Archive getNestedArchive(String root) throws Exception {
+	private List<Archive> getNestedArchive(String root) throws Exception {
+		List<Archive> list = new ArrayList<Archive>();
 		if (root.startsWith("/")
 				|| this.parent.getUrl().equals(this.home.toURI().toURL())) {
 			// If home dir is same as parent archive, no need to add it twice.
-			return null;
+			return list;
 		}
 		EntryFilter filter = new PrefixMatchingArchiveFilter(root);
 		if (this.parent.getNestedArchives(filter).isEmpty()) {
-			return null;
+			return list;
 		}
 		// If there are more archives nested in this subdirectory (root) then create a new
 		// virtual archive for them, and have it added to the classpath
-		return new FilteredArchive(this.parent, filter);
+		list.add(new FilteredArchive(this.parent, filter));
+		return list;
 	}
 
 	private void addNestedEntries(List<Archive> lib) {
@@ -546,6 +581,11 @@ public class PropertiesLauncher extends Launcher {
 			// just sysout log messages when "loader.debug" is true
 			System.out.println(message);
 		}
+	}
+
+	private void warn(String message) {
+		// We shouldn't use java.util.logging because of classpath issues
+		System.out.println(message);
 	}
 
 	/**
