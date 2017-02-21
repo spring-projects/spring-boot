@@ -388,6 +388,16 @@ public class OAuth2AutoConfigurationTests {
 				.isEqualTo(PrePostAnnotationSecurityMetadataSource.class.getName());
 	}
 
+	@Test
+	public void resourceServerConditionWhenJwkConfigurationPresentShouldMatch() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"security.oauth2.resource.jwk.key-set-uri:http://my-auth-server/token_keys");
+		this.context.register(ResourceServerConfiguration.class, MinimalSecureWebApplication.class);
+		this.context.refresh();
+		assertThat(countBeans(RESOURCE_SERVER_CONFIG)).isEqualTo(1);
+	}
+
 	/**
 	 * Connect to the oauth service, get a token, and then attempt some operations using
 	 * it.
