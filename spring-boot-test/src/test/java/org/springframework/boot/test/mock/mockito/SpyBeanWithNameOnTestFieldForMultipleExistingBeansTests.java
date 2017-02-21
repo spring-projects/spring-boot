@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,41 +20,33 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.util.MockUtil;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.example.ExampleGenericStringServiceCaller;
 import org.springframework.boot.test.mock.mockito.example.SimpleExampleStringGenericService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
 
 /**
- * Test {@link SpyBean} on a test class field can be used to inject new spy instances.
+ * Test {@link SpyBean} on a test class field can be used to inject a spy instance when
+ * there are multiple candidates and one is chosen using the name attribute.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
-public class SpyBeanOnTestFieldForMultipleExistingBeansIntegrationTests {
+public class SpyBeanWithNameOnTestFieldForMultipleExistingBeansTests {
 
-	@SpyBean
+	@SpyBean(name = "two")
 	private SimpleExampleStringGenericService spy;
-
-	@Autowired
-	private ExampleGenericStringServiceCaller caller;
 
 	@Test
 	public void testSpying() throws Exception {
-		assertThat(this.caller.sayGreeting()).isEqualTo("I say two");
+		assertThat(new MockUtil().isSpy(this.spy)).isTrue();
 		assertThat(new MockUtil().getMockName(this.spy).toString()).isEqualTo("two");
-		verify(this.spy).greeting();
 	}
 
 	@Configuration
-	@Import(ExampleGenericStringServiceCaller.class)
 	static class Config {
 
 		@Bean
@@ -63,7 +55,6 @@ public class SpyBeanOnTestFieldForMultipleExistingBeansIntegrationTests {
 		}
 
 		@Bean
-		@Primary
 		public SimpleExampleStringGenericService two() {
 			return new SimpleExampleStringGenericService("two");
 		}
