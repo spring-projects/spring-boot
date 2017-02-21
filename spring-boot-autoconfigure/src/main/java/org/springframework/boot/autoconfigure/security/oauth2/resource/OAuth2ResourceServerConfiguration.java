@@ -161,6 +161,10 @@ public class OAuth2ResourceServerConfiguration {
 				return ConditionOutcome
 						.match(message.foundExactly("JWT resource configuration"));
 			}
+			if (!resolver.getSubProperties("jwk").isEmpty()) {
+				return ConditionOutcome
+						.match(message.foundExactly("JWK resource configuration"));
+			}
 			if (StringUtils.hasText(resolver.getProperty("user-info-uri"))) {
 				return ConditionOutcome
 						.match(message.foundExactly("user-info-uri property"));
