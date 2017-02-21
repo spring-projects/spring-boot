@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -311,21 +310,26 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	private void registerSpies(BeanDefinitionRegistry registry, SpyDefinition definition,
 			Field field, String[] existingBeans) {
-		ResolvableType type = definition.getTypeToSpy();
 		try {
-			if (ObjectUtils.isEmpty(existingBeans)) {
-				throw new NoSuchBeanDefinitionException(type);
-			}
-			if (existingBeans.length > 1) {
-				existingBeans = new String[] {
-						determinePrimaryCandidate(registry, existingBeans, type) };
-			}
-			registerSpy(definition, field, existingBeans[0]);
+			registerSpy(definition, field,
+					determineBeanName(existingBeans, definition, registry));
 		}
 		catch (RuntimeException ex) {
 			throw new IllegalStateException(
 					"Unable to register spy bean " + definition.getTypeToSpy(), ex);
 		}
+	}
+
+	private String determineBeanName(String[] existingBeans, SpyDefinition definition,
+			BeanDefinitionRegistry registry) {
+		if (StringUtils.hasText(definition.getName())) {
+			return definition.getName();
+		}
+		if (existingBeans.length == 1) {
+			return existingBeans[0];
+		}
+		return determinePrimaryCandidate(registry, existingBeans,
+				definition.getTypeToSpy());
 	}
 
 	private String determinePrimaryCandidate(BeanDefinitionRegistry registry,

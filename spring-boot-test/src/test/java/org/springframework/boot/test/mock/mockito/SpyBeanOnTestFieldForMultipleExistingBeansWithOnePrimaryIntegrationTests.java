@@ -33,12 +33,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 /**
- * Test {@link SpyBean} on a test class field can be used to inject new spy instances.
+ * Test {@link SpyBean} on a test class field can be used to inject a spy instance when
+ * there are multiple candidates and one is primary.
  *
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-public class SpyBeanOnTestFieldForMultipleExistingBeansIntegrationTests {
+public class SpyBeanOnTestFieldForMultipleExistingBeansWithOnePrimaryIntegrationTests {
 
 	@SpyBean
 	private SimpleExampleStringGenericService spy;
