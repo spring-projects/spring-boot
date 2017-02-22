@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.boot.Banner.Mode;
+import org.springframework.boot.bind.PropertiesConfigurationFactory;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.diagnostics.FailureAnalyzers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -52,6 +55,8 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -71,6 +76,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
@@ -96,10 +102,11 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * &#064;EnableAutoConfiguration
  * public class MyApplication  {
  *
- * // ... Bean definitions
+ *   // ... Bean definitions
  *
- * public static void main(String[] args) throws Exception {
- *   SpringApplication.run(MyApplication.class, args);
+ *   public static void main(String[] args) throws Exception {
+ *     SpringApplication.run(MyApplication.class, args);
+ *   }
  * }
  * </pre>
  *
@@ -131,6 +138,12 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * resolve to a {@link Resource} that exists it will be considered a {@link Package}.</li>
  * </ul>
  *
+ * Configuration properties are also bound to the {@link SpringApplication}. This makes it
+ * possible to set {@link SpringApplication} properties dynamically, like the sources
+ * ("spring.main.sources" - a CSV list) the flag to indicate a web environment
+ * ("spring.main.web_environment=true") or the flag to switch off the banner
+ * ("spring.main.show_banner=false").
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
@@ -139,6 +152,8 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Jeremy Rickard
  * @author Craig Burke
  * @author Michael Simons
+ * @author Madhura Bhave
+ * @author Brian Clozel
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)
@@ -161,6 +176,19 @@ public class SpringApplication {
 
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
+
+	/**
+	 * The class name of application context that will be used by default for
+	 * reactive web environments.
+	 */
+	public static final String DEFAULT_REACTIVE_WEB_CONTEXT_CLASS = "org.springframework."
+			+ "boot.context.embedded.ReactiveWebApplicationContext";
+
+	private static final String REACTIVE_WEB_ENVIRONMENT_CLASS = "org.springframework."
+			+ "web.reactive.DispatcherHandler";
+
+	private static final String MVC_WEB_ENVIRONMENT_CLASS = "org.springframework."
+			+ "web.servlet.DispatcherServlet";
 
 	/**
 	 * Default banner location.
@@ -208,7 +236,7 @@ public class SpringApplication {
 
 	private Class<? extends ConfigurableApplicationContext> applicationContextClass;
 
-	private boolean webEnvironment;
+	private WebApplicationType webApplicationType;
 
 	private boolean headless = true;
 
@@ -255,20 +283,24 @@ public class SpringApplication {
 		if (sources != null && sources.length > 0) {
 			this.sources.addAll(Arrays.asList(sources));
 		}
-		this.webEnvironment = deduceWebEnvironment();
+		this.webApplicationType = deduceWebApplication();
 		setInitializers((Collection) getSpringFactoriesInstances(
 				ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
-	private boolean deduceWebEnvironment() {
+	private WebApplicationType deduceWebApplication() {
+		if (ClassUtils.isPresent(REACTIVE_WEB_ENVIRONMENT_CLASS, null)
+				&& !ClassUtils.isPresent(MVC_WEB_ENVIRONMENT_CLASS, null)) {
+			return WebApplicationType.REACTIVE;
+		}
 		for (String className : WEB_ENVIRONMENT_CLASSES) {
 			if (!ClassUtils.isPresent(className, null)) {
-				return false;
+				return WebApplicationType.NONE;
 			}
 		}
-		return true;
+		return WebApplicationType.SERVLET;
 	}
 
 	private Class<?> deduceMainApplicationClass() {
@@ -305,6 +337,8 @@ public class SpringApplication {
 					args);
 			ConfigurableEnvironment environment = prepareEnvironment(listeners,
 					applicationArguments);
+			configureIgnoreBeanInfo(environment);
+			bindToSpringApplication(environment);
 			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
 			analyzers = new FailureAnalyzers(context);
@@ -333,7 +367,8 @@ public class SpringApplication {
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		listeners.environmentPrepared(environment);
-		if (isWebEnvironment(environment) && !this.webEnvironment) {
+		if (isWebEnvironment(environment)
+				&& this.webApplicationType == WebApplicationType.NONE) {
 			environment = convertToStandardEnvironment(environment);
 		}
 		return environment;
@@ -430,7 +465,7 @@ public class SpringApplication {
 		if (this.environment != null) {
 			return this.environment;
 		}
-		if (this.webEnvironment) {
+		if (this.webApplicationType == WebApplicationType.SERVLET) {
 			return new StandardServletEnvironment();
 		}
 		return new StandardEnvironment();
@@ -534,6 +569,36 @@ public class SpringApplication {
 		environment.setActiveProfiles(profiles.toArray(new String[profiles.size()]));
 	}
 
+	private void configureIgnoreBeanInfo(ConfigurableEnvironment environment) {
+		if (System.getProperty(
+				CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME) == null) {
+			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
+					"spring.beaninfo.");
+			Boolean ignore = resolver.getProperty("ignore", Boolean.class, Boolean.TRUE);
+			System.setProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME,
+					ignore.toString());
+		}
+	}
+
+	/**
+	 * Bind the environment to the {@link SpringApplication}.
+	 * @param environment the environment to bind
+	 */
+	protected void bindToSpringApplication(ConfigurableEnvironment environment) {
+		PropertiesConfigurationFactory<SpringApplication> binder = new PropertiesConfigurationFactory<>(
+				this);
+		ConversionService conversionService = new DefaultConversionService();
+		binder.setTargetName("spring.main");
+		binder.setConversionService(conversionService);
+		binder.setPropertySources(environment.getPropertySources());
+		try {
+			binder.bindPropertiesToTarget();
+		}
+		catch (BindException ex) {
+			throw new IllegalStateException("Cannot bind to SpringApplication", ex);
+		}
+	}
+
 	private Banner printBanner(ConfigurableEnvironment environment) {
 		if (this.bannerMode == Banner.Mode.OFF) {
 			return null;
@@ -559,8 +624,16 @@ public class SpringApplication {
 		Class<?> contextClass = this.applicationContextClass;
 		if (contextClass == null) {
 			try {
-				contextClass = Class.forName(this.webEnvironment
-						? DEFAULT_WEB_CONTEXT_CLASS : DEFAULT_CONTEXT_CLASS);
+				switch (this.webApplicationType) {
+					case SERVLET:
+						contextClass = Class.forName(DEFAULT_WEB_CONTEXT_CLASS);
+						break;
+					case REACTIVE:
+						contextClass = Class.forName(DEFAULT_REACTIVE_WEB_CONTEXT_CLASS);
+						break;
+					default:
+						contextClass = Class.forName(DEFAULT_CONTEXT_CLASS);
+				}
 			}
 			catch (ClassNotFoundException ex) {
 				throw new IllegalStateException(
@@ -908,18 +981,44 @@ public class SpringApplication {
 	 * Returns whether this {@link SpringApplication} is running within a web environment.
 	 * @return {@code true} if running within a web environment, otherwise {@code false}.
 	 * @see #setWebEnvironment(boolean)
+	 * @deprecated since 2.0.0 in favor of {@link #getWebApplicationType()}
 	 */
+	@Deprecated
 	public boolean isWebEnvironment() {
-		return this.webEnvironment;
+		return this.webApplicationType == WebApplicationType.SERVLET;
+	}
+
+	/**
+	 * Returns the type of web application that is being run.
+	 * @return the type of web application
+	 * @since 2.0.0
+	 */
+	public WebApplicationType getWebApplicationType() {
+		return this.webApplicationType;
 	}
 
 	/**
 	 * Sets if this application is running within a web environment. If not specified will
 	 * attempt to deduce the environment based on the classpath.
 	 * @param webEnvironment if the application is running in a web environment
+	 * @deprecated since 2.0.0 in favor of
+	 * {@link #setWebApplicationType(WebApplicationType)}
 	 */
+	@Deprecated
 	public void setWebEnvironment(boolean webEnvironment) {
-		this.webEnvironment = webEnvironment;
+		this.webApplicationType = webEnvironment ? WebApplicationType.SERVLET
+				: WebApplicationType.NONE;
+	}
+
+	/**
+	 * Sets the type of web application to be run. If not explicitly set the type of web
+	 * application will be deduced based on the classpath.
+	 * @param webApplicationType the web application type
+	 * @since 2.0.0
+	 */
+	public void setWebApplicationType(WebApplicationType webApplicationType) {
+		Assert.notNull(webApplicationType, "WebApplicationType must not be null");
+		this.webApplicationType = webApplicationType;
 	}
 
 	/**
@@ -1068,7 +1167,7 @@ public class SpringApplication {
 			Class<? extends ConfigurableApplicationContext> applicationContextClass) {
 		this.applicationContextClass = applicationContextClass;
 		if (!isWebApplicationContext(applicationContextClass)) {
-			this.webEnvironment = false;
+			this.webApplicationType = WebApplicationType.NONE;
 		}
 	}
 
@@ -1207,7 +1306,6 @@ public class SpringApplication {
 			finally {
 				close(context);
 			}
-
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();

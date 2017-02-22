@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -247,7 +247,7 @@ public class CacheAutoConfigurationTests {
 		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
 		Cache cache = cacheManager.getCache("foo");
 		assertThat(cache).isInstanceOf(CouchbaseCache.class);
-		assertThat(((CouchbaseCache) cache).getTtl()).isEqualTo(2000);
+		assertThat(((CouchbaseCache) cache).getTtl()).isEqualTo(2);
 		assertThat(((CouchbaseCache) cache).getNativeCache())
 				.isEqualTo(this.context.getBean("bucket"));
 	}
@@ -761,6 +761,7 @@ public class CacheAutoConfigurationTests {
 	@Import({ GenericCacheConfiguration.class,
 			CacheManagerCustomizersConfiguration.class })
 	static class GenericCacheAndCustomizersConfiguration {
+
 	}
 
 	@Configuration

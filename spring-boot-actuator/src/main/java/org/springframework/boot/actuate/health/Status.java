@@ -38,22 +38,25 @@ import org.springframework.util.ObjectUtils;
 public final class Status {
 
 	/**
-	 * Convenient constant value representing unknown state.
+	 * {@link Status} indicating that the component or subsystem is in an unknown state.
 	 */
 	public static final Status UNKNOWN = new Status("UNKNOWN");
 
 	/**
-	 * Convenient constant value representing up state.
+	 * {@link Status} indicating that the component or subsystem is functioning as
+	 * expected.
 	 */
 	public static final Status UP = new Status("UP");
 
 	/**
-	 * Convenient constant value representing down state.
+	 * {@link Status} indicating that the component or subsystem has suffered an
+	 * unexpected failure.
 	 */
 	public static final Status DOWN = new Status("DOWN");
 
 	/**
-	 * Convenient constant value representing out-of-service state.
+	 * {@link Status} indicating that the component or subsystem has been taken out of
+	 * service and should not be used.
 	 */
 	public static final Status OUT_OF_SERVICE = new Status("OUT_OF_SERVICE");
 

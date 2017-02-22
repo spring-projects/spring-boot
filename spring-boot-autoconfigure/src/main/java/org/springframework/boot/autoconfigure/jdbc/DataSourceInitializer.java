@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -26,9 +26,9 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.config.ResourceNotFoundException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.config.SortedResourcesFactoryBean;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
@@ -43,6 +43,8 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
+ * @author Kazuki Shimizu
  * @since 1.1.0
  * @see DataSourceAutoConfiguration
  */
@@ -50,15 +52,19 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 
 	private static final Log logger = LogFactory.getLog(DataSourceInitializer.class);
 
-	@Autowired
-	private ConfigurableApplicationContext applicationContext;
+	private final DataSourceProperties properties;
+
+	private final ApplicationContext applicationContext;
 
 	private DataSource dataSource;
 
-	@Autowired
-	private DataSourceProperties properties;
-
 	private boolean initialized = false;
+
+	DataSourceInitializer(DataSourceProperties properties,
+			ApplicationContext applicationContext) {
+		this.properties = properties;
+		this.applicationContext = applicationContext;
+	}
 
 	@PostConstruct
 	public void init() {
@@ -78,7 +84,8 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 	}
 
 	private void runSchemaScripts() {
-		List<Resource> scripts = getScripts(this.properties.getSchema(), "schema");
+		List<Resource> scripts = getScripts("spring.datasource.schema",
+				this.properties.getSchema(), "schema");
 		if (!scripts.isEmpty()) {
 			String username = this.properties.getSchemaUsername();
 			String password = this.properties.getSchemaPassword();
@@ -114,41 +121,50 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 	}
 
 	private void runDataScripts() {
-		List<Resource> scripts = getScripts(this.properties.getData(), "data");
+		List<Resource> scripts = getScripts("spring.datasource.data",
+				this.properties.getData(), "data");
 		String username = this.properties.getDataUsername();
 		String password = this.properties.getDataPassword();
 		runScripts(scripts, username, password);
 	}
 
-	private List<Resource> getScripts(String locations, String fallback) {
-		if (locations == null) {
-			String platform = this.properties.getPlatform();
-			locations = "classpath*:" + fallback + "-" + platform + ".sql,";
-			locations += "classpath*:" + fallback + ".sql";
+	private List<Resource> getScripts(String propertyName, List<String> resources,
+			String fallback) {
+		if (resources != null) {
+			return getResources(propertyName, resources, true);
 		}
-		return getResources(locations);
+		String platform = this.properties.getPlatform();
+		List<String> fallbackResources = new ArrayList<String>();
+		fallbackResources.add("classpath*:" + fallback + "-" + platform + ".sql");
+		fallbackResources.add("classpath*:" + fallback + ".sql");
+		return getResources(propertyName, fallbackResources, false);
 	}
 
-	private List<Resource> getResources(String locations) {
-		return getResources(
-				Arrays.asList(StringUtils.commaDelimitedListToStringArray(locations)));
-	}
-
-	private List<Resource> getResources(List<String> locations) {
-		SortedResourcesFactoryBean factory = new SortedResourcesFactoryBean(
-				this.applicationContext, locations);
-		try {
-			factory.afterPropertiesSet();
-			List<Resource> resources = new ArrayList<Resource>();
-			for (Resource resource : factory.getObject()) {
+	private List<Resource> getResources(String propertyName, List<String> locations,
+			boolean validate) {
+		List<Resource> resources = new ArrayList<Resource>();
+		for (String location : locations) {
+			for (Resource resource : doGetResources(location)) {
 				if (resource.exists()) {
 					resources.add(resource);
 				}
+				else if (validate) {
+					throw new ResourceNotFoundException(propertyName, resource);
+				}
 			}
-			return resources;
+		}
+		return resources;
+	}
+
+	private Resource[] doGetResources(String location) {
+		try {
+			SortedResourcesFactoryBean factory = new SortedResourcesFactoryBean(
+					this.applicationContext, Collections.singletonList(location));
+			factory.afterPropertiesSet();
+			return factory.getObject();
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to load resources from " + locations,
+			throw new IllegalStateException("Unable to load resources from " + location,
 					ex);
 		}
 	}

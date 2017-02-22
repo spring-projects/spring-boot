@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.security;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -48,8 +49,8 @@ public class SecurityProperties implements SecurityPrerequisite {
 	/**
 	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
 	 * authentication for application endpoints. If you want to add your own
-	 * authentication for all or some of those endpoints the best thing to do is add your
-	 * own WebSecurityConfigurerAdapter with lower order.
+	 * authentication for all or some of those endpoints the best thing to do is to add
+	 * your own WebSecurityConfigurerAdapter with lower order.
 	 */
 	public static final int BASIC_AUTH_ORDER = Ordered.LOWEST_PRECEDENCE - 5;
 
@@ -102,7 +103,8 @@ public class SecurityProperties implements SecurityPrerequisite {
 	/**
 	 * Security filter chain dispatcher types.
 	 */
-	private Set<String> filterDispatcherTypes;
+	private Set<String> filterDispatcherTypes = new HashSet<String>(
+			Arrays.asList("ASYNC", "ERROR", "REQUEST"));
 
 	public Headers getHeaders() {
 		return this.headers;
@@ -171,7 +173,9 @@ public class SecurityProperties implements SecurityPrerequisite {
 	public static class Headers {
 
 		public enum HSTS {
+
 			NONE, DOMAIN, ALL
+
 		}
 
 		public enum ContentSecurityPolicyMode {
@@ -214,7 +218,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 		private String contentSecurityPolicy;
 
 		/**
-		 * Security policy mode.
+		 * Content security policy mode.
 		 */
 		private ContentSecurityPolicyMode contentSecurityPolicyMode = ContentSecurityPolicyMode.DEFAULT;
 

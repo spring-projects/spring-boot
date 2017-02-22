@@ -26,7 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.integration.monitor.IntegrationMBeanExporter;
+import org.springframework.integration.support.management.IntegrationManagementConfigurer;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link SpringIntegrationMetricReader}.
  *
  * @author Dave Syer
+ * @author Artem Bilan
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest("spring.jmx.enabled=true")
@@ -53,10 +54,13 @@ public class SpringIntegrationMetricReaderTests {
 	@Configuration
 	@Import({ JmxAutoConfiguration.class, IntegrationAutoConfiguration.class })
 	protected static class TestConfiguration {
+
 		@Bean
-		public SpringIntegrationMetricReader reader(IntegrationMBeanExporter exporter) {
-			return new SpringIntegrationMetricReader(exporter);
+		public SpringIntegrationMetricReader reader(
+				IntegrationManagementConfigurer managementConfigurer) {
+			return new SpringIntegrationMetricReader(managementConfigurer);
 		}
+
 	}
 
 }

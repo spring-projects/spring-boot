@@ -67,6 +67,7 @@ abstract class HazelcastInstanceConfiguration {
 					existingHazelcastInstance);
 			return this.customizers.customize(cacheManager);
 		}
+
 	}
 
 	@Configuration

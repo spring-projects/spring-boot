@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcHypermediaManagementContextConfiguration.EndpointHypermediaEnabledCondition;
 import org.springframework.boot.actuate.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.ActuatorMediaTypes;
 import org.springframework.boot.actuate.endpoint.mvc.DocsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HalBrowserMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
@@ -50,7 +52,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -64,7 +65,9 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.UriTemplate;
 import org.springframework.hateoas.hal.CurieProvider;
 import org.springframework.hateoas.hal.DefaultCurieProvider;
+import org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.server.ServerHttpRequest;
@@ -88,10 +91,11 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
  */
 @ManagementContextConfiguration
 @ConditionalOnClass(Link.class)
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnBean(HttpMessageConverters.class)
 @Conditional(EndpointHypermediaEnabledCondition.class)
-@EnableConfigurationProperties(ResourceProperties.class)
+@EnableConfigurationProperties({ ResourceProperties.class,
+		ManagementServerProperties.class })
 public class EndpointWebMvcHypermediaManagementContextConfiguration {
 
 	@Bean
@@ -122,7 +126,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	@ConditionalOnBean(DocsMvcEndpoint.class)
 	@ConditionalOnMissingBean(CurieProvider.class)
 	@ConditionalOnProperty(prefix = "endpoints.docs.curies", name = "enabled", matchIfMissing = false)
-	public DefaultCurieProvider curieProvider(ServerProperties server,
+	public DefaultCurieProvider curieProvider(
 			ManagementServerProperties management, DocsMvcEndpoint endpoint) {
 		String path = management.getContextPath() + endpoint.getPath()
 				+ "/#spring_boot_actuator__{rel}";
@@ -221,12 +225,36 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	 */
 	@ConditionalOnProperty(prefix = "endpoints.hypermedia", name = "enabled", matchIfMissing = false)
 	@ControllerAdvice(assignableTypes = MvcEndpoint.class)
-	public static class MvcEndpointAdvice implements ResponseBodyAdvice<Object> {
+	static class MvcEndpointAdvice implements ResponseBodyAdvice<Object> {
 
-		@Autowired
-		private List<RequestMappingHandlerAdapter> handlerAdapters;
+		private final List<RequestMappingHandlerAdapter> handlerAdapters;
 
 		private final Map<MediaType, HttpMessageConverter<?>> converterCache = new ConcurrentHashMap<MediaType, HttpMessageConverter<?>>();
+
+		MvcEndpointAdvice(List<RequestMappingHandlerAdapter> handlerAdapters) {
+			this.handlerAdapters = handlerAdapters;
+		}
+
+		@PostConstruct
+		public void configureHttpMessageConverters() {
+			for (RequestMappingHandlerAdapter handlerAdapter : this.handlerAdapters) {
+				for (HttpMessageConverter<?> messageConverter : handlerAdapter
+						.getMessageConverters()) {
+					configureHttpMessageConverter(messageConverter);
+				}
+			}
+		}
+
+		private void configureHttpMessageConverter(
+				HttpMessageConverter<?> messageConverter) {
+			if (messageConverter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
+				List<MediaType> supportedMediaTypes = new ArrayList<MediaType>(
+						messageConverter.getSupportedMediaTypes());
+				supportedMediaTypes.add(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON);
+				((AbstractHttpMessageConverter<?>) messageConverter)
+						.setSupportedMediaTypes(supportedMediaTypes);
+			}
+		}
 
 		@Override
 		public boolean supports(MethodParameter returnType,

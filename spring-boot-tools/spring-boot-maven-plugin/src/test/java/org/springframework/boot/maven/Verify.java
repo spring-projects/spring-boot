@@ -87,6 +87,7 @@ public final class Verify {
 	public static class ArchiveVerifier {
 
 		private final ZipFile zipFile;
+
 		private final Map<String, ZipEntry> content;
 
 		public ArchiveVerifier(ZipFile zipFile) {
@@ -253,6 +254,7 @@ public final class Verify {
 			assertThat(manifest.getMainAttributes().getValue("Not-Used"))
 					.isEqualTo("Foo");
 		}
+
 	}
 
 	public static class WarArchiveVerification extends AbstractArchiveVerification {
@@ -286,6 +288,7 @@ public final class Verify {
 			assertThat(manifest.getMainAttributes().getValue("Not-Used"))
 					.isEqualTo("Foo");
 		}
+
 	}
 
 	private static class ZipArchiveVerification extends AbstractArchiveVerification {
@@ -303,6 +306,7 @@ public final class Verify {
 			assertThat(manifest.getMainAttributes().getValue("Not-Used"))
 					.isEqualTo("Foo");
 		}
+
 	}
 
 	private static class ModuleArchiveVerification extends AbstractArchiveVerification {

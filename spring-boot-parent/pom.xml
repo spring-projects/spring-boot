@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -40,6 +41,12 @@
 	</ciManagement>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-test-support</artifactId>
+				<version>2.0.0.BUILD-SNAPSHOT</version>
+			</dependency>
+
 			<!-- Additional Dependencies the consumers of spring-boot-dependencies
 				will generally not need -->
 			<dependency> <!-- deprecated but recent version required by 3rd party libs -->
@@ -58,6 +65,11 @@
 				<version>3.4.1</version>
 			</dependency>
 			<dependency>
+				<groupId>com.vaadin.external.google</groupId>
+				<artifactId>android-json</artifactId>
+				<version>0.0.20131108.vaadin1</version>
+			</dependency>
+			<dependency>
 				<groupId>io.netty</groupId>
 				<artifactId>netty-all</artifactId>
 				<version>4.0.38.Final</version>
@@ -65,7 +77,7 @@
 			<dependency>
 				<groupId>io.spring.gradle</groupId>
 				<artifactId>dependency-management-plugin</artifactId>
-				<version>0.6.1.RELEASE</version>
+				<version>1.0.0.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>jline</groupId>
@@ -75,7 +87,7 @@
 			<dependency>
 				<groupId>net.bytebuddy</groupId>
 				<artifactId>byte-buddy</artifactId>
-				<version>1.5.4</version>
+				<version>1.6.0</version>
 			</dependency>
 			<dependency>
 				<groupId>net.sf.jopt-simple</groupId>
@@ -233,6 +245,11 @@
 				<version>1.0.4</version>
 			</dependency>
 			<dependency>
+				<groupId>org.sonatype.plexus</groupId>
+				<artifactId>plexus-build-api</artifactId>
+				<version>0.0.7</version>
+			</dependency>
+			<dependency>
 				<groupId>org.zeroturnaround</groupId>
 				<artifactId>zt-zip</artifactId>
 				<version>1.7</version>
@@ -290,16 +307,6 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-invoker-plugin</artifactId>
-					<version>1.10</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>1.4</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-failsafe-plugin</artifactId>
 					<version>2.18</version>
 					<executions>
@@ -334,7 +341,7 @@
 				<plugin>
 					<groupId>org.codehaus.cargo</groupId>
 					<artifactId>cargo-maven2-plugin</artifactId>
-					<version>1.4.15</version>
+					<version>1.6.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.gmavenplus</groupId>
@@ -625,6 +632,9 @@
 					<annotations>
 						<annotation>org.springframework.boot.lang.UsesUnsafeJava</annotation>
 					</annotations>
+					<excludeDependencies>
+						<excludeDependency>org.glassfish.hk2.external:asm-all-repackaged</excludeDependency>
+					</excludeDependencies>
 				</configuration>
 				<executions>
 					<execution>
@@ -771,6 +781,12 @@
 					<name>m2e.version</name>
 				</property>
 			</activation>
+			<properties>
+				<m2e.jaxrs.activation>false</m2e.jaxrs.activation>
+				<m2e.jpa.activation>false</m2e.jpa.activation>
+				<m2e.jsf.activation>false</m2e.jsf.activation>
+				<m2e.cdi.activation>false</m2e.cdi.activation>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>

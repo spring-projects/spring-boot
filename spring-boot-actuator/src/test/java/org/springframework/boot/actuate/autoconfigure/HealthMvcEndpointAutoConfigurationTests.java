@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -60,8 +61,9 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
+		MockHttpServletRequest request = new MockHttpServletRequest();
 		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class)
-				.invoke(null);
+				.invoke(request);
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("foo")).isNull();
 	}
@@ -84,8 +86,7 @@ public class HealthMvcEndpointAutoConfigurationTests {
 	@Configuration
 	@ImportAutoConfiguration({ SecurityAutoConfiguration.class,
 			JacksonAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, AuditAutoConfiguration.class,
 			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class })
 	static class TestConfiguration {
 

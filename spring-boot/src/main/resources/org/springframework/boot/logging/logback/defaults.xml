@@ -26,7 +26,4 @@ initialization performed by Boot
 	<logger name="org.springframework.boot.actuate.endpoint.jmx" additivity="false">
 		<appender-ref ref="DEBUG_LEVEL_REMAPPER"/>
 	</logger>
-	<logger name="org.thymeleaf" additivity="false">
-		<appender-ref ref="DEBUG_LEVEL_REMAPPER"/>
-	</logger>
 </included>

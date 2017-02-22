@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
+import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,15 +26,17 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
+import org.flywaydb.core.api.callback.FlywayCallback;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.InOrder;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -43,12 +46,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Component;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link FlywayAutoConfiguration}.
@@ -57,6 +64,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Vedran Pavic
+ * @author Eddú Meléndez
  */
 public class FlywayAutoConfigurationTests {
 
@@ -234,10 +242,38 @@ public class FlywayAutoConfigurationTests {
 				.isEqualTo(MigrationVersion.fromVersion("1"));
 	}
 
+	@Test
+	public void useVendorDirectory() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"flyway.locations=classpath:db/vendors/{vendor},classpath:db/changelog");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertThat(flyway.getLocations()).containsExactlyInAnyOrder(
+				"classpath:db/vendors/h2", "classpath:db/changelog");
+	}
+
+	@Test
+	public void callbacksAreConfiguredAndOrdered() throws Exception {
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				CallbackConfiguration.class);
+		assertThat(this.context.getBeansOfType(Flyway.class)).hasSize(1);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		FlywayCallback callbackOne = this.context.getBean("callbackOne",
+				FlywayCallback.class);
+		FlywayCallback callbackTwo = this.context.getBean("callbackTwo",
+				FlywayCallback.class);
+		assertThat(flyway.getCallbacks()).containsExactly(callbackTwo, callbackOne);
+		InOrder orderedCallbacks = inOrder(callbackOne, callbackTwo);
+		orderedCallbacks.verify(callbackTwo).beforeMigrate(any(Connection.class));
+		orderedCallbacks.verify(callbackOne).beforeMigrate(any(Connection.class));
+	}
+
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
 		this.context.register(annotatedClasses);
 		this.context.refresh();
-
 	}
 
 	@Configuration
@@ -269,6 +305,7 @@ public class FlywayAutoConfigurationTests {
 			initializer.setOrder(Ordered.HIGHEST_PRECEDENCE);
 			return initializer;
 		}
+
 	}
 
 	@Configuration
@@ -310,6 +347,24 @@ public class FlywayAutoConfigurationTests {
 		public void assertCalled() {
 			assertThat(this.called).isTrue();
 		}
+
+	}
+
+	@Configuration
+	static class CallbackConfiguration {
+
+		@Bean
+		@Order(1)
+		public FlywayCallback callbackOne() {
+			return mock(FlywayCallback.class);
+		}
+
+		@Bean
+		@Order(0)
+		public FlywayCallback callbackTwo() {
+			return mock(FlywayCallback.class);
+		}
+
 	}
 
 }

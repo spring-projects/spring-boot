@@ -57,7 +57,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * A {@link WebApplicationContext} that can be used to bootstrap itself from a contained
  * {@link EmbeddedServletContainerFactory} bean.
  * <p>
- * This context will create, initialize and run an {@link EmbeddedServletContainer} by
+ * This context will create, initialize and run an {@link EmbeddedWebServer} by
  * searching for a single {@link EmbeddedServletContainerFactory} bean within the
  * {@link ApplicationContext} itself. The {@link EmbeddedServletContainerFactory} is free
  * to use standard Spring concepts (such as dependency injection, lifecycle callbacks and
@@ -99,7 +99,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	 */
 	public static final String DISPATCHER_SERVLET_NAME = "dispatcherServlet";
 
-	private volatile EmbeddedServletContainer embeddedServletContainer;
+	private volatile EmbeddedWebServer embeddedWebServer;
 
 	private ServletConfig servletConfig;
 
@@ -142,7 +142,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	@Override
 	protected void finishRefresh() {
 		super.finishRefresh();
-		EmbeddedServletContainer localContainer = startEmbeddedServletContainer();
+		EmbeddedWebServer localContainer = startEmbeddedServletContainer();
 		if (localContainer != null) {
 			publishEvent(
 					new EmbeddedServletContainerInitializedEvent(this, localContainer));
@@ -156,11 +156,11 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	}
 
 	private void createEmbeddedServletContainer() {
-		EmbeddedServletContainer localContainer = this.embeddedServletContainer;
+		EmbeddedWebServer localContainer = this.embeddedWebServer;
 		ServletContext localServletContext = getServletContext();
 		if (localContainer == null && localServletContext == null) {
 			EmbeddedServletContainerFactory containerFactory = getEmbeddedServletContainerFactory();
-			this.embeddedServletContainer = containerFactory
+			this.embeddedWebServer = containerFactory
 					.getEmbeddedServletContainer(getSelfInitializer());
 		}
 		else if (localServletContext != null) {
@@ -291,8 +291,8 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		}
 	}
 
-	private EmbeddedServletContainer startEmbeddedServletContainer() {
-		EmbeddedServletContainer localContainer = this.embeddedServletContainer;
+	private EmbeddedWebServer startEmbeddedServletContainer() {
+		EmbeddedWebServer localContainer = this.embeddedWebServer;
 		if (localContainer != null) {
 			localContainer.start();
 		}
@@ -300,11 +300,11 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	}
 
 	private void stopAndReleaseEmbeddedServletContainer() {
-		EmbeddedServletContainer localContainer = this.embeddedServletContainer;
+		EmbeddedWebServer localContainer = this.embeddedWebServer;
 		if (localContainer != null) {
 			try {
 				localContainer.stop();
-				this.embeddedServletContainer = null;
+				this.embeddedWebServer = null;
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException(ex);
@@ -341,12 +341,12 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	}
 
 	/**
-	 * Returns the {@link EmbeddedServletContainer} that was created by the context or
+	 * Returns the {@link EmbeddedWebServer} that was created by the context or
 	 * {@code null} if the container has not yet been created.
 	 * @return the embedded servlet container
 	 */
-	public EmbeddedServletContainer getEmbeddedServletContainer() {
-		return this.embeddedServletContainer;
+	public EmbeddedWebServer getEmbeddedWebServer() {
+		return this.embeddedWebServer;
 	}
 
 	/**

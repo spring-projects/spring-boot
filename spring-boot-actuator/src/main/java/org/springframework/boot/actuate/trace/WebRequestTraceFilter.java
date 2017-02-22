@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,11 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -49,6 +51,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * @author Wallace Wadge
  * @author Andy Wilkinson
  * @author Venil Noronha
+ * @author Madhura Bhave
  */
 public class WebRequestTraceFilter extends OncePerRequestFilter implements Ordered {
 
@@ -150,24 +153,38 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 
 	private Map<String, Object> getRequestHeaders(HttpServletRequest request) {
 		Map<String, Object> headers = new LinkedHashMap<String, Object>();
+		Set<String> excludedHeaders = getExcludeHeaders();
 		Enumeration<String> names = request.getHeaderNames();
 		while (names.hasMoreElements()) {
 			String name = names.nextElement();
-			List<String> values = Collections.list(request.getHeaders(name));
-			Object value = values;
-			if (values.size() == 1) {
-				value = values.get(0);
+			if (!excludedHeaders.contains(name.toLowerCase())) {
+				headers.put(name, getHeaderValue(request, name));
 			}
-			else if (values.isEmpty()) {
-				value = "";
-			}
-			headers.put(name, value);
-		}
-		if (!isIncluded(Include.COOKIES)) {
-			headers.remove("Cookie");
 		}
 		postProcessRequestHeaders(headers);
 		return headers;
+	}
+
+	private Set<String> getExcludeHeaders() {
+		Set<String> excludedHeaders = new HashSet<String>();
+		if (!isIncluded(Include.COOKIES)) {
+			excludedHeaders.add("cookie");
+		}
+		if (!isIncluded(Include.AUTHORIZATION_HEADER)) {
+			excludedHeaders.add("authorization");
+		}
+		return excludedHeaders;
+	}
+
+	private Object getHeaderValue(HttpServletRequest request, String name) {
+		List<String> value = Collections.list(request.getHeaders(name));
+		if (value.size() == 1) {
+			return value.get(0);
+		}
+		if (value.isEmpty()) {
+			return "";
+		}
+		return value;
 	}
 
 	/**

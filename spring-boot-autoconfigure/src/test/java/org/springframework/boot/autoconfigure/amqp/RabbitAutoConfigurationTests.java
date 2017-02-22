@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
@@ -39,6 +40,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.rabbit.support.ValueExpression;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.DirectFieldAccessor;
@@ -49,6 +51,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
+import org.springframework.retry.interceptor.MethodInvocationRecoverer;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 
@@ -293,7 +296,8 @@ public class RabbitAutoConfigurationTests {
 
 	@Test
 	public void testRabbitListenerContainerFactoryWithCustomSettings() {
-		load(MessageConvertersConfiguration.class,
+		load(new Class<?>[] { MessageConvertersConfiguration.class,
+				MessageRecoverersConfiguration.class },
 				"spring.rabbitmq.listener.retry.enabled:true",
 				"spring.rabbitmq.listener.retry.maxAttempts:4",
 				"spring.rabbitmq.listener.retry.initialInterval:2000",
@@ -327,6 +331,14 @@ public class RabbitAutoConfigurationTests {
 		assertThat(adviceChain).isNotNull();
 		assertThat(adviceChain.length).isEqualTo(1);
 		dfa = new DirectFieldAccessor(adviceChain[0]);
+		MessageRecoverer messageRecoverer = this.context.getBean("myMessageRecoverer",
+				MessageRecoverer.class);
+		MethodInvocationRecoverer<?> mir = (MethodInvocationRecoverer<?>) dfa
+				.getPropertyValue("recoverer");
+		Message message = mock(Message.class);
+		Exception ex = new Exception("test");
+		mir.recover(new Object[] { "foo", message }, ex);
+		verify(messageRecoverer).recover(message, ex);
 		RetryTemplate retryTemplate = (RetryTemplate) dfa
 				.getPropertyValue("retryOperations");
 		assertThat(retryTemplate).isNotNull();
@@ -422,17 +434,16 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	private void load(Class<?> config, String... environment) {
-		this.context = doLoad(new Class<?>[] { config }, environment);
+		load(new Class<?>[] { config }, environment);
 	}
 
-	private AnnotationConfigApplicationContext doLoad(Class<?>[] configs,
-			String... environment) {
+	private void load(Class<?>[] configs, String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(configs);
 		applicationContext.register(RabbitAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.refresh();
-		return applicationContext;
+		this.context = applicationContext;
 	}
 
 	@Configuration
@@ -442,10 +453,12 @@ public class RabbitAutoConfigurationTests {
 
 	@Configuration
 	protected static class TestConfiguration2 {
+
 		@Bean
 		ConnectionFactory aDifferentConnectionFactory() {
 			return new CachingConnectionFactory("otherserver", 8001);
 		}
+
 	}
 
 	@Configuration
@@ -475,6 +488,7 @@ public class RabbitAutoConfigurationTests {
 			messagingTemplate.setDefaultDestination("fooBar");
 			return messagingTemplate;
 		}
+
 	}
 
 	@Configuration
@@ -499,6 +513,22 @@ public class RabbitAutoConfigurationTests {
 		@Bean
 		public MessageConverter anotherMessageConverter() {
 			return mock(MessageConverter.class);
+		}
+
+	}
+
+	@Configuration
+	protected static class MessageRecoverersConfiguration {
+
+		@Bean
+		@Primary
+		public MessageRecoverer myMessageRecoverer() {
+			return mock(MessageRecoverer.class);
+		}
+
+		@Bean
+		public MessageRecoverer anotherMessageRecoverer() {
+			return mock(MessageRecoverer.class);
 		}
 
 	}

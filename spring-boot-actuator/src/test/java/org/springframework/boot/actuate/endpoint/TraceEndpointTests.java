@@ -56,5 +56,7 @@ public class TraceEndpointTests extends AbstractEndpointTests<TraceEndpoint> {
 			repository.add(Collections.<String, Object>singletonMap("a", "b"));
 			return new TraceEndpoint(repository);
 		}
+
 	}
+
 }

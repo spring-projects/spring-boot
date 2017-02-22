@@ -25,6 +25,7 @@ import org.flywaydb.core.Flyway;
  * @author Andreas Ahlenstorf
  * @author Phillip Webb
  */
+@FunctionalInterface
 public interface FlywayMigrationStrategy {
 
 	/**

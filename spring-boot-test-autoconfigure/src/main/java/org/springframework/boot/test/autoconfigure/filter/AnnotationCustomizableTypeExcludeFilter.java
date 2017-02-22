@@ -27,6 +27,7 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.AssignableTypeFilter;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Abstract base class for a {@link TypeExcludeFilter} that can be customized using an
@@ -75,6 +76,11 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 				return true;
 			}
 		}
+		for (Class<?> component : getComponentIncludes()) {
+			if (isTypeOrAnnotated(metadataReader, metadataReaderFactory, component)) {
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -103,10 +109,50 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 
 	protected abstract Set<Class<?>> getDefaultIncludes();
 
+	protected abstract Set<Class<?>> getComponentIncludes();
+
 	protected enum FilterType {
 
 		INCLUDE, EXCLUDE
 
-	};
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 0;
+		result = prime * result + ObjectUtils.hashCode(hasAnnotation());
+		for (FilterType filterType : FilterType.values()) {
+			result = prime * result
+					+ ObjectUtils.nullSafeHashCode(getFilters(filterType));
+		}
+		result = prime * result + ObjectUtils.hashCode(isUseDefaultFilters());
+		result = prime * result + ObjectUtils.nullSafeHashCode(getDefaultIncludes());
+		result = prime * result + ObjectUtils.nullSafeHashCode(getComponentIncludes());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		AnnotationCustomizableTypeExcludeFilter other = (AnnotationCustomizableTypeExcludeFilter) obj;
+		boolean result = true;
+		result = result && hasAnnotation() == other.hasAnnotation();
+		for (FilterType filterType : FilterType.values()) {
+			result &= ObjectUtils.nullSafeEquals(getFilters(filterType),
+					other.getFilters(filterType));
+		}
+		result = result && isUseDefaultFilters() == other.isUseDefaultFilters();
+		result = result && ObjectUtils.nullSafeEquals(getDefaultIncludes(),
+				other.getDefaultIncludes());
+		result = result && ObjectUtils.nullSafeEquals(getComponentIncludes(),
+				other.getComponentIncludes());
+		return result;
+	}
 
 }

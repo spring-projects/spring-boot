@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,13 +58,12 @@ public class PropertiesConfigurationFactory<T>
 
 	private static final char[] TARGET_NAME_DELIMITERS = { '_', '.' };
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private static final Log logger = LogFactory
+			.getLog(PropertiesConfigurationFactory.class);
 
 	private boolean ignoreUnknownFields = true;
 
 	private boolean ignoreInvalidFields;
-
-	private boolean exceptionIfInvalid = true;
 
 	private PropertySources propertySources;
 
@@ -90,7 +89,7 @@ public class PropertiesConfigurationFactory<T>
 	 * @see #PropertiesConfigurationFactory(Class)
 	 */
 	public PropertiesConfigurationFactory(T target) {
-		Assert.notNull(target);
+		Assert.notNull(target, "Target object must not be null");
 		this.target = target;
 	}
 
@@ -101,7 +100,7 @@ public class PropertiesConfigurationFactory<T>
 	 */
 	@SuppressWarnings("unchecked")
 	public PropertiesConfigurationFactory(Class<?> type) {
-		Assert.notNull(type);
+		Assert.notNull(type, "Target type must not be null");
 		this.target = (T) BeanUtils.instantiateClass(type);
 	}
 
@@ -182,15 +181,6 @@ public class PropertiesConfigurationFactory<T>
 	}
 
 	/**
-	 * Set a flag to indicate that an exception should be raised if a Validator is
-	 * available and validation fails.
-	 * @param exceptionIfInvalid the flag to set
-	 */
-	public void setExceptionIfInvalid(boolean exceptionIfInvalid) {
-		this.exceptionIfInvalid = exceptionIfInvalid;
-	}
-
-	/**
 	 * Flag to indicate that placeholders should be replaced during binding. Default is
 	 * true.
 	 * @param resolvePlaceholders flag value
@@ -227,28 +217,20 @@ public class PropertiesConfigurationFactory<T>
 
 	public void bindPropertiesToTarget() throws BindException {
 		Assert.state(this.propertySources != null, "PropertySources should not be null");
-		try {
-			if (this.logger.isTraceEnabled()) {
-				this.logger.trace("Property Sources: " + this.propertySources);
+		if (logger.isTraceEnabled()) {
+			logger.trace("Property Sources: " + this.propertySources);
 
-			}
-			this.hasBeenBound = true;
-			doBindPropertiesToTarget();
 		}
-		catch (BindException ex) {
-			if (this.exceptionIfInvalid) {
-				throw ex;
-			}
-			this.logger.error("Failed to load Properties validation bean. "
-					+ "Your Properties may be invalid.", ex);
-		}
+		this.hasBeenBound = true;
+		doBindPropertiesToTarget();
 	}
 
 	private void doBindPropertiesToTarget() throws BindException {
 		RelaxedDataBinder dataBinder = (this.targetName != null
 				? new RelaxedDataBinder(this.target, this.targetName)
 				: new RelaxedDataBinder(this.target));
-		if (this.validator != null) {
+		if (this.validator != null
+				&& this.validator.supports(dataBinder.getTarget().getClass())) {
 			dataBinder.setValidator(this.validator);
 		}
 		if (this.conversionService != null) {
@@ -265,8 +247,9 @@ public class PropertiesConfigurationFactory<T>
 				relaxedTargetNames);
 		dataBinder.bind(propertyValues);
 		if (this.validator != null) {
-			validate(dataBinder);
+			dataBinder.validate();
 		}
+		checkForBindingErrors(dataBinder);
 	}
 
 	private Iterable<String> getRelaxedTargetNames() {
@@ -336,21 +319,19 @@ public class PropertiesConfigurationFactory<T>
 		return this.target != null && Map.class.isAssignableFrom(this.target.getClass());
 	}
 
-	private void validate(RelaxedDataBinder dataBinder) throws BindException {
-		dataBinder.validate();
+	private void checkForBindingErrors(RelaxedDataBinder dataBinder)
+			throws BindException {
 		BindingResult errors = dataBinder.getBindingResult();
 		if (errors.hasErrors()) {
-			this.logger.error("Properties configuration failed validation");
+			logger.error("Properties configuration failed validation");
 			for (ObjectError error : errors.getAllErrors()) {
-				this.logger
-						.error(this.messageSource != null
+				logger.error(
+						this.messageSource != null
 								? this.messageSource.getMessage(error,
 										Locale.getDefault()) + " (" + error + ")"
 								: error);
 			}
-			if (this.exceptionIfInvalid) {
-				throw new BindException(errors);
-			}
+			throw new BindException(errors);
 		}
 	}
 

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import org.hamcrest.CoreMatchers;
 import org.json.JSONException;
 import org.junit.Test;
 
@@ -45,7 +46,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 
 	@Test
 	public void invalidMetadata() throws IOException {
-		this.thrown.expect(JSONException.class);
+		this.thrown.expectCause(CoreMatchers.<Throwable>instanceOf(JSONException.class));
 		readFor("invalid");
 	}
 

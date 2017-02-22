@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import org.springframework.boot.web.servlet.ErrorPageRegistrar;
 import org.springframework.boot.web.servlet.ErrorPageRegistry;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.NestedServletException;
 
@@ -56,7 +55,6 @@ import org.springframework.web.util.NestedServletException;
  * @author Andy Wilkinson
  * @since 1.4.0
  */
-@Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
@@ -179,10 +177,12 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		}
 		setErrorAttributes(request, 500, ex.getMessage());
 		request.setAttribute(ERROR_EXCEPTION, ex);
-		request.setAttribute(ERROR_EXCEPTION_TYPE, ex.getClass().getName());
+		request.setAttribute(ERROR_EXCEPTION_TYPE, ex.getClass());
 		response.reset();
 		response.sendError(500, ex.getMessage());
 		request.getRequestDispatcher(path).forward(request, response);
+		request.removeAttribute(ERROR_EXCEPTION);
+		request.removeAttribute(ERROR_EXCEPTION_TYPE);
 	}
 
 	/**

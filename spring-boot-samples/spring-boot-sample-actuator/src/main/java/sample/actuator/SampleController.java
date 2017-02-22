@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Description;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -36,8 +35,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Description("A controller for handling requests for hello messages")
 public class SampleController {
 
-	@Autowired
-	private HelloWorldService helloWorldService;
+	private final HelloWorldService helloWorldService;
+
+	public SampleController(HelloWorldService helloWorldService) {
+		this.helloWorldService = helloWorldService;
+	}
 
 	@GetMapping("/")
 	@ResponseBody

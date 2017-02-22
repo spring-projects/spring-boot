@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import com.datastax.driver.core.Cluster;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -64,9 +64,20 @@ public class CassandraAutoConfigurationTests {
 
 	@Test
 	public void createCustomizeCluster() {
-		load(ClusterConfig.class);
+		load(MockCustomizerConfig.class);
 		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
-		assertThat(this.context.getBeanNamesForType(ClusterCustomizer.class).length).isEqualTo(1);
+		assertThat(
+				this.context.getBeanNamesForType(ClusterBuilderCustomizer.class).length)
+						.isEqualTo(1);
+	}
+
+	@Test
+	public void customizerOverridesAutoConfig() {
+		load(SimpleCustomizerConfig.class,
+				"spring.data.cassandra.cluster-name=testcluster");
+		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
+		Cluster cluster = this.context.getBean(Cluster.class);
+		assertThat(cluster.getClusterName()).isEqualTo("overridden-name");
 	}
 
 	private void load(String... environment) {
@@ -85,13 +96,27 @@ public class CassandraAutoConfigurationTests {
 		this.context = ctx;
 	}
 
-
 	@Configuration
-	static class ClusterConfig {
+	static class MockCustomizerConfig {
 
 		@Bean
-		public ClusterCustomizer customizer() {
-			return mock(ClusterCustomizer.class);
+		public ClusterBuilderCustomizer customizer() {
+			return mock(ClusterBuilderCustomizer.class);
+		}
+
+	}
+
+	@Configuration
+	static class SimpleCustomizerConfig {
+
+		@Bean
+		public ClusterBuilderCustomizer customizer() {
+			return new ClusterBuilderCustomizer() {
+				@Override
+				public void customize(Cluster.Builder clusterBuilder) {
+					clusterBuilder.withClusterName("overridden-name");
+				}
+			};
 		}
 
 	}

@@ -57,14 +57,14 @@ class CaffeineCacheConfiguration {
 
 	CaffeineCacheConfiguration(CacheProperties cacheProperties,
 			CacheManagerCustomizers customizers,
-			ObjectProvider<Caffeine<Object, Object>> caffeineProvider,
-			ObjectProvider<CaffeineSpec> caffeineSpecProvider,
-			ObjectProvider<CacheLoader<Object, Object>> cacheLoaderProvider) {
+			ObjectProvider<Caffeine<Object, Object>> caffeine,
+			ObjectProvider<CaffeineSpec> caffeineSpec,
+			ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
 		this.cacheProperties = cacheProperties;
 		this.customizers = customizers;
-		this.caffeine = caffeineProvider.getIfAvailable();
-		this.caffeineSpec = caffeineSpecProvider.getIfAvailable();
-		this.cacheLoader = cacheLoaderProvider.getIfAvailable();
+		this.caffeine = caffeine.getIfAvailable();
+		this.caffeineSpec = caffeineSpec.getIfAvailable();
+		this.cacheLoader = cacheLoader.getIfAvailable();
 	}
 
 	@Bean

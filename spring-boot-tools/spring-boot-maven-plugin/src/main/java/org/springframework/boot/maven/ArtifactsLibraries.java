@@ -38,6 +38,7 @@ import org.springframework.boot.loader.tools.LibraryScope;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class ArtifactsLibraries implements Libraries {
 
@@ -71,7 +72,7 @@ public class ArtifactsLibraries implements Libraries {
 		for (Artifact artifact : this.artifacts) {
 			LibraryScope scope = SCOPES.get(artifact.getScope());
 			if (scope != null && artifact.getFile() != null) {
-				String name = artifact.getFile().getName();
+				String name = getFileName(artifact);
 				if (duplicates.contains(name)) {
 					this.log.debug("Duplicate found: " + name);
 					name = artifact.getGroupId() + "-" + name;
@@ -87,8 +88,9 @@ public class ArtifactsLibraries implements Libraries {
 		Set<String> duplicates = new HashSet<String>();
 		Set<String> seen = new HashSet<String>();
 		for (Artifact artifact : artifacts) {
-			if (artifact.getFile() != null && !seen.add(artifact.getFile().getName())) {
-				duplicates.add(artifact.getFile().getName());
+			String fileName = getFileName(artifact);
+			if (artifact.getFile() != null && !seen.add(fileName)) {
+				duplicates.add(fileName);
 			}
 		}
 		return duplicates;
@@ -104,6 +106,17 @@ public class ArtifactsLibraries implements Libraries {
 			}
 		}
 		return false;
+	}
+
+	private String getFileName(Artifact artifact) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(artifact.getArtifactId()).append("-").append(artifact.getBaseVersion());
+		String classifier = artifact.getClassifier();
+		if (classifier != null) {
+			sb.append("-").append(classifier);
+		}
+		sb.append(".").append(artifact.getArtifactHandler().getExtension());
+		return sb.toString();
 	}
 
 }

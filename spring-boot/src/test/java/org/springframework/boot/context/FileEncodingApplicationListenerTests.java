@@ -33,7 +33,9 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 public class FileEncodingApplicationListenerTests {
 
 	private final FileEncodingApplicationListener initializer = new FileEncodingApplicationListener();
+
 	private final ConfigurableEnvironment environment = new StandardEnvironment();
+
 	private final ApplicationEnvironmentPreparedEvent event = new ApplicationEnvironmentPreparedEvent(
 			new SpringApplication(), new String[0], this.environment);
 

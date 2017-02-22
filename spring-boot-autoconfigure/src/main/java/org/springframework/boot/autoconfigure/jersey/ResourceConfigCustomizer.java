@@ -25,6 +25,7 @@ import org.glassfish.jersey.server.ResourceConfig;
  * @author Eddú Meléndez
  * @since 1.4.0
  */
+@FunctionalInterface
 public interface ResourceConfigCustomizer {
 
 	/**

@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.tomcat.websocket.WsWebSocketContainer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +35,6 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -85,7 +85,8 @@ public class WebSocketMessagingAutoConfigurationTests {
 	@Before
 	public void setup() {
 		List<Transport> transports = Arrays.asList(
-				new WebSocketTransport(new StandardWebSocketClient()),
+				new WebSocketTransport(
+						new StandardWebSocketClient(new WsWebSocketContainer())),
 				new RestTemplateXhrTransport(new RestTemplate()));
 		this.sockJsClient = new SockJsClient(transports);
 	}
@@ -193,7 +194,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 		stompClient.connect("ws://localhost:{port}/messaging", handler,
 				this.context.getEnvironment().getProperty("local.server.port"));
 
-		if (!latch.await(30, TimeUnit.SECONDS)) {
+		if (!latch.await(30000, TimeUnit.SECONDS)) {
 			if (failure.get() != null) {
 				throw failure.get();
 			}
@@ -208,7 +209,6 @@ public class WebSocketMessagingAutoConfigurationTests {
 	@EnableWebSocketMessageBroker
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
 			EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
 			WebSocketMessagingAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class })
 	static class WebSocketMessagingConfiguration

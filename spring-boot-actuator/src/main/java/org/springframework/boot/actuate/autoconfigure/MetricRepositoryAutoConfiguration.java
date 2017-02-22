@@ -67,7 +67,6 @@ import org.springframework.messaging.MessageChannel;
  * @see MetricWriter
  * @see InMemoryMetricRepository
  * @see Exporter
- *
  * @author Dave Syer
  */
 @Configuration
@@ -108,6 +107,7 @@ public class MetricRepositoryAutoConfiguration {
 		public BufferGaugeService gaugeService(GaugeBuffers writer) {
 			return new BufferGaugeService(writer);
 		}
+
 	}
 
 }

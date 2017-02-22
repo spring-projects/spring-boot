@@ -26,6 +26,7 @@ import java.net.URL;
  * @since 1.3.0
  * @see DefaultSourceFolderUrlFilter
  */
+@FunctionalInterface
 public interface SourceFolderUrlFilter {
 
 	/**

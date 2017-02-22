@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 
 import ch.qos.logback.classic.Level;
@@ -26,6 +27,7 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
+import ch.qos.logback.core.util.FileSize;
 import ch.qos.logback.core.util.OptionHelper;
 
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -34,6 +36,7 @@ import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Default logback configuration used by Spring Boot. Uses {@link LogbackConfigurator} to
@@ -69,7 +72,8 @@ class DefaultLogbackConfiguration {
 		if (environment == null) {
 			return new PropertySourcesPropertyResolver(null);
 		}
-		return new RelaxedPropertyResolver(environment, "logging.pattern.");
+		return RelaxedPropertyResolver.ignoringUnresolvableNestedPlaceholders(environment,
+				"logging.pattern.");
 	}
 
 	public void apply(LogbackConfigurator config) {
@@ -104,7 +108,6 @@ class DefaultLogbackConfiguration {
 		config.logger("org.hibernate.validator.internal.util.Version", Level.WARN);
 		config.logger("org.springframework.boot.actuate.endpoint.jmx", null, false,
 				debugRemapAppender);
-		config.logger("org.thymeleaf", null, false, debugRemapAppender);
 	}
 
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
@@ -127,22 +130,36 @@ class DefaultLogbackConfiguration {
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
 		appender.setEncoder(encoder);
 		config.start(encoder);
-
 		appender.setFile(logFile);
+		setRollingPolicy(appender, config, logFile);
+		setMaxFileSize(appender, config);
+		config.appender("FILE", appender);
+		return appender;
+	}
 
+	private void setRollingPolicy(RollingFileAppender<ILoggingEvent> appender,
+			LogbackConfigurator config, String logFile) {
 		FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
 		rollingPolicy.setFileNamePattern(logFile + ".%i");
 		appender.setRollingPolicy(rollingPolicy);
 		rollingPolicy.setParent(appender);
 		config.start(rollingPolicy);
+	}
 
+	private void setMaxFileSize(RollingFileAppender<ILoggingEvent> appender,
+			LogbackConfigurator config) {
 		SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>();
-		triggeringPolicy.setMaxFileSize("10MB");
+		try {
+			triggeringPolicy.setMaxFileSize(FileSize.valueOf("10MB"));
+		}
+		catch (NoSuchMethodError ex) {
+			// Logback < 1.1.8 used String configuration
+			Method method = ReflectionUtils.findMethod(SizeBasedTriggeringPolicy.class,
+					"setMaxFileSize", String.class);
+			ReflectionUtils.invokeMethod(method, triggeringPolicy, "10MB");
+		}
 		appender.setTriggeringPolicy(triggeringPolicy);
 		config.start(triggeringPolicy);
-
-		config.appender("FILE", appender);
-		return appender;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,15 @@ package org.springframework.boot.autoconfigure.security.oauth2.client;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2RestOperationsConfiguration.OAuth2ClientIdCondition;
@@ -68,11 +70,11 @@ import org.springframework.util.StringUtils;
 public class OAuth2RestOperationsConfiguration {
 
 	@Configuration
-	@ConditionalOnNotWebApplication
+	@Conditional(ClientCredentialsCondition.class)
 	protected static class SingletonScopedConfiguration {
 
 		@Bean
-		@ConfigurationProperties("security.oauth2.client")
+		@ConfigurationProperties(prefix = "security.oauth2.client")
 		@Primary
 		public ClientCredentialsResourceDetails oauth2RemoteResource() {
 			ClientCredentialsResourceDetails details = new ClientCredentialsResourceDetails();
@@ -88,14 +90,14 @@ public class OAuth2RestOperationsConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(OAuth2ClientConfiguration.class)
-	@ConditionalOnWebApplication
+	@Conditional(NoClientCredentialsCondition.class)
 	@Import(OAuth2ProtectedResourceDetailsConfiguration.class)
 	protected static class SessionScopedConfiguration {
 
 		@Bean
-		public FilterRegistrationBean oauth2ClientFilterRegistration(
+		public FilterRegistrationBean<OAuth2ClientContextFilter> oauth2ClientFilterRegistration(
 				OAuth2ClientContextFilter filter, SecurityProperties security) {
-			FilterRegistrationBean registration = new FilterRegistrationBean();
+			FilterRegistrationBean<OAuth2ClientContextFilter> registration = new FilterRegistrationBean<OAuth2ClientContextFilter>();
 			registration.setFilter(filter);
 			registration.setOrder(security.getFilterOrder() - 10);
 			return registration;
@@ -118,15 +120,13 @@ public class OAuth2RestOperationsConfiguration {
 
 	}
 
-	/*
-	 * When the authentication is per cookie but the stored token is an oauth2 one, we can
-	 * pass that on to a client that wants to call downstream. We don't even need an
-	 * OAuth2ClientContextFilter until we need to refresh the access token. To handle
-	 * refresh tokens you need to {@code @EnableOAuth2Client}
-	 */
+	// When the authentication is per cookie but the stored token is an oauth2 one, we can
+	// pass that on to a client that wants to call downstream. We don't even need an
+	// OAuth2ClientContextFilter until we need to refresh the access token. To handle
+	// refresh tokens you need to @EnableOAuth2Client
 	@Configuration
 	@ConditionalOnMissingBean(OAuth2ClientConfiguration.class)
-	@ConditionalOnWebApplication
+	@Conditional(NoClientCredentialsCondition.class)
 	@Import(OAuth2ProtectedResourceDetailsConfiguration.class)
 	protected static class RequestScopedConfiguration {
 
@@ -173,4 +173,39 @@ public class OAuth2RestOperationsConfiguration {
 		}
 
 	}
+
+	/**
+	 * Condition to check for no client credentials.
+	 */
+	static class NoClientCredentialsCondition extends NoneNestedConditions {
+
+		NoClientCredentialsCondition() {
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
+		}
+
+		@Conditional(ClientCredentialsCondition.class)
+		static class ClientCredentialsActivated {
+		}
+
+	}
+
+	/**
+	 * Condition to check for client credentials.
+	 */
+	static class ClientCredentialsCondition extends AnyNestedCondition {
+
+		ClientCredentialsCondition() {
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
+		}
+
+		@ConditionalOnProperty(prefix = "security.oauth2.client", name = "grant-type", havingValue = "client_credentials", matchIfMissing = false)
+		static class ClientCredentialsConfigured {
+		}
+
+		@ConditionalOnNotWebApplication
+		static class NoWebApplication {
+		}
+
+	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,13 @@ import bitronix.tm.BitronixTransactionManager;
 import bitronix.tm.TransactionManagerServices;
 import bitronix.tm.jndi.BitronixContext;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 import org.springframework.boot.jta.XADataSourceWrapper;
 import org.springframework.boot.jta.bitronix.BitronixDependentBeanFactoryPostProcessor;
@@ -46,22 +49,29 @@ import org.springframework.util.StringUtils;
  * @author Josh Long
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  * @since 1.2.0
  */
 @Configuration
+@EnableConfigurationProperties(JtaProperties.class)
 @ConditionalOnClass({ JtaTransactionManager.class, BitronixContext.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
 class BitronixJtaConfiguration {
 
 	private final JtaProperties jtaProperties;
 
-	BitronixJtaConfiguration(JtaProperties jtaProperties) {
+	private final TransactionManagerCustomizers transactionManagerCustomizers;
+
+	BitronixJtaConfiguration(JtaProperties jtaProperties,
+			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 		this.jtaProperties = jtaProperties;
+		this.transactionManagerCustomizers = transactionManagerCustomizers
+				.getIfAvailable();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConfigurationProperties("spring.jta.bitronix.properties")
+	@ConfigurationProperties(prefix = "spring.jta.bitronix.properties")
 	public bitronix.tm.Configuration bitronixConfiguration() {
 		bitronix.tm.Configuration config = TransactionManagerServices.getConfiguration();
 		if (StringUtils.hasText(this.jtaProperties.getTransactionManagerId())) {
@@ -105,7 +115,12 @@ class BitronixJtaConfiguration {
 	@Bean
 	public JtaTransactionManager transactionManager(
 			TransactionManager transactionManager) {
-		return new JtaTransactionManager(transactionManager);
+		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(
+				transactionManager);
+		if (this.transactionManagerCustomizers != null) {
+			this.transactionManagerCustomizers.customize(jtaTransactionManager);
+		}
+		return jtaTransactionManager;
 	}
 
 	@ConditionalOnClass(Message.class)
@@ -116,5 +131,7 @@ class BitronixJtaConfiguration {
 		public BitronixXAConnectionFactoryWrapper xaConnectionFactoryWrapper() {
 			return new BitronixXAConnectionFactoryWrapper();
 		}
+
 	}
+
 }

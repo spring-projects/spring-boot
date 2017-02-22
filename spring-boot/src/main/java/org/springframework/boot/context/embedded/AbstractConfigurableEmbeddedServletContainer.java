@@ -80,7 +80,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 
 	private SslStoreProvider sslStoreProvider;
 
-	private JspServlet jspServlet = new JspServlet();
+	private Jsp jsp = new Jsp();
 
 	private Compression compression;
 
@@ -308,12 +308,12 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	}
 
 	@Override
-	public void setJspServlet(JspServlet jspServlet) {
-		this.jspServlet = jspServlet;
+	public void setJsp(Jsp jsp) {
+		this.jsp = jsp;
 	}
 
-	public JspServlet getJspServlet() {
-		return this.jspServlet;
+	public Jsp getJsp() {
+		return this.jsp;
 	}
 
 	public Compression getCompression() {
@@ -370,8 +370,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	 * @return {@code true} if the container should be registered, otherwise {@code false}
 	 */
 	protected boolean shouldRegisterJspServlet() {
-		return this.jspServlet != null && this.jspServlet.getRegistered() && ClassUtils
-				.isPresent(this.jspServlet.getClassName(), getClass().getClassLoader());
+		return this.jsp != null && this.jsp.getRegistered() && ClassUtils
+				.isPresent(this.jsp.getClassName(), getClass().getClassLoader());
 	}
 
 }

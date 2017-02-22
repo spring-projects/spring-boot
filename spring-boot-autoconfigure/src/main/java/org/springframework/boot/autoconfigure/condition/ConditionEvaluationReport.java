@@ -264,6 +264,7 @@ public final class ConditionEvaluationReport {
 		public String toString() {
 			return this.condition.getClass() + " " + this.outcome;
 		}
+
 	}
 
 	private static class AncestorsMatchedCondition implements Condition {

@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
  * @author Madhura Bhave
  * @since 1.5.0
  */
-public class AbstractNamedMvcEndpoint extends AbstractMvcEndpoint
+public abstract class AbstractNamedMvcEndpoint extends AbstractMvcEndpoint
 		implements NamedMvcEndpoint {
 
 	private final String name;

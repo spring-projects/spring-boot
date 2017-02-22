@@ -126,9 +126,9 @@ public class Metric<T extends Number> {
 		if (obj instanceof Metric) {
 			Metric<?> other = (Metric<?>) obj;
 			boolean rtn = true;
-			rtn &= ObjectUtils.nullSafeEquals(this.name, other.name);
-			rtn &= ObjectUtils.nullSafeEquals(this.timestamp, other.timestamp);
-			rtn &= ObjectUtils.nullSafeEquals(this.value, other.value);
+			rtn = rtn && ObjectUtils.nullSafeEquals(this.name, other.name);
+			rtn = rtn && ObjectUtils.nullSafeEquals(this.timestamp, other.timestamp);
+			rtn = rtn && ObjectUtils.nullSafeEquals(this.value, other.value);
 			return rtn;
 		}
 		return super.equals(obj);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.jar.JarFile;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -43,9 +40,11 @@ import org.apache.maven.shared.artifact.filter.collection.ScopeFilter;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.boot.loader.tools.Layout;
+import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Repackager;
+import org.springframework.boot.loader.tools.Repackager.MainClassTimeoutWarningListener;
 
 /**
  * Repackages existing JAR and WAR archives so that they can be executed from the command
@@ -58,8 +57,6 @@ import org.springframework.boot.loader.tools.Repackager;
  */
 @Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class RepackageMojo extends AbstractDependencyFilterMojo {
-
-	private static final long FIND_WARNING_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
 
 	/**
 	 * The Maven project.
@@ -132,6 +129,15 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter
 	private LayoutType layout;
+
+	/**
+	 * The layout factory that will be used to create the executable archive if no
+	 * explicit layout is set. Alternative layouts implementations can be provided by 3rd
+	 * parties.
+	 * @since 1.5
+	 */
+	@Parameter
+	private LayoutFactory layoutFactory;
 
 	/**
 	 * A list of the libraries that must be unpacked from fat jars in order to run.
@@ -224,7 +230,9 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private Repackager getRepackager(File source) {
-		Repackager repackager = new LoggingRepackager(source, getLog());
+		Repackager repackager = new Repackager(source, this.layoutFactory);
+		repackager.addMainClassTimeoutWarningListener(
+				new LoggingMainClassTimeoutWarningListener());
 		repackager.setMainClass(this.mainClass);
 		if (this.layout != null) {
 			getLog().info("Layout: " + this.layout);
@@ -335,11 +343,6 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		DIR(new Layouts.Expanded()),
 
 		/**
-		 * Module Layout.
-		 */
-		MODULE(new Layouts.Module()),
-
-		/**
 		 * No Layout.
 		 */
 		NONE(new Layouts.None());
@@ -356,30 +359,15 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	}
 
-	private static class LoggingRepackager extends Repackager {
-
-		private final Log log;
-
-		LoggingRepackager(File source, Log log) {
-			super(source);
-			this.log = log;
-		}
+	private class LoggingMainClassTimeoutWarningListener
+			implements MainClassTimeoutWarningListener {
 
 		@Override
-		protected String findMainMethod(JarFile source) throws IOException {
-			long startTime = System.currentTimeMillis();
-			try {
-				return super.findMainMethod(source);
-			}
-			finally {
-				long duration = System.currentTimeMillis() - startTime;
-				if (duration > FIND_WARNING_TIMEOUT) {
-					this.log.warn("Searching for the main-class is taking some time, "
-							+ "consider using the mainClass configuration "
-							+ "parameter");
-				}
-			}
+		public void handleTimeoutWarning(long duration, String mainMethod) {
+			getLog().warn("Searching for the main-class is taking some time, "
+					+ "consider using the mainClass configuration " + "parameter");
 		}
 
 	}
+
 }

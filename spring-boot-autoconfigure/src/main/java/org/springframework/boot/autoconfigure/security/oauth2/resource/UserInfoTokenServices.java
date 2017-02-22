@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,9 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 			throws AuthenticationException, InvalidTokenException {
 		Map<String, Object> map = getMap(this.userInfoEndpointUrl, accessToken);
 		if (map.containsKey("error")) {
-			this.logger.debug("userinfo returned error: " + map.get("error"));
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("userinfo returned error: " + map.get("error"));
+			}
 			throw new InvalidTokenException(accessToken);
 		}
 		return extractAuthentication(map);
@@ -123,7 +125,9 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 
 	@SuppressWarnings({ "unchecked" })
 	private Map<String, Object> getMap(String path, String accessToken) {
-		this.logger.info("Getting user info from: " + path);
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Getting user info from: " + path);
+		}
 		try {
 			OAuth2RestOperations restTemplate = this.restTemplate;
 			if (restTemplate == null) {
@@ -142,7 +146,7 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 			return restTemplate.getForEntity(path, Map.class).getBody();
 		}
 		catch (Exception ex) {
-			this.logger.info("Could not fetch user details: " + ex.getClass() + ", "
+			this.logger.warn("Could not fetch user details: " + ex.getClass() + ", "
 					+ ex.getMessage());
 			return Collections.<String, Object>singletonMap("error",
 					"Could not fetch user details");

@@ -80,6 +80,7 @@ import org.springframework.retry.support.RetryTemplate;
  * <li>{@literal spring.rabbitmq.metrics} is used to enable metrics collection, default is
  * true. RabbitMQ Java Client metrics needs Dropwizard Metrics to be on the classpath to work.</li>
  * </ul>
+ *
  * @author Greg Turnquist
  * @author Josh Long
  * @author Stephane Nicoll

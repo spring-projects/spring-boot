@@ -58,11 +58,11 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Matchers.anyDouble;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -126,6 +126,51 @@ public class MetricFilterAutoConfigurationTests {
 				.increment("status.200.templateVarTest.someVariable");
 		verify(context.getBean(GaugeService.class))
 				.submit(eq("response.templateVarTest.someVariable"), anyDouble());
+		context.close();
+	}
+
+	@Test
+	public void recordsHttpInteractionsWithRegexTemplateVariable() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				Config.class, MetricFilterAutoConfiguration.class);
+		Filter filter = context.getBean(Filter.class);
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
+				.addFilter(filter).build();
+		mvc.perform(get("/templateVarRegexTest/foo")).andExpect(status().isOk());
+		verify(context.getBean(CounterService.class))
+				.increment("status.200.templateVarRegexTest.someVariable");
+		verify(context.getBean(GaugeService.class))
+				.submit(eq("response.templateVarRegexTest.someVariable"), anyDouble());
+		context.close();
+	}
+
+	@Test
+	public void recordsHttpInteractionsWithWildcardMapping() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				Config.class, MetricFilterAutoConfiguration.class);
+		Filter filter = context.getBean(Filter.class);
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
+				.addFilter(filter).build();
+		mvc.perform(get("/wildcardMapping/foo")).andExpect(status().isOk());
+		verify(context.getBean(CounterService.class))
+				.increment("status.200.wildcardMapping.star");
+		verify(context.getBean(GaugeService.class))
+				.submit(eq("response.wildcardMapping.star"), anyDouble());
+		context.close();
+	}
+
+	@Test
+	public void recordsHttpInteractionsWithDoubleWildcardMapping() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				Config.class, MetricFilterAutoConfiguration.class);
+		Filter filter = context.getBean(Filter.class);
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
+				.addFilter(filter).build();
+		mvc.perform(get("/doubleWildcardMapping/foo/bar/baz")).andExpect(status().isOk());
+		verify(context.getBean(CounterService.class))
+				.increment("status.200.doubleWildcardMapping.star-star.baz");
+		verify(context.getBean(GaugeService.class))
+				.submit(eq("response.doubleWildcardMapping.star-star.baz"), anyDouble());
 		context.close();
 	}
 
@@ -426,6 +471,22 @@ public class MetricFilterAutoConfigurationTests {
 
 		@RequestMapping("templateVarTest/{someVariable}")
 		public String testTemplateVariableResolution(@PathVariable String someVariable) {
+			return someVariable;
+		}
+
+		@RequestMapping("wildcardMapping/*")
+		public String testWildcardMapping() {
+			return "wildcard";
+		}
+
+		@RequestMapping("doubleWildcardMapping/**/baz")
+		public String testDoubleWildcardMapping() {
+			return "doubleWildcard";
+		}
+
+		@RequestMapping("templateVarRegexTest/{someVariable:[a-z]+}")
+		public String testTemplateVariableRegexResolution(
+				@PathVariable String someVariable) {
 			return someVariable;
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,7 +191,7 @@ public class TestEntityManagerTests {
 	public void getIdForTypeWhenTypeIsWrongShouldThrowException() throws Exception {
 		TestEntity entity = new TestEntity();
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
-		this.thrown.expectMessage("ID mismatch Object of class [java.lang.Integer] "
+		this.thrown.expectMessage("ID mismatch: Object of class [java.lang.Integer] "
 				+ "must be an instance of class java.lang.Long");
 		this.testEntityManager.getId(entity, Long.class);
 	}

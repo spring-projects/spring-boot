@@ -22,6 +22,7 @@ package org.springframework.boot.loader.tools;
  * @author Phillip Webb
  * @since 1.3.0
  */
+@FunctionalInterface
 public interface LaunchScript {
 
 	/**

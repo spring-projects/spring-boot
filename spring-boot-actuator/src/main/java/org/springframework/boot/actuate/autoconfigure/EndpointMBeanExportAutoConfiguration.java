@@ -21,13 +21,17 @@ import javax.management.MBeanServer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.autoconfigure.EndpointMBeanExportAutoConfiguration.JmxEnabledCondition;
+import org.springframework.boot.actuate.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.jmx.AuditEventsJmxEndpoint;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanExporter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
@@ -58,9 +62,9 @@ public class EndpointMBeanExportAutoConfiguration {
 	private final ObjectMapper objectMapper;
 
 	public EndpointMBeanExportAutoConfiguration(EndpointMBeanExportProperties properties,
-			ObjectProvider<ObjectMapper> objectMapperProvider) {
+			ObjectProvider<ObjectMapper> objectMapper) {
 		this.properties = properties;
-		this.objectMapper = objectMapperProvider.getIfAvailable();
+		this.objectMapper = objectMapper.getIfAvailable();
 	}
 
 	@Bean
@@ -81,6 +85,14 @@ public class EndpointMBeanExportAutoConfiguration {
 	@ConditionalOnMissingBean(MBeanServer.class)
 	public MBeanServer mbeanServer() {
 		return new JmxAutoConfiguration().mbeanServer();
+	}
+
+	@Bean
+	@ConditionalOnBean(AuditEventRepository.class)
+	@ConditionalOnEnabledEndpoint("auditevents")
+	public AuditEventsJmxEndpoint auditEventsEndpoint(
+			AuditEventRepository auditEventRepository) {
+		return new AuditEventsJmxEndpoint(this.objectMapper, auditEventRepository);
 	}
 
 	/**

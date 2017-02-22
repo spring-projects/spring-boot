@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,7 @@
 
 package org.springframework.boot.actuate.metrics.repository;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.concurrent.ConcurrentNavigableMap;
 
 import org.springframework.boot.actuate.metrics.Metric;
@@ -28,16 +25,14 @@ import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository.Ca
 import org.springframework.boot.actuate.metrics.writer.Delta;
 
 /**
- * {@link MetricRepository} and {@link MultiMetricRepository} implementation that stores
- * metrics in memory.
+ * {@link MetricRepository} implementation that stores metrics in memory.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
-public class InMemoryMetricRepository implements MetricRepository, MultiMetricRepository {
+public class InMemoryMetricRepository implements MetricRepository {
 
 	private final SimpleInMemoryRepository<Metric<?>> metrics = new SimpleInMemoryRepository<Metric<?>>();
-
-	private final Collection<String> groups = new HashSet<String>();
 
 	public void setValues(ConcurrentNavigableMap<String, Metric<?>> values) {
 		this.metrics.setValues(values);
@@ -49,17 +44,16 @@ public class InMemoryMetricRepository implements MetricRepository, MultiMetricRe
 		final int amount = delta.getValue().intValue();
 		final Date timestamp = delta.getTimestamp();
 		this.metrics.update(metricName, new Callback<Metric<?>>() {
+
 			@Override
 			public Metric<?> modify(Metric<?> current) {
 				if (current != null) {
-					Metric<? extends Number> metric = current;
 					return new Metric<Long>(metricName,
-							metric.increment(amount).getValue(), timestamp);
+							current.increment(amount).getValue(), timestamp);
 				}
-				else {
-					return new Metric<Long>(metricName, Long.valueOf(amount), timestamp);
-				}
+				return new Metric<Long>(metricName, (long) amount, timestamp);
 			}
+
 		});
 	}
 
@@ -69,48 +63,8 @@ public class InMemoryMetricRepository implements MetricRepository, MultiMetricRe
 	}
 
 	@Override
-	public void set(String group, Collection<Metric<?>> values) {
-		String prefix = group;
-		if (!prefix.endsWith(".")) {
-			prefix = prefix + ".";
-		}
-		for (Metric<?> metric : values) {
-			if (!metric.getName().startsWith(prefix)) {
-				metric = new Metric<Number>(prefix + metric.getName(), metric.getValue(),
-						metric.getTimestamp());
-			}
-			set(metric);
-		}
-		this.groups.add(group);
-	}
-
-	@Override
-	public void increment(String group, Delta<?> delta) {
-		String prefix = group;
-		if (!prefix.endsWith(".")) {
-			prefix = prefix + ".";
-		}
-		if (!delta.getName().startsWith(prefix)) {
-			delta = new Delta<Number>(prefix + delta.getName(), delta.getValue(),
-					delta.getTimestamp());
-		}
-		increment(delta);
-		this.groups.add(group);
-	}
-
-	@Override
-	public Iterable<String> groups() {
-		return Collections.unmodifiableCollection(this.groups);
-	}
-
-	@Override
 	public long count() {
 		return this.metrics.count();
-	}
-
-	@Override
-	public long countGroups() {
-		return this.groups.size();
 	}
 
 	@Override
@@ -128,9 +82,8 @@ public class InMemoryMetricRepository implements MetricRepository, MultiMetricRe
 		return this.metrics.findAll();
 	}
 
-	@Override
-	public Iterable<Metric<?>> findAll(String metricNamePrefix) {
-		return this.metrics.findAllWithPrefix(metricNamePrefix);
+	public Iterable<Metric<?>> findAllWithPrefix(String prefix) {
+		return this.metrics.findAllWithPrefix(prefix);
 	}
 
 }

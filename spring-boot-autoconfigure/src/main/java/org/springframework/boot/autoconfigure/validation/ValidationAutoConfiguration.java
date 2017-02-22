@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,15 @@
 package org.springframework.boot.autoconfigure.validation;
 
 import javax.validation.Validator;
+import javax.validation.executable.ExecutableValidator;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
+import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 /**
@@ -32,14 +35,27 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  * @author Stephane Nicoll
  * @since 1.5.0
  */
-@ConditionalOnClass({ Validator.class })
+@ConditionalOnClass(ExecutableValidator.class)
+@ConditionalOnResource(resources = "classpath:META-INF/services/javax.validation.spi.ValidationProvider")
 public class ValidationAutoConfiguration {
 
 	@Bean
-	@ConditionalOnResource(resources = "META-INF/services/javax.validation.spi.ValidationProvider")
 	@ConditionalOnMissingBean
-	public MethodValidationPostProcessor methodValidationPostProcessor() {
-		return new MethodValidationPostProcessor();
+	public Validator validator() {
+		LocalValidatorFactoryBean factoryBean = new LocalValidatorFactoryBean();
+		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory();
+		factoryBean.setMessageInterpolator(interpolatorFactory.getObject());
+		return factoryBean;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public MethodValidationPostProcessor methodValidationPostProcessor(
+			Validator validator) {
+		MethodValidationPostProcessor processor = new MethodValidationPostProcessor();
+		processor.setProxyTargetClass(true);
+		processor.setValidator(validator);
+		return processor;
 	}
 
 }

@@ -16,11 +16,12 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.test.autoconfigure.filter.AnnotationCustomizableTypeExcludeFilter;
@@ -28,8 +29,6 @@ import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBea
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.type.classreading.MetadataReader;
-import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -54,6 +53,7 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		includes.add(FilterRegistrationBean.class);
 		includes.add(DelegatingFilterProxyRegistrationBean.class);
 		includes.add(HandlerMethodArgumentResolver.class);
+		includes.add(ErrorAttributes.class);
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
 	};
 
@@ -70,20 +70,6 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	WebMvcTypeExcludeFilter(Class<?> testClass) {
 		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
 				WebMvcTest.class);
-	}
-
-	@Override
-	protected boolean defaultInclude(MetadataReader metadataReader,
-			MetadataReaderFactory metadataReaderFactory) throws IOException {
-		if (super.defaultInclude(metadataReader, metadataReaderFactory)) {
-			return true;
-		}
-		for (Class<?> controller : this.annotation.controllers()) {
-			if (isTypeOrAnnotated(metadataReader, metadataReaderFactory, controller)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@Override
@@ -113,6 +99,11 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 			return DEFAULT_INCLUDES_AND_CONTROLLER;
 		}
 		return DEFAULT_INCLUDES;
+	}
+
+	@Override
+	protected Set<Class<?>> getComponentIncludes() {
+		return new LinkedHashSet<Class<?>>(Arrays.asList(this.annotation.controllers()));
 	}
 
 }

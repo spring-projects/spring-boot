@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -46,12 +47,12 @@ import org.springframework.core.io.ResourceLoader;
  * new SpringApplicationBuilder(ParentConfig.class).child(ChildConfig.class).run(args);
  * </pre>
  *
- * Another common use case is setting default arguments, e.g. active Spring profiles, to
- * set up the environment for an application:
+ * Another common use case is setting active profiles and default properties to set up the
+ * environment for an application:
  *
  * <pre class="code">
  * new SpringApplicationBuilder(Application.class).profiles(&quot;server&quot;)
- * 		.defaultArgs(&quot;--transport=local&quot;).run(args);
+ * 		.properties(&quot;transport=local&quot;).run(args);
  * </pre>
  *
  * <p>
@@ -296,9 +297,23 @@ public class SpringApplicationBuilder {
 	 * classpath if not set).
 	 * @param webEnvironment the flag to set
 	 * @return the current builder
+	 * @deprecated since 2.0.0 in favour of {@link #web(WebApplicationType)}
 	 */
+	@Deprecated
 	public SpringApplicationBuilder web(boolean webEnvironment) {
 		this.application.setWebEnvironment(webEnvironment);
+		return this;
+	}
+
+	/**
+	 * Flag to explicitly request a specific type of web application. Auto-detected based
+	 * on the classpath if not set.
+	 * @param webApplication the type of web application
+	 * @return the current builder
+	 * @since 2.0.0
+	 */
+	public SpringApplicationBuilder web(WebApplicationType webApplication) {
+		this.application.setWebApplicationType(webApplication);
 		return this;
 	}
 

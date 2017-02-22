@@ -23,6 +23,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.sql.DataSource;
+
 import liquibase.integration.spring.SpringLiquibase;
 import org.flywaydb.core.Flyway;
 import org.junit.After;
@@ -50,6 +52,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionEvaluationRepor
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
 import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.bind.PropertySourcesBinder;
@@ -65,7 +68,6 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.validation.BindException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link EndpointAutoConfiguration}.
@@ -222,12 +224,13 @@ public class EndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void flywayEndpointIsDisabledWhenThereAreMultipleFlywayBeans() {
+	public void testFlywayEndpointWithMultipleFlywayBeans() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(MultipleFlywayBeansConfig.class,
-				EndpointAutoConfiguration.class);
+				FlywayAutoConfiguration.class, EndpointAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBeansOfType(FlywayEndpoint.class)).hasSize(0);
+		assertThat(this.context.getBeansOfType(Flyway.class)).hasSize(2);
+		assertThat(this.context.getBeansOfType(FlywayEndpoint.class)).hasSize(1);
 	}
 
 	@Test
@@ -242,12 +245,13 @@ public class EndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void liquibaseEndpointIsDisabledWhenThereAreMultipleSpringLiquibaseBeans() {
+	public void testLiquibaseEndpointWithMultipleSpringLiquibaseBeans() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(MultipleLiquibaseBeansConfig.class,
-				EndpointAutoConfiguration.class);
+				LiquibaseAutoConfiguration.class, EndpointAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBeansOfType(LiquibaseEndpoint.class)).hasSize(0);
+		assertThat(this.context.getBeansOfType(SpringLiquibase.class)).hasSize(2);
+		assertThat(this.context.getBeansOfType(LiquibaseEndpoint.class)).hasSize(1);
 	}
 
 	private void load(Class<?>... config) {
@@ -330,32 +334,58 @@ public class EndpointAutoConfigurationTests {
 
 	}
 
-	@Configuration
-	static class MultipleFlywayBeansConfig {
+	static class DataSourceConfig {
 
 		@Bean
-		Flyway flywayOne() {
-			return mock(Flyway.class);
+		public DataSource dataSourceOne() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:changelogdbtest")
+					.username("sa").build();
 		}
 
 		@Bean
-		Flyway flywayTwo() {
-			return mock(Flyway.class);
+		public DataSource dataSourceTwo() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:changelogdbtest2")
+					.username("sa").build();
 		}
 
 	}
 
 	@Configuration
-	static class MultipleLiquibaseBeansConfig {
+	static class MultipleFlywayBeansConfig extends DataSourceConfig {
 
 		@Bean
-		SpringLiquibase liquibaseOne() {
-			return mock(SpringLiquibase.class);
+		public Flyway flywayOne() {
+			Flyway flyway = new Flyway();
+			flyway.setDataSource(dataSourceOne());
+			return flyway;
 		}
 
 		@Bean
-		SpringLiquibase liquibaseTwo() {
-			return mock(SpringLiquibase.class);
+		public Flyway flywayTwo() {
+			Flyway flyway = new Flyway();
+			flyway.setDataSource(dataSourceTwo());
+			return flyway;
+		}
+
+	}
+
+	@Configuration
+	static class MultipleLiquibaseBeansConfig extends DataSourceConfig {
+
+		@Bean
+		public SpringLiquibase liquibaseOne() {
+			SpringLiquibase liquibase = new SpringLiquibase();
+			liquibase.setChangeLog("classpath:/db/changelog/db.changelog-master.yaml");
+			liquibase.setDataSource(dataSourceOne());
+			return liquibase;
+		}
+
+		@Bean
+		public SpringLiquibase liquibaseTwo() {
+			SpringLiquibase liquibase = new SpringLiquibase();
+			liquibase.setChangeLog("classpath:/db/changelog/db.changelog-master.yaml");
+			liquibase.setDataSource(dataSourceTwo());
+			return liquibase;
 		}
 
 	}

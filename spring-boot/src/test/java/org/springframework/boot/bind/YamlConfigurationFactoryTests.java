@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,6 @@ public class YamlConfigurationFactoryTests {
 		YamlConfigurationFactory<Foo> factory = new YamlConfigurationFactory<Foo>(
 				Foo.class);
 		factory.setYaml(yaml);
-		factory.setExceptionIfInvalid(true);
 		factory.setPropertyAliases(this.aliases);
 		factory.setValidator(this.validator);
 		factory.setMessageSource(new StaticMessageSource());
@@ -60,7 +59,6 @@ public class YamlConfigurationFactoryTests {
 		YamlConfigurationFactory<Jee> factory = new YamlConfigurationFactory<Jee>(
 				Jee.class);
 		factory.setYaml(yaml);
-		factory.setExceptionIfInvalid(true);
 		factory.setPropertyAliases(this.aliases);
 		factory.setValidator(this.validator);
 		factory.setMessageSource(new StaticMessageSource());
@@ -100,13 +98,18 @@ public class YamlConfigurationFactoryTests {
 	}
 
 	private static class Foo {
+
 		@NotNull
 		public String name;
 
 		public String bar;
+
 	}
 
 	private static class Jee {
+
 		public Map<Object, Object> mymap;
+
 	}
+
 }

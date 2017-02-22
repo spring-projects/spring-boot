@@ -73,6 +73,10 @@ The following technology agnostic endpoints are available:
 HATEOAS to be on the classpath.
 |true
 
+|`auditevents`
+|Exposes audit events information for the current application.
+|true
+
 |`autoconfig`
 |Displays an auto-configuration report showing all auto-configuration candidates and the
  reason why they '`were`' or '`were not`' applied.
@@ -532,11 +536,32 @@ all enabled endpoints to be exposed over HTTP. The default convention is to use 
 
 
 [[production-ready-sensitive-endpoints]]
-=== Securing sensitive endpoints
-If you add '`Spring Security`' to your project, all sensitive endpoints exposed over HTTP
-will be protected. By default '`basic`' authentication will be used with the username
-`user` and a generated password (which is printed on the console when the application
-starts).
+=== Accessing sensitive endpoints
+By default all sensitive HTTP endpoints are secured such that only users that have an
+`ACTUATOR` role may access them. Security is enforced using the standard
+`HttpServletRequest.isUserInRole` method.
+
+TIP: Use the `management.security.roles` property if you want something different to
+`ACTUATOR`.
+
+If you are deploying applications behind a firewall, you may prefer that all your actuator
+endpoints can be accessed without requiring authentication. You can do this by changing
+the `management.security.enabled` property:
+
+.application.properties
+[source,properties,indent=0]
+----
+	management.security.enabled=false
+----
+
+NOTE: By default, actuator endpoints are exposed on the same port that serves regular
+HTTP traffic. Take care not to accidentally expose sensitive information if you change
+the `management.security.enabled` property.
+
+If you're deploying applications publicly, you may want to add '`Spring Security`' to
+handle user authentication. When '`Spring Security`' is added, by default '`basic`'
+authentication will be used with the username `user` and a generated password (which is
+printed on the console when the application starts).
 
 TIP: Generated passwords are logged as the application starts. Search for '`Using default
 security password`'.
@@ -552,10 +577,6 @@ in your `application.properties`:
 	management.security.roles=SUPERUSER
 ----
 
-TIP: If you don't use Spring Security and your HTTP endpoints are exposed publicly,
-you should carefully consider which endpoints you enable. See
-<<production-ready-customizing-endpoints>> for details of how you can set
-`endpoints.enabled` to `false` then "`opt-in`" only specific endpoints.
 
 
 [[production-ready-customizing-management-server-context-path]]
@@ -630,7 +651,7 @@ management server to be available via HTTP while the main application uses HTTPS
 	server.ssl.key-store=classpath:store.jks
 	server.ssl.key-password=secret
 	management.port=8080
-	management.ssl.enable=false
+	management.ssl.enabled=false
 ----
 
 Alternatively, both the main server and the management server can use SSL but with
@@ -643,7 +664,7 @@ different key stores:
 	server.ssl.key-store=classpath:main.jks
 	server.ssl.key-password=secret
 	management.port=8080
-	management.ssl.enable=true
+	management.ssl.enabled=true
 	management.ssl.key-store=classpath:management.jks
 	management.ssl.key-password=secret
 ----
@@ -1024,25 +1045,6 @@ beans are gathered by the endpoint. You can easily change that by defining your 
 
 
 
-[[production-ready-metric-repositories]]
-=== Special features with Java 8
-The default implementation of `GaugeService` and `CounterService` provided by Spring Boot
-depends on the version of Java that you are using. With Java 8 (or better) the
-implementation switches to a high-performance version optimized for fast writes, backed by
-atomic in-memory buffers, rather than by the immutable but relatively expensive
-`Metric<?>` type (counters are approximately 5 times faster and gauges approximately twice
-as fast as the repository-based implementations). The Dropwizard metrics services (see
-below) are also very efficient even for Java 7 (they have backports of some of the Java 8
-concurrency libraries), but they do not record timestamps for metric values. If
-performance of metric gathering is a concern then it is always advisable to use one of the
-high-performance options, and also to only read metrics infrequently, so that the writes
-are buffered locally and only read when needed.
-
-NOTE: The old `MetricRepository` and its `InMemoryMetricRepository` implementation are not
-used by default if you are on Java 8 or if you are using Dropwizard metrics.
-
-
-
 [[production-ready-metric-writers]]
 === Metric writers, exporters and aggregation
 Spring Boot provides a couple of implementations of a marker interface called `Exporter`
@@ -1053,6 +1055,10 @@ can be analyzed and displayed. Indeed, if you provide a `@Bean` that implements 
 metric updates every 5 seconds (configured via `spring.metrics.export.delay-millis`).
 In addition, any `MetricReader` that you define and mark as `@ExportMetricReader` will
 have its values exported by the default exporter.
+
+NOTE: This feature is enabling scheduling in your application (`@EnableScheduling`) which
+can be a problem if you run an integration test as your own scheduled tasks will start.
+You can disable this behaviour by setting `spring.metrics.export.enabled` to `false`.
 
 The default exporter is a `MetricCopyExporter` which tries to optimize itself by not
 copying values that haven't changed since it was last called (the optimization can be
@@ -1089,19 +1095,19 @@ Example:
 
 [source,java,indent=0]
 ----
-@Bean
-@ExportMetricWriter
-MetricWriter metricWriter(MetricExportProperties export) {
-	return new RedisMetricRepository(connectionFactory,
-      export.getRedis().getPrefix(), export.getRedis().getKey());
-}
+	@Bean
+	@ExportMetricWriter
+	MetricWriter metricWriter(MetricExportProperties export) {
+		return new RedisMetricRepository(connectionFactory,
+			export.getRedis().getPrefix(), export.getRedis().getKey());
+	}
 ----
 
 .application.properties
-[source,properties]
+[source,properties,indent=0]
 ----
-spring.metrics.export.redis.prefix: metrics.mysystem.${spring.application.name:application}.${random.value:0000}
-spring.metrics.export.redis.key: keys.metrics.mysystem
+	spring.metrics.export.redis.prefix: metrics.mysystem.${spring.application.name:application}.${random.value:0000}
+	spring.metrics.export.redis.key: keys.metrics.mysystem
 ----
 
 The prefix is constructed with the application name and id at the end, so it can easily be used
@@ -1140,21 +1146,21 @@ Example:
 
 [source,indent=0]
 ----
-curl localhost:4242/api/query?start=1h-ago&m=max:counter.status.200.root
-[
-	{
-		"metric": "counter.status.200.root",
-		"tags": {
-			"domain": "org.springframework.metrics",
-			"process": "b968a76"
-		},
-		"aggregateTags": [],
-		"dps": {
-			"1430492872": 2,
-			"1430492875": 6
+	curl localhost:4242/api/query?start=1h-ago&m=max:counter.status.200.root
+	[
+		{
+			"metric": "counter.status.200.root",
+			"tags": {
+				"domain": "org.springframework.metrics",
+				"process": "b968a76"
+			},
+			"aggregateTags": [],
+			"dps": {
+				"1430492872": 2,
+				"1430492875": 6
+			}
 		}
-	}
-]
+	]
 ----
 
 
@@ -1173,14 +1179,14 @@ Alternatively, you can provide a `@Bean` of type `StatsdMetricWriter` and mark i
 
 [source,java,indent=0]
 ----
-@Value("${spring.application.name:application}.${random.value:0000}")
-private String prefix = "metrics";
+	@Value("${spring.application.name:application}.${random.value:0000}")
+	private String prefix = "metrics";
 
-@Bean
-@ExportMetricWriter
-MetricWriter metricWriter() {
-	return new StatsdMetricWriter(prefix, "localhost", 8125);
-}
+	@Bean
+	@ExportMetricWriter
+	MetricWriter metricWriter() {
+		return new StatsdMetricWriter(prefix, "localhost", 8125);
+	}
 ----
 
 
@@ -1196,11 +1202,11 @@ Example:
 
 [source,java,indent=0]
 ----
-@Bean
-@ExportMetricWriter
-MetricWriter metricWriter(MBeanExporter exporter) {
-	return new JmxMetricWriter(exporter);
-}
+	@Bean
+	@ExportMetricWriter
+	MetricWriter metricWriter(MBeanExporter exporter) {
+		return new JmxMetricWriter(exporter);
+	}
 ----
 
 Each metric is exported as an individual MBean. The format for the `ObjectNames` is given
@@ -1227,24 +1233,24 @@ Example:
 
 [source,java,indent=0]
 ----
-  @Autowired
-  private MetricExportProperties export;
+	@Autowired
+	private MetricExportProperties export;
 
-  @Bean
-  public PublicMetrics metricsAggregate() {
-    return new MetricReaderPublicMetrics(aggregatesMetricReader());
-  }
+	@Bean
+	public PublicMetrics metricsAggregate() {
+		return new MetricReaderPublicMetrics(aggregatesMetricReader());
+	}
 
-  private MetricReader globalMetricsForAggregation() {
-    return new RedisMetricRepository(this.connectionFactory,
-        this.export.getRedis().getAggregatePrefix(), this.export.getRedis().getKey());
-  }
+	private MetricReader globalMetricsForAggregation() {
+		return new RedisMetricRepository(this.connectionFactory,
+			this.export.getRedis().getAggregatePrefix(), this.export.getRedis().getKey());
+	}
 
-  private MetricReader aggregatesMetricReader() {
-    AggregateMetricReader repository = new AggregateMetricReader(
-        globalMetricsForAggregation());
-    return repository;
-  }
+	private MetricReader aggregatesMetricReader() {
+		AggregateMetricReader repository = new AggregateMetricReader(
+			globalMetricsForAggregation());
+		return repository;
+	}
 ----
 
 NOTE: The example above uses `MetricExportProperties` to inject and extract the key and
@@ -1278,10 +1284,12 @@ replaced with a `DropwizardMetricServices`, which is a wrapper around the `Metri
 [[production-ready-metrics-message-channel-integration]]
 === Message channel integration
 If a `MessageChannel` bean called `metricsChannel` exists, then a `MetricWriter` will be
-created that writes metrics to that channel. The writer is automatically hooked up to an
-exporter (as for all writers), so all metric values will appear on the channel, and
-additional analysis or actions can be taken by subscribers (it's up to you to provide the
-channel and any subscribers you need).
+created that writes metrics to that channel. Each message sent to the channel will contain
+a {dc-spring-boot-actuator}/metrics/writer/Delta.{dc-ext}[`Delta`] or
+{dc-spring-boot-actuator}/metrics/Metric.{dc-ext}[`Metric`] payload and have a `metricName`
+header. The writer is automatically hooked up to an exporter (as for all writers), so all
+metric values will appear on the channel, and additional analysis or actions can be taken
+by subscribers (it's up to you to provide the channel and any subscribers you need).
 
 
 
@@ -1308,34 +1316,34 @@ and obtain basic information about the last 100 requests:
 
 [source,json,indent=0]
 ----
-[{
-    "timestamp": 1394343677415,
-    "info": {
-      "method": "GET",
-      "path": "/trace",
-      "headers": {
-        "request": {
-          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-          "Connection": "keep-alive",
-          "Accept-Encoding": "gzip, deflate",
-          "User-Agent": "Mozilla/5.0 Gecko/Firefox",
-          "Accept-Language": "en-US,en;q=0.5",
-          "Cookie": "_ga=GA1.1.827067509.1390890128; ..."
-          "Authorization": "Basic ...",
-          "Host": "localhost:8080"
-        },
-        "response": {
-          "Strict-Transport-Security": "max-age=31536000 ; includeSubDomains",
-          "X-Application-Context": "application:8080",
-          "Content-Type": "application/json;charset=UTF-8",
-          "status": "200"
-        }
-      }
-    }
-  },{
-    "timestamp": 1394343684465,
-    ...
-    }]
+	[{
+		"timestamp": 1394343677415,
+		"info": {
+			"method": "GET",
+			"path": "/trace",
+			"headers": {
+				"request": {
+					"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+					"Connection": "keep-alive",
+					"Accept-Encoding": "gzip, deflate",
+					"User-Agent": "Mozilla/5.0 Gecko/Firefox",
+					"Accept-Language": "en-US,en;q=0.5",
+					"Cookie": "_ga=GA1.1.827067509.1390890128; ..."
+					"Authorization": "Basic ...",
+					"Host": "localhost:8080"
+				},
+				"response": {
+					"Strict-Transport-Security": "max-age=31536000 ; includeSubDomains",
+					"X-Application-Context": "application:8080",
+					"Content-Type": "application/json;charset=UTF-8",
+					"status": "200"
+				}
+			}
+		}
+	},{
+		"timestamp": 1394343684465,
+		...
+	}]
 ----
 
 
@@ -1378,7 +1386,7 @@ writes a PID file. Example:
 [indent=0]
 ----
 	org.springframework.context.ApplicationListener=\
-	org.springframework.boot.actuate.system.ApplicationPidFileWriter,
+	org.springframework.boot.system.ApplicationPidFileWriter,\
 	org.springframework.boot.actuate.system.EmbeddedServerPortFileWriter
 ----
 
@@ -1389,6 +1397,67 @@ writes a PID file. Example:
 You can also activate a listener by invoking the `SpringApplication.addListeners(...)`
 method and passing the appropriate `Writer` object. This method also allows you to
 customize the file name and path via the `Writer` constructor.
+
+
+
+[[production-ready-cloudfoundry]]
+== Cloud Foundry support
+Spring Boot's actuator module includes additional support that is activated when you
+deploy to a compatible Cloud Foundry instance. The `/cloudfoundryapplication` path
+provides an alternative secured route to all `NamedMvcEndpoint` beans.
+
+The extended support allows Cloud Foundry management UIs (such as the web
+application that you can use to view deployed applications) to be augmented with Spring
+Boot actuator information. For example, an application status page may include full health
+information instead of the typical "`running`" or "`stopped`" status.
+
+NOTE: The `/cloudfoundryapplication` path is not directly accessible to regular users.
+In order to use the endpoint a valid UAA token must be passed with the request.
+
+
+
+[[production-ready-cloudfoundry-disable]]
+=== Disabling extended Cloud Foundry actuator support
+If you want to fully disable the `/cloudfoundryapplication` endpoints you can add the
+following to your `application.properties` file:
+
+
+.application.properties
+[source,properties,indent=0]
+----
+	management.cloudfoundry.enabled=false
+----
+
+
+
+[[production-ready-cloudfoundry-ssl]]
+=== Cloud Foundry self signed certificates
+By default, the security verification for `/cloudfoundryapplication` endpoints makes SSL
+calls to various Cloud Foundry services. If your Cloud Foundry UAA or Cloud Controller
+services use self-signed certificates you will need to set the following property:
+
+.application.properties
+[source,properties,indent=0]
+----
+	management.cloudfoundry.skip-ssl-validation=true
+----
+
+
+
+[[production-ready-cloudfoundry-custom-security]]
+=== Custom security configuration
+If you define custom security configuration, and you want extended Cloud Foundry actuator
+support, you'll should ensure that `/cloudfoundryapplication/**` paths are open. Without
+a direct open route, your Cloud Foundry application manager will not be able to obtain
+endpoint data.
+
+For Spring Security, you'll typically include something like
+`mvcMatchers("/cloudfoundryapplication/**").permitAll()` in your configuration:
+
+[source,java,indent=0]
+----
+include::{code-examples}/cloudfoundry/CloudFoundryIgnorePathsExample.java[tag=security]
+----
 
 
 

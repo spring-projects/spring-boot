@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -199,7 +199,7 @@ public class LiveReloadServer {
 	}
 
 	private void closeAllConnections() throws IOException {
-		synchronized (this.monitor) {
+		synchronized (this.connections) {
 			for (Connection connection : this.connections) {
 				connection.close();
 			}
@@ -211,25 +211,27 @@ public class LiveReloadServer {
 	 */
 	public void triggerReload() {
 		synchronized (this.monitor) {
-			for (Connection connection : this.connections) {
-				try {
-					connection.triggerReload();
-				}
-				catch (Exception ex) {
-					logger.debug("Unable to send reload message", ex);
+			synchronized (this.connections) {
+				for (Connection connection : this.connections) {
+					try {
+						connection.triggerReload();
+					}
+					catch (Exception ex) {
+						logger.debug("Unable to send reload message", ex);
+					}
 				}
 			}
 		}
 	}
 
 	private void addConnection(Connection connection) {
-		synchronized (this.monitor) {
+		synchronized (this.connections) {
 			this.connections.add(connection);
 		}
 	}
 
 	private void removeConnection(Connection connection) {
-		synchronized (this.monitor) {
+		synchronized (this.connections) {
 			this.connections.remove(connection);
 		}
 	}
@@ -249,6 +251,7 @@ public class LiveReloadServer {
 
 	/**
 	 * {@link Runnable} to handle a single connection.
+	 *
 	 * @see Connection
 	 */
 	private class ConnectionHandler implements Runnable {

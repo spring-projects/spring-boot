@@ -31,9 +31,10 @@
 		<module>spring-boot-starter-data-cassandra</module>
 		<module>spring-boot-starter-data-couchbase</module>
 		<module>spring-boot-starter-data-elasticsearch</module>
-		<module>spring-boot-starter-data-gemfire</module>
 		<module>spring-boot-starter-data-jpa</module>
+		<module>spring-boot-starter-data-ldap</module>
 		<module>spring-boot-starter-data-mongodb</module>
+		<module>spring-boot-starter-data-mongodb-reactive</module>
 		<module>spring-boot-starter-data-neo4j</module>
 		<module>spring-boot-starter-data-redis</module>
 		<module>spring-boot-starter-data-rest</module>
@@ -56,6 +57,7 @@
 		<module>spring-boot-starter-mustache</module>
 		<module>spring-boot-starter-actuator</module>
 		<module>spring-boot-starter-parent</module>
+		<module>spring-boot-starter-reactor-netty</module>
 		<module>spring-boot-starter-security</module>
 		<module>spring-boot-starter-social-facebook</module>
 		<module>spring-boot-starter-social-twitter</module>
@@ -66,6 +68,7 @@
 		<module>spring-boot-starter-undertow</module>
 		<module>spring-boot-starter-validation</module>
 		<module>spring-boot-starter-web</module>
+		<module>spring-boot-starter-webflux</module>
 		<module>spring-boot-starter-websocket</module>
 		<module>spring-boot-starter-web-services</module>
 	</modules>

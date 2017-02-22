@@ -64,14 +64,14 @@ public class MetricExportAutoConfiguration {
 	private final Map<String, Exporter> exporters;
 
 	public MetricExportAutoConfiguration(MetricExportProperties properties,
-			ObjectProvider<MetricsEndpointMetricReader> endpointReaderProvider,
-			@ExportMetricReader ObjectProvider<List<MetricReader>> readersProvider,
-			@ExportMetricWriter ObjectProvider<Map<String, GaugeWriter>> writersProvider,
-			ObjectProvider<Map<String, Exporter>> exportersProvider) {
-		this.endpointReader = endpointReaderProvider.getIfAvailable();
-		this.readers = readersProvider.getIfAvailable();
-		this.writers = writersProvider.getIfAvailable();
-		this.exporters = exportersProvider.getIfAvailable();
+			ObjectProvider<MetricsEndpointMetricReader> endpointReader,
+			@ExportMetricReader ObjectProvider<List<MetricReader>> readers,
+			@ExportMetricWriter ObjectProvider<Map<String, GaugeWriter>> writers,
+			ObjectProvider<Map<String, Exporter>> exporters) {
+		this.endpointReader = endpointReader.getIfAvailable();
+		this.readers = readers.getIfAvailable();
+		this.writers = writers.getIfAvailable();
+		this.exporters = exporters.getIfAvailable();
 	}
 
 	@Bean

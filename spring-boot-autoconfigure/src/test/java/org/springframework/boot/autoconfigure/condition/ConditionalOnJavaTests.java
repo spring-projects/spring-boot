@@ -164,28 +164,34 @@ public class ConditionalOnJavaTests {
 	@Configuration
 	@ConditionalOnJava(JavaVersion.NINE)
 	static class Java9Required {
+
 		@Bean
 		String foo() {
 			return "foo";
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnJava(range = Range.OLDER_THAN, value = JavaVersion.EIGHT)
 	static class Java7Required {
+
 		@Bean
 		String foo() {
 			return "foo";
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnJava(JavaVersion.EIGHT)
 	static class Java8Required {
+
 		@Bean
 		String foo() {
 			return "foo";
 		}
+
 	}
 
 }

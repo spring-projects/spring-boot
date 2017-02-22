@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,98 +16,45 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.mvc.ServletWrappingController;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link JolokiaMvcEndpoint}
+ * Tests for {@link JolokiaMvcEndpoint}.
  *
- * @author Christian Dupuis
- * @author Dave Syer
+ * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
-@DirtiesContext
-@SpringBootTest
 public class JolokiaMvcEndpointTests {
 
-	@Autowired
-	private MvcEndpoints endpoints;
+	private final JolokiaMvcEndpoint endpoint = new JolokiaMvcEndpoint();
 
-	@Autowired
-	private WebApplicationContext context;
-
-	private MockMvc mvc;
+	private final ServletWrappingController controller = (ServletWrappingController) spy(
+			ReflectionTestUtils.getField(this.endpoint, "controller"));
 
 	@Before
-	public void setUp() {
-		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		EnvironmentTestUtils.addEnvironment((ConfigurableApplicationContext) this.context,
-				"foo:bar");
+	public void before() {
+		ReflectionTestUtils.setField(this.endpoint, "controller", this.controller);
 	}
 
 	@Test
-	public void endpointRegistered() throws Exception {
-		Set<? extends MvcEndpoint> values = this.endpoints.getEndpoints();
-		assertThat(values).hasAtLeastOneElementOfType(JolokiaMvcEndpoint.class);
-	}
-
-	@Test
-	public void search() throws Exception {
-		this.mvc.perform(get("/jolokia/search/java.lang:*")).andExpect(status().isOk())
-				.andExpect(content().string(containsString("GarbageCollector")));
-	}
-
-	@Test
-	public void read() throws Exception {
-		this.mvc.perform(get("/jolokia/read/java.lang:type=Memory"))
-				.andExpect(status().isOk())
-				.andExpect(content().string(containsString("NonHeapMemoryUsage")));
-	}
-
-	@Test
-	public void list() throws Exception {
-		this.mvc.perform(get("/jolokia/list/java.lang/type=Memory/attr"))
-				.andExpect(status().isOk())
-				.andExpect(content().string(containsString("NonHeapMemoryUsage")));
-	}
-
-	@Configuration
-	@EnableConfigurationProperties
-	@EnableWebMvc
-	@Import({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class })
-	public static class Config {
-
+	public void controllerIsDestroyed() throws Exception {
+		this.endpoint.setApplicationContext(mock(WebApplicationContext.class));
+		this.endpoint.setServletContext(new MockServletContext());
+		this.endpoint.afterPropertiesSet();
+		this.endpoint.destroy();
+		assertThat(this.endpoint).isInstanceOf(DisposableBean.class);
+		verify(this.controller).destroy();
 	}
 
 }

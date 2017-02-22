@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.restart;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,42 +30,76 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kin
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFileURLStreamHandler;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceFolder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.AbstractResource;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.PathMatcher;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.ServletContextResource;
+import org.springframework.web.context.support.ServletContextResourcePatternResolver;
 
 /**
  * A {@code ResourcePatternResolver} that considers {@link ClassLoaderFiles} when
  * resolving resources.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternResolver {
 
 	private static final String[] LOCATION_PATTERN_PREFIXES = { CLASSPATH_ALL_URL_PREFIX,
 			CLASSPATH_URL_PREFIX };
 
-	private final ResourcePatternResolver delegate = new PathMatchingResourcePatternResolver();
+	private static final String WEB_CONTEXT_CLASS = "org.springframework.web.context."
+			+ "WebApplicationContext";
 
-	private final AntPathMatcher antPathMatcher = new AntPathMatcher();
+	private final ResourcePatternResolver patternResolverDelegate;
+
+	private final PathMatcher antPathMatcher = new AntPathMatcher();
 
 	private final ClassLoaderFiles classLoaderFiles;
 
-	ClassLoaderFilesResourcePatternResolver(ClassLoaderFiles classLoaderFiles) {
+	ClassLoaderFilesResourcePatternResolver(ApplicationContext applicationContext,
+			ClassLoaderFiles classLoaderFiles) {
 		this.classLoaderFiles = classLoaderFiles;
+		this.patternResolverDelegate = getResourcePatternResolverFactory()
+				.getResourcePatternResolver(applicationContext,
+						retrieveResourceLoader(applicationContext));
+	}
+
+	private ResourceLoader retrieveResourceLoader(ApplicationContext applicationContext) {
+		Field field = ReflectionUtils.findField(applicationContext.getClass(),
+				"resourceLoader", ResourceLoader.class);
+		if (field == null) {
+			return null;
+		}
+		ReflectionUtils.makeAccessible(field);
+		return (ResourceLoader) ReflectionUtils.getField(field, applicationContext);
+	}
+
+	private ResourcePatternResolverFactory getResourcePatternResolverFactory() {
+		if (ClassUtils.isPresent(WEB_CONTEXT_CLASS, null)) {
+			return new WebResourcePatternResolverFactory();
+		}
+		return new ResourcePatternResolverFactory();
 	}
 
 	@Override
 	public ClassLoader getClassLoader() {
-		return this.delegate.getClassLoader();
+		return this.patternResolverDelegate.getClassLoader();
 	}
 
 	@Override
 	public Resource getResource(String location) {
-		Resource candidate = this.delegate.getResource(location);
+		Resource candidate = this.patternResolverDelegate.getResource(location);
 		if (isDeleted(candidate)) {
 			return new DeletedClassLoaderFileResource(location);
 		}
@@ -74,7 +109,8 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	@Override
 	public Resource[] getResources(String locationPattern) throws IOException {
 		List<Resource> resources = new ArrayList<Resource>();
-		Resource[] candidates = this.delegate.getResources(locationPattern);
+		Resource[] candidates = this.patternResolverDelegate
+				.getResources(locationPattern);
 		for (Resource candidate : candidates) {
 			if (!isDeleted(candidate)) {
 				resources.add(candidate);
@@ -137,7 +173,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	 * A {@link Resource} that represents a {@link ClassLoaderFile} that has been
 	 * {@link Kind#DELETED deleted}.
 	 */
-	private final class DeletedClassLoaderFileResource extends AbstractResource {
+	static final class DeletedClassLoaderFileResource extends AbstractResource {
 
 		private final String name;
 
@@ -158,6 +194,64 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 		@Override
 		public InputStream getInputStream() throws IOException {
 			throw new IOException(this.name + " has been deleted");
+		}
+
+	}
+
+	/**
+	 * Factory used to create the {@link ResourcePatternResolver} delegate.
+	 */
+	private static class ResourcePatternResolverFactory {
+
+		public ResourcePatternResolver getResourcePatternResolver(
+				ApplicationContext applicationContext, ResourceLoader resourceLoader) {
+			return new PathMatchingResourcePatternResolver(resourceLoader == null
+					? new DefaultResourceLoader() : resourceLoader);
+		}
+
+	}
+
+	/**
+	 * {@link ResourcePatternResolverFactory} to be used when the classloader can access
+	 * {@link WebApplicationContext}.
+	 */
+	private static class WebResourcePatternResolverFactory
+			extends ResourcePatternResolverFactory {
+
+		@Override
+		public ResourcePatternResolver getResourcePatternResolver(
+				ApplicationContext applicationContext, ResourceLoader resourceLoader) {
+			if (applicationContext instanceof WebApplicationContext) {
+				return new ServletContextResourcePatternResolver(resourceLoader == null
+						? new WebApplicationContextResourceLoader(
+								(WebApplicationContext) applicationContext)
+						: resourceLoader);
+			}
+			return super.getResourcePatternResolver(applicationContext, resourceLoader);
+		}
+
+	}
+
+	/**
+	 * {@link ResourceLoader} that optionally supports {@link ServletContextResource
+	 * ServletContextResources}.
+	 */
+	private static class WebApplicationContextResourceLoader
+			extends DefaultResourceLoader {
+
+		private final WebApplicationContext applicationContext;
+
+		WebApplicationContextResourceLoader(WebApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		@Override
+		protected Resource getResourceByPath(String path) {
+			if (this.applicationContext.getServletContext() != null) {
+				return new ServletContextResource(
+						this.applicationContext.getServletContext(), path);
+			}
+			return super.getResourceByPath(path);
 		}
 
 	}

@@ -26,18 +26,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.management.MBeanException;
 import javax.management.MBeanInfo;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
+import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
+import org.springframework.boot.logging.logback.LogbackLoggingSystem;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.jmx.export.MBeanExporter;
@@ -45,14 +50,20 @@ import org.springframework.jmx.support.ObjectNameManager;
 import org.springframework.util.ObjectUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
 
 /**
  * Tests for {@link EndpointMBeanExporter}
  *
  * @author Christian Dupuis
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class EndpointMBeanExporterTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	GenericApplicationContext context = null;
 
@@ -117,7 +128,7 @@ public class EndpointMBeanExporterTests {
 		this.context.registerBeanDefinition("endpoint1",
 				new RootBeanDefinition(TestEndpoint.class));
 		this.context.registerBeanDefinition("endpoint2",
-				new RootBeanDefinition(TestEndpoint.class));
+				new RootBeanDefinition(TestEndpoint2.class));
 		this.context.refresh();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 		assertThat(mbeanExporter.getServer()
@@ -253,6 +264,41 @@ public class EndpointMBeanExporterTests {
 		assertThat(((List<?>) response).get(0)).isInstanceOf(Long.class);
 	}
 
+	@Test
+	public void loggerEndpointLowerCaseLogLevel() throws Exception {
+		MBeanExporter mbeanExporter = registerLoggersEndpoint();
+		Object response = mbeanExporter.getServer().invoke(
+				getObjectName("loggersEndpoint", this.context), "setLogLevel",
+				new Object[] { "com.example", "trace" },
+				new String[] { String.class.getName(), String.class.getName() });
+		assertThat(response).isNull();
+	}
+
+	@Test
+	public void loggerEndpointUnknownLogLevel() throws Exception {
+		MBeanExporter mbeanExporter = registerLoggersEndpoint();
+		this.thrown.expect(MBeanException.class);
+		this.thrown.expectCause(hasMessage(containsString("No enum constant")));
+		this.thrown.expectCause(hasMessage(containsString("LogLevel.INVALID")));
+		mbeanExporter.getServer().invoke(getObjectName("loggersEndpoint", this.context),
+				"setLogLevel", new Object[] { "com.example", "invalid" },
+				new String[] { String.class.getName(), String.class.getName() });
+	}
+
+	private MBeanExporter registerLoggersEndpoint() {
+		this.context = new GenericApplicationContext();
+		this.context.registerBeanDefinition("endpointMbeanExporter",
+				new RootBeanDefinition(EndpointMBeanExporter.class));
+		RootBeanDefinition bd = new RootBeanDefinition(LoggersEndpoint.class);
+		ConstructorArgumentValues values = new ConstructorArgumentValues();
+		values.addIndexedArgumentValue(0,
+				new LogbackLoggingSystem(getClass().getClassLoader()));
+		bd.setConstructorArgumentValues(values);
+		this.context.registerBeanDefinition("loggersEndpoint", bd);
+		this.context.refresh();
+		return this.context.getBean(EndpointMBeanExporter.class);
+	}
+
 	private ObjectName getObjectName(String beanKey, GenericApplicationContext context)
 			throws MalformedObjectNameException {
 		return getObjectName("org.springframework.boot", beanKey, false, context);
@@ -283,11 +329,15 @@ public class EndpointMBeanExporterTests {
 
 	}
 
+	public static class TestEndpoint2 extends TestEndpoint {
+
+	}
+
 	public static class JsonMapConversionEndpoint
 			extends AbstractEndpoint<Map<String, Object>> {
 
 		public JsonMapConversionEndpoint() {
-			super("json-map-conversion");
+			super("json_map_conversion");
 		}
 
 		@Override
@@ -303,7 +353,7 @@ public class EndpointMBeanExporterTests {
 			extends AbstractEndpoint<List<Object>> {
 
 		public JsonListConversionEndpoint() {
-			super("json-list-conversion");
+			super("json_list_conversion");
 		}
 
 		@Override

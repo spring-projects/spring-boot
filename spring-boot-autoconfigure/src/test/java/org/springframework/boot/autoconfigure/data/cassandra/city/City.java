@@ -81,4 +81,5 @@ public class City {
 	public void setMap(String map) {
 		this.map = map;
 	}
+
 }

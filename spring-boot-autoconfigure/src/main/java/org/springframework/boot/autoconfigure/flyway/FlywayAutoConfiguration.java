@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.flyway;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -26,6 +27,7 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
+import org.flywaydb.core.api.callback.FlywayCallback;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -40,11 +42,14 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.jdbc.support.JdbcUtils;
+import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.Assert;
@@ -58,6 +63,7 @@ import org.springframework.util.ObjectUtils;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @author Jacques-Etienne Beaudet
+ * @author Eddú Meléndez
  * @since 1.1.0
  */
 @Configuration
@@ -89,16 +95,20 @@ public class FlywayAutoConfiguration {
 
 		private final FlywayMigrationStrategy migrationStrategy;
 
+		private List<FlywayCallback> flywayCallbacks;
+
 		public FlywayConfiguration(FlywayProperties properties,
-				ResourceLoader resourceLoader,
-				ObjectProvider<DataSource> dataSourceProvider,
-				@FlywayDataSource ObjectProvider<DataSource> flywayDataSourceProvider,
-				ObjectProvider<FlywayMigrationStrategy> migrationStrategyProvider) {
+				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
+				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
+				ObjectProvider<FlywayMigrationStrategy> migrationStrategy,
+				ObjectProvider<List<FlywayCallback>> flywayCallbacks) {
 			this.properties = properties;
 			this.resourceLoader = resourceLoader;
-			this.dataSource = dataSourceProvider.getIfUnique();
-			this.flywayDataSource = flywayDataSourceProvider.getIfAvailable();
-			this.migrationStrategy = migrationStrategyProvider.getIfAvailable();
+			this.dataSource = dataSource.getIfUnique();
+			this.flywayDataSource = flywayDataSource.getIfAvailable();
+			this.migrationStrategy = migrationStrategy.getIfAvailable();
+			this.flywayCallbacks = flywayCallbacks
+					.getIfAvailable(() -> Collections.emptyList());
 		}
 
 		@PostConstruct
@@ -126,7 +136,7 @@ public class FlywayAutoConfiguration {
 		@Bean
 		@ConfigurationProperties(prefix = "flyway")
 		public Flyway flyway() {
-			Flyway flyway = new Flyway();
+			Flyway flyway = new SpringBootFlyway();
 			if (this.properties.isCreateDataSource()) {
 				flyway.setDataSource(this.properties.getUrl(), this.properties.getUser(),
 						this.properties.getPassword(),
@@ -138,6 +148,8 @@ public class FlywayAutoConfiguration {
 			else {
 				flyway.setDataSource(this.dataSource);
 			}
+			flyway.setCallbacks(this.flywayCallbacks
+					.toArray(new FlywayCallback[this.flywayCallbacks.size()]));
 			flyway.setLocations(this.properties.getLocations().toArray(new String[0]));
 			return flyway;
 		}
@@ -178,6 +190,42 @@ public class FlywayAutoConfiguration {
 
 		public FlywayJpaDependencyConfiguration() {
 			super("flyway");
+		}
+
+	}
+
+	private static class SpringBootFlyway extends Flyway {
+
+		private static final String VENDOR_PLACEHOLDER = "{vendor}";
+
+		@Override
+		public void setLocations(String... locations) {
+			if (usesVendorLocation(locations)) {
+				try {
+					String url = (String) JdbcUtils
+							.extractDatabaseMetaData(getDataSource(), "getURL");
+					DatabaseDriver vendor = DatabaseDriver.fromJdbcUrl(url);
+					if (vendor != DatabaseDriver.UNKNOWN) {
+						for (int i = 0; i < locations.length; i++) {
+							locations[i] = locations[i].replace(VENDOR_PLACEHOLDER,
+									vendor.getId());
+						}
+					}
+				}
+				catch (MetaDataAccessException ex) {
+					throw new IllegalStateException(ex);
+				}
+			}
+			super.setLocations(locations);
+		}
+
+		private boolean usesVendorLocation(String... locations) {
+			for (String location : locations) {
+				if (location.contains(VENDOR_PLACEHOLDER)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 	}

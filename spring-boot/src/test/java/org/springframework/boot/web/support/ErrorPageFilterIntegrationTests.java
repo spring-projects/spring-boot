@@ -93,7 +93,7 @@ public class ErrorPageFilterIntegrationTests {
 
 	private void doTest(AnnotationConfigEmbeddedWebApplicationContext context,
 			String resourcePath, HttpStatus status) throws Exception {
-		int port = context.getEmbeddedServletContainer().getPort();
+		int port = context.getEmbeddedWebServer().getPort();
 		RestTemplate template = new RestTemplate();
 		ResponseEntity<String> entity = template.getForEntity(
 				new URI("http://localhost:" + port + resourcePath), String.class);

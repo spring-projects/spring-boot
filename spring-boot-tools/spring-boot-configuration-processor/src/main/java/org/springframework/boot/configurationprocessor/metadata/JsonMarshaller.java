@@ -20,18 +20,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
@@ -51,136 +47,26 @@ public class JsonMarshaller {
 
 	public void write(ConfigurationMetadata metadata, OutputStream outputStream)
 			throws IOException {
-		JSONObject object = new JSONOrderedObject();
-		object.put("groups", toJsonArray(metadata, ItemType.GROUP));
-		object.put("properties", toJsonArray(metadata, ItemType.PROPERTY));
-		object.put("hints", toJsonArray(metadata.getHints()));
-		outputStream.write(object.toString(2).getBytes(UTF_8));
-	}
-
-	private JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) {
-		JSONArray jsonArray = new JSONArray();
-		for (ItemMetadata item : metadata.getItems()) {
-			if (item.isOfItemType(itemType)) {
-				jsonArray.put(toJsonObject(item));
+		try {
+			JSONObject object = new JSONOrderedObject();
+			JsonConverter converter = new JsonConverter();
+			object.put("groups", converter.toJsonArray(metadata, ItemType.GROUP));
+			object.put("properties", converter.toJsonArray(metadata, ItemType.PROPERTY));
+			object.put("hints", converter.toJsonArray(metadata.getHints()));
+			outputStream.write(object.toString(2).getBytes(UTF_8));
+		}
+		catch (Exception ex) {
+			if (ex instanceof IOException) {
+				throw (IOException) ex;
 			}
-		}
-		return jsonArray;
-	}
-
-	private JSONArray toJsonArray(Collection<ItemHint> hints) {
-		JSONArray jsonArray = new JSONArray();
-		for (ItemHint hint : hints) {
-			jsonArray.put(toJsonObject(hint));
-		}
-		return jsonArray;
-	}
-
-	private JSONObject toJsonObject(ItemMetadata item) {
-		JSONObject jsonObject = new JSONOrderedObject();
-		jsonObject.put("name", item.getName());
-		putIfPresent(jsonObject, "type", item.getType());
-		putIfPresent(jsonObject, "description", item.getDescription());
-		putIfPresent(jsonObject, "sourceType", item.getSourceType());
-		putIfPresent(jsonObject, "sourceMethod", item.getSourceMethod());
-		Object defaultValue = item.getDefaultValue();
-		if (defaultValue != null) {
-			putDefaultValue(jsonObject, defaultValue);
-		}
-		ItemDeprecation deprecation = item.getDeprecation();
-		if (deprecation != null) {
-			jsonObject.put("deprecated", true); // backward compatibility
-			JSONObject deprecationJsonObject = new JSONObject();
-			if (deprecation.getReason() != null) {
-				deprecationJsonObject.put("reason", deprecation.getReason());
+			if (ex instanceof RuntimeException) {
+				throw (RuntimeException) ex;
 			}
-			if (deprecation.getReplacement() != null) {
-				deprecationJsonObject.put("replacement", deprecation.getReplacement());
-			}
-			jsonObject.put("deprecation", deprecationJsonObject);
-		}
-		return jsonObject;
-	}
-
-	private JSONObject toJsonObject(ItemHint hint) {
-		JSONObject jsonObject = new JSONOrderedObject();
-		jsonObject.put("name", hint.getName());
-		if (!hint.getValues().isEmpty()) {
-			jsonObject.put("values", getItemHintValues(hint));
-		}
-		if (!hint.getProviders().isEmpty()) {
-			jsonObject.put("providers", getItemHintProviders(hint));
-		}
-		return jsonObject;
-	}
-
-	private JSONArray getItemHintValues(ItemHint hint) {
-		JSONArray values = new JSONArray();
-		for (ItemHint.ValueHint value : hint.getValues()) {
-			values.put(getItemHintValue(value));
-		}
-		return values;
-	}
-
-	private JSONObject getItemHintValue(ItemHint.ValueHint value) {
-		JSONObject result = new JSONOrderedObject();
-		putHintValue(result, value.getValue());
-		putIfPresent(result, "description", value.getDescription());
-		return result;
-	}
-
-	private JSONArray getItemHintProviders(ItemHint hint) {
-		JSONArray providers = new JSONArray();
-		for (ItemHint.ValueProvider provider : hint.getProviders()) {
-			providers.put(getItemHintProvider(provider));
-		}
-		return providers;
-	}
-
-	private JSONObject getItemHintProvider(ItemHint.ValueProvider provider) {
-		JSONObject result = new JSONOrderedObject();
-		result.put("name", provider.getName());
-		if (provider.getParameters() != null && !provider.getParameters().isEmpty()) {
-			JSONObject parameters = new JSONOrderedObject();
-			for (Map.Entry<String, Object> entry : provider.getParameters().entrySet()) {
-				parameters.put(entry.getKey(), extractItemValue(entry.getValue()));
-			}
-			result.put("parameters", parameters);
-		}
-		return result;
-	}
-
-	private void putIfPresent(JSONObject jsonObject, String name, Object value) {
-		if (value != null) {
-			jsonObject.put(name, value);
+			throw new IllegalStateException(ex);
 		}
 	}
 
-	private void putHintValue(JSONObject jsonObject, Object value) {
-		Object hintValue = extractItemValue(value);
-		jsonObject.put("value", hintValue);
-	}
-
-	private void putDefaultValue(JSONObject jsonObject, Object value) {
-		Object defaultValue = extractItemValue(value);
-		jsonObject.put("defaultValue", defaultValue);
-	}
-
-	private Object extractItemValue(Object value) {
-		Object defaultValue = value;
-		if (value.getClass().isArray()) {
-			JSONArray array = new JSONArray();
-			int length = Array.getLength(value);
-			for (int i = 0; i < length; i++) {
-				array.put(Array.get(value, i));
-			}
-			defaultValue = array;
-
-		}
-		return defaultValue;
-	}
-
-	public ConfigurationMetadata read(InputStream inputStream) throws IOException {
+	public ConfigurationMetadata read(InputStream inputStream) throws Exception {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		JSONObject object = new JSONObject(toString(inputStream));
 		JSONArray groups = object.optJSONArray("groups");
@@ -205,7 +91,8 @@ public class JsonMarshaller {
 		return metadata;
 	}
 
-	private ItemMetadata toItemMetadata(JSONObject object, ItemType itemType) {
+	private ItemMetadata toItemMetadata(JSONObject object, ItemType itemType)
+			throws Exception {
 		String name = object.getString("name");
 		String type = object.optString("type", null);
 		String description = object.optString("description", null);
@@ -217,7 +104,7 @@ public class JsonMarshaller {
 				description, defaultValue, deprecation);
 	}
 
-	private ItemDeprecation toItemDeprecation(JSONObject object) {
+	private ItemDeprecation toItemDeprecation(JSONObject object) throws Exception {
 		if (object.has("deprecation")) {
 			JSONObject deprecationJsonObject = object.getJSONObject("deprecation");
 			ItemDeprecation deprecation = new ItemDeprecation();
@@ -229,7 +116,7 @@ public class JsonMarshaller {
 		return (object.optBoolean("deprecated") ? new ItemDeprecation() : null);
 	}
 
-	private ItemHint toItemHint(JSONObject object) {
+	private ItemHint toItemHint(JSONObject object) throws Exception {
 		String name = object.getString("name");
 		List<ItemHint.ValueHint> values = new ArrayList<ItemHint.ValueHint>();
 		if (object.has("values")) {
@@ -248,19 +135,19 @@ public class JsonMarshaller {
 		return new ItemHint(name, values, providers);
 	}
 
-	private ItemHint.ValueHint toValueHint(JSONObject object) {
+	private ItemHint.ValueHint toValueHint(JSONObject object) throws Exception {
 		Object value = readItemValue(object.get("value"));
 		String description = object.optString("description", null);
 		return new ItemHint.ValueHint(value, description);
 	}
 
-	private ItemHint.ValueProvider toValueProvider(JSONObject object) {
+	private ItemHint.ValueProvider toValueProvider(JSONObject object) throws Exception {
 		String name = object.getString("name");
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		if (object.has("parameters")) {
 			JSONObject parametersObject = object.getJSONObject("parameters");
-			for (Object k : parametersObject.keySet()) {
-				String key = (String) k;
+			for (Iterator<?> iterator = parametersObject.keys(); iterator.hasNext();) {
+				String key = (String) iterator.next();
 				Object value = readItemValue(parametersObject.get(key));
 				parameters.put(key, value);
 			}
@@ -268,7 +155,7 @@ public class JsonMarshaller {
 		return new ItemHint.ValueProvider(name, parameters);
 	}
 
-	private Object readItemValue(Object value) {
+	private Object readItemValue(Object value) throws Exception {
 		if (value instanceof JSONArray) {
 			JSONArray array = (JSONArray) value;
 			Object[] content = new Object[array.length()];
@@ -289,27 +176,6 @@ public class JsonMarshaller {
 			out.append(buffer, 0, bytesRead);
 		}
 		return out.toString();
-	}
-
-	/**
-	 * Extension to {@link JSONObject} that remembers the order of inserts.
-	 */
-	@SuppressWarnings("rawtypes")
-	private static class JSONOrderedObject extends JSONObject {
-
-		private Set<String> keys = new LinkedHashSet<String>();
-
-		@Override
-		public JSONObject put(String key, Object value) throws JSONException {
-			this.keys.add(key);
-			return super.put(key, value);
-		}
-
-		@Override
-		public Set keySet() {
-			return this.keys;
-		}
-
 	}
 
 }

@@ -117,6 +117,7 @@ public class LevelRemappingAppender extends AppenderBase<ILoggingEvent> {
 				this.logger.callAppenders(event);
 			}
 		}
+
 	}
 
 	/**

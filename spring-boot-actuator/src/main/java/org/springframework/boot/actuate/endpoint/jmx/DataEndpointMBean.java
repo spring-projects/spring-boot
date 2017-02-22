@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
-import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
  * Simple wrapper around {@link Endpoint} implementations that provide actuator data of
@@ -29,7 +28,6 @@ import org.springframework.jmx.export.annotation.ManagedResource;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
-@ManagedResource
 public class DataEndpointMBean extends EndpointMBean {
 
 	/**

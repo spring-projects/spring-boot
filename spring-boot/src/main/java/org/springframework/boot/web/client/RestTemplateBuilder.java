@@ -463,7 +463,6 @@ public class RestTemplateBuilder {
 	/**
 	 * Sets the connect timeout in milliseconds on the underlying
 	 * {@link ClientHttpRequestFactory}.
-	 *
 	 * @param connectTimeout the connect timeout in milliseconds
 	 * @return a new builder instance.
 	 */
@@ -479,7 +478,6 @@ public class RestTemplateBuilder {
 	/**
 	 * Sets the read timeout in milliseconds on the underlying
 	 * {@link ClientHttpRequestFactory}.
-	 *
 	 * @param readTimeout the read timeout in milliseconds
 	 * @return a new builder instance.
 	 */

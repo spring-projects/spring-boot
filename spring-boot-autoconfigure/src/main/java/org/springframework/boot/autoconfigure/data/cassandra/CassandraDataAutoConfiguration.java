@@ -45,6 +45,8 @@ import org.springframework.data.cassandra.core.CassandraAdminOperations;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.mapping.BasicCassandraMappingContext;
 import org.springframework.data.cassandra.mapping.CassandraMappingContext;
+import org.springframework.data.cassandra.mapping.SimpleUserTypeResolver;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Cassandra support.
@@ -88,6 +90,10 @@ public class CassandraDataAutoConfiguration {
 		}
 		if (!packages.isEmpty()) {
 			context.setInitialEntitySet(CassandraEntityClassScanner.scan(packages));
+		}
+		if (StringUtils.hasText(this.properties.getKeyspaceName())) {
+			context.setUserTypeResolver(new SimpleUserTypeResolver(this.cluster,
+					this.properties.getKeyspaceName()));
 		}
 		return context;
 	}

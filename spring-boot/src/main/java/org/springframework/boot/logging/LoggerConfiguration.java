@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,10 +99,10 @@ public final class LoggerConfiguration {
 		if (obj instanceof LoggerConfiguration) {
 			LoggerConfiguration other = (LoggerConfiguration) obj;
 			boolean rtn = true;
-			rtn &= ObjectUtils.nullSafeEquals(this.name, other.name);
-			rtn &= ObjectUtils.nullSafeEquals(this.configuredLevel,
+			rtn = rtn && ObjectUtils.nullSafeEquals(this.name, other.name);
+			rtn = rtn && ObjectUtils.nullSafeEquals(this.configuredLevel,
 					other.configuredLevel);
-			rtn &= ObjectUtils.nullSafeEquals(this.effectiveLevel, other.effectiveLevel);
+			rtn = rtn && ObjectUtils.nullSafeEquals(this.effectiveLevel, other.effectiveLevel);
 			return rtn;
 		}
 		return super.equals(obj);

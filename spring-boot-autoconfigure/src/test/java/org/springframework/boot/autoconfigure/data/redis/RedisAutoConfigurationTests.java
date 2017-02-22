@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
 
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Christian Dupuis
  * @author Christoph Strobl
  * @author Eddú Meléndez
+ * @author Marco Aust
  */
 public class RedisAutoConfigurationTests {
 
@@ -73,6 +74,21 @@ public class RedisAutoConfigurationTests {
 				.isEqualTo("foo");
 		assertThat(this.context.getBean(JedisConnectionFactory.class).getDatabase())
 				.isEqualTo(1);
+	}
+
+	@Test
+	public void testOverrideUrlRedisConfiguration() throws Exception {
+		load("spring.redis.host:foo", "spring.redis.password:xyz",
+				"spring.redis.port:1000", "spring.redis.ssl:true",
+				"spring.redis.url:redis://user:password@example:33");
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getHostName())
+				.isEqualTo("example");
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getPort())
+				.isEqualTo(33);
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getPassword())
+				.isEqualTo("password");
+		assertThat(this.context.getBean(JedisConnectionFactory.class).isUseSsl())
+				.isEqualTo(true);
 	}
 
 	@Test

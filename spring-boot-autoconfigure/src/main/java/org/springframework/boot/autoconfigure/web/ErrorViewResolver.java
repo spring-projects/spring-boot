@@ -29,6 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Phillip Webb
  * @since 1.4.0
  */
+@FunctionalInterface
 public interface ErrorViewResolver {
 
 	/**

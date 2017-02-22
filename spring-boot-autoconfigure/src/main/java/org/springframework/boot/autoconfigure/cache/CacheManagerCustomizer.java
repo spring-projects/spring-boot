@@ -26,6 +26,7 @@ import org.springframework.cache.CacheManager;
  * @author Stephane Nicoll
  * @since 1.3.3
  */
+@FunctionalInterface
 public interface CacheManagerCustomizer<T extends CacheManager> {
 
 	/**

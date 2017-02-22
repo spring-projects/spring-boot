@@ -40,6 +40,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Julien Dubois
  * @author Phillip Webb
+ * @author Eddú Meléndez
+ * @author Stephane Nicoll
  * @since 1.3.0
  */
 @Configuration
@@ -49,12 +51,12 @@ public class CassandraAutoConfiguration {
 
 	private final CassandraProperties properties;
 
-	private final List<ClusterCustomizer> clusterCustomizers;
+	private final List<ClusterBuilderCustomizer> builderCustomizers;
 
 	public CassandraAutoConfiguration(CassandraProperties properties,
-			ObjectProvider<List<ClusterCustomizer>> clusterCustomizersProvider) {
+			ObjectProvider<List<ClusterBuilderCustomizer>> builderCustomizers) {
 		this.properties = properties;
-		this.clusterCustomizers = clusterCustomizersProvider.getIfAvailable();
+		this.builderCustomizers = builderCustomizers.getIfAvailable();
 	}
 
 	@Bean
@@ -90,15 +92,14 @@ public class CassandraAutoConfiguration {
 		String points = properties.getContactPoints();
 		builder.addContactPoints(StringUtils.commaDelimitedListToStringArray(points));
 
-		Cluster cluster = builder.build();
-		customize(cluster);
-		return cluster;
+		customize(builder);
+		return builder.build();
 	}
 
-	private void customize(Cluster cluster) {
-		if (this.clusterCustomizers != null) {
-			for (ClusterCustomizer customizer : this.clusterCustomizers) {
-				customizer.customize(cluster);
+	private void customize(Cluster.Builder builder) {
+		if (this.builderCustomizers != null) {
+			for (ClusterBuilderCustomizer customizer : this.builderCustomizers) {
+				customizer.customize(builder);
 			}
 		}
 	}

@@ -101,6 +101,7 @@ public class JmsAutoConfiguration {
 			}
 			return jmsTemplate;
 		}
+
 	}
 
 	@ConditionalOnClass(JmsMessagingTemplate.class)

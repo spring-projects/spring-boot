@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.validation;
 
 import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 import org.junit.After;
@@ -24,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,6 +57,7 @@ public class ValidationAutoConfigurationTests {
 	@Test
 	public void validationIsEnabled() {
 		load(SampleService.class);
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		SampleService service = this.context.getBean(SampleService.class);
 		service.doSomething("Valid");
 		this.thrown.expect(ConstraintViolationException.class);
@@ -61,11 +65,29 @@ public class ValidationAutoConfigurationTests {
 	}
 
 	@Test
+	public void validationUsesCglibProxy() {
+		load(DefaultAnotherSampleService.class);
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
+		DefaultAnotherSampleService service = this.context
+				.getBean(DefaultAnotherSampleService.class);
+		service.doSomething(42);
+		this.thrown.expect(ConstraintViolationException.class);
+		service.doSomething(2);
+	}
+
+	@Test
 	public void userDefinedMethodValidationPostProcessorTakesPrecedence() {
 		load(SampleConfiguration.class);
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
+		Object userMethodValidationPostProcessor = this.context
+				.getBean("testMethodValidationPostProcessor");
 		assertThat(this.context.getBean(MethodValidationPostProcessor.class))
-				.isSameAs(this.context.getBean("testMethodValidationPostProcessor"));
-		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class)).hasSize(1);
+				.isSameAs(userMethodValidationPostProcessor);
+		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class))
+				.hasSize(1);
+		assertThat(this.context.getBean(Validator.class))
+				.isNotSameAs(new DirectFieldAccessor(userMethodValidationPostProcessor)
+						.getPropertyValue("validator"));
 	}
 
 	public void load(Class<?> config) {
@@ -82,6 +104,21 @@ public class ValidationAutoConfigurationTests {
 	static class SampleService {
 
 		public void doSomething(@Size(min = 3, max = 10) String name) {
+
+		}
+
+	}
+
+	interface AnotherSampleService {
+
+		void doSomething(@Min(42) Integer counter);
+	}
+
+	@Validated
+	static class DefaultAnotherSampleService implements AnotherSampleService {
+
+		@Override
+		public void doSomething(Integer counter) {
 
 		}
 	}

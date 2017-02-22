@@ -98,6 +98,11 @@ class Token {
 	}
 
 	@SuppressWarnings("unchecked")
+	public String getKeyId() {
+		return getRequired(this.header, "kid", String.class);
+	}
+
+	@SuppressWarnings("unchecked")
 	private <T> T getRequired(Map<String, Object> map, String key, Class<T> type) {
 		Object value = map.get(key);
 		if (value == null) {

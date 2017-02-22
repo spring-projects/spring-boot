@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,19 +84,6 @@ public class LayoutsTests {
 				.isEqualTo("WEB-INF/lib-provided/");
 		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME))
 				.isEqualTo("WEB-INF/lib/");
-	}
-
-	@Test
-	public void moduleLayout() throws Exception {
-		Layout layout = new Layouts.Module();
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE))
-				.isEqualTo("lib/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED))
-				.isNull();
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME))
-				.isEqualTo("lib/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM))
-				.isEqualTo("lib/");
 	}
 
 }

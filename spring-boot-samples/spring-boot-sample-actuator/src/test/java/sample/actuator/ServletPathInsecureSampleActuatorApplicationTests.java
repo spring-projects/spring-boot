@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"security.basic.enabled:false", "server.servletPath:/spring" })
+		"security.basic.enabled:false", "server.servlet.path:/spring" })
 @DirtiesContext
 public class ServletPathInsecureSampleActuatorApplicationTests {
 

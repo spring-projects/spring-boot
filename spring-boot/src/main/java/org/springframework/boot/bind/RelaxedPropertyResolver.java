@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,9 @@ package org.springframework.boot.bind;
 import java.util.Map;
 
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
+import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.util.Assert;
 
 /**
@@ -127,6 +129,27 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 		ConfigurableEnvironment env = (ConfigurableEnvironment) this.resolver;
 		return PropertySourceUtils.getSubProperties(env.getPropertySources(), this.prefix,
 				keyPrefix);
+	}
+
+	/**
+	 * Return a property resolver for the environment, preferring one that ignores
+	 * unresolvable nested placeholders.
+	 * @param environment the source environment
+	 * @param prefix the prefix
+	 * @return a property resolver for the environment
+	 * @since 1.4.3
+	 */
+	public static RelaxedPropertyResolver ignoringUnresolvableNestedPlaceholders(
+			Environment environment, String prefix) {
+		Assert.notNull(environment, "Environment must not be null");
+		PropertyResolver resolver = environment;
+		if (environment instanceof ConfigurableEnvironment) {
+			resolver = new PropertySourcesPropertyResolver(
+					((ConfigurableEnvironment) environment).getPropertySources());
+			((PropertySourcesPropertyResolver) resolver)
+					.setIgnoreUnresolvableNestedPlaceholders(true);
+		}
+		return new RelaxedPropertyResolver(resolver, prefix);
 	}
 
 }

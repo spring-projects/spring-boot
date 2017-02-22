@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.setup.ConfigurableMockMvcBuilder;
  * @since 1.4.0
  * @see MockMvcAutoConfiguration
  */
+@FunctionalInterface
 public interface MockMvcBuilderCustomizer {
 
 	/**

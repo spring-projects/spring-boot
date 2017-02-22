@@ -16,16 +16,24 @@
 
 package org.springframework.boot.yaml;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.config.YamlProcessor.DocumentMatcher;
 import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
+import org.springframework.boot.bind.PropertySourcesPropertyValues;
+import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertiesPropertySource;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -38,10 +46,9 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Matt Benson
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class SpringProfileDocumentMatcher implements DocumentMatcher {
-
-	private static final String SPRING_PROFILES = "spring.profiles";
 
 	private String[] activeProfiles = new String[0];
 
@@ -61,90 +68,95 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
 	@Override
 	public MatchStatus matches(Properties properties) {
-		DocumentMatcher activeProfilesMatcher = getActiveProfilesDocumentMatcher();
-		String profiles = properties.getProperty(SPRING_PROFILES);
-		String negative = extractProfiles(profiles, ProfileType.NEGATIVE);
-		String positive = extractProfiles(profiles, ProfileType.POSITIVE);
-		if (StringUtils.hasLength(negative)) {
-			properties = new Properties(properties);
-			properties.setProperty(SPRING_PROFILES, negative);
-			if (activeProfilesMatcher.matches(properties) == MatchStatus.FOUND) {
+		List<String> profiles = extractSpringProfiles(properties);
+		ProfilesMatcher profilesMatcher = getProfilesMatcher();
+		Set<String> negative = extractProfiles(profiles, ProfileType.NEGATIVE);
+		Set<String> positive = extractProfiles(profiles, ProfileType.POSITIVE);
+		if (!CollectionUtils.isEmpty(negative)) {
+			if (profilesMatcher.matches(negative) == MatchStatus.FOUND) {
 				return MatchStatus.NOT_FOUND;
 			}
-			if (StringUtils.isEmpty(positive)) {
+			if (CollectionUtils.isEmpty(positive)) {
 				return MatchStatus.FOUND;
 			}
-			properties.setProperty(SPRING_PROFILES, positive);
 		}
-		return activeProfilesMatcher.matches(properties);
+		return profilesMatcher.matches(positive);
 	}
 
-	private DocumentMatcher getActiveProfilesDocumentMatcher() {
-		return this.activeProfiles.length == 0 ? new EmptyProfileDocumentMatcher()
-				: new ActiveProfilesDocumentMatcher(
+	private List<String> extractSpringProfiles(Properties properties) {
+		SpringProperties springProperties = new SpringProperties();
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addFirst(new PropertiesPropertySource("profiles", properties));
+		PropertyValues propertyValues = new PropertySourcesPropertyValues(
+				propertySources);
+		new RelaxedDataBinder(springProperties, "spring").bind(propertyValues);
+		List<String> profiles = springProperties.getProfiles();
+		return profiles;
+	}
+
+	private ProfilesMatcher getProfilesMatcher() {
+		return this.activeProfiles.length == 0 ? new EmptyProfilesMatcher()
+				: new ActiveProfilesMatcher(
 						new HashSet<String>(Arrays.asList(this.activeProfiles)));
 	}
 
-	private String extractProfiles(String profiles, ProfileType type) {
-		if (profiles == null) {
+	private Set<String> extractProfiles(List<String> profiles, ProfileType type) {
+		if (CollectionUtils.isEmpty(profiles)) {
 			return null;
 		}
-		StringBuilder result = new StringBuilder();
-		for (String candidate : StringUtils.commaDelimitedListToSet(profiles)) {
+		Set<String> extractedProfiles = new HashSet<String>();
+		for (String candidate : profiles) {
 			ProfileType candidateType = ProfileType.POSITIVE;
 			if (candidate.startsWith("!")) {
 				candidateType = ProfileType.NEGATIVE;
 			}
 			if (candidateType == type) {
-				result.append(result.length() > 0 ? "," : "");
-				result.append(candidate.substring(type == ProfileType.POSITIVE ? 0 : 1));
+				extractedProfiles.add(type == ProfileType.POSITIVE ? candidate
+						: candidate.substring(1));
 			}
 		}
-		return result.toString();
+		return extractedProfiles;
 	}
 
 	/**
 	 * Profile match types.
 	 */
 	enum ProfileType {
+
 		POSITIVE, NEGATIVE
+
 	}
 
 	/**
-	 * Base class for profile-based {@link DocumentMatcher DocumentMatchers}.
+	 * Base class for profile matchers.
 	 */
-	private static abstract class AbstractProfileDocumentMatcher
-			implements DocumentMatcher {
+	private static abstract class ProfilesMatcher {
 
-		@Override
-		public final MatchStatus matches(Properties properties) {
-			if (!properties.containsKey(SPRING_PROFILES)) {
+		public final MatchStatus matches(Set<String> profiles) {
+			if (CollectionUtils.isEmpty(profiles)) {
 				return MatchStatus.ABSTAIN;
 			}
-			Set<String> profiles = StringUtils
-					.commaDelimitedListToSet(properties.getProperty(SPRING_PROFILES));
-			return matches(profiles);
+			return doMatches(profiles);
 		}
 
-		protected abstract MatchStatus matches(Set<String> profiles);
+		protected abstract MatchStatus doMatches(Set<String> profiles);
 
 	}
 
 	/**
-	 * {@link AbstractProfileDocumentMatcher} that matches a document when a value in
-	 * {@code spring.profiles} is also in {@code spring.profiles.active}.
+	 * {@link ProfilesMatcher} that matches when a value in {@code spring.profiles} is
+	 * also in {@code spring.profiles.active}.
 	 */
-	private static class ActiveProfilesDocumentMatcher
-			extends AbstractProfileDocumentMatcher {
+	private static class ActiveProfilesMatcher extends ProfilesMatcher {
 
 		private final Set<String> activeProfiles;
 
-		ActiveProfilesDocumentMatcher(Set<String> activeProfiles) {
+		ActiveProfilesMatcher(Set<String> activeProfiles) {
 			this.activeProfiles = activeProfiles;
 		}
 
 		@Override
-		protected MatchStatus matches(Set<String> profiles) {
+		protected MatchStatus doMatches(Set<String> profiles) {
 			if (profiles.isEmpty()) {
 				return MatchStatus.NOT_FOUND;
 			}
@@ -159,25 +171,41 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	}
 
 	/**
-	 * {@link AbstractProfileDocumentMatcher} that matches a document when {@code
+	 * {@link ProfilesMatcher} that matches when {@code
 	 * spring.profiles} is empty or contains a value with no text.
 	 *
 	 * @see StringUtils#hasText(String)
 	 */
-	private static class EmptyProfileDocumentMatcher
-			extends AbstractProfileDocumentMatcher {
+	private static class EmptyProfilesMatcher extends ProfilesMatcher {
 
 		@Override
-		public MatchStatus matches(Set<String> profiles) {
-			if (profiles.isEmpty()) {
+		public MatchStatus doMatches(Set<String> springProfiles) {
+			if (springProfiles.isEmpty()) {
 				return MatchStatus.FOUND;
 			}
-			for (String profile : profiles) {
+			for (String profile : springProfiles) {
 				if (!StringUtils.hasText(profile)) {
 					return MatchStatus.FOUND;
 				}
 			}
 			return MatchStatus.NOT_FOUND;
+		}
+
+	}
+
+	/**
+	 * Class for binding {@code spring.profiles} property.
+	 */
+	static class SpringProperties {
+
+		private List<String> profiles = new ArrayList<String>();
+
+		public List<String> getProfiles() {
+			return this.profiles;
+		}
+
+		public void setProfiles(List<String> profiles) {
+			this.profiles = profiles;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public abstract class AbstractConfigurationClassTests {
 	private Set<AnnotationMetadata> findConfigurationClasses() throws IOException {
 		Set<AnnotationMetadata> configurationClasses = new HashSet<AnnotationMetadata>();
 		Resource[] resources = this.resolver.getResources("classpath*:"
-				+ getClass().getPackage().getName().replace(".", "/") + "/**/*.class");
+				+ getClass().getPackage().getName().replace('.', '/') + "/**/*.class");
 		for (Resource resource : resources) {
 			if (!isTestClass(resource)) {
 				MetadataReader metadataReader = new SimpleMetadataReaderFactory()

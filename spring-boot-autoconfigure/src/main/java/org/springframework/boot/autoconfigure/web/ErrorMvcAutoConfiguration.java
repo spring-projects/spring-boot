@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.aop.framework.autoproxy.AutoProxyUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -39,6 +39,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
@@ -75,27 +76,21 @@ import org.springframework.web.util.HtmlUtils;
  * @author Stephane Nicoll
  */
 @Configuration
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 // Load before the main WebMvcAutoConfiguration so that the error View is available
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
-@EnableConfigurationProperties(ResourceProperties.class)
+@EnableConfigurationProperties({ ServerProperties.class, ResourceProperties.class })
 public class ErrorMvcAutoConfiguration {
-
-	private final ApplicationContext applicationContext;
 
 	private final ServerProperties serverProperties;
 
-	private final ResourceProperties resourceProperties;
+	private final List<ErrorViewResolver> errorViewResolvers;
 
-	@Autowired(required = false)
-	private List<ErrorViewResolver> errorViewResolvers;
-
-	public ErrorMvcAutoConfiguration(ApplicationContext applicationContext,
-			ServerProperties serverProperties, ResourceProperties resourceProperties) {
-		this.applicationContext = applicationContext;
+	public ErrorMvcAutoConfiguration(ServerProperties serverProperties,
+			ObjectProvider<List<ErrorViewResolver>> errorViewResolversProvider) {
 		this.serverProperties = serverProperties;
-		this.resourceProperties = resourceProperties;
+		this.errorViewResolvers = errorViewResolversProvider.getIfAvailable();
 	}
 
 	@Bean
@@ -117,16 +112,31 @@ public class ErrorMvcAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBean(DispatcherServlet.class)
-	@ConditionalOnMissingBean
-	public DefaultErrorViewResolver conventionErrorViewResolver() {
-		return new DefaultErrorViewResolver(this.applicationContext,
-				this.resourceProperties);
-	}
-
-	@Bean
 	public static PreserveErrorControllerTargetClassPostProcessor preserveErrorControllerTargetClassPostProcessor() {
 		return new PreserveErrorControllerTargetClassPostProcessor();
+	}
+
+	@Configuration
+	static class DefaultErrorViewResolverConfiguration {
+
+		private final ApplicationContext applicationContext;
+
+		private final ResourceProperties resourceProperties;
+
+		DefaultErrorViewResolverConfiguration(ApplicationContext applicationContext,
+				ResourceProperties resourceProperties) {
+			this.applicationContext = applicationContext;
+			this.resourceProperties = resourceProperties;
+		}
+
+		@Bean
+		@ConditionalOnBean(DispatcherServlet.class)
+		@ConditionalOnMissingBean
+		public DefaultErrorViewResolver conventionErrorViewResolver() {
+			return new DefaultErrorViewResolver(this.applicationContext,
+					this.resourceProperties);
+		}
+
 	}
 
 	@Configuration
@@ -299,7 +309,7 @@ public class ErrorMvcAutoConfiguration {
 
 		@Override
 		public void registerErrorPages(ErrorPageRegistry errorPageRegistry) {
-			ErrorPage errorPage = new ErrorPage(this.properties.getServletPrefix()
+			ErrorPage errorPage = new ErrorPage(this.properties.getServlet().getServletPrefix()
 					+ this.properties.getError().getPath());
 			errorPageRegistry.addErrorPages(errorPage);
 		}

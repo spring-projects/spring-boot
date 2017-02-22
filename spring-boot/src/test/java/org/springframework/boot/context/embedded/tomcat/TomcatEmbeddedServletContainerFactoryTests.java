@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ import org.mockito.InOrder;
 
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.embedded.EmbeddedWebServerException;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -58,9 +58,8 @@ import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -119,7 +118,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		this.container = factory.getEmbeddedServletContainer();
 		InOrder ordered = inOrder((Object[]) listeners);
 		for (LifecycleListener listener : listeners) {
-			ordered.verify(listener).lifecycleEvent((LifecycleEvent) anyObject());
+			ordered.verify(listener).lifecycleEvent(any(LifecycleEvent.class));
 		}
 	}
 
@@ -135,7 +134,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		this.container = factory.getEmbeddedServletContainer();
 		InOrder ordered = inOrder((Object[]) listeners);
 		for (TomcatContextCustomizer listener : listeners) {
-			ordered.verify(listener).customize((Context) anyObject());
+			ordered.verify(listener).customize(any(Context.class));
 		}
 	}
 
@@ -151,7 +150,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		this.container = factory.getEmbeddedServletContainer();
 		InOrder ordered = inOrder((Object[]) listeners);
 		for (TomcatConnectorCustomizer listener : listeners) {
-			ordered.verify(listener).customize((Connector) anyObject());
+			ordered.verify(listener).customize(any(Connector.class));
 		}
 	}
 
@@ -247,14 +246,18 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		factory.setUriEncoding(Charset.forName("US-ASCII"));
 		Tomcat tomcat = getTomcat(factory);
-		assertThat(tomcat.getConnector().getURIEncoding()).isEqualTo("US-ASCII");
+		Connector connector = ((TomcatEmbeddedServletContainer) this.container)
+				.getServiceConnectors().get(tomcat.getService())[0];
+		assertThat(connector.getURIEncoding()).isEqualTo("US-ASCII");
 	}
 
 	@Test
 	public void defaultUriEncoding() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		Tomcat tomcat = getTomcat(factory);
-		assertThat(tomcat.getConnector().getURIEncoding()).isEqualTo("UTF-8");
+		Connector connector = ((TomcatEmbeddedServletContainer) this.container)
+				.getServiceConnectors().get(tomcat.getService())[0];
+		assertThat(connector.getURIEncoding()).isEqualTo("UTF-8");
 	}
 
 	@Test
@@ -263,13 +266,12 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		ssl.setKeyStore("test.jks");
 		ssl.setKeyStorePassword("secret");
 		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
-
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSsl(ssl);
 
 		Tomcat tomcat = getTomcat(factory);
-		Connector connector = tomcat.getConnector();
-
+		Connector connector = ((TomcatEmbeddedServletContainer) this.container)
+				.getServiceConnectors().get(tomcat.getService())[0];
 		SSLHostConfig[] sslHostConfigs = connector.getProtocolHandler()
 				.findSslHostConfigs();
 		assertThat(sslHostConfigs[0].getCiphers()).isEqualTo("ALPHA:BRAVO:CHARLIE");
@@ -309,9 +311,8 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		this.container = factory
 				.getEmbeddedServletContainer(sessionServletRegistration());
 		Tomcat tomcat = ((TomcatEmbeddedServletContainer) this.container).getTomcat();
-		Connector connector = tomcat.getConnector();
-
 		this.container.start();
+		Connector connector = tomcat.getConnector();
 		SSLHostConfig sslHostConfig = connector.getProtocolHandler()
 				.findSslHostConfigs()[0];
 		assertThat(sslHostConfig.getSslProtocol()).isEqualTo("TLS");
@@ -334,7 +335,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 					TomcatEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
-				catch (EmbeddedServletContainerException ex) {
+				catch (EmbeddedWebServerException ex) {
 					// Ignore
 				}
 			}

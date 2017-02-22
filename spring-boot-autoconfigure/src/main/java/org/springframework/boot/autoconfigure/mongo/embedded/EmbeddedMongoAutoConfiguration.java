@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.mongo.MongoClientDependsOnBeanFactoryPostProcessor;
+import org.springframework.boot.autoconfigure.data.mongo.ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -64,6 +65,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.data.mongodb.core.MongoClientFactoryBean;
+import org.springframework.data.mongodb.core.ReactiveMongoClientFactoryBean;
 import org.springframework.util.Assert;
 
 /**
@@ -72,6 +74,7 @@ import org.springframework.util.Assert;
  * @author Henryk Konsek
  * @author Andy Wilkinson
  * @author Yogesh Lonkar
+ * @author Mark Paluch
  * @since 1.3.0
  */
 @Configuration
@@ -106,8 +109,9 @@ public class EmbeddedMongoAutoConfiguration {
 	@ConditionalOnMissingBean
 	public MongodExecutable embeddedMongoServer(IMongodConfig mongodConfig)
 			throws IOException {
-		if (getPort() == 0) {
-			publishPortInfo(mongodConfig.net().getPort());
+		Integer configuredPort = this.properties.getPort();
+		if (configuredPort == null || configuredPort == 0) {
+			setEmbeddedPort(mongodConfig.net().getPort());
 		}
 		MongodStarter mongodStarter = getMongodStarter(this.runtimeConfig);
 		return mongodStarter.prepare(mongodConfig);
@@ -136,8 +140,9 @@ public class EmbeddedMongoAutoConfiguration {
 									? this.embeddedProperties.getStorage().getOplogSize()
 									: 0));
 		}
-		if (getPort() > 0) {
-			builder.net(new Net(getHost().getHostAddress(), getPort(),
+		Integer configuredPort = this.properties.getPort();
+		if (configuredPort != null && configuredPort > 0) {
+			builder.net(new Net(getHost().getHostAddress(), configuredPort,
 					Network.localhostIsIPv6()));
 		}
 		else {
@@ -145,13 +150,6 @@ public class EmbeddedMongoAutoConfiguration {
 					Network.getFreeServerPort(getHost()), Network.localhostIsIPv6()));
 		}
 		return builder.build();
-	}
-
-	private int getPort() {
-		if (this.properties.getPort() == null) {
-			return MongoProperties.DEFAULT_PORT;
-		}
-		return this.properties.getPort();
 	}
 
 	private InetAddress getHost() throws UnknownHostException {
@@ -162,7 +160,8 @@ public class EmbeddedMongoAutoConfiguration {
 		return InetAddress.getByName(this.properties.getHost());
 	}
 
-	private void publishPortInfo(int port) {
+	private void setEmbeddedPort(int port) {
+		this.properties.setPort(port);
 		setPortProperty(this.context, port);
 	}
 
@@ -231,6 +230,22 @@ public class EmbeddedMongoAutoConfiguration {
 	}
 
 	/**
+	 * Additional configuration to ensure that {@link MongoClient} beans depend on the
+	 * {@code embeddedMongoServer} bean.
+	 */
+	@Configuration
+	@ConditionalOnClass({ com.mongodb.reactivestreams.client.MongoClient.class,
+			ReactiveMongoClientFactoryBean.class })
+	protected static class EmbeddedReactiveMongoDependencyConfiguration extends
+			ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor {
+
+		public EmbeddedReactiveMongoDependencyConfiguration() {
+			super("embeddedMongoServer");
+		}
+
+	}
+
+	/**
 	 * A workaround for the lack of a {@code toString} implementation on
 	 * {@code GenericFeatureAwareVersion}.
 	 */
@@ -284,8 +299,8 @@ public class EmbeddedMongoAutoConfiguration {
 			if (getClass() == obj.getClass()) {
 				ToStringFriendlyFeatureAwareVersion other = (ToStringFriendlyFeatureAwareVersion) obj;
 				boolean equals = true;
-				equals &= this.features.equals(other.features);
-				equals &= this.version.equals(other.version);
+				equals = equals && this.features.equals(other.features);
+				equals = equals && this.version.equals(other.version);
 				return equals;
 			}
 			return super.equals(obj);

@@ -25,6 +25,7 @@ import java.nio.channels.WritableByteChannel;
  * @author Phillip Webb
  * @since 1.3.0
  */
+@FunctionalInterface
 public interface TunnelConnection {
 
 	/**

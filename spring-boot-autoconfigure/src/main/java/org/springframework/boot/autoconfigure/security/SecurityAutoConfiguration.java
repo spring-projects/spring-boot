@@ -47,7 +47,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 @ConditionalOnClass({ AuthenticationManager.class,
 		GlobalAuthenticationConfigurerAdapter.class })
-@EnableConfigurationProperties
+@EnableConfigurationProperties(SecurityProperties.class)
 @Import({ SpringBootWebSecurityConfiguration.class,
 		AuthenticationManagerConfiguration.class,
 		BootGlobalAuthenticationConfiguration.class, SecurityDataConfiguration.class })
@@ -58,12 +58,6 @@ public class SecurityAutoConfiguration {
 	public DefaultAuthenticationEventPublisher authenticationEventPublisher(
 			ApplicationEventPublisher publisher) {
 		return new DefaultAuthenticationEventPublisher(publisher);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public SecurityProperties securityProperties() {
-		return new SecurityProperties();
 	}
 
 }

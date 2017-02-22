@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,15 +83,21 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	}
 
 	private File getExplodedWarFileDocumentRoot() {
-		File file = getCodeSourceArchive();
+		return getExplodedWarFileDocumentRoot(getCodeSourceArchive());
+	}
+
+	File getExplodedWarFileDocumentRoot(File codeSourceFile) {
 		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Code archive: " + file);
+			this.logger.debug("Code archive: " + codeSourceFile);
 		}
-		if (file != null && file.exists()
-				&& file.getAbsolutePath().contains("/WEB-INF/")) {
-			String path = file.getAbsolutePath();
-			path = path.substring(0, path.indexOf("/WEB-INF/"));
-			return new File(path);
+		if (codeSourceFile != null && codeSourceFile.exists()) {
+			String path = codeSourceFile.getAbsolutePath();
+			int webInfPathIndex = path
+					.indexOf(File.separatorChar + "WEB-INF" + File.separatorChar);
+			if (webInfPathIndex >= 0) {
+				path = path.substring(0, webInfPathIndex);
+				return new File(path);
+			}
 		}
 		return null;
 	}
@@ -115,7 +121,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	private File getCommonDocumentRoot() {
 		for (String commonDocRoot : COMMON_DOC_ROOTS) {
 			File root = new File(commonDocRoot);
-			if (root != null && root.exists() && root.isDirectory()) {
+			if (root.exists() && root.isDirectory()) {
 				return root.getAbsoluteFile();
 			}
 		}
@@ -178,7 +184,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 			return tempDir;
 		}
 		catch (IOException ex) {
-			throw new EmbeddedServletContainerException(
+			throw new EmbeddedWebServerException(
 					"Unable to create tempDir. java.io.tmpdir is set to "
 							+ System.getProperty("java.io.tmpdir"),
 					ex);

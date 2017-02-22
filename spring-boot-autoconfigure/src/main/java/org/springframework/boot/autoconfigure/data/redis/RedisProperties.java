@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  * @author Christoph Strobl
  * @author Eddú Meléndez
+ * @author Marco Aust
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
@@ -34,6 +35,11 @@ public class RedisProperties {
 	 * Database index used by the connection factory.
 	 */
 	private int database = 0;
+
+	/**
+	 * Redis url, which will overrule host, port and password if set.
+	 */
+	private String url;
 
 	/**
 	 * Redis server host.
@@ -49,6 +55,11 @@ public class RedisProperties {
 	 * Redis server port.
 	 */
 	private int port = 6379;
+
+	/**
+	 * Enable SSL.
+	 */
+	private boolean ssl;
 
 	/**
 	 * Connection timeout in milliseconds.
@@ -67,6 +78,14 @@ public class RedisProperties {
 
 	public void setDatabase(int database) {
 		this.database = database;
+	}
+
+	public String getUrl() {
+		return this.url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	public String getHost() {
@@ -91,6 +110,14 @@ public class RedisProperties {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public boolean isSsl() {
+		return this.ssl;
+	}
+
+	public void setSsl(boolean ssl) {
+		this.ssl = ssl;
 	}
 
 	public void setTimeout(int timeout) {
@@ -256,4 +283,5 @@ public class RedisProperties {
 		}
 
 	}
+
 }

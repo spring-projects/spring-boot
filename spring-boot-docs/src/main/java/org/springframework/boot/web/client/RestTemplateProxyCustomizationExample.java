@@ -64,4 +64,5 @@ public class RestTemplateProxyCustomizationExample {
 
 	}
 	// end::customizer[]
+
 }

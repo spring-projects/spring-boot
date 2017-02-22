@@ -51,7 +51,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @DirtiesContext
-@TestPropertySource(properties = "endpoints.hypermedia.enabled=true")
+@TestPropertySource(properties = { "endpoints.hypermedia.enabled=true",
+		"management.security.enabled=false" })
 public class HalBrowserMvcEndpointVanillaIntegrationTests {
 
 	@Autowired
@@ -118,8 +119,8 @@ public class HalBrowserMvcEndpointVanillaIntegrationTests {
 
 	@Test
 	public void endpointsEachHaveSelf() throws Exception {
-		Set<String> collections = new HashSet<String>(
-				Arrays.asList("/trace", "/beans", "/dump", "/heapdump", "/loggers"));
+		Set<String> collections = new HashSet<String>(Arrays.asList("/trace", "/beans",
+				"/dump", "/heapdump", "/loggers", "/auditevents"));
 		for (MvcEndpoint endpoint : this.mvcEndpoints.getEndpoints()) {
 			String path = endpoint.getPath();
 			if (collections.contains(path)) {

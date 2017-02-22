@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,6 @@
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -42,8 +39,6 @@ import org.springframework.social.oauth2.AccessGrant;
  * @since 1.3.0
  */
 public class SpringSocialTokenServices implements ResourceServerTokenServices {
-
-	protected final Log logger = LogFactory.getLog(getClass());
 
 	private final OAuth2ConnectionFactory<?> connectionFactory;
 

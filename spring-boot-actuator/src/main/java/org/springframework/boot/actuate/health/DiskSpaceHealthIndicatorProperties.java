@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @since 1.2.0
  */
-@ConfigurationProperties("management.health.diskspace")
+@ConfigurationProperties(prefix = "management.health.diskspace")
 public class DiskSpaceHealthIndicatorProperties {
 
 	private static final int MEGABYTES = 1024 * 1024;

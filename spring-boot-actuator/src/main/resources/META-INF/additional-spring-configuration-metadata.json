@@ -86,6 +86,30 @@
     "description": "Arbitrary properties to add to the info endpoint."
   },
   {
+    "name": "management.cloudfoundry.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable extended Cloud Foundry actuator endpoints.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.cloudfoundry.skip-ssl-validation",
+    "type": "java.lang.Boolean",
+    "description": "Skip SSL verification for Cloud Foundry actuator endpoint security calls.",
+    "defaultValue": false
+  },
+  {
+    "name": "management.health.cassandra.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable cassandra health check.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.health.couchbase.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable couchbase health check.",
+    "defaultValue": true
+  },
+  {
     "name": "management.health.db.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable database health check.",
@@ -113,6 +137,12 @@
     "name": "management.health.jms.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable JMS health check.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.health.ldap.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable LDAP health check.",
     "defaultValue": true
   },
   {
@@ -170,32 +200,19 @@
     "defaultValue": true
   },
   {
+    "name": "management.info.git.mode",
+    "defaultValue": "simple"
+  },
+  {
+    "name": "management.security.sessions",
+    "defaultValue": "stateless"
+  },
+  {
     "name": "spring.git.properties",
     "type": "java.lang.String",
     "description": "Resource reference to a generated git info properties file.",
     "deprecation": {
       "replacement": "spring.info.git.location"
-    }
-  },
-  {
-    "name": "spring.pid.file",
-    "type": "java.lang.String",
-    "description": "Location of the PID file to write (if ApplicationPidFileWriter is used).",
-    "sourceType": "org.springframework.boot.actuate.system.ApplicationPidFileWriter"
-  },
-  {
-    "name": "spring.pid.fail-on-write-error",
-    "type": "java.lang.Boolean",
-    "description": "Fail if ApplicationPidFileWriter is used but it cannot write the PID file.",
-    "sourceType": "org.springframework.boot.actuate.system.ApplicationPidFileWriter"
-  },
-  {
-    "name": "spring.pidfile",
-    "type": "java.lang.String",
-    "description": "Location of the PID file to write (if ApplicationPidFileWriter is used).",
-    "sourceType": "org.springframework.boot.actuate.system.ApplicationPidFileWriter",
-    "deprecation": {
-      "replacement": "spring.pid.file"
     }
   }
 ],"hints": [
