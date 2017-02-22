@@ -17,8 +17,8 @@
 	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
-		<wildfly.version>8.2.0.Final</wildfly.version>
-		<cargo.container.id>wildfly8x</cargo.container.id>
+		<wildfly.version>9.0.2.Final</wildfly.version>
+		<cargo.container.id>wildfly9x</cargo.container.id>
 		<cargo.container.url>http://download.jboss.org/wildfly/${wildfly.version}/wildfly-${wildfly.version}.zip
 		</cargo.container.url>
 	</properties>
