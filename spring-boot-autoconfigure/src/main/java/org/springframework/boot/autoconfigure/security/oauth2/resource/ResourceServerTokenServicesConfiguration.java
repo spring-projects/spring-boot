@@ -334,7 +334,8 @@ public class ResourceServerTokenServicesConfiguration {
 			}
 			String tokenInfoUri = resolver.getProperty("token-info-uri");
 			String userInfoUri = resolver.getProperty("user-info-uri");
-			if (!StringUtils.hasLength(userInfoUri) && !StringUtils.hasLength(tokenInfoUri)) {
+			if (!StringUtils.hasLength(userInfoUri)
+					&& !StringUtils.hasLength(tokenInfoUri)) {
 				return ConditionOutcome
 						.match(message.didNotFind("user-info-uri property").atAll());
 			}
