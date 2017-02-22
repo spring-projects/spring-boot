@@ -82,7 +82,7 @@
 		<h2.version>1.4.193</h2.version>
 		<hamcrest.version>1.3</hamcrest.version>
 		<hazelcast.version>3.6.7</hazelcast.version>
-		<hibernate.version>5.0.11.Final</hibernate.version>
+		<hibernate.version>5.0.12.Final</hibernate.version>
 		<hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
 		<hikaricp.version>2.4.7</hikaricp.version>
 		<hikaricp-java6.version>2.3.13</hikaricp-java6.version>
