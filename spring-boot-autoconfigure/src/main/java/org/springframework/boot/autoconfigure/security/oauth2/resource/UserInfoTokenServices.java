@@ -120,7 +120,7 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 
 	@Override
 	public OAuth2AccessToken readAccessToken(String accessToken) {
-		throw new UnsupportedOperationException("Not supported: read access token");
+		return restTemplate.getOAuth2ClientContext().getAccessToken();
 	}
 
 	@SuppressWarnings({ "unchecked" })
@@ -138,12 +138,12 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 			OAuth2AccessToken existingToken = restTemplate.getOAuth2ClientContext()
 					.getAccessToken();
 			if (existingToken == null || !accessToken.equals(existingToken.getValue())) {
-				DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken(
-						accessToken);
+				existingToken = new DefaultOAuth2AccessToken(accessToken);
+				DefaultOAuth2AccessToken token = (DefaultOAuth2AccessToken) existingToken;
 				token.setTokenType(this.tokenType);
 				restTemplate.getOAuth2ClientContext().setAccessToken(token);
 			}
-			return restTemplate.getForEntity(path, Map.class).getBody();
+			return restTemplate.getForEntity(path, Map.class, existingToken.getAdditionalInformation()).getBody();
 		}
 		catch (Exception ex) {
 			this.logger.warn("Could not fetch user details: " + ex.getClass() + ", "
