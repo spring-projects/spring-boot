@@ -43,11 +43,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.boot.web.filter.OrderedRequestContextFilter;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -112,6 +114,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Sébastien Deleuze
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Bruce Brouwer
  */
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -296,8 +299,9 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		public WelcomePageHandlerMapping welcomePageHandlerMapping(
-				ResourceProperties resourceProperties) {
-			return new WelcomePageHandlerMapping(resourceProperties.getWelcomePage());
+				final ApplicationContext context,
+				final ResourceProperties resourceProperties) {
+			return new WelcomePageHandlerMapping(context, resourceProperties.getWelcomePage());
 		}
 
 		private void customizeResourceHandlerRegistration(
@@ -506,14 +510,29 @@ public class WebMvcAutoConfiguration {
 		private static final Log logger = LogFactory
 				.getLog(WelcomePageHandlerMapping.class);
 
-		private WelcomePageHandlerMapping(Resource welcomePage) {
-			if (welcomePage != null) {
-				logger.info("Adding welcome page: " + welcomePage);
-				ParameterizableViewController controller = new ParameterizableViewController();
-				controller.setViewName("forward:index.html");
-				setRootHandler(controller);
-				setOrder(0);
+		private WelcomePageHandlerMapping(final ApplicationContext applicationContext,
+				final Resource welcomePage) {
+			if (welcomeTemplateExists(applicationContext)) {
+				logger.info("Adding welcome page template: index");
+				setRootViewName("index");
 			}
+			else if (welcomePage != null) {
+				logger.info("Adding welcome page: " + welcomePage);
+				setRootViewName("forward:index.html");
+			}
+		}
+
+		private boolean welcomeTemplateExists(final ApplicationContext applicationContext) {
+			final TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(
+					applicationContext);
+			return providers.getProvider("index", applicationContext) != null;
+		}
+
+		private void setRootViewName(final String viewName) {
+			final ParameterizableViewController controller = new ParameterizableViewController();
+			controller.setViewName(viewName);
+			setRootHandler(controller);
+			setOrder(0);
 		}
 
 		@Override

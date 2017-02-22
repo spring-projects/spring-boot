@@ -63,6 +63,8 @@ import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
  * @author Stephane Nicoll
  * @author Brian Clozel
  * @author Eddú Meléndez
+ * @author Bruce Brouwer
+ *
  */
 @Configuration
 @EnableConfigurationProperties(ThymeleafProperties.class)

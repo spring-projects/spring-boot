@@ -1,0 +1,1 @@
+<html lang='${.lang}'><body>Index</body></html>

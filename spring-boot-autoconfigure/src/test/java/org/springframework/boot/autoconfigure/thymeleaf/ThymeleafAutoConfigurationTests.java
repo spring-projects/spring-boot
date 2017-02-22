@@ -17,7 +17,10 @@
 package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
@@ -34,15 +37,22 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfigurationTests.Config;
+import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
@@ -50,6 +60,9 @@ import org.springframework.web.servlet.support.RequestContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link ThymeleafAutoConfiguration}.
@@ -57,13 +70,15 @@ import static org.hamcrest.Matchers.containsString;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Bruce Brouwer
  */
 public class ThymeleafAutoConfigurationTests {
+	private static final String WELCOME_CONTENT = "<html lang=\"en\"><body>Index</body></html>";
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
-	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+	private AnnotationConfigEmbeddedWebApplicationContext context;
 
 	@After
 	public void close() {
@@ -74,11 +89,7 @@ public class ThymeleafAutoConfigurationTests {
 
 	@Test
 	public void createFromConfigClass() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.thymeleaf.mode:XHTML",
-				"spring.thymeleaf.suffix:");
-		this.context.register(ThymeleafAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		registerAndRefreshContext("spring.thymeleaf.mode:XHTML", "spring.thymeleaf.suffix:");
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
 		String result = engine.process("template.txt", attrs);
@@ -87,11 +98,7 @@ public class ThymeleafAutoConfigurationTests {
 
 	@Test
 	public void overrideCharacterEncoding() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.thymeleaf.encoding:UTF-16");
-		this.context.register(ThymeleafAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		registerAndRefreshContext("spring.thymeleaf.encoding:UTF-16");
 		ITemplateResolver resolver = this.context.getBean(ITemplateResolver.class);
 		assertThat(resolver instanceof SpringResourceTemplateResolver).isTrue();
 		assertThat(((SpringResourceTemplateResolver) resolver).getCharacterEncoding())
@@ -103,44 +110,28 @@ public class ThymeleafAutoConfigurationTests {
 
 	@Test
 	public void overrideTemplateResolverOrder() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.thymeleaf.templateResolverOrder:25");
-		this.context.register(ThymeleafAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		registerAndRefreshContext("spring.thymeleaf.templateResolverOrder:25");
 		ITemplateResolver resolver = this.context.getBean(ITemplateResolver.class);
 		assertThat(resolver.getOrder()).isEqualTo(Integer.valueOf(25));
 	}
 
 	@Test
 	public void overrideViewNames() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.thymeleaf.viewNames:foo,bar");
-		this.context.register(ThymeleafAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		registerAndRefreshContext("spring.thymeleaf.viewNames:foo,bar");
 		ThymeleafViewResolver views = this.context.getBean(ThymeleafViewResolver.class);
 		assertThat(views.getViewNames()).isEqualTo(new String[] { "foo", "bar" });
 	}
 
 	@Test
 	public void templateLocationDoesNotExist() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.thymeleaf.prefix:classpath:/no-such-directory/");
-		this.context.register(ThymeleafAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		registerAndRefreshContext("spring.thymeleaf.prefix:classpath:/no-such-directory/");
 		this.output.expect(containsString("Cannot find template location"));
 	}
 
 	@Test
 	public void templateLocationEmpty() throws Exception {
 		new File("target/test-classes/templates/empty-directory").mkdir();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.thymeleaf.prefix:classpath:/templates/empty-directory/");
-		this.context.register(ThymeleafAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		registerAndRefreshContext("spring.thymeleaf.prefix:classpath:/templates/empty-directory/");
 	}
 
 	@Test
@@ -165,9 +156,7 @@ public class ThymeleafAutoConfigurationTests {
 
 	@Test
 	public void useDataDialect() throws Exception {
-		this.context.register(ThymeleafAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		registerAndRefreshContext();
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
 		String result = engine.process("data-dialect", attrs);
@@ -176,9 +165,7 @@ public class ThymeleafAutoConfigurationTests {
 
 	@Test
 	public void useJava8TimeDialect() throws Exception {
-		this.context.register(ThymeleafAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		registerAndRefreshContext();
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
 		Context attrs = new Context(Locale.UK);
 		String result = engine.process("java8time-dialect", attrs);
@@ -187,9 +174,7 @@ public class ThymeleafAutoConfigurationTests {
 
 	@Test
 	public void renderTemplate() throws Exception {
-		this.context.register(ThymeleafAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		registerAndRefreshContext();
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
 		String result = engine.process("home", attrs);
@@ -216,9 +201,7 @@ public class ThymeleafAutoConfigurationTests {
 
 	@Test
 	public void registerResourceHandlingFilterDisabledByDefault() throws Exception {
-		this.context.register(ThymeleafAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		registerAndRefreshContext();
 		assertThat(this.context.getBeansOfType(ResourceUrlEncodingFilter.class))
 				.isEmpty();
 	}
@@ -226,18 +209,13 @@ public class ThymeleafAutoConfigurationTests {
 	@Test
 	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled()
 			throws Exception {
-		this.context.register(ThymeleafAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.resources.chain.enabled:true");
-		this.context.refresh();
+		registerAndRefreshContext("spring.resources.chain.enabled:true");
 		assertThat(this.context.getBean(ResourceUrlEncodingFilter.class)).isNotNull();
 	}
 
 	@Test
 	public void layoutDialectCanBeCustomized() throws Exception {
-		this.context.register(LayoutDialectConfiguration.class);
-		this.context.refresh();
+		registerAndRefreshContext(LayoutDialectConfiguration.class);
 		LayoutDialect layoutDialect = this.context.getBean(LayoutDialect.class);
 		assertThat(ReflectionTestUtils.getField(layoutDialect, "sortingStrategy"))
 				.isInstanceOf(GroupingStrategy.class);
@@ -245,15 +223,49 @@ public class ThymeleafAutoConfigurationTests {
 
 	@Test
 	public void cachingCanBeDisabled() {
-		this.context.register(ThymeleafAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.thymeleaf.cache:false");
-		this.context.refresh();
+		registerAndRefreshContext("spring.thymeleaf.cache:false");
 		assertThat(this.context.getBean(ThymeleafViewResolver.class).isCache()).isFalse();
 		SpringResourceTemplateResolver templateResolver = this.context
 				.getBean(SpringResourceTemplateResolver.class);
 		assertThat(templateResolver.isCacheable()).isFalse();
 	}
+
+	@Test
+	public void welcomeTemplateExists()
+			throws Exception {
+		registerAndRefreshContext("spring.thymeleaf.prefix:classpath:/welcome-templates/");
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isOk()).andExpect(content().string(WELCOME_CONTENT));
+	}
+
+	@Test
+	public void welcomeTemplateDoesNotExist()
+			throws Exception {
+		registerAndRefreshContext("spring.thymeleaf.prefix:classpath:/no-welcome-template/");
+		MockMvcBuilders.webAppContextSetup(this.context).build()
+				.perform(get("/").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isNotFound());
+	}
+
+	private void registerAndRefreshContext(Class<?> config, String... environment) {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, environment);
+		List<Class<?>> configClasses = new ArrayList<Class<?>>();
+		if (config != null) {
+			configClasses.add(config);
+		}
+		configClasses.addAll(Arrays.asList(Config.class, WebMvcAutoConfiguration.class,
+				ThymeleafAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class));
+		this.context.register(configClasses.toArray(new Class<?>[configClasses.size()]));
+		this.context.refresh();
+	}
+
+	private void registerAndRefreshContext(String... environment) {
+		registerAndRefreshContext(null, environment);
+	}
+
 
 	@Configuration
 	@ImportAutoConfiguration({ ThymeleafAutoConfiguration.class,

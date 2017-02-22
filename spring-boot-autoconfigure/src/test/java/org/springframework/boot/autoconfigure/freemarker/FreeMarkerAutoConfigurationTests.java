@@ -23,18 +23,22 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfigurationTests.Config;
+import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.support.RequestContext;
@@ -44,24 +48,24 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link FreeMarkerAutoConfiguration}.
  *
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
+ * @author Bruce Brouwer
  */
 public class FreeMarkerAutoConfigurationTests {
+	private static final String WELCOME_CONTENT = "<html lang='en'><body>Index</body></html>";
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
-	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-
-	@Before
-	public void setupContext() {
-		this.context.setServletContext(new MockServletContext());
-	}
+	private AnnotationConfigEmbeddedWebApplicationContext context;
 
 	@After
 	public void close() {
@@ -205,9 +209,30 @@ public class FreeMarkerAutoConfigurationTests {
 		assertThat(this.context.getBean(ResourceUrlEncodingFilter.class)).isNotNull();
 	}
 
-	private void registerAndRefreshContext(String... env) {
-		EnvironmentTestUtils.addEnvironment(this.context, env);
-		this.context.register(FreeMarkerAutoConfiguration.class);
+	@Test
+	public void welcomeTemplateExists()
+			throws Exception {
+		registerAndRefreshContext("spring.freemarker.templateLoaderPath:classpath:/welcome-templates/");
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isOk()).andExpect(content().string(WELCOME_CONTENT));
+	}
+
+	@Test
+	public void welcomeTemplateDoesNotExist()
+			throws Exception {
+		registerAndRefreshContext("spring.freemarker.templateLoaderPath:classpath:/no-welcome-template/");
+		MockMvcBuilders.webAppContextSetup(this.context).build()
+				.perform(get("/").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isNotFound());
+	}
+
+	private void registerAndRefreshContext(String... environment) {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, environment);
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				FreeMarkerAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
 	}
 
