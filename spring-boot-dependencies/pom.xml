@@ -143,7 +143,7 @@
 		<simple-json.version>1.1.1</simple-json.version>
 		<slf4j.version>1.7.22</slf4j.version>
 		<snakeyaml.version>1.17</snakeyaml.version>
-		<solr.version>5.5.3</solr.version>
+		<solr.version>5.5.4</solr.version>
 		<spock.version>1.0-groovy-2.4</spock.version>
 		<spring.version>4.3.7.BUILD-SNAPSHOT</spring.version>
 		<spring-amqp.version>1.6.7.RELEASE</spring-amqp.version>
