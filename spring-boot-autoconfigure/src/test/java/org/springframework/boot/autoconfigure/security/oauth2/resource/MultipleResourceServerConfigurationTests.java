@@ -19,43 +19,30 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource;
 import java.util.List;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.OAuth2AutoConfiguration;
-import org.springframework.boot.autoconfigure.security.oauth2.OAuth2ClientProperties;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.StandardEnvironment;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfiguration;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurer;
-import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
- * @author Dave Syer
+ * Tests for {@link OAuth2ResourceServerConfiguration} when there are multiple
+ * {@link ResourceServerConfiguration} beans.
  *
+ * @author Dave Syer
  */
 public class MultipleResourceServerConfigurationTests {
 
-	private ConfigurableApplicationContext context;
-
-	private ConfigurableEnvironment environment = new StandardEnvironment();
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	private AnnotationConfigWebApplicationContext context;
 
 	@After
 	public void close() {
@@ -65,26 +52,24 @@ public class MultipleResourceServerConfigurationTests {
 	}
 
 	@Test
-	public void doubleResourceServerConfiguration() {
-		EnvironmentTestUtils.addEnvironment(this.environment, "debug=true",
-				"security.oauth2.resource.tokenInfoUri:http://example.com", "security.oauth2.client.clientId=acme");
-		this.context = new SpringApplicationBuilder(DoubleResourceConfiguration.class, MockServletConfiguration.class)
-				.environment(this.environment).run();
-		RemoteTokenServices services = this.context.getBean(RemoteTokenServices.class);
-		assertThat(services).isNotNull();
+	public void orderIsUnchangedWhenThereAreMultipleResourceServerConfigurations() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(DoubleResourceConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"security.oauth2.resource.tokenInfoUri:http://example.com",
+				"security.oauth2.client.clientId=acme");
+		this.context.refresh();
+		assertThat(this.context
+				.getBean("adminResources", ResourceServerConfiguration.class).getOrder())
+						.isEqualTo(3);
+		assertThat(this.context
+				.getBean("otherResources", ResourceServerConfiguration.class).getOrder())
+						.isEqualTo(4);
 	}
 
-	@Configuration
-	@Import({ OAuth2AutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
-	@EnableConfigurationProperties(OAuth2ClientProperties.class)
+	@ImportAutoConfiguration({ OAuth2AutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	@EnableWebSecurity
-	protected static class MockServletConfiguration {
-		@Bean
-		public EmbeddedServletContainerFactory embeddedServletContainerFactory() {
-			return mock(EmbeddedServletContainerFactory.class);
-		}
-	}
-
 	@Configuration
 	protected static class DoubleResourceConfiguration {
 
@@ -93,6 +78,7 @@ public class MultipleResourceServerConfigurationTests {
 
 			ResourceServerConfiguration resource = new ResourceServerConfiguration() {
 				// Switch off the Spring Boot @Autowired configurers
+				@Override
 				public void setConfigurers(List<ResourceServerConfigurer> configurers) {
 					super.setConfigurers(configurers);
 				}
@@ -106,6 +92,7 @@ public class MultipleResourceServerConfigurationTests {
 
 			ResourceServerConfiguration resource = new ResourceServerConfiguration() {
 				// Switch off the Spring Boot @Autowired configurers
+				@Override
 				public void setConfigurers(List<ResourceServerConfigurer> configurers) {
 					super.setConfigurers(configurers);
 				}
