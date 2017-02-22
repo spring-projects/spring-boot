@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.embedded;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -24,13 +25,15 @@ import org.springframework.context.ApplicationEvent;
  * obtaining the local port of a running server.
  *
  * @author Brian Clozel
+ * @author Stephane Nicoll
  * @since 2.0.0
  * @see EmbeddedServletContainerInitializedEvent
+ * @see EmbeddedReactiveWebServerInitializedEvent
  */
 @SuppressWarnings("serial")
-public class EmbeddedWebServerInitializedEvent extends ApplicationEvent {
+public abstract class EmbeddedWebServerInitializedEvent extends ApplicationEvent {
 
-	public EmbeddedWebServerInitializedEvent(EmbeddedWebServer source) {
+	protected EmbeddedWebServerInitializedEvent(EmbeddedWebServer source) {
 		super(source);
 	}
 
@@ -43,6 +46,14 @@ public class EmbeddedWebServerInitializedEvent extends ApplicationEvent {
 	}
 
 	/**
+	 * Access the application context that the container was created in. Sometimes it is
+	 * prudent to check that this matches expectations (like being equal to the current
+	 * context) before acting on the server container itself.
+	 * @return the applicationContext that the container was created from
+	 */
+	public abstract ApplicationContext getApplicationContext();
+
+	/**
 	 * Access the source of the event (an {@link EmbeddedWebServer}).
 	 * @return the embedded web server
 	 */
@@ -50,4 +61,12 @@ public class EmbeddedWebServerInitializedEvent extends ApplicationEvent {
 	public EmbeddedWebServer getSource() {
 		return (EmbeddedWebServer) super.getSource();
 	}
+
+	/**
+	 * Access the {@link EmbeddedWebServer} Id used internally
+	 * to differentiate application / management servers.
+	 * @return the server internal Id
+	 */
+	public abstract String getServerId();
+
 }

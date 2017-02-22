@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.embedded;
 
+import org.springframework.util.StringUtils;
+
 /**
  * Event to be published after the {@link EmbeddedWebApplicationContext} is
  * refreshed and the {@link EmbeddedWebServer} is ready. Useful for
@@ -44,8 +46,18 @@ public class EmbeddedServletContainerInitializedEvent extends EmbeddedWebServerI
 	 * context) before acting on the server container itself.
 	 * @return the applicationContext that the container was created from
 	 */
+	@Override
 	public EmbeddedWebApplicationContext getApplicationContext() {
 		return this.applicationContext;
+	}
+
+	@Override
+	public String getServerId() {
+		String name = this.applicationContext.getNamespace();
+		if (StringUtils.isEmpty(name)) {
+			name = "server";
+		}
+		return name;
 	}
 
 }
