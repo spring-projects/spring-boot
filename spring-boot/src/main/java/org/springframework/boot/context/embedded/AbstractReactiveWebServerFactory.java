@@ -16,6 +16,12 @@
 
 package org.springframework.boot.context.embedded;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Abstract base class for {@link ReactiveWebServerFactory} implementations.
  *
@@ -26,11 +32,35 @@ public abstract class AbstractReactiveWebServerFactory
 		extends AbstractConfigurableReactiveWebServer
 		implements ReactiveWebServerFactory {
 
+	protected final Log logger = LogFactory.getLog(getClass());
+
 	public AbstractReactiveWebServerFactory() {
 	}
 
 	public AbstractReactiveWebServerFactory(int port) {
 		super(port);
+	}
+
+
+	/**
+	 * Return the absolute temp dir for given web server.
+	 * @param prefix servlet container name
+	 * @return The temp dir for given servlet container.
+	 */
+	protected File createTempDir(String prefix) {
+		try {
+			File tempDir = File.createTempFile(prefix + ".", "." + getPort());
+			tempDir.delete();
+			tempDir.mkdir();
+			tempDir.deleteOnExit();
+			return tempDir;
+		}
+		catch (IOException ex) {
+			throw new EmbeddedWebServerException(
+					"Unable to create tempDir. java.io.tmpdir is set to "
+							+ System.getProperty("java.io.tmpdir"),
+					ex);
+		}
 	}
 
 }
