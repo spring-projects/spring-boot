@@ -29,6 +29,8 @@ import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerConfiguration.ResourceServerCondition;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -84,8 +86,7 @@ public class OAuth2ResourceServerConfiguration {
 		return new ResourceServerFilterChainOrderProcessor(properties);
 	}
 
-	protected static class ResourceSecurityConfigurer
-			extends ResourceServerConfigurerAdapter {
+	protected static class ResourceSecurityConfigurer extends ResourceServerConfigurerAdapter {
 
 		private ResourceServerProperties resource;
 
@@ -94,8 +95,7 @@ public class OAuth2ResourceServerConfiguration {
 		}
 
 		@Override
-		public void configure(ResourceServerSecurityConfigurer resources)
-				throws Exception {
+		public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
 			resources.resourceId(this.resource.getResourceId());
 		}
 
@@ -107,39 +107,42 @@ public class OAuth2ResourceServerConfiguration {
 	}
 
 	private static final class ResourceServerFilterChainOrderProcessor
-			implements BeanPostProcessor {
+			implements BeanPostProcessor, ApplicationContextAware {
 
 		private final ResourceServerProperties properties;
+		private ApplicationContext context;
 
-		private ResourceServerFilterChainOrderProcessor(
-				ResourceServerProperties properties) {
+		private ResourceServerFilterChainOrderProcessor(ResourceServerProperties properties) {
 			this.properties = properties;
 		}
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName)
-				throws BeansException {
+		public void setApplicationContext(ApplicationContext context) throws BeansException {
+			this.context = context;
+		}
+
+		@Override
+		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 			return bean;
 		}
 
 		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName)
-				throws BeansException {
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 			if (bean instanceof ResourceServerConfiguration) {
-				ResourceServerConfiguration config = (ResourceServerConfiguration) bean;
-				config.setOrder(this.properties.getFilterOrder());
+				if (this.context.getBeanNamesForType(ResourceServerConfiguration.class, false, false).length == 1) {
+					ResourceServerConfiguration config = (ResourceServerConfiguration) bean;
+					config.setOrder(this.properties.getFilterOrder());
+				}
 			}
 			return bean;
 		}
 
 	}
 
-	protected static class ResourceServerCondition extends SpringBootCondition
-			implements ConfigurationCondition {
+	protected static class ResourceServerCondition extends SpringBootCondition implements ConfigurationCondition {
 
 		private static final String AUTHORIZATION_ANNOTATION = "org.springframework."
-				+ "security.oauth2.config.annotation.web.configuration."
-				+ "AuthorizationServerEndpointsConfiguration";
+				+ "security.oauth2.config.annotation.web.configuration." + "AuthorizationServerEndpointsConfiguration";
 
 		@Override
 		public ConfigurationPhase getConfigurationPhase() {
@@ -147,43 +150,37 @@ public class OAuth2ResourceServerConfiguration {
 		}
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("OAuth ResourceServer Condition");
+		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage.forCondition("OAuth ResourceServer Condition");
 			Environment environment = context.getEnvironment();
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
-					"security.oauth2.resource.");
+			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment, "security.oauth2.resource.");
 			if (hasOAuthClientId(environment)) {
 				return ConditionOutcome.match(message.foundExactly("client-id property"));
 			}
 			if (!resolver.getSubProperties("jwt").isEmpty()) {
-				return ConditionOutcome
-						.match(message.foundExactly("JWT resource configuration"));
+				return ConditionOutcome.match(message.foundExactly("JWT resource configuration"));
 			}
 			if (!resolver.getSubProperties("jwk").isEmpty()) {
 				return ConditionOutcome
 						.match(message.foundExactly("JWK resource configuration"));
 			}
 			if (StringUtils.hasText(resolver.getProperty("user-info-uri"))) {
-				return ConditionOutcome
-						.match(message.foundExactly("user-info-uri property"));
+				return ConditionOutcome.match(message.foundExactly("user-info-uri property"));
+			}
+			if (StringUtils.hasText(resolver.getProperty("token-info-uri"))) {
+				return ConditionOutcome.match(message.foundExactly("token-info-uri property"));
 			}
 			if (ClassUtils.isPresent(AUTHORIZATION_ANNOTATION, null)) {
-				if (AuthorizationServerEndpointsConfigurationBeanCondition
-						.matches(context)) {
-					return ConditionOutcome.match(
-							message.found("class").items(AUTHORIZATION_ANNOTATION));
+				if (AuthorizationServerEndpointsConfigurationBeanCondition.matches(context)) {
+					return ConditionOutcome.match(message.found("class").items(AUTHORIZATION_ANNOTATION));
 				}
 			}
-			return ConditionOutcome.noMatch(
-					message.didNotFind("client id, JWT resource or authorization server")
-							.atAll());
+			return ConditionOutcome
+					.noMatch(message.didNotFind("client id, JWT resource or authorization server").atAll());
 		}
 
 		private boolean hasOAuthClientId(Environment environment) {
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
-					"security.oauth2.client.");
+			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment, "security.oauth2.client.");
 			return StringUtils.hasLength(resolver.getProperty("client-id", ""));
 		}
 
@@ -194,8 +191,7 @@ public class OAuth2ResourceServerConfiguration {
 
 		public static boolean matches(ConditionContext context) {
 			Class<AuthorizationServerEndpointsConfigurationBeanCondition> type = AuthorizationServerEndpointsConfigurationBeanCondition.class;
-			Conditional conditional = AnnotationUtils.findAnnotation(type,
-					Conditional.class);
+			Conditional conditional = AnnotationUtils.findAnnotation(type, Conditional.class);
 			StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(type);
 			for (Class<? extends Condition> conditionType : conditional.value()) {
 				Condition condition = BeanUtils.instantiateClass(conditionType);
