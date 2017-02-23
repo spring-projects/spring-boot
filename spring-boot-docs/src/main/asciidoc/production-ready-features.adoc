@@ -1154,7 +1154,6 @@ Here is a simple example that counts the number of times that a method is invoke
 
 [source,java,indent=0]
 ----
-	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.boot.actuate.metrics.CounterService;
 	import org.springframework.stereotype.Service;
 
@@ -1163,7 +1162,6 @@ Here is a simple example that counts the number of times that a method is invoke
 
 		private final CounterService counterService;
 
-		@Autowired
 		public MyService(CounterService counterService) {
 			this.counterService = counterService;
 		}
