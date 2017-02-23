@@ -29,8 +29,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,6 +52,9 @@ public abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests 
 	@Autowired
 	private ReactiveWebApplicationContext context;
 
+	@Autowired
+	private WebTestClient webClient;
+
 	public ReactiveWebApplicationContext getContext() {
 		return this.context;
 	}
@@ -59,9 +62,19 @@ public abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests 
 	@Test
 	public void runAndTestHttpEndpoint() {
 		assertThat(this.port).isNotEqualTo(8080).isNotEqualTo(0);
-		String body = new RestTemplate()
-				.getForObject("http://localhost:" + this.port + "/", String.class);
-		assertThat(body).isEqualTo("Hello World");
+		WebTestClient.bindToServer()
+				.baseUrl("http://localhost:" + this.port).build()
+				.get().uri("/")
+				.exchange()
+				.expectBody(String.class).value().isEqualTo("Hello World");
+	}
+
+	@Test
+	public void injectWebTestClient() {
+		this.webClient
+				.get().uri("/")
+				.exchange()
+				.expectBody(String.class).value().isEqualTo("Hello World");
 	}
 
 	@Test

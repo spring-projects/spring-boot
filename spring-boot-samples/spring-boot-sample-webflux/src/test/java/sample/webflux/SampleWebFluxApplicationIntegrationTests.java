@@ -16,18 +16,15 @@
 
 package sample.webflux;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
 
-import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
  * Basic integration tests for WebFlux application.
@@ -38,27 +35,16 @@ import org.springframework.web.reactive.function.client.WebClient;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class SampleWebFluxApplicationIntegrationTests {
 
-	@LocalServerPort
-	private int port;
-
-	private WebClient webClient;
-
-	@Before
-	public void setUp() throws Exception {
-		this.webClient = WebClient.create("http://localhost:" + this.port);
-	}
+	@Autowired
+	private WebTestClient webClient;
 
 	@Test
 	public void testWelcome() throws Exception {
-		Mono<String> body = this.webClient
+		this.webClient
 				.get().uri("/")
 				.accept(MediaType.TEXT_PLAIN)
 				.exchange()
-				.then(response -> response.bodyToMono(String.class));
-
-		StepVerifier.create(body)
-				.expectNext("Hello World")
-				.verifyComplete();
+				.expectBody(String.class).value().isEqualTo("Hello World");
 	}
 
 }
