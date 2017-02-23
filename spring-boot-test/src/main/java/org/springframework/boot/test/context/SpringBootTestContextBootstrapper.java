@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -27,9 +28,14 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySources;
+import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextLoader;
@@ -38,6 +44,7 @@ import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.DefaultTestContextBootstrapper;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.Assert;
@@ -146,7 +153,8 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 						.toArray(new String[propertySourceProperties.size()]));
 		WebEnvironment webEnvironment = getWebEnvironment(mergedConfig.getTestClass());
 		if (webEnvironment != null) {
-			if (deduceWebApplication() == WebApplicationType.SERVLET &&
+			WebApplicationType webApplicationType = getWebApplicationType(mergedConfig);
+			if (webApplicationType == WebApplicationType.SERVLET &&
 					(webEnvironment.isEmbedded() || webEnvironment == WebEnvironment.MOCK)) {
 				WebAppConfiguration webAppConfiguration = AnnotatedElementUtils
 						.findMergedAnnotation(mergedConfig.getTestClass(),
@@ -156,8 +164,22 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 				mergedConfig = new WebMergedContextConfiguration(mergedConfig,
 						resourceBasePath);
 			}
+			else if (webApplicationType == WebApplicationType.REACTIVE
+					&& webEnvironment.isEmbedded()) {
+				return new ReactiveWebMergedContextConfiguration(mergedConfig);
+			}
 		}
 		return mergedConfig;
+	}
+
+	private WebApplicationType getWebApplicationType(
+			MergedContextConfiguration configuration) {
+		WebApplicationType webApplicationType =
+				getConfiguredWebApplicationType(configuration);
+		if (webApplicationType != null) {
+			return webApplicationType;
+		}
+		return deduceWebApplication();
 	}
 
 	private WebApplicationType deduceWebApplication() {
@@ -171,6 +193,25 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			}
 		}
 		return WebApplicationType.SERVLET;
+	}
+
+	private WebApplicationType getConfiguredWebApplicationType(
+			MergedContextConfiguration configuration) {
+		PropertySources sources = convertToPropertySources(
+				configuration.getPropertySourceProperties());
+		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
+				new PropertySourcesPropertyResolver(sources), "spring.main.");
+		String property = resolver.getProperty("web-application-type");
+		return (property != null ? WebApplicationType.valueOf(property.toUpperCase())
+				: null);
+	}
+
+	private PropertySources convertToPropertySources(String[] properties) {
+		Map<String, Object> source = TestPropertySourceUtils
+				.convertInlinedPropertiesToMap(properties);
+		MutablePropertySources sources = new MutablePropertySources();
+		sources.addFirst(new MapPropertySource("inline", source));
+		return sources;
 	}
 
 	protected Class<?>[] getOrFindConfigurationClasses(

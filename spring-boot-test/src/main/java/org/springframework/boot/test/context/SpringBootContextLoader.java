@@ -114,6 +114,9 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 				new WebConfigurer().configure(config, application, initializers);
 			}
 		}
+		else if (config instanceof ReactiveWebMergedContextConfiguration) {
+			application.setWebApplicationType(WebApplicationType.REACTIVE);
+		}
 		else {
 			application.setWebApplicationType(WebApplicationType.NONE);
 		}
