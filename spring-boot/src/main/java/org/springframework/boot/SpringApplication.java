@@ -182,7 +182,7 @@ public class SpringApplication {
 	 * reactive web environments.
 	 */
 	public static final String DEFAULT_REACTIVE_WEB_CONTEXT_CLASS = "org.springframework."
-			+ "boot.context.embedded.ReactiveWebApplicationContext";
+			+ "boot.context.embedded.EmbeddedReactiveWebApplicationContext";
 
 	private static final String REACTIVE_WEB_ENVIRONMENT_CLASS = "org.springframework."
 			+ "web.reactive.DispatcherHandler";

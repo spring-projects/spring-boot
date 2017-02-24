@@ -46,6 +46,16 @@ org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters=\
 org.springframework.boot.test.autoconfigure.json.JsonTestersAutoConfiguration
 
+# AutoConfigureWebClient auto-configuration imports
+org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient=\
+org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientAutoConfiguration
+
+# AutoConfigureWebFlux auto-configuration imports
+org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebFlux=\
+org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration,\
+org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
+org.springframework.boot.autoconfigure.webflux.WebFluxAnnotationAutoConfiguration
+
 # AutoConfigureMockMvc auto-configuration imports
 org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc=\
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration,\

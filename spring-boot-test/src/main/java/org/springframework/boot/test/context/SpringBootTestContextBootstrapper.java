@@ -164,8 +164,8 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 				mergedConfig = new WebMergedContextConfiguration(mergedConfig,
 						resourceBasePath);
 			}
-			else if (webApplicationType == WebApplicationType.REACTIVE
-					&& webEnvironment.isEmbedded()) {
+			else if (webApplicationType == WebApplicationType.REACTIVE &&
+					(webEnvironment.isEmbedded() || webEnvironment == WebEnvironment.MOCK)) {
 				return new ReactiveWebMergedContextConfiguration(mergedConfig);
 			}
 		}

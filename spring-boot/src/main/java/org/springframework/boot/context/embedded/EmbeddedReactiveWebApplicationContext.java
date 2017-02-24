@@ -17,27 +17,28 @@
 package org.springframework.boot.context.embedded;
 
 import org.springframework.beans.BeansException;
+import org.springframework.boot.context.GenericReactiveWebApplicationContext;
 import org.springframework.context.ApplicationContextException;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@link AnnotationConfigApplicationContext} that can be used to bootstrap
+ * A {@link GenericReactiveWebApplicationContext} that can be used to bootstrap
  * itself from a contained embedded web server factory bean.
  *
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class ReactiveWebApplicationContext extends AnnotationConfigApplicationContext {
+public class EmbeddedReactiveWebApplicationContext
+		extends GenericReactiveWebApplicationContext {
 
 	private volatile EmbeddedWebServer embeddedWebServer;
 
-	public ReactiveWebApplicationContext() {
+	public EmbeddedReactiveWebApplicationContext() {
 		super();
 	}
 
-	public ReactiveWebApplicationContext(Class... annotatedClasses) {
+	public EmbeddedReactiveWebApplicationContext(Class... annotatedClasses) {
 		super(annotatedClasses);
 	}
 

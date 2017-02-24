@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.servlet;
+package org.springframework.boot.test.autoconfigure.web.reactive;
 
 import java.util.Locale;
 
@@ -30,14 +30,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link WebMvcTest} and {@link MessageSource} auto-configuration.
+ * Integration tests for {@link WebFluxTest} and {@link MessageSource} auto-configuration.
  *
- * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(secure = false)
+@WebFluxTest
 @TestPropertySource(properties = "spring.messages.basename=web-test-messages")
-public class WebMvcTestMessageSourceIntegrationTests {
+public class WebFluxTestMessageSourceIntegrationTests {
 
 	@Autowired
 	private ApplicationContext context;

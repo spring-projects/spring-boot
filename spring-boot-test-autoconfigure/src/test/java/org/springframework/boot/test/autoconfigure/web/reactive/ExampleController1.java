@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.autoconfigure.web.reactive;
 
-import org.springframework.test.context.MergedContextConfiguration;
+import reactor.core.publisher.Mono;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Encapsulates the <em>merged</em> context configuration declared on a test class and
- * all of its superclasses for a reactive web application.
+ * Example {@link Controller} used with {@link WebFluxTest} tests.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
  */
-public class ReactiveWebMergedContextConfiguration extends MergedContextConfiguration {
+@RestController
+public class ExampleController1 {
 
-	public ReactiveWebMergedContextConfiguration(
-			MergedContextConfiguration mergedConfig) {
-		super(mergedConfig);
+	@GetMapping("/one")
+	public Mono<String> one() {
+		return Mono.just("one");
 	}
+
 }

@@ -44,7 +44,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.ReactiveWebApplicationContext;
+import org.springframework.boot.context.embedded.EmbeddedReactiveWebApplicationContext;
 import org.springframework.boot.context.embedded.reactor.ReactorNettyReactiveWebServerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -406,7 +406,7 @@ public class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleReactiveWebConfig.class);
 		application.setWebApplicationType(WebApplicationType.REACTIVE);
 		this.context = application.run();
-		assertThat(this.context).isInstanceOf(ReactiveWebApplicationContext.class);
+		assertThat(this.context).isInstanceOf(EmbeddedReactiveWebApplicationContext.class);
 	}
 
 	@Test

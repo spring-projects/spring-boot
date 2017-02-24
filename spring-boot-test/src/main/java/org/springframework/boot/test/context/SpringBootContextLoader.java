@@ -28,6 +28,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.GenericReactiveWebApplicationContext;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.web.support.ServletContextApplicationContextInitializer;
@@ -116,6 +117,9 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		}
 		else if (config instanceof ReactiveWebMergedContextConfiguration) {
 			application.setWebApplicationType(WebApplicationType.REACTIVE);
+			if (!isEmbeddedWebEnvironment(config)) {
+				new ReactiveWebConfigurer().configure(application);
+			}
 		}
 		else {
 			application.setWebApplicationType(WebApplicationType.NONE);
@@ -277,6 +281,19 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 					webConfiguration.getResourceBasePath());
 			initializers.add(0, new ServletContextApplicationContextInitializer(
 					servletContext, true));
+		}
+
+	}
+
+	/**
+	 * Inner class to configure {@link ReactiveWebMergedContextConfiguration}.
+	 */
+	private static class ReactiveWebConfigurer {
+
+		private static final Class<GenericReactiveWebApplicationContext> WEB_CONTEXT_CLASS = GenericReactiveWebApplicationContext.class;
+
+		void configure(SpringApplication application) {
+			application.setApplicationContextClass(WEB_CONTEXT_CLASS);
 		}
 
 	}

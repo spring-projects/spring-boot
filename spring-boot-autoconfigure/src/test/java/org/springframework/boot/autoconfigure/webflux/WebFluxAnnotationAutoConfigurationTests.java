@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.webflux;
 
 import org.junit.Test;
 
-import org.springframework.boot.context.embedded.ReactiveWebApplicationContext;
+import org.springframework.boot.context.embedded.EmbeddedReactiveWebApplicationContext;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
@@ -58,7 +58,7 @@ import static org.mockito.Mockito.mock;
  */
 public class WebFluxAnnotationAutoConfigurationTests {
 
-	private ReactiveWebApplicationContext context;
+	private EmbeddedReactiveWebApplicationContext context;
 
 	@Test
 	public void shouldNotProcessIfExistingHttpHandler() throws Exception {
@@ -173,7 +173,7 @@ public class WebFluxAnnotationAutoConfigurationTests {
 	}
 
 	private void load(Class<?> config, String... environment) {
-		this.context = new ReactiveWebApplicationContext();
+		this.context = new EmbeddedReactiveWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
 		this.context.register(config);
 		if (!config.equals(BaseConfiguration.class)) {

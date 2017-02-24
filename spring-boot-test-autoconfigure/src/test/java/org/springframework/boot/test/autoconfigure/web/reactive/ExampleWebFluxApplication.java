@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.autoconfigure.web.reactive;
 
-import org.springframework.test.context.MergedContextConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Encapsulates the <em>merged</em> context configuration declared on a test class and
- * all of its superclasses for a reactive web application.
+ * Example {@link SpringBootApplication} used with {@link WebFluxTest} tests.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
  */
-public class ReactiveWebMergedContextConfiguration extends MergedContextConfiguration {
-
-	public ReactiveWebMergedContextConfiguration(
-			MergedContextConfiguration mergedConfig) {
-		super(mergedConfig);
-	}
+@SpringBootApplication
+public class ExampleWebFluxApplication {
 }

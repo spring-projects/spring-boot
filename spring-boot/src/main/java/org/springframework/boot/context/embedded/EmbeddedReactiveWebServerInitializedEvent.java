@@ -17,7 +17,7 @@
 package org.springframework.boot.context.embedded;
 
 /**
- * Event to be published after the {@link ReactiveWebApplicationContext} is
+ * Event to be published after the {@link EmbeddedReactiveWebApplicationContext} is
  * refreshed and the {@link EmbeddedWebServer} is ready. Useful for
  * obtaining the local port of a running server.
  *
@@ -27,17 +27,17 @@ package org.springframework.boot.context.embedded;
  */
 public class EmbeddedReactiveWebServerInitializedEvent extends EmbeddedWebServerInitializedEvent {
 
-	private final ReactiveWebApplicationContext applicationContext;
+	private final EmbeddedReactiveWebApplicationContext applicationContext;
 
 	public EmbeddedReactiveWebServerInitializedEvent(
 			EmbeddedWebServer source,
-			ReactiveWebApplicationContext applicationContext) {
+			EmbeddedReactiveWebApplicationContext applicationContext) {
 		super(source);
 		this.applicationContext = applicationContext;
 	}
 
 	@Override
-	public ReactiveWebApplicationContext getApplicationContext() {
+	public EmbeddedReactiveWebApplicationContext getApplicationContext() {
 		return this.applicationContext;
 	}
 

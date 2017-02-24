@@ -21,7 +21,7 @@ import org.junit.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.webflux.MockReactiveWebServerFactory;
-import org.springframework.boot.context.embedded.ReactiveWebApplicationContext;
+import org.springframework.boot.context.GenericReactiveWebApplicationContext;
 import org.springframework.boot.context.embedded.ReactiveWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -64,7 +64,7 @@ public class ConditionalOnNotWebApplicationTests {
 
 	@Test
 	public void testNotWebApplicationWithReactiveContext() {
-		ReactiveWebApplicationContext ctx = new ReactiveWebApplicationContext();
+		GenericReactiveWebApplicationContext ctx = new GenericReactiveWebApplicationContext();
 		ctx.register(ReactiveApplicationConfig.class, NotWebApplicationConfiguration.class);
 		ctx.refresh();
 

@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.context;
 
-import org.springframework.test.context.MergedContextConfiguration;
+import org.springframework.context.ApplicationContext;
 
 /**
- * Encapsulates the <em>merged</em> context configuration declared on a test class and
- * all of its superclasses for a reactive web application.
+ * Interface to provide configuration for a reactive web application.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class ReactiveWebMergedContextConfiguration extends MergedContextConfiguration {
+public interface ReactiveWebApplicationContext extends ApplicationContext {
 
-	public ReactiveWebMergedContextConfiguration(
-			MergedContextConfiguration mergedConfig) {
-		super(mergedConfig);
-	}
 }

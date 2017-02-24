@@ -20,7 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.context.embedded.ReactiveWebApplicationContext;
+import org.springframework.boot.context.embedded.EmbeddedReactiveWebApplicationContext;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContextException;
@@ -50,7 +50,7 @@ public class WebFluxFunctionalAutoConfigurationTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private ReactiveWebApplicationContext context;
+	private EmbeddedReactiveWebApplicationContext context;
 
 	@Test
 	public void shouldNotProcessIfExistingHttpHandler() throws Exception {
@@ -92,7 +92,7 @@ public class WebFluxFunctionalAutoConfigurationTests {
 
 
 	private void load(Class<?> config, String... environment) {
-		this.context = new ReactiveWebApplicationContext();
+		this.context = new EmbeddedReactiveWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
 		this.context.register(config);
 		if (!config.equals(BaseConfiguration.class)) {
