@@ -16,12 +16,16 @@
 
 package org.springframework.boot.autoconfigure.webflux;
 
+import io.undertow.Undertow;
 import reactor.ipc.netty.http.server.HttpServer;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.embedded.ReactiveWebServerFactory;
+import org.springframework.boot.context.embedded.jetty.JettyReactiveWebServerFactory;
 import org.springframework.boot.context.embedded.reactor.ReactorNettyReactiveWebServerFactory;
+import org.springframework.boot.context.embedded.tomcat.TomcatReactiveWebServerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -40,6 +44,34 @@ abstract class ReactiveWebServerConfiguration {
 		public ReactorNettyReactiveWebServerFactory reactorNettyReactiveWebServerFactory() {
 			return new ReactorNettyReactiveWebServerFactory();
 		}
+	}
+
+	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
+	@ConditionalOnClass({org.apache.catalina.startup.Tomcat.class})
+	static class TomcatAutoConfiguration {
+		@Bean
+		public TomcatReactiveWebServerFactory tomcatReactiveWebServerFactory() {
+			return new TomcatReactiveWebServerFactory();
+		}
+	}
+
+	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
+	@ConditionalOnClass({org.eclipse.jetty.server.Server.class})
+	static class JettyAutoConfiguration {
+		@Bean
+		public JettyReactiveWebServerFactory jettyReactiveWebServerFactory() {
+			return new JettyReactiveWebServerFactory();
+		}
+	}
+
+	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
+	@ConditionalOnClass({Undertow.class})
+	static class UndertowAutoConfiguration {
+		@Bean
+		public UndertowReactiveWebServerFactory undertowReactiveWebServerFactory() {
+			return new UndertowReactiveWebServerFactory();
+		}
+
 	}
 
 }

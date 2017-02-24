@@ -47,7 +47,10 @@ import org.springframework.util.ObjectUtils;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @EnableConfigurationProperties(ServerProperties.class)
 @Import({ReactiveWebServerAutoConfiguration.BeanPostProcessorsRegistrar.class,
-		ReactiveWebServerConfiguration.ReactorNettyAutoConfiguration.class})
+		ReactiveWebServerConfiguration.TomcatAutoConfiguration.class,
+		ReactiveWebServerConfiguration.JettyAutoConfiguration.class,
+		ReactiveWebServerConfiguration.ReactorNettyAutoConfiguration.class,
+		ReactiveWebServerConfiguration.UndertowAutoConfiguration.class})
 public class ReactiveWebServerAutoConfiguration {
 
 	@ConditionalOnMissingBean
