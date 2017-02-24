@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ValidatorFactory;
 
 import org.assertj.core.api.Condition;
 import org.joda.time.DateTime;
@@ -60,6 +61,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.Validator;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.filter.HttpPutFormContentFilter;
@@ -94,6 +98,7 @@ import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -640,6 +645,55 @@ public class WebMvcAutoConfigurationTests {
 		}
 	}
 
+	@Test
+	public void validationNoJsr303ValidatorExposedByDefault() {
+		load();
+		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
+				.isEmpty();
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
+	}
+
+	@Test
+	public void validationCustomConfigurerTakesPrecedence() {
+		load(MvcValidator.class);
+		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
+				.isEmpty();
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
+		Validator validator = this.context.getBean(Validator.class);
+		assertThat(validator).isSameAs(this.context.getBean(MvcValidator.class)
+				.validator);
+	}
+
+	@Test
+	public void validationJsr303CustomValidatorReusedAsSpringValidator() {
+		load(CustomValidator.class);
+		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
+				.hasSize(1);
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(2);
+		Validator validator = this.context.getBean("mvcValidator", Validator.class);
+		assertThat(validator).isInstanceOf(SpringValidatorAdapterWrapper.class);
+		assertThat(((SpringValidatorAdapterWrapper) validator).getTarget())
+				.isSameAs(this.context.getBean(javax.validation.Validator.class));
+	}
+
+	@Test
+	public void validationJsr303ValidatorExposedAsSpringValidator() {
+		load(Jsr303Validator.class);
+		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
+				.hasSize(1);
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
+		Validator validator = this.context.getBean(Validator.class);
+		assertThat(validator).isInstanceOf(SpringValidatorAdapterWrapper.class);
+		SpringValidatorAdapter target = ((SpringValidatorAdapterWrapper) validator)
+				.getTarget();
+		assertThat(new DirectFieldAccessor(target).getPropertyValue("targetValidator"))
+				.isSameAs(this.context.getBean(javax.validation.Validator.class));
+	}
+
 	private void load(Class<?> config, String... environment) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
@@ -815,6 +869,38 @@ public class WebMvcAutoConfigurationTests {
 	@Import({ CustomRequestMappingHandlerMapping.class,
 			CustomRequestMappingHandlerAdapter.class })
 	static class MultipleWebMvcRegistrations {
+
+	}
+
+	@Configuration
+	protected static class MvcValidator extends WebMvcConfigurerAdapter {
+
+		private final Validator validator = mock(Validator.class);
+
+		@Override
+		public Validator getValidator() {
+			return this.validator;
+		}
+
+	}
+
+	@Configuration
+	static class Jsr303Validator {
+
+		@Bean
+		public javax.validation.Validator jsr303Validator() {
+			return mock(javax.validation.Validator.class);
+		}
+
+	}
+
+	@Configuration
+	static class CustomValidator {
+
+		@Bean
+		public Validator customValidator() {
+			return new LocalValidatorFactoryBean();
+		}
 
 	}
 

@@ -43,11 +43,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.boot.web.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.boot.web.filter.OrderedRequestContextFilter;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -62,9 +65,14 @@ import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
+import org.springframework.validation.Validator;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean;
+import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.RequestContextListener;
@@ -84,6 +92,7 @@ import org.springframework.web.servlet.config.annotation.ResourceChainRegistrati
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
@@ -119,12 +128,15 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 		WebMvcConfigurerAdapter.class })
 @ConditionalOnMissingBean(WebMvcConfigurationSupport.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-@AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
+@AutoConfigureAfter({ DispatcherServletAutoConfiguration.class,
+		ValidationAutoConfiguration.class })
 public class WebMvcAutoConfiguration {
 
 	public static String DEFAULT_PREFIX = "";
 
 	public static String DEFAULT_SUFFIX = "";
+
+	private static final String JSR303_VALIDATOR_CLASS = "javax.validation.Validator";
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
@@ -149,6 +161,8 @@ public class WebMvcAutoConfiguration {
 		private static final Log logger = LogFactory
 				.getLog(WebMvcConfigurerAdapter.class);
 
+		private final ApplicationContext applicationContext;
+
 		private final ResourceProperties resourceProperties;
 
 		private final WebMvcProperties mvcProperties;
@@ -157,18 +171,37 @@ public class WebMvcAutoConfiguration {
 
 		private final HttpMessageConverters messageConverters;
 
+		private final Validator userDefinedValidator;
+
 		final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
 
-		public WebMvcAutoConfigurationAdapter(ResourceProperties resourceProperties,
-				WebMvcProperties mvcProperties, ListableBeanFactory beanFactory,
-				HttpMessageConverters messageConverters,
+		public WebMvcAutoConfigurationAdapter(ApplicationContext applicationContext,
+				ResourceProperties resourceProperties, WebMvcProperties mvcProperties,
+				ListableBeanFactory beanFactory, HttpMessageConverters messageConverters,
+				ObjectProvider<List<WebMvcConfigurer>> webMvcConfigurers,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider) {
+			this.applicationContext = applicationContext;
 			this.resourceProperties = resourceProperties;
 			this.mvcProperties = mvcProperties;
 			this.beanFactory = beanFactory;
 			this.messageConverters = messageConverters;
+			this.userDefinedValidator = findUserDefinedValidator(
+					webMvcConfigurers.getIfAvailable());
 			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizerProvider
 					.getIfAvailable();
+		}
+
+		private static Validator findUserDefinedValidator(
+				List<WebMvcConfigurer> webMvcConfigurers) {
+			if (webMvcConfigurers != null) {
+				for (WebMvcConfigurer webMvcConfigurer : webMvcConfigurers) {
+					Validator validator = webMvcConfigurer.getValidator();
+					if (validator != null) {
+						return validator;
+					}
+				}
+			}
+			return null;
 		}
 
 		@Override
@@ -264,6 +297,23 @@ public class WebMvcAutoConfiguration {
 			for (Formatter<?> formatter : getBeansOfType(Formatter.class)) {
 				registry.addFormatter(formatter);
 			}
+		}
+
+		@Override
+		public Validator getValidator() {
+			// We want to make sure that the exposed 'mvcValidator' bean isn't going to
+			// expose the standard JSR-303 type
+			if (isJsr303Present() && this.userDefinedValidator == null) {
+				return new Jsr303ValidatorHandler(this.applicationContext)
+						.wrapJsr303Validator();
+
+			}
+			return null; // Keep default or user defined, if any
+		}
+
+		private boolean isJsr303Present() {
+			return ClassUtils.isPresent(JSR303_VALIDATOR_CLASS,
+					this.applicationContext.getClassLoader());
 		}
 
 		private <T> Collection<T> getBeansOfType(Class<T> type) {
@@ -532,6 +582,37 @@ public class WebMvcAutoConfiguration {
 					StringUtils.hasText(acceptHeader) ? acceptHeader : "*/*");
 		}
 
+	}
+
+	static class Jsr303ValidatorHandler {
+
+		private final ApplicationContext applicationContext;
+
+		Jsr303ValidatorHandler(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		public Validator wrapJsr303Validator() {
+			try {
+				javax.validation.Validator validator = this.applicationContext
+						.getBean(javax.validation.Validator.class);
+				if (validator instanceof LocalValidatorFactoryBean) {
+					return new SpringValidatorAdapterWrapper(
+							(LocalValidatorFactoryBean) validator, true);
+				}
+				else {
+					return new SpringValidatorAdapterWrapper(
+							new SpringValidatorAdapter(validator), false);
+				}
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				OptionalValidatorFactoryBean factory = new OptionalValidatorFactoryBean();
+				MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory();
+				factory.setMessageInterpolator(interpolatorFactory.getObject());
+				return new SpringValidatorAdapterWrapper(factory, false);
+			}
+
+		}
 	}
 
 }
