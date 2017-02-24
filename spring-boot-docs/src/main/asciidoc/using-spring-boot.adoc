@@ -572,8 +572,28 @@ required `RiskAssessor` bean.
 ----
 	package com.example.service;
 
+	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.stereotype.Service;
 
+	@Service
+	public class DatabaseAccountService implements AccountService {
+
+		private final RiskAssessor riskAssessor;
+
+		@Autowired
+		public DatabaseAccountService(RiskAssessor riskAssessor) {
+			this.riskAssessor = riskAssessor;
+		}
+
+		// ...
+
+	}
+----
+
+And if a bean has one constructor, you can omit the `@Autowired`.
+
+[source,java,indent=0]
+----
 	@Service
 	public class DatabaseAccountService implements AccountService {
 
