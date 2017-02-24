@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.SessionTrackingMode;
-
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.Servlet;
 import org.springframework.boot.context.embedded.Ssl;
@@ -358,6 +356,28 @@ public class ServerProperties {
 			public void setMaxAge(Integer maxAge) {
 				this.maxAge = maxAge;
 			}
+
+		}
+
+		/**
+		 * Available session tracking modes (mirrors
+		 * {@link javax.servlet.SessionTrackingMode}.
+		 */
+		public enum SessionTrackingMode {
+			/**
+			 * Send a cookie in response to the client's first request.
+			 */
+			COOKIE,
+
+			/**
+			 * Rewrite the URL to append a session ID.
+			 */
+			URL,
+
+			/**
+			 * Use SSL build-in mechanism to track the session.
+			 */
+			SSL
 
 		}
 

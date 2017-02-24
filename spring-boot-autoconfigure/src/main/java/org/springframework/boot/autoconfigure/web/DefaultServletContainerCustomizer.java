@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.SessionCookieConfig;
@@ -38,6 +41,7 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 
+import org.springframework.boot.autoconfigure.web.ServerProperties.Session;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -63,6 +67,7 @@ import org.springframework.util.StringUtils;
  * {@link EmbeddedServletContainerCustomizerBeanPostProcessor} is active.
  *
  * @author Brian Clozel
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 public class DefaultServletContainerCustomizer
@@ -147,28 +152,29 @@ public class DefaultServletContainerCustomizer
 	}
 
 	/**
-	 * {@link ServletContextInitializer} to apply appropriate parts of the {@link ServerProperties.Session}
+	 * {@link ServletContextInitializer} to apply appropriate parts of the {@link Session}
 	 * configuration.
 	 */
 	private static class SessionConfiguringInitializer
 			implements ServletContextInitializer {
 
-		private final ServerProperties.Session session;
+		private final Session session;
 
-		SessionConfiguringInitializer(ServerProperties.Session session) {
+		SessionConfiguringInitializer(Session session) {
 			this.session = session;
 		}
 
 		@Override
 		public void onStartup(ServletContext servletContext) throws ServletException {
 			if (this.session.getTrackingModes() != null) {
-				servletContext.setSessionTrackingModes(this.session.getTrackingModes());
+				servletContext.setSessionTrackingModes(
+						unwrap(this.session.getTrackingModes()));
 			}
 			configureSessionCookie(servletContext.getSessionCookieConfig());
 		}
 
 		private void configureSessionCookie(SessionCookieConfig config) {
-			ServerProperties.Session.Cookie cookie = this.session.getCookie();
+			Session.Cookie cookie = this.session.getCookie();
 			if (cookie.getName() != null) {
 				config.setName(cookie.getName());
 			}
@@ -190,6 +196,18 @@ public class DefaultServletContainerCustomizer
 			if (cookie.getMaxAge() != null) {
 				config.setMaxAge(cookie.getMaxAge());
 			}
+		}
+
+		private Set<javax.servlet.SessionTrackingMode> unwrap(
+				Set<Session.SessionTrackingMode> modes) {
+			if (modes == null) {
+				return null;
+			}
+			Set<javax.servlet.SessionTrackingMode> result = new LinkedHashSet<>();
+			for (Session.SessionTrackingMode mode : modes) {
+				result.add(javax.servlet.SessionTrackingMode.valueOf(mode.name()));
+			}
+			return result;
 		}
 
 	}
