@@ -20,5 +20,6 @@
   </properties>
   <modules>
     <module>spring-boot-actuator-test-log4j2</module>
+    <module>spring-boot-actuator-test-secure-oauth2</module>
   </modules>
 </project>

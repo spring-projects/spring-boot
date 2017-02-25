@@ -4,19 +4,19 @@
 	<parent>
 		<!-- Your own application should inherit from spring-boot-starter-parent -->
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-samples</artifactId>
+		<artifactId>spring-boot-actuator-tests</artifactId>
 		<version>2.0.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-sample-secure-oauth2-actuator</artifactId>
-	<name>spring-boot-sample-secure-oauth2-actuator</name>
-	<description>Spring Boot Security OAuth2 Actuator Sample</description>
+	<artifactId>spring-boot-actuator-test-secure-oauth2</artifactId>
+	<name>spring-boot-actuator-test-secure-oauth2</name>
+	<description>Spring Boot Security OAuth2 Actuator Test</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
 		<url>http://www.spring.io</url>
 	</organization>
 	<properties>
-		<main.basedir>${basedir}/../..</main.basedir>
+		<main.basedir>${basedir}/../../..</main.basedir>
 	</properties>
 	<dependencies>
 		<!-- Compile -->

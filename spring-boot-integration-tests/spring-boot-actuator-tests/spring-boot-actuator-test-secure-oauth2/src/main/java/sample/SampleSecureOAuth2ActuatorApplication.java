@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample.secure.oauth2.actuator;
+package sample;
 
 import java.util.UUID;
 
@@ -44,7 +44,7 @@ public class SampleSecureOAuth2ActuatorApplication {
 
 		private String value;
 
-		public Message(String value) {
+		Message(String value) {
 			this.value = value;
 		}
 

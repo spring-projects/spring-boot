@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample.secure.oauth2.actuator;
+package sample;
 
 import org.junit.Before;
 import org.junit.Test;
