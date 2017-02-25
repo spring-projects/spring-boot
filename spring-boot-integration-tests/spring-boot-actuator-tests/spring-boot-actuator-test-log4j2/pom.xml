@@ -7,9 +7,9 @@
 		<artifactId>spring-boot-actuator-tests</artifactId>
 		<version>2.0.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-sample-actuator-log4j2</artifactId>
-	<name>Spring Boot Actuator Log4j 2 Sample</name>
-	<description>Spring Boot Actuator Log4j 2 Sample</description>
+	<artifactId>spring-boot-actuator-test-log4j2</artifactId>
+	<name>Spring Boot Actuator Log4j2 Integration Test</name>
+	<description>Spring Boot Actuator Log4j2 Test</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
