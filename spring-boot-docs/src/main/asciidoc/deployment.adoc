@@ -307,7 +307,7 @@ option : AWS Elastic Beanstalk.
 ==== AWS Elastic Beanstalk
 As described in the official http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_Java.html[Elastic
 Beanstalk Java guide], there are two main options to deploy a Java application; You can
-either us the "`Tomcat Platform`" or the "`Java SE platform`".
+either use the "`Tomcat Platform`" or the "`Java SE platform`".
 
 
 
