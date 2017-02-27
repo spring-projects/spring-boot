@@ -32,11 +32,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class GroovyTemplateAvailabilityProviderTests {
 
-	private final TemplateAvailabilityProvider provider = new GroovyTemplateAvailabilityProvider();
+	private TemplateAvailabilityProvider provider = new GroovyTemplateAvailabilityProvider();
 
-	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
+	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 
-	private final MockEnvironment environment = new MockEnvironment();
+	private MockEnvironment environment = new MockEnvironment();
 
 	@Test
 	public void availabilityOfTemplateInDefaultLocation() {

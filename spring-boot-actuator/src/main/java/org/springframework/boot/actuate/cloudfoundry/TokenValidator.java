@@ -52,8 +52,6 @@ class TokenValidator {
 		validateAudience(token);
 	}
 
-
-
 	private void validateAlgorithm(Token token) {
 		String algorithm = token.getSignatureAlgorithm();
 		if (algorithm == null) {
@@ -83,9 +81,9 @@ class TokenValidator {
 		}
 	}
 
-	private boolean hasValidKeyId(String tokenKeyId) {
-		for (String keyId: this.tokenKeys.keySet()) {
-			if (tokenKeyId.equals(keyId)) {
+	private boolean hasValidKeyId(String tokenKey) {
+		for (String candidate : this.tokenKeys.keySet()) {
+			if (tokenKey.equals(candidate)) {
 				return true;
 			}
 		}

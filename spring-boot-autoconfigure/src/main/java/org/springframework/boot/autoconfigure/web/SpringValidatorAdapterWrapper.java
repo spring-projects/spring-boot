@@ -26,9 +26,9 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 
 /**
- * Wraps a {@link SpringValidatorAdapter} so that only the Spring's {@link Validator}
- * type is exposed. This prevents such a bean to expose both the Spring and JSR-303
- * validator contract at the same time.
+ * Wraps a {@link SpringValidatorAdapter} so that only the Spring's {@link Validator} type
+ * is exposed. This prevents such a bean to expose both the Spring and JSR-303 validator
+ * contract at the same time.
  *
  * @author Stephane Nicoll
  */
@@ -36,6 +36,7 @@ class SpringValidatorAdapterWrapper
 		implements Validator, ApplicationContextAware, InitializingBean, DisposableBean {
 
 	private final SpringValidatorAdapter target;
+
 	private final boolean managed;
 
 	SpringValidatorAdapterWrapper(SpringValidatorAdapter target, boolean managed) {
@@ -61,8 +62,8 @@ class SpringValidatorAdapterWrapper
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
 		if (!this.managed && this.target instanceof ApplicationContextAware) {
-			((ApplicationContextAware) this.target).setApplicationContext(
-					applicationContext);
+			((ApplicationContextAware) this.target)
+					.setApplicationContext(applicationContext);
 		}
 	}
 

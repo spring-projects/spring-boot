@@ -57,8 +57,8 @@ public class SpringValidatorAdapterWrapperTests {
 		SpringValidatorAdapterWrapper wrapper = load(
 				LocalValidatorFactoryBeanConfig.class);
 		assertThat(wrapper.supports(SampleData.class)).isTrue();
-		MapBindingResult errors = new MapBindingResult(
-				new HashMap<String, Object>(), "test");
+		MapBindingResult errors = new MapBindingResult(new HashMap<String, Object>(),
+				"test");
 		wrapper.validate(new SampleData(40), errors);
 		assertThat(errors.getErrorCount()).isEqualTo(1);
 	}
@@ -66,8 +66,8 @@ public class SpringValidatorAdapterWrapperTests {
 	@Test
 	public void wrapperInvokesCallbackOnNonManagedBean() {
 		load(NonManagedBeanConfig.class);
-		LocalValidatorFactoryBean validator = this.context.getBean(
-				NonManagedBeanConfig.class).validator;
+		LocalValidatorFactoryBean validator = this.context
+				.getBean(NonManagedBeanConfig.class).validator;
 		verify(validator, times(1)).setApplicationContext(any(ApplicationContext.class));
 		verify(validator, times(1)).afterPropertiesSet();
 		verify(validator, times(0)).destroy();
@@ -79,8 +79,8 @@ public class SpringValidatorAdapterWrapperTests {
 	@Test
 	public void wrapperDoesNotInvokeCallbackOnManagedBean() {
 		load(ManagedBeanConfig.class);
-		LocalValidatorFactoryBean validator = this.context.getBean(
-				ManagedBeanConfig.class).validator;
+		LocalValidatorFactoryBean validator = this.context
+				.getBean(ManagedBeanConfig.class).validator;
 		verify(validator, times(0)).setApplicationContext(any(ApplicationContext.class));
 		verify(validator, times(0)).afterPropertiesSet();
 		verify(validator, times(0)).destroy();
@@ -115,8 +115,8 @@ public class SpringValidatorAdapterWrapperTests {
 	@Configuration
 	static class NonManagedBeanConfig {
 
-		private final LocalValidatorFactoryBean validator
-				= mock(LocalValidatorFactoryBean.class);
+		private final LocalValidatorFactoryBean validator = mock(
+				LocalValidatorFactoryBean.class);
 
 		@Bean
 		public SpringValidatorAdapterWrapper wrapper() {
@@ -128,8 +128,8 @@ public class SpringValidatorAdapterWrapperTests {
 	@Configuration
 	static class ManagedBeanConfig {
 
-		private final LocalValidatorFactoryBean validator
-				= mock(LocalValidatorFactoryBean.class);
+		private final LocalValidatorFactoryBean validator = mock(
+				LocalValidatorFactoryBean.class);
 
 		@Bean
 		public SpringValidatorAdapterWrapper wrapper() {

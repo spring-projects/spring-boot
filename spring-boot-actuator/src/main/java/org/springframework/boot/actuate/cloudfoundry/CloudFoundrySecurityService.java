@@ -117,10 +117,9 @@ class CloudFoundrySecurityService {
 
 	private Map<String, String> extractTokenKeys(Map<?, ?> response) {
 		Map<String, String> tokenKeys = new HashMap<String, String>();
-		List<?> keys = (List<?>) response.get("keys");
-		for (Object key : keys) {
+		for (Object key : (List<?>) response.get("keys")) {
 			Map<?, ?> tokenKey = (Map<?, ?>) key;
-			tokenKeys.put((String) (tokenKey).get("kid"), (String) (tokenKey).get("value"));
+			tokenKeys.put((String) tokenKey.get("kid"), (String) tokenKey.get("value"));
 		}
 		return tokenKeys;
 	}

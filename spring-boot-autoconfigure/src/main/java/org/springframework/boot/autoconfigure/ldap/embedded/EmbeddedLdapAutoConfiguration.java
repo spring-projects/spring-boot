@@ -109,24 +109,7 @@ public class EmbeddedLdapAutoConfiguration {
 					this.embeddedProperties.getCredential().getUsername(),
 					this.embeddedProperties.getCredential().getPassword());
 		}
-
-		if (!this.embeddedProperties.getValidation().isEnabled()) {
-			config.setSchema(null);
-		}
-		else {
-			Resource schema = this.embeddedProperties.getValidation().getSchema();
-			if (schema != null) {
-				try {
-					config.setSchema(Schema.mergeSchemas(Schema.getDefaultStandardSchema(),
-							Schema.getSchema(schema.getInputStream())));
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException(
-							"Unable to load schema " + schema.getDescription(), ex);
-				}
-			}
-		}
-
+		setSchema(config);
 		InMemoryListenerConfig listenerConfig = InMemoryListenerConfig
 				.createLDAPConfig("LDAP", this.embeddedProperties.getPort());
 		config.setListenerConfigs(listenerConfig);
@@ -135,6 +118,29 @@ public class EmbeddedLdapAutoConfiguration {
 		this.server.startListening();
 		setPortProperty(this.applicationContext, this.server.getListenPort());
 		return this.server;
+	}
+
+	private void setSchema(InMemoryDirectoryServerConfig config) {
+		if (!this.embeddedProperties.getValidation().isEnabled()) {
+			config.setSchema(null);
+			return;
+		}
+		Resource schema = this.embeddedProperties.getValidation().getSchema();
+		if (schema != null) {
+			setSchema(config, schema);
+		}
+	}
+
+	private void setSchema(InMemoryDirectoryServerConfig config, Resource resource) {
+		try {
+			Schema defaultSchema = Schema.getDefaultStandardSchema();
+			Schema schema = Schema.getSchema(resource.getInputStream());
+			config.setSchema(Schema.mergeSchemas(defaultSchema, schema));
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(
+					"Unable to load schema " + resource.getDescription(), ex);
+		}
 	}
 
 	private boolean hasCredentials(Credential credential) {

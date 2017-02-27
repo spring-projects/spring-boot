@@ -575,15 +575,17 @@ public class WebMvcAutoConfiguration {
 			try {
 				if (this.userDefinedValidator != null) {
 					if (this.userDefinedValidator instanceof javax.validation.Validator) {
-						return wrap((javax.validation.Validator) this.userDefinedValidator, false);
+						return wrap(
+								(javax.validation.Validator) this.userDefinedValidator,
+								false);
 					}
 					else {
 						return this.userDefinedValidator;
 					}
 				}
 				else {
-					return wrap(this.applicationContext.getBean(
-							javax.validation.Validator.class), true);
+					return wrap(this.applicationContext
+							.getBean(javax.validation.Validator.class), true);
 				}
 			}
 			catch (NoSuchBeanDefinitionException ex) {

@@ -278,12 +278,19 @@ class ProjectLibraries implements Libraries {
 
 	}
 
+	/**
+	 * Strategy used to resolve configurations regardless of the underlying Gradle
+	 * version.
+	 */
 	private interface TargetConfigurationResolver {
 
 		Configuration resolveTargetConfiguration(ProjectDependency projectDependency);
 
 	}
 
+	/**
+	 * {@link TargetConfigurationResolver} for Gradle 2.x.
+	 */
 	private static final class Gradle2TargetConfigurationResolver
 			implements TargetConfigurationResolver {
 
@@ -295,6 +302,9 @@ class ProjectLibraries implements Libraries {
 
 	}
 
+	/**
+	 * {@link TargetConfigurationResolver} for Gradle 3.x.
+	 */
 	private static final class Gradle3TargetConfigurationResolver
 			implements TargetConfigurationResolver {
 

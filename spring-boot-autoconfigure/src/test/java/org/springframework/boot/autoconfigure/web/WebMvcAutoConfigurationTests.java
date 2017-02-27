@@ -662,8 +662,8 @@ public class WebMvcAutoConfigurationTests {
 				.isEmpty();
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		Validator validator = this.context.getBean(Validator.class);
-		assertThat(validator).isSameAs(this.context.getBean(MvcValidator.class)
-				.validator);
+		assertThat(validator)
+				.isSameAs(this.context.getBean(MvcValidator.class).validator);
 	}
 
 	@Test
@@ -900,7 +900,7 @@ public class WebMvcAutoConfigurationTests {
 	@Configuration
 	protected static class MvcJsr303Validator extends WebMvcConfigurerAdapter {
 
-		private final LocalValidatorFactoryBean  validator = new LocalValidatorFactoryBean();
+		private final LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
 
 		@Override
 		public Validator getValidator() {

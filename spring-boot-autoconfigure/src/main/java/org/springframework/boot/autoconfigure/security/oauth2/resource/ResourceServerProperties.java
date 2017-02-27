@@ -203,31 +203,36 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 			return;
 		}
 		ResourceServerProperties resource = (ResourceServerProperties) target;
+		validate(resource, errors);
 
+	}
+
+	private void validate(ResourceServerProperties target, Errors errors) {
 		if ((StringUtils.hasText(this.jwt.getKeyUri())
 				|| StringUtils.hasText(this.jwt.getKeyValue()))
 				&& StringUtils.hasText(this.jwk.getKeySetUri())) {
-			errors.reject("ambiguous.keyUri", "Only one of jwt.keyUri (or jwt.keyValue) and jwk.keySetUri should be configured.");
+			errors.reject("ambiguous.keyUri",
+					"Only one of jwt.keyUri (or jwt.keyValue) and "
+							+ "jwk.keySetUri should be configured.");
 		}
-
 		else {
 			if (StringUtils.hasText(this.clientId)) {
 				if (!StringUtils.hasText(this.clientSecret)) {
-					if (!StringUtils.hasText(resource.getUserInfoUri())) {
+					if (!StringUtils.hasText(target.getUserInfoUri())) {
 						errors.rejectValue("userInfoUri", "missing.userInfoUri",
 								"Missing userInfoUri (no client secret available)");
 					}
 				}
 				else {
 					if (isPreferTokenInfo()
-							&& !StringUtils.hasText(resource.getTokenInfoUri())) {
+							&& !StringUtils.hasText(target.getTokenInfoUri())) {
 						if (StringUtils.hasText(getJwt().getKeyUri())
 								|| StringUtils.hasText(getJwt().getKeyValue())
 								|| StringUtils.hasText(getJwk().getKeySetUri())) {
 							// It's a JWT decoder
 							return;
 						}
-						if (!StringUtils.hasText(resource.getUserInfoUri())) {
+						if (!StringUtils.hasText(target.getUserInfoUri())) {
 							errors.rejectValue("tokenInfoUri", "missing.tokenInfoUri",
 									"Missing tokenInfoUri and userInfoUri and there is no "
 											+ "JWT verifier key");
@@ -236,7 +241,6 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 				}
 			}
 		}
-
 	}
 
 	private int countBeans(Class<?> type) {
@@ -294,9 +298,8 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 	public class Jwk {
 
 		/**
-		 * The URI to get verification keys to verify the JWT token.
-		 * This can be set when the authorization server returns a
-		 * set of verification keys.
+		 * The URI to get verification keys to verify the JWT token. This can be set when
+		 * the authorization server returns a set of verification keys.
 		 */
 		private String keySetUri;
 

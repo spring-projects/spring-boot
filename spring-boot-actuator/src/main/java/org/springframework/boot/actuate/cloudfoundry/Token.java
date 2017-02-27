@@ -97,7 +97,6 @@ class Token {
 		return getRequired(this.claims, "scope", List.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	public String getKeyId() {
 		return getRequired(this.header, "kid", String.class);
 	}
