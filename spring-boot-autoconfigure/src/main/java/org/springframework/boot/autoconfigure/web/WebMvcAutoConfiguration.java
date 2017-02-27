@@ -70,7 +70,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.validation.Validator;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import org.springframework.web.accept.ContentNegotiationManager;
@@ -92,7 +91,6 @@ import org.springframework.web.servlet.config.annotation.ResourceChainRegistrati
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
@@ -161,8 +159,6 @@ public class WebMvcAutoConfiguration {
 		private static final Log logger = LogFactory
 				.getLog(WebMvcConfigurerAdapter.class);
 
-		private final ApplicationContext applicationContext;
-
 		private final ResourceProperties resourceProperties;
 
 		private final WebMvcProperties mvcProperties;
@@ -171,37 +167,18 @@ public class WebMvcAutoConfiguration {
 
 		private final HttpMessageConverters messageConverters;
 
-		private final Validator userDefinedValidator;
-
 		final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
 
-		public WebMvcAutoConfigurationAdapter(ApplicationContext applicationContext,
-				ResourceProperties resourceProperties, WebMvcProperties mvcProperties,
-				ListableBeanFactory beanFactory, HttpMessageConverters messageConverters,
-				ObjectProvider<List<WebMvcConfigurer>> webMvcConfigurers,
+		public WebMvcAutoConfigurationAdapter(ResourceProperties resourceProperties,
+				WebMvcProperties mvcProperties, ListableBeanFactory beanFactory,
+				HttpMessageConverters messageConverters,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider) {
-			this.applicationContext = applicationContext;
 			this.resourceProperties = resourceProperties;
 			this.mvcProperties = mvcProperties;
 			this.beanFactory = beanFactory;
 			this.messageConverters = messageConverters;
-			this.userDefinedValidator = findUserDefinedValidator(
-					webMvcConfigurers.getIfAvailable());
 			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizerProvider
 					.getIfAvailable();
-		}
-
-		private static Validator findUserDefinedValidator(
-				List<WebMvcConfigurer> webMvcConfigurers) {
-			if (webMvcConfigurers != null) {
-				for (WebMvcConfigurer webMvcConfigurer : webMvcConfigurers) {
-					Validator validator = webMvcConfigurer.getValidator();
-					if (validator != null) {
-						return validator;
-					}
-				}
-			}
-			return null;
 		}
 
 		@Override
@@ -297,23 +274,6 @@ public class WebMvcAutoConfiguration {
 			for (Formatter<?> formatter : getBeansOfType(Formatter.class)) {
 				registry.addFormatter(formatter);
 			}
-		}
-
-		@Override
-		public Validator getValidator() {
-			// We want to make sure that the exposed 'mvcValidator' bean isn't going to
-			// expose the standard JSR-303 type
-			if (isJsr303Present() && this.userDefinedValidator == null) {
-				return new Jsr303ValidatorHandler(this.applicationContext)
-						.wrapJsr303Validator();
-
-			}
-			return null; // Keep default or user defined, if any
-		}
-
-		private boolean isJsr303Present() {
-			return ClassUtils.isPresent(JSR303_VALIDATOR_CLASS,
-					this.applicationContext.getClassLoader());
 		}
 
 		private <T> Collection<T> getBeansOfType(Class<T> type) {
@@ -441,6 +401,22 @@ public class WebMvcAutoConfiguration {
 		public RequestMappingHandlerMapping requestMappingHandlerMapping() {
 			// Must be @Primary for MvcUriComponentsBuilder to work
 			return super.requestMappingHandlerMapping();
+		}
+
+		@Bean
+		@Override
+		public Validator mvcValidator() {
+			if (isJsr303Present()) {
+				Validator userDefinedValidator = getValidator();
+				return new Jsr303ValidatorHandler(getApplicationContext(),
+						userDefinedValidator).wrapJsr303Validator();
+			}
+			return super.mvcValidator();
+		}
+
+		private boolean isJsr303Present() {
+			return ClassUtils.isPresent(JSR303_VALIDATOR_CLASS,
+					getApplicationContext().getClassLoader());
 		}
 
 		@Override
@@ -588,21 +564,27 @@ public class WebMvcAutoConfiguration {
 
 		private final ApplicationContext applicationContext;
 
-		Jsr303ValidatorHandler(ApplicationContext applicationContext) {
+		private final Validator userDefinedValidator;
+
+		Jsr303ValidatorHandler(ApplicationContext applicationContext,
+				Validator userDefinedValidator) {
 			this.applicationContext = applicationContext;
+			this.userDefinedValidator = userDefinedValidator;
 		}
 
 		public Validator wrapJsr303Validator() {
 			try {
-				javax.validation.Validator validator = this.applicationContext
-						.getBean(javax.validation.Validator.class);
-				if (validator instanceof LocalValidatorFactoryBean) {
-					return new SpringValidatorAdapterWrapper(
-							(LocalValidatorFactoryBean) validator, true);
+				if (this.userDefinedValidator != null) {
+					if (this.userDefinedValidator instanceof javax.validation.Validator) {
+						return wrap((javax.validation.Validator) this.userDefinedValidator, false);
+					}
+					else {
+						return this.userDefinedValidator;
+					}
 				}
 				else {
-					return new SpringValidatorAdapterWrapper(
-							new SpringValidatorAdapter(validator), false);
+					return wrap(this.applicationContext.getBean(
+							javax.validation.Validator.class), true);
 				}
 			}
 			catch (NoSuchBeanDefinitionException ex) {
@@ -613,6 +595,25 @@ public class WebMvcAutoConfiguration {
 			}
 
 		}
+
+		/**
+		 * Wrap the specified {@code validator}.
+		 * @param validator the validator to wrap
+		 * @param bean {@code true} if the specified {@code validator} is a bean managed
+		 * in the context
+		 * @return a {@link Validator} wrapping the specified argument
+		 */
+		private Validator wrap(javax.validation.Validator validator, boolean bean) {
+			if (validator instanceof SpringValidatorAdapter) {
+				return new SpringValidatorAdapterWrapper(
+						(SpringValidatorAdapter) validator, bean);
+			}
+			else {
+				return new SpringValidatorAdapterWrapper(
+						new SpringValidatorAdapter(validator), false);
+			}
+		}
+
 	}
 
 }

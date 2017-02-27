@@ -667,6 +667,19 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	public void validationCustomConfigurerTakesPrecedenceAndDoNotExposeJsr303() {
+		load(MvcJsr303Validator.class);
+		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
+				.isEmpty();
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
+		Validator validator = this.context.getBean(Validator.class);
+		assertThat(validator).isInstanceOf(SpringValidatorAdapterWrapper.class);
+		assertThat(((SpringValidatorAdapterWrapper) validator).getTarget())
+				.isSameAs(this.context.getBean(MvcJsr303Validator.class).validator);
+	}
+
+	@Test
 	public void validationJsr303CustomValidatorReusedAsSpringValidator() {
 		load(CustomValidator.class);
 		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).hasSize(1);
@@ -876,6 +889,18 @@ public class WebMvcAutoConfigurationTests {
 	protected static class MvcValidator extends WebMvcConfigurerAdapter {
 
 		private final Validator validator = mock(Validator.class);
+
+		@Override
+		public Validator getValidator() {
+			return this.validator;
+		}
+
+	}
+
+	@Configuration
+	protected static class MvcJsr303Validator extends WebMvcConfigurerAdapter {
+
+		private final LocalValidatorFactoryBean  validator = new LocalValidatorFactoryBean();
 
 		@Override
 		public Validator getValidator() {
