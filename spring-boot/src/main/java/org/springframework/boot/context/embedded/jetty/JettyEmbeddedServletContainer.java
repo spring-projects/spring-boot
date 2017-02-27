@@ -28,15 +28,15 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.embedded.EmbeddedWebServer;
+import org.springframework.boot.context.embedded.EmbeddedWebServerException;
 import org.springframework.boot.context.embedded.PortInUseException;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link EmbeddedServletContainer} that can be used to control an embedded Jetty server.
+ * {@link EmbeddedWebServer} that can be used to control an embedded Jetty server.
  * Usually this class should be created using the
  * {@link JettyEmbeddedServletContainerFactory} and not directly.
  *
@@ -46,7 +46,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @see JettyEmbeddedServletContainerFactory
  */
-public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
+public class JettyEmbeddedServletContainer implements EmbeddedWebServer {
 
 	private static final Log logger = LogFactory
 			.getLog(JettyEmbeddedServletContainer.class);
@@ -96,7 +96,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			catch (Exception ex) {
 				// Ensure process isn't left running
 				stopSilently();
-				throw new EmbeddedServletContainerException(
+				throw new EmbeddedWebServerException(
 						"Unable to start embedded Jetty servlet container", ex);
 			}
 		}
@@ -112,7 +112,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	}
 
 	@Override
-	public void start() throws EmbeddedServletContainerException {
+	public void start() throws EmbeddedWebServerException {
 		synchronized (this.monitor) {
 			if (this.started) {
 				return;
@@ -143,11 +143,11 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 				JettyEmbeddedServletContainer.logger
 						.info("Jetty started on port(s) " + getActualPortsDescription());
 			}
-			catch (EmbeddedServletContainerException ex) {
+			catch (EmbeddedWebServerException ex) {
 				throw ex;
 			}
 			catch (Exception ex) {
-				throw new EmbeddedServletContainerException(
+				throw new EmbeddedWebServerException(
 						"Unable to start embedded Jetty servlet container", ex);
 			}
 		}
@@ -216,7 +216,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 				Thread.currentThread().interrupt();
 			}
 			catch (Exception ex) {
-				throw new EmbeddedServletContainerException(
+				throw new EmbeddedWebServerException(
 						"Unable to stop embedded Jetty servlet container", ex);
 			}
 		}

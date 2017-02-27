@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers.ContentSecurityPolicyMode;
 import org.springframework.boot.autoconfigure.web.ErrorController;
@@ -85,10 +86,10 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 @Configuration
-@EnableConfigurationProperties
+@EnableConfigurationProperties(ServerProperties.class)
 @ConditionalOnClass({ EnableWebSecurity.class, AuthenticationEntryPoint.class })
 @ConditionalOnMissingBean(WebSecurityConfiguration.class)
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableWebSecurity
 public class SpringBootWebSecurityConfiguration {
 
@@ -188,7 +189,7 @@ public class SpringBootWebSecurityConfiguration {
 			if (this.errorController != null) {
 				ignored.add(normalizePath(this.errorController.getErrorPath()));
 			}
-			String[] paths = this.server.getPathsArray(ignored);
+			String[] paths = this.server.getServlet().getPathsArray(ignored);
 			List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
 			if (!ObjectUtils.isEmpty(paths)) {
 				for (String pattern : paths) {

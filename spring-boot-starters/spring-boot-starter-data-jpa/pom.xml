@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starters</artifactId>
-		<version>1.5.2.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-data-jpa</artifactId>
 	<name>Spring Boot Data JPA Starter</name>
@@ -35,8 +35,10 @@
 			<artifactId>hibernate-core</artifactId>
 			<exclusions>
 				<exclusion>
-					<groupId>org.apache.geronimo.specs</groupId>
-					<artifactId>geronimo-jta_1.1_spec</artifactId>
+					<artifactId>
+						jboss-transaction-api_1.2_spec
+					</artifactId>
+					<groupId>org.jboss.spec.javax.transaction</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -45,8 +47,10 @@
 			<artifactId>hibernate-entitymanager</artifactId>
 			<exclusions>
 				<exclusion>
-					<groupId>org.apache.geronimo.specs</groupId>
-					<artifactId>geronimo-jta_1.1_spec</artifactId>
+					<artifactId>
+						jboss-transaction-api_1.2_spec
+					</artifactId>
+					<groupId>org.jboss.spec.javax.transaction</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>

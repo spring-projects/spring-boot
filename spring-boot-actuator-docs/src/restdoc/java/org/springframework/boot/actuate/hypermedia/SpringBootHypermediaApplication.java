@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.lang.UsesJava8;
 
 // Flyway must go first
 @SpringBootApplication
@@ -66,7 +65,6 @@ public class SpringBootHypermediaApplication implements CommandLineRunner {
 				createEvent("2016-11-01T12:00:00Z", "admin", "AUTHENTICATION_SUCCESS"));
 	}
 
-	@UsesJava8
 	private AuditEvent createEvent(String instant, String principal, String type) {
 		return new AuditEvent(Date.from(Instant.parse(instant)), principal, type,
 				Collections.<String, Object>emptyMap());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link EmbeddedWebApplicationContext} and
- * {@link EmbeddedServletContainer}s running Spring MVC.
+ * {@link EmbeddedWebServer}s running Spring MVC.
  *
  * @author Phillip Webb
  * @author Ivan Sopov
@@ -97,8 +97,8 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 			String resourcePath) throws Exception {
 		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
 		ClientHttpRequest request = clientHttpRequestFactory.createRequest(
-				new URI("http://localhost:"
-						+ context.getEmbeddedServletContainer().getPort() + resourcePath),
+				new URI("http://localhost:" + context.getEmbeddedWebServer().getPort()
+						+ resourcePath),
 				HttpMethod.GET);
 		ClientHttpResponse response = request.execute();
 		try {
@@ -190,8 +190,8 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 		}
 
 		@Bean
-		public ServletRegistrationBean dispatcherRegistration() {
-			ServletRegistrationBean registration = new ServletRegistrationBean(
+		public ServletRegistrationBean<DispatcherServlet> dispatcherRegistration() {
+			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<DispatcherServlet>(
 					dispatcherServlet());
 			registration.addUrlMappings("/spring/*");
 			return registration;

@@ -52,7 +52,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -92,10 +91,11 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
  */
 @ManagementContextConfiguration
 @ConditionalOnClass(Link.class)
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnBean(HttpMessageConverters.class)
 @Conditional(EndpointHypermediaEnabledCondition.class)
-@EnableConfigurationProperties(ResourceProperties.class)
+@EnableConfigurationProperties({ ResourceProperties.class,
+		ManagementServerProperties.class })
 public class EndpointWebMvcHypermediaManagementContextConfiguration {
 
 	@Bean
@@ -126,7 +126,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	@ConditionalOnBean(DocsMvcEndpoint.class)
 	@ConditionalOnMissingBean(CurieProvider.class)
 	@ConditionalOnProperty(prefix = "endpoints.docs.curies", name = "enabled", matchIfMissing = false)
-	public DefaultCurieProvider curieProvider(ServerProperties server,
+	public DefaultCurieProvider curieProvider(
 			ManagementServerProperties management, DocsMvcEndpoint endpoint) {
 		String path = management.getContextPath() + endpoint.getPath()
 				+ "/#spring_boot_actuator__{rel}";

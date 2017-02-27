@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfigura
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,9 +43,7 @@ import org.springframework.context.annotation.Configuration;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Configuration
-@ImportAutoConfiguration({ ServerPropertiesAutoConfiguration.class,
-		ManagementServerPropertiesAutoConfiguration.class,
-		EmbeddedServletContainerAutoConfiguration.class,
+@ImportAutoConfiguration({ EmbeddedServletContainerAutoConfiguration.class,
 		DispatcherServletAutoConfiguration.class, JacksonAutoConfiguration.class,
 		HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
 		HypermediaAutoConfiguration.class, EndpointAutoConfiguration.class,

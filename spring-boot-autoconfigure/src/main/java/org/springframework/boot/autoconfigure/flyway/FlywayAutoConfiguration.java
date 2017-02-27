@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.flyway;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -26,6 +27,7 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
+import org.flywaydb.core.api.callback.FlywayCallback;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -61,6 +63,7 @@ import org.springframework.util.ObjectUtils;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @author Jacques-Etienne Beaudet
+ * @author Eddú Meléndez
  * @since 1.1.0
  */
 @Configuration
@@ -92,15 +95,20 @@ public class FlywayAutoConfiguration {
 
 		private final FlywayMigrationStrategy migrationStrategy;
 
+		private List<FlywayCallback> flywayCallbacks;
+
 		public FlywayConfiguration(FlywayProperties properties,
 				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
 				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
-				ObjectProvider<FlywayMigrationStrategy> migrationStrategy) {
+				ObjectProvider<FlywayMigrationStrategy> migrationStrategy,
+				ObjectProvider<List<FlywayCallback>> flywayCallbacks) {
 			this.properties = properties;
 			this.resourceLoader = resourceLoader;
 			this.dataSource = dataSource.getIfUnique();
 			this.flywayDataSource = flywayDataSource.getIfAvailable();
 			this.migrationStrategy = migrationStrategy.getIfAvailable();
+			this.flywayCallbacks = flywayCallbacks
+					.getIfAvailable(() -> Collections.emptyList());
 		}
 
 		@PostConstruct
@@ -140,6 +148,8 @@ public class FlywayAutoConfiguration {
 			else {
 				flyway.setDataSource(this.dataSource);
 			}
+			flyway.setCallbacks(this.flywayCallbacks
+					.toArray(new FlywayCallback[this.flywayCallbacks.size()]));
 			flyway.setLocations(this.properties.getLocations().toArray(new String[0]));
 			return flyway;
 		}

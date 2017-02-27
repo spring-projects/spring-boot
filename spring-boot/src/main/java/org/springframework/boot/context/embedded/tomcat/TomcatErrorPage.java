@@ -36,8 +36,6 @@ class TomcatErrorPage {
 
 	private static final String ERROR_PAGE_CLASS = "org.apache.tomcat.util.descriptor.web.ErrorPage";
 
-	private static final String LEGACY_ERROR_PAGE_CLASS = "org.apache.catalina.deploy.ErrorPage";
-
 	private final String location;
 
 	private final String exceptionType;
@@ -56,11 +54,8 @@ class TomcatErrorPage {
 	private Object createNativePage(ErrorPage errorPage) {
 		try {
 			if (ClassUtils.isPresent(ERROR_PAGE_CLASS, null)) {
-				return BeanUtils.instantiate(ClassUtils.forName(ERROR_PAGE_CLASS, null));
-			}
-			if (ClassUtils.isPresent(LEGACY_ERROR_PAGE_CLASS, null)) {
 				return BeanUtils
-						.instantiate(ClassUtils.forName(LEGACY_ERROR_PAGE_CLASS, null));
+						.instantiateClass(ClassUtils.forName(ERROR_PAGE_CLASS, null));
 			}
 		}
 		catch (ClassNotFoundException ex) {
@@ -74,7 +69,7 @@ class TomcatErrorPage {
 
 	public void addToContext(Context context) {
 		Assert.state(this.nativePage != null,
-				"Neither Tomcat 7 nor 8 detected so no native error page exists");
+				"No Tomcat 8 detected so no native error page exists");
 		if (ClassUtils.isPresent(ERROR_PAGE_CLASS, null)) {
 			org.apache.tomcat.util.descriptor.web.ErrorPage errorPage = (org.apache.tomcat.util.descriptor.web.ErrorPage) this.nativePage;
 			errorPage.setLocation(this.location);

@@ -90,7 +90,6 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
@@ -141,7 +140,6 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context.register(SecurityAutoConfiguration.class,
 				ManagementWebSecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.ignored:none");
 		this.context.refresh();
@@ -170,7 +168,6 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context.register(TestConfiguration.class, SecurityAutoConfiguration.class,
 				ManagementWebSecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(AuthenticationManager.class)).isEqualTo(
@@ -184,7 +181,6 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context.register(TestConfiguration.class, SecurityAutoConfiguration.class,
 				ManagementWebSecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(AuthenticationManager.class)).isEqualTo(
@@ -201,7 +197,6 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
 				WebMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
 				AuditAutoConfiguration.class);
 		this.context.refresh();
@@ -264,7 +259,6 @@ public class ManagementWebSecurityAutoConfigurationTests {
 			WebMvcAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class,
 			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class,
 			FallbackWebSecurityAutoConfiguration.class })
 	static class WebConfiguration {

@@ -17,7 +17,10 @@ org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo=\
 org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.mongo.ReactiveMongoDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.mongo.ReactiveMongoRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
+org.springframework.boot.autoconfigure.mongo.ReactiveMongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
 
 # AutoConfigureJdbc auto-configuration imports
@@ -58,11 +61,6 @@ org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerAuto
 org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs=\
 org.springframework.boot.test.autoconfigure.restdocs.RestDocsAutoConfiguration
 
-# AutoConfigureTestDatabase auto-configuration imports
-org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestDatabase=\
-org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration,\
-org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-
 # AutoConfigureTestEntityManager auto-configuration imports
 org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager=\
 org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManagerAutoConfiguration
@@ -88,7 +86,6 @@ org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration
 
 # DefaultTestExecutionListenersPostProcessors

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.5.2.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-actuator</artifactId>
@@ -72,11 +72,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>com.hazelcast</groupId>
 			<artifactId>hazelcast</artifactId>
 			<optional>true</optional>
@@ -107,6 +102,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>javax.jms</groupId>
+			<artifactId>javax.jms-api</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<optional>true</optional>
@@ -120,6 +120,12 @@
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-broker</artifactId>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>geronimo-jms_1.1_spec</artifactId>
+					<groupId>org.apache.geronimo.specs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
@@ -229,21 +235,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.crashub</groupId>
-			<artifactId>crash.shell</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.crashub</groupId>
-			<artifactId>crash.cli</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.crashub</groupId>
-			<artifactId>crash.embed.spring</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.jolokia</groupId>
 			<artifactId>jolokia-core</artifactId>
 			<optional>true</optional>
@@ -265,7 +256,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP-java6</artifactId>
+			<artifactId>HikariCP</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -336,11 +327,6 @@
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.crashub</groupId>
-			<artifactId>crash.connectors.telnet</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

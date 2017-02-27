@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.testutil.InternalOutputCapture;
@@ -43,7 +44,7 @@ public class LoggingApplicationListenerIntegrationTests {
 	@Test
 	public void loggingSystemRegisteredInTheContext() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
-				SampleService.class).web(false).run();
+				SampleService.class).web(WebApplicationType.NONE).run();
 		try {
 			SampleService service = context.getBean(SampleService.class);
 			assertThat(service.loggingSystem).isNotNull();
@@ -55,8 +56,8 @@ public class LoggingApplicationListenerIntegrationTests {
 
 	@Test
 	public void loggingPerformedDuringChildApplicationStartIsNotLost() {
-		new SpringApplicationBuilder(Config.class).web(false).child(Config.class)
-				.web(false)
+		new SpringApplicationBuilder(Config.class).web(WebApplicationType.NONE)
+				.child(Config.class).web(WebApplicationType.NONE)
 				.listeners(new ApplicationListener<ApplicationStartingEvent>() {
 
 					private final Logger logger = LoggerFactory.getLogger(getClass());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.devtools.restart.RestartInitializer;
 import org.springframework.boot.devtools.restart.Restarter;
@@ -63,7 +64,7 @@ public class DevToolPropertiesIntegrationTests {
 	public void classPropertyConditionIsAffectedByDevToolProperties() {
 		SpringApplication application = new SpringApplication(
 				ClassConditionConfiguration.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		this.context.getBean(ClassConditionConfiguration.class);
 	}
@@ -72,7 +73,7 @@ public class DevToolPropertiesIntegrationTests {
 	public void beanMethodPropertyConditionIsAffectedByDevToolProperties() {
 		SpringApplication application = new SpringApplication(
 				BeanConditionConfiguration.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		this.context.getBean(MyBean.class);
 	}
@@ -84,7 +85,7 @@ public class DevToolPropertiesIntegrationTests {
 		Restarter.disable();
 		SpringApplication application = new SpringApplication(
 				BeanConditionConfiguration.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean(MyBean.class);
@@ -97,7 +98,7 @@ public class DevToolPropertiesIntegrationTests {
 		Restarter.disable();
 		SpringApplication application = new SpringApplication(
 				BeanConditionConfiguration.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setDefaultProperties(Collections.<String, Object>singletonMap(
 				"spring.devtools.remote.secret", "donttell"));
 		this.context = application.run();

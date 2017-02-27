@@ -24,6 +24,7 @@ import javax.sql.DataSource;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
+@FunctionalInterface
 public interface DataSourcePoolMetadataProvider {
 
 	/**

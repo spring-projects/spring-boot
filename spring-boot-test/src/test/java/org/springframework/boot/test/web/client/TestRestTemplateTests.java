@@ -47,12 +47,12 @@ import org.springframework.util.ReflectionUtils.MethodCallback;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.DefaultUriTemplateHandler;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -102,7 +102,7 @@ public class TestRestTemplateTests {
 	public void restOperationsAreAvailable() throws Exception {
 		RestTemplate delegate = mock(RestTemplate.class);
 		given(delegate.getUriTemplateHandler())
-				.willReturn(new DefaultUriTemplateHandler());
+				.willReturn(new DefaultUriBuilderFactory());
 		final TestRestTemplate restTemplate = new TestRestTemplate(delegate);
 		ReflectionUtils.doWithMethods(RestOperations.class, new MethodCallback() {
 

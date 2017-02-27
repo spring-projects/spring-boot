@@ -125,7 +125,6 @@ public class BasicErrorControllerDirectMockMvcTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })

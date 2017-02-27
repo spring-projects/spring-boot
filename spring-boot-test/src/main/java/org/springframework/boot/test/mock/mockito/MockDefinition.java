@@ -24,7 +24,6 @@ import java.util.Set;
 import org.mockito.Answers;
 import org.mockito.MockSettings;
 import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.core.style.ToStringCreator;
@@ -149,19 +148,11 @@ class MockDefinition extends Definition {
 		if (!this.extraInterfaces.isEmpty()) {
 			settings.extraInterfaces(this.extraInterfaces.toArray(new Class<?>[] {}));
 		}
-		settings.defaultAnswer(getAnswer(this.answer));
+		settings.defaultAnswer(MockitoApi.get().getAnswer(this.answer));
 		if (this.serializable) {
 			settings.serializable();
 		}
 		return (T) Mockito.mock(this.typeToMock.resolve(), settings);
-	}
-
-	private Answer<?> getAnswer(Answers answer) {
-		if (Answer.class.isInstance(answer)) {
-			// With Mockito 2.0 we can directly cast the answer
-			return (Answer<?>) ((Object) answer);
-		}
-		return answer.get();
 	}
 
 }

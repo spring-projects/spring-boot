@@ -87,7 +87,6 @@ public class HealthMvcEndpointAutoConfigurationTests {
 	@ImportAutoConfiguration({ SecurityAutoConfiguration.class,
 			JacksonAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, AuditAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
 			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class })
 	static class TestConfiguration {
 

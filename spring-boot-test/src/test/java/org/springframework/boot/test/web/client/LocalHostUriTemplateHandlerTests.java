@@ -78,7 +78,7 @@ public class LocalHostUriTemplateHandlerTests {
 	@Test
 	public void getRootUriShouldUseContextPath() throws Exception {
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("server.contextPath", "/foo");
+		environment.setProperty("server.servlet.context-path", "/foo");
 		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
 				environment);
 		assertThat(handler.getRootUri()).isEqualTo("http://localhost:8080/foo");

@@ -54,7 +54,7 @@ public class HalBrowserMvcEndpoint extends HalJsonMvcEndpoint
 			new HalBrowserLocation("classpath:/META-INF/spring-data-rest/hal-browser/",
 					"index.html"),
 			new HalBrowserLocation(
-					"classpath:/META-INF/resources/webjars/hal-browser/9f96c74/",
+					"classpath:/META-INF/resources/webjars/hal-browser/3325375/",
 					"browser.html") };
 
 	private HalBrowserLocation location;

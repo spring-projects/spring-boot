@@ -44,12 +44,10 @@ public class YamlConfigurationFactoryTests {
 
 	private final Map<Class<?>, Map<String, String>> aliases = new HashMap<Class<?>, Map<String, String>>();
 
-	@SuppressWarnings("deprecation")
 	private Foo createFoo(final String yaml) throws Exception {
 		YamlConfigurationFactory<Foo> factory = new YamlConfigurationFactory<Foo>(
 				Foo.class);
 		factory.setYaml(yaml);
-		factory.setExceptionIfInvalid(true);
 		factory.setPropertyAliases(this.aliases);
 		factory.setValidator(this.validator);
 		factory.setMessageSource(new StaticMessageSource());
@@ -57,12 +55,10 @@ public class YamlConfigurationFactoryTests {
 		return factory.getObject();
 	}
 
-	@SuppressWarnings("deprecation")
 	private Jee createJee(final String yaml) throws Exception {
 		YamlConfigurationFactory<Jee> factory = new YamlConfigurationFactory<Jee>(
 				Jee.class);
 		factory.setYaml(yaml);
-		factory.setExceptionIfInvalid(true);
 		factory.setPropertyAliases(this.aliases);
 		factory.setValidator(this.validator);
 		factory.setMessageSource(new StaticMessageSource());

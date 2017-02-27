@@ -47,9 +47,9 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -88,7 +88,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 						.add(String.valueOf(invocation.getArguments()[0]));
 			}
 
-		}).given(this.log).debug(anyObject());
+		}).given(this.log).debug(any());
 
 		given(this.log.isInfoEnabled()).willReturn(info);
 		willAnswer(new Answer<Object>() {
@@ -99,7 +99,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 						.add(String.valueOf(invocation.getArguments()[0]));
 			}
 
-		}).given(this.log).info(anyObject());
+		}).given(this.log).info(any());
 
 		LogFactory.releaseAll();
 		System.setProperty(LogFactory.FACTORY_PROPERTY, MockLogFactory.class.getName());
@@ -171,7 +171,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		}
 		// Just basic sanity check, test is for visual inspection
 		String l = this.debugLog.get(0);
-		assertThat(l).contains("not a web application (OnWebApplicationCondition)");
+		assertThat(l).contains(
+				"not a servlet web application (OnWebApplicationCondition)");
 	}
 
 	@Test

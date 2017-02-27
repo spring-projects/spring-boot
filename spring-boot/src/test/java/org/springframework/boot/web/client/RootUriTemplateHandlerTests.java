@@ -19,6 +19,7 @@ package org.springframework.boot.web.client;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,10 +32,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplateHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyMap;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -60,9 +60,8 @@ public class RootUriTemplateHandlerTests {
 		MockitoAnnotations.initMocks(this);
 		this.uri = new URI("http://example.com/hello");
 		this.handler = new RootUriTemplateHandler("http://example.com", this.delegate);
-		given(this.delegate.expand(anyString(), anyMap())).willReturn(this.uri);
-		given(this.delegate.expand(anyString(), (Object[]) anyVararg()))
-				.willReturn(this.uri);
+		given(this.delegate.expand(anyString(), any(Map.class))).willReturn(this.uri);
+		given(this.delegate.expand(anyString(), (Object[]) any())).willReturn(this.uri);
 	}
 
 	@Test

@@ -127,7 +127,6 @@ public class BasicErrorControllerMockMvcTests {
 	@Documented
 	@Import({ EmbeddedServletContainerAutoConfiguration.EmbeddedTomcat.class,
 			EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })

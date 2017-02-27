@@ -50,7 +50,7 @@ import org.mockito.InOrder;
 
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.embedded.EmbeddedWebServerException;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -58,9 +58,8 @@ import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -119,7 +118,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		this.container = factory.getEmbeddedServletContainer();
 		InOrder ordered = inOrder((Object[]) listeners);
 		for (LifecycleListener listener : listeners) {
-			ordered.verify(listener).lifecycleEvent((LifecycleEvent) anyObject());
+			ordered.verify(listener).lifecycleEvent(any(LifecycleEvent.class));
 		}
 	}
 
@@ -135,7 +134,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		this.container = factory.getEmbeddedServletContainer();
 		InOrder ordered = inOrder((Object[]) listeners);
 		for (TomcatContextCustomizer listener : listeners) {
-			ordered.verify(listener).customize((Context) anyObject());
+			ordered.verify(listener).customize(any(Context.class));
 		}
 	}
 
@@ -151,7 +150,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		this.container = factory.getEmbeddedServletContainer();
 		InOrder ordered = inOrder((Object[]) listeners);
 		for (TomcatConnectorCustomizer listener : listeners) {
-			ordered.verify(listener).customize((Connector) anyObject());
+			ordered.verify(listener).customize(any(Connector.class));
 		}
 	}
 
@@ -336,7 +335,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 					TomcatEmbeddedServletContainerFactoryTests.this.container.start();
 					fail();
 				}
-				catch (EmbeddedServletContainerException ex) {
+				catch (EmbeddedWebServerException ex) {
 					// Ignore
 				}
 			}

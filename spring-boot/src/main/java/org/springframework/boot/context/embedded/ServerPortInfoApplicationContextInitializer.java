@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,11 +29,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link ApplicationContextInitializer} that sets {@link Environment} properties for the
- * ports that {@link EmbeddedServletContainer} servers are actually listening on. The
+ * ports that {@link EmbeddedWebServer} servers are actually listening on. The
  * property {@literal "local.server.port"} can be injected directly into tests using
  * {@link Value @Value} or obtained via the {@link Environment}.
  * <p>
@@ -54,11 +53,11 @@ public class ServerPortInfoApplicationContextInitializer
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		applicationContext.addApplicationListener(
-				new ApplicationListener<EmbeddedServletContainerInitializedEvent>() {
+				new ApplicationListener<EmbeddedWebServerInitializedEvent>() {
 
 					@Override
 					public void onApplicationEvent(
-							EmbeddedServletContainerInitializedEvent event) {
+							EmbeddedWebServerInitializedEvent event) {
 						ServerPortInfoApplicationContextInitializer.this
 								.onApplicationEvent(event);
 					}
@@ -66,19 +65,12 @@ public class ServerPortInfoApplicationContextInitializer
 				});
 	}
 
-	protected void onApplicationEvent(EmbeddedServletContainerInitializedEvent event) {
-		String propertyName = getPropertyName(event.getApplicationContext());
+	protected void onApplicationEvent(EmbeddedWebServerInitializedEvent event) {
+		String propertyName =  "local." + event.getServerId() + ".port";
 		setPortProperty(event.getApplicationContext(), propertyName,
-				event.getEmbeddedServletContainer().getPort());
+				event.getEmbeddedWebServer().getPort());
 	}
 
-	protected String getPropertyName(EmbeddedWebApplicationContext context) {
-		String name = context.getNamespace();
-		if (StringUtils.isEmpty(name)) {
-			name = "server";
-		}
-		return "local." + name + ".port";
-	}
 
 	private void setPortProperty(ApplicationContext context, String propertyName,
 			int port) {

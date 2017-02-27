@@ -38,6 +38,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.AuthenticationManagerConfiguration;
 import org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration;
@@ -85,11 +86,11 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ EnableWebSecurity.class })
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
 @AutoConfigureBefore(FallbackWebSecurityAutoConfiguration.class)
-@EnableConfigurationProperties
+@EnableConfigurationProperties(ManagementServerProperties.class)
 public class ManagementWebSecurityAutoConfiguration {
 
 	private static final String[] NO_PATHS = new String[0];
@@ -189,6 +190,7 @@ public class ManagementWebSecurityAutoConfiguration {
 	@Configuration
 	@ConditionalOnMissingBean({ ManagementWebSecurityConfigurerAdapter.class })
 	@ConditionalOnProperty(prefix = "management.security", name = "enabled", matchIfMissing = true)
+	@EnableConfigurationProperties(SecurityProperties.class)
 	@Order(ManagementServerProperties.BASIC_AUTH_ORDER)
 	protected static class ManagementWebSecurityConfigurerAdapter
 			extends WebSecurityConfigurerAdapter {
@@ -335,7 +337,7 @@ public class ManagementWebSecurityAutoConfiguration {
 			String path = management.getContextPath();
 			if (StringUtils.hasText(path)) {
 				AntPathRequestMatcher matcher = new AntPathRequestMatcher(
-						server.getPath(path) + "/**");
+						server.getServlet().getPath(path) + "/**");
 				return matcher;
 			}
 			// Match everything, including the sensitive and non-sensitive paths
@@ -362,7 +364,7 @@ public class ManagementWebSecurityAutoConfiguration {
 			List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
 			EndpointHandlerMapping endpointHandlerMapping = getRequiredEndpointHandlerMapping();
 			for (String path : this.endpointPaths.getPaths(endpointHandlerMapping)) {
-				matchers.add(new AntPathRequestMatcher(server.getPath(path)));
+				matchers.add(new AntPathRequestMatcher(server.getServlet().getPath(path)));
 			}
 			return (matchers.isEmpty() ? MATCH_NONE : new OrRequestMatcher(matchers));
 		}

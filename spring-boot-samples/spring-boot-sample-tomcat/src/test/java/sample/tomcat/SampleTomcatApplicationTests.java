@@ -90,7 +90,7 @@ public class SampleTomcatApplicationTests {
 	public void testTimeout() throws Exception {
 		EmbeddedWebApplicationContext context = (EmbeddedWebApplicationContext) this.applicationContext;
 		TomcatEmbeddedServletContainer embeddedServletContainer = (TomcatEmbeddedServletContainer) context
-				.getEmbeddedServletContainer();
+				.getEmbeddedWebServer();
 		ProtocolHandler protocolHandler = embeddedServletContainer.getTomcat()
 				.getConnector().getProtocolHandler();
 		int timeout = ((AbstractProtocol<?>) protocolHandler).getConnectionTimeout();

@@ -139,7 +139,7 @@ public class MultipartAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				ContainerWithEverythingTomcat.class, BaseConfiguration.class);
 		new RestTemplate().getForObject("http://localhost:"
-				+ this.context.getEmbeddedServletContainer().getPort() + "/",
+				+ this.context.getEmbeddedWebServer().getPort() + "/",
 				String.class);
 		this.context.getBean(MultipartConfigElement.class);
 		assertThat(this.context.getBean(StandardServletMultipartResolver.class)).isSameAs(
@@ -208,7 +208,7 @@ public class MultipartAutoConfigurationTests {
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		ClientHttpRequest request = requestFactory.createRequest(
 				new URI("http://localhost:"
-						+ this.context.getEmbeddedServletContainer().getPort() + "/"),
+						+ this.context.getEmbeddedWebServer().getPort() + "/"),
 				HttpMethod.GET);
 		ClientHttpResponse response = request.execute();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -217,7 +217,7 @@ public class MultipartAutoConfigurationTests {
 	private void verifyServletWorks() {
 		RestTemplate restTemplate = new RestTemplate();
 		String url = "http://localhost:"
-				+ this.context.getEmbeddedServletContainer().getPort() + "/";
+				+ this.context.getEmbeddedWebServer().getPort() + "/";
 		assertThat(restTemplate.getForObject(url, String.class)).isEqualTo("Hello");
 	}
 
@@ -258,8 +258,7 @@ public class MultipartAutoConfigurationTests {
 
 	@Configuration
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, MultipartAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class })
+			DispatcherServletAutoConfiguration.class, MultipartAutoConfiguration.class })
 	@EnableConfigurationProperties(MultipartProperties.class)
 	protected static class BaseConfiguration {
 

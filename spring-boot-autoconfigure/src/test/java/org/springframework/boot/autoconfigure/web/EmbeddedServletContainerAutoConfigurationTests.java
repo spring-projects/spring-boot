@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,7 +122,8 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 	public void initParametersAreConfiguredOnTheServletContext() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"server.context_parameters.a:alpha", "server.context_parameters.b:bravo");
+				"server.servlet.context-parameters.a:alpha",
+				"server.servlet.context-parameters.b:bravo");
 		this.context.register(BaseConfiguration.class);
 		this.context.refresh();
 
@@ -147,8 +148,7 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 	@Configuration
 	@Import({ EmbeddedContainerConfiguration.class,
 			EmbeddedServletContainerAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class })
+			DispatcherServletAutoConfiguration.class })
 	protected static class BaseConfiguration {
 
 	}
@@ -218,8 +218,9 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 		}
 
 		@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
-		public ServletRegistrationBean dispatcherRegistration() {
-			return new ServletRegistrationBean(dispatcherServlet(), "/app/*");
+		public ServletRegistrationBean<DispatcherServlet> dispatcherRegistration() {
+			return new ServletRegistrationBean<DispatcherServlet>(dispatcherServlet(),
+					"/app/*");
 		}
 
 	}

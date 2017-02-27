@@ -184,7 +184,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 			return tempDir;
 		}
 		catch (IOException ex) {
-			throw new EmbeddedServletContainerException(
+			throw new EmbeddedWebServerException(
 					"Unable to create tempDir. java.io.tmpdir is set to "
 							+ System.getProperty("java.io.tmpdir"),
 					ex);

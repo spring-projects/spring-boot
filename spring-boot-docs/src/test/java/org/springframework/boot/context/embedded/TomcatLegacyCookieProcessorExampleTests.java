@@ -41,7 +41,7 @@ public class TomcatLegacyCookieProcessorExampleTests {
 		EmbeddedWebApplicationContext applicationContext = (EmbeddedWebApplicationContext) new SpringApplication(
 				TestConfiguration.class, LegacyCookieProcessorConfiguration.class).run();
 		Context context = (Context) ((TomcatEmbeddedServletContainer) applicationContext
-				.getEmbeddedServletContainer()).getTomcat().getHost().findChildren()[0];
+				.getEmbeddedWebServer()).getTomcat().getHost().findChildren()[0];
 		assertThat(context.getCookieProcessor())
 				.isInstanceOf(LegacyCookieProcessor.class);
 	}

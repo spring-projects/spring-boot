@@ -67,8 +67,8 @@ import org.xnio.Xnio;
 import org.xnio.XnioWorker;
 
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.EmbeddedWebServer;
 import org.springframework.boot.context.embedded.MimeMappings.Mapping;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.Ssl.ClientAuth;
@@ -131,7 +131,7 @@ public class UndertowEmbeddedServletContainerFactory
 	 */
 	public UndertowEmbeddedServletContainerFactory() {
 		super();
-		getJspServlet().setRegistered(false);
+		getJsp().setRegistered(false);
 	}
 
 	/**
@@ -141,7 +141,7 @@ public class UndertowEmbeddedServletContainerFactory
 	 */
 	public UndertowEmbeddedServletContainerFactory(int port) {
 		super(port);
-		getJspServlet().setRegistered(false);
+		getJsp().setRegistered(false);
 	}
 
 	/**
@@ -152,7 +152,7 @@ public class UndertowEmbeddedServletContainerFactory
 	 */
 	public UndertowEmbeddedServletContainerFactory(String contextPath, int port) {
 		super(contextPath, port);
-		getJspServlet().setRegistered(false);
+		getJsp().setRegistered(false);
 	}
 
 	/**
@@ -219,7 +219,7 @@ public class UndertowEmbeddedServletContainerFactory
 	}
 
 	@Override
-	public EmbeddedServletContainer getEmbeddedServletContainer(
+	public EmbeddedWebServer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
 		DeploymentManager manager = createDeploymentManager(initializers);
 		int port = getPort();

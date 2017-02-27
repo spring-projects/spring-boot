@@ -28,7 +28,6 @@ import org.springframework.integration.support.management.MessageHandlerMetrics;
 import org.springframework.integration.support.management.MessageSourceMetrics;
 import org.springframework.integration.support.management.PollableChannelManagement;
 import org.springframework.integration.support.management.Statistics;
-import org.springframework.lang.UsesJava7;
 
 /**
  * A {@link MetricReader} for Spring Integration metrics (as provided by
@@ -38,7 +37,6 @@ import org.springframework.lang.UsesJava7;
  * @author Artem Bilan
  * @since 1.3.0
  */
-@UsesJava7
 public class SpringIntegrationMetricReader implements MetricReader {
 
 	private final IntegrationManagementConfigurer configurer;

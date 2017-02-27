@@ -89,8 +89,7 @@ public class MockDefinitionTests {
 		assertThat(mock).isInstanceOf(ExampleService.class);
 		assertThat(mock).isInstanceOf(ExampleExtraInterface.class);
 		assertThat(settings.getMockName().toString()).isEqualTo("name");
-		assertThat(settings.getDefaultAnswer())
-				.isEqualTo(Answers.RETURNS_SMART_NULLS.get());
+		assertThat(settings.getDefaultAnswer()).isEqualTo(Answers.RETURNS_SMART_NULLS);
 		assertThat(settings.isSerializable()).isTrue();
 		assertThat(MockReset.get(mock)).isEqualTo(MockReset.BEFORE);
 	}

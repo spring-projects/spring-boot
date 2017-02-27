@@ -104,8 +104,8 @@ import org.springframework.util.concurrent.ListenableFuture;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -128,7 +128,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Rule
 	public InternalOutputCapture output = new InternalOutputCapture();
 
-	protected EmbeddedServletContainer container;
+	protected EmbeddedWebServer container;
 
 	private final HttpClientContext httpClientContext = HttpClientContext.create();
 
@@ -226,7 +226,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	public void startServletAndFilter() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory.getEmbeddedServletContainer(exampleServletRegistration(),
-				new FilterRegistrationBean(new ExampleFilter()));
+				new FilterRegistrationBean<ExampleFilter>(new ExampleFilter()));
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("[Hello World]");
 	}
@@ -339,7 +339,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container.start();
 		InOrder ordered = inOrder((Object[]) initializers);
 		for (ServletContextInitializer initializer : initializers) {
-			ordered.verify(initializer).onStartup((ServletContext) anyObject());
+			ordered.verify(initializer).onStartup((ServletContext) any());
 		}
 	}
 
@@ -409,8 +409,9 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		Ssl ssl = getSsl(null, "password", "classpath:test.jks");
 		ssl.setEnabled(false);
 		factory.setSsl(ssl);
-		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
+		this.container = factory
+				.getEmbeddedServletContainer(new ServletRegistrationBean<ExampleServlet>(
+						new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
@@ -427,8 +428,9 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	public void sslGetScheme() throws Exception { // gh-2232
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
-		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
+		this.container = factory
+				.getEmbeddedServletContainer(new ServletRegistrationBean<ExampleServlet>(
+						new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
@@ -445,8 +447,9 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	public void serverHeaderIsDisabledByDefaultWhenUsingSsl() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
-		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
+		this.container = factory
+				.getEmbeddedServletContainer(new ServletRegistrationBean<ExampleServlet>(
+						new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
@@ -463,8 +466,9 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.setServerHeader("MyServer");
 		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
-		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
+		this.container = factory
+				.getEmbeddedServletContainer(new ServletRegistrationBean<ExampleServlet>(
+						new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
@@ -634,7 +638,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void disableJspServletRegistration() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		factory.getJspServlet().setRegistered(false);
+		factory.getJsp().setRegistered(false);
 		this.container = factory.getEmbeddedServletContainer();
 		assertThat(getJspServlet()).isNull();
 	}
@@ -685,8 +689,9 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks", null,
 				protocols, ciphers));
-		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
+		this.container = factory
+				.getEmbeddedServletContainer(new ServletRegistrationBean<ExampleServlet>(
+						new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
@@ -806,8 +811,9 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		Compression compression = new Compression();
 		compression.setEnabled(true);
 		factory.setCompression(compression);
-		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(false, true), "/hello"));
+		this.container = factory
+				.getEmbeddedServletContainer(new ServletRegistrationBean<ExampleServlet>(
+						new ExampleServlet(false, true), "/hello"));
 		this.container.start();
 		TestGzipInputStreamFactory inputStreamFactory = new TestGzipInputStreamFactory();
 		Map<String, InputStreamFactory> contentDecoderMap = Collections
@@ -941,7 +947,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		Map<String, String> initParameters = new HashMap<String, String>();
 		initParameters.put("a", "alpha");
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		factory.getJspServlet().setInitParameters(initParameters);
+		factory.getJsp().setInitParameters(initParameters);
 		this.container = factory.getEmbeddedServletContainer();
 		Assume.assumeThat(getJspServlet(), notNullValue());
 		JspServlet jspServlet = getJspServlet();
@@ -1117,8 +1123,9 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	protected void assertForwardHeaderIsUsed(EmbeddedServletContainerFactory factory)
 			throws IOException, URISyntaxException {
-		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
+		this.container = factory
+				.getEmbeddedServletContainer(new ServletRegistrationBean<ExampleServlet>(
+						new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello"), "X-Forwarded-For:140.211.11.130"))
 				.contains("remoteaddr=140.211.11.130");
@@ -1130,39 +1137,43 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			throws Exception;
 
 	protected ServletContextInitializer exampleServletRegistration() {
-		return new ServletRegistrationBean(new ExampleServlet(), "/hello");
+		return new ServletRegistrationBean<ExampleServlet>(new ExampleServlet(),
+				"/hello");
 	}
 
 	@SuppressWarnings("serial")
 	private ServletContextInitializer errorServletRegistration() {
-		ServletRegistrationBean bean = new ServletRegistrationBean(new ExampleServlet() {
+		ServletRegistrationBean<ExampleServlet> bean = new ServletRegistrationBean<ExampleServlet>(
+				new ExampleServlet() {
 
-			@Override
-			public void service(ServletRequest request, ServletResponse response)
-					throws ServletException, IOException {
-				throw new RuntimeException("Planned");
-			}
+					@Override
+					public void service(ServletRequest request, ServletResponse response)
+							throws ServletException, IOException {
+						throw new RuntimeException("Planned");
+					}
 
-		}, "/bang");
+				}, "/bang");
 		bean.setName("error");
 		return bean;
 	}
 
 	protected final ServletContextInitializer sessionServletRegistration() {
-		ServletRegistrationBean bean = new ServletRegistrationBean(new ExampleServlet() {
+		ServletRegistrationBean<ExampleServlet> bean = new ServletRegistrationBean<ExampleServlet>(
+				new ExampleServlet() {
 
-			@Override
-			public void service(ServletRequest request, ServletResponse response)
-					throws ServletException, IOException {
-				HttpSession session = ((HttpServletRequest) request).getSession(true);
-				long value = System.currentTimeMillis();
-				Object existing = session.getAttribute("boot");
-				session.setAttribute("boot", value);
-				PrintWriter writer = response.getWriter();
-				writer.append(String.valueOf(existing) + ":" + value);
-			}
+					@Override
+					public void service(ServletRequest request, ServletResponse response)
+							throws ServletException, IOException {
+						HttpSession session = ((HttpServletRequest) request)
+								.getSession(true);
+						long value = System.currentTimeMillis();
+						Object existing = session.getAttribute("boot");
+						session.setAttribute("boot", value);
+						PrintWriter writer = response.getWriter();
+						writer.append(String.valueOf(existing) + ":" + value);
+					}
 
-		}, "/session");
+				}, "/session");
 		bean.setName("session");
 		return bean;
 	}

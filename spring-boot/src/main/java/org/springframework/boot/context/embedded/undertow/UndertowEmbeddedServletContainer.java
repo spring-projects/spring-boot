@@ -44,8 +44,8 @@ import org.apache.commons.logging.LogFactory;
 import org.xnio.channels.BoundChannel;
 
 import org.springframework.boot.context.embedded.Compression;
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.embedded.EmbeddedWebServer;
+import org.springframework.boot.context.embedded.EmbeddedWebServerException;
 import org.springframework.boot.context.embedded.PortInUseException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.MimeType;
@@ -54,7 +54,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link EmbeddedServletContainer} that can be used to control an embedded Undertow
+ * {@link EmbeddedWebServer} that can be used to control an embedded Undertow
  * server. Typically this class should be created using
  * {@link UndertowEmbeddedServletContainerFactory} and not directly.
  *
@@ -65,7 +65,7 @@ import org.springframework.util.StringUtils;
  * @since 1.2.0
  * @see UndertowEmbeddedServletContainerFactory
  */
-public class UndertowEmbeddedServletContainer implements EmbeddedServletContainer {
+public class UndertowEmbeddedServletContainer implements EmbeddedWebServer {
 
 	private static final Log logger = LogFactory
 			.getLog(UndertowEmbeddedServletContainer.class);
@@ -142,7 +142,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	}
 
 	@Override
-	public void start() throws EmbeddedServletContainerException {
+	public void start() throws EmbeddedWebServerException {
 		synchronized (this.monitor) {
 			if (this.started) {
 				return;
@@ -169,7 +169,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 								failedPorts.iterator().next().getNumber());
 					}
 				}
-				throw new EmbeddedServletContainerException(
+				throw new EmbeddedWebServerException(
 						"Unable to start embedded Undertow", ex);
 			}
 		}
@@ -306,7 +306,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	}
 
 	@Override
-	public void stop() throws EmbeddedServletContainerException {
+	public void stop() throws EmbeddedWebServerException {
 		synchronized (this.monitor) {
 			if (!this.started) {
 				return;
@@ -317,7 +317,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 				this.undertow.stop();
 			}
 			catch (Exception ex) {
-				throw new EmbeddedServletContainerException("Unable to stop undertow",
+				throw new EmbeddedWebServerException("Unable to stop undertow",
 						ex);
 			}
 		}

@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -86,7 +85,6 @@ public class SecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
@@ -101,7 +99,6 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(WebSecurity.class, SecurityAutoConfiguration.class,
 				SecurityFilterAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean("securityFilterChainRegistration",
@@ -114,7 +111,6 @@ public class SecurityAutoConfigurationTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(SecurityAutoConfiguration.class,
 				SecurityFilterAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		try {
 			context.refresh();
@@ -131,7 +127,6 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
 				SecurityFilterAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean("securityFilterChainRegistration",
@@ -146,7 +141,6 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
 				SecurityFilterAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean("securityFilterChainRegistration",
@@ -158,7 +152,6 @@ public class SecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.ignored:none");
 		this.context.refresh();
@@ -172,7 +165,6 @@ public class SecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
@@ -186,7 +178,6 @@ public class SecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(AuthenticationManager.class)).isNotNull();
@@ -218,7 +209,7 @@ public class SecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestAuthenticationConfiguration.class,
-				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
+				SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(AuthenticationManager.class))
@@ -232,7 +223,7 @@ public class SecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(UserDetailsSecurityCustomizer.class,
-				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
+				SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(UserDetailsSecurityCustomizer.class)
@@ -246,7 +237,6 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestAuthenticationConfiguration.class,
 				SecurityCustomizer.class, SecurityAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(AuthenticationManager.class))
@@ -261,7 +251,6 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(AuthenticationManagerCustomizer.class,
 				SecurityCustomizer.class, SecurityAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
@@ -279,7 +268,6 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(AuthenticationManagerCustomizer.class,
 				WorkaroundSecurityCustomizer.class, SecurityAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
@@ -300,7 +288,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.register(EntityConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
-				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class);
+				SecurityAutoConfiguration.class);
 		// This can fail if security @Conditionals force early instantiation of the
 		// HibernateJpaAutoConfiguration (e.g. the EntityManagerFactory is not found)
 		this.context.refresh();
@@ -312,8 +300,7 @@ public class SecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 
-		this.context.register(SecurityAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class);
+		this.context.register(SecurityAutoConfiguration.class);
 		this.context.refresh();
 
 		SecurityProperties security = this.context.getBean(SecurityProperties.class);
@@ -331,7 +318,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 
 		this.context.register(AuthenticationManagerCustomizer.class,
-				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class);
+				SecurityAutoConfiguration.class);
 		this.context.refresh();
 
 		SecurityProperties security = this.context.getBean(SecurityProperties.class);
@@ -356,7 +343,7 @@ public class SecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(AuthenticationManagerCustomizer.class,
-				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class);
+				SecurityAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(SecurityEvaluationContextExtension.class))
 				.isNotNull();
@@ -368,7 +355,6 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
 				SecurityFilterAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DelegatingFilterProxyRegistrationBean bean = this.context.getBean(
@@ -377,7 +363,8 @@ public class SecurityAutoConfigurationTests {
 		@SuppressWarnings("unchecked")
 		EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
 				.getField(bean, "dispatcherTypes");
-		assertThat(dispatcherTypes).isNull();
+		assertThat(dispatcherTypes).containsOnly(DispatcherType.ASYNC,
+				DispatcherType.ERROR, DispatcherType.REQUEST);
 	}
 
 	@Test
@@ -386,7 +373,6 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
 				SecurityFilterAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"security.filter-dispatcher-types:INCLUDE,ERROR");

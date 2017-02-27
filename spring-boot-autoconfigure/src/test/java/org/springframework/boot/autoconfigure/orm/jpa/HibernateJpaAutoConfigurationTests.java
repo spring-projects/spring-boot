@@ -26,7 +26,6 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
-import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -42,6 +41,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link HibernateJpaAutoConfiguration}.
@@ -56,11 +56,6 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-
-	@After
-	public void cleanup() {
-		HibernateVersion.setRunning(null);
-	}
 
 	@Override
 	protected Class<?> getAutoConfigureClass() {
@@ -90,38 +85,6 @@ public class HibernateJpaAutoConfigurationTests
 		this.context.refresh();
 		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class))
 				.queryForObject("SELECT COUNT(*) from CITY", Integer.class)).isEqualTo(1);
-	}
-
-	@Test
-	public void testCustomNamingStrategy() throws Exception {
-		HibernateVersion.setRunning(HibernateVersion.V4);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jpa.hibernate.naming.strategy:"
-						+ "org.hibernate.cfg.EJB3NamingStrategy");
-		setupTestConfiguration();
-		this.context.refresh();
-		LocalContainerEntityManagerFactoryBean bean = this.context
-				.getBean(LocalContainerEntityManagerFactoryBean.class);
-		String actual = (String) bean.getJpaPropertyMap()
-				.get("hibernate.ejb.naming_strategy");
-		assertThat(actual).isEqualTo("org.hibernate.cfg.EJB3NamingStrategy");
-	}
-
-	@Test
-	public void testCustomNamingStrategyViaJpaProperties() throws Exception {
-		HibernateVersion.setRunning(HibernateVersion.V4);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jpa.properties.hibernate.ejb.naming_strategy:"
-						+ "org.hibernate.cfg.EJB3NamingStrategy");
-		setupTestConfiguration();
-		this.context.refresh();
-		LocalContainerEntityManagerFactoryBean bean = this.context
-				.getBean(LocalContainerEntityManagerFactoryBean.class);
-		String actual = (String) bean.getJpaPropertyMap()
-				.get("hibernate.ejb.naming_strategy");
-		// You can't override this one from spring.jpa.properties because it has an
-		// opinionated default
-		assertThat(actual).isNotEqualTo("org.hibernate.cfg.EJB3NamingStrategy");
 	}
 
 	@Test
@@ -190,7 +153,7 @@ public class HibernateJpaAutoConfigurationTests
 
 		@Override
 		public TransactionManager retrieveTransactionManager() {
-			throw new UnsupportedOperationException();
+			return mock(TransactionManager.class);
 		}
 
 		@Override

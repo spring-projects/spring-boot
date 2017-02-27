@@ -38,7 +38,6 @@ import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration
 import org.springframework.boot.autoconfigure.mustache.MustacheResourceTemplateLoader;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -71,7 +70,7 @@ public class MustacheWebIntegrationTests {
 
 	@Before
 	public void init() {
-		this.port = this.context.getEmbeddedServletContainer().getPort();
+		this.port = this.context.getEmbeddedWebServer().getPort();
 	}
 
 	@Test
@@ -140,7 +139,6 @@ public class MustacheWebIntegrationTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {

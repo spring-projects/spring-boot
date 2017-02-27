@@ -23,7 +23,7 @@ package org.springframework.boot.context.embedded;
  * @author Andy Wilkinson
  * @since 1.4.0
  */
-public class PortInUseException extends EmbeddedServletContainerException {
+public class PortInUseException extends EmbeddedWebServerException {
 
 	private final int port;
 

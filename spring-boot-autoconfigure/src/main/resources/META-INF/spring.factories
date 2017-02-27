@@ -41,6 +41,8 @@ org.springframework.boot.autoconfigure.data.ldap.LdapDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.ldap.LdapRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.mongo.ReactiveMongoDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.mongo.ReactiveMongoRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.solr.SolrRepositoriesAutoConfiguration,\
@@ -83,9 +85,10 @@ org.springframework.boot.autoconfigure.mobile.DeviceDelegatingViewResolverAutoCo
 org.springframework.boot.autoconfigure.mobile.SitePreferenceAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
+org.springframework.boot.autoconfigure.mongo.ReactiveMongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
-org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration,\
+org.springframework.boot.autoconfigure.reactor.core.ReactorCoreAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration,\
@@ -107,9 +110,11 @@ org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.HttpEncodingAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration,\
+org.springframework.boot.autoconfigure.webflux.ReactiveWebServerAutoConfiguration,\
+org.springframework.boot.autoconfigure.webflux.WebFluxAnnotationAutoConfiguration,\
+org.springframework.boot.autoconfigure.webflux.WebFluxFunctionalAutoConfiguration,\
 org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration,\
 org.springframework.boot.autoconfigure.websocket.WebSocketMessagingAutoConfiguration,\
 org.springframework.boot.autoconfigure.webservices.WebServicesAutoConfiguration

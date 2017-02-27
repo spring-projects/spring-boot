@@ -32,7 +32,6 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfigurationTests.WebSecurity;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -65,7 +64,7 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 					"security.user.password:password");
 			context.register(Config.class);
 			context.refresh();
-			int port = context.getEmbeddedServletContainer().getPort();
+			int port = context.getEmbeddedWebServer().getPort();
 			new TestRestTemplate("user", "password")
 					.getForEntity("http://localhost:" + port, Object.class);
 			// If early initialization occurred a ConverterNotFoundException is thrown
@@ -84,7 +83,6 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebSecurity.class,
 			SecurityAutoConfiguration.class, SecurityFilterAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	static class Config {
 

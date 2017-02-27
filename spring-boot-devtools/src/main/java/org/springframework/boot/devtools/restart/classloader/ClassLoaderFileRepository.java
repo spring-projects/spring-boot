@@ -25,6 +25,7 @@ package org.springframework.boot.devtools.restart.classloader;
  * @since 1.3.0
  * @see ClassLoaderFile
  */
+@FunctionalInterface
 public interface ClassLoaderFileRepository {
 
 	/**

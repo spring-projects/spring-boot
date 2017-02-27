@@ -95,9 +95,9 @@ public class OAuth2RestOperationsConfiguration {
 	protected static class SessionScopedConfiguration {
 
 		@Bean
-		public FilterRegistrationBean oauth2ClientFilterRegistration(
+		public FilterRegistrationBean<OAuth2ClientContextFilter> oauth2ClientFilterRegistration(
 				OAuth2ClientContextFilter filter, SecurityProperties security) {
-			FilterRegistrationBean registration = new FilterRegistrationBean();
+			FilterRegistrationBean<OAuth2ClientContextFilter> registration = new FilterRegistrationBean<OAuth2ClientContextFilter>();
 			registration.setFilter(filter);
 			registration.setOrder(security.getFilterOrder() - 10);
 			return registration;

@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.security;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -102,7 +103,8 @@ public class SecurityProperties implements SecurityPrerequisite {
 	/**
 	 * Security filter chain dispatcher types.
 	 */
-	private Set<String> filterDispatcherTypes;
+	private Set<String> filterDispatcherTypes = new HashSet<String>(
+			Arrays.asList("ASYNC", "ERROR", "REQUEST"));
 
 	public Headers getHeaders() {
 		return this.headers;

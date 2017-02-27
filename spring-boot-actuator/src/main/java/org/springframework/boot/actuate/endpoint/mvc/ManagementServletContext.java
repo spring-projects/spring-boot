@@ -22,6 +22,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
  * @author Phillip Webb
  * @since 1.3.0
  */
+@FunctionalInterface
 public interface ManagementServletContext {
 
 	/**

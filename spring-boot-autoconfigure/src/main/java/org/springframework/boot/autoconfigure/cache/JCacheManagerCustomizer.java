@@ -25,6 +25,7 @@ import javax.cache.CacheManager;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
+@FunctionalInterface
 public interface JCacheManagerCustomizer {
 
 	/**
