@@ -78,11 +78,11 @@ public class LiquibaseAutoConfiguration {
 		public LiquibaseConfiguration(LiquibaseProperties properties,
 				ResourceLoader resourceLoader,
 				ObjectProvider<DataSource> dataSourceProvider,
-				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSourceProvider) {
+				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource) {
 			this.properties = properties;
 			this.resourceLoader = resourceLoader;
 			this.dataSource = dataSourceProvider.getIfUnique();
-			this.liquibaseDataSource = liquibaseDataSourceProvider.getIfAvailable();
+			this.liquibaseDataSource = liquibaseDataSource.getIfAvailable();
 		}
 
 		@PostConstruct
