@@ -2259,7 +2259,7 @@ your application defines, if any.
 NOTE: By default, batch applications require a `DataSource` to store job details. If you
 want to deviate from that, you'll need to implement `BatchConfigurer`, see
 {spring-batch-javadoc}/core/configuration/annotation/EnableBatchProcessing.html[The
-Javadoc of @EnableBatchProcessing] for more details.
+Javadoc of `@EnableBatchProcessing`] for more details.
 
 
 
