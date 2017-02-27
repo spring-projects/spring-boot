@@ -204,39 +204,31 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 		}
 		ResourceServerProperties resource = (ResourceServerProperties) target;
 
-		if ((StringUtils.hasText(this.jwt.getKeyUri())
-				|| StringUtils.hasText(this.jwt.getKeyValue()))
-				&& StringUtils.hasText(this.jwk.getKeySetUri())) {
+		boolean jwtConfigPresent = StringUtils.hasText(this.jwt.getKeyUri())
+				|| StringUtils.hasText(this.jwt.getKeyValue());
+		boolean jwkConfigPresent = StringUtils.hasText(this.jwk.getKeySetUri());
+
+		if (jwtConfigPresent && jwkConfigPresent) {
 			errors.reject("ambiguous.keyUri", "Only one of jwt.keyUri (or jwt.keyValue) and jwk.keySetUri should be configured.");
 		}
 
 		else {
-			if (StringUtils.hasText(this.clientId)) {
-				if (!StringUtils.hasText(this.clientSecret)) {
-					if (!StringUtils.hasText(resource.getUserInfoUri())) {
-						errors.rejectValue("userInfoUri", "missing.userInfoUri",
-								"Missing userInfoUri (no client secret available)");
-					}
-				}
-				else {
-					if (isPreferTokenInfo()
-							&& !StringUtils.hasText(resource.getTokenInfoUri())) {
-						if (StringUtils.hasText(getJwt().getKeyUri())
-								|| StringUtils.hasText(getJwt().getKeyValue())
-								|| StringUtils.hasText(getJwk().getKeySetUri())) {
-							// It's a JWT decoder
-							return;
-						}
-						if (!StringUtils.hasText(resource.getUserInfoUri())) {
-							errors.rejectValue("tokenInfoUri", "missing.tokenInfoUri",
-									"Missing tokenInfoUri and userInfoUri and there is no "
-											+ "JWT verifier key");
-						}
-					}
+			if (jwtConfigPresent || jwkConfigPresent) {
+				// It's a JWT decoder
+				return;
+			}
+			if (!StringUtils.hasText(resource.getUserInfoUri()) && !StringUtils.hasText(resource.getTokenInfoUri())) {
+				errors.rejectValue("tokenInfoUri", "missing.tokenInfoUri",
+						"Missing tokenInfoUri and userInfoUri and there is no "
+								+ "JWT verifier key");
+			}
+			if (StringUtils.hasText(resource.getTokenInfoUri()) && isPreferTokenInfo()) {
+				if (StringUtils.hasText(this.clientId) && !StringUtils.hasText(this.clientSecret)) {
+					errors.rejectValue("clientSecret", "missing.clientSecret",
+							"Missing client secret");
 				}
 			}
 		}
-
 	}
 
 	private int countBeans(Class<?> type) {
@@ -272,21 +264,7 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 		}
 
 		public String getKeyUri() {
-			if (this.keyUri != null) {
-				return this.keyUri;
-			}
-			if (ResourceServerProperties.this.userInfoUri != null
-					&& ResourceServerProperties.this.userInfoUri.endsWith("/userinfo")) {
-				return ResourceServerProperties.this.userInfoUri.replace("/userinfo",
-						"/token_key");
-			}
-			if (ResourceServerProperties.this.tokenInfoUri != null
-					&& ResourceServerProperties.this.tokenInfoUri
-							.endsWith("/check_token")) {
-				return ResourceServerProperties.this.tokenInfoUri.replace("/check_token",
-						"/token_key");
-			}
-			return null;
+			return this.keyUri;
 		}
 
 	}
