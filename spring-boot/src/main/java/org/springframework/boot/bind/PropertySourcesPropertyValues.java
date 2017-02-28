@@ -70,8 +70,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	 * Create a new PropertyValues from the given PropertySources that will optionally
 	 * resolve placeholders.
 	 * @param propertySources a PropertySources instance
-	 * @param resolvePlaceholders {@code true} if placeholders should be resolved,
-	 * otherwise {@code false}
+	 * @param resolvePlaceholders {@code true} if placeholders should be resolved.
 	 * @since 1.5.2
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources,

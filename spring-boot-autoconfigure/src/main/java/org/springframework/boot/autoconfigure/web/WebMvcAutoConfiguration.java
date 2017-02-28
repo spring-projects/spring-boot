@@ -46,11 +46,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.boot.web.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.boot.web.filter.OrderedRequestContextFilter;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -70,8 +68,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.validation.Validator;
-import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean;
-import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.RequestContextListener;
@@ -133,8 +129,6 @@ public class WebMvcAutoConfiguration {
 	public static String DEFAULT_PREFIX = "";
 
 	public static String DEFAULT_SUFFIX = "";
-
-	private static final String JSR303_VALIDATOR_CLASS = "javax.validation.Validator";
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
@@ -406,17 +400,12 @@ public class WebMvcAutoConfiguration {
 		@Bean
 		@Override
 		public Validator mvcValidator() {
-			if (isJsr303Present()) {
-				Validator userDefinedValidator = getValidator();
-				return new Jsr303ValidatorHandler(getApplicationContext(),
-						userDefinedValidator).wrapJsr303Validator();
+			if (!ClassUtils.isPresent("javax.validation.Validator",
+					getClass().getClassLoader())) {
+				return super.mvcValidator();
 			}
-			return super.mvcValidator();
-		}
-
-		private boolean isJsr303Present() {
-			return ClassUtils.isPresent(JSR303_VALIDATOR_CLASS,
-					getApplicationContext().getClassLoader());
+			return WebMvcValidator.get(getApplicationContext(),
+					getValidator());
 		}
 
 		@Override
@@ -556,62 +545,6 @@ public class WebMvcAutoConfiguration {
 			String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
 			return MediaType.parseMediaTypes(
 					StringUtils.hasText(acceptHeader) ? acceptHeader : "*/*");
-		}
-
-	}
-
-	static class Jsr303ValidatorHandler {
-
-		private final ApplicationContext applicationContext;
-
-		private final Validator userDefinedValidator;
-
-		Jsr303ValidatorHandler(ApplicationContext applicationContext,
-				Validator userDefinedValidator) {
-			this.applicationContext = applicationContext;
-			this.userDefinedValidator = userDefinedValidator;
-		}
-
-		public Validator wrapJsr303Validator() {
-			try {
-				if (this.userDefinedValidator != null) {
-					if (this.userDefinedValidator instanceof javax.validation.Validator) {
-						return wrap((javax.validation.Validator) this.userDefinedValidator, false);
-					}
-					else {
-						return this.userDefinedValidator;
-					}
-				}
-				else {
-					return wrap(this.applicationContext.getBean(
-							javax.validation.Validator.class), true);
-				}
-			}
-			catch (NoSuchBeanDefinitionException ex) {
-				OptionalValidatorFactoryBean factory = new OptionalValidatorFactoryBean();
-				MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory();
-				factory.setMessageInterpolator(interpolatorFactory.getObject());
-				return new SpringValidatorAdapterWrapper(factory, false);
-			}
-
-		}
-
-		/**
-		 * Wrap the specified {@code validator}.
-		 * @param validator the validator to wrap
-		 * @param bean {@code true} if the specified {@code validator} is a bean managed
-		 * in the context
-		 * @return a {@link Validator} wrapping the specified argument
-		 */
-		private Validator wrap(javax.validation.Validator validator, boolean bean) {
-			if (validator instanceof SpringValidatorAdapter) {
-				return new SpringValidatorAdapterWrapper(
-						(SpringValidatorAdapter) validator, bean);
-			}
-			else {
-				return new SpringValidatorAdapterWrapper(
-						new SpringValidatorAdapter(validator), false);
-			}
 		}
 
 	}

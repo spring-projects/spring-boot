@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,7 +120,8 @@ class MockDefinition extends Definition {
 		MockDefinition other = (MockDefinition) obj;
 		boolean result = super.equals(obj);
 		result = result && ObjectUtils.nullSafeEquals(this.typeToMock, other.typeToMock);
-		result = result && ObjectUtils.nullSafeEquals(this.extraInterfaces, other.extraInterfaces);
+		result = result && ObjectUtils.nullSafeEquals(this.extraInterfaces,
+				other.extraInterfaces);
 		result = result && ObjectUtils.nullSafeEquals(this.answer, other.answer);
 		result = result && this.serializable == other.serializable;
 		return result;

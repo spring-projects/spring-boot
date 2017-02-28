@@ -662,8 +662,8 @@ public class WebMvcAutoConfigurationTests {
 				.isEmpty();
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		Validator validator = this.context.getBean(Validator.class);
-		assertThat(validator).isSameAs(this.context.getBean(MvcValidator.class)
-				.validator);
+		assertThat(validator)
+				.isSameAs(this.context.getBean(MvcValidator.class).validator);
 	}
 
 	@Test
@@ -674,8 +674,8 @@ public class WebMvcAutoConfigurationTests {
 				.isEmpty();
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		Validator validator = this.context.getBean(Validator.class);
-		assertThat(validator).isInstanceOf(SpringValidatorAdapterWrapper.class);
-		assertThat(((SpringValidatorAdapterWrapper) validator).getTarget())
+		assertThat(validator).isInstanceOf(WebMvcValidator.class);
+		assertThat(((WebMvcValidator) validator).getTarget())
 				.isSameAs(this.context.getBean(MvcJsr303Validator.class).validator);
 	}
 
@@ -687,8 +687,8 @@ public class WebMvcAutoConfigurationTests {
 				.hasSize(1);
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(2);
 		Validator validator = this.context.getBean("mvcValidator", Validator.class);
-		assertThat(validator).isInstanceOf(SpringValidatorAdapterWrapper.class);
-		assertThat(((SpringValidatorAdapterWrapper) validator).getTarget())
+		assertThat(validator).isInstanceOf(WebMvcValidator.class);
+		assertThat(((WebMvcValidator) validator).getTarget())
 				.isSameAs(this.context.getBean(javax.validation.Validator.class));
 	}
 
@@ -700,8 +700,8 @@ public class WebMvcAutoConfigurationTests {
 				.hasSize(1);
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		Validator validator = this.context.getBean(Validator.class);
-		assertThat(validator).isInstanceOf(SpringValidatorAdapterWrapper.class);
-		SpringValidatorAdapter target = ((SpringValidatorAdapterWrapper) validator)
+		assertThat(validator).isInstanceOf(WebMvcValidator.class);
+		SpringValidatorAdapter target = ((WebMvcValidator) validator)
 				.getTarget();
 		assertThat(new DirectFieldAccessor(target).getPropertyValue("targetValidator"))
 				.isSameAs(this.context.getBean(javax.validation.Validator.class));
@@ -900,7 +900,7 @@ public class WebMvcAutoConfigurationTests {
 	@Configuration
 	protected static class MvcJsr303Validator extends WebMvcConfigurerAdapter {
 
-		private final LocalValidatorFactoryBean  validator = new LocalValidatorFactoryBean();
+		private final LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
 
 		@Override
 		public Validator getValidator() {

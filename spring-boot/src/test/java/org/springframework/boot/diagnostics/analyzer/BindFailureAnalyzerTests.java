@@ -58,7 +58,8 @@ public class BindFailureAnalyzerTests {
 
 	@Test
 	public void bindExceptionWithFieldErrorsDueToValidationFailure() {
-		FailureAnalysis analysis = performAnalysis(FieldValidationFailureConfiguration.class);
+		FailureAnalysis analysis = performAnalysis(
+				FieldValidationFailureConfiguration.class);
 		assertThat(analysis.getDescription())
 				.contains(failure("test.foo.foo", "null", "may not be null"));
 		assertThat(analysis.getDescription())
@@ -69,7 +70,8 @@ public class BindFailureAnalyzerTests {
 
 	@Test
 	public void bindExceptionWithObjectErrorsDueToValidationFailure() throws Exception {
-		FailureAnalysis analysis = performAnalysis(ObjectValidationFailureConfiguration.class);
+		FailureAnalysis analysis = performAnalysis(
+				ObjectValidationFailureConfiguration.class);
 		assertThat(analysis.getDescription())
 				.contains("Reason: This object could not be bound.");
 	}
@@ -171,6 +173,7 @@ public class BindFailureAnalyzerTests {
 		public boolean supports(Class<?> clazz) {
 			return true;
 		}
+
 	}
 
 }

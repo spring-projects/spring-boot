@@ -86,6 +86,8 @@ public class DatabaseDriverTests {
 				.isEqualTo(DatabaseDriver.POSTGRESQL);
 		assertThat(DatabaseDriver.fromProductName("Microsoft SQL Server"))
 				.isEqualTo(DatabaseDriver.SQLSERVER);
+		assertThat(DatabaseDriver.fromProductName("SQL SERVER"))
+				.isEqualTo(DatabaseDriver.SQLSERVER);
 		assertThat(DatabaseDriver.fromProductName("DB2")).isEqualTo(DatabaseDriver.DB2);
 		assertThat(DatabaseDriver.fromProductName("Firebird 2.5.WI"))
 				.isEqualTo(DatabaseDriver.FIREBIRD);

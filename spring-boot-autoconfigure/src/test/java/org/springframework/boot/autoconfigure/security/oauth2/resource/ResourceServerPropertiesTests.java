@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,13 +68,15 @@ public class ResourceServerPropertiesTests {
 	}
 
 	@Test
-	public void validateWhenBothJwtAndJwtKeyConfigurationPresentShouldFail() throws Exception {
+	public void validateWhenBothJwtAndJwtKeyConfigurationPresentShouldFail()
+			throws Exception {
 		this.properties.getJwk().setKeySetUri("http://my-auth-server/token_keys");
 		this.properties.getJwt().setKeyUri("http://my-auth-server/token_key");
 		setListableBeanFactory();
 		Errors errors = mock(Errors.class);
 		this.properties.validate(this.properties, errors);
-		verify(errors).reject("ambiguous.keyUri", "Only one of jwt.keyUri (or jwt.keyValue) and jwk.keySetUri should be configured.");
+		verify(errors).reject("ambiguous.keyUri",
+				"Only one of jwt.keyUri (or jwt.keyValue) and jwk.keySetUri should be configured.");
 
 	}
 
@@ -89,14 +91,19 @@ public class ResourceServerPropertiesTests {
 
 	private void setListableBeanFactory() {
 		ListableBeanFactory beanFactory = new StaticWebApplicationContext() {
+
 			@Override
-			public String[] getBeanNamesForType(Class<?> type, boolean includeNonSingletons, boolean allowEagerInit) {
-				if (type.isAssignableFrom(ResourceServerTokenServicesConfiguration.class)) {
-					return new String[]{"ResourceServerTokenServicesConfiguration"};
+			public String[] getBeanNamesForType(Class<?> type,
+					boolean includeNonSingletons, boolean allowEagerInit) {
+				if (type.isAssignableFrom(
+						ResourceServerTokenServicesConfiguration.class)) {
+					return new String[] { "ResourceServerTokenServicesConfiguration" };
 				}
 				return new String[0];
 			}
+
 		};
 		this.properties.setBeanFactory(beanFactory);
 	}
+
 }

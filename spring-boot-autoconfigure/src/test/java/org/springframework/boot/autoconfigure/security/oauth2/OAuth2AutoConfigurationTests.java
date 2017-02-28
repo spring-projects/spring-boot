@@ -389,11 +389,13 @@ public class OAuth2AutoConfigurationTests {
 	}
 
 	@Test
-	public void resourceServerConditionWhenJwkConfigurationPresentShouldMatch() throws Exception {
+	public void resourceServerConditionWhenJwkConfigurationPresentShouldMatch()
+			throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"security.oauth2.resource.jwk.key-set-uri:http://my-auth-server/token_keys");
-		this.context.register(ResourceServerConfiguration.class, MinimalSecureWebApplication.class);
+		this.context.register(ResourceServerConfiguration.class,
+				MinimalSecureWebApplication.class);
 		this.context.refresh();
 		assertThat(countBeans(RESOURCE_SERVER_CONFIG)).isEqualTo(1);
 	}

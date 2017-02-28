@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,8 @@ public class TokenValidatorTests {
 	private static final Map<String, String> INVALID_KEYS = Collections
 			.singletonMap("invalid-key", INVALID_KEY);
 
-	private static final Map<String, String> VALID_KEYS = Collections.singletonMap("valid-key", VALID_KEY);
+	private static final Map<String, String> VALID_KEYS = Collections
+			.singletonMap("valid-key", VALID_KEY);
 
 	@Before
 	public void setup() throws Exception {
@@ -100,8 +101,8 @@ public class TokenValidatorTests {
 		given(this.securityService.fetchTokenKeys()).willReturn(INVALID_KEYS);
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
-		this.thrown.expect(
-				AuthorizationExceptionMatcher.withReason(Reason.INVALID_KEY_ID));
+		this.thrown
+				.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_KEY_ID));
 		this.tokenValidator.validate(
 				new Token(getSignedToken(header.getBytes(), claims.getBytes())));
 	}
@@ -131,8 +132,7 @@ public class TokenValidatorTests {
 	}
 
 	@Test
-	public void validateTokenWhenValidShouldNotFetchTokenKeys()
-			throws Exception {
+	public void validateTokenWhenValidShouldNotFetchTokenKeys() throws Exception {
 		ReflectionTestUtils.setField(this.tokenValidator, "tokenKeys", VALID_KEYS);
 		given(this.securityService.getUaaUrl()).willReturn("http://localhost:8080/uaa");
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
@@ -144,7 +144,8 @@ public class TokenValidatorTests {
 
 	@Test
 	public void validateTokenWhenSignatureInvalidShouldThrowException() throws Exception {
-		ReflectionTestUtils.setField(this.tokenValidator, "tokenKeys", Collections.singletonMap("valid-key", INVALID_KEY));
+		ReflectionTestUtils.setField(this.tokenValidator, "tokenKeys",
+				Collections.singletonMap("valid-key", INVALID_KEY));
 		given(this.securityService.getUaaUrl()).willReturn("http://localhost:8080/uaa");
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
