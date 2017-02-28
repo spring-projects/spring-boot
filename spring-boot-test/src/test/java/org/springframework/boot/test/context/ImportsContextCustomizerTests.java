@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package org.springframework.boot.test.context;
 import kotlin.Metadata;
 import org.junit.Test;
 import org.spockframework.runtime.model.SpecMetadata;
+import spock.lang.Issue;
+import spock.lang.Stepwise;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,10 +39,18 @@ public class ImportsContextCustomizerTests {
 	}
 
 	@Test
-	public void customizersForTestClassesWithDifferentSpockMetadataAreEqual() {
-		assertThat(new ImportsContextCustomizer(FirstSpockAnnotatedTestClass.class))
+	public void customizersForTestClassesWithDifferentSpockFrameworkAnnotationsAreEqual() {
+		assertThat(
+				new ImportsContextCustomizer(FirstSpockFrameworkAnnotatedTestClass.class))
+						.isEqualTo(new ImportsContextCustomizer(
+								SecondSpockFrameworkAnnotatedTestClass.class));
+	}
+
+	@Test
+	public void customizersForTestClassesWithDifferentSpockLangAnnotationsAreEqual() {
+		assertThat(new ImportsContextCustomizer(FirstSpockLangAnnotatedTestClass.class))
 				.isEqualTo(new ImportsContextCustomizer(
-						SecondSpockAnnotatedTestClass.class));
+						SecondSpockLangAnnotatedTestClass.class));
 	}
 
 	@Metadata(d2 = "foo")
@@ -54,12 +64,22 @@ public class ImportsContextCustomizerTests {
 	}
 
 	@SpecMetadata(filename = "foo", line = 10)
-	static class FirstSpockAnnotatedTestClass {
+	static class FirstSpockFrameworkAnnotatedTestClass {
 
 	}
 
 	@SpecMetadata(filename = "bar", line = 10)
-	static class SecondSpockAnnotatedTestClass {
+	static class SecondSpockFrameworkAnnotatedTestClass {
+
+	}
+
+	@Stepwise
+	static class FirstSpockLangAnnotatedTestClass {
+
+	}
+
+	@Issue("1234")
+	static class SecondSpockLangAnnotatedTestClass {
 
 	}
 
