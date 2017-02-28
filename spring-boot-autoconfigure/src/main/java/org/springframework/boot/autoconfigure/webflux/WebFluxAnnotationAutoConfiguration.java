@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +35,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -48,8 +45,6 @@ import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.CacheControl;
-import org.springframework.http.server.reactive.HttpHandler;
-import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.reactive.config.DelegatingWebFluxConfiguration;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.config.ResourceChainRegistration;
@@ -65,18 +60,18 @@ import org.springframework.web.reactive.resource.ResourceResolver;
 import org.springframework.web.reactive.resource.VersionResourceResolver;
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolver;
 import org.springframework.web.reactive.result.view.ViewResolver;
-import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link EnableWebFlux WebFlux}.
  *
  * @author Brian Clozel
  * @author Rob Winch
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-@ConditionalOnClass({DispatcherHandler.class, HttpHandler.class})
-@ConditionalOnMissingBean({RouterFunction.class, HttpHandler.class})
+@ConditionalOnClass(WebFluxConfigurer.class)
+@ConditionalOnMissingBean(RouterFunction.class)
 @AutoConfigureAfter(ReactiveWebServerAutoConfiguration.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebFluxAnnotationAutoConfiguration {
@@ -180,24 +175,6 @@ public class WebFluxAnnotationAutoConfiguration {
 				this.resourceHandlerRegistrationCustomizer.customize(registration);
 			}
 
-		}
-	}
-
-	@Configuration
-	@Import(WebFluxConfig.class)
-	public static class WebHttpHandlerConfiguration implements ApplicationContextAware {
-
-		private ApplicationContext applicationContext;
-
-		@Override
-		public void setApplicationContext(ApplicationContext applicationContext)
-				throws BeansException {
-			this.applicationContext = applicationContext;
-		}
-
-		@Bean
-		public HttpHandler httpHandler() {
-			return WebHttpHandlerBuilder.applicationContext(this.applicationContext).build();
 		}
 	}
 

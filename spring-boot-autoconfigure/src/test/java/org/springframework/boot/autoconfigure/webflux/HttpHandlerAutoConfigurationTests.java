@@ -20,59 +20,82 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.context.embedded.EmbeddedReactiveWebApplicationContext;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.GenericReactiveWebApplicationContext;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebHandler;
-import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
 import org.springframework.web.server.handler.FilteringWebHandler;
 import org.springframework.web.server.handler.WebHandlerDecorator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link WebFluxFunctionalAutoConfiguration}.
+ * Tests for {@link HttpHandlerAutoConfiguration}.
  *
  * @author Brian Clozel
+ * @author Stephane Nicoll
  */
-public class WebFluxFunctionalAutoConfigurationTests {
+public class HttpHandlerAutoConfigurationTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private EmbeddedReactiveWebApplicationContext context;
+	private GenericReactiveWebApplicationContext context;
 
 	@Test
-	public void shouldNotProcessIfExistingHttpHandler() throws Exception {
+	public void shouldNotProcessIfExistingHttpHandler() {
 		load(CustomHttpHandler.class);
-		assertThat(this.context.getBeansOfType(HttpWebHandlerAdapter.class).size()).isEqualTo(0);
+		assertThat(this.context.getBeansOfType(HttpHandler.class)).hasSize(1);
+		assertThat(this.context.getBean(HttpHandler.class)).isSameAs(
+				this.context.getBean("customHttpHandler"));
 	}
 
 	@Test
-	public void shouldFailIfNoHttpHandler() throws Exception {
-		this.thrown.expect(ApplicationContextException.class);
-		this.thrown.expectMessage("Unable to start ReactiveWebApplicationContext due to missing HttpHandler bean.");
-		load(BaseConfiguration.class);
+	public void shouldConfigureHttpHandlerAnnotation() {
+		load(WebFluxAnnotationAutoConfiguration.class);
+		assertThat(this.context.getBeansOfType(HttpHandler.class).size()).isEqualTo(1);
 	}
 
 	@Test
-	public void shouldConfigureHttpHandler() {
+	public void shouldConfigureHttpHandlerFunctional() {
 		load(FunctionalConfig.class);
 		assertThat(this.context.getBeansOfType(HttpHandler.class).size()).isEqualTo(1);
 	}
 
 	@Test
-	public void shouldConfigureWebFilters() {
+	public void shouldConfigureWebFiltersAnnotation() {
+		load(AnnotationConfigWithWebFilters.class);
+
+		HttpHandler handler = this.context.getBean(HttpHandler.class);
+		assertThat(handler).isInstanceOf(WebHandler.class);
+		WebHandler webHandler = (WebHandler) handler;
+		while (webHandler instanceof WebHandlerDecorator) {
+			if (webHandler instanceof FilteringWebHandler) {
+				FilteringWebHandler filteringWebHandler = (FilteringWebHandler) webHandler;
+				assertThat(filteringWebHandler.getFilters()).containsExactly(
+						this.context.getBean("firstWebFilter", WebFilter.class),
+						this.context.getBean("aWebFilter", WebFilter.class),
+						this.context.getBean("lastWebFilter", WebFilter.class));
+				return;
+			}
+			webHandler = ((WebHandlerDecorator) webHandler).getDelegate();
+		}
+		fail("Did not find any FilteringWebHandler");
+	}
+
+	@Test
+	public void shouldConfigureWebFiltersFunctional() {
 		load(FunctionalConfigWithWebFilters.class);
 		assertThat(this.context.getBeansOfType(HttpHandler.class).size()).isEqualTo(1);
 		HttpHandler handler = this.context.getBean(HttpHandler.class);
@@ -92,24 +115,34 @@ public class WebFluxFunctionalAutoConfigurationTests {
 
 
 	private void load(Class<?> config, String... environment) {
-		this.context = new EmbeddedReactiveWebApplicationContext();
+		this.context = new GenericReactiveWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
-		this.context.register(config);
-		if (!config.equals(BaseConfiguration.class)) {
-			this.context.register(BaseConfiguration.class);
+		if (this.context != null) {
+			this.context.register(config);
 		}
+		this.context.register(HttpHandlerAutoConfiguration.class);
 		this.context.refresh();
 	}
 
-
 	@Configuration
-	@Import({WebFluxFunctionalAutoConfiguration.class})
-	@EnableConfigurationProperties(WebFluxProperties.class)
-	protected static class BaseConfiguration {
+	@Import(WebFluxAnnotationAutoConfiguration.class)
+	protected static class AnnotationConfigWithWebFilters {
 
 		@Bean
-		public MockReactiveWebServerFactory mockReactiveWebServerFactory() {
-			return new MockReactiveWebServerFactory();
+		public WebFilter aWebFilter() {
+			return mock(WebFilter.class);
+		}
+
+		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE)
+		public WebFilter lastWebFilter() {
+			return mock(WebFilter.class);
+		}
+
+		@Bean
+		@Order(Ordered.HIGHEST_PRECEDENCE)
+		public WebFilter firstWebFilter() {
+			return mock(WebFilter.class);
 		}
 	}
 
@@ -140,7 +173,7 @@ public class WebFluxFunctionalAutoConfigurationTests {
 	protected static class CustomHttpHandler {
 
 		@Bean
-		public HttpHandler httpHandler() {
+		public HttpHandler customHttpHandler() {
 			return (serverHttpRequest, serverHttpResponse) -> null;
 		}
 

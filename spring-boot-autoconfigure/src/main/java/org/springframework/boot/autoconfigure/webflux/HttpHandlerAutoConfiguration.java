@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.webflux;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -27,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -45,21 +45,40 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.session.WebSessionManager;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Functional WebFlux.
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link HttpHandler}.
  *
  * @author Brian Clozel
+ * @author Stephane Nicoll
  */
 @Configuration
-@ConditionalOnClass({DispatcherHandler.class, HttpHandler.class})
+@ConditionalOnClass({ DispatcherHandler.class, HttpHandler.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-@ConditionalOnBean(RouterFunction.class)
 @ConditionalOnMissingBean(HttpHandler.class)
-@AutoConfigureAfter({ReactiveWebServerAutoConfiguration.class})
+@AutoConfigureAfter({ WebFluxAnnotationAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-public class WebFluxFunctionalAutoConfiguration {
+public class HttpHandlerAutoConfiguration {
 
 	@Configuration
-	public static class WebFluxFunctionalConfig {
+	@ConditionalOnMissingBean(RouterFunction.class)
+	public static class AnnotationConfig {
+
+		private ApplicationContext applicationContext;
+
+		public AnnotationConfig(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		@Bean
+		public HttpHandler httpHandler() {
+			return WebHttpHandlerBuilder.applicationContext(this.applicationContext)
+					.build();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnBean(RouterFunction.class)
+	public static class FunctionalConfig {
 
 		private final List<WebFilter> webFilters;
 
@@ -71,7 +90,7 @@ public class WebFluxFunctionalAutoConfiguration {
 
 		private final List<ViewResolver> viewResolvers;
 
-		public WebFluxFunctionalConfig(ObjectProvider<List<WebFilter>> webFilters,
+		public FunctionalConfig(ObjectProvider<List<WebFilter>> webFilters,
 				ObjectProvider<WebSessionManager> webSessionManager,
 				ObjectProvider<List<HttpMessageReader>> messageReaders,
 				ObjectProvider<List<HttpMessageWriter>> messageWriters,
@@ -88,24 +107,27 @@ public class WebFluxFunctionalAutoConfiguration {
 
 		@Bean
 		public HttpHandler httpHandler(List<RouterFunction> routerFunctions) {
-			Collections.sort(routerFunctions, new AnnotationAwareOrderComparator());
-			RouterFunction routerFunction = routerFunctions.stream().reduce(RouterFunction::and).get();
+			routerFunctions.sort(new AnnotationAwareOrderComparator());
+			RouterFunction routerFunction = routerFunctions.stream()
+					.reduce(RouterFunction::and).get();
 			HandlerStrategies.Builder strategiesBuilder = HandlerStrategies.builder();
 			if (this.messageReaders != null) {
-				this.messageReaders.forEach(reader -> strategiesBuilder.messageReader(reader));
+				this.messageReaders.forEach(strategiesBuilder::messageReader);
 			}
 			if (this.messageWriters != null) {
-				this.messageWriters.forEach(writer -> strategiesBuilder.messageWriter(writer));
+				this.messageWriters.forEach(strategiesBuilder::messageWriter);
 			}
 			if (this.viewResolvers != null) {
-				this.viewResolvers.forEach(viewResolver -> strategiesBuilder.viewResolver(viewResolver));
+				this.viewResolvers.forEach(strategiesBuilder::viewResolver);
 			}
-			WebHandler webHandler = RouterFunctions.toHttpHandler(routerFunction, strategiesBuilder.build());
+			WebHandler webHandler = RouterFunctions
+					.toHttpHandler(routerFunction, strategiesBuilder.build());
 			WebHttpHandlerBuilder builder = WebHttpHandlerBuilder
 					.webHandler(webHandler)
 					.sessionManager(this.webSessionManager);
 			if (this.webFilters != null) {
-				builder.filters(this.webFilters.toArray(new WebFilter[this.webFilters.size()]));
+				builder.filters(this.webFilters.toArray(
+						new WebFilter[this.webFilters.size()]));
 			}
 			return builder.build();
 		}
