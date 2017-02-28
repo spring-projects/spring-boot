@@ -37,11 +37,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link SpringValidatorAdapterWrapper}.
+ * Tests for {@link WebMvcValidator}.
  *
  * @author Stephane Nicoll
  */
-public class SpringValidatorAdapterWrapperTests {
+public class WebMvcValidatorTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -54,7 +54,7 @@ public class SpringValidatorAdapterWrapperTests {
 
 	@Test
 	public void wrapLocalValidatorFactoryBean() {
-		SpringValidatorAdapterWrapper wrapper = load(
+		WebMvcValidator wrapper = load(
 				LocalValidatorFactoryBeanConfig.class);
 		assertThat(wrapper.supports(SampleData.class)).isTrue();
 		MapBindingResult errors = new MapBindingResult(new HashMap<String, Object>(),
@@ -89,12 +89,12 @@ public class SpringValidatorAdapterWrapperTests {
 		verify(validator, times(0)).destroy();
 	}
 
-	private SpringValidatorAdapterWrapper load(Class<?> config) {
+	private WebMvcValidator load(Class<?> config) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		ctx.register(config);
 		ctx.refresh();
 		this.context = ctx;
-		return this.context.getBean(SpringValidatorAdapterWrapper.class);
+		return this.context.getBean(WebMvcValidator.class);
 	}
 
 	@Configuration
@@ -106,8 +106,8 @@ public class SpringValidatorAdapterWrapperTests {
 		}
 
 		@Bean
-		public SpringValidatorAdapterWrapper wrapper() {
-			return new SpringValidatorAdapterWrapper(validator(), true);
+		public WebMvcValidator wrapper() {
+			return new WebMvcValidator(validator(), true);
 		}
 
 	}
@@ -119,8 +119,8 @@ public class SpringValidatorAdapterWrapperTests {
 				LocalValidatorFactoryBean.class);
 
 		@Bean
-		public SpringValidatorAdapterWrapper wrapper() {
-			return new SpringValidatorAdapterWrapper(this.validator, false);
+		public WebMvcValidator wrapper() {
+			return new WebMvcValidator(this.validator, false);
 		}
 
 	}
@@ -132,8 +132,8 @@ public class SpringValidatorAdapterWrapperTests {
 				LocalValidatorFactoryBean.class);
 
 		@Bean
-		public SpringValidatorAdapterWrapper wrapper() {
-			return new SpringValidatorAdapterWrapper(this.validator, true);
+		public WebMvcValidator wrapper() {
+			return new WebMvcValidator(this.validator, true);
 		}
 
 	}
