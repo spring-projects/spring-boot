@@ -575,6 +575,24 @@ required `RiskAssessor` bean.
 	}
 ----
 
+And if a bean has one constructor, you can omit the `@Autowired`.
+
+[source,java,indent=0]
+----
+	@Service
+	public class DatabaseAccountService implements AccountService {
+
+		private final RiskAssessor riskAssessor;
+
+		public DatabaseAccountService(RiskAssessor riskAssessor) {
+			this.riskAssessor = riskAssessor;
+		}
+
+		// ...
+
+	}
+----
+
 TIP: Notice how using constructor injection allows the `riskAssessor` field to be marked
 as `final`, indicating that it cannot be subsequently changed.
 
