@@ -61,7 +61,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
+			<artifactId>hibernate-core</artifactId>
 			<exclusions>
 				<exclusion>
 					<groupId>org.jboss.spec.javax.transaction</groupId>
