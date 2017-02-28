@@ -23,7 +23,6 @@ import java.util.Set;
 
 import kotlin.Metadata;
 import org.junit.Test;
-import org.spockframework.runtime.model.SpecMetadata;
 
 import org.springframework.boot.context.annotation.DeterminableImports;
 import org.springframework.context.annotation.Configuration;
@@ -69,6 +68,13 @@ public class ImportsContextCustomizerTests {
 						SecondSpockAnnotatedTestClass.class));
 	}
 
+	@Test
+	public void customizersForTestClassesWithMixOfSpockAndOtherAnnotationAreNotEqual() {
+		assertThat(new ImportsContextCustomizer(SecondSpockAnnotatedTestClass.class))
+				.isNotEqualTo(new ImportsContextCustomizer(
+						ThirdSpockAnnotatedTestClass.class));
+	}
+
 	@Import(TestImportSelector.class)
 	@Indicator1
 	static class FirstImportSelectorAnnotatedClass {
@@ -93,23 +99,37 @@ public class ImportsContextCustomizerTests {
 
 	}
 
+	@Import(TestImportSelector.class)
 	@Metadata(d2 = "foo")
 	static class FirstKotlinAnnotatedTestClass {
 
 	}
 
+	@Import(TestImportSelector.class)
 	@Metadata(d2 = "bar")
 	static class SecondKotlinAnnotatedTestClass {
 
 	}
 
-	@SpecMetadata(filename = "foo", line = 10)
+	@Import(TestImportSelector.class)
+	@org.spockframework.runtime.model.SpecMetadata(filename = "bar", line = 10)
+	@Indicator1
 	static class FirstSpockAnnotatedTestClass {
 
 	}
 
-	@SpecMetadata(filename = "bar", line = 10)
+
+	@Import(TestImportSelector.class)
+	@spock.lang.Stepwise
+	@Indicator1
 	static class SecondSpockAnnotatedTestClass {
+
+	}
+
+	@Import(TestImportSelector.class)
+	@spock.lang.Stepwise
+	@Indicator2
+	static class ThirdSpockAnnotatedTestClass {
 
 	}
 
