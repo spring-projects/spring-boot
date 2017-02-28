@@ -202,33 +202,61 @@ public class MongoProperties {
 	public MongoClient createMongoClient(MongoClientOptions options,
 			Environment environment) throws UnknownHostException {
 		try {
-			if (hasCustomAddress() || hasCustomCredentials()) {
-				if (this.uri != null) {
-					throw new IllegalStateException("Invalid mongo configuration, "
-							+ "either uri or host/port/credentials must be specified");
-				}
-				if (options == null) {
-					options = MongoClientOptions.builder().build();
-				}
-				List<MongoCredential> credentials = new ArrayList<MongoCredential>();
-				if (hasCustomCredentials()) {
-					String database = this.authenticationDatabase == null
-							? getMongoClientDatabase() : this.authenticationDatabase;
-					credentials.add(MongoCredential.createCredential(this.username,
-							database, this.password));
-				}
-				String host = this.host == null ? "localhost" : this.host;
-				int port = determinePort(environment);
-				return new MongoClient(
-						Collections.singletonList(new ServerAddress(host, port)),
-						credentials, options);
+			Integer embeddedPort = getEmbeddedPort(environment);
+			if (embeddedPort != null) {
+				return createEmbeddedMongoClient(options, embeddedPort);
 			}
-			// The options and credentials are in the URI
-			return new MongoClient(new MongoClientURI(determineUri(), builder(options)));
+			return createNetworkMongoClient(options);
 		}
 		finally {
 			clearPassword();
 		}
+	}
+
+	private Integer getEmbeddedPort(Environment environment) {
+		if (environment != null) {
+			String localPort = environment.getProperty("local.mongo.port");
+			if (localPort != null) {
+				return Integer.valueOf(localPort);
+			}
+		}
+		return null;
+	}
+
+	private MongoClient createEmbeddedMongoClient(MongoClientOptions options, int port) {
+		if (options == null) {
+			options = MongoClientOptions.builder().build();
+		}
+		String host = this.host == null ? "localhost" : this.host;
+		return new MongoClient(
+				Collections.singletonList(new ServerAddress(host, port)),
+				Collections.<MongoCredential>emptyList(), options);
+	}
+
+	private MongoClient createNetworkMongoClient(MongoClientOptions options) {
+		if (hasCustomAddress() || hasCustomCredentials()) {
+			if (this.uri != null) {
+				throw new IllegalStateException("Invalid mongo configuration, "
+						+ "either uri or host/port/credentials must be specified");
+			}
+			if (options == null) {
+				options = MongoClientOptions.builder().build();
+			}
+			List<MongoCredential> credentials = new ArrayList<MongoCredential>();
+			if (hasCustomCredentials()) {
+				String database = this.authenticationDatabase == null
+						? getMongoClientDatabase() : this.authenticationDatabase;
+				credentials.add(MongoCredential.createCredential(this.username,
+						database, this.password));
+			}
+			String host = this.host == null ? "localhost" : this.host;
+			int port = this.port != null ? this.port : DEFAULT_PORT;
+			return new MongoClient(
+					Collections.singletonList(new ServerAddress(host, port)),
+					credentials, options);
+		}
+		// The options and credentials are in the URI
+		return new MongoClient(new MongoClientURI(determineUri(), builder(options)));
 	}
 
 	private boolean hasCustomAddress() {
@@ -237,24 +265,6 @@ public class MongoProperties {
 
 	private boolean hasCustomCredentials() {
 		return this.username != null && this.password != null;
-	}
-
-	private int determinePort(Environment environment) {
-		if (this.port == null) {
-			return DEFAULT_PORT;
-		}
-		if (this.port == 0) {
-			if (environment != null) {
-				String localPort = environment.getProperty("local.mongo.port");
-				if (localPort != null) {
-					return Integer.valueOf(localPort);
-				}
-			}
-			throw new IllegalStateException(
-					"spring.data.mongodb.port=0 and no local mongo port configuration "
-							+ "is available");
-		}
-		return this.port;
 	}
 
 	private Builder builder(MongoClientOptions options) {

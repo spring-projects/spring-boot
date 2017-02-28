@@ -33,6 +33,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,6 +49,8 @@ public class MongoPropertiesTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	private MockEnvironment environment = new MockEnvironment();
 
 	@Test
 	public void canBindCharArrayPassword() {
@@ -149,6 +152,17 @@ public class MongoPropertiesTests {
 		this.thrown.expectMessage("Invalid mongo configuration, "
 				+ "either uri or host/port/credentials must be specified");
 		properties.createMongoClient(null, null);
+	}
+
+	@Test
+	public void uriIsIgnoredInEmbeddedMode() throws UnknownHostException {
+		MongoProperties properties = new MongoProperties();
+		properties.setUri("mongodb://mongo.example.com:1234/mydb");
+		this.environment.setProperty("local.mongo.port", "4000");
+		MongoClient client = properties.createMongoClient(null, this.environment);
+		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		assertThat(allAddresses).hasSize(1);
+		assertServerAddress(allAddresses.get(0), "localhost", 4000);
 	}
 
 	@Test

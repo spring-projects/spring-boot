@@ -158,7 +158,6 @@ public class EmbeddedMongoAutoConfiguration {
 	}
 
 	private void setEmbeddedPort(int port) {
-		this.properties.setPort(port);
 		setPortProperty(this.context, port);
 	}
 
