@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.validation.SpringValidator;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -45,6 +46,8 @@ import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.CacheControl;
+import org.springframework.util.ClassUtils;
+import org.springframework.validation.Validator;
 import org.springframework.web.reactive.config.DelegatingWebFluxConfiguration;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.config.ResourceChainRegistration;
@@ -71,15 +74,14 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 @Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
-@ConditionalOnMissingBean(RouterFunction.class)
+@ConditionalOnMissingBean({ WebFluxConfigurationSupport.class, RouterFunction.class })
 @AutoConfigureAfter(ReactiveWebServerAutoConfiguration.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebFluxAnnotationAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnMissingBean(WebFluxConfigurationSupport.class)
 	@EnableConfigurationProperties({ResourceProperties.class, WebFluxProperties.class})
-	@Import(DelegatingWebFluxConfiguration.class)
+	@Import(EnableWebFluxConfiguration.class)
 	public static class WebFluxConfig implements WebFluxConfigurer {
 
 		private static final Log logger = LogFactory.getLog(WebFluxConfig.class);
@@ -176,6 +178,26 @@ public class WebFluxAnnotationAutoConfiguration {
 			}
 
 		}
+	}
+
+	/**
+	 * Configuration equivalent to {@code @EnableWebFlux}.
+	 */
+	@Configuration
+	public static class EnableWebFluxConfiguration
+			extends DelegatingWebFluxConfiguration {
+
+		@Override
+		@Bean
+		public Validator webFluxValidator() {
+			if (!ClassUtils.isPresent("javax.validation.Validator",
+					getClass().getClassLoader())) {
+				return super.webFluxValidator();
+			}
+			return SpringValidator.get(getApplicationContext(),
+					getValidator());
+		}
+
 	}
 
 	@Configuration

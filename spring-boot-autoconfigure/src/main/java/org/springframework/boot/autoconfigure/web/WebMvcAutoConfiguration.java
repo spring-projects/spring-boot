@@ -43,6 +43,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.validation.SpringValidator;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -404,7 +405,7 @@ public class WebMvcAutoConfiguration {
 					getClass().getClassLoader())) {
 				return super.mvcValidator();
 			}
-			return WebMvcValidator.get(getApplicationContext(),
+			return SpringValidator.get(getApplicationContext(),
 					getValidator());
 		}
 

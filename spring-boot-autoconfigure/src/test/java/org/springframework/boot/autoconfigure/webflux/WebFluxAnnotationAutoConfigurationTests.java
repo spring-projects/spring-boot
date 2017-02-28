@@ -16,8 +16,14 @@
 
 package org.springframework.boot.autoconfigure.webflux;
 
+import java.util.Optional;
+
+import javax.validation.ValidatorFactory;
+
 import org.junit.Test;
 
+import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.boot.autoconfigure.validation.SpringValidator;
 import org.springframework.boot.context.GenericReactiveWebApplicationContext;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
@@ -28,9 +34,13 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.validation.Validator;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.accept.CompositeContentTypeResolver;
 import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.reactive.resource.CachingResourceResolver;
 import org.springframework.web.reactive.resource.CachingResourceTransformer;
@@ -41,7 +51,6 @@ import org.springframework.web.reactive.result.method.annotation.RequestMappingH
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.reactive.result.view.ViewResolutionResultHandler;
 import org.springframework.web.reactive.result.view.ViewResolver;
-import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -152,6 +161,68 @@ public class WebFluxAnnotationAutoConfigurationTests {
 		);
 	}
 
+	@Test
+	public void validationNoJsr303ValidatorExposedByDefault() {
+		load();
+		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
+				.isEmpty();
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
+	}
+
+	@Test
+	public void validationCustomConfigurerTakesPrecedence() {
+		load(WebFluxValidator.class);
+		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
+				.isEmpty();
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
+		Validator validator = this.context.getBean(Validator.class);
+		assertThat(validator)
+				.isSameAs(this.context.getBean(WebFluxValidator.class).validator);
+	}
+
+	@Test
+	public void validationCustomConfigurerTakesPrecedenceAndDoNotExposeJsr303() {
+		load(WebFluxJsr303Validator.class);
+		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
+				.isEmpty();
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
+		Validator validator = this.context.getBean(Validator.class);
+		assertThat(validator).isInstanceOf(SpringValidator.class);
+		assertThat(((SpringValidator) validator).getTarget())
+				.isSameAs(this.context.getBean(WebFluxJsr303Validator.class).validator);
+	}
+
+	@Test
+	public void validationJsr303CustomValidatorReusedAsSpringValidator() {
+		load(CustomValidator.class);
+		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
+				.hasSize(1);
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(2);
+		Validator validator = this.context.getBean("webFluxValidator", Validator.class);
+		assertThat(validator).isInstanceOf(SpringValidator.class);
+		assertThat(((SpringValidator) validator).getTarget())
+				.isSameAs(this.context.getBean(javax.validation.Validator.class));
+	}
+
+	@Test
+	public void validationJsr303ValidatorExposedAsSpringValidator() {
+		load(Jsr303Validator.class);
+		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
+				.hasSize(1);
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
+		Validator validator = this.context.getBean(Validator.class);
+		assertThat(validator).isInstanceOf(SpringValidator.class);
+		SpringValidatorAdapter target = ((SpringValidator) validator)
+				.getTarget();
+		assertThat(new DirectFieldAccessor(target).getPropertyValue("targetValidator"))
+				.isSameAs(this.context.getBean(javax.validation.Validator.class));
+	}
+
 	private void load(String... environment) {
 		load(null, environment);
 	}
@@ -216,4 +287,49 @@ public class WebFluxAnnotationAutoConfigurationTests {
 			return (serverHttpRequest, serverHttpResponse) -> null;
 		}
 	}
+
+	@Configuration
+	protected static class WebFluxValidator implements WebFluxConfigurer {
+
+		private final Validator validator = mock(Validator.class);
+
+		@Override
+		public Optional<Validator> getValidator() {
+			return Optional.of(this.validator);
+		}
+
+	}
+
+	@Configuration
+	protected static class WebFluxJsr303Validator implements WebFluxConfigurer {
+
+		private final LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+
+		@Override
+		public Optional<Validator> getValidator() {
+			return Optional.of(this.validator);
+		}
+
+	}
+
+	@Configuration
+	static class Jsr303Validator {
+
+		@Bean
+		public javax.validation.Validator jsr303Validator() {
+			return mock(javax.validation.Validator.class);
+		}
+
+	}
+
+	@Configuration
+	static class CustomValidator {
+
+		@Bean
+		public Validator customValidator() {
+			return new LocalValidatorFactoryBean();
+		}
+
+	}
+
 }

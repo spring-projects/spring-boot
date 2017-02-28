@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web;
+package org.springframework.boot.autoconfigure.validation;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -38,19 +38,19 @@ import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-class WebMvcValidator implements SmartValidator, ApplicationContextAware,
+public class SpringValidator implements SmartValidator, ApplicationContextAware,
 		InitializingBean, DisposableBean {
 
 	private final SpringValidatorAdapter target;
 
 	private final boolean existingBean;
 
-	WebMvcValidator(SpringValidatorAdapter target, boolean existingBean) {
+	public SpringValidator(SpringValidatorAdapter target, boolean existingBean) {
 		this.target = target;
 		this.existingBean = existingBean;
 	}
 
-	SpringValidatorAdapter getTarget() {
+	public final SpringValidatorAdapter getTarget() {
 		return this.target;
 	}
 
@@ -131,10 +131,10 @@ class WebMvcValidator implements SmartValidator, ApplicationContextAware,
 	private static Validator wrap(Validator validator, boolean existingBean) {
 		if (validator instanceof javax.validation.Validator) {
 			if (validator instanceof SpringValidatorAdapter) {
-				return new WebMvcValidator((SpringValidatorAdapter) validator,
+				return new SpringValidator((SpringValidatorAdapter) validator,
 						existingBean);
 			}
-			return new WebMvcValidator(
+			return new SpringValidator(
 					new SpringValidatorAdapter((javax.validation.Validator) validator),
 					existingBean);
 		}

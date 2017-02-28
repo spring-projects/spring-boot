@@ -39,6 +39,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.validation.SpringValidator;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WelcomePageHandlerMapping;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
@@ -674,8 +675,8 @@ public class WebMvcAutoConfigurationTests {
 				.isEmpty();
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		Validator validator = this.context.getBean(Validator.class);
-		assertThat(validator).isInstanceOf(WebMvcValidator.class);
-		assertThat(((WebMvcValidator) validator).getTarget())
+		assertThat(validator).isInstanceOf(SpringValidator.class);
+		assertThat(((SpringValidator) validator).getTarget())
 				.isSameAs(this.context.getBean(MvcJsr303Validator.class).validator);
 	}
 
@@ -687,8 +688,8 @@ public class WebMvcAutoConfigurationTests {
 				.hasSize(1);
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(2);
 		Validator validator = this.context.getBean("mvcValidator", Validator.class);
-		assertThat(validator).isInstanceOf(WebMvcValidator.class);
-		assertThat(((WebMvcValidator) validator).getTarget())
+		assertThat(validator).isInstanceOf(SpringValidator.class);
+		assertThat(((SpringValidator) validator).getTarget())
 				.isSameAs(this.context.getBean(javax.validation.Validator.class));
 	}
 
@@ -700,8 +701,8 @@ public class WebMvcAutoConfigurationTests {
 				.hasSize(1);
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		Validator validator = this.context.getBean(Validator.class);
-		assertThat(validator).isInstanceOf(WebMvcValidator.class);
-		SpringValidatorAdapter target = ((WebMvcValidator) validator)
+		assertThat(validator).isInstanceOf(SpringValidator.class);
+		SpringValidatorAdapter target = ((SpringValidator) validator)
 				.getTarget();
 		assertThat(new DirectFieldAccessor(target).getPropertyValue("targetValidator"))
 				.isSameAs(this.context.getBean(javax.validation.Validator.class));
