@@ -24,6 +24,8 @@ import java.util.Set;
 import kotlin.Metadata;
 import org.junit.Test;
 import org.spockframework.runtime.model.SpecMetadata;
+import spock.lang.Issue;
+import spock.lang.Stepwise;
 
 import org.springframework.boot.context.annotation.DeterminableImports;
 import org.springframework.context.annotation.Configuration;
@@ -63,10 +65,18 @@ public class ImportsContextCustomizerTests {
 	}
 
 	@Test
-	public void customizersForTestClassesWithDifferentSpockMetadataAreEqual() {
-		assertThat(new ImportsContextCustomizer(FirstSpockAnnotatedTestClass.class))
+	public void customizersForTestClassesWithDifferentSpockFrameworkAnnotationsAreEqual() {
+		assertThat(
+				new ImportsContextCustomizer(FirstSpockFrameworkAnnotatedTestClass.class))
+						.isEqualTo(new ImportsContextCustomizer(
+								SecondSpockFrameworkAnnotatedTestClass.class));
+	}
+
+	@Test
+	public void customizersForTestClassesWithDifferentSpockLangAnnotationsAreEqual() {
+		assertThat(new ImportsContextCustomizer(FirstSpockLangAnnotatedTestClass.class))
 				.isEqualTo(new ImportsContextCustomizer(
-						SecondSpockAnnotatedTestClass.class));
+						SecondSpockLangAnnotatedTestClass.class));
 	}
 
 	@Import(TestImportSelector.class)
@@ -104,12 +114,22 @@ public class ImportsContextCustomizerTests {
 	}
 
 	@SpecMetadata(filename = "foo", line = 10)
-	static class FirstSpockAnnotatedTestClass {
+	static class FirstSpockFrameworkAnnotatedTestClass {
 
 	}
 
 	@SpecMetadata(filename = "bar", line = 10)
-	static class SecondSpockAnnotatedTestClass {
+	static class SecondSpockFrameworkAnnotatedTestClass {
+
+	}
+
+	@Stepwise
+	static class FirstSpockLangAnnotatedTestClass {
+
+	}
+
+	@Issue("1234")
+	static class SecondSpockLangAnnotatedTestClass {
 
 	}
 
