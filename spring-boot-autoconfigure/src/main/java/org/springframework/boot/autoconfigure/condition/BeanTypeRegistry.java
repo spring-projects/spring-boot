@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.core.type.StandardMethodMetadata;
 import org.springframework.util.Assert;
@@ -85,7 +87,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	 * @param beanFactory the source bean factory
 	 * @return the {@link BeanTypeRegistry} for the given bean factory
 	 */
-	public static BeanTypeRegistry create(ListableBeanFactory beanFactory) {
+	static BeanTypeRegistry get(ListableBeanFactory beanFactory) {
 		Assert.isInstanceOf(DefaultListableBeanFactory.class, beanFactory);
 		DefaultListableBeanFactory listableBeanFactory = (DefaultListableBeanFactory) beanFactory;
 		Assert.isTrue(listableBeanFactory.isAllowEagerClassLoading(),
@@ -101,26 +103,39 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 
 	/**
 	 * Return the names of beans matching the given type (including subclasses), judging
-	 * from either bean definitions or the value of {@code getObjectType} in the case of
-	 * FactoryBeans. Will include singletons but not cause early bean initialization.
+	 * from either bean definitions or the value of {@link FactoryBean#getObjectType()} in
+	 * the case of {@link FactoryBean FactoryBeans}. Will include singletons but will not
+	 * cause early bean initialization.
 	 * @param type the class or interface to match (must not be {@code null})
 	 * @return the names of beans (or objects created by FactoryBeans) matching the given
 	 * object type (including subclasses), or an empty set if none
 	 */
 	Set<String> getNamesForType(Class<?> type) {
-		if (this.lastBeanDefinitionCount != this.beanFactory.getBeanDefinitionCount()) {
-			Iterator<String> names = this.beanFactory.getBeanNamesIterator();
-			while (names.hasNext()) {
-				String name = names.next();
-				if (!this.beanTypes.containsKey(name)) {
-					addBeanType(name);
-				}
-			}
-			this.lastBeanDefinitionCount = this.beanFactory.getBeanDefinitionCount();
-		}
+		updateTypesIfNecessary();
 		Set<String> matches = new LinkedHashSet<String>();
 		for (Map.Entry<String, Class<?>> entry : this.beanTypes.entrySet()) {
 			if (entry.getValue() != null && type.isAssignableFrom(entry.getValue())) {
+				matches.add(entry.getKey());
+			}
+		}
+		return matches;
+	}
+
+	/**
+	 * Returns the names of beans annotated with the given {@code annotation}, judging
+	 * from either bean definitions or the value of {@link FactoryBean#getObjectType()} in
+	 * the case of {@link FactoryBean FactoryBeans}. Will include singletons but will not
+	 * cause early bean initialization.
+	 * @param annotation the annotation to match (must not be {@code null})
+	 * @return the names of beans (or objects created by FactoryBeans) annoated with the
+	 * given annotation, or an empty set if none
+	 */
+	Set<String> getNamesForAnnotation(Class<? extends Annotation> annotation) {
+		updateTypesIfNecessary();
+		Set<String> matches = new LinkedHashSet<String>();
+		for (Map.Entry<String, Class<?>> entry : this.beanTypes.entrySet()) {
+			if (entry.getValue() != null && AnnotationUtils
+					.findAnnotation(entry.getValue(), annotation) != null) {
 				matches.add(entry.getKey());
 			}
 		}
@@ -181,6 +196,19 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	private boolean requiresEagerInit(String factoryBeanName) {
 		return (factoryBeanName != null && this.beanFactory.isFactoryBean(factoryBeanName)
 				&& !this.beanFactory.containsSingleton(factoryBeanName));
+	}
+
+	private void updateTypesIfNecessary() {
+		if (this.lastBeanDefinitionCount != this.beanFactory.getBeanDefinitionCount()) {
+			Iterator<String> names = this.beanFactory.getBeanNamesIterator();
+			while (names.hasNext()) {
+				String name = names.next();
+				if (!this.beanTypes.containsKey(name)) {
+					addBeanType(name);
+				}
+			}
+			this.lastBeanDefinitionCount = this.beanFactory.getBeanDefinitionCount();
+		}
 	}
 
 	/**
