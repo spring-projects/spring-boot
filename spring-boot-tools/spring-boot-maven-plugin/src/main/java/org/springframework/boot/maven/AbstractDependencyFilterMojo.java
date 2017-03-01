@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.maven;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -89,11 +90,26 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	@SuppressWarnings("unchecked")
 	protected Set<Artifact> filterDependencies(Set<Artifact> dependencies,
 			FilterArtifacts filters) throws MojoExecutionException {
+		List<ArtifactsFilter> artifactsFilters = filters.getFilters();
 		try {
-			return filters.filter(dependencies);
+			for (ArtifactsFilter filter : artifactsFilters) {
+				Set<Artifact> result = filter.filter(dependencies);
+				applyFiltering(dependencies, result);
+			}
+			return dependencies;
 		}
 		catch (ArtifactFilterException e) {
 			throw new MojoExecutionException(e.getMessage(), e);
+		}
+	}
+
+	private void applyFiltering(Set<Artifact> original, Set<Artifact> filtered) {
+		Iterator<Artifact> iterator = original.iterator();
+		while (iterator.hasNext()) {
+			Artifact element = iterator.next();
+			if (!filtered.contains(element)) {
+				iterator.remove();
+			}
 		}
 	}
 
