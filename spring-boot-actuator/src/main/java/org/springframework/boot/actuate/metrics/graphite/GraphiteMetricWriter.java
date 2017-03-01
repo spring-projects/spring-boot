@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -38,42 +39,54 @@ public class GraphiteMetricWriter implements MetricWriter {
     private final String prefix;
     private final String host;
     private final int port;
-    private final SocketProvider socketProvider;
 
-    public GraphiteMetricWriter(String prefix, String host, int port) {
-        this(prefix, host, port, Socket::new);
+    public GraphiteMetricWriter(String host, int port) {
+        this(null, host, port);
     }
 
-    GraphiteMetricWriter(String prefix, String host, int port, SocketProvider socketProvider) {
-        this.prefix = prefix;
+    public GraphiteMetricWriter(String prefix, String host, int port) {
+        this.prefix = trimPrefix(prefix);
         this.host = host;
         this.port = port;
-        this.socketProvider = socketProvider;
+    }
+
+    private static String trimPrefix(String prefix) {
+        String trimmedPrefix = StringUtils.hasText(prefix) ? prefix : null;
+        while (trimmedPrefix != null && trimmedPrefix.endsWith(".")) {
+            trimmedPrefix = trimmedPrefix.substring(0, trimmedPrefix.length() - 1);
+        }
+
+        return trimmedPrefix;
     }
 
     @Override
     public void increment(Delta<?> delta) {
-    }
+        String fullMetrix = this.prefix + "." + delta.getName();
 
-    @Override
-    public void reset(String s) {
-    }
-
-    @Override
-    public void set(Metric<?> metric) {
-        String fullMetrix = this.prefix + "." + metric.getName();
-
-        try (Socket socket = this.socketProvider.socket(this.host, this.port);
+        try (Socket socket = new Socket(this.host, this.port);
              OutputStream stream = socket.getOutputStream()) {
-            byte[] bytes = String.format("%s %d %d%n", fullMetrix, metric.getValue().intValue(), metric.getTimestamp().getTime() / 1000).getBytes();
+            byte[] bytes = String.format("%s %d %d%n", fullMetrix, delta.getValue().intValue(), delta.getTimestamp().getTime() / 1000).getBytes();
             stream.write(bytes);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
     }
 
-    @FunctionalInterface
-    public interface SocketProvider {
-        Socket socket(String host, int port) throws IOException;
+    @Override
+    public void reset(String s) {
+
+    }
+
+    @Override
+    public void set(Metric<?> metric) {
+        String fullMetrix = this.prefix + "." + metric.getName();
+
+        try (Socket socket = new Socket(this.host, this.port);
+             OutputStream stream = socket.getOutputStream()) {
+            byte[] bytes = String.format("%s %d %d%n", fullMetrix, metric.getValue().intValue(), metric.getTimestamp().getTime() / 1000).getBytes();
+            stream.write(bytes);
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 }

@@ -16,18 +16,22 @@
 
 package org.springframework.boot.actuate.metrics.graphite;
 
-import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.boot.actuate.metrics.writer.Delta;
+import org.springframework.util.SocketUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link GraphiteMetricWriter}.
@@ -36,31 +40,122 @@ import static org.mockito.Mockito.when;
  */
 public class GraphiteMetricWriterTest {
 
-    private static final String HOST = "localhost";
-    private static final int PORT = 2003;
-    private static final String PREFIX = "metrics.mysystem";
+    private int port = SocketUtils.findAvailableTcpPort();
 
-    private GraphiteMetricWriter graphiteMetricWriter;
-    private GraphiteMetricWriter.SocketProvider mockSocketFactory;
+    private DummyGraphiteServer server = new DummyGraphiteServer(this.port);
 
-    @Before
-    public void setup() {
-        this.mockSocketFactory = mock(GraphiteMetricWriter.SocketProvider.class);
-        this.graphiteMetricWriter = new GraphiteMetricWriter(PREFIX, HOST, PORT, this.mockSocketFactory);
+    private GraphiteMetricWriter writer = new GraphiteMetricWriter("me", "localhost", this.port);
+
+    @After
+    public void close() {
+        this.server.stop();
     }
 
     @Test
-    public void testMetricIsWrittenToSocket() throws IOException {
-        Socket socket = mock(Socket.class);
-        OutputStream outputStream = mock(OutputStream.class);
-        when(mockSocketFactory.socket(HOST, PORT)).thenReturn(socket);
-        when(socket.getOutputStream()).thenReturn(outputStream);
-        Metric<Number> metric = new Metric<>("volume", 11, new Date(1488375459));
+    public void increment() {
+        this.writer.increment(new Delta<Long>("counter.foo", 3L, new Date(1488405805)));
+        this.server.waitForMessage();
+        assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.counter.foo 3 1488405");
+    }
 
-        this.graphiteMetricWriter.set(metric);
+    @Test
+    public void setLongMetric() throws Exception {
+        this.writer.set(new Metric<Long>("gauge.foo", 3L, new Date(1488405805)));
+        this.server.waitForMessage();
+        assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.gauge.foo 3 1488405");
+    }
 
-        verify(outputStream).write("metrics.mysystem.volume 11 1488375\n".getBytes());
-        verify(outputStream).close();
-        verify(socket).close();
+    @Test
+    public void setDoubleMetric() throws Exception {
+        this.writer.set(new Metric<Double>("gauge.foo", 3.7, new Date(1488405805)));
+        this.server.waitForMessage();
+        // Doubles are truncated
+        assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.gauge.foo 3.7 1488405");
+    }
+
+    @Test
+    public void setTimerMetric() throws Exception {
+        this.writer.set(new Metric<Long>("timer.foo", 37L, new Date(1488405805)));
+        this.server.waitForMessage();
+        assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.timer.foo 37 1488405");
+    }
+
+    @Test
+    public void nullPrefix() throws Exception {
+        this.writer = new GraphiteMetricWriter("localhost", this.port);
+        this.writer.set(new Metric<Long>("gauge.foo", 3L, new Date(1488405805)));
+        this.server.waitForMessage();
+        assertThat(this.server.messagesReceived().get(0)).isEqualTo("gauge.foo 3 1488405");
+    }
+
+    @Test
+    public void periodPrefix() throws Exception {
+        this.writer = new GraphiteMetricWriter("my.", "localhost", this.port);
+        this.writer.set(new Metric<Long>("gauge.foo", 3L, new Date(1488405805)));
+        this.server.waitForMessage();
+        assertThat(this.server.messagesReceived().get(0)).isEqualTo("my.gauge.foo 3 1488405");
+    }
+
+    private static final class DummyGraphiteServer implements Runnable {
+
+        private final List<String> messagesReceived = new ArrayList<>();
+
+        private final ServerSocket server;
+
+        DummyGraphiteServer(int port) {
+            try {
+                this.server = new ServerSocket(port);
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
+            new Thread(this).start();
+        }
+
+        void stop() {
+            try {
+                this.server.close();
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        @Override
+        public void run()
+        {
+            BufferedReader in;
+            try
+            {
+                Socket socket = this.server.accept();
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                String serverResponse;
+                while ((serverResponse = in.readLine()) != null) {
+                    this.messagesReceived.add(serverResponse);
+                }
+
+                in.close();
+                socket.close();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        void waitForMessage() {
+            while (this.messagesReceived.isEmpty()) {
+                try {
+                    Thread.sleep(50L);
+                }
+                catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+
+        List<String> messagesReceived() {
+            return new ArrayList<>(this.messagesReceived);
+        }
+
     }
 }
