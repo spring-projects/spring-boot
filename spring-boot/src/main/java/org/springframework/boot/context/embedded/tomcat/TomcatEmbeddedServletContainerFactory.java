@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,7 +189,7 @@ public class TomcatEmbeddedServletContainerFactory
 	protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
 		File docBase = getValidDocumentRoot();
 		docBase = (docBase != null ? docBase : createTempDir("tomcat-docbase"));
-		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
+		final TomcatEmbeddedContext context = new TomcatEmbeddedContext();
 		context.setName(getContextPath());
 		context.setDisplayName(getDisplayName());
 		context.setPath(getContextPath());
@@ -219,6 +219,17 @@ public class TomcatEmbeddedServletContainerFactory
 			addJasperInitializer(context);
 			context.addLifecycleListener(new StoreMergedWebXmlListener());
 		}
+		context.addLifecycleListener(new LifecycleListener() {
+
+			@Override
+			public void lifecycleEvent(LifecycleEvent event) {
+				if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
+					TomcatResources.get(context)
+							.addResourceJars(getUrlsOfJarsWithMetaInfResources());
+				}
+			}
+
+		});
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
 		configureContext(context, initializersToUse);
 		host.addChild(context);
@@ -823,7 +834,6 @@ public class TomcatEmbeddedServletContainerFactory
 			if (servletContext.getAttribute(MERGED_WEB_XML) == null) {
 				servletContext.setAttribute(MERGED_WEB_XML, getEmptyWebXml());
 			}
-			TomcatResources.get(context).addClasspathResources();
 		}
 
 		private String getEmptyWebXml() {

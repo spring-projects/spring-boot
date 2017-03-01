@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletMapping;
 import org.eclipse.jetty.util.resource.JarResource;
 import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.util.resource.ResourceCollection;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
@@ -408,14 +409,21 @@ public class JettyEmbeddedServletContainerFactory
 		File root = getValidDocumentRoot();
 		root = (root != null ? root : createTempDir("jetty-docbase"));
 		try {
-			if (!root.isDirectory()) {
-				Resource resource = JarResource
-						.newJarResource(Resource.newResource(root));
-				handler.setBaseResource(resource);
+			List<Resource> resources = new ArrayList<Resource>();
+			resources.add(
+					root.isDirectory() ? Resource.newResource(root.getCanonicalFile())
+							: JarResource.newJarResource(Resource.newResource(root)));
+			for (URL resourceJarUrl : this.getUrlsOfJarsWithMetaInfResources()) {
+				Resource resource = Resource
+						.newResource(resourceJarUrl + "META-INF/resources");
+				// Jetty 9.2 and earlier do not support nested jars. See
+				// https://github.com/eclipse/jetty.project/issues/518
+				if (resource.exists() && resource.isDirectory()) {
+					resources.add(resource);
+				}
 			}
-			else {
-				handler.setBaseResource(Resource.newResource(root.getCanonicalFile()));
-			}
+			handler.setBaseResource(new ResourceCollection(
+					resources.toArray(new Resource[resources.size()])));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);

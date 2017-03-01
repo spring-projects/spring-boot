@@ -19,6 +19,7 @@ package org.springframework.boot.context.embedded.undertow;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -49,7 +50,10 @@ import io.undertow.server.handlers.accesslog.AccessLogHandler;
 import io.undertow.server.handlers.accesslog.AccessLogReceiver;
 import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
 import io.undertow.server.handlers.resource.FileResourceManager;
+import io.undertow.server.handlers.resource.Resource;
+import io.undertow.server.handlers.resource.ResourceChangeListener;
 import io.undertow.server.handlers.resource.ResourceManager;
+import io.undertow.server.handlers.resource.URLResource;
 import io.undertow.server.session.SessionManager;
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
@@ -461,13 +465,11 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private ResourceManager getDocumentRootResourceManager() {
 		File root = getCanonicalDocumentRoot();
-		if (root.isDirectory()) {
-			return new FileResourceManager(root, 0);
-		}
-		if (root.isFile()) {
-			return new JarResourceManager(root);
-		}
-		return ResourceManager.EMPTY_RESOURCE_MANAGER;
+		List<URL> metaInfResourceJarUrls = getUrlsOfJarsWithMetaInfResources();
+		ResourceManager rootResourceManager = root.isDirectory()
+				? new FileResourceManager(root, 0) : new JarResourceManager(root);
+		return new CompositeResourceManager(rootResourceManager,
+				new MetaInfResourcesResourceManager(metaInfResourceJarUrls));
 	}
 
 	/**
@@ -597,6 +599,49 @@ public class UndertowEmbeddedServletContainerFactory
 	 */
 	public void setUseForwardHeaders(boolean useForwardHeaders) {
 		this.useForwardHeaders = useForwardHeaders;
+	}
+
+	/**
+	 * {@link ResourceManager} that exposes resource in {@code META-INF/resources}
+	 * directory of nested (in {@code BOOT-INF/lib} or {@code WEB-INF/lib}) jars.
+	 */
+	private static final class MetaInfResourcesResourceManager
+			implements ResourceManager {
+
+		private final List<URL> metaInfResourceJarUrls;
+
+		private MetaInfResourcesResourceManager(List<URL> metaInfResourceJarUrls) {
+			this.metaInfResourceJarUrls = metaInfResourceJarUrls;
+		}
+
+		@Override
+		public void close() throws IOException {
+		}
+
+		@Override
+		public Resource getResource(String path) throws IOException {
+			for (URL url : this.metaInfResourceJarUrls) {
+				URL resourceUrl = new URL(url + "META-INF/resources" + path);
+				URLConnection connection = resourceUrl.openConnection();
+				if (connection.getContentLength() >= 0) {
+					return new URLResource(resourceUrl, connection, path);
+				}
+			}
+			return null;
+		}
+
+		@Override
+		public boolean isResourceChangeListenerSupported() {
+			return false;
+		}
+
+		@Override
+		public void registerResourceChangeListener(ResourceChangeListener listener) {
+		}
+
+		@Override
+		public void removeResourceChangeListener(ResourceChangeListener listener) {
+		}
 	}
 
 	/**

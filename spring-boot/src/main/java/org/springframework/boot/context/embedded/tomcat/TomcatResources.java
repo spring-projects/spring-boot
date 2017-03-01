@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
+import java.util.List;
 
 import javax.naming.directory.DirContext;
 import javax.servlet.ServletContext;
@@ -37,6 +36,7 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 abstract class TomcatResources {
 
@@ -46,28 +46,16 @@ abstract class TomcatResources {
 		this.context = context;
 	}
 
-	/**
-	 * Add resources from the classpath.
-	 */
-	public void addClasspathResources() {
-		ClassLoader loader = getClass().getClassLoader();
-		if (loader instanceof URLClassLoader) {
-			for (URL url : ((URLClassLoader) loader).getURLs()) {
-				String file = url.getFile();
-				if (file.endsWith(".jar") || file.endsWith(".jar!/")) {
-					String jar = url.toString();
-					if (!jar.startsWith("jar:")) {
-						// A jar file in the file system. Convert to Jar URL.
-						jar = "jar:" + jar + "!/";
-					}
-					addJar(jar);
+	void addResourceJars(List<URL> resourceJarUrls) {
+		for (URL url : resourceJarUrls) {
+			String file = url.getFile();
+			if (file.endsWith(".jar") || file.endsWith(".jar!/")) {
+				String jar = url.toString();
+				if (!jar.startsWith("jar:")) {
+					// A jar file in the file system. Convert to Jar URL.
+					jar = "jar:" + jar + "!/";
 				}
-				else if (url.toString().startsWith("file:")) {
-					String dir = url.toString().substring("file:".length());
-					if (new File(dir).isDirectory()) {
-						addDir(dir, url);
-					}
-				}
+				addJar(jar);
 			}
 		}
 	}
