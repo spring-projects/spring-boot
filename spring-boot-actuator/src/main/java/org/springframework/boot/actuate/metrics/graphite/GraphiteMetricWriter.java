@@ -1,0 +1,79 @@
+/*
+ * Copyright 2012-2016 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.boot.actuate.metrics.graphite;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.boot.actuate.metrics.writer.Delta;
+import org.springframework.boot.actuate.metrics.writer.MetricWriter;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.Socket;
+
+/**
+ * A {@link MetricWriter} that pushes data to Graphite.
+ *
+ * @author Mark Sailes
+ */
+public class GraphiteMetricWriter implements MetricWriter {
+
+    private static final Log logger = LogFactory.getLog(GraphiteMetricWriter.class);
+
+    private final String prefix;
+    private final String host;
+    private final int port;
+    private final SocketProvider socketProvider;
+
+    public GraphiteMetricWriter(String prefix, String host, int port) {
+        this(prefix, host, port, Socket::new);
+    }
+
+    GraphiteMetricWriter(String prefix, String host, int port, SocketProvider socketProvider) {
+        this.prefix = prefix;
+        this.host = host;
+        this.port = port;
+        this.socketProvider = socketProvider;
+    }
+
+    @Override
+    public void increment(Delta<?> delta) {
+    }
+
+    @Override
+    public void reset(String s) {
+    }
+
+    @Override
+    public void set(Metric<?> metric) {
+        String fullMetrix = this.prefix + "." + metric.getName();
+
+        try (Socket socket = this.socketProvider.socket(this.host, this.port);
+             OutputStream stream = socket.getOutputStream()) {
+            byte[] bytes = String.format("%s %d %d%n", fullMetrix, metric.getValue().intValue(), metric.getTimestamp().getTime() / 1000).getBytes();
+            stream.write(bytes);
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    @FunctionalInterface
+    public interface SocketProvider {
+        Socket socket(String host, int port) throws IOException;
+    }
+}
