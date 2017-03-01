@@ -184,7 +184,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 	private void collectBeanNamesForType(Set<String> result,
 			ListableBeanFactory beanFactory, Class<?> type, boolean considerHierarchy) {
-		result.addAll(BeanTypeRegistry.get(beanFactory).getNamesForType(type));
+		result.addAll(BeanTypeRegistry.create(beanFactory).getNamesForType(type));
 		if (considerHierarchy && beanFactory instanceof HierarchicalBeanFactory) {
 			BeanFactory parent = ((HierarchicalBeanFactory) beanFactory)
 					.getParentBeanFactory();
