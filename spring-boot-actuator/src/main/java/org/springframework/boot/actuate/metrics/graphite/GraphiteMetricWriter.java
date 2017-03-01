@@ -61,30 +61,26 @@ public class GraphiteMetricWriter implements MetricWriter {
 
     @Override
     public void increment(Delta<?> delta) {
-        String fullMetrix = this.prefix + "." + delta.getName();
-
-        try (Socket socket = new Socket(this.host, this.port);
-             OutputStream stream = socket.getOutputStream()) {
-            byte[] bytes = String.format("%s %d %d%n", fullMetrix, delta.getValue().intValue(), delta.getTimestamp().getTime() / 1000).getBytes();
-            stream.write(bytes);
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
+        sendMetric(delta);
     }
 
     @Override
     public void reset(String s) {
-
+        // Not implemented
     }
 
     @Override
     public void set(Metric<?> metric) {
+        sendMetric(metric);
+    }
+
+    private void sendMetric(Metric<?> metric) {
         String fullMetrix = this.prefix + "." + metric.getName();
 
         try (Socket socket = new Socket(this.host, this.port);
              OutputStream stream = socket.getOutputStream()) {
-            byte[] bytes = String.format("%s %d %d%n", fullMetrix, metric.getValue().intValue(), metric.getTimestamp().getTime() / 1000).getBytes();
-            stream.write(bytes);
+            String payload = String.format("%s %d %d%n", fullMetrix, metric.getValue().intValue(), metric.getTimestamp().getTime() / 1000);
+            stream.write(payload.getBytes());
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
