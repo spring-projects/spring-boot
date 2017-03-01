@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.context.embedded.tomcat;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +42,7 @@ import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Manager;
 import org.apache.catalina.Valve;
+import org.apache.catalina.WebResourceRoot.ResourceSetType;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.loader.WebappLoader;
@@ -185,7 +187,7 @@ public class TomcatEmbeddedServletContainerFactory
 	protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
 		File docBase = getValidDocumentRoot();
 		docBase = (docBase != null ? docBase : createTempDir("tomcat-docbase"));
-		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
+		final TomcatEmbeddedContext context = new TomcatEmbeddedContext();
 		context.setName(getContextPath());
 		context.setDisplayName(getDisplayName());
 		context.setPath(getContextPath());
@@ -214,6 +216,7 @@ public class TomcatEmbeddedServletContainerFactory
 			addJspServlet(context);
 			addJasperInitializer(context);
 		}
+		context.addLifecycleListener(new StaticResourceConfigurer(context));
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
 		configureContext(context, initializersToUse);
 		host.addChild(context);
@@ -813,6 +816,59 @@ public class TomcatEmbeddedServletContainerFactory
 					((StandardManager) manager).setPathname(null);
 				}
 			}
+		}
+
+	}
+
+	private final class StaticResourceConfigurer implements LifecycleListener {
+
+		private final Context context;
+
+		private StaticResourceConfigurer(Context context) {
+			this.context = context;
+		}
+
+		@Override
+		public void lifecycleEvent(LifecycleEvent event) {
+			if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
+				addResourceJars(getUrlsOfJarsWithMetaInfResources());
+			}
+		}
+
+		private void addResourceJars(List<URL> resourceJarUrls) {
+			for (URL url : resourceJarUrls) {
+				String file = url.getFile();
+				if (file.endsWith(".jar") || file.endsWith(".jar!/")) {
+					String jar = url.toString();
+					if (!jar.startsWith("jar:")) {
+						// A jar file in the file system. Convert to Jar URL.
+						jar = "jar:" + jar + "!/";
+					}
+					addJar(jar);
+				}
+			}
+		}
+
+		private void addJar(String jar) {
+			try {
+				if (isInsideNestedJar(jar)) {
+					// It's a nested jar but we now don't want the suffix because Tomcat
+					// is going to try and locate it as a root URL (not the resource
+					// inside it)
+					jar = jar.substring(0, jar.length() - 2);
+				}
+				URL url = new URL(jar);
+				String path = "/META-INF/resources";
+				this.context.getResources().createWebResourceSet(
+						ResourceSetType.RESOURCE_JAR, "/", url, path);
+			}
+			catch (Exception ex) {
+				// Ignore (probably not a directory)
+			}
+		}
+
+		private boolean isInsideNestedJar(String dir) {
+			return dir.indexOf("!/") < dir.lastIndexOf("!/");
 		}
 
 	}
