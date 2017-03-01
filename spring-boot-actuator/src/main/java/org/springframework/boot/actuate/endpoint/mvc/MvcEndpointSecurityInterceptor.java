@@ -43,21 +43,18 @@ public class MvcEndpointSecurityInterceptor extends HandlerInterceptorAdapter {
 	private static final Log logger = LogFactory
 			.getLog(MvcEndpointSecurityInterceptor.class);
 
-	private final boolean secure;
-
 	private final List<String> roles;
 
 	private AtomicBoolean loggedUnauthorizedAttempt = new AtomicBoolean();
 
-	public MvcEndpointSecurityInterceptor(boolean secure, List<String> roles) {
-		this.secure = secure;
+	public MvcEndpointSecurityInterceptor(List<String> roles) {
 		this.roles = roles;
 	}
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
 			Object handler) throws Exception {
-		if (CorsUtils.isPreFlightRequest(request) || !this.secure) {
+		if (CorsUtils.isPreFlightRequest(request)) {
 			return true;
 		}
 		HandlerMethod handlerMethod = (HandlerMethod) handler;

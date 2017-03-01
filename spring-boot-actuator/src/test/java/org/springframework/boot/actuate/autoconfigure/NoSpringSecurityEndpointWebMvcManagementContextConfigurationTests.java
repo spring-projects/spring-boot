@@ -16,47 +16,49 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpointSecurityInterceptor;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.mock.web.MockServletContext;
+import org.springframework.boot.junit.runner.classpath.ClassPathExclusions;
+import org.springframework.boot.junit.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link EndpointWebMvcManagementContextConfiguration}.
+ * Tests for {@link EndpointWebMvcManagementContextConfiguration} when Spring Security is not available.
  *
  * @author Madhura Bhave
  */
-public class EndpointWebMvcManagementContextConfigurationTests {
+@RunWith(ModifiedClassPathRunner.class)
+@ClassPathExclusions("spring-security-*.jar")
+public class NoSpringSecurityEndpointWebMvcManagementContextConfigurationTests {
 
-	private AnnotationConfigWebApplicationContext context;
+	private AnnotationConfigApplicationContext context;
 
 	@Before
 	public void setup() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class,
-				WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				WebClientAutoConfiguration.class,
 				EndpointWebMvcManagementContextConfiguration.class);
-		this.context.refresh();
-
 	}
 
 	@After
@@ -67,13 +69,36 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 	}
 
 	@Test
-	public void endpointHandlerMappingShouldNotHaveSecurityInterceptor() throws Exception {
+	public void endpointHandlerMappingWhenSecurityEnabledShouldHaveSecurityInterceptor() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.security.enabled=true",
+				"management.security.roles=my-role,your-role");
+		this.context.refresh();
 		EndpointHandlerMapping mapping = this.context.getBean("endpointHandlerMapping",
 				EndpointHandlerMapping.class);
-		assertThat(mapping.getPrefix()).isEmpty();
+		MvcEndpointSecurityInterceptor securityInterceptor = (MvcEndpointSecurityInterceptor) ReflectionTestUtils
+				.getField(mapping, "securityInterceptor");
+		List<String> roles = getRoles(securityInterceptor);
+		assertThat(roles).containsExactly("my-role", "your-role");
+	}
+
+	@Test
+	public void endpointHandlerMappingWhenSecurityDisabledShouldHaveSecurityInterceptor() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.security.enabled=false",
+				"management.security.roles=my-role,your-role");
+		this.context.refresh();
+		EndpointHandlerMapping mapping = this.context.getBean("endpointHandlerMapping",
+				EndpointHandlerMapping.class);
 		MvcEndpointSecurityInterceptor securityInterceptor = (MvcEndpointSecurityInterceptor) ReflectionTestUtils
 				.getField(mapping, "securityInterceptor");
 		assertThat(securityInterceptor).isNull();
 	}
 
+	@SuppressWarnings("unchecked")
+	private List<String> getRoles(MvcEndpointSecurityInterceptor securityInterceptor) {
+		return (List<String>) ReflectionTestUtils.getField(securityInterceptor, "roles");
+	}
+
 }
+

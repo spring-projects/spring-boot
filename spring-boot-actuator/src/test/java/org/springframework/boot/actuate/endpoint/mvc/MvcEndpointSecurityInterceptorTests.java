@@ -66,20 +66,13 @@ public class MvcEndpointSecurityInterceptorTests {
 	@Before
 	public void setup() throws Exception {
 		this.roles = Arrays.asList("SUPER_HERO");
-		this.securityInterceptor = new MvcEndpointSecurityInterceptor(true, this.roles);
+		this.securityInterceptor = new MvcEndpointSecurityInterceptor(this.roles);
 		this.endpoint = new TestEndpoint("a");
 		this.mvcEndpoint = new TestMvcEndpoint(this.endpoint);
 		this.handlerMethod = new HandlerMethod(this.mvcEndpoint, "invoke");
 		this.servletContext = new MockServletContext();
 		this.request = new MockHttpServletRequest(this.servletContext);
 		this.response = mock(HttpServletResponse.class);
-	}
-
-	@Test
-	public void securityDisabledShouldAllowAccess() throws Exception {
-		this.securityInterceptor = new MvcEndpointSecurityInterceptor(false, this.roles);
-		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
-				this.handlerMethod)).isTrue();
 	}
 
 	@Test

@@ -54,6 +54,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
@@ -102,14 +103,27 @@ public class EndpointWebMvcManagementContextConfiguration {
 		EndpointHandlerMapping mapping = new EndpointHandlerMapping(endpoints,
 				corsConfiguration);
 		mapping.setPrefix(this.managementServerProperties.getContextPath());
-		MvcEndpointSecurityInterceptor securityInterceptor = new MvcEndpointSecurityInterceptor(
-				this.managementServerProperties.getSecurity().isEnabled(),
-				this.managementServerProperties.getSecurity().getRoles());
-		mapping.setSecurityInterceptor(securityInterceptor);
+		if (isSecurityInterceptorRequired()) {
+			MvcEndpointSecurityInterceptor securityInterceptor = new MvcEndpointSecurityInterceptor(
+					this.managementServerProperties.getSecurity().getRoles());
+			mapping.setSecurityInterceptor(securityInterceptor);
+		}
+
 		for (EndpointHandlerMappingCustomizer customizer : this.mappingCustomizers) {
 			customizer.customize(mapping);
 		}
 		return mapping;
+	}
+
+	private boolean isSecurityInterceptorRequired() {
+		return this.managementServerProperties.getSecurity().isEnabled()
+				&& !isSpringSecurityAvailable();
+	}
+
+	private boolean isSpringSecurityAvailable() {
+		return ClassUtils.isPresent(
+				"org.springframework.security.config.annotation.web.WebSecurityConfigurer",
+				getClass().getClassLoader());
 	}
 
 	private CorsConfiguration getCorsConfiguration(EndpointCorsProperties properties) {
