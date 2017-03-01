@@ -16,6 +16,11 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Date;
 
 import org.junit.Test;
@@ -313,6 +318,15 @@ public class ConditionalOnMissingBeanTests {
 		assertThat(child.getBeansOfType(ExampleBean.class)).hasSize(2);
 	}
 
+	@Test
+	public void beanProducedByFactoryBeanIsConsideredWhenMatchingOnAnnotation() {
+		this.context.register(ConcreteFactoryBeanConfiguration.class,
+				OnAnnotationWithFactoryBeanConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.containsBean("bar")).isFalse();
+		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(1);
+	}
+
 	@Configuration
 	protected static class OnBeanInParentsConfiguration {
 
@@ -541,6 +555,17 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration
+	@ConditionalOnMissingBean(annotation = TestAnnotation.class)
+	protected static class OnAnnotationWithFactoryBeanConfiguration {
+
+		@Bean
+		public String bar() {
+			return "bar";
+		}
+
+	}
+
+	@Configuration
 	@EnableScheduling
 	protected static class FooConfiguration {
 
@@ -594,6 +619,7 @@ public class ConditionalOnMissingBeanTests {
 
 	}
 
+	@TestAnnotation
 	public static class ExampleBean {
 
 		private String value;
@@ -660,6 +686,13 @@ public class ConditionalOnMissingBeanTests {
 		public boolean isSingleton() {
 			return false;
 		}
+
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	public @interface TestAnnotation {
 
 	}
 

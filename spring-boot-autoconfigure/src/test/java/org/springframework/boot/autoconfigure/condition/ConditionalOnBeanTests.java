@@ -16,10 +16,16 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Date;
 
 import org.junit.Test;
 
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
@@ -124,6 +130,15 @@ public class ConditionalOnBeanTests {
 		this.context.refresh();
 	}
 
+	@Test
+	public void beanProducedByFactoryBeanIsConsideredWhenMatchingOnAnnotation() {
+		this.context.register(FactoryBeanConfiguration.class,
+				OnAnnotationWithFactoryBeanConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(1);
+	}
+
 	@Configuration
 	@ConditionalOnBean(name = "foo")
 	protected static class OnBeanNameConfiguration {
@@ -220,6 +235,27 @@ public class ConditionalOnBeanTests {
 
 	}
 
+	@Configuration
+	static class FactoryBeanConfiguration {
+
+		@Bean
+		public ExampleFactoryBean exampleBeanFactoryBean() {
+			return new ExampleFactoryBean();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnBean(annotation = TestAnnotation.class)
+	static class OnAnnotationWithFactoryBeanConfiguration {
+
+		@Bean
+		public String bar() {
+			return "bar";
+		}
+
+	}
+
 	protected static class WithPropertyPlaceholderClassNameRegistrar
 			implements ImportBeanDefinitionRegistrar {
 
@@ -230,6 +266,48 @@ public class ConditionalOnBeanTests {
 			bd.setBeanClassName("${mybeanclass}");
 			registry.registerBeanDefinition("mybean", bd);
 		}
+
+	}
+
+	public static class ExampleFactoryBean implements FactoryBean<ExampleBean> {
+
+		@Override
+		public ExampleBean getObject() throws Exception {
+			return new ExampleBean("fromFactory");
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return ExampleBean.class;
+		}
+
+		@Override
+		public boolean isSingleton() {
+			return false;
+		}
+
+	}
+
+	@TestAnnotation
+	public static class ExampleBean {
+
+		private String value;
+
+		public ExampleBean(String value) {
+			this.value = value;
+		}
+
+		@Override
+		public String toString() {
+			return this.value;
+		}
+
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	public @interface TestAnnotation {
 
 	}
 

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,8 +56,6 @@ import org.springframework.util.StringUtils;
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
 class OnBeanCondition extends SpringBootCondition implements ConfigurationCondition {
-
-	private static final String[] NO_BEANS = {};
 
 	/**
 	 * Bean definition attribute name for factory beans to signal their product type (if
@@ -183,7 +182,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 	private void collectBeanNamesForType(Set<String> result,
 			ListableBeanFactory beanFactory, Class<?> type, boolean considerHierarchy) {
-		result.addAll(BeanTypeRegistry.create(beanFactory).getNamesForType(type));
+		result.addAll(BeanTypeRegistry.get(beanFactory).getNamesForType(type));
 		if (considerHierarchy && beanFactory instanceof HierarchicalBeanFactory) {
 			BeanFactory parent = ((HierarchicalBeanFactory) beanFactory)
 					.getParentBeanFactory();
@@ -197,34 +196,32 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 	private String[] getBeanNamesForAnnotation(
 			ConfigurableListableBeanFactory beanFactory, String type,
 			ClassLoader classLoader, boolean considerHierarchy) throws LinkageError {
-		String[] result = NO_BEANS;
+		Set<String> names = new HashSet<String>();
 		try {
 			@SuppressWarnings("unchecked")
-			Class<? extends Annotation> typeClass = (Class<? extends Annotation>) ClassUtils
+			Class<? extends Annotation> annotationType = (Class<? extends Annotation>) ClassUtils
 					.forName(type, classLoader);
-			result = beanFactory.getBeanNamesForAnnotation(typeClass);
-			if (considerHierarchy) {
-				if (beanFactory
-						.getParentBeanFactory() instanceof ConfigurableListableBeanFactory) {
-					String[] parentResult = getBeanNamesForAnnotation(
-							(ConfigurableListableBeanFactory) beanFactory
-									.getParentBeanFactory(),
-							type, classLoader, true);
-					List<String> resultList = new ArrayList<String>();
-					resultList.addAll(Arrays.asList(result));
-					for (String beanName : parentResult) {
-						if (!resultList.contains(beanName)
-								&& !beanFactory.containsLocalBean(beanName)) {
-							resultList.add(beanName);
-						}
-					}
-					result = StringUtils.toStringArray(resultList);
-				}
-			}
-			return result;
+			collectBeanNamesForAnnotation(names, beanFactory, annotationType,
+					considerHierarchy);
 		}
-		catch (ClassNotFoundException ex) {
-			return NO_BEANS;
+		catch (ClassNotFoundException e) {
+			// Continue
+		}
+		return StringUtils.toStringArray(names);
+	}
+
+	private void collectBeanNamesForAnnotation(Set<String> names,
+			ListableBeanFactory beanFactory, Class<? extends Annotation> annotationType,
+			boolean considerHierarchy) {
+		names.addAll(
+				BeanTypeRegistry.get(beanFactory).getNamesForAnnotation(annotationType));
+		if (considerHierarchy) {
+			BeanFactory parent = ((HierarchicalBeanFactory) beanFactory)
+					.getParentBeanFactory();
+			if (parent instanceof ListableBeanFactory) {
+				collectBeanNamesForAnnotation(names, (ListableBeanFactory) parent,
+						annotationType, considerHierarchy);
+			}
 		}
 	}
 
