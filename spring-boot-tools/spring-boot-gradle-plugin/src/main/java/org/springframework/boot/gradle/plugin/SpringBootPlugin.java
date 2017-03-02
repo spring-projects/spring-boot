@@ -24,8 +24,8 @@ import org.gradle.api.tasks.compile.JavaCompile;
 
 import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.gradle.agent.AgentPluginFeatures;
+import org.springframework.boot.gradle.bundling.BundlingPluginFeatures;
 import org.springframework.boot.gradle.dependencymanagement.DependencyManagementPluginFeatures;
-import org.springframework.boot.gradle.repackage.RepackagePluginFeatures;
 import org.springframework.boot.gradle.run.RunPluginFeatures;
 
 /**
@@ -42,7 +42,7 @@ public class SpringBootPlugin implements Plugin<Project> {
 		project.getExtensions().create("springBoot", SpringBootPluginExtension.class,
 				project);
 		new AgentPluginFeatures().apply(project);
-		new RepackagePluginFeatures().apply(project);
+		new BundlingPluginFeatures().apply(project);
 		new RunPluginFeatures().apply(project);
 		new DependencyManagementPluginFeatures().apply(project);
 		project.getTasks().withType(JavaCompile.class).all(new SetUtf8EncodingAction());

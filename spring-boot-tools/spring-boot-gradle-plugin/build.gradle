@@ -35,6 +35,7 @@ if (effectivePomFile.file) {
 dependencies {
 	compile localGroovy()
 	compile gradleApi()
+	testCompile gradleTestKit()
 }
 
 jar {
