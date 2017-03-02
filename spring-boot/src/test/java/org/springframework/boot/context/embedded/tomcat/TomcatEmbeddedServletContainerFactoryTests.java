@@ -353,7 +353,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	}
 
 	@Test
-	public void stopNoStart() throws Exception {
+	public void stopCalledWithoutStart() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());

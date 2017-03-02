@@ -144,7 +144,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 	}
 
 	@Test
-	public void stopNoStart() throws Exception {
+	public void stopCalledWithoutStart() throws Exception {
 		JettyEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
