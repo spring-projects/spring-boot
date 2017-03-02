@@ -30,6 +30,8 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +48,8 @@ public class MongoClientFactoryTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	private MockEnvironment environment = new MockEnvironment();
 
 	@Test
 	public void portCanBeCustomized() throws UnknownHostException {
@@ -138,9 +142,26 @@ public class MongoClientFactoryTests {
 		createMongoClient(properties);
 	}
 
+	@Test
+	public void uriIsIgnoredInEmbeddedMode() throws UnknownHostException {
+		MongoProperties properties = new MongoProperties();
+		properties.setUri("mongodb://mongo.example.com:1234/mydb");
+		this.environment.setProperty("local.mongo.port", "4000");
+		MongoClient client = createMongoClient(properties, this.environment);
+		List<ServerAddress> allAddresses = extractServerAddresses(client);
+		assertThat(allAddresses).hasSize(1);
+		assertServerAddress(allAddresses.get(0), "localhost", 4000);
+	}
+
 	private MongoClient createMongoClient(MongoProperties properties)
 			throws UnknownHostException {
-		return new MongoClientFactory(properties, null).createMongoClient(null);
+		return createMongoClient(properties, null);
+	}
+
+	private MongoClient createMongoClient(MongoProperties properties,
+			Environment environment)
+			throws UnknownHostException {
+		return new MongoClientFactory(properties, environment).createMongoClient(null);
 	}
 
 	private List<ServerAddress> extractServerAddresses(MongoClient client) {
