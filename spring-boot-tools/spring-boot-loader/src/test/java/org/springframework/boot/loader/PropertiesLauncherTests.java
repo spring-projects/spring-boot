@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.MockitoAnnotations;
 
@@ -49,6 +50,9 @@ public class PropertiesLauncherTests {
 
 	@Rule
 	public InternalOutputCapture output = new InternalOutputCapture();
+
+	@Rule
+	public ExpectedException expected = ExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -72,9 +76,28 @@ public class PropertiesLauncherTests {
 
 	@Test
 	public void testDefaultHome() {
+		System.clearProperty("loader.home");
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		assertThat(launcher.getHomeDirectory())
+				.isEqualTo(new File(System.getProperty("user.dir")));
+	}
+
+	@Test
+	public void testAlternateHome() throws Exception {
+		System.setProperty("loader.home", "src/test/resources/home");
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertThat(launcher.getHomeDirectory())
 				.isEqualTo(new File(System.getProperty("loader.home")));
+		assertThat(launcher.getMainClass()).isEqualTo("demo.HomeApplication");
+	}
+
+	@Test
+	public void testNonExistentHome() throws Exception {
+		System.setProperty("loader.home", "src/test/resources/nonexistent");
+		this.expected.expectMessage("Invalid source folder");
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		assertThat(launcher.getHomeDirectory())
+				.isNotEqualTo(new File(System.getProperty("loader.home")));
 	}
 
 	@Test
@@ -91,6 +114,13 @@ public class PropertiesLauncherTests {
 		assertThat(launcher.getMainClass()).isEqualTo("my.Application");
 		assertThat(ReflectionTestUtils.getField(launcher, "paths").toString())
 				.isEqualTo("[etc/]");
+	}
+
+	@Test
+	public void testRootOfClasspathFirst() throws Exception {
+		System.setProperty("loader.config.name", "bar");
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		assertThat(launcher.getMainClass()).isEqualTo("my.BarApplication");
 	}
 
 	@Test
@@ -230,6 +260,13 @@ public class PropertiesLauncherTests {
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertThat((List<String>) ReflectionTestUtils.getField(launcher, "paths"))
 				.containsExactly("/foo.jar", "/bar/");
+	}
+
+	@Test
+	public void testManifestWithPlaceholders() throws Exception {
+		System.setProperty("loader.home", "src/test/resources/placeholders");
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		assertThat(launcher.getMainClass()).isEqualTo("demo.FooApplication");
 	}
 
 	private void waitFor(String value) throws Exception {
