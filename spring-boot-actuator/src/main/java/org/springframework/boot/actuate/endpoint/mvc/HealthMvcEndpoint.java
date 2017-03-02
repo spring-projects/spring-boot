@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +34,10 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -133,12 +137,12 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 
 	@ActuatorGetMapping
 	@ResponseBody
-	public Object invoke(HttpServletRequest request) {
+	public Object invoke(HttpServletRequest request, Principal principal) {
 		if (!getDelegate().isEnabled()) {
 			// Shouldn't happen because the request mapping should not be registered
 			return getDisabledResponse();
 		}
-		Health health = getHealth(request);
+		Health health = getHealth(request, principal);
 		HttpStatus status = getStatus(health);
 		if (status != null) {
 			return new ResponseEntity<Health>(health, status);
@@ -160,13 +164,13 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		return null;
 	}
 
-	private Health getHealth(HttpServletRequest request) {
+	private Health getHealth(HttpServletRequest request, Principal principal) {
 		long accessTime = System.currentTimeMillis();
 		if (isCacheStale(accessTime)) {
 			this.lastAccess = accessTime;
 			this.cached = getDelegate().invoke();
 		}
-		if (exposeHealthDetails(request)) {
+		if (exposeHealthDetails(request, principal)) {
 			return this.cached;
 		}
 		return Health.status(this.cached.getStatus()).build();
@@ -179,13 +183,23 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		return (accessTime - this.lastAccess) >= getDelegate().getTimeToLive();
 	}
 
-	protected boolean exposeHealthDetails(HttpServletRequest request) {
+	protected boolean exposeHealthDetails(HttpServletRequest request, Principal principal) {
 		if (!this.secure) {
 			return true;
 		}
-		for (String role : getRoles()) {
-			if (request.isUserInRole(role) || request.isUserInRole("ROLE_" + role)) {
+		List<String> roles = getRoles();
+		for (String role : roles) {
+			if (request.isUserInRole(role)) {
 				return true;
+			}
+			if (isSpringSecurityAuthentication(principal))  {
+				Authentication authentication = (Authentication) principal;
+				for (GrantedAuthority authority : authentication.getAuthorities()) {
+					String name = authority.getAuthority();
+					if (role.equals(name)) {
+						return true;
+					}
+				}
 			}
 		}
 		return false;
@@ -199,6 +213,11 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 				this.securityPropertyResolver.getProperty("roles", "ROLE_ACTUATOR"));
 		roles = StringUtils.trimArrayElements(roles);
 		return Arrays.asList(roles);
+	}
+
+	private boolean isSpringSecurityAuthentication(Principal principal) {
+		return ClassUtils.isPresent("org.springframework.security.core.Authentication",
+				null) && (principal instanceof Authentication);
 	}
 
 }
