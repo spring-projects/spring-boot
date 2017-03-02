@@ -16,7 +16,9 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +54,8 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 
 	private final boolean secure;
 
+	private final List<String> roles;
+
 	private Map<String, HttpStatus> statusMapping = new HashMap<String, HttpStatus>();
 
 	private RelaxedPropertyResolver securityPropertyResolver;
@@ -65,9 +69,15 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 	}
 
 	public HealthMvcEndpoint(HealthEndpoint delegate, boolean secure) {
+		this(delegate, secure, null);
+	}
+
+	public HealthMvcEndpoint(HealthEndpoint delegate, boolean secure,
+			List<String> roles) {
 		super(delegate);
 		this.secure = secure;
 		setupDefaultStatusMapping();
+		this.roles = roles;
 	}
 
 	private void setupDefaultStatusMapping() {
@@ -173,15 +183,22 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		if (!this.secure) {
 			return true;
 		}
-		String[] roles = StringUtils.commaDelimitedListToStringArray(
-				this.securityPropertyResolver.getProperty("roles", "ROLE_ACTUATOR"));
-		roles = StringUtils.trimArrayElements(roles);
-		for (String role : roles) {
+		for (String role : getRoles()) {
 			if (request.isUserInRole(role) || request.isUserInRole("ROLE_" + role)) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private List<String> getRoles() {
+		if (this.roles != null) {
+			return this.roles;
+		}
+		String[] roles = StringUtils.commaDelimitedListToStringArray(
+				this.securityPropertyResolver.getProperty("roles", "ROLE_ACTUATOR"));
+		roles = StringUtils.trimArrayElements(roles);
+		return Arrays.asList(roles);
 	}
 
 }

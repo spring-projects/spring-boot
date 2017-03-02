@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
@@ -180,6 +181,19 @@ public class HealthMvcEndpointTests {
 		assertThat(result instanceof Health).isTrue();
 		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
 		assertThat(((Health) result).getDetails().get("foo")).isNull();
+	}
+
+	@Test
+	public void customRoleFromListShouldNotExposeDetailsForDefaultRole() {
+		// gh-8314
+		this.mvc = new HealthMvcEndpoint(this.endpoint, true,
+				Arrays.asList("HERO", "USER"));
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(this.hero);
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isEqualTo("bar");
 	}
 
 	@Test

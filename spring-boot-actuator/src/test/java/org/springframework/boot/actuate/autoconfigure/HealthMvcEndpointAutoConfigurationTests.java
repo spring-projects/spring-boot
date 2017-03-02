@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.Arrays;
+
 import org.junit.After;
 import org.junit.Test;
 
@@ -34,6 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -81,6 +84,20 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		Health map = (Health) health.getDetails().get("test");
 		assertThat(map.getDetails().get("foo")).isEqualTo("bar");
+	}
+
+	@Test
+	public void testSetRoles() throws Exception {
+		// gh-8314
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(TestConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.security.roles[0]=super");
+		this.context.refresh();
+		HealthMvcEndpoint health = this.context.getBean(HealthMvcEndpoint.class);
+		assertThat(ReflectionTestUtils.getField(health, "roles"))
+				.isEqualTo(Arrays.asList("super"));
 	}
 
 	@Configuration

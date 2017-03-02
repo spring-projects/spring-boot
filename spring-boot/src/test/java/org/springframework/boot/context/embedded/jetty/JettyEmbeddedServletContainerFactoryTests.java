@@ -143,6 +143,16 @@ public class JettyEmbeddedServletContainerFactoryTests
 				.isEmpty();
 	}
 
+	@Test
+	public void stopCalledWithoutStart() throws Exception {
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory
+				.getEmbeddedServletContainer(exampleServletRegistration());
+		this.container.stop();
+		Server server = ((JettyEmbeddedServletContainer) this.container).getServer();
+		assertThat(server.isStopped()).isTrue();
+	}
+
 	@Override
 	protected void addConnector(final int port,
 			AbstractEmbeddedServletContainerFactory factory) {

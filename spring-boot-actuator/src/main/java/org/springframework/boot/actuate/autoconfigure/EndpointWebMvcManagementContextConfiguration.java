@@ -159,9 +159,11 @@ public class EndpointWebMvcManagementContextConfiguration {
 	@Bean
 	@ConditionalOnBean(HealthEndpoint.class)
 	@ConditionalOnEnabledEndpoint("health")
-	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
+	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate,
+			ManagementServerProperties managementServerProperties) {
 		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate,
-				this.managementServerProperties.getSecurity().isEnabled());
+				this.managementServerProperties.getSecurity().isEnabled(),
+				managementServerProperties.getSecurity().getRoles());
 		if (this.healthMvcEndpointProperties.getMapping() != null) {
 			healthMvcEndpoint
 					.addStatusMapping(this.healthMvcEndpointProperties.getMapping());
