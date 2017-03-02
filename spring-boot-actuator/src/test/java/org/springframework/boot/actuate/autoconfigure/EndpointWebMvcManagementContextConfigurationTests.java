@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +30,7 @@ import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -55,8 +58,6 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class,
 				WebClientAutoConfiguration.class,
 				EndpointWebMvcManagementContextConfiguration.class);
-		this.context.refresh();
-
 	}
 
 	@After
@@ -67,13 +68,25 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 	}
 
 	@Test
-	public void endpointHandlerMappingShouldNotHaveSecurityInterceptor() throws Exception {
+	public void endpointHandlerMapping() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.security.enabled=false",
+				"management.security.roles=my-role,your-role");
+		this.context.refresh();
 		EndpointHandlerMapping mapping = this.context.getBean("endpointHandlerMapping",
 				EndpointHandlerMapping.class);
 		assertThat(mapping.getPrefix()).isEmpty();
 		MvcEndpointSecurityInterceptor securityInterceptor = (MvcEndpointSecurityInterceptor) ReflectionTestUtils
 				.getField(mapping, "securityInterceptor");
-		assertThat(securityInterceptor).isNull();
+		Object secure = ReflectionTestUtils.getField(securityInterceptor, "secure");
+		List<String> roles = getRoles(securityInterceptor);
+		assertThat(secure).isEqualTo(false);
+		assertThat(roles).containsExactly("my-role", "your-role");
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<String> getRoles(MvcEndpointSecurityInterceptor securityInterceptor) {
+		return (List<String>) ReflectionTestUtils.getField(securityInterceptor, "roles");
 	}
 
 }

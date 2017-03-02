@@ -257,10 +257,8 @@ public class ManagementWebSecurityAutoConfiguration {
 
 		private void configurePermittedRequests(
 				ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry requests) {
-			List<String> roles = this.management.getSecurity().getRoles();
 			requests.requestMatchers(new LazyEndpointPathRequestMatcher(
-					this.contextResolver, EndpointPaths.SENSITIVE))
-					.hasAnyRole(roles.toArray(new String[roles.size()]));
+					this.contextResolver, EndpointPaths.SENSITIVE)).authenticated();
 			// Permit access to the non-sensitive endpoints
 			requests.requestMatchers(new LazyEndpointPathRequestMatcher(
 					this.contextResolver, EndpointPaths.NON_SENSITIVE)).permitAll();

@@ -55,7 +55,6 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -253,57 +252,6 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		mockMvc //
 				.perform(get("/info")) //
 				.andExpect(status().isUnauthorized());
-	}
-
-	@Test
-	public void sensitiveEndpointWithRightRoleShouldReturnOk() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(AuthenticationConfig.class, WebConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "management.security.roles:USER");
-		this.context.refresh();
-
-		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
-				.apply(springSecurity())
-				.build();
-
-		String authorizationHeader = Base64Utils.encodeToString("user:password".getBytes());
-		mockMvc //
-				.perform(get("/env").header("authorization", "Basic " + authorizationHeader))
-				.andExpect(status().isOk());
-	}
-
-	@Test
-	public void sensitiveEndpointWithRightRoleShouldReturnForbidden() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(AuthenticationConfig.class, WebConfiguration.class);
-		this.context.refresh();
-
-		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
-				.apply(springSecurity())
-				.build();
-
-		String authorizationHeader = Base64Utils.encodeToString("user:password".getBytes());
-		mockMvc //
-				.perform(get("/env").header("authorization", "Basic " + authorizationHeader))
-				.andExpect(status().isForbidden());
-	}
-
-	@Test
-	public void nonSensitiveEndpointShouldAlwaysReturnOk() throws Exception {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(WebConfiguration.class);
-		this.context.refresh();
-
-		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
-				.apply(springSecurity())
-				.build();
-
-		mockMvc //
-				.perform(get("/health"))
-				.andExpect(status().isOk());
 	}
 
 	private ResultMatcher springAuthenticateRealmHeader() {
