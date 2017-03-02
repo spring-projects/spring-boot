@@ -45,12 +45,12 @@ public class GraphiteMetricWriter implements MetricWriter {
     }
 
     public GraphiteMetricWriter(String prefix, String host, int port) {
-        this.prefix = trimPrefix(prefix);
+        this.prefix = removeTrailingDots(prefix);
         this.host = host;
         this.port = port;
     }
 
-    private static String trimPrefix(String prefix) {
+    private static String removeTrailingDots(String prefix) {
         String trimmedPrefix = StringUtils.hasText(prefix) ? prefix : null;
         while (trimmedPrefix != null && trimmedPrefix.endsWith(".")) {
             trimmedPrefix = trimmedPrefix.substring(0, trimmedPrefix.length() - 1);
@@ -75,11 +75,15 @@ public class GraphiteMetricWriter implements MetricWriter {
     }
 
     private void sendMetric(Metric<?> metric) {
-        String fullMetrix = this.prefix + "." + metric.getName();
+        String fullMetric = metric.getName();
+
+        if (this.prefix != null) {
+            fullMetric = this.prefix + "." + metric.getName();
+        }
 
         try (Socket socket = new Socket(this.host, this.port);
              OutputStream stream = socket.getOutputStream()) {
-            String payload = String.format("%s %d %d%n", fullMetrix, metric.getValue().intValue(), metric.getTimestamp().getTime() / 1000);
+            String payload = String.format("%s %d %d%n", fullMetric, metric.getValue().intValue(), metric.getTimestamp().getTime() / 1000);
             stream.write(payload.getBytes());
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
