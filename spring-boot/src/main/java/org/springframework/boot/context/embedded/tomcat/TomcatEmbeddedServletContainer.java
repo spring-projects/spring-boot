@@ -90,32 +90,38 @@ public class TomcatEmbeddedServletContainer implements EmbeddedWebServer {
 		synchronized (this.monitor) {
 			try {
 				addInstanceIdToEngineName();
-
-				// Remove service connectors to that protocol binding doesn't happen yet
-				removeServiceConnectors();
-
-				// Start the server to trigger initialization listeners
-				this.tomcat.start();
-
-				// We can re-throw failure exception directly in the main thread
-				rethrowDeferredStartupExceptions();
-
-				Context context = findContext();
 				try {
-					ContextBindings.bindClassLoader(context, context.getNamingToken(),
-							getClass().getClassLoader());
-				}
-				catch (NamingException ex) {
-					// Naming is not enabled. Continue
-				}
+					// Remove service connectors to that protocol binding doesn't happen
+					// yet
+					removeServiceConnectors();
 
-				// Unlike Jetty, all Tomcat threads are daemon threads. We create a
-				// blocking non-daemon to stop immediate shutdown
-				startDaemonAwaitThread();
+					// Start the server to trigger initialization listeners
+					this.tomcat.start();
+
+					// We can re-throw failure exception directly in the main thread
+					rethrowDeferredStartupExceptions();
+
+					Context context = findContext();
+					try {
+						ContextBindings.bindClassLoader(context, context.getNamingToken(),
+								getClass().getClassLoader());
+					}
+					catch (NamingException ex) {
+						// Naming is not enabled. Continue
+					}
+
+					// Unlike Jetty, all Tomcat threads are daemon threads. We create a
+					// blocking non-daemon to stop immediate shutdown
+					startDaemonAwaitThread();
+				}
+				catch (Exception ex) {
+					containerCounter.decrementAndGet();
+					throw ex;
+				}
 			}
 			catch (Exception ex) {
-				throw new EmbeddedWebServerException(
-						"Unable to start embedded Tomcat", ex);
+				throw new EmbeddedWebServerException("Unable to start embedded Tomcat",
+						ex);
 			}
 		}
 	}
@@ -279,9 +285,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedWebServer {
 	@Override
 	public void stop() throws EmbeddedWebServerException {
 		synchronized (this.monitor) {
-			if (!this.started) {
-				return;
-			}
+			boolean wasStarted = this.started;
 			try {
 				this.started = false;
 				try {
@@ -293,11 +297,13 @@ public class TomcatEmbeddedServletContainer implements EmbeddedWebServer {
 				}
 			}
 			catch (Exception ex) {
-				throw new EmbeddedWebServerException(
-						"Unable to stop embedded Tomcat", ex);
+				throw new EmbeddedWebServerException("Unable to stop embedded Tomcat",
+						ex);
 			}
 			finally {
-				containerCounter.decrementAndGet();
+				if (wasStarted) {
+					containerCounter.decrementAndGet();
+				}
 			}
 		}
 	}

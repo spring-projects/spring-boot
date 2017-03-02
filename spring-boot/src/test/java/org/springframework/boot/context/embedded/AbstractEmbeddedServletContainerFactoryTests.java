@@ -175,6 +175,16 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	@Test
+	public void stopCalledTwice() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory
+				.getEmbeddedServletContainer(exampleServletRegistration());
+		this.container.start();
+		this.container.stop();
+		this.container.stop();
+	}
+
+	@Test
 	public void emptyServerWhenPortIsMinusOne() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.setPort(-1);
@@ -313,16 +323,6 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.thrown.expectMessage(
 				"Root ContextPath must be specified using an empty string");
 		getFactory().setContextPath("/");
-	}
-
-	@Test
-	public void doubleStop() throws Exception {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		this.container = factory
-				.getEmbeddedServletContainer(exampleServletRegistration());
-		this.container.start();
-		this.container.stop();
-		this.container.stop();
 	}
 
 	@Test

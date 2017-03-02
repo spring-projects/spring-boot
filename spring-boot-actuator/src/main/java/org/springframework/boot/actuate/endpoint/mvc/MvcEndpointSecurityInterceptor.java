@@ -125,10 +125,14 @@ public class MvcEndpointSecurityInterceptor extends HandlerInterceptorAdapter {
 		}
 	}
 
-	private class AuthoritiesValidator {
+	/**
+	 * Inner class to check authorities using Spring Security (when available).
+	 */
+	private static class AuthoritiesValidator {
 
 		private boolean hasAuthority(String role) {
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			Authentication authentication = SecurityContextHolder.getContext()
+					.getAuthentication();
 			if (authentication != null) {
 				for (GrantedAuthority authority : authentication.getAuthorities()) {
 					if (authority.getAuthority().equals(role)) {
