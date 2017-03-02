@@ -3228,9 +3228,9 @@ replacing those elements from the `web.xml` as follows:
   container as if it was a `<servlet/>` and `<servlet-mapping/>` in `web.xml`.
 * A `@Bean` of type `Filter` or `FilterRegistrationBean` behaves similarly (like a
   `<filter/>` and `<filter-mapping/>`.
-* An `ApplicationContext` in an XML file can be added to an `@Import` in your
-  `Application`. Or simple cases where annotation configuration is heavily used already
-  can be recreated in a few lines as `@Bean` definitions.
+* An `ApplicationContext` in an XML file can be added through an `@ImportResource` in
+  your `Application`. Or simple cases where annotation configuration is heavily used
+  already can be recreated in a few lines as `@Bean` definitions.
 
 Once the war is working we make it executable by adding a `main` method to our
 `Application`, e.g.
