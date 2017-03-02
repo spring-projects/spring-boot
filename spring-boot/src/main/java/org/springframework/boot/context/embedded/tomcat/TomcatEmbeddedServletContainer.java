@@ -279,9 +279,6 @@ public class TomcatEmbeddedServletContainer implements EmbeddedWebServer {
 	@Override
 	public void stop() throws EmbeddedWebServerException {
 		synchronized (this.monitor) {
-			if (!this.started) {
-				return;
-			}
 			try {
 				this.started = false;
 				try {
