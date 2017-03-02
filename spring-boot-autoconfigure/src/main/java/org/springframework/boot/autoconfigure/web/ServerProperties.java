@@ -1006,6 +1006,7 @@ public class ServerProperties
 					this.accesslog.isRequestAttributesEnabled());
 			valve.setRotatable(this.accesslog.isRotate());
 			valve.setBuffered(this.accesslog.isBuffered());
+			valve.setFileDateFormat(this.accesslog.getFileDateFormat());
 			factory.addEngineValves(valve);
 		}
 
@@ -1070,6 +1071,11 @@ public class ServerProperties
 			 * Buffer output such that it is only flushed periodically.
 			 */
 			private boolean buffered = true;
+
+			/**
+			 * Customized date format in the access log file name.
+			 */
+			private String fileDateFormat = "yyyy-MM-dd";
 
 			public boolean isEnabled() {
 				return this.enabled;
@@ -1143,6 +1149,13 @@ public class ServerProperties
 				this.buffered = buffered;
 			}
 
+			public String getFileDateFormat() {
+				return fileDateFormat;
+			}
+
+			public void setFileDateFormat(String fileDateFormat) {
+				this.fileDateFormat = fileDateFormat;
+			}
 		}
 
 	}
