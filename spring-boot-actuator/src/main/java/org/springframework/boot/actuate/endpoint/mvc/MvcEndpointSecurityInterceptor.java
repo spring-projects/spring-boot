@@ -27,6 +27,10 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.method.HandlerMethod;
@@ -69,13 +73,33 @@ public class MvcEndpointSecurityInterceptor extends HandlerInterceptorAdapter {
 		if (!mvcEndpoint.isSensitive()) {
 			return true;
 		}
+		if (isUserAllowedAccess(request)) {
+			return true;
+		}
+		sendFailureResponse(request, response);
+		return false;
+	}
+
+	private boolean isUserAllowedAccess(HttpServletRequest request) {
+		AuthoritiesValidator authoritiesValidator = null;
+		if (isSpringSecurityAvailable()) {
+			authoritiesValidator = new AuthoritiesValidator();
+		}
 		for (String role : this.roles) {
 			if (request.isUserInRole(role)) {
 				return true;
 			}
+			if (authoritiesValidator != null && authoritiesValidator.hasAuthority(role)) {
+				return true;
+			}
 		}
-		sendFailureResponse(request, response);
 		return false;
+	}
+
+	private boolean isSpringSecurityAvailable() {
+		return ClassUtils.isPresent(
+				"org.springframework.security.config.annotation.web.WebSecurityConfigurer",
+				getClass().getClassLoader());
 	}
 
 	private void sendFailureResponse(HttpServletRequest request,
@@ -98,6 +122,21 @@ public class MvcEndpointSecurityInterceptor extends HandlerInterceptorAdapter {
 			logger.info("Full authentication is required to access "
 					+ "actuator endpoints. Consider adding Spring Security "
 					+ "or set 'management.security.enabled' to false.");
+		}
+	}
+
+	private class AuthoritiesValidator {
+
+		private boolean hasAuthority(String role) {
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			if (authentication != null) {
+				for (GrantedAuthority authority : authentication.getAuthorities()) {
+					if (authority.getAuthority().equals(role)) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 	}
 
