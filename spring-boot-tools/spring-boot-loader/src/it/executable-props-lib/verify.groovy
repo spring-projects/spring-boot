@@ -1,4 +1,4 @@
-def jarfile = './target/executable-props-lib-0.0.1.BUILD-SNAPSHOT-full.jar'
+def jarfile = './target/executable-props-lib-0.0.1.BUILD-SNAPSHOT-app.jar'
 
 new File("${basedir}/application.properties").delete()
 
@@ -10,8 +10,8 @@ String exec(String command) {
 
 String out = exec("java -jar ${jarfile}")
 assert out.contains('Hello Embedded World!'),
-	'Using -jar my.jar should use the application.properties from the jar\n' + out
+	'Using -jar my.jar should load dependencies from separate jar and use the application.properties from the jar\n' + out
 
 out = exec("java -cp ${jarfile} org.springframework.boot.loader.PropertiesLauncher")
 assert out.contains('Hello Embedded World!'),
-	'Using -cp my.jar with PropertiesLauncher should use the application.properties from the jar\n' + out
+	'Using -cp my.jar with PropertiesLauncher should load dependencies from separate jar and use the application.properties from the jar\n' + out
