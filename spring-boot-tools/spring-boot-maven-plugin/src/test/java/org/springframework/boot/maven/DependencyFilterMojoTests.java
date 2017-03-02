@@ -103,7 +103,7 @@ public class DependencyFilterMojoTests {
 	}
 
 	@Test
-	public void filterExcludeKeepOrder()  throws MojoExecutionException {
+	public void filterExcludeKeepOrder() throws MojoExecutionException {
 		Exclude exclude = new Exclude();
 		exclude.setGroupId("com.bar");
 		exclude.setArtifactId("two");
@@ -121,7 +121,8 @@ public class DependencyFilterMojoTests {
 		return createArtifact(groupId, artifactId, null);
 	}
 
-	private static Artifact createArtifact(String groupId, String artifactId, String scope) {
+	private static Artifact createArtifact(String groupId, String artifactId,
+			String scope) {
 		Artifact a = mock(Artifact.class);
 		given(a.getGroupId()).willReturn(groupId);
 		given(a.getArtifactId()).willReturn(artifactId);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,11 +130,13 @@ public class MvcEndpointSecurityInterceptorTests {
 	}
 
 	@Test
-	public void sensitiveEndpointIfRoleNotCorrectShouldCheckAuthorities() throws Exception {
+	public void sensitiveEndpointIfRoleNotCorrectShouldCheckAuthorities()
+			throws Exception {
 		Principal principal = mock(Principal.class);
 		this.request.setUserPrincipal(principal);
 		Authentication authentication = mock(Authentication.class);
-		Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("SUPER_HERO"));
+		Set<SimpleGrantedAuthority> authorities = Collections
+				.singleton(new SimpleGrantedAuthority("SUPER_HERO"));
 		doReturn(authorities).when(authentication).getAuthorities();
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
@@ -142,11 +144,13 @@ public class MvcEndpointSecurityInterceptorTests {
 	}
 
 	@Test
-	public void sensitiveEndpointIfRoleAndAuthoritiesNotCorrectShouldNotAllowAccess() throws Exception {
+	public void sensitiveEndpointIfRoleAndAuthoritiesNotCorrectShouldNotAllowAccess()
+			throws Exception {
 		Principal principal = mock(Principal.class);
 		this.request.setUserPrincipal(principal);
 		Authentication authentication = mock(Authentication.class);
-		Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("HERO"));
+		Set<SimpleGrantedAuthority> authorities = Collections
+				.singleton(new SimpleGrantedAuthority("HERO"));
 		doReturn(authorities).when(authentication).getAuthorities();
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		assertThat(this.securityInterceptor.preHandle(this.request, this.response,
