@@ -68,7 +68,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	@Override
 	protected List<Archive> getClassPathArchives() throws Exception {
-		List<Archive> archives = new ArrayList<Archive>(
+		List<Archive> archives = new ArrayList<>(
 				this.archive.getNestedArchives(new EntryFilter() {
 
 					@Override
