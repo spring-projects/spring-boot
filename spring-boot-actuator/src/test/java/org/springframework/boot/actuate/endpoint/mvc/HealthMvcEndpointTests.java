@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Before;
@@ -156,6 +157,19 @@ public class HealthMvcEndpointTests {
 	@Test
 	public void secureCustomRole() {
 		this.environment.getPropertySources().addLast(SECURITY_ROLES);
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(this.hero);
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isEqualTo("bar");
+	}
+
+	@Test
+	public void secureCustomRoleList() {
+		// gh-8314
+		this.mvc = new HealthMvcEndpoint(this.endpoint, true,
+				Arrays.asList("HERO", "USER"));
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(this.hero);

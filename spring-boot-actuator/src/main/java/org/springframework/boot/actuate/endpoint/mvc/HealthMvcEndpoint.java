@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,8 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 
 	private final boolean secure;
 
+	private final List<String> roles;
+
 	private Map<String, HttpStatus> statusMapping = new HashMap<String, HttpStatus>();
 
 	private RelaxedPropertyResolver healthPropertyResolver;
@@ -70,13 +72,19 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 	private Health cached;
 
 	public HealthMvcEndpoint(HealthEndpoint delegate) {
-		this(delegate, true);
+		this(delegate, true, null);
 	}
 
 	public HealthMvcEndpoint(HealthEndpoint delegate, boolean secure) {
+		this(delegate, secure, null);
+	}
+
+	public HealthMvcEndpoint(HealthEndpoint delegate, boolean secure,
+			List<String> roles) {
 		super(delegate);
 		this.secure = secure;
 		setupDefaultStatusMapping();
+		this.roles = roles;
 	}
 
 	private void setupDefaultStatusMapping() {
@@ -192,12 +200,9 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		}
 		if (isSpringSecurityAuthentication(principal)) {
 			Authentication authentication = (Authentication) principal;
-			List<String> roles = Arrays.asList(StringUtils
-					.trimArrayElements(StringUtils.commaDelimitedListToStringArray(
-							this.roleResolver.getProperty("roles", "ROLE_ADMIN"))));
 			for (GrantedAuthority authority : authentication.getAuthorities()) {
 				String name = authority.getAuthority();
-				for (String role : roles) {
+				for (String role : getRoles()) {
 					if (role.equals(name) || ("ROLE_" + role).equals(name)) {
 						return true;
 					}
@@ -205,6 +210,15 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 			}
 		}
 		return false;
+	}
+
+	private List<String> getRoles() {
+		if (this.roles != null) {
+			return this.roles;
+		}
+		return Arrays.asList(
+				StringUtils.trimArrayElements(StringUtils.commaDelimitedListToStringArray(
+						this.roleResolver.getProperty("roles", "ROLE_ADMIN"))));
 	}
 
 	private boolean isSpringSecurityAuthentication(Principal principal) {
