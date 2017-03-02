@@ -66,7 +66,7 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		this.context.refresh();
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class)
-				.invoke(request);
+				.invoke(request, null);
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("foo")).isNull();
 	}
@@ -80,7 +80,7 @@ public class HealthMvcEndpointAutoConfigurationTests {
 				"management.security.enabled=false");
 		this.context.refresh();
 		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class)
-				.invoke(null);
+				.invoke(null, null);
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		Health map = (Health) health.getDetails().get("test");
 		assertThat(map.getDetails().get("foo")).isEqualTo("bar");

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.security.Principal;
+
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,12 +36,15 @@ import org.springframework.boot.junit.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -62,13 +67,13 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void healthDetailNotPresent() throws Exception {
+	public void healthWhenRightRoleNotPresentShouldExposeHealthDetails() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		mockMvc.perform(get("/health")).andExpect(status().isOk())
+		mockMvc.perform(get("/health").with(getRequestPostProcessor())).andExpect(status().isOk())
 				.andExpect(content().string(containsString("\"status\":\"UP\"")));
 	}
 
@@ -84,6 +89,17 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 		mockMvc.perform(get("/health")).andExpect(status().isOk())
 				.andExpect(content().string(containsString(
 						"\"status\":\"UP\",\"test\":{\"status\":\"UP\",\"hello\":\"world\"}")));
+	}
+
+	private RequestPostProcessor getRequestPostProcessor() {
+		return new RequestPostProcessor() {
+			@Override
+			public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+				Principal principal = mock(Principal.class);
+				request.setUserPrincipal(principal);
+				return request;
+			}
+		};
 	}
 
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
