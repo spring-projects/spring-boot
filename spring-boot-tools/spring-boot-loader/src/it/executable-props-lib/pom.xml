@@ -39,7 +39,17 @@
 									<type>jar</type>
 								</artifactItem>
 							</artifactItems>
-							<outputDirectory>${project.build.directory}/assembly</outputDirectory>
+							<outputDirectory>${project.build.directory}/app-assembly</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/dependencies-assembly/BOOT-INF/lib</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
@@ -47,26 +57,38 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.4</version>
-				<configuration>
-					<descriptors>
-						<descriptor>src/main/assembly/jar-with-dependencies.xml</descriptor>
-					</descriptors>
-					<archive>
-						<manifest>
-							<mainClass>org.springframework.boot.loader.PropertiesLauncher</mainClass>
-						</manifest>
-						<manifestEntries>
-							<Start-Class>org.springframework.boot.load.it.props.EmbeddedJarStarter</Start-Class>
-						</manifestEntries>
-					</archive>
-				</configuration>
 				<executions>
 					<execution>
-						<id>jar-with-dependencies</id>
+						<id>app</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/assembly/app.xml</descriptor>
+							</descriptors>
+							<archive>
+								<manifest>
+									<mainClass>org.springframework.boot.loader.PropertiesLauncher</mainClass>
+								</manifest>
+								<manifestEntries>
+									<Start-Class>org.springframework.boot.launcher.it.props.EmbeddedJarStarter</Start-Class>
+								</manifestEntries>
+							</archive>
+						</configuration>
+					</execution>
+					<execution>
+						<id>depedendencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/assembly/dependencies.xml</descriptor>
+							</descriptors>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
