@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -59,10 +58,8 @@ public class MongoClientFactory {
 	 * to an embedded MongoDB instance.
 	 * @param options the options
 	 * @return the Mongo client
-	 * @throws UnknownHostException if the configured host is unknown
 	 */
-	public MongoClient createMongoClient(MongoClientOptions options)
-			throws UnknownHostException {
+	public MongoClient createMongoClient(MongoClientOptions options) {
 		Integer embeddedPort = getEmbeddedPort();
 		if (embeddedPort != null) {
 			return createEmbeddedMongoClient(options, embeddedPort);
@@ -91,8 +88,7 @@ public class MongoClientFactory {
 				Collections.emptyList(), options);
 	}
 
-	private MongoClient createNetworkMongoClient(MongoClientOptions options)
-			throws UnknownHostException {
+	private MongoClient createNetworkMongoClient(MongoClientOptions options) {
 
 		if (hasCustomAddress() || hasCustomCredentials()) {
 			if (this.properties.getUri() != null) {

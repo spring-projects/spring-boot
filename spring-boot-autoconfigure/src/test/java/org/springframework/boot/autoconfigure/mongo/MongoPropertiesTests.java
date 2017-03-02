@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.net.UnknownHostException;
-
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import org.junit.Rule;
@@ -56,7 +54,7 @@ public class MongoPropertiesTests {
 	}
 
 	@Test
-	public void allMongoClientOptionsCanBeSet() throws UnknownHostException {
+	public void allMongoClientOptionsCanBeSet() {
 		MongoClientOptions.Builder builder = MongoClientOptions.builder();
 		builder.alwaysUseMBeans(true);
 		builder.connectionsPerHost(101);
