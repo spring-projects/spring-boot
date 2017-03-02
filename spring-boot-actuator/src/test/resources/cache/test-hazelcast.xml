@@ -5,4 +5,11 @@
 	<map name="books"/>
 	<map name="players"/>
 
+	<network>
+		<join>
+			<tcp-ip enabled="false"/>
+			<multicast enabled="false"/>
+		</join>
+	</network>
+
 </hazelcast>

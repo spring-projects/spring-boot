@@ -14,4 +14,11 @@
 		<management-enabled>true</management-enabled>
 	</cache>
 
+	<network>
+		<join>
+			<tcp-ip enabled="false"/>
+			<multicast enabled="false"/>
+		</join>
+	</network>
+
 </hazelcast>

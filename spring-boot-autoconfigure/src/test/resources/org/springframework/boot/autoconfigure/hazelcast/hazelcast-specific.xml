@@ -4,4 +4,11 @@
 
 	<queue name="foobar"/>
 
+	<network>
+		<join>
+			<tcp-ip enabled="false"/>
+			<multicast enabled="false"/>
+		</join>
+	</network>
+
 </hazelcast>
