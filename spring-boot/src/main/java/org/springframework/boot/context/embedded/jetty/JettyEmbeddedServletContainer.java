@@ -205,9 +205,6 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	@Override
 	public void stop() {
 		synchronized (this.monitor) {
-			if (!this.started) {
-				return;
-			}
 			this.started = false;
 			try {
 				this.server.stop();
