@@ -88,6 +88,7 @@ public class CacheProperties {
 		return this.ehcache;
 	}
 
+	@Deprecated
 	public Hazelcast getHazelcast() {
 		return this.hazelcast;
 	}
@@ -193,6 +194,7 @@ public class CacheProperties {
 	/**
 	 * Hazelcast specific cache properties.
 	 */
+	@Deprecated
 	public static class Hazelcast {
 
 		/**
@@ -200,6 +202,9 @@ public class CacheProperties {
 		 */
 		private Resource config;
 
+		@DeprecatedConfigurationProperty(replacement = "spring.hazelcast.config",
+				reason = "Use general hazelcast auto-configuration instead.")
+		@Deprecated
 		public Resource getConfig() {
 			return this.config;
 		}
