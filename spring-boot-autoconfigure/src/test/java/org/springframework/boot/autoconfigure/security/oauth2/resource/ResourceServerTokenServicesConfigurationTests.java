@@ -55,17 +55,22 @@ import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ResourceServerTokenServicesConfiguration}.
  *
  * @author Dave Syer
  * @author Madhura Bhave
+ * @author Eddú Meléndez
  */
 public class ResourceServerTokenServicesConfigurationTests {
 
@@ -242,6 +247,27 @@ public class ResourceServerTokenServicesConfigurationTests {
 				.isInstanceOf(CustomUserInfoRestTemplateFactory.class);
 	}
 
+	@Test
+	public void jwtAccessTokenConverterIsConfiguredWhenKeyUriIsProvided() {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"security.oauth2.resource.jwt.key-uri=http://localhost:12345/banana");
+		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
+				.environment(this.environment).web(false).run();
+		assertThat(this.context.getBeansOfType(JwtAccessTokenConverter.class)).hasSize(1);
+	}
+
+	@Test
+	public void jwtAccessTokenConverterRestTemplateCanBeCustomized() {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"security.oauth2.resource.jwt.key-uri=http://localhost:12345/banana");
+		this.context = new SpringApplicationBuilder(ResourceConfiguration.class,
+				JwtAccessTokenConverterRestTemplateCustomizerConfiguration.class)
+						.environment(this.environment).web(false).run();
+		JwtAccessTokenConverterRestTemplateCustomizer customizer = this.context
+				.getBean(JwtAccessTokenConverterRestTemplateCustomizer.class);
+		verify(customizer).customize(any(RestTemplate.class));
+	}
+
 	@Configuration
 	@Import({ ResourceServerTokenServicesConfiguration.class,
 			ResourceServerPropertiesConfiguration.class,
@@ -352,6 +378,16 @@ public class ResourceServerTokenServicesConfigurationTests {
 		@Override
 		public OAuth2RestTemplate getUserInfoRestTemplate() {
 			return this.restTemplate;
+		}
+
+	}
+
+	@Configuration
+	static class JwtAccessTokenConverterRestTemplateCustomizerConfiguration {
+
+		@Bean
+		public JwtAccessTokenConverterRestTemplateCustomizer restTemplateCustomizer() {
+			return mock(JwtAccessTokenConverterRestTemplateCustomizer.class);
 		}
 
 	}
