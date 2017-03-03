@@ -303,8 +303,10 @@ public class ResourceServerTokenServicesConfiguration {
 
 		private String getKeyFromServer() {
 			RestTemplate keyUriRestTemplate = new RestTemplate();
-			for (JwtAccessTokenConverterRestTemplateCustomizer customizer : this.customizers) {
-				customizer.customize(keyUriRestTemplate);
+			if (!CollectionUtils.isEmpty(this.customizers)) {
+				for (JwtAccessTokenConverterRestTemplateCustomizer customizer : this.customizers) {
+					customizer.customize(keyUriRestTemplate);
+				}
 			}
 			HttpHeaders headers = new HttpHeaders();
 			String username = this.resource.getClientId();

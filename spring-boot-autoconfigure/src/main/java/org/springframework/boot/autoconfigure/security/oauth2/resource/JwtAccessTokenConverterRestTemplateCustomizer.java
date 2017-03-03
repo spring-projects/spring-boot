@@ -16,18 +16,22 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Callback for customizing the rest template used to fetch the token key.
+ * Callback for customizing the {@link RestTemplate} that is used to fetch the keys used
+ * by {@link JwtAccessTokenConverter}.
  *
  * @author Eddú Meléndez
  * @since 1.5.2
+ * @see JwtAccessTokenConverter#setSigningKey(String)
+ * @see JwtAccessTokenConverter#setVerifierKey(String)
  */
 public interface JwtAccessTokenConverterRestTemplateCustomizer {
 
 	/**
-	 * Customize the rest template before it is initialized.
+	 * Customize the {@code template} before it is initialized.
 	 * @param template the rest template
 	 */
 	void customize(RestTemplate template);
