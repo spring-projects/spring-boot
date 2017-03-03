@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ import org.springframework.util.ObjectUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Ivan Sopov
+ * @author Stephane Nicoll
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
@@ -136,17 +137,21 @@ public class EmbeddedServletContainerAutoConfiguration {
 			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(
 					EmbeddedServletContainerCustomizerBeanPostProcessor.class, true,
 					false))) {
+				RootBeanDefinition beanDefinition = new RootBeanDefinition(
+						EmbeddedServletContainerCustomizerBeanPostProcessor.class);
+				beanDefinition.setSynthetic(true);
 				registry.registerBeanDefinition(
 						"embeddedServletContainerCustomizerBeanPostProcessor",
-						new RootBeanDefinition(
-								EmbeddedServletContainerCustomizerBeanPostProcessor.class));
+						beanDefinition);
 
 			}
 			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(
 					ErrorPageRegistrarBeanPostProcessor.class, true, false))) {
+				RootBeanDefinition beanDefinition = new RootBeanDefinition(
+						ErrorPageRegistrarBeanPostProcessor.class);
+				beanDefinition.setSynthetic(true);
 				registry.registerBeanDefinition("errorPageRegistrarBeanPostProcessor",
-						new RootBeanDefinition(
-								ErrorPageRegistrarBeanPostProcessor.class));
+						beanDefinition);
 
 			}
 		}
