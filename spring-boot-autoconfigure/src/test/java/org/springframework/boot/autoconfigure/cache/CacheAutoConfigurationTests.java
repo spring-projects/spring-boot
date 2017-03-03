@@ -448,6 +448,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	public void hazelcastCacheWithConfig() throws IOException {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=hazelcast",
 				"spring.cache.hazelcast.config=org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml");
@@ -466,6 +467,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	public void hazelcastWithWrongConfig() {
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("foo/bar/unknown.xml");
@@ -502,6 +504,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	public void hazelcastCacheWithMainHazelcastAutoConfigurationAndSeparateCacheConfig()
 			throws IOException {
 		String mainConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";

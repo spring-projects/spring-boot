@@ -4152,18 +4152,6 @@ Spring Boot has a <<boot-features-hazelcast,general support for Hazelcast>>. If
 a `HazelcastInstance` has been auto-configured, it is automatically wrapped in a
 `CacheManager`.
 
-If for some reason you need a different `HazelcastInstance` for caching, you can
-request Spring Boot to create a separate one that will be only used by the
-`CacheManager`:
-
-[source,properties,indent=0]
-----
-	spring.cache.hazelcast.config=classpath:config/my-cache-hazelcast.xml
-----
-
-TIP: If a separate `HazelcastInstance` is created that way, it is not registered
-in the application context.
-
 
 
 [[boot-features-caching-provider-infinispan]]
