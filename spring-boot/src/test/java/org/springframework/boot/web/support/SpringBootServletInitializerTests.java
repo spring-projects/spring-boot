@@ -26,8 +26,8 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.EmbeddedWebServer;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -96,8 +96,8 @@ public class SpringBootServletInitializerTests {
 
 	@Test
 	public void errorPageFilterRegistrationCanBeDisabled() throws Exception {
-		EmbeddedServletContainer container = new UndertowEmbeddedServletContainerFactory(
-				0).getEmbeddedServletContainer(new ServletContextInitializer() {
+		EmbeddedWebServer container = new UndertowEmbeddedServletContainerFactory(0)
+				.getEmbeddedServletContainer(new ServletContextInitializer() {
 
 					@Override
 					public void onStartup(ServletContext servletContext)
