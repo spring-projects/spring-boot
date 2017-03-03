@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.web.support;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,8 +26,14 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.support.SpringBootServletInitializer.ErrorPageFilterConfiguration;
+import org.springframework.boot.context.embedded.EmbeddedServletContainer;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -88,11 +95,43 @@ public class SpringBootServletInitializerTests {
 	}
 
 	@Test
-	public void withErrorPageFilterNotRegistered() throws Exception {
-		new WithErrorPageFilterNotRegistered()
-				.createRootApplicationContext(this.servletContext);
-		assertThat(this.application.getSources())
-				.containsOnly(WithErrorPageFilterNotRegistered.class);
+	public void errorPageFilterRegistrationCanBeDisabled() throws Exception {
+		EmbeddedServletContainer container = new UndertowEmbeddedServletContainerFactory(
+				0).getEmbeddedServletContainer(new ServletContextInitializer() {
+
+					@Override
+					public void onStartup(ServletContext servletContext)
+							throws ServletException {
+						AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
+								.createRootApplicationContext(servletContext);
+						try {
+							assertThat(context.getBeansOfType(ErrorPageFilter.class))
+									.hasSize(0);
+						}
+						finally {
+							context.close();
+						}
+					}
+				});
+		try {
+			container.start();
+		}
+		finally {
+			container.stop();
+		}
+	}
+
+	@Test
+	public void executableWarThatUsesServletInitializerDoesNotHaveErrorPageFilterConfigured()
+			throws Exception {
+		ConfigurableApplicationContext context = new SpringApplication(
+				ExecutableWar.class).run();
+		try {
+			assertThat(context.getBeansOfType(ErrorPageFilter.class)).hasSize(0);
+		}
+		finally {
+			context.close();
+		}
 	}
 
 	@Test
@@ -146,11 +185,21 @@ public class SpringBootServletInitializerTests {
 	}
 
 	@Configuration
-	public class WithErrorPageFilterNotRegistered
-			extends MockSpringBootServletInitializer {
+	public static class WithErrorPageFilterNotRegistered
+			extends SpringBootServletInitializer {
 
 		public WithErrorPageFilterNotRegistered() {
 			setRegisterErrorPageFilter(false);
+		}
+
+	}
+
+	@Configuration
+	public static class ExecutableWar extends SpringBootServletInitializer {
+
+		@Bean
+		public EmbeddedServletContainerFactory containerFactory() {
+			return new UndertowEmbeddedServletContainerFactory(0);
 		}
 
 	}
