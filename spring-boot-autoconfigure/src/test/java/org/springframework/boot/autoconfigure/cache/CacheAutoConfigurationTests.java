@@ -52,7 +52,6 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.support.MockCachingProvider;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
@@ -347,7 +346,7 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void jCacheCacheWithConfig() throws IOException {
 		String cachingProviderFqn = MockCachingProvider.class.getName();
-		String configLocation = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
+		String configLocation = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
 		load(JCacheCustomConfiguration.class, "spring.cache.type=jcache",
 				"spring.cache.jcache.provider=" + cachingProviderFqn,
 				"spring.cache.jcache.config=" + configLocation);
@@ -431,7 +430,8 @@ public class CacheAutoConfigurationTests {
 
 	@Test
 	public void hazelcastCacheExplicit() {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=hazelcast");
+		load(new Class[] { HazelcastAutoConfiguration.class,
+				DefaultCacheConfiguration.class }, "spring.cache.type=hazelcast");
 		HazelcastCacheManager cacheManager = validateCacheManager(
 				HazelcastCacheManager.class);
 		// NOTE: the hazelcast implementation knows about a cache in a lazy manner.
@@ -443,36 +443,8 @@ public class CacheAutoConfigurationTests {
 
 	@Test
 	public void hazelcastCacheWithCustomizers() {
-		testCustomizers(DefaultCacheAndCustomizersConfiguration.class, "hazelcast",
+		testCustomizers(HazelcastCacheAndCustomizersConfiguration.class, "hazelcast",
 				"allCacheManagerCustomizer", "hazelcastCacheManagerCustomizer");
-	}
-
-	@Test
-	@Deprecated
-	public void hazelcastCacheWithConfig() throws IOException {
-		load(DefaultCacheConfiguration.class, "spring.cache.type=hazelcast",
-				"spring.cache.hazelcast.config=org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml");
-		HazelcastInstance hazelcastInstance = this.context
-				.getBean(HazelcastInstance.class);
-		HazelcastCacheManager cacheManager = validateCacheManager(
-				HazelcastCacheManager.class);
-		HazelcastInstance actual = cacheManager.getHazelcastInstance();
-		assertThat(actual).isSameAs(hazelcastInstance);
-		assertThat(actual.getConfig().getConfigurationUrl())
-				.isEqualTo(new ClassPathResource(
-						"org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml")
-								.getURL());
-		cacheManager.getCache("foobar");
-		assertThat(cacheManager.getCacheNames()).containsOnly("foobar");
-	}
-
-	@Test
-	@Deprecated
-	public void hazelcastWithWrongConfig() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("foo/bar/unknown.xml");
-		load(DefaultCacheConfiguration.class, "spring.cache.type=hazelcast",
-				"spring.cache.hazelcast.config=foo/bar/unknown.xml");
 	}
 
 	@Test
@@ -485,49 +457,20 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void hazelcastCacheWithMainHazelcastAutoConfiguration() throws IOException {
-		String mainConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
-		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(applicationContext,
-				"spring.cache.type=hazelcast", "spring.hazelcast.config=" + mainConfig);
-		applicationContext.register(DefaultCacheConfiguration.class);
-		applicationContext.register(HazelcastAndCacheConfiguration.class);
-		applicationContext.refresh();
-		this.context = applicationContext;
+	public void hazelcastCacheWithHazelcastAutoConfiguration() throws IOException {
+		String hazelcastConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
+		load(new Class[] { HazelcastAutoConfiguration.class,
+						DefaultCacheConfiguration.class }, "spring.cache.type=hazelcast",
+				"spring.hazelcast.config=" + hazelcastConfig);
 		HazelcastCacheManager cacheManager = validateCacheManager(
 				HazelcastCacheManager.class);
 		HazelcastInstance hazelcastInstance = this.context
 				.getBean(HazelcastInstance.class);
-		assertThat(cacheManager.getHazelcastInstance()).isEqualTo(hazelcastInstance);
+		assertThat(cacheManager.getHazelcastInstance()).isSameAs(hazelcastInstance);
 		assertThat(hazelcastInstance.getConfig().getConfigurationFile())
-				.isEqualTo(new ClassPathResource(mainConfig).getFile());
-	}
-
-	@Test
-	@Deprecated
-	public void hazelcastCacheWithMainHazelcastAutoConfigurationAndSeparateCacheConfig()
-			throws IOException {
-		String mainConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
-		String cacheConfig = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
-		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(applicationContext,
-				"spring.cache.type=hazelcast",
-				"spring.cache.hazelcast.config=" + cacheConfig,
-				"spring.hazelcast.config=" + mainConfig);
-		applicationContext.register(DefaultCacheConfiguration.class);
-		applicationContext.register(HazelcastAndCacheConfiguration.class);
-		applicationContext.refresh();
-		this.context = applicationContext;
-		HazelcastInstance hazelcastInstance = this.context
-				.getBean(HazelcastInstance.class);
-		HazelcastCacheManager cacheManager = validateCacheManager(
-				HazelcastCacheManager.class);
-		HazelcastInstance cacheHazelcastInstance = cacheManager.getHazelcastInstance();
-		assertThat(cacheHazelcastInstance).isNotEqualTo(hazelcastInstance); // Our custom
-		assertThat(hazelcastInstance.getConfig().getConfigurationFile())
-				.isEqualTo(new ClassPathResource(mainConfig).getFile());
-		assertThat(cacheHazelcastInstance.getConfig().getConfigurationFile())
-				.isEqualTo(new ClassPathResource(cacheConfig).getFile());
+				.isEqualTo(new ClassPathResource(hazelcastConfig).getFile());
+		assertThat(cacheManager.getCache("foobar")).isNotNull();
+		assertThat(cacheManager.getCacheNames()).containsOnly("foobar");
 	}
 
 	@Test
@@ -549,7 +492,7 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void hazelcastAsJCacheWithConfig() throws IOException {
 		String cachingProviderFqn = HazelcastCachingProvider.class.getName();
-		String configLocation = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
+		String configLocation = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
 		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
 				"spring.cache.jcache.provider=" + cachingProviderFqn,
 				"spring.cache.jcache.config=" + configLocation);
@@ -711,9 +654,13 @@ public class CacheAutoConfigurationTests {
 	}
 
 	private void load(Class<?> config, String... environment) {
+		load(new Class[]{config}, environment);
+	}
+
+	private void load(Class<?>[] configs, String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
-		applicationContext.register(config);
+		applicationContext.register(configs);
 		applicationContext.register(CacheAutoConfiguration.class);
 		applicationContext.refresh();
 		this.context = applicationContext;
@@ -757,6 +704,14 @@ public class CacheAutoConfigurationTests {
 	@Import({ GenericCacheConfiguration.class,
 			CacheManagerCustomizersConfiguration.class })
 	static class GenericCacheAndCustomizersConfiguration {
+
+	}
+
+	@Configuration
+	@EnableCaching
+	@Import({ HazelcastAutoConfiguration.class,
+			CacheManagerCustomizersConfiguration.class })
+	static class HazelcastCacheAndCustomizersConfiguration {
 
 	}
 
@@ -867,13 +822,6 @@ public class CacheAutoConfigurationTests {
 		public HazelcastInstance customHazelcastInstance() {
 			return mock(HazelcastInstance.class);
 		}
-
-	}
-
-	@Configuration
-	@ImportAutoConfiguration({ CacheAutoConfiguration.class,
-			HazelcastAutoConfiguration.class })
-	static class HazelcastAndCacheConfiguration {
 
 	}
 

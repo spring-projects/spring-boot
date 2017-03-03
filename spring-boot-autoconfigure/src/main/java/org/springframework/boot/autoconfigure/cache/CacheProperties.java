@@ -51,8 +51,6 @@ public class CacheProperties {
 
 	private final EhCache ehcache = new EhCache();
 
-	private final Hazelcast hazelcast = new Hazelcast();
-
 	private final Infinispan infinispan = new Infinispan();
 
 	private final JCache jcache = new JCache();
@@ -83,11 +81,6 @@ public class CacheProperties {
 
 	public EhCache getEhcache() {
 		return this.ehcache;
-	}
-
-	@Deprecated
-	public Hazelcast getHazelcast() {
-		return this.hazelcast;
 	}
 
 	public Infinispan getInfinispan() {
@@ -174,30 +167,6 @@ public class CacheProperties {
 		 */
 		private Resource config;
 
-		public Resource getConfig() {
-			return this.config;
-		}
-
-		public void setConfig(Resource config) {
-			this.config = config;
-		}
-
-	}
-
-	/**
-	 * Hazelcast specific cache properties.
-	 */
-	@Deprecated
-	public static class Hazelcast {
-
-		/**
-		 * The location of the configuration file to use to initialize Hazelcast.
-		 */
-		private Resource config;
-
-		@DeprecatedConfigurationProperty(replacement = "spring.hazelcast.config",
-				reason = "Use general hazelcast auto-configuration instead.")
-		@Deprecated
 		public Resource getConfig() {
 			return this.config;
 		}
