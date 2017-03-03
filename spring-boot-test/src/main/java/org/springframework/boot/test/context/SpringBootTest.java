@@ -25,6 +25,8 @@ import java.lang.annotation.Target;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.context.ReactiveWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.context.ApplicationContext;
@@ -112,28 +114,31 @@ public @interface SpringBootTest {
 	enum WebEnvironment {
 
 		/**
-		 * Creates a {@link WebApplicationContext} with a mock servlet environment or a
-		 * regular {@link ApplicationContext} if servlet APIs are not on the classpath.
+		 * Creates a {@link WebApplicationContext} with a mock servlet environment if
+		 * servlet APIs are on the classpath, a {@link ReactiveWebApplicationContext}
+		 * if Spring WebFlux is on the classpath or a regular {@link ApplicationContext}
+		 * otherwise.
 		 */
 		MOCK(false),
 
 		/**
-		 * Creates an {@link EmbeddedWebApplicationContext} and sets a
-		 * {@code server.port=0} {@link Environment} property (which usually triggers
-		 * listening on a random port). Often used in conjunction with a
-		 * {@link LocalServerPort} injected field on the test.
+		 * Creates a (reactive) web application context and sets a {@code server.port=0}
+		 * {@link Environment} property (which usually triggers listening on a random
+		 * port). Often used in conjunction with a {@link LocalServerPort} injected field
+		 * on the test.
 		 */
 		RANDOM_PORT(true),
 
 		/**
-		 * Creates an {@link EmbeddedWebApplicationContext} without defining any
+		 * Creates a (reactive) web application context without defining any
 		 * {@code server.port=0} {@link Environment} property.
 		 */
 		DEFINED_PORT(true),
 
 		/**
 		 * Creates an {@link ApplicationContext} and sets
-		 * {@link SpringApplication#setWebEnvironment(boolean)} to {@code false}.
+		 * {@link SpringApplication#setWebApplicationType(WebApplicationType)} to
+		 * {@link WebApplicationType#NONE}.
 		 */
 		NONE(false);
 
