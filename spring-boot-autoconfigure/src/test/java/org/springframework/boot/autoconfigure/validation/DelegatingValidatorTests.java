@@ -99,7 +99,6 @@ public class DelegatingValidatorTests {
 		Object[] hints = { "foo", "bar" };
 		this.delegating.validate(target, errors, hints);
 		verify(this.delegate).validate(target, errors, hints);
-		;
 	}
 
 	@Test

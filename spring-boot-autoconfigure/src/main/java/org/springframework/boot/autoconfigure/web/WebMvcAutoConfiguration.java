@@ -735,7 +735,7 @@ public class WebMvcAutoConfiguration {
 	static class DelegatingWebMvcValidator extends DelegatingValidator
 			implements ApplicationContextAware, InitializingBean, DisposableBean {
 
-		public DelegatingWebMvcValidator(Validator targetValidator) {
+		DelegatingWebMvcValidator(Validator targetValidator) {
 			super(targetValidator);
 		}
 
