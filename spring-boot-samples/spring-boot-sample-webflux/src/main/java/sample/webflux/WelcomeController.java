@@ -18,6 +18,11 @@ package sample.webflux;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSource;
+import reactor.core.publisher.Mono;
+
+import java.util.stream.Stream;
 
 @RestController
 public class WelcomeController {
@@ -27,4 +32,16 @@ public class WelcomeController {
 		return "Hello World";
 	}
 
+	@GetMapping("/mono")
+	public Mono<String> mono() {
+		return Mono.just("mono");
+	}
+
+	@GetMapping("/flux")
+	public Flux<String> flux() {
+		return FluxSource.fromStream(
+				Stream.of("one", "two", "three", "two", "one")
+						.map("flux-"::concat))
+				.distinct();
+	}
 }

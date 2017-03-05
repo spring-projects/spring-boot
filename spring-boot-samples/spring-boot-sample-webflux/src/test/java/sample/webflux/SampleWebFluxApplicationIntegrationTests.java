@@ -18,13 +18,15 @@ package sample.webflux;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Basic integration tests for WebFlux application.
@@ -47,4 +49,21 @@ public class SampleWebFluxApplicationIntegrationTests {
 				.expectBody(String.class).value().isEqualTo("Hello World");
 	}
 
+	@Test
+	public void testMono() throws Exception {
+		this.webClient
+				.get().uri("/mono")
+				.exchange()
+				.expectBody(String.class).value().isEqualTo("mono");
+	}
+
+	@Test
+	public void testFlux() throws Exception {
+		this.webClient
+				.get().uri("/flux")
+				.exchange()
+				.expectBody(String.class).value().isEqualTo(
+						Stream.of("flux-one", "flux-two", "flux-three")
+								.collect(Collectors.joining()));
+	}
 }
