@@ -167,7 +167,8 @@ public class HealthMvcEndpointTests {
 	public void rightAuthorityPresentShouldExposeDetails() throws Exception {
 		this.environment.getPropertySources().addLast(SECURITY_ROLES);
 		Authentication principal = mock(Authentication.class);
-		Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("HERO"));
+		Set<SimpleGrantedAuthority> authorities = Collections
+				.singleton(new SimpleGrantedAuthority("HERO"));
 		doReturn(authorities).when(principal).getAuthorities();
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());

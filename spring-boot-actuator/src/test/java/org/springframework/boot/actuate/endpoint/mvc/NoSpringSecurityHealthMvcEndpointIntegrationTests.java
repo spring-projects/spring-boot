@@ -67,13 +67,15 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void healthWhenRightRoleNotPresentShouldExposeHealthDetails() throws Exception {
+	public void healthWhenRightRoleNotPresentShouldExposeHealthDetails()
+			throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		mockMvc.perform(get("/health").with(getRequestPostProcessor())).andExpect(status().isOk())
+		mockMvc.perform(get("/health").with(getRequestPostProcessor()))
+				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("\"status\":\"UP\"")));
 	}
 
@@ -93,12 +95,15 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 
 	private RequestPostProcessor getRequestPostProcessor() {
 		return new RequestPostProcessor() {
+
 			@Override
-			public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+			public MockHttpServletRequest postProcessRequest(
+					MockHttpServletRequest request) {
 				Principal principal = mock(Principal.class);
 				request.setUserPrincipal(principal);
 				return request;
 			}
+
 		};
 	}
 
@@ -117,6 +122,7 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 				public Health health() {
 					return Health.up().withDetail("hello", "world").build();
 				}
+
 			};
 		}
 

@@ -40,6 +40,9 @@ public class MongoProperties {
 	 */
 	public static final int DEFAULT_PORT = 27017;
 
+	/**
+	 * Default URI used when the configured URI is {@code null}.
+	 */
 	public static final String DEFAULT_URI = "mongodb://localhost/test";
 
 	/**

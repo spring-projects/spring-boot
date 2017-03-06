@@ -27,6 +27,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.util.Assert;
 
 /**
  * {@link BeanPostProcessor} that applies all {@link EmbeddedServletContainerCustomizer}s
@@ -45,6 +46,9 @@ public class EmbeddedServletContainerCustomizerBeanPostProcessor
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) {
+		Assert.isInstanceOf(ListableBeanFactory.class, beanFactory,
+				"EmbeddedServletContainerCustomizerBeanPostProcessor can only be used "
+						+ "with a ListableBeanFactory");
 		this.beanFactory = (ListableBeanFactory) beanFactory;
 	}
 

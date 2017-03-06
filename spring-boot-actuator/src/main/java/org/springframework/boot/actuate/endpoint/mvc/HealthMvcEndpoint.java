@@ -183,7 +183,8 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		return (accessTime - this.lastAccess) >= getDelegate().getTimeToLive();
 	}
 
-	protected boolean exposeHealthDetails(HttpServletRequest request, Principal principal) {
+	protected boolean exposeHealthDetails(HttpServletRequest request,
+			Principal principal) {
 		if (!this.secure) {
 			return true;
 		}
@@ -192,7 +193,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 			if (request.isUserInRole(role)) {
 				return true;
 			}
-			if (isSpringSecurityAuthentication(principal))  {
+			if (isSpringSecurityAuthentication(principal)) {
 				Authentication authentication = (Authentication) principal;
 				for (GrantedAuthority authority : authentication.getAuthorities()) {
 					String name = authority.getAuthority();
@@ -217,7 +218,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 
 	private boolean isSpringSecurityAuthentication(Principal principal) {
 		return ClassUtils.isPresent("org.springframework.security.core.Authentication",
-				null) && (principal instanceof Authentication);
+				null) && principal instanceof Authentication;
 	}
 
 }
