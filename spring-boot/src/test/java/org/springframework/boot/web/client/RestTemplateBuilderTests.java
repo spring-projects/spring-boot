@@ -19,7 +19,6 @@ package org.springframework.boot.web.client;
 import java.util.Collections;
 import java.util.Set;
 
-import com.squareup.okhttp.OkHttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.junit.Before;
 import org.junit.Rule;
@@ -482,28 +481,6 @@ public class RestTemplateBuilderTests {
 				.build().getRequestFactory();
 		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
 				.isEqualTo(1234);
-	}
-
-	@Test
-	@Deprecated
-	public void connectTimeoutCanBeConfiguredOnOkHttp2RequestFactory() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(
-						org.springframework.http.client.OkHttpClientHttpRequestFactory.class)
-				.setConnectTimeout(1234).build().getRequestFactory();
-		assertThat(((OkHttpClient) ReflectionTestUtils.getField(requestFactory, "client"))
-				.getConnectTimeout()).isEqualTo(1234);
-	}
-
-	@Test
-	@Deprecated
-	public void readTimeoutCanBeConfiguredOnOkHttp2RequestFactory() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(
-						org.springframework.http.client.OkHttpClientHttpRequestFactory.class)
-				.setReadTimeout(1234).build().getRequestFactory();
-		assertThat(((OkHttpClient) ReflectionTestUtils.getField(requestFactory, "client"))
-				.getReadTimeout()).isEqualTo(1234);
 	}
 
 	@Test
