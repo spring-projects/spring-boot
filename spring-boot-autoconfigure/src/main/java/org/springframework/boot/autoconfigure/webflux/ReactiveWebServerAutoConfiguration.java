@@ -84,9 +84,11 @@ public class ReactiveWebServerAutoConfiguration {
 			}
 			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(
 					ReactiveWebServerCustomizerBeanPostProcessor.class, true, false))) {
+				RootBeanDefinition beanDefinition = new RootBeanDefinition(
+						ReactiveWebServerCustomizerBeanPostProcessor.class);
+				beanDefinition.setSynthetic(true);
 				registry.registerBeanDefinition(
-						"reactiveWebServerCustomizerBeanPostProcessor",
-						new RootBeanDefinition(ReactiveWebServerCustomizerBeanPostProcessor.class));
+						"reactiveWebServerCustomizerBeanPostProcessor", beanDefinition);
 
 			}
 		}
