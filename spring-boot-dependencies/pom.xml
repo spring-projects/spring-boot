@@ -142,7 +142,7 @@
 		<postgresql.version>9.4.1212.jre7</postgresql.version>
 		<querydsl.version>4.1.4</querydsl.version>
 		<reactor-bom.version>Aluminium-SR1</reactor-bom.version>
-		<rxjava.version>1.2.6</rxjava.version>
+		<rxjava.version>1.2.7</rxjava.version>
 		<rxjava-adapter.version>1.2.1</rxjava-adapter.version>
 		<rxjava2.version>2.0.6</rxjava2.version>
 		<selenium.version>3.1.0</selenium.version>
