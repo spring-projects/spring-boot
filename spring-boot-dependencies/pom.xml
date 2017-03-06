@@ -170,7 +170,7 @@
 		<spring-retry.version>1.2.0.RELEASE</spring-retry.version>
 		<spring-security.version>4.2.2.RELEASE</spring-security.version>
 		<spring-security-jwt.version>1.0.7.RELEASE</spring-security-jwt.version>
-		<spring-security-oauth.version>2.0.13.RELEASE</spring-security-oauth.version>
+		<spring-security-oauth.version>2.1.0.RELEASE</spring-security-oauth.version>
 		<spring-session.version>2.0.0.BUILD-SNAPSHOT</spring-session.version>
 		<spring-social.version>2.0.0.BUILD-SNAPSHOT</spring-social.version>
 		<spring-social-facebook.version>3.0.0.BUILD-SNAPSHOT</spring-social-facebook.version>
