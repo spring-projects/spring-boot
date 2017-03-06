@@ -23,9 +23,8 @@ import org.springframework.boot.web.servlet.ErrorPage;
 import org.springframework.boot.web.servlet.ErrorPageRegistry;
 
 /**
- * Interface that regroups common customizations to
- * embedded server factories such as {@link EmbeddedServletContainerFactory}
- * and {@link ReactiveWebServerFactory}.
+ * Interface that regroups common customizations to embedded server factories such as
+ * {@link EmbeddedServletContainerFactory} and {@link ReactiveWebServerFactory}.
  * @author Brian Clozel
  * @since 2.0.0
  */

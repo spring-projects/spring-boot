@@ -60,7 +60,6 @@ public class ReactiveMongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		prepareApplicationContext(TestConfiguration.class);
-
 		assertThat(this.context.getBean(ReactiveCityRepository.class)).isNotNull();
 		MongoClient client = this.context.getBean(MongoClient.class);
 		assertThat(client).isInstanceOf(MongoClient.class);
@@ -75,7 +74,6 @@ public class ReactiveMongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {
 		prepareApplicationContext(EmptyConfiguration.class);
-
 		MongoClient client = this.context.getBean(MongoClient.class);
 		assertThat(client).isInstanceOf(MongoClient.class);
 	}
@@ -83,14 +81,13 @@ public class ReactiveMongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		prepareApplicationContext(CustomizedConfiguration.class);
-
-		assertThat(this.context.getBeansOfType(ReactiveCityMongoDbRepository.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(ReactiveCityMongoDbRepository.class))
+				.isEmpty();
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
 		prepareApplicationContext(SortOfInvalidCustomConfiguration.class);
-
 		this.context.getBean(ReactiveCityRepository.class);
 	}
 
@@ -98,8 +95,7 @@ public class ReactiveMongoRepositoriesAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(configurationClasses);
 		this.context.register(MongoAutoConfiguration.class,
-				MongoDataAutoConfiguration.class,
-				ReactiveMongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class, ReactiveMongoAutoConfiguration.class,
 				ReactiveMongoDataAutoConfiguration.class,
 				ReactiveMongoRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);

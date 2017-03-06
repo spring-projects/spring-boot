@@ -20,15 +20,16 @@ import org.springframework.boot.context.embedded.AbstractReactiveWebServerFactor
 import org.springframework.boot.context.embedded.AbstractReactiveWebServerFactoryTests;
 
 /**
- * Tests for {@link UndertowReactiveWebServerFactory} and
- * {@link UndertowWebServer}.
+ * Tests for {@link UndertowReactiveWebServerFactory} and {@link UndertowWebServer}.
  *
  * @author Brian Clozel
  */
-public class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
+public class UndertowReactiveWebServerFactoryTests
+		extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
 	protected AbstractReactiveWebServerFactory getFactory() {
 		return new UndertowReactiveWebServerFactory(0);
 	}
+
 }

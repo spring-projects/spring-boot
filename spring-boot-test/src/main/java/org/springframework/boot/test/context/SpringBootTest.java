@@ -115,8 +115,8 @@ public @interface SpringBootTest {
 
 		/**
 		 * Creates a {@link WebApplicationContext} with a mock servlet environment if
-		 * servlet APIs are on the classpath, a {@link ReactiveWebApplicationContext}
-		 * if Spring WebFlux is on the classpath or a regular {@link ApplicationContext}
+		 * servlet APIs are on the classpath, a {@link ReactiveWebApplicationContext} if
+		 * Spring WebFlux is on the classpath or a regular {@link ApplicationContext}
 		 * otherwise.
 		 */
 		MOCK(false),

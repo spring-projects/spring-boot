@@ -42,8 +42,8 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedConfig) {
-		SpringBootTest annotation = AnnotatedElementUtils.getMergedAnnotation(
-				mergedConfig.getTestClass(), SpringBootTest.class);
+		SpringBootTest annotation = AnnotatedElementUtils
+				.getMergedAnnotation(mergedConfig.getTestClass(), SpringBootTest.class);
 		if (annotation.webEnvironment().isEmbedded()) {
 			registerWebTestClient(context);
 		}

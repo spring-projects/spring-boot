@@ -54,8 +54,8 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link EmbeddedWebServer} that can be used to control an embedded Undertow
- * server. Typically this class should be created using
+ * {@link EmbeddedWebServer} that can be used to control an embedded Undertow server.
+ * Typically this class should be created using
  * {@link UndertowEmbeddedServletContainerFactory} and not directly.
  *
  * @author Ivan Sopov
@@ -169,8 +169,8 @@ public class UndertowEmbeddedServletContainer implements EmbeddedWebServer {
 								failedPorts.iterator().next().getNumber());
 					}
 				}
-				throw new EmbeddedWebServerException(
-						"Unable to start embedded Undertow", ex);
+				throw new EmbeddedWebServerException("Unable to start embedded Undertow",
+						ex);
 			}
 		}
 	}
@@ -317,8 +317,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedWebServer {
 				this.undertow.stop();
 			}
 			catch (Exception ex) {
-				throw new EmbeddedWebServerException("Unable to stop undertow",
-						ex);
+				throw new EmbeddedWebServerException("Unable to stop undertow", ex);
 			}
 		}
 	}

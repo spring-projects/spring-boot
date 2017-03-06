@@ -58,7 +58,7 @@ abstract class RemoteApplicationLauncher implements ApplicationLauncher {
 		remoteDirectory.mkdirs();
 		FileSystemUtils.copyRecursively(new File("target/test-classes/com"),
 				new File("target/remote/com"));
-		List<String> entries = new ArrayList<String>();
+		List<String> entries = new ArrayList<>();
 		entries.add("target/remote");
 		for (File jar : new File("target/dependencies").listFiles()) {
 			entries.add(jar.getAbsolutePath());

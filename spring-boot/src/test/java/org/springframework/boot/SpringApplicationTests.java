@@ -403,10 +403,12 @@ public class SpringApplicationTests {
 
 	@Test
 	public void defaultApplicationContextForReactiveWeb() throws Exception {
-		SpringApplication application = new SpringApplication(ExampleReactiveWebConfig.class);
+		SpringApplication application = new SpringApplication(
+				ExampleReactiveWebConfig.class);
 		application.setWebApplicationType(WebApplicationType.REACTIVE);
 		this.context = application.run();
-		assertThat(this.context).isInstanceOf(EmbeddedReactiveWebApplicationContext.class);
+		assertThat(this.context)
+				.isInstanceOf(EmbeddedReactiveWebApplicationContext.class);
 	}
 
 	@Test
@@ -574,7 +576,7 @@ public class SpringApplicationTests {
 
 	@Test
 	public void loadSources() throws Exception {
-		Object[] sources = {ExampleConfig.class, "a", TestCommandLineRunner.class};
+		Object[] sources = { ExampleConfig.class, "a", TestCommandLineRunner.class };
 		TestSpringApplication application = new TestSpringApplication(sources);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setUseMockLoader(true);
@@ -586,7 +588,7 @@ public class SpringApplicationTests {
 	@Test
 	public void wildcardSources() {
 		Object[] sources = {
-				"classpath:org/springframework/boot/sample-${sample.app.test.prop}.xml"};
+				"classpath:org/springframework/boot/sample-${sample.app.test.prop}.xml" };
 		TestSpringApplication application = new TestSpringApplication(sources);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
@@ -601,7 +603,7 @@ public class SpringApplicationTests {
 	@Test
 	public void runComponents() throws Exception {
 		this.context = SpringApplication.run(
-				new Object[] {ExampleWebConfig.class, Object.class}, new String[0]);
+				new Object[] { ExampleWebConfig.class, Object.class }, new String[0]);
 		assertThat(this.context).isNotNull();
 	}
 
@@ -716,7 +718,7 @@ public class SpringApplicationTests {
 	public void defaultCommandLineArgs() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setDefaultProperties(StringUtils.splitArrayElementsIntoProperties(
-				new String[] {"baz=", "bar=spam"}, "="));
+				new String[] { "baz=", "bar=spam" }, "="));
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--bar=foo", "bucket", "crap");
 		assertThat(this.context).isInstanceOf(AnnotationConfigApplicationContext.class);
@@ -867,7 +869,7 @@ public class SpringApplicationTests {
 		assertThat(this.context.getEnvironment().getProperty("foo")).isEqualTo("bar");
 		assertThat(this.context.getEnvironment().getPropertySources().iterator().next()
 				.getName()).isEqualTo(
-				TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
+						TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
 	}
 
 	@Test
@@ -1045,7 +1047,6 @@ public class SpringApplicationTests {
 		}
 
 	}
-
 
 	@Configuration
 	static class FailingConfig {

@@ -55,7 +55,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 	protected EmbeddedWebServer webServer;
 
-
 	@After
 	public void tearDown() {
 		if (this.webServer != null) {
@@ -74,21 +73,17 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	public void startStopServer() {
 		this.webServer = getFactory().getReactiveHttpServer(new EchoHandler());
 		this.webServer.start();
-		Mono<String> result = getWebClient()
-				.post().uri("/test")
+		Mono<String> result = getWebClient().post().uri("/test")
 				.contentType(MediaType.TEXT_PLAIN)
 				.exchange(BodyInserters.fromObject("Hello World"))
 				.then(response -> response.bodyToMono(String.class));
 		assertThat(result.block()).isEqualTo("Hello World");
 
 		this.webServer.stop();
-		Mono<ClientResponse> response = getWebClient()
-				.post().uri("/test")
+		Mono<ClientResponse> response = getWebClient().post().uri("/test")
 				.contentType(MediaType.TEXT_PLAIN)
 				.exchange(BodyInserters.fromObject("Hello World"));
-		StepVerifier.create(response)
-				.expectError()
-				.verify();
+		StepVerifier.create(response).expectError().verify();
 	}
 
 	@Test
@@ -99,9 +94,8 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		this.webServer = factory.getReactiveHttpServer(new EchoHandler());
 		this.webServer.start();
 
-		Mono<String> result = WebClient.create("http://localhost:" + specificPort)
-				.post().uri("/test")
-				.contentType(MediaType.TEXT_PLAIN)
+		Mono<String> result = WebClient.create("http://localhost:" + specificPort).post()
+				.uri("/test").contentType(MediaType.TEXT_PLAIN)
 				.exchange(BodyInserters.fromObject("Hello World"))
 				.then(response -> response.bodyToMono(String.class));
 
@@ -120,4 +114,5 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			return response.writeWith(request.getBody());
 		}
 	}
+
 }

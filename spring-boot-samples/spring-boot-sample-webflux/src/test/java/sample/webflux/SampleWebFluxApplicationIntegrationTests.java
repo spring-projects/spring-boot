@@ -40,10 +40,7 @@ public class SampleWebFluxApplicationIntegrationTests {
 
 	@Test
 	public void testWelcome() throws Exception {
-		this.webClient
-				.get().uri("/")
-				.accept(MediaType.TEXT_PLAIN)
-				.exchange()
+		this.webClient.get().uri("/").accept(MediaType.TEXT_PLAIN).exchange()
 				.expectBody(String.class).value().isEqualTo("Hello World");
 	}
 

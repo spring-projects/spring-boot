@@ -364,6 +364,7 @@ public class ServerProperties {
 		 * {@link javax.servlet.SessionTrackingMode}.
 		 */
 		public enum SessionTrackingMode {
+
 			/**
 			 * Send a cookie in response to the client's first request.
 			 */
@@ -869,7 +870,6 @@ public class ServerProperties {
 		public Accesslog getAccesslog() {
 			return this.accesslog;
 		}
-
 
 		public static class Accesslog {
 

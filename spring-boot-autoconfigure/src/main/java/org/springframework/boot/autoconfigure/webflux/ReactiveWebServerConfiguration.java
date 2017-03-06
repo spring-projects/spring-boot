@@ -30,43 +30,51 @@ import org.springframework.context.annotation.Bean;
 
 /**
  * Configuration classes for reactive web servers
- * <p>Those should be {@code @Import} in a regular auto-configuration class
- * to guarantee their order of execution.
+ * <p>
+ * Those should be {@code @Import} in a regular auto-configuration class to guarantee
+ * their order of execution.
  *
  * @author Brian Clozel
  */
 abstract class ReactiveWebServerConfiguration {
 
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
-	@ConditionalOnClass({HttpServer.class})
+	@ConditionalOnClass({ HttpServer.class })
 	static class ReactorNettyAutoConfiguration {
+
 		@Bean
 		public ReactorNettyReactiveWebServerFactory reactorNettyReactiveWebServerFactory() {
 			return new ReactorNettyReactiveWebServerFactory();
 		}
+
 	}
 
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
-	@ConditionalOnClass({org.apache.catalina.startup.Tomcat.class})
+	@ConditionalOnClass({ org.apache.catalina.startup.Tomcat.class })
 	static class TomcatAutoConfiguration {
+
 		@Bean
 		public TomcatReactiveWebServerFactory tomcatReactiveWebServerFactory() {
 			return new TomcatReactiveWebServerFactory();
 		}
+
 	}
 
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
-	@ConditionalOnClass({org.eclipse.jetty.server.Server.class})
+	@ConditionalOnClass({ org.eclipse.jetty.server.Server.class })
 	static class JettyAutoConfiguration {
+
 		@Bean
 		public JettyReactiveWebServerFactory jettyReactiveWebServerFactory() {
 			return new JettyReactiveWebServerFactory();
 		}
+
 	}
 
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
-	@ConditionalOnClass({Undertow.class})
+	@ConditionalOnClass({ Undertow.class })
 	static class UndertowAutoConfiguration {
+
 		@Bean
 		public UndertowReactiveWebServerFactory undertowReactiveWebServerFactory() {
 			return new UndertowReactiveWebServerFactory();

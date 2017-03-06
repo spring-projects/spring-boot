@@ -460,7 +460,7 @@ public class CacheAutoConfigurationTests {
 	public void hazelcastCacheWithHazelcastAutoConfiguration() throws IOException {
 		String hazelcastConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
 		load(new Class[] { HazelcastAutoConfiguration.class,
-						DefaultCacheConfiguration.class }, "spring.cache.type=hazelcast",
+				DefaultCacheConfiguration.class }, "spring.cache.type=hazelcast",
 				"spring.hazelcast.config=" + hazelcastConfig);
 		HazelcastCacheManager cacheManager = validateCacheManager(
 				HazelcastCacheManager.class);
@@ -654,7 +654,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	private void load(Class<?> config, String... environment) {
-		load(new Class[]{config}, environment);
+		load(new Class[] { config }, environment);
 	}
 
 	private void load(Class<?>[] configs, String... environment) {

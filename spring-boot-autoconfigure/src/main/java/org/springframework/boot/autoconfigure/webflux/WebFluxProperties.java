@@ -39,4 +39,5 @@ public class WebFluxProperties {
 	public void setStaticPathPattern(String staticPathPattern) {
 		this.staticPathPattern = staticPathPattern;
 	}
+
 }

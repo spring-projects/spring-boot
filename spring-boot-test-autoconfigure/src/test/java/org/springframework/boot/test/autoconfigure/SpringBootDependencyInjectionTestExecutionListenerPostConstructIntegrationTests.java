@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 public class SpringBootDependencyInjectionTestExecutionListenerPostConstructIntegrationTests {
 
-	private List<String> calls = new ArrayList<String>();
+	private List<String> calls = new ArrayList<>();
 
 	@PostConstruct
 	public void postConstruct() {

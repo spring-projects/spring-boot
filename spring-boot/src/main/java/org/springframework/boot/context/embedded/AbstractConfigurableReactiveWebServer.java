@@ -30,7 +30,8 @@ import org.springframework.util.Assert;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class AbstractConfigurableReactiveWebServer implements ConfigurableReactiveWebServer {
+public class AbstractConfigurableReactiveWebServer
+		implements ConfigurableReactiveWebServer {
 
 	private int port = 8080;
 
@@ -143,4 +144,5 @@ public class AbstractConfigurableReactiveWebServer implements ConfigurableReacti
 	public void setServerHeader(String serverHeader) {
 		this.serverHeader = serverHeader;
 	}
+
 }

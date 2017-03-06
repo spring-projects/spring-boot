@@ -405,8 +405,7 @@ public class WebMvcAutoConfiguration {
 					getClass().getClassLoader())) {
 				return super.mvcValidator();
 			}
-			return SpringValidator.get(getApplicationContext(),
-					getValidator());
+			return SpringValidator.get(getApplicationContext(), getValidator());
 		}
 
 		@Override

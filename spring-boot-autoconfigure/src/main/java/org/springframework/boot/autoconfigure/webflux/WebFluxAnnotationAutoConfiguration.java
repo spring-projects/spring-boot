@@ -70,6 +70,7 @@ import org.springframework.web.reactive.result.view.ViewResolver;
  * @author Brian Clozel
  * @author Rob Winch
  * @author Stephane Nicoll
+ * @since 2.0.0
  */
 @Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
@@ -80,7 +81,7 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 public class WebFluxAnnotationAutoConfiguration {
 
 	@Configuration
-	@EnableConfigurationProperties({ResourceProperties.class, WebFluxProperties.class})
+	@EnableConfigurationProperties({ ResourceProperties.class, WebFluxProperties.class })
 	@Import(EnableWebFluxConfiguration.class)
 	public static class WebFluxConfig implements WebFluxConfigurer {
 
@@ -98,7 +99,6 @@ public class WebFluxAnnotationAutoConfiguration {
 
 		private final List<ViewResolver> viewResolvers;
 
-
 		public WebFluxConfig(ResourceProperties resourceProperties,
 				WebFluxProperties webFluxProperties, ListableBeanFactory beanFactory,
 				ObjectProvider<List<HandlerMethodArgumentResolver>> resolvers,
@@ -108,7 +108,8 @@ public class WebFluxAnnotationAutoConfiguration {
 			this.webFluxProperties = webFluxProperties;
 			this.beanFactory = beanFactory;
 			this.argumentResolvers = resolvers.getIfAvailable();
-			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizer.getIfAvailable();
+			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizer
+					.getIfAvailable();
 			this.viewResolvers = viewResolvers.getIfAvailable();
 		}
 
@@ -131,16 +132,19 @@ public class WebFluxAnnotationAutoConfiguration {
 						.addResourceHandler("/webjars/**")
 						.addResourceLocations("classpath:/META-INF/resources/webjars/");
 				if (cachePeriod != null) {
-					registration.setCacheControl(CacheControl.maxAge(cachePeriod, TimeUnit.SECONDS));
+					registration.setCacheControl(
+							CacheControl.maxAge(cachePeriod, TimeUnit.SECONDS));
 				}
 				customizeResourceHandlerRegistration(registration);
 			}
 			String staticPathPattern = this.webFluxProperties.getStaticPathPattern();
 			if (!registry.hasMappingForPattern(staticPathPattern)) {
-				ResourceHandlerRegistration registration = registry.addResourceHandler(staticPathPattern)
-						.addResourceLocations(this.resourceProperties.getStaticLocations());
+				ResourceHandlerRegistration registration = registry
+						.addResourceHandler(staticPathPattern).addResourceLocations(
+								this.resourceProperties.getStaticLocations());
 				if (cachePeriod != null) {
-					registration.setCacheControl(CacheControl.maxAge(cachePeriod, TimeUnit.SECONDS));
+					registration.setCacheControl(
+							CacheControl.maxAge(cachePeriod, TimeUnit.SECONDS));
 				}
 				customizeResourceHandlerRegistration(registration);
 			}
@@ -194,8 +198,7 @@ public class WebFluxAnnotationAutoConfiguration {
 					getClass().getClassLoader())) {
 				return super.webFluxValidator();
 			}
-			return SpringValidator.get(getApplicationContext(),
-					getValidator());
+			return SpringValidator.get(getApplicationContext(), getValidator());
 		}
 
 	}
@@ -208,6 +211,7 @@ public class WebFluxAnnotationAutoConfiguration {
 		public ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer() {
 			return new ResourceChainResourceHandlerRegistrationCustomizer();
 		}
+
 	}
 
 	interface ResourceHandlerRegistrationCustomizer {
@@ -259,4 +263,5 @@ public class WebFluxAnnotationAutoConfiguration {
 		}
 
 	}
+
 }

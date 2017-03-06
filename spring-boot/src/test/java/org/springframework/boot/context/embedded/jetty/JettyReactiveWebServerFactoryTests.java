@@ -20,15 +20,16 @@ import org.springframework.boot.context.embedded.AbstractReactiveWebServerFactor
 import org.springframework.boot.context.embedded.AbstractReactiveWebServerFactoryTests;
 
 /**
- * Tests for {@link JettyReactiveWebServerFactory} and
- * {@link JettyWebServer}.
+ * Tests for {@link JettyReactiveWebServerFactory} and {@link JettyWebServer}.
  *
  * @author Brian Clozel
  */
-public class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
+public class JettyReactiveWebServerFactoryTests
+		extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
 	protected AbstractReactiveWebServerFactory getFactory() {
 		return new JettyReactiveWebServerFactory(0);
 	}
+
 }

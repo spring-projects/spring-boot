@@ -41,7 +41,7 @@ class WebFluxTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 
 	static {
-		Set<Class<?>> includes = new LinkedHashSet<Class<?>>();
+		Set<Class<?>> includes = new LinkedHashSet<>();
 		includes.add(ControllerAdvice.class);
 		includes.add(JsonComponent.class);
 		includes.add(WebFluxConfigurer.class);
@@ -51,7 +51,7 @@ class WebFluxTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	private static final Set<Class<?>> DEFAULT_INCLUDES_AND_CONTROLLER;
 
 	static {
-		Set<Class<?>> includes = new LinkedHashSet<Class<?>>(DEFAULT_INCLUDES);
+		Set<Class<?>> includes = new LinkedHashSet<>(DEFAULT_INCLUDES);
 		includes.add(Controller.class);
 		DEFAULT_INCLUDES_AND_CONTROLLER = Collections.unmodifiableSet(includes);
 	}
@@ -71,10 +71,10 @@ class WebFluxTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	@Override
 	protected ComponentScan.Filter[] getFilters(FilterType type) {
 		switch (type) {
-			case INCLUDE:
-				return this.annotation.includeFilters();
-			case EXCLUDE:
-				return this.annotation.excludeFilters();
+		case INCLUDE:
+			return this.annotation.includeFilters();
+		case EXCLUDE:
+			return this.annotation.excludeFilters();
 		}
 		throw new IllegalStateException("Unsupported type " + type);
 	}

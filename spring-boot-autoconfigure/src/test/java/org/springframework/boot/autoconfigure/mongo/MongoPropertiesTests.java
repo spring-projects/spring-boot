@@ -76,7 +76,7 @@ public class MongoPropertiesTests {
 		builder.requiredReplicaSetName("testReplicaSetName");
 		MongoClientOptions options = builder.build();
 		MongoProperties properties = new MongoProperties();
-		MongoClient client =  new MongoClientFactory(properties, null)
+		MongoClient client = new MongoClientFactory(properties, null)
 				.createMongoClient(options);
 		MongoClientOptions wrapped = client.getMongoClientOptions();
 		assertThat(wrapped.isAlwaysUseMBeans()).isEqualTo(options.isAlwaysUseMBeans());

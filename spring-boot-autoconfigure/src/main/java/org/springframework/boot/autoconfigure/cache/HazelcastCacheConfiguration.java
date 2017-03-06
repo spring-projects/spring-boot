@@ -57,8 +57,8 @@ class HazelcastCacheConfiguration {
 	}
 
 	@Bean
-	public HazelcastCacheManager cacheManager(
-			HazelcastInstance existingHazelcastInstance) throws IOException {
+	public HazelcastCacheManager cacheManager(HazelcastInstance existingHazelcastInstance)
+			throws IOException {
 		HazelcastCacheManager cacheManager = new HazelcastCacheManager(
 				existingHazelcastInstance);
 		return this.customizers.customize(cacheManager);

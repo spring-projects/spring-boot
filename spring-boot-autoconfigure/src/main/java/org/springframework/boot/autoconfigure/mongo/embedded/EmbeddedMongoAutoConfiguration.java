@@ -235,8 +235,8 @@ public class EmbeddedMongoAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass({ com.mongodb.reactivestreams.client.MongoClient.class,
 			ReactiveMongoClientFactoryBean.class })
-	protected static class EmbeddedReactiveMongoDependencyConfiguration extends
-			ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor {
+	protected static class EmbeddedReactiveMongoDependencyConfiguration
+			extends ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor {
 
 		public EmbeddedReactiveMongoDependencyConfiguration() {
 			super("embeddedMongoServer");

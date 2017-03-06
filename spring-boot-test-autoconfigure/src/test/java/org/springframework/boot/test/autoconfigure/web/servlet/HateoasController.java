@@ -35,13 +35,13 @@ class HateoasController {
 
 	@RequestMapping("/resource")
 	public Resource<Map<String, String>> resource() {
-		return new Resource<Map<String, String>>(new HashMap<String, String>(),
+		return new Resource<>(new HashMap<String, String>(),
 				new Link("self", "http://api.example.com"));
 	}
 
 	@RequestMapping("/plain")
 	public Map<String, String> plain() {
-		return new HashMap<String, String>();
+		return new HashMap<>();
 	}
 
 }

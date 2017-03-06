@@ -20,9 +20,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 
 /**
- * Event to be published after the application context is
- * refreshed and the {@link EmbeddedWebServer} is ready. Useful for
- * obtaining the local port of a running server.
+ * Event to be published after the application context is refreshed and the
+ * {@link EmbeddedWebServer} is ready. Useful for obtaining the local port of a running
+ * server.
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
@@ -63,8 +63,8 @@ public abstract class EmbeddedWebServerInitializedEvent extends ApplicationEvent
 	}
 
 	/**
-	 * Access the {@link EmbeddedWebServer} Id used internally
-	 * to differentiate application / management servers.
+	 * Access the {@link EmbeddedWebServer} Id used internally to differentiate
+	 * application / management servers.
 	 * @return the server internal Id
 	 */
 	public abstract String getServerId();

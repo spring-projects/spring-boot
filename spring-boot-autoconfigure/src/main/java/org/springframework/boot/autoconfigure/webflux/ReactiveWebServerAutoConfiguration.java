@@ -41,16 +41,17 @@ import org.springframework.util.ObjectUtils;
  * {@link EnableAutoConfiguration Auto-configuration} for a reactive web server.
  *
  * @author Brian Clozel
+ * @since 2.0.0
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @EnableConfigurationProperties(ServerProperties.class)
-@Import({ReactiveWebServerAutoConfiguration.BeanPostProcessorsRegistrar.class,
+@Import({ ReactiveWebServerAutoConfiguration.BeanPostProcessorsRegistrar.class,
 		ReactiveWebServerConfiguration.TomcatAutoConfiguration.class,
 		ReactiveWebServerConfiguration.JettyAutoConfiguration.class,
 		ReactiveWebServerConfiguration.ReactorNettyAutoConfiguration.class,
-		ReactiveWebServerConfiguration.UndertowAutoConfiguration.class})
+		ReactiveWebServerConfiguration.UndertowAutoConfiguration.class })
 public class ReactiveWebServerAutoConfiguration {
 
 	@ConditionalOnMissingBean
@@ -61,8 +62,8 @@ public class ReactiveWebServerAutoConfiguration {
 	}
 
 	/**
-	 * Registers a {@link ReactiveWebServerCustomizerBeanPostProcessor}. Registered
-	 * via {@link ImportBeanDefinitionRegistrar} for early registration.
+	 * Registers a {@link ReactiveWebServerCustomizerBeanPostProcessor}. Registered via
+	 * {@link ImportBeanDefinitionRegistrar} for early registration.
 	 */
 	public static class BeanPostProcessorsRegistrar
 			implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
@@ -94,4 +95,5 @@ public class ReactiveWebServerAutoConfiguration {
 		}
 
 	}
+
 }

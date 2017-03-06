@@ -29,8 +29,8 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 /**
- * {@link BeanPostProcessor} that applies all {@link ReactiveWebServerCustomizer}s
- * from the bean factory to {@link ConfigurableReactiveWebServer} beans.
+ * {@link BeanPostProcessor} that applies all {@link ReactiveWebServerCustomizer}s from
+ * the bean factory to {@link ConfigurableReactiveWebServer} beans.
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
@@ -63,8 +63,7 @@ public class ReactiveWebServerCustomizerBeanPostProcessor
 		return bean;
 	}
 
-	private void postProcessBeforeInitialization(
-			ConfigurableReactiveWebServer bean) {
+	private void postProcessBeforeInitialization(ConfigurableReactiveWebServer bean) {
 		for (ReactiveWebServerCustomizer customizer : getCustomizers()) {
 			customizer.customize(bean);
 		}
@@ -73,11 +72,9 @@ public class ReactiveWebServerCustomizerBeanPostProcessor
 	private Collection<ReactiveWebServerCustomizer> getCustomizers() {
 		if (this.customizers == null) {
 			// Look up does not include the parent context
-			this.customizers = new ArrayList<ReactiveWebServerCustomizer>(
-					this.beanFactory
-							.getBeansOfType(ReactiveWebServerCustomizer.class,
-									false, false)
-							.values());
+			this.customizers = new ArrayList<ReactiveWebServerCustomizer>(this.beanFactory
+					.getBeansOfType(ReactiveWebServerCustomizer.class, false, false)
+					.values());
 			Collections.sort(this.customizers, AnnotationAwareOrderComparator.INSTANCE);
 			this.customizers = Collections.unmodifiableList(this.customizers);
 		}

@@ -28,6 +28,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * Auto-configuration for {@link WebTestClient}.
  *
  * @author Stephane Nicoll
+ * @since 2.0.0
  */
 @Configuration
 @ConditionalOnClass({ WebClient.class, WebTestClient.class })

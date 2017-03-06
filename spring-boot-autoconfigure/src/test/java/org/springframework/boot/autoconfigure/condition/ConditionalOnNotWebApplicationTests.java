@@ -65,9 +65,9 @@ public class ConditionalOnNotWebApplicationTests {
 	@Test
 	public void testNotWebApplicationWithReactiveContext() {
 		GenericReactiveWebApplicationContext ctx = new GenericReactiveWebApplicationContext();
-		ctx.register(ReactiveApplicationConfig.class, NotWebApplicationConfiguration.class);
+		ctx.register(ReactiveApplicationConfig.class,
+				NotWebApplicationConfiguration.class);
 		ctx.refresh();
-
 		this.context = ctx;
 		assertThat(this.context.getBeansOfType(String.class)).isEmpty();
 	}
@@ -77,10 +77,9 @@ public class ConditionalOnNotWebApplicationTests {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		ctx.register(NotWebApplicationConfiguration.class);
 		ctx.refresh();
-
 		this.context = ctx;
-		assertThat(this.context.getBeansOfType(String.class)).containsExactly(
-				entry("none", "none"));
+		assertThat(this.context.getBeansOfType(String.class))
+				.containsExactly(entry("none", "none"));
 	}
 
 	@Configuration
@@ -95,6 +94,7 @@ public class ConditionalOnNotWebApplicationTests {
 		public HttpHandler httpHandler() {
 			return (request, response) -> Mono.empty();
 		}
+
 	}
 
 	@Configuration

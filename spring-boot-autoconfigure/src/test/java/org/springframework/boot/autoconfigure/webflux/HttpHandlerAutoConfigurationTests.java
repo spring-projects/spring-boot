@@ -57,8 +57,8 @@ public class HttpHandlerAutoConfigurationTests {
 	public void shouldNotProcessIfExistingHttpHandler() {
 		load(CustomHttpHandler.class);
 		assertThat(this.context.getBeansOfType(HttpHandler.class)).hasSize(1);
-		assertThat(this.context.getBean(HttpHandler.class)).isSameAs(
-				this.context.getBean("customHttpHandler"));
+		assertThat(this.context.getBean(HttpHandler.class))
+				.isSameAs(this.context.getBean("customHttpHandler"));
 	}
 
 	@Test
@@ -113,7 +113,6 @@ public class HttpHandlerAutoConfigurationTests {
 		fail("Did not find any FilteringWebHandler");
 	}
 
-
 	private void load(Class<?> config, String... environment) {
 		this.context = new GenericReactiveWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
@@ -151,8 +150,10 @@ public class HttpHandlerAutoConfigurationTests {
 
 		@Bean
 		public RouterFunction routerFunction() {
-			return RouterFunctions.route(RequestPredicates.GET("/test"), serverRequest -> null);
+			return RouterFunctions.route(RequestPredicates.GET("/test"),
+					serverRequest -> null);
 		}
+
 	}
 
 	@Configuration
@@ -160,13 +161,15 @@ public class HttpHandlerAutoConfigurationTests {
 
 		@Bean
 		public RouterFunction routerFunction() {
-			return RouterFunctions.route(RequestPredicates.GET("/test"), serverRequest -> null);
+			return RouterFunctions.route(RequestPredicates.GET("/test"),
+					serverRequest -> null);
 		}
 
 		@Bean
 		public WebFilter customWebFilter() {
 			return (serverWebExchange, webFilterChain) -> null;
 		}
+
 	}
 
 	@Configuration
@@ -179,8 +182,10 @@ public class HttpHandlerAutoConfigurationTests {
 
 		@Bean
 		public RouterFunction routerFunction() {
-			return RouterFunctions.route(RequestPredicates.GET("/test"), serverRequest -> null);
+			return RouterFunctions.route(RequestPredicates.GET("/test"),
+					serverRequest -> null);
 		}
+
 	}
 
 }

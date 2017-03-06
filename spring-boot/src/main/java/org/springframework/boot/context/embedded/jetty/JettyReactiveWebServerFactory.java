@@ -35,8 +35,7 @@ import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.JettyHttpHandlerAdapter;
 
 /**
- * {@link ReactiveWebServerFactory} that can be used to create
- * {@link JettyWebServer}s.
+ * {@link ReactiveWebServerFactory} that can be used to create {@link JettyWebServer}s.
  *
  * @author Brian Clozel
  */
@@ -90,8 +89,8 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		Server server = new Server(getThreadPool());
 		server.addConnector(createConnector(address, server));
 		ServletHolder servletHolder = new ServletHolder(servlet);
-		ServletContextHandler contextHandler = new ServletContextHandler(server,
-				"", false, false);
+		ServletContextHandler contextHandler = new ServletContextHandler(server, "",
+				false, false);
 		contextHandler.addServlet(servletHolder, "/");
 		this.logger.info("Server initialized with port: " + port);
 		return server;

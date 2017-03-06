@@ -28,9 +28,8 @@ import org.apache.commons.logging.LogFactory;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public abstract class AbstractReactiveWebServerFactory
-		extends AbstractConfigurableReactiveWebServer
-		implements ReactiveWebServerFactory {
+public abstract class AbstractReactiveWebServerFactory extends
+		AbstractConfigurableReactiveWebServer implements ReactiveWebServerFactory {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
@@ -40,7 +39,6 @@ public abstract class AbstractReactiveWebServerFactory
 	public AbstractReactiveWebServerFactory(int port) {
 		super(port);
 	}
-
 
 	/**
 	 * Return the absolute temp dir for given web server.

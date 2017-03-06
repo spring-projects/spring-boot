@@ -17,9 +17,9 @@
 package org.springframework.boot.context.embedded;
 
 /**
- * Simple interface that represents a fully configured embedded web server (for
- * example Tomcat or Jetty). Allows the server to be {@link #start() started} and
- * {@link #stop() stopped}.
+ * Simple interface that represents a fully configured embedded web server (for example
+ * Tomcat or Jetty). Allows the server to be {@link #start() started} and {@link #stop()
+ * stopped}.
  * <p>
  * Instances of this class are usually obtained via a
  * {@link EmbeddedServletContainerFactory}.
@@ -31,15 +31,15 @@ package org.springframework.boot.context.embedded;
 public interface EmbeddedWebServer {
 
 	/**
-	 * Starts the embedded web server. Calling this method on an already started
-	 * container has no effect.
+	 * Starts the embedded web server. Calling this method on an already started container
+	 * has no effect.
 	 * @throws EmbeddedWebServerException if the container cannot be started
 	 */
 	void start() throws EmbeddedWebServerException;
 
 	/**
-	 * Stops the embedded web server. Calling this method on an already stopped
-	 * container has no effect.
+	 * Stops the embedded web server. Calling this method on an already stopped container
+	 * has no effect.
 	 * @throws EmbeddedWebServerException if the container cannot be stopped
 	 */
 	void stop() throws EmbeddedWebServerException;

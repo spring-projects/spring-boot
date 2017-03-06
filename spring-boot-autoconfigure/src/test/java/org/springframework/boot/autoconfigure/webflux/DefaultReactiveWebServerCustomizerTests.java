@@ -38,7 +38,6 @@ public class DefaultReactiveWebServerCustomizerTests {
 
 	private DefaultReactiveWebServerCustomizer customizer;
 
-
 	@Before
 	public void setup() throws Exception {
 		this.customizer = new DefaultReactiveWebServerCustomizer(this.properties);
@@ -60,4 +59,5 @@ public class DefaultReactiveWebServerCustomizerTests {
 		this.customizer.customize(factory);
 		verify(factory).setAddress(address);
 	}
+
 }

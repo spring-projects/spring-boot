@@ -38,7 +38,7 @@ public class ExplodedRemoteApplicationLauncher extends RemoteApplicationLauncher
 		appDirectory.mkdirs();
 		FileSystemUtils.copyRecursively(new File("target/test-classes/com"),
 				new File("target/app/com"));
-		List<String> entries = new ArrayList<String>();
+		List<String> entries = new ArrayList<>();
 		entries.add("target/app");
 		for (File jar : new File("target/dependencies").listFiles()) {
 			entries.add(jar.getAbsolutePath());

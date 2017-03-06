@@ -32,7 +32,8 @@ import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
  *
  * @author Brian Clozel
  */
-public class ReactorNettyReactiveWebServerFactory extends AbstractReactiveWebServerFactory {
+public class ReactorNettyReactiveWebServerFactory
+		extends AbstractReactiveWebServerFactory {
 
 	public ReactorNettyReactiveWebServerFactory() {
 	}
@@ -44,14 +45,16 @@ public class ReactorNettyReactiveWebServerFactory extends AbstractReactiveWebSer
 	@Override
 	public EmbeddedWebServer getReactiveHttpServer(HttpHandler httpHandler) {
 		HttpServer server = createHttpServer();
-		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(httpHandler);
+		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(
+				httpHandler);
 		return new ReactorNettyWebServer(server, handlerAdapter);
 	}
 
 	@Override
 	public EmbeddedWebServer getReactiveHttpServer(Map<String, HttpHandler> handlerMap) {
 		HttpServer server = createHttpServer();
-		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(handlerMap);
+		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(
+				handlerMap);
 		return new ReactorNettyWebServer(server, handlerAdapter);
 	}
 

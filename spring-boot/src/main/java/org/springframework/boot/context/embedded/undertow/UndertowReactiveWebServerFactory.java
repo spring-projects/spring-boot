@@ -27,8 +27,7 @@ import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.UndertowHttpHandlerAdapter;
 
 /**
- * {@link ReactiveWebServerFactory} that can be used to create
- * {@link UndertowWebServer}s.
+ * {@link ReactiveWebServerFactory} that can be used to create {@link UndertowWebServer}s.
  *
  * @author Brian Clozel
  */
@@ -49,8 +48,8 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	}
 
 	/**
-	 * Create a new {@link UndertowReactiveWebServerFactory} that listens for
-	 * requests using the specified port.
+	 * Create a new {@link UndertowReactiveWebServerFactory} that listens for requests
+	 * using the specified port.
 	 * @param port the port to listen on
 	 */
 	public UndertowReactiveWebServerFactory(int port) {
@@ -97,4 +96,5 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		}
 		return getAddress().getHostAddress();
 	}
+
 }

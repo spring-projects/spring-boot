@@ -67,23 +67,21 @@ public class WebFluxAnnotationAutoConfigurationTests {
 	@Test
 	public void shouldNotProcessIfExistingWebReactiveConfiguration() throws Exception {
 		load(WebFluxConfigurationSupport.class);
-
-		assertThat(this.context.getBeansOfType(RequestMappingHandlerMapping.class)
-				.size()).isEqualTo(1);
-		assertThat(this.context.getBeansOfType(RequestMappingHandlerAdapter.class)
-				.size()).isEqualTo(1);
+		assertThat(this.context.getBeansOfType(RequestMappingHandlerMapping.class).size())
+				.isEqualTo(1);
+		assertThat(this.context.getBeansOfType(RequestMappingHandlerAdapter.class).size())
+				.isEqualTo(1);
 	}
 
 	@Test
 	public void shouldCreateDefaultBeans() throws Exception {
 		load();
-
-		assertThat(this.context.getBeansOfType(RequestMappingHandlerMapping.class)
-				.size()).isEqualTo(1);
-		assertThat(this.context.getBeansOfType(RequestMappingHandlerAdapter.class)
-				.size()).isEqualTo(1);
-		assertThat(this.context.getBeansOfType(CompositeContentTypeResolver.class)
-				.size()).isEqualTo(1);
+		assertThat(this.context.getBeansOfType(RequestMappingHandlerMapping.class).size())
+				.isEqualTo(1);
+		assertThat(this.context.getBeansOfType(RequestMappingHandlerAdapter.class).size())
+				.isEqualTo(1);
+		assertThat(this.context.getBeansOfType(CompositeContentTypeResolver.class).size())
+				.isEqualTo(1);
 		assertThat(this.context.getBean("resourceHandlerMapping", HandlerMapping.class))
 				.isNotNull();
 	}
@@ -91,18 +89,18 @@ public class WebFluxAnnotationAutoConfigurationTests {
 	@Test
 	public void shouldRegisterCustomHandlerMethodArgumentResolver() throws Exception {
 		load(CustomArgumentResolvers.class);
-
-		RequestMappingHandlerAdapter adapter = this.context.getBean(
-				RequestMappingHandlerAdapter.class);
+		RequestMappingHandlerAdapter adapter = this.context
+				.getBean(RequestMappingHandlerAdapter.class);
 		assertThat(adapter.getArgumentResolvers()).contains(
-				this.context.getBean("firstResolver", HandlerMethodArgumentResolver.class),
-				this.context.getBean("secondResolver", HandlerMethodArgumentResolver.class));
+				this.context.getBean("firstResolver",
+						HandlerMethodArgumentResolver.class),
+				this.context.getBean("secondResolver",
+						HandlerMethodArgumentResolver.class));
 	}
 
 	@Test
 	public void shouldRegisterResourceHandlerMapping() throws Exception {
 		load();
-
 		SimpleUrlHandlerMapping hm = this.context.getBean("resourceHandlerMapping",
 				SimpleUrlHandlerMapping.class);
 		assertThat(hm.getUrlMap().get("/**")).isInstanceOf(ResourceWebHandler.class);
@@ -153,12 +151,11 @@ public class WebFluxAnnotationAutoConfigurationTests {
 	@Test
 	public void shouldRegisterViewResolvers() throws Exception {
 		load(ViewResolvers.class);
-		ViewResolutionResultHandler resultHandler = this.context.getBean(
-				ViewResolutionResultHandler.class);
+		ViewResolutionResultHandler resultHandler = this.context
+				.getBean(ViewResolutionResultHandler.class);
 		assertThat(resultHandler.getViewResolvers()).containsExactly(
 				this.context.getBean("aViewResolver", ViewResolver.class),
-				this.context.getBean("anotherViewResolver", ViewResolver.class)
-		);
+				this.context.getBean("anotherViewResolver", ViewResolver.class));
 	}
 
 	@Test
@@ -217,8 +214,7 @@ public class WebFluxAnnotationAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		Validator validator = this.context.getBean(Validator.class);
 		assertThat(validator).isInstanceOf(SpringValidator.class);
-		SpringValidatorAdapter target = ((SpringValidator) validator)
-				.getTarget();
+		SpringValidatorAdapter target = ((SpringValidator) validator).getTarget();
 		assertThat(new DirectFieldAccessor(target).getPropertyValue("targetValidator"))
 				.isSameAs(this.context.getBean(javax.validation.Validator.class));
 	}
@@ -268,7 +264,7 @@ public class WebFluxAnnotationAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({WebFluxAnnotationAutoConfiguration.class})
+	@Import({ WebFluxAnnotationAutoConfiguration.class })
 	@EnableConfigurationProperties(WebFluxProperties.class)
 	protected static class BaseConfiguration {
 

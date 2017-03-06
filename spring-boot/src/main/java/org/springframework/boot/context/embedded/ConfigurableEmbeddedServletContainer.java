@@ -37,7 +37,8 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
  * @see EmbeddedServletContainerFactory
  * @see EmbeddedServletContainerCustomizer
  */
-public interface ConfigurableEmbeddedServletContainer extends ConfigurableEmbeddedWebServer {
+public interface ConfigurableEmbeddedServletContainer
+		extends ConfigurableEmbeddedWebServer {
 
 	/**
 	 * Sets the context path for the embedded servlet container. The context should start

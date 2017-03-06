@@ -36,9 +36,9 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link EmbeddedWebServer} that can be used to control a Jetty web server.
- * Usually this class should be created using the
- * {@link JettyReactiveWebServerFactory} and not directly.
+ * {@link EmbeddedWebServer} that can be used to control a Jetty web server. Usually this
+ * class should be created using the {@link JettyReactiveWebServerFactory} and not
+ * directly.
  *
  * @author Phillip Webb
  * @author Dave Syer
@@ -49,8 +49,7 @@ import org.springframework.util.StringUtils;
  */
 public class JettyWebServer implements EmbeddedWebServer {
 
-	private static final Log logger = LogFactory
-			.getLog(JettyWebServer.class);
+	private static final Log logger = LogFactory.getLog(JettyWebServer.class);
 
 	private final Object monitor = new Object();
 
@@ -233,4 +232,5 @@ public class JettyWebServer implements EmbeddedWebServer {
 	public Server getServer() {
 		return this.server;
 	}
+
 }

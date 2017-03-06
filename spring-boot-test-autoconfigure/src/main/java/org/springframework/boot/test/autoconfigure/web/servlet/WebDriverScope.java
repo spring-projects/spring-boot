@@ -50,7 +50,7 @@ class WebDriverScope implements Scope {
 	private static final String[] BEAN_CLASSES = { WEB_DRIVER_CLASS,
 			"org.springframework.test.web.servlet.htmlunit.webdriver.MockMvcHtmlUnitDriverBuilder" };
 
-	private final Map<String, Object> instances = new HashMap<String, Object>();
+	private final Map<String, Object> instances = new HashMap<>();
 
 	@Override
 	public Object get(String name, ObjectFactory<?> objectFactory) {

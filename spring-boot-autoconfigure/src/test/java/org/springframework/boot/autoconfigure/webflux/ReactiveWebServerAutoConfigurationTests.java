@@ -48,47 +48,55 @@ public class ReactiveWebServerAutoConfigurationTests {
 	@Test
 	public void createFromConfigClass() {
 		this.context = new EmbeddedReactiveWebApplicationContext(BaseConfiguration.class);
-
-		assertThat(this.context.getBeansOfType(ReactiveWebServerFactory.class)).hasSize(1);
-		assertThat(this.context.getBeansOfType(ReactiveWebServerCustomizer.class)).hasSize(1);
-		assertThat(this.context.getBeansOfType(DefaultReactiveWebServerCustomizer.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(ReactiveWebServerFactory.class))
+				.hasSize(1);
+		assertThat(this.context.getBeansOfType(ReactiveWebServerCustomizer.class))
+				.hasSize(1);
+		assertThat(this.context.getBeansOfType(DefaultReactiveWebServerCustomizer.class))
+				.hasSize(1);
 	}
 
 	@Test
 	public void missingHttpHandler() {
 		this.thrown.expect(ApplicationContextException.class);
 		this.thrown.expectMessage(Matchers.containsString("missing HttpHandler bean"));
-		this.context = new EmbeddedReactiveWebApplicationContext(MissingHttpHandlerConfiguration.class);
+		this.context = new EmbeddedReactiveWebApplicationContext(
+				MissingHttpHandlerConfiguration.class);
 	}
 
 	@Test
 	public void multipleHttpHandler() {
 		this.thrown.expect(ApplicationContextException.class);
-		this.thrown.expectMessage(Matchers
-				.containsString("multiple HttpHandler beans : httpHandler,additionalHttpHandler"));
-		this.context = new EmbeddedReactiveWebApplicationContext(BaseConfiguration.class, TooManyHttpHandlers.class);
+		this.thrown.expectMessage(Matchers.containsString(
+				"multiple HttpHandler beans : httpHandler,additionalHttpHandler"));
+		this.context = new EmbeddedReactiveWebApplicationContext(BaseConfiguration.class,
+				TooManyHttpHandlers.class);
 	}
 
 	@Test
 	public void customizeReactiveWebServer() {
 		this.context = new EmbeddedReactiveWebApplicationContext(BaseConfiguration.class,
 				ReactiveWebServerCustomization.class);
-		MockReactiveWebServerFactory factory = this.context.getBean(MockReactiveWebServerFactory.class);
+		MockReactiveWebServerFactory factory = this.context
+				.getBean(MockReactiveWebServerFactory.class);
 		assertThat(factory.getPort()).isEqualTo(9000);
 	}
 
 	@Configuration
-	@Import({MockWebServerAutoConfiguration.class, ReactiveWebServerAutoConfiguration.class})
+	@Import({ MockWebServerAutoConfiguration.class,
+			ReactiveWebServerAutoConfiguration.class })
 	protected static class BaseConfiguration {
 
 		@Bean
 		public HttpHandler httpHandler() {
 			return Mockito.mock(HttpHandler.class);
 		}
+
 	}
 
 	@Configuration
-	@Import({MockWebServerAutoConfiguration.class, ReactiveWebServerAutoConfiguration.class})
+	@Import({ MockWebServerAutoConfiguration.class,
+			ReactiveWebServerAutoConfiguration.class })
 	protected static class MissingHttpHandlerConfiguration {
 
 	}
@@ -100,6 +108,7 @@ public class ReactiveWebServerAutoConfigurationTests {
 		public HttpHandler additionalHttpHandler() {
 			return Mockito.mock(HttpHandler.class);
 		}
+
 	}
 
 	@Configuration
@@ -109,6 +118,7 @@ public class ReactiveWebServerAutoConfigurationTests {
 		public ReactiveWebServerCustomizer reactiveWebServerCustomizer() {
 			return (server) -> server.setPort(9000);
 		}
+
 	}
 
 	@Configuration
@@ -118,5 +128,7 @@ public class ReactiveWebServerAutoConfigurationTests {
 		public MockReactiveWebServerFactory mockReactiveWebServerFactory() {
 			return new MockReactiveWebServerFactory();
 		}
+
 	}
+
 }

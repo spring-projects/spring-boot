@@ -59,7 +59,7 @@ public class SpringBootDependencyInjectionTestExecutionListener
 		@Override
 		public Set<Class<? extends TestExecutionListener>> postProcessDefaultTestExecutionListeners(
 				Set<Class<? extends TestExecutionListener>> listeners) {
-			Set<Class<? extends TestExecutionListener>> updated = new LinkedHashSet<Class<? extends TestExecutionListener>>(
+			Set<Class<? extends TestExecutionListener>> updated = new LinkedHashSet<>(
 					listeners.size());
 			for (Class<? extends TestExecutionListener> listener : listeners) {
 				updated.add(

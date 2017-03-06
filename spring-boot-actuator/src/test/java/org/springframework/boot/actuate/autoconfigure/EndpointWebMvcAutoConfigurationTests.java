@@ -115,8 +115,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private final AnnotationConfigEmbeddedWebApplicationContext applicationContext =
-			new AnnotationConfigEmbeddedWebApplicationContext();
+	private final AnnotationConfigEmbeddedWebApplicationContext applicationContext = new AnnotationConfigEmbeddedWebApplicationContext();
 
 	private static ThreadLocal<Ports> ports = new ThreadLocal<Ports>();
 
@@ -125,10 +124,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 		Ports values = new Ports();
 		ports.set(values);
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"management.context-path=",
-				"management.security.enabled=false",
-				"server.servlet.context-path=",
-				"server.port=" + ports.get().server);
+				"management.context-path=", "management.security.enabled=false",
+				"server.servlet.context-path=", "server.port=" + ports.get().server);
 	}
 
 	@After
@@ -276,8 +273,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onRandomPort() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"management.port=0", "management.security.enabled=false");
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "management.port=0",
+				"management.security.enabled=false");
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ErrorMvcAutoConfiguration.class);
@@ -565,8 +562,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Test
 	public void managementServerCanDisableSslWhenUsingADifferentPort() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"management.port=" + ports.get().management,
-				"server.ssl.enabled=true", "server.ssl.key-store=classpath:test.jks",
+				"management.port=" + ports.get().management, "server.ssl.enabled=true",
+				"server.ssl.key-store=classpath:test.jks",
 				"server.ssl.key-password=password", "management.ssl.enabled=false");
 
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
@@ -652,8 +649,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	private void endpointEnabledOverride(String name, Class<? extends MvcEndpoint> type)
 			throws Exception {
 		this.applicationContext.register(LoggingConfig.class, RootConfig.class,
-				BaseConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class);
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
 				"endpoints.enabled:false",
 				String.format("endpoints_%s_enabled:true", name));
@@ -736,7 +732,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({PropertyPlaceholderAutoConfiguration.class,
+	@Import({ PropertyPlaceholderAutoConfiguration.class,
 			EmbeddedServletContainerAutoConfiguration.class,
 			JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,

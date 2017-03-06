@@ -60,10 +60,9 @@ public class ConditionalOnWebApplicationTests {
 				ReactiveWebApplicationConfiguration.class);
 		ctx.setServletContext(new MockServletContext());
 		ctx.refresh();
-
 		this.context = ctx;
-		assertThat(this.context.getBeansOfType(String.class)).containsExactly(
-				entry("any", "any"), entry("servlet", "servlet"));
+		assertThat(this.context.getBeansOfType(String.class))
+				.containsExactly(entry("any", "any"), entry("servlet", "servlet"));
 	}
 
 	@Test
@@ -73,10 +72,9 @@ public class ConditionalOnWebApplicationTests {
 				ServletWebApplicationConfiguration.class,
 				ReactiveWebApplicationConfiguration.class);
 		ctx.refresh();
-
 		this.context = ctx;
-		assertThat(this.context.getBeansOfType(String.class)).containsExactly(
-				entry("any", "any"), entry("reactive", "reactive"));
+		assertThat(this.context.getBeansOfType(String.class))
+				.containsExactly(entry("any", "any"), entry("reactive", "reactive"));
 	}
 
 	@Test
@@ -86,7 +84,6 @@ public class ConditionalOnWebApplicationTests {
 				ServletWebApplicationConfiguration.class,
 				ReactiveWebApplicationConfiguration.class);
 		ctx.refresh();
-
 		this.context = ctx;
 		assertThat(this.context.getBeansOfType(String.class)).isEmpty();
 	}
@@ -131,6 +128,7 @@ public class ConditionalOnWebApplicationTests {
 		public HttpHandler httpHandler() {
 			return (request, response) -> Mono.empty();
 		}
+
 	}
 
 }

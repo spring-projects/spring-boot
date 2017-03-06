@@ -77,16 +77,16 @@ class OnWebApplicationCondition extends SpringBootCondition {
 						message.because(servletOutcome.getMessage()));
 			}
 			ConditionOutcome reactiveOutcome = isReactiveWebApplication(context);
-			if (reactiveOutcome.isMatch() && required)  {
+			if (reactiveOutcome.isMatch() && required) {
 				return new ConditionOutcome(reactiveOutcome.isMatch(),
 						message.because(reactiveOutcome.getMessage()));
 			}
-			boolean finalOutcome = (required ?
-					servletOutcome.isMatch() && reactiveOutcome.isMatch() :
-					servletOutcome.isMatch() || reactiveOutcome.isMatch());
-			return new ConditionOutcome(finalOutcome, message.because(
-					servletOutcome.getMessage()).append("and").append(
-							reactiveOutcome.getMessage()));
+			boolean finalOutcome = (required
+					? servletOutcome.isMatch() && reactiveOutcome.isMatch()
+					: servletOutcome.isMatch() || reactiveOutcome.isMatch());
+			return new ConditionOutcome(finalOutcome,
+					message.because(servletOutcome.getMessage()).append("and")
+							.append(reactiveOutcome.getMessage()));
 		}
 	}
 
@@ -115,16 +115,16 @@ class OnWebApplicationCondition extends SpringBootCondition {
 	private ConditionOutcome isReactiveWebApplication(ConditionContext context) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("");
 		if (context.getResourceLoader() instanceof ReactiveWebApplicationContext) {
-			return ConditionOutcome.match(
-					message.foundExactly("ReactiveWebApplicationContext"));
+			return ConditionOutcome
+					.match(message.foundExactly("ReactiveWebApplicationContext"));
 		}
-		return ConditionOutcome.noMatch(message.because(
-				"not a reactive web application"));
+		return ConditionOutcome
+				.noMatch(message.because("not a reactive web application"));
 	}
 
 	private Type deduceType(AnnotatedTypeMetadata metadata) {
-		Map<String, Object> attributes = metadata.getAnnotationAttributes(
-				ConditionalOnWebApplication.class.getName());
+		Map<String, Object> attributes = metadata
+				.getAnnotationAttributes(ConditionalOnWebApplication.class.getName());
 		if (attributes != null) {
 			return (Type) attributes.get("type");
 		}

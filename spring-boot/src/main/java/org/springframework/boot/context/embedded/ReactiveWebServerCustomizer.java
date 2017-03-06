@@ -17,9 +17,9 @@
 package org.springframework.boot.context.embedded;
 
 /**
- * Strategy interface for customizing auto-configured embedded reactive servers. Any
- * beans of this type will get a callback with the server factory before the server
- * itself is started, so you can set the port, address, error pages etc.
+ * Strategy interface for customizing auto-configured embedded reactive servers. Any beans
+ * of this type will get a callback with the server factory before the server itself is
+ * started, so you can set the port, address, error pages etc.
  * @author Brian Clozel
  * @since 2.0.0
  */

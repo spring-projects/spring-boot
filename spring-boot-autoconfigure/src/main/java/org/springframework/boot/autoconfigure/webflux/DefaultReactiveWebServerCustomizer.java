@@ -28,6 +28,7 @@ import org.springframework.core.Ordered;
  * {@link EmbeddedServletContainerCustomizerBeanPostProcessor} is active.
  *
  * @author Brian Clozel
+ * @since 2.0.0
  */
 public class DefaultReactiveWebServerCustomizer
 		implements ReactiveWebServerCustomizer, Ordered {
@@ -57,6 +58,6 @@ public class DefaultReactiveWebServerCustomizer
 		if (this.serverProperties.getCompression() != null) {
 			server.setCompression(this.serverProperties.getCompression());
 		}
-
 	}
+
 }

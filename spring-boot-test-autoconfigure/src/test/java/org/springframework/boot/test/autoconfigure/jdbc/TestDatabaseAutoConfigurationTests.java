@@ -76,7 +76,8 @@ public class TestDatabaseAutoConfigurationTests {
 		this.context = doLoad(config, environment);
 	}
 
-	private ConfigurableApplicationContext doLoad(Class<?> config, String... environment) {
+	private ConfigurableApplicationContext doLoad(Class<?> config,
+			String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		if (config != null) {
 			ctx.register(config);

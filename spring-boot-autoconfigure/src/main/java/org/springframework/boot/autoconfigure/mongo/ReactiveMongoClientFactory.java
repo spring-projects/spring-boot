@@ -56,8 +56,8 @@ public class ReactiveMongoClientFactory {
 
 	/**
 	 * Creates a {@link MongoClient} using the given {@code settings}. If the environment
-	 * contains a {@code local.mongo.port} property, it is used to configure a client
-	 * to an embedded MongoDB instance.
+	 * contains a {@code local.mongo.port} property, it is used to configure a client to
+	 * an embedded MongoDB instance.
 	 * @param settings the settings
 	 * @return the Mongo client
 	 */
@@ -85,8 +85,7 @@ public class ReactiveMongoClientFactory {
 		String host = this.properties.getHost() == null ? "localhost"
 				: this.properties.getHost();
 		ClusterSettings clusterSettings = ClusterSettings.builder()
-				.hosts(Collections.singletonList(new ServerAddress(host, port)))
-				.build();
+				.hosts(Collections.singletonList(new ServerAddress(host, port))).build();
 		builder.clusterSettings(clusterSettings);
 		return MongoClients.create(builder.build());
 	}
@@ -101,12 +100,12 @@ public class ReactiveMongoClientFactory {
 			Builder builder = builder(settings);
 			if (hasCustomCredentials()) {
 				List<MongoCredential> credentials = new ArrayList<MongoCredential>();
-				String database = this.properties.getAuthenticationDatabase() == null ? this.properties
-						.getMongoClientDatabase() : this.properties
-						.getAuthenticationDatabase();
-				credentials.add(MongoCredential.createCredential(
-						this.properties.getUsername(), database,
-						this.properties.getPassword()));
+				String database = this.properties.getAuthenticationDatabase() == null
+						? this.properties.getMongoClientDatabase()
+						: this.properties.getAuthenticationDatabase();
+				credentials.add(
+						MongoCredential.createCredential(this.properties.getUsername(),
+								database, this.properties.getPassword()));
 				builder.credentialList(credentials);
 			}
 			String host = this.properties.getHost() == null ? "localhost"
@@ -127,22 +126,17 @@ public class ReactiveMongoClientFactory {
 	private Builder createBuilder(MongoClientSettings settings,
 			ConnectionString connectionString) {
 		Builder builder = builder(settings)
-				.clusterSettings(
-						ClusterSettings.builder().applyConnectionString(connectionString)
-								.build())
-				.connectionPoolSettings(
-						ConnectionPoolSettings.builder()
-								.applyConnectionString(connectionString).build())
-				.serverSettings(
-						ServerSettings.builder().applyConnectionString(connectionString)
-								.build())
+				.clusterSettings(ClusterSettings.builder()
+						.applyConnectionString(connectionString).build())
+				.connectionPoolSettings(ConnectionPoolSettings.builder()
+						.applyConnectionString(connectionString).build())
+				.serverSettings(ServerSettings.builder()
+						.applyConnectionString(connectionString).build())
 				.credentialList(connectionString.getCredentialList())
-				.sslSettings(
-						SslSettings.builder().applyConnectionString(connectionString)
-								.build())
-				.socketSettings(
-						SocketSettings.builder().applyConnectionString(connectionString)
-								.build());
+				.sslSettings(SslSettings.builder().applyConnectionString(connectionString)
+						.build())
+				.socketSettings(SocketSettings.builder()
+						.applyConnectionString(connectionString).build());
 		if (connectionString.getReadPreference() != null) {
 			builder.readPreference(connectionString.getReadPreference());
 		}

@@ -35,9 +35,9 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link EmbeddedWebServer} that can be used to control a Jetty web server.
- * Usually this class should be created using the
- * {@link UndertowReactiveWebServerFactory} and not directly.
+ * {@link EmbeddedWebServer} that can be used to control a Jetty web server. Usually this
+ * class should be created using the {@link UndertowReactiveWebServerFactory} and not
+ * directly.
  *
  * @author Ivan Sopov
  * @author Andy Wilkinson
@@ -98,8 +98,8 @@ public class UndertowWebServer implements EmbeddedWebServer {
 								failedPorts.iterator().next().getNumber());
 					}
 				}
-				throw new EmbeddedWebServerException(
-						"Unable to start embedded Undertow", ex);
+				throw new EmbeddedWebServerException("Unable to start embedded Undertow",
+						ex);
 			}
 		}
 	}
@@ -141,7 +141,6 @@ public class UndertowWebServer implements EmbeddedWebServer {
 		return ports;
 	}
 
-
 	@SuppressWarnings("unchecked")
 	private List<BoundChannel> extractChannels() {
 		Field channelsField = ReflectionUtils.findField(Undertow.class, "channels");
@@ -155,7 +154,8 @@ public class UndertowWebServer implements EmbeddedWebServer {
 		if (socketAddress instanceof InetSocketAddress) {
 			String protocol = ReflectionUtils.findField(channel.getClass(), "ssl") != null
 					? "https" : "http";
-			return new UndertowWebServer.Port(((InetSocketAddress) socketAddress).getPort(), protocol);
+			return new UndertowWebServer.Port(
+					((InetSocketAddress) socketAddress).getPort(), protocol);
 		}
 		return null;
 	}
@@ -190,7 +190,6 @@ public class UndertowWebServer implements EmbeddedWebServer {
 		return new UndertowWebServer.Port(port, protocol);
 	}
 
-
 	@Override
 	public void stop() throws EmbeddedWebServerException {
 		synchronized (this.monitor) {
@@ -202,8 +201,7 @@ public class UndertowWebServer implements EmbeddedWebServer {
 				this.undertow.stop();
 			}
 			catch (Exception ex) {
-				throw new EmbeddedWebServerException("Unable to stop undertow",
-						ex);
+				throw new EmbeddedWebServerException("Unable to stop undertow", ex);
 			}
 		}
 	}
@@ -264,4 +262,5 @@ public class UndertowWebServer implements EmbeddedWebServer {
 		}
 
 	}
+
 }

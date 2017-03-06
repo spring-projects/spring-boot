@@ -39,14 +39,13 @@ import org.springframework.boot.context.embedded.EmbeddedWebServerException;
 import org.springframework.util.Assert;
 
 /**
- * {@link EmbeddedWebServer} that can be used to control a Tomcat web server.
- * Usually this class should be created using the
- * {@link TomcatReactiveWebServerFactory} and not directly.
+ * {@link EmbeddedWebServer} that can be used to control a Tomcat web server. Usually this
+ * class should be created using the {@link TomcatReactiveWebServerFactory} and not
+ * directly.
  *
  * @author Brian Clozel
  */
 public class TomcatWebServer implements EmbeddedWebServer {
-
 
 	private static final Log logger = LogFactory
 			.getLog(TomcatEmbeddedServletContainer.class);
@@ -110,8 +109,8 @@ public class TomcatWebServer implements EmbeddedWebServer {
 				startDaemonAwaitThread();
 			}
 			catch (Exception ex) {
-				throw new EmbeddedWebServerException(
-						"Unable to start embedded Tomcat", ex);
+				throw new EmbeddedWebServerException("Unable to start embedded Tomcat",
+						ex);
 			}
 		}
 	}
@@ -276,8 +275,8 @@ public class TomcatWebServer implements EmbeddedWebServer {
 				}
 			}
 			catch (Exception ex) {
-				throw new EmbeddedWebServerException(
-						"Unable to stop embedded Tomcat", ex);
+				throw new EmbeddedWebServerException("Unable to stop embedded Tomcat",
+						ex);
 			}
 			finally {
 				containerCounter.decrementAndGet();

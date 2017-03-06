@@ -25,7 +25,8 @@ import org.springframework.boot.context.embedded.AbstractReactiveWebServerFactor
  *
  * @author Brian Clozel
  */
-public class ReactorNettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
+public class ReactorNettyReactiveWebServerFactoryTests
+		extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
 	protected AbstractReactiveWebServerFactory getFactory() {

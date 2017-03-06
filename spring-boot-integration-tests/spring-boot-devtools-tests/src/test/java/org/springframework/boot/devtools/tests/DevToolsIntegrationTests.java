@@ -161,7 +161,7 @@ public class DevToolsIntegrationTests {
 
 	private static final class ControllerBuilder {
 
-		private final List<String> mappings = new ArrayList<String>();
+		private final List<String> mappings = new ArrayList<>();
 
 		private final String name;
 

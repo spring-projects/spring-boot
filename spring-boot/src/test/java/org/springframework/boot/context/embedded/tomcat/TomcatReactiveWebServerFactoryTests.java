@@ -20,15 +20,16 @@ import org.springframework.boot.context.embedded.AbstractReactiveWebServerFactor
 import org.springframework.boot.context.embedded.AbstractReactiveWebServerFactoryTests;
 
 /**
- * Tests for {@link TomcatReactiveWebServerFactory} and
- * {@link TomcatWebServer}.
+ * Tests for {@link TomcatReactiveWebServerFactory} and {@link TomcatWebServer}.
  *
  * @author Brian Clozel
  */
-public class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
+public class TomcatReactiveWebServerFactoryTests
+		extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
 	protected AbstractReactiveWebServerFactory getFactory() {
 		return new TomcatReactiveWebServerFactory(0);
 	}
+
 }

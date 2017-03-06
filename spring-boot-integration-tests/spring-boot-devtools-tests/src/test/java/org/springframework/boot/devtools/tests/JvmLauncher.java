@@ -45,7 +45,7 @@ class JvmLauncher implements TestRule {
 	}
 
 	LaunchedJvm launch(String name, String classpath, String... args) throws IOException {
-		List<String> command = new ArrayList<String>(Arrays
+		List<String> command = new ArrayList<>(Arrays
 				.asList(System.getProperty("java.home") + "/bin/java", "-cp", classpath));
 		command.addAll(Arrays.asList(args));
 		File standardOut = new File(this.outputDirectory, name + ".out");

@@ -93,7 +93,8 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		TestContext context = super.buildTestContext();
 		verifyConfiguration(context.getTestClass());
 		WebEnvironment webEnvironment = getWebEnvironment(context.getTestClass());
-		if (webEnvironment == WebEnvironment.MOCK && deduceWebApplication() == WebApplicationType.SERVLET) {
+		if (webEnvironment == WebEnvironment.MOCK
+				&& deduceWebApplication() == WebApplicationType.SERVLET) {
 			context.setAttribute(ACTIVATE_SERVLET_LISTENER, true);
 		}
 		else if (webEnvironment != null && webEnvironment.isEmbedded()) {
@@ -154,8 +155,9 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		WebEnvironment webEnvironment = getWebEnvironment(mergedConfig.getTestClass());
 		if (webEnvironment != null) {
 			WebApplicationType webApplicationType = getWebApplicationType(mergedConfig);
-			if (webApplicationType == WebApplicationType.SERVLET &&
-					(webEnvironment.isEmbedded() || webEnvironment == WebEnvironment.MOCK)) {
+			if (webApplicationType == WebApplicationType.SERVLET
+					&& (webEnvironment.isEmbedded()
+							|| webEnvironment == WebEnvironment.MOCK)) {
 				WebAppConfiguration webAppConfiguration = AnnotatedElementUtils
 						.findMergedAnnotation(mergedConfig.getTestClass(),
 								WebAppConfiguration.class);
@@ -164,8 +166,9 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 				mergedConfig = new WebMergedContextConfiguration(mergedConfig,
 						resourceBasePath);
 			}
-			else if (webApplicationType == WebApplicationType.REACTIVE &&
-					(webEnvironment.isEmbedded() || webEnvironment == WebEnvironment.MOCK)) {
+			else if (webApplicationType == WebApplicationType.REACTIVE
+					&& (webEnvironment.isEmbedded()
+							|| webEnvironment == WebEnvironment.MOCK)) {
 				return new ReactiveWebMergedContextConfiguration(mergedConfig);
 			}
 		}
@@ -174,8 +177,8 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 
 	private WebApplicationType getWebApplicationType(
 			MergedContextConfiguration configuration) {
-		WebApplicationType webApplicationType =
-				getConfiguredWebApplicationType(configuration);
+		WebApplicationType webApplicationType = getConfiguredWebApplicationType(
+				configuration);
 		if (webApplicationType != null) {
 			return webApplicationType;
 		}

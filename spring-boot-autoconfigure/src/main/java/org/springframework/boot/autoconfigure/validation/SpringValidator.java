@@ -37,6 +37,7 @@ import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @since 2.0.0
  */
 public class SpringValidator implements SmartValidator, ApplicationContextAware,
 		InitializingBean, DisposableBean {

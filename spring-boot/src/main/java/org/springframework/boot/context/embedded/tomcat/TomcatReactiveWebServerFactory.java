@@ -35,8 +35,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ReactiveWebServerFactory} that can be used to create
- * {@link TomcatWebServer}s.
+ * {@link ReactiveWebServerFactory} that can be used to create {@link TomcatWebServer}s.
  *
  * @author Brian Clozel
  */
@@ -93,7 +92,6 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		return tomcat;
 	}
 
-
 	protected void prepareContext(Host host, TomcatHttpHandlerAdapter servlet) {
 		File docBase = createTempDir("tomcat-docbase");
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
@@ -109,7 +107,6 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		context.addServletMappingDecoded("/", "httpHandlerServlet");
 		host.addChild(context);
 	}
-
 
 	// Needs to be protected so it can be used by subclasses
 	protected void customizeConnector(Connector connector) {

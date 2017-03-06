@@ -51,4 +51,5 @@ public class WebFluxTestAutoConfigurationIntegrationTests {
 		assertThat(this.applicationContext)
 				.has(importedAutoConfiguration(ValidationAutoConfiguration.class));
 	}
+
 }

@@ -31,8 +31,8 @@ import org.springframework.http.server.reactive.HttpHandler;
 public interface ReactiveWebServerFactory {
 
 	/**
-	 * Gets a new fully configured but paused {@link EmbeddedWebServer} instance.
-	 * Clients should not be able to connect to the returned server until
+	 * Gets a new fully configured but paused {@link EmbeddedWebServer} instance. Clients
+	 * should not be able to connect to the returned server until
 	 * {@link EmbeddedWebServer#start()} is called (which happens when the
 	 * {@link ApplicationContext} has been fully refreshed).
 	 * @param httpHandler the HTTP handler in charge of processing requests
@@ -43,10 +43,10 @@ public interface ReactiveWebServerFactory {
 
 	/**
 	 * Register a map of {@link HttpHandler}s, each to a specific context path.
-	 *
 	 * @param handlerMap a map of context paths and the associated {@code HttpHandler}
 	 * @return a fully configured and started {@link EmbeddedWebServer}
 	 * @see EmbeddedWebServer#stop()
 	 */
 	EmbeddedWebServer getReactiveHttpServer(Map<String, HttpHandler> handlerMap);
+
 }

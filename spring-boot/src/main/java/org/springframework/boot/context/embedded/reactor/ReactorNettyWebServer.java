@@ -44,7 +44,8 @@ public class ReactorNettyWebServer implements EmbeddedWebServer, Loopback {
 
 	private AtomicReference<NettyContext> nettyContext = new AtomicReference<>();
 
-	public ReactorNettyWebServer(HttpServer reactorServer, ReactorHttpHandlerAdapter handlerAdapter) {
+	public ReactorNettyWebServer(HttpServer reactorServer,
+			ReactorHttpHandlerAdapter handlerAdapter) {
 		this.reactorServer = reactorServer;
 		this.handlerAdapter = handlerAdapter;
 	}
@@ -62,20 +63,24 @@ public class ReactorNettyWebServer implements EmbeddedWebServer, Loopback {
 	@Override
 	public void start() throws EmbeddedWebServerException {
 		if (this.nettyContext.get() == null) {
-			this.nettyContext.set(this.reactorServer.newHandler(this.handlerAdapter).block());
+			this.nettyContext
+					.set(this.reactorServer.newHandler(this.handlerAdapter).block());
 			startDaemonAwaitThread();
 		}
 	}
 
 	private void startDaemonAwaitThread() {
 		Thread awaitThread = new Thread("server") {
+
 			@Override
 			public void run() {
 				try {
 					ReactorNettyWebServer.latch.await();
 				}
-				catch (InterruptedException e) { }
+				catch (InterruptedException e) {
+				}
 			}
+
 		};
 		awaitThread.setContextClassLoader(getClass().getClassLoader());
 		awaitThread.setDaemon(false);
@@ -98,4 +103,5 @@ public class ReactorNettyWebServer implements EmbeddedWebServer, Loopback {
 		}
 		return 0;
 	}
+
 }

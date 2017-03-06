@@ -49,6 +49,7 @@ import org.springframework.web.server.session.WebSessionManager;
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
+ * @since 2.0.0
  */
 @Configuration
 @ConditionalOnClass({ DispatcherHandler.class, HttpHandler.class })
@@ -120,16 +121,17 @@ public class HttpHandlerAutoConfiguration {
 			if (this.viewResolvers != null) {
 				this.viewResolvers.forEach(strategiesBuilder::viewResolver);
 			}
-			WebHandler webHandler = RouterFunctions
-					.toHttpHandler(routerFunction, strategiesBuilder.build());
-			WebHttpHandlerBuilder builder = WebHttpHandlerBuilder
-					.webHandler(webHandler)
+			WebHandler webHandler = RouterFunctions.toHttpHandler(routerFunction,
+					strategiesBuilder.build());
+			WebHttpHandlerBuilder builder = WebHttpHandlerBuilder.webHandler(webHandler)
 					.sessionManager(this.webSessionManager);
 			if (this.webFilters != null) {
-				builder.filters(this.webFilters.toArray(
-						new WebFilter[this.webFilters.size()]));
+				builder.filters(
+						this.webFilters.toArray(new WebFilter[this.webFilters.size()]));
 			}
 			return builder.build();
 		}
+
 	}
+
 }

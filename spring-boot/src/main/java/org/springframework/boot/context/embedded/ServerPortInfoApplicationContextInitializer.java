@@ -32,8 +32,8 @@ import org.springframework.core.env.PropertySource;
 
 /**
  * {@link ApplicationContextInitializer} that sets {@link Environment} properties for the
- * ports that {@link EmbeddedWebServer} servers are actually listening on. The
- * property {@literal "local.server.port"} can be injected directly into tests using
+ * ports that {@link EmbeddedWebServer} servers are actually listening on. The property
+ * {@literal "local.server.port"} can be injected directly into tests using
  * {@link Value @Value} or obtained via the {@link Environment}.
  * <p>
  * If the {@link EmbeddedWebApplicationContext} has a
@@ -66,11 +66,10 @@ public class ServerPortInfoApplicationContextInitializer
 	}
 
 	protected void onApplicationEvent(EmbeddedWebServerInitializedEvent event) {
-		String propertyName =  "local." + event.getServerId() + ".port";
+		String propertyName = "local." + event.getServerId() + ".port";
 		setPortProperty(event.getApplicationContext(), propertyName,
 				event.getEmbeddedWebServer().getPort());
 	}
-
 
 	private void setPortProperty(ApplicationContext context, String propertyName,
 			int port) {
