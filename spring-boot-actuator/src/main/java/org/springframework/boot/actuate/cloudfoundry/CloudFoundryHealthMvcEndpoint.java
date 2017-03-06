@@ -38,7 +38,8 @@ class CloudFoundryHealthMvcEndpoint extends HealthMvcEndpoint {
 	}
 
 	@Override
-	protected boolean exposeHealthDetails(HttpServletRequest request, Principal principal) {
+	protected boolean exposeHealthDetails(HttpServletRequest request,
+			Principal principal) {
 		return true;
 	}
 

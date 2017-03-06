@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -227,8 +227,7 @@ public class MongoProperties {
 			options = MongoClientOptions.builder().build();
 		}
 		String host = this.host == null ? "localhost" : this.host;
-		return new MongoClient(
-				Collections.singletonList(new ServerAddress(host, port)),
+		return new MongoClient(Collections.singletonList(new ServerAddress(host, port)),
 				Collections.<MongoCredential>emptyList(), options);
 	}
 
@@ -245,14 +244,14 @@ public class MongoProperties {
 			if (hasCustomCredentials()) {
 				String database = this.authenticationDatabase == null
 						? getMongoClientDatabase() : this.authenticationDatabase;
-				credentials.add(MongoCredential.createCredential(this.username,
-						database, this.password));
+				credentials.add(MongoCredential.createCredential(this.username, database,
+						this.password));
 			}
 			String host = this.host == null ? "localhost" : this.host;
 			int port = this.port != null ? this.port : DEFAULT_PORT;
 			return new MongoClient(
-					Collections.singletonList(new ServerAddress(host, port)),
-					credentials, options);
+					Collections.singletonList(new ServerAddress(host, port)), credentials,
+					options);
 		}
 		// The options and credentials are in the URI
 		return new MongoClient(new MongoClientURI(determineUri(), builder(options)));
