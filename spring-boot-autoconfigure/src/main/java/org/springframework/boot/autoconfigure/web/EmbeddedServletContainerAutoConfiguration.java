@@ -61,6 +61,7 @@ import org.springframework.util.ObjectUtils;
  * @author Dave Syer
  * @author Ivan Sopov
  * @author Brian Clozel
+ * @author Stephane Nicoll
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
@@ -147,17 +148,21 @@ public class EmbeddedServletContainerAutoConfiguration {
 			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(
 					EmbeddedServletContainerCustomizerBeanPostProcessor.class, true,
 					false))) {
+				RootBeanDefinition beanDefinition = new RootBeanDefinition(
+						EmbeddedServletContainerCustomizerBeanPostProcessor.class);
+				beanDefinition.setSynthetic(true);
 				registry.registerBeanDefinition(
 						"embeddedServletContainerCustomizerBeanPostProcessor",
-						new RootBeanDefinition(
-								EmbeddedServletContainerCustomizerBeanPostProcessor.class));
+						beanDefinition);
 
 			}
 			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(
 					ErrorPageRegistrarBeanPostProcessor.class, true, false))) {
+				RootBeanDefinition beanDefinition = new RootBeanDefinition(
+						ErrorPageRegistrarBeanPostProcessor.class);
+				beanDefinition.setSynthetic(true);
 				registry.registerBeanDefinition("errorPageRegistrarBeanPostProcessor",
-						new RootBeanDefinition(
-								ErrorPageRegistrarBeanPostProcessor.class));
+						beanDefinition);
 
 			}
 		}
