@@ -134,25 +134,21 @@ public class EmbeddedServletContainerAutoConfiguration {
 			if (this.beanFactory == null) {
 				return;
 			}
-			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(
-					EmbeddedServletContainerCustomizerBeanPostProcessor.class, true,
-					false))) {
-				RootBeanDefinition beanDefinition = new RootBeanDefinition(
-						EmbeddedServletContainerCustomizerBeanPostProcessor.class);
-				beanDefinition.setSynthetic(true);
-				registry.registerBeanDefinition(
-						"embeddedServletContainerCustomizerBeanPostProcessor",
-						beanDefinition);
+			registerSyntheticBeanIfMissing(registry,
+					"embeddedServletContainerCustomizerBeanPostProcessor",
+					EmbeddedServletContainerCustomizerBeanPostProcessor.class);
+			registerSyntheticBeanIfMissing(registry,
+					"errorPageRegistrarBeanPostProcessor",
+					ErrorPageRegistrarBeanPostProcessor.class);
+		}
 
-			}
-			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(
-					ErrorPageRegistrarBeanPostProcessor.class, true, false))) {
-				RootBeanDefinition beanDefinition = new RootBeanDefinition(
-						ErrorPageRegistrarBeanPostProcessor.class);
+		private void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry,
+				String name, Class<?> beanClass) {
+			if (ObjectUtils.isEmpty(
+					this.beanFactory.getBeanNamesForType(beanClass, true, false))) {
+				RootBeanDefinition beanDefinition = new RootBeanDefinition(beanClass);
 				beanDefinition.setSynthetic(true);
-				registry.registerBeanDefinition("errorPageRegistrarBeanPostProcessor",
-						beanDefinition);
-
+				registry.registerBeanDefinition(name, beanDefinition);
 			}
 		}
 
