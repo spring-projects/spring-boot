@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 /**
@@ -33,18 +34,18 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class EmbeddedServletContainerCustomizerBeanPostProcessor
-		implements BeanPostProcessor, ApplicationContextAware {
+		implements BeanPostProcessor, BeanFactoryAware {
 
-	private ApplicationContext applicationContext;
+	private ListableBeanFactory beanFactory;
 
 	private List<EmbeddedServletContainerCustomizer> customizers;
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		this.applicationContext = applicationContext;
+	public void setBeanFactory(BeanFactory beanFactory) {
+		this.beanFactory = (ListableBeanFactory) beanFactory;
 	}
 
 	@Override
@@ -73,7 +74,7 @@ public class EmbeddedServletContainerCustomizerBeanPostProcessor
 		if (this.customizers == null) {
 			// Look up does not include the parent context
 			this.customizers = new ArrayList<EmbeddedServletContainerCustomizer>(
-					this.applicationContext
+					this.beanFactory
 							.getBeansOfType(EmbeddedServletContainerCustomizer.class,
 									false, false)
 							.values());
