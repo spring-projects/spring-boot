@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -82,6 +84,16 @@ public class YamlPropertySourceLoaderTests {
 		PropertySource<?> source = this.loader.load("resource", resource, null);
 		assertThat(source).isNotNull();
 		assertThat(source.getProperty("foo")).isEqualTo("2015-01-28");
+	}
+
+	@Test
+	public void loadOriginAware() throws Exception {
+		Resource resource = new ClassPathResource("test-yaml.yml", getClass());
+		PropertySource<?> source = this.loader.load("resource", resource, null);
+		EnumerablePropertySource<?> enumerableSource = (EnumerablePropertySource<?>) source;
+		for (String name : enumerableSource.getPropertyNames()) {
+			System.out.println(name + " = " + enumerableSource.getProperty(name));
+		}
 	}
 
 }

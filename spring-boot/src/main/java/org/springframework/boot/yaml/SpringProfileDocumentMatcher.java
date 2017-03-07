@@ -52,9 +52,6 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
 	private String[] activeProfiles = new String[0];
 
-	public SpringProfileDocumentMatcher() {
-	}
-
 	public SpringProfileDocumentMatcher(String... profiles) {
 		addActiveProfiles(profiles);
 	}
@@ -68,7 +65,21 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
 	@Override
 	public MatchStatus matches(Properties properties) {
-		List<String> profiles = extractSpringProfiles(properties);
+		return matches(extractSpringProfiles(properties));
+	}
+
+	protected List<String> extractSpringProfiles(Properties properties) {
+		SpringProperties springProperties = new SpringProperties();
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addFirst(new PropertiesPropertySource("profiles", properties));
+		PropertyValues propertyValues = new PropertySourcesPropertyValues(
+				propertySources);
+		new RelaxedDataBinder(springProperties, "spring").bind(propertyValues);
+		List<String> profiles = springProperties.getProfiles();
+		return profiles;
+	}
+
+	private MatchStatus matches(List<String> profiles) {
 		ProfilesMatcher profilesMatcher = getProfilesMatcher();
 		Set<String> negative = extractProfiles(profiles, ProfileType.NEGATIVE);
 		Set<String> positive = extractProfiles(profiles, ProfileType.POSITIVE);
@@ -81,17 +92,6 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 			}
 		}
 		return profilesMatcher.matches(positive);
-	}
-
-	private List<String> extractSpringProfiles(Properties properties) {
-		SpringProperties springProperties = new SpringProperties();
-		MutablePropertySources propertySources = new MutablePropertySources();
-		propertySources.addFirst(new PropertiesPropertySource("profiles", properties));
-		PropertyValues propertyValues = new PropertySourcesPropertyValues(
-				propertySources);
-		new RelaxedDataBinder(springProperties, "spring").bind(propertyValues);
-		List<String> profiles = springProperties.getProfiles();
-		return profiles;
 	}
 
 	private ProfilesMatcher getProfilesMatcher() {
