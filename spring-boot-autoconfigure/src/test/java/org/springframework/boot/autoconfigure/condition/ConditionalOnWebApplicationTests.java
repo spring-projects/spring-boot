@@ -22,8 +22,8 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.webflux.MockReactiveWebServerFactory;
-import org.springframework.boot.context.GenericReactiveWebApplicationContext;
-import org.springframework.boot.context.embedded.ReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
+import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;

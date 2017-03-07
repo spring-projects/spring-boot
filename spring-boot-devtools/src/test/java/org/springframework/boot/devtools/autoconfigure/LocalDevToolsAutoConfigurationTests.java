@@ -33,10 +33,8 @@ import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
+import org.springframework.boot.autoconfigure.web.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
@@ -45,6 +43,8 @@ import org.springframework.boot.devtools.restart.FailureHandler;
 import org.springframework.boot.devtools.restart.MockRestartInitializer;
 import org.springframework.boot.devtools.restart.MockRestarter;
 import org.springframework.boot.devtools.restart.Restarter;
+import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -243,8 +243,8 @@ public class LocalDevToolsAutoConfigurationTests {
 	@Test
 	public void devToolsSwitchesJspServletToDevelopmentMode() {
 		this.context = initializeAndRun(Config.class);
-		TomcatEmbeddedServletContainer tomcatContainer = (TomcatEmbeddedServletContainer) ((EmbeddedWebApplicationContext) this.context)
-				.getEmbeddedWebServer();
+		TomcatWebServer tomcatContainer = (TomcatWebServer) ((ServletWebServerApplicationContext) this.context)
+				.getWebServer();
 		Container context = tomcatContainer.getTomcat().getHost().findChildren()[0];
 		StandardWrapper jspServletWrapper = (StandardWrapper) context.findChild("jsp");
 		EmbeddedServletOptions options = (EmbeddedServletOptions) ReflectionTestUtils
@@ -277,14 +277,14 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+	@Import({ ServletWebServerFactoryAutoConfiguration.class,
 			LocalDevToolsAutoConfiguration.class, ThymeleafAutoConfiguration.class })
 	public static class Config {
 
 	}
 
 	@Configuration
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+	@Import({ ServletWebServerFactoryAutoConfiguration.class,
 			LocalDevToolsAutoConfiguration.class, ThymeleafAutoConfiguration.class })
 	public static class ConfigWithMockLiveReload {
 
@@ -296,7 +296,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+	@Import({ ServletWebServerFactoryAutoConfiguration.class,
 			LocalDevToolsAutoConfiguration.class, ResourceProperties.class })
 	public static class WebResourcesConfig {
 

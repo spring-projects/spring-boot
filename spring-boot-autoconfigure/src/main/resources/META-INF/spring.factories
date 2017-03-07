@@ -105,7 +105,7 @@ org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration,
 org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration,\
 org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.ServletWebServerFactoryAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.HttpEncodingAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration,\

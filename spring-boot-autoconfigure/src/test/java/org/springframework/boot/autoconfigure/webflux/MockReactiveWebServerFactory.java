@@ -18,10 +18,10 @@ package org.springframework.boot.autoconfigure.webflux;
 
 import java.util.Map;
 
-import org.springframework.boot.context.embedded.AbstractReactiveWebServerFactory;
-import org.springframework.boot.context.embedded.EmbeddedWebServer;
-import org.springframework.boot.context.embedded.EmbeddedWebServerException;
-import org.springframework.boot.context.embedded.ReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.server.WebServerException;
 import org.springframework.http.server.reactive.HttpHandler;
 
 import static org.mockito.Mockito.spy;
@@ -36,13 +36,13 @@ public class MockReactiveWebServerFactory extends AbstractReactiveWebServerFacto
 	private MockReactiveWebServer webServer;
 
 	@Override
-	public EmbeddedWebServer getReactiveHttpServer(HttpHandler httpHandler) {
+	public WebServer getWebServer(HttpHandler httpHandler) {
 		this.webServer = spy(new MockReactiveWebServer(httpHandler, getPort()));
 		return this.webServer;
 	}
 
 	@Override
-	public EmbeddedWebServer getReactiveHttpServer(Map<String, HttpHandler> handlerMap) {
+	public WebServer getWebServer(Map<String, HttpHandler> handlerMap) {
 		this.webServer = spy(new MockReactiveWebServer(handlerMap, getPort()));
 		return this.webServer;
 	}
@@ -51,7 +51,7 @@ public class MockReactiveWebServerFactory extends AbstractReactiveWebServerFacto
 		return this.webServer;
 	}
 
-	public static class MockReactiveWebServer implements EmbeddedWebServer {
+	public static class MockReactiveWebServer implements WebServer {
 
 		private final int port;
 
@@ -78,12 +78,12 @@ public class MockReactiveWebServerFactory extends AbstractReactiveWebServerFacto
 		}
 
 		@Override
-		public void start() throws EmbeddedWebServerException {
+		public void start() throws WebServerException {
 
 		}
 
 		@Override
-		public void stop() throws EmbeddedWebServerException {
+		public void stop() throws WebServerException {
 
 		}
 

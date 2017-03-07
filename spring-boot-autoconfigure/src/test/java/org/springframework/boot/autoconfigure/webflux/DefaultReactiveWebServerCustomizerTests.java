@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.embedded.ConfigurableReactiveWebServer;
+import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -45,7 +45,7 @@ public class DefaultReactiveWebServerCustomizerTests {
 
 	@Test
 	public void testCustomizeServerPort() throws Exception {
-		ConfigurableReactiveWebServer factory = mock(ConfigurableReactiveWebServer.class);
+		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
 		this.properties.setPort(9000);
 		this.customizer.customize(factory);
 		verify(factory).setPort(9000);
@@ -53,7 +53,7 @@ public class DefaultReactiveWebServerCustomizerTests {
 
 	@Test
 	public void testCustomizeServerAddress() throws Exception {
-		ConfigurableReactiveWebServer factory = mock(ConfigurableReactiveWebServer.class);
+		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
 		InetAddress address = mock(InetAddress.class);
 		this.properties.setAddress(address);
 		this.customizer.customize(factory);

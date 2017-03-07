@@ -24,9 +24,9 @@ import org.junit.Test;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.validation.SpringValidator;
-import org.springframework.boot.context.GenericReactiveWebApplicationContext;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

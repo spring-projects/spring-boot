@@ -12,7 +12,7 @@ org.springframework.context.ApplicationContextInitializer=\
 org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer,\
 org.springframework.boot.context.ContextIdApplicationContextInitializer,\
 org.springframework.boot.context.config.DelegatingApplicationContextInitializer,\
-org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer
+org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer
 
 # Application Listeners
 org.springframework.context.ApplicationListener=\

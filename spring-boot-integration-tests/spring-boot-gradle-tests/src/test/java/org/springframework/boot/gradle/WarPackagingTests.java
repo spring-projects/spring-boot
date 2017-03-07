@@ -70,21 +70,21 @@ public class WarPackagingTests {
 
 	@Test
 	public void onlyTomcatIsPackagedInWebInfLibProvided() throws IOException {
-		checkWebInfEntriesForServletContainer("tomcat",
+		checkWebInfEntriesForWebServer("tomcat",
 				TOMCAT_EXPECTED_IN_WEB_INF_LIB_PROVIDED);
 	}
 
 	@Test
 	public void onlyJettyIsPackagedInWebInfLibProvided() throws IOException {
-		checkWebInfEntriesForServletContainer("jetty",
+		checkWebInfEntriesForWebServer("jetty",
 				JETTY_EXPECTED_IN_WEB_INF_LIB_PROVIDED);
 	}
 
-	private void checkWebInfEntriesForServletContainer(String servletContainer,
+	private void checkWebInfEntriesForWebServer(String webServer,
 			Set<String> expectedLibProvidedEntries) throws IOException {
 		project.newBuild().forTasks("clean", "build")
 				.withArguments("-PbootVersion=" + BOOT_VERSION,
-						"-PservletContainer=" + servletContainer)
+						"-PservletContainer=" + webServer)
 				.run();
 
 		JarFile war = new JarFile("target/war-packaging/build/libs/war-packaging.war");

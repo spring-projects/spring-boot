@@ -33,9 +33,9 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.web.servlet.ErrorPage;
-import org.springframework.boot.web.servlet.ErrorPageRegistrar;
-import org.springframework.boot.web.servlet.ErrorPageRegistry;
+import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.ErrorPageRegistrar;
+import org.springframework.boot.web.server.ErrorPageRegistry;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -45,10 +45,10 @@ import org.springframework.web.util.NestedServletException;
  * A Servlet {@link Filter} that provides an {@link ErrorPageRegistry} for non-embedded
  * applications (i.e. deployed WAR files). It registers error pages and handles
  * application errors by filtering requests and forwarding to the error pages instead of
- * letting the container handle them. Error pages are a feature of the servlet spec but
- * there is no Java API for registering them in the spec. This filter works around that by
+ * letting the server handle them. Error pages are a feature of the servlet spec but there
+ * is no Java API for registering them in the spec. This filter works around that by
  * accepting error page registrations from Spring Boot's {@link ErrorPageRegistrar} (any
- * beans of that type in the context will be applied to this container).
+ * beans of that type in the context will be applied to this server).
  *
  * @author Dave Syer
  * @author Phillip Webb

@@ -40,17 +40,17 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.hateoas.HypermediaHttpMessageConverterConfiguration;
-import org.springframework.boot.autoconfigure.web.DefaultServletContainerCustomizer;
+import org.springframework.boot.autoconfigure.web.DefaultServletWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.EmbeddedWebServer;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
-import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
+import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -69,7 +69,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
  * Configuration triggered from {@link EndpointWebMvcAutoConfiguration} when a new
- * {@link EmbeddedWebServer} running on a different port is required.
+ * {@link WebServer} running on a different port is required.
  *
  * @author Dave Syer
  * @author Stephane Nicoll
@@ -109,8 +109,8 @@ public class EndpointWebMvcChildContextConfiguration {
 	}
 
 	@Bean
-	public ServerCustomization serverCustomization() {
-		return new ServerCustomization();
+	public ServerFactoryCustomization serverCustomization() {
+		return new ServerFactoryCustomization();
 	}
 
 	@Bean
@@ -171,19 +171,19 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	}
 
-	static class ServerCustomization
-			implements EmbeddedServletContainerCustomizer, Ordered {
+	static class ServerFactoryCustomization
+			implements ServletWebServerFactoryCustomizer, Ordered {
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
 
-		// This needs to be lazily initialized because EmbeddedServletContainerCustomizer
+		// This needs to be lazily initialized because web server customizer
 		// instances get their callback very early in the context lifecycle.
 		private ManagementServerProperties managementServerProperties;
 
 		private ServerProperties server;
 
-		private DefaultServletContainerCustomizer serverCustomizer;
+		private DefaultServletWebServerFactoryCustomizer serverCustomizer;
 
 		@Override
 		public int getOrder() {
@@ -191,7 +191,7 @@ public class EndpointWebMvcChildContextConfiguration {
 		}
 
 		@Override
-		public void customize(ConfigurableEmbeddedServletContainer container) {
+		public void customize(ConfigurableServletWebServerFactory webServerFactory) {
 			if (this.managementServerProperties == null) {
 				this.managementServerProperties = BeanFactoryUtils
 						.beanOfTypeIncludingAncestors(this.beanFactory,
@@ -199,23 +199,23 @@ public class EndpointWebMvcChildContextConfiguration {
 				this.server = BeanFactoryUtils.beanOfTypeIncludingAncestors(
 						this.beanFactory, ServerProperties.class);
 				this.serverCustomizer = BeanFactoryUtils.beanOfTypeIncludingAncestors(
-						this.beanFactory, DefaultServletContainerCustomizer.class);
+						this.beanFactory, DefaultServletWebServerFactoryCustomizer.class);
 			}
 			// Customize as per the parent context first (so e.g. the access logs go to
 			// the same place)
-			this.serverCustomizer.customize(container);
+			this.serverCustomizer.customize(webServerFactory);
 			// Then reset the error pages
-			container.setErrorPages(Collections.<ErrorPage>emptySet());
+			webServerFactory.setErrorPages(Collections.<ErrorPage>emptySet());
 			// and the context path
-			container.setContextPath("");
+			webServerFactory.setContextPath("");
 			// and add the management-specific bits
-			container.setPort(this.managementServerProperties.getPort());
+			webServerFactory.setPort(this.managementServerProperties.getPort());
 			if (this.managementServerProperties.getSsl() != null) {
-				container.setSsl(this.managementServerProperties.getSsl());
+				webServerFactory.setSsl(this.managementServerProperties.getSsl());
 			}
-			container.setServerHeader(this.server.getServerHeader());
-			container.setAddress(this.managementServerProperties.getAddress());
-			container.addErrorPages(new ErrorPage(this.server.getError().getPath()));
+			webServerFactory.setServerHeader(this.server.getServerHeader());
+			webServerFactory.setAddress(this.managementServerProperties.getAddress());
+			webServerFactory.addErrorPages(new ErrorPage(this.server.getError().getPath()));
 		}
 
 	}
@@ -343,8 +343,8 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	}
 
-	static abstract class AccessLogCustomizer<T extends EmbeddedServletContainerFactory>
-			implements EmbeddedServletContainerCustomizer, Ordered {
+	static abstract class AccessLogCustomizer<T extends ServletWebServerFactory>
+			implements ServletWebServerFactoryCustomizer, Ordered {
 
 		private final Class<T> factoryClass;
 
@@ -362,26 +362,26 @@ public class EndpointWebMvcChildContextConfiguration {
 		}
 
 		@Override
-		public void customize(ConfigurableEmbeddedServletContainer container) {
-			if (this.factoryClass.isInstance(container)) {
-				customize(this.factoryClass.cast(container));
+		public void customize(ConfigurableServletWebServerFactory serverFactory) {
+			if (this.factoryClass.isInstance(serverFactory)) {
+				customize(this.factoryClass.cast(serverFactory));
 			}
 		}
 
-		abstract void customize(T container);
+		abstract void customize(T webServerFactory);
 
 	}
 
 	static class TomcatAccessLogCustomizer
-			extends AccessLogCustomizer<TomcatEmbeddedServletContainerFactory> {
+			extends AccessLogCustomizer<TomcatServletWebServerFactory> {
 
 		TomcatAccessLogCustomizer() {
-			super(TomcatEmbeddedServletContainerFactory.class);
+			super(TomcatServletWebServerFactory.class);
 		}
 
 		@Override
-		public void customize(TomcatEmbeddedServletContainerFactory container) {
-			AccessLogValve accessLogValve = findAccessLogValve(container);
+		public void customize(TomcatServletWebServerFactory serverFactory) {
+			AccessLogValve accessLogValve = findAccessLogValve(serverFactory);
 			if (accessLogValve == null) {
 				return;
 			}
@@ -389,8 +389,8 @@ public class EndpointWebMvcChildContextConfiguration {
 		}
 
 		private AccessLogValve findAccessLogValve(
-				TomcatEmbeddedServletContainerFactory container) {
-			for (Valve engineValve : container.getEngineValves()) {
+				TomcatServletWebServerFactory serverFactory) {
+			for (Valve engineValve : serverFactory.getEngineValves()) {
 				if (engineValve instanceof AccessLogValve) {
 					return (AccessLogValve) engineValve;
 				}
@@ -401,15 +401,15 @@ public class EndpointWebMvcChildContextConfiguration {
 	}
 
 	static class UndertowAccessLogCustomizer
-			extends AccessLogCustomizer<UndertowEmbeddedServletContainerFactory> {
+			extends AccessLogCustomizer<UndertowServletWebServerFactory> {
 
 		UndertowAccessLogCustomizer() {
-			super(UndertowEmbeddedServletContainerFactory.class);
+			super(UndertowServletWebServerFactory.class);
 		}
 
 		@Override
-		public void customize(UndertowEmbeddedServletContainerFactory container) {
-			container.setAccessLogPrefix(customizePrefix(container.getAccessLogPrefix()));
+		public void customize(UndertowServletWebServerFactory serverFactory) {
+			serverFactory.setAccessLogPrefix(customizePrefix(serverFactory.getAccessLogPrefix()));
 		}
 
 	}

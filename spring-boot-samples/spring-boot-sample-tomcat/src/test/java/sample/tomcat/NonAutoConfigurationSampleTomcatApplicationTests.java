@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -55,7 +55,7 @@ public class NonAutoConfigurationSampleTomcatApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Configuration
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+	@Import({ ServletWebServerFactoryAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })

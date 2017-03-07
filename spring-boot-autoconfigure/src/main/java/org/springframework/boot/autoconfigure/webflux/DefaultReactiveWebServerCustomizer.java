@@ -17,15 +17,15 @@
 package org.springframework.boot.autoconfigure.webflux;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.embedded.ConfigurableReactiveWebServer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
-import org.springframework.boot.context.embedded.ReactiveWebServerCustomizer;
-import org.springframework.boot.context.embedded.ReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.server.ReactiveWebServerCustomizer;
+import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.core.Ordered;
 
 /**
  * Customizer used by an {@link ReactiveWebServerFactory} when an
- * {@link EmbeddedServletContainerCustomizerBeanPostProcessor} is active.
+ * {@link ServletWebServerFactoryCustomizerBeanPostProcessor} is active.
  *
  * @author Brian Clozel
  * @since 2.0.0
@@ -45,7 +45,7 @@ public class DefaultReactiveWebServerCustomizer
 	}
 
 	@Override
-	public void customize(ConfigurableReactiveWebServer server) {
+	public void customize(ConfigurableReactiveWebServerFactory server) {
 		if (this.serverProperties.getPort() != null) {
 			server.setPort(this.serverProperties.getPort());
 		}

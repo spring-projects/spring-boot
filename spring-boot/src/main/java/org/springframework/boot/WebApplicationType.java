@@ -27,19 +27,19 @@ public enum WebApplicationType {
 
 	/**
 	 * The application should not run as a web application and should not start an
-	 * embedded web container.
+	 * embedded web server.
 	 */
 	NONE,
 
 	/**
 	 * The application should run as a servlet-based web application and should start an
-	 * embedded servlet container.
+	 * embedded servlet web server.
 	 */
 	SERVLET,
 
 	/**
 	 * The application should run as a reactive web application and should start an
-	 * embedded web container.
+	 * embedded reactive web server.
 	 */
 	REACTIVE;
 

@@ -26,11 +26,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -88,9 +88,9 @@ public class SampleTomcatApplicationTests {
 
 	@Test
 	public void testTimeout() throws Exception {
-		EmbeddedWebApplicationContext context = (EmbeddedWebApplicationContext) this.applicationContext;
-		TomcatEmbeddedServletContainer embeddedServletContainer = (TomcatEmbeddedServletContainer) context
-				.getEmbeddedWebServer();
+		ServletWebServerApplicationContext context = (ServletWebServerApplicationContext) this.applicationContext;
+		TomcatWebServer embeddedServletContainer = (TomcatWebServer) context
+				.getWebServer();
 		ProtocolHandler protocolHandler = embeddedServletContainer.getTomcat()
 				.getConnector().getProtocolHandler();
 		int timeout = ((AbstractProtocol<?>) protocolHandler).getConnectionTimeout();

@@ -32,9 +32,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -321,7 +321,7 @@ public class SpringBootWebSecurityConfigurationTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+	@Import({ ServletWebServerFactoryAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })

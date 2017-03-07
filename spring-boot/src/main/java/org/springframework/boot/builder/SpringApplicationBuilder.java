@@ -184,7 +184,7 @@ public class SpringApplicationBuilder {
 				.additionalProfiles(this.additionalProfiles);
 		child.parent = this;
 
-		// It's not possible if embedded containers are enabled to support web contexts as
+		// It's not possible if embedded web server are enabled to support web contexts as
 		// parents because the servlets cannot be initialized at the right point in
 		// lifecycle.
 		web(false);

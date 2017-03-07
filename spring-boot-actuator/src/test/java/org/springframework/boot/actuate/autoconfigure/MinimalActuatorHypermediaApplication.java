@@ -27,9 +27,9 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 
@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Configuration;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Configuration
-@ImportAutoConfiguration({ EmbeddedServletContainerAutoConfiguration.class,
+@ImportAutoConfiguration({ ServletWebServerFactoryAutoConfiguration.class,
 		DispatcherServletAutoConfiguration.class, JacksonAutoConfiguration.class,
 		HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
 		HypermediaAutoConfiguration.class, EndpointAutoConfiguration.class,

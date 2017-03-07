@@ -32,7 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.boot.testutil.InternalOutputCapture;
-import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockFilterConfig;

@@ -171,8 +171,8 @@ public class SpringApplication {
 	 * The class name of application context that will be used by default for web
 	 * environments.
 	 */
-	public static final String DEFAULT_WEB_CONTEXT_CLASS = "org.springframework."
-			+ "boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext";
+	public static final String DEFAULT_WEB_CONTEXT_CLASS = "org.springframework.boot."
+			+ "web.servlet.context.AnnotationConfigServletWebServerApplicationContext";
 
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
@@ -182,7 +182,7 @@ public class SpringApplication {
 	 * environments.
 	 */
 	public static final String DEFAULT_REACTIVE_WEB_CONTEXT_CLASS = "org.springframework."
-			+ "boot.context.embedded.EmbeddedReactiveWebApplicationContext";
+			+ "boot.web.reactive.context.ReactiveWebServerApplicationContext";
 
 	private static final String REACTIVE_WEB_ENVIRONMENT_CLASS = "org.springframework."
 			+ "web.reactive.DispatcherHandler";

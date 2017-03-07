@@ -23,10 +23,10 @@ import net.minidev.json.JSONArray;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 
@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class BootCuriesHrefIntegrationTests {
 
-	private AnnotationConfigEmbeddedWebApplicationContext context;
+	private AnnotationConfigServletWebServerApplicationContext context;
 
 	@After
 	public void closeContext() {
@@ -110,7 +110,7 @@ public class BootCuriesHrefIntegrationTests {
 	}
 
 	private int load(String... properties) {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.setClassLoader(new ClassLoader(getClass().getClassLoader()) {
 
 			@Override

@@ -26,10 +26,10 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.EmbeddedWebServer;
-import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
+import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -96,8 +96,8 @@ public class SpringBootServletInitializerTests {
 
 	@Test
 	public void errorPageFilterRegistrationCanBeDisabled() throws Exception {
-		EmbeddedWebServer container = new UndertowEmbeddedServletContainerFactory(0)
-				.getEmbeddedServletContainer(new ServletContextInitializer() {
+		WebServer webServer = new UndertowServletWebServerFactory(0)
+				.getWebServer(new ServletContextInitializer() {
 
 					@Override
 					public void onStartup(ServletContext servletContext)
@@ -114,10 +114,10 @@ public class SpringBootServletInitializerTests {
 					}
 				});
 		try {
-			container.start();
+			webServer.start();
 		}
 		finally {
-			container.stop();
+			webServer.stop();
 		}
 	}
 
@@ -198,8 +198,8 @@ public class SpringBootServletInitializerTests {
 	public static class ExecutableWar extends SpringBootServletInitializer {
 
 		@Bean
-		public EmbeddedServletContainerFactory containerFactory() {
-			return new UndertowEmbeddedServletContainerFactory(0);
+		public ServletWebServerFactory webServerFactory() {
+			return new UndertowServletWebServerFactory(0);
 		}
 
 	}

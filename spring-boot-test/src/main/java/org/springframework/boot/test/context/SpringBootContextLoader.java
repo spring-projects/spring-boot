@@ -28,9 +28,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.boot.context.GenericReactiveWebApplicationContext;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.boot.web.support.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -66,8 +66,8 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * <p>
  * The loader supports both standard {@link MergedContextConfiguration} as well as
  * {@link WebMergedContextConfiguration}. If {@link WebMergedContextConfiguration} is used
- * the context will either use a mock servlet environment, or start the full embedded
- * servlet container.
+ * the context will either use a mock servlet environment, or start the full embedded web
+ * server.
  * <p>
  * If {@code @ActiveProfiles} are provided in the test class they will be used to create
  * the application context.

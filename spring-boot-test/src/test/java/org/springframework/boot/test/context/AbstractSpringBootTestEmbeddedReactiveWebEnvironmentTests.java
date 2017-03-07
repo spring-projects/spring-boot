@@ -21,10 +21,10 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.ReactiveWebApplicationContext;
-import org.springframework.boot.context.embedded.LocalServerPort;
-import org.springframework.boot.context.embedded.ReactiveWebServerFactory;
-import org.springframework.boot.context.embedded.tomcat.TomcatReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
+import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -89,7 +89,7 @@ public abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests 
 		}
 
 		@Bean
-		public ReactiveWebServerFactory embeddedReactiveContainer() {
+		public ReactiveWebServerFactory webServerFactory() {
 			TomcatReactiveWebServerFactory factory = new TomcatReactiveWebServerFactory();
 			factory.setPort(this.port);
 			return factory;

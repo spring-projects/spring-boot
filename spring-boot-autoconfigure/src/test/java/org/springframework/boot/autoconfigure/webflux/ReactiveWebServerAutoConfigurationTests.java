@@ -22,9 +22,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
-import org.springframework.boot.context.embedded.EmbeddedReactiveWebApplicationContext;
-import org.springframework.boot.context.embedded.ReactiveWebServerCustomizer;
-import org.springframework.boot.context.embedded.ReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
+import org.springframework.boot.web.reactive.server.ReactiveWebServerCustomizer;
+import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,14 +40,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ReactiveWebServerAutoConfigurationTests {
 
-	private EmbeddedReactiveWebApplicationContext context;
+	private ReactiveWebServerApplicationContext context;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void createFromConfigClass() {
-		this.context = new EmbeddedReactiveWebApplicationContext(BaseConfiguration.class);
+		this.context = new ReactiveWebServerApplicationContext(BaseConfiguration.class);
 		assertThat(this.context.getBeansOfType(ReactiveWebServerFactory.class))
 				.hasSize(1);
 		assertThat(this.context.getBeansOfType(ReactiveWebServerCustomizer.class))
@@ -60,7 +60,7 @@ public class ReactiveWebServerAutoConfigurationTests {
 	public void missingHttpHandler() {
 		this.thrown.expect(ApplicationContextException.class);
 		this.thrown.expectMessage(Matchers.containsString("missing HttpHandler bean"));
-		this.context = new EmbeddedReactiveWebApplicationContext(
+		this.context = new ReactiveWebServerApplicationContext(
 				MissingHttpHandlerConfiguration.class);
 	}
 
@@ -69,13 +69,13 @@ public class ReactiveWebServerAutoConfigurationTests {
 		this.thrown.expect(ApplicationContextException.class);
 		this.thrown.expectMessage(Matchers.containsString(
 				"multiple HttpHandler beans : httpHandler,additionalHttpHandler"));
-		this.context = new EmbeddedReactiveWebApplicationContext(BaseConfiguration.class,
+		this.context = new ReactiveWebServerApplicationContext(BaseConfiguration.class,
 				TooManyHttpHandlers.class);
 	}
 
 	@Test
 	public void customizeReactiveWebServer() {
-		this.context = new EmbeddedReactiveWebApplicationContext(BaseConfiguration.class,
+		this.context = new ReactiveWebServerApplicationContext(BaseConfiguration.class,
 				ReactiveWebServerCustomization.class);
 		MockReactiveWebServerFactory factory = this.context
 				.getBean(MockReactiveWebServerFactory.class);

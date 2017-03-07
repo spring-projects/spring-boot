@@ -29,9 +29,9 @@ import org.junit.runner.RunWith;
 import org.xnio.channels.UnsupportedOptionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.boot.web.support.ErrorPageFilterIntegrationTests.EmbeddedWebContextLoader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -72,7 +72,7 @@ public class ErrorPageFilterIntegrationTests {
 	private HelloWorldController controller;
 
 	@Autowired
-	private AnnotationConfigEmbeddedWebApplicationContext context;
+	private AnnotationConfigServletWebServerApplicationContext context;
 
 	@After
 	public void init() {
@@ -91,9 +91,9 @@ public class ErrorPageFilterIntegrationTests {
 		assertThat(this.controller.getStatus()).isEqualTo(200);
 	}
 
-	private void doTest(AnnotationConfigEmbeddedWebApplicationContext context,
+	private void doTest(AnnotationConfigServletWebServerApplicationContext context,
 			String resourcePath, HttpStatus status) throws Exception {
-		int port = context.getEmbeddedWebServer().getPort();
+		int port = context.getWebServer().getPort();
 		RestTemplate template = new RestTemplate();
 		ResponseEntity<String> entity = template.getForEntity(
 				new URI("http://localhost:" + port + resourcePath), String.class);
@@ -106,8 +106,8 @@ public class ErrorPageFilterIntegrationTests {
 	public static class TomcatConfig {
 
 		@Bean
-		public EmbeddedServletContainerFactory containerFactory() {
-			return new TomcatEmbeddedServletContainerFactory(0);
+		public ServletWebServerFactory webServerFactory() {
+			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
@@ -184,7 +184,7 @@ public class ErrorPageFilterIntegrationTests {
 		@Override
 		public ApplicationContext loadContext(MergedContextConfiguration config)
 				throws Exception {
-			AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext(
+			AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
 					config.getClasses());
 			context.registerShutdownHook();
 			return context;

@@ -42,14 +42,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+import org.springframework.boot.autoconfigure.web.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -152,7 +152,7 @@ public class EndpointMvcIntegrationTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+	@Import({ ServletWebServerFactoryAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			JacksonAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })

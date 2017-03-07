@@ -37,11 +37,11 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheResourceTemplateLoader;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.boot.autoconfigure.web.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -64,13 +64,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MustacheWebIntegrationTests {
 
 	@Autowired
-	private EmbeddedWebApplicationContext context;
+	private ServletWebServerApplicationContext context;
 
 	private int port;
 
 	@Before
 	public void init() {
-		this.port = this.context.getEmbeddedWebServer().getPort();
+		this.port = this.context.getWebServer().getPort();
 	}
 
 	@Test
@@ -138,7 +138,7 @@ public class MustacheWebIntegrationTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+	@Import({ ServletWebServerFactoryAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {

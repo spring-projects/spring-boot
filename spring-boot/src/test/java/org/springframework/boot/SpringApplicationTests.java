@@ -43,15 +43,15 @@ import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.EmbeddedReactiveWebApplicationContext;
-import org.springframework.boot.context.embedded.reactor.ReactorNettyReactiveWebServerFactory;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationContextInitializer;
@@ -398,7 +398,7 @@ public class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.SERVLET);
 		this.context = application.run();
 		assertThat(this.context)
-				.isInstanceOf(AnnotationConfigEmbeddedWebApplicationContext.class);
+				.isInstanceOf(AnnotationConfigServletWebServerApplicationContext.class);
 	}
 
 	@Test
@@ -407,8 +407,7 @@ public class SpringApplicationTests {
 				ExampleReactiveWebConfig.class);
 		application.setWebApplicationType(WebApplicationType.REACTIVE);
 		this.context = application.run();
-		assertThat(this.context)
-				.isInstanceOf(EmbeddedReactiveWebApplicationContext.class);
+		assertThat(this.context).isInstanceOf(ReactiveWebServerApplicationContext.class);
 	}
 
 	@Test
@@ -1027,8 +1026,8 @@ public class SpringApplicationTests {
 	static class ExampleWebConfig {
 
 		@Bean
-		public TomcatEmbeddedServletContainerFactory container() {
-			return new TomcatEmbeddedServletContainerFactory(0);
+		public TomcatServletWebServerFactory webServer() {
+			return new TomcatServletWebServerFactory(0);
 		}
 
 	}
@@ -1037,8 +1036,8 @@ public class SpringApplicationTests {
 	static class ExampleReactiveWebConfig {
 
 		@Bean
-		public ReactorNettyReactiveWebServerFactory webServerFactory() {
-			return new ReactorNettyReactiveWebServerFactory(0);
+		public NettyReactiveWebServerFactory webServerFactory() {
+			return new NettyReactiveWebServerFactory(0);
 		}
 
 		@Bean

@@ -25,7 +25,7 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 
@@ -41,8 +41,8 @@ public class SampleJersey1Application {
 
 	@Bean
 	// Not needed if Spring Web MVC is also present on classpath
-	public TomcatEmbeddedServletContainerFactory tomcatEmbeddedServletContainerFactory() {
-		return new TomcatEmbeddedServletContainerFactory();
+	public TomcatServletWebServerFactory webServerFactory() {
+		return new TomcatServletWebServerFactory();
 	}
 
 	@Bean

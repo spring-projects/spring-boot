@@ -100,7 +100,7 @@ public class BasicErrorControllerMockMvcTests {
 
 	@Test
 	public void testBindingExceptionForMachineClient() throws Exception {
-		// In a real container the response is carried over into the error dispatcher, but
+		// In a real server the response is carried over into the error dispatcher, but
 		// in the mock a new one is created so we have to assert the status at this
 		// intermediate point
 		MvcResult result = this.mockMvc.perform(get("/bind"))
@@ -125,8 +125,8 @@ public class BasicErrorControllerMockMvcTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ EmbeddedServletContainerAutoConfiguration.EmbeddedTomcat.class,
-			EmbeddedServletContainerAutoConfiguration.class,
+	@Import({ ServletWebServerFactoryAutoConfiguration.EmbeddedTomcat.class,
+			ServletWebServerFactoryAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })

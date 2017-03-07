@@ -64,7 +64,7 @@ class ServletComponentRegisteringPostProcessor
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
 			throws BeansException {
-		if (isRunningInEmbeddedContainer()) {
+		if (isRunningInEmbeddedWebServer()) {
 			ClassPathScanningCandidateComponentProvider componentProvider = createComponentProvider();
 			for (String packageToScan : this.packagesToScan) {
 				scanPackage(componentProvider, packageToScan);
@@ -86,7 +86,7 @@ class ServletComponentRegisteringPostProcessor
 		}
 	}
 
-	private boolean isRunningInEmbeddedContainer() {
+	private boolean isRunningInEmbeddedWebServer() {
 		return this.applicationContext instanceof WebApplicationContext
 				&& ((WebApplicationContext) this.applicationContext)
 						.getServletContext() == null;

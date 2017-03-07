@@ -28,13 +28,13 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
-import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory.RegisteredFilter;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.boot.web.filter.OrderedCharacterEncodingFilter;
-import org.springframework.boot.web.filter.OrderedRequestContextFilter;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
+import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
+import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.MockServletWebServerFactory.RegisteredFilter;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -54,7 +54,7 @@ import static org.mockito.Mockito.mock;
  */
 public class FilterOrderingIntegrationTests {
 
-	private AnnotationConfigEmbeddedWebApplicationContext context;
+	private AnnotationConfigServletWebServerApplicationContext context;
 
 	@After
 	public void cleanup() {
@@ -67,7 +67,7 @@ public class FilterOrderingIntegrationTests {
 	public void testFilterOrdering() {
 		load();
 		List<RegisteredFilter> registeredFilters = this.context
-				.getBean(MockEmbeddedServletContainerFactory.class).getContainer()
+				.getBean(MockServletWebServerFactory.class).getWebServer()
 				.getRegisteredFilters();
 		List<Filter> filters = new ArrayList<>(registeredFilters.size());
 		for (RegisteredFilter registeredFilter : registeredFilters) {
@@ -83,10 +83,10 @@ public class FilterOrderingIntegrationTests {
 	}
 
 	private void load() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.session.store-type=hash-map");
-		this.context.register(MockEmbeddedServletContainerConfiguration.class,
+		this.context.register(MockWebServerConfiguration.class,
 				TestRedisConfiguration.class, WebMvcAutoConfiguration.class,
 				SecurityAutoConfiguration.class, SessionAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
@@ -96,16 +96,16 @@ public class FilterOrderingIntegrationTests {
 	}
 
 	@Configuration
-	static class MockEmbeddedServletContainerConfiguration {
+	static class MockWebServerConfiguration {
 
 		@Bean
-		public MockEmbeddedServletContainerFactory containerFactory() {
-			return new MockEmbeddedServletContainerFactory();
+		public MockServletWebServerFactory webServerFactory() {
+			return new MockServletWebServerFactory();
 		}
 
 		@Bean
-		public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
-			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
+		public ServletWebServerFactoryCustomizerBeanPostProcessor ServletWebServerCustomizerBeanPostProcessor() {
+			return new ServletWebServerFactoryCustomizerBeanPostProcessor();
 		}
 
 	}

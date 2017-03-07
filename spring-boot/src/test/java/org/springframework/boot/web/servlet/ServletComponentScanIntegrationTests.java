@@ -23,9 +23,9 @@ import javax.servlet.MultipartConfigElement;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.testcomponents.TestMultipartServlet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ServletComponentScanIntegrationTests {
 
-	private AnnotationConfigEmbeddedWebApplicationContext context;
+	private AnnotationConfigServletWebServerApplicationContext context;
 
 	@After
 	public void cleanUp() {
@@ -51,7 +51,7 @@ public class ServletComponentScanIntegrationTests {
 
 	@Test
 	public void componentsAreRegistered() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(TestConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
@@ -63,7 +63,7 @@ public class ServletComponentScanIntegrationTests {
 
 	@Test
 	public void multipartConfigIsHonoured() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(TestConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
@@ -87,8 +87,8 @@ public class ServletComponentScanIntegrationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public TomcatEmbeddedServletContainerFactory servletContainerFactory() {
-			return new TomcatEmbeddedServletContainerFactory(0);
+		public TomcatServletWebServerFactory webServerFactory() {
+			return new TomcatServletWebServerFactory(0);
 		}
 
 	}

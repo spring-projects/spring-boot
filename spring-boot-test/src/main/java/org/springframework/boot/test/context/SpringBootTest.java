@@ -26,9 +26,9 @@ import java.lang.annotation.Target;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.context.ReactiveWebApplicationContext;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AliasFor;
@@ -53,11 +53,11 @@ import org.springframework.web.context.WebApplicationContext;
  * <li>Allows custom {@link Environment} properties to be defined using the
  * {@link #properties() properties attribute}.</li>
  * <li>Provides support for different {@link #webEnvironment() webEnvironment} modes,
- * including the ability to start a fully running container listening on a
+ * including the ability to start a fully running web server listening on a
  * {@link WebEnvironment#DEFINED_PORT defined} or {@link WebEnvironment#RANDOM_PORT
  * random} port.</li>
  * <li>Registers a {@link org.springframework.boot.test.web.client.TestRestTemplate
- * TestRestTemplate} bean for use in web tests that are using a fully running container.
+ * TestRestTemplate} bean for use in web tests that are using a fully running web server.
  * </li>
  * </ul>
  *
@@ -149,8 +149,8 @@ public @interface SpringBootTest {
 		}
 
 		/**
-		 * Return if the environment uses an {@link EmbeddedWebApplicationContext}.
-		 * @return if an {@link EmbeddedWebApplicationContext} is used.
+		 * Return if the environment uses an {@link ServletWebServerApplicationContext}.
+		 * @return if an {@link ServletWebServerApplicationContext} is used.
 		 */
 		public boolean isEmbedded() {
 			return this.embedded;

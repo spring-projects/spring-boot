@@ -53,7 +53,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the Spring
  * {@link DispatcherServlet}. Should work for a standalone application where an embedded
- * servlet container is already present and also for a deployable application using
+ * web server is already present and also for a deployable application using
  * {@link SpringBootServletInitializer}.
  *
  * @author Phillip Webb
@@ -65,7 +65,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(DispatcherServlet.class)
-@AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
+@AutoConfigureAfter(ServletWebServerFactoryAutoConfiguration.class)
 @EnableConfigurationProperties(ServerProperties.class)
 public class DispatcherServletAutoConfiguration {
 

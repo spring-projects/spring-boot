@@ -21,7 +21,7 @@ import java.net.URI;
 import org.junit.Test;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer;
+import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpHeaders;

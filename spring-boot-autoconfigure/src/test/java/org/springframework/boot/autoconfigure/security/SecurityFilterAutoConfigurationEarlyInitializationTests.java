@@ -33,10 +33,10 @@ import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -58,13 +58,13 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
 	@Test
 	public void testSecurityFilterDoesNotCauseEarlyInitialization() throws Exception {
-		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
+		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
 		try {
 			EnvironmentTestUtils.addEnvironment(context, "server.port:0",
 					"security.user.password:password");
 			context.register(Config.class);
 			context.refresh();
-			int port = context.getEmbeddedWebServer().getPort();
+			int port = context.getWebServer().getPort();
 			new TestRestTemplate("user", "password")
 					.getForEntity("http://localhost:" + port, Object.class);
 			// If early initialization occurred a ConverterNotFoundException is thrown
@@ -87,8 +87,8 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 	static class Config {
 
 		@Bean
-		public TomcatEmbeddedServletContainerFactory containerFactory() {
-			TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+		public TomcatServletWebServerFactory webServerFactory() {
+			TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 			factory.setPort(0);
 			return factory;
 		}

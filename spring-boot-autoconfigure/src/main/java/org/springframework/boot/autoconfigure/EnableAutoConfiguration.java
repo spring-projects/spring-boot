@@ -26,8 +26,8 @@ import java.lang.annotation.Target;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -38,8 +38,8 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * configure beans that you are likely to need. Auto-configuration classes are usually
  * applied based on your classpath and what beans you have defined. For example, If you
  * have {@code tomcat-embedded.jar} on your classpath you are likely to want a
- * {@link TomcatEmbeddedServletContainerFactory} (unless you have defined your own
- * {@link EmbeddedServletContainerFactory} bean).
+ * {@link TomcatServletWebServerFactory} (unless you have defined your own
+ * {@link ServletWebServerFactory} bean).
  * <p>
  * Auto-configuration tries to be as intelligent as possible and will back-away as you
  * define more of your own configuration. You can always manually {@link #exclude()} any

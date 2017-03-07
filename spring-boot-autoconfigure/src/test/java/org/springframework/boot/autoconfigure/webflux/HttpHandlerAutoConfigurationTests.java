@@ -20,8 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.context.GenericReactiveWebApplicationContext;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

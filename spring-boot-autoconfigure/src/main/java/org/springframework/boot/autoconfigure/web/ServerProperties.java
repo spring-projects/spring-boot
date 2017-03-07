@@ -20,15 +20,20 @@ import java.io.File;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.springframework.boot.context.embedded.Compression;
-import org.springframework.boot.context.embedded.Servlet;
-import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.web.server.Compression;
+import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.servlet.server.Jsp;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link ConfigurationProperties} for a web server (e.g. port and path settings).
@@ -82,8 +87,8 @@ public class ServerProperties {
 
 	/**
 	 * Time in milliseconds that connectors will wait for another HTTP request before
-	 * closing the connection. When not set, the connector's container-specific default
-	 * will be used. Use a value of -1 to indicate no (i.e. infinite) timeout.
+	 * closing the connection. When not set, the connector's server-specific default will
+	 * be used. Use a value of -1 to indicate no (i.e. infinite) timeout.
 	 */
 	private Integer connectionTimeout;
 
@@ -95,7 +100,6 @@ public class ServerProperties {
 	@NestedConfigurationProperty
 	private Compression compression = new Compression();
 
-	@NestedConfigurationProperty
 	private Servlet servlet = new Servlet();
 
 	private final Tomcat tomcat = new Tomcat();
@@ -204,6 +208,120 @@ public class ServerProperties {
 		return this.undertow;
 	}
 
+	/**
+	 * Servlet properties.
+	 */
+	public class Servlet {
+
+		/**
+		 * ServletContext parameters.
+		 */
+		private final Map<String, String> contextParameters = new HashMap<>();
+
+		/**
+		 * Context path of the application.
+		 */
+		private String contextPath;
+
+		/**
+		 * Path of the main dispatcher servlet.
+		 */
+		private String path = "/";
+
+		@NestedConfigurationProperty
+		private Jsp jsp = new Jsp();
+
+		public String getContextPath() {
+			return this.contextPath;
+		}
+
+		public void setContextPath(String contextPath) {
+			this.contextPath = cleanContextPath(contextPath);
+		}
+
+		private String cleanContextPath(String contextPath) {
+			if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
+				return contextPath.substring(0, contextPath.length() - 1);
+			}
+			return contextPath;
+		}
+
+		public String getPath() {
+			return this.path;
+		}
+
+		public void setPath(String path) {
+			Assert.notNull(path, "Path must not be null");
+			this.path = path;
+		}
+
+		public Map<String, String> getContextParameters() {
+			return this.contextParameters;
+		}
+
+		public Jsp getJsp() {
+			return this.jsp;
+		}
+
+		public void setJsp(Jsp jsp) {
+			this.jsp = jsp;
+		}
+
+		public String getServletMapping() {
+			if (this.path.equals("") || this.path.equals("/")) {
+				return "/";
+			}
+			if (this.path.contains("*")) {
+				return this.path;
+			}
+			if (this.path.endsWith("/")) {
+				return this.path + "*";
+			}
+			return this.path + "/*";
+		}
+
+		public String getPath(String path) {
+			String prefix = getServletPrefix();
+			if (!path.startsWith("/")) {
+				path = "/" + path;
+			}
+			return prefix + path;
+		}
+
+		public String getServletPrefix() {
+			String result = this.path;
+			if (result.contains("*")) {
+				result = result.substring(0, result.indexOf("*"));
+			}
+			if (result.endsWith("/")) {
+				result = result.substring(0, result.length() - 1);
+			}
+			return result;
+		}
+
+		public String[] getPathsArray(Collection<String> paths) {
+			String[] result = new String[paths.size()];
+			int i = 0;
+			for (String path : paths) {
+				result[i++] = getPath(path);
+			}
+			return result;
+		}
+
+		public String[] getPathsArray(String[] paths) {
+			String[] result = new String[paths.length];
+			int i = 0;
+			for (String path : paths) {
+				result[i++] = getPath(path);
+			}
+			return result;
+		}
+
+	}
+
+	/**
+	 * Session properties.
+	 */
 	public static class Session {
 
 		/**
@@ -264,6 +382,9 @@ public class ServerProperties {
 			this.storeDir = storeDir;
 		}
 
+		/**
+		 * Cookie properties.
+		 */
 		public static class Cookie {
 
 			/**
@@ -384,6 +505,9 @@ public class ServerProperties {
 
 	}
 
+	/**
+	 * Tomcat properties.
+	 */
 	public static class Tomcat {
 
 		/**
@@ -615,6 +739,9 @@ public class ServerProperties {
 			this.additionalTldSkipPatterns = additionalTldSkipPatterns;
 		}
 
+		/**
+		 * Tomcat access log properties.
+		 */
 		public static class Accesslog {
 
 			/**
@@ -753,6 +880,9 @@ public class ServerProperties {
 
 	}
 
+	/**
+	 * Jetty properties.
+	 */
 	public static class Jetty {
 
 		/**
@@ -796,6 +926,9 @@ public class ServerProperties {
 
 	}
 
+	/**
+	 * Undertow properties.
+	 */
 	public static class Undertow {
 
 		/**
@@ -884,6 +1017,9 @@ public class ServerProperties {
 			return this.accesslog;
 		}
 
+		/**
+		 * Undertow access log properties.
+		 */
 		public static class Accesslog {
 
 			/**

@@ -34,12 +34,12 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.autoconfigure.web.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.CompositeMessageConverter;
@@ -78,7 +78,7 @@ import static org.junit.Assert.fail;
  */
 public class WebSocketMessagingAutoConfigurationTests {
 
-	private AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
+	private AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
 
 	private SockJsClient sockJsClient;
 
@@ -208,7 +208,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 	@EnableConfigurationProperties
 	@EnableWebSocketMessageBroker
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			EmbeddedServletContainerAutoConfiguration.class,
+			ServletWebServerFactoryAutoConfiguration.class,
 			WebSocketMessagingAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class })
 	static class WebSocketMessagingConfiguration
@@ -230,8 +230,8 @@ public class WebSocketMessagingAutoConfigurationTests {
 		}
 
 		@Bean
-		public TomcatEmbeddedServletContainerFactory tomcat() {
-			return new TomcatEmbeddedServletContainerFactory(0);
+		public TomcatServletWebServerFactory tomcat() {
+			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean

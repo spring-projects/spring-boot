@@ -44,11 +44,11 @@ import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.servlet.ErrorPage;
-import org.springframework.boot.web.servlet.ErrorPageRegistrar;
-import org.springframework.boot.web.servlet.ErrorPageRegistry;
+import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.ErrorPageRegistrar;
+import org.springframework.boot.web.server.ErrorPageRegistry;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactoryCustomizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -296,8 +296,7 @@ public class ErrorMvcAutoConfiguration {
 	}
 
 	/**
-	 * {@link EmbeddedServletContainerCustomizer} that configures the container's error
-	 * pages.
+	 * {@link ServletWebServerFactoryCustomizer} that configures the server's error pages.
 	 */
 	private static class ErrorPageCustomizer implements ErrorPageRegistrar, Ordered {
 

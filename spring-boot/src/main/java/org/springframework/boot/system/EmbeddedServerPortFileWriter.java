@@ -21,8 +21,8 @@ import java.io.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.boot.web.servlet.context.ServletWebServerInitializedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
@@ -30,9 +30,9 @@ import org.springframework.util.StringUtils;
 
 /**
  * An {@link ApplicationListener} that saves embedded server port and management port into
- * file. This application listener will be triggered whenever the servlet container
- * starts, and the file name can be overridden at runtime with a System property or
- * environment variable named "PORTFILE" or "portfile".
+ * file. This application listener will be triggered whenever the server starts, and the
+ * file name can be overridden at runtime with a System property or environment variable
+ * named "PORTFILE" or "portfile".
  *
  * @author David Liu
  * @author Phillip Webb
@@ -40,7 +40,7 @@ import org.springframework.util.StringUtils;
  * @since 1.4.0
  */
 public class EmbeddedServerPortFileWriter
-		implements ApplicationListener<EmbeddedServletContainerInitializedEvent> {
+		implements ApplicationListener<ServletWebServerInitializedEvent> {
 
 	private static final String DEFAULT_FILE_NAME = "application.port";
 
@@ -84,10 +84,10 @@ public class EmbeddedServerPortFileWriter
 	}
 
 	@Override
-	public void onApplicationEvent(EmbeddedServletContainerInitializedEvent event) {
+	public void onApplicationEvent(ServletWebServerInitializedEvent event) {
 		File portFile = getPortFile(event.getApplicationContext());
 		try {
-			String port = String.valueOf(event.getEmbeddedWebServer().getPort());
+			String port = String.valueOf(event.getWebServer().getPort());
 			createParentFolder(portFile);
 			FileCopyUtils.copy(port.getBytes(), portFile);
 			portFile.deleteOnExit();
@@ -104,7 +104,7 @@ public class EmbeddedServerPortFileWriter
 	 * @param applicationContext the source application context
 	 * @return the file that should be written
 	 */
-	protected File getPortFile(EmbeddedWebApplicationContext applicationContext) {
+	protected File getPortFile(ServletWebServerApplicationContext applicationContext) {
 		String contextName = applicationContext.getNamespace();
 		if (StringUtils.isEmpty(contextName)) {
 			return this.file;

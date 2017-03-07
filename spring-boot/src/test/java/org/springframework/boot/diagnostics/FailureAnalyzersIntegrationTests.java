@@ -23,8 +23,8 @@ import org.junit.Test;
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.PortInUseException;
 import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -35,10 +35,10 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2RestO
 import org.springframework.boot.autoconfigure.social.FacebookAutoConfiguration;
 import org.springframework.boot.autoconfigure.social.SocialWebAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -317,8 +317,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 	protected static class ResourceNoClientConfiguration extends ResourceConfiguration {
 
 		@Bean
-		public MockEmbeddedServletContainerFactory embeddedServletContainerFactory() {
-			return new MockEmbeddedServletContainerFactory();
+		public MockServletWebServerFactory webServerFactory() {
+			return new MockServletWebServerFactory();
 		}
 
 	}
@@ -344,8 +344,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 	protected static class SocialResourceConfiguration extends ResourceConfiguration {
 
 		@Bean
-		public EmbeddedServletContainerFactory embeddedServletContainerFactory() {
-			return mock(EmbeddedServletContainerFactory.class);
+		public ServletWebServerFactory webServerFactory() {
+			return mock(ServletWebServerFactory.class);
 		}
 
 	}

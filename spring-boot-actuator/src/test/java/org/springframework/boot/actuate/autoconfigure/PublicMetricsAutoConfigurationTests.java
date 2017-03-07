@@ -43,9 +43,9 @@ import org.springframework.boot.actuate.metrics.rich.RichGaugeReader;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -237,14 +237,13 @@ public class PublicMetricsAutoConfigurationTests {
 	}
 
 	private void loadWeb(Class<?>... config) {
-		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
+		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
 		if (config.length > 0) {
 			context.register(config);
 		}
 		context.register(DataSourcePoolMetadataProvidersConfiguration.class,
 				CacheStatisticsAutoConfiguration.class,
-				PublicMetricsAutoConfiguration.class,
-				MockEmbeddedServletContainerFactory.class);
+				PublicMetricsAutoConfiguration.class, MockServletWebServerFactory.class);
 		context.refresh();
 		this.context = context;
 	}
@@ -346,8 +345,8 @@ public class PublicMetricsAutoConfigurationTests {
 	static class TomcatConfiguration {
 
 		@Bean
-		public TomcatEmbeddedServletContainerFactory containerFactory() {
-			TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+		public TomcatServletWebServerFactory webServerFactory() {
+			TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 			factory.setPort(SocketUtils.findAvailableTcpPort(40000));
 			return factory;
 		}

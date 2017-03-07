@@ -28,9 +28,9 @@ import org.apache.catalina.session.ManagerBase;
 
 import org.springframework.beans.BeansException;
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.EmbeddedWebServer;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
+import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
+import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -47,9 +47,9 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 
 	@Override
 	public Collection<Metric<?>> metrics() {
-		if (this.applicationContext instanceof EmbeddedWebApplicationContext) {
+		if (this.applicationContext instanceof ServletWebServerApplicationContext) {
 			Manager manager = getManager(
-					(EmbeddedWebApplicationContext) this.applicationContext);
+					(ServletWebServerApplicationContext) this.applicationContext);
 			if (manager != null) {
 				return metrics(manager);
 			}
@@ -57,16 +57,16 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 		return Collections.emptySet();
 	}
 
-	private Manager getManager(EmbeddedWebApplicationContext applicationContext) {
-		EmbeddedWebServer embeddedWebServer = applicationContext.getEmbeddedWebServer();
-		if (embeddedWebServer instanceof TomcatEmbeddedServletContainer) {
-			return getManager((TomcatEmbeddedServletContainer) embeddedWebServer);
+	private Manager getManager(ServletWebServerApplicationContext applicationContext) {
+		WebServer webServer = applicationContext.getWebServer();
+		if (webServer instanceof TomcatWebServer) {
+			return getManager((TomcatWebServer) webServer);
 		}
 		return null;
 	}
 
-	private Manager getManager(TomcatEmbeddedServletContainer servletContainer) {
-		for (Container container : servletContainer.getTomcat().getHost()
+	private Manager getManager(TomcatWebServer webServer) {
+		for (Container container : webServer.getTomcat().getHost()
 				.findChildren()) {
 			if (container instanceof Context) {
 				return ((Context) container).getManager();

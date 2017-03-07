@@ -21,11 +21,11 @@ import reactor.ipc.netty.http.server.HttpServer;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.embedded.ReactiveWebServerFactory;
-import org.springframework.boot.context.embedded.jetty.JettyReactiveWebServerFactory;
-import org.springframework.boot.context.embedded.reactor.ReactorNettyReactiveWebServerFactory;
-import org.springframework.boot.context.embedded.tomcat.TomcatReactiveWebServerFactory;
-import org.springframework.boot.context.embedded.undertow.UndertowReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -43,8 +43,8 @@ abstract class ReactiveWebServerConfiguration {
 	static class ReactorNettyAutoConfiguration {
 
 		@Bean
-		public ReactorNettyReactiveWebServerFactory reactorNettyReactiveWebServerFactory() {
-			return new ReactorNettyReactiveWebServerFactory();
+		public NettyReactiveWebServerFactory NettyReactiveWebServerFactory() {
+			return new NettyReactiveWebServerFactory();
 		}
 
 	}

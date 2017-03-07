@@ -27,9 +27,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.EmbeddedWebServer;
+import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.boot.web.servlet.context.ServletWebServerInitializedEvent;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
@@ -117,13 +117,13 @@ public class EmbeddedServerPortFileWriterTests {
 		assertThat(collectFileNames(file.getParentFile())).contains(managementFile);
 	}
 
-	private EmbeddedServletContainerInitializedEvent mockEvent(String name, int port) {
-		EmbeddedWebApplicationContext applicationContext = mock(
-				EmbeddedWebApplicationContext.class);
-		EmbeddedWebServer source = mock(EmbeddedWebServer.class);
+	private ServletWebServerInitializedEvent mockEvent(String name, int port) {
+		ServletWebServerApplicationContext applicationContext = mock(
+				ServletWebServerApplicationContext.class);
+		WebServer source = mock(WebServer.class);
 		given(applicationContext.getNamespace()).willReturn(name);
 		given(source.getPort()).willReturn(port);
-		EmbeddedServletContainerInitializedEvent event = new EmbeddedServletContainerInitializedEvent(
+		ServletWebServerInitializedEvent event = new ServletWebServerInitializedEvent(
 				applicationContext, source);
 		return event;
 	}

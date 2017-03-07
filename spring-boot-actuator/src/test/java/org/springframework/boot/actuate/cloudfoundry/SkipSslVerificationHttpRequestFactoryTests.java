@@ -23,11 +23,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.context.embedded.EmbeddedWebServer;
-import org.springframework.boot.context.embedded.ExampleServlet;
-import org.springframework.boot.context.embedded.Ssl;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.boot.web.servlet.server.ExampleServlet;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
@@ -63,13 +63,12 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 	}
 
 	private String getHttpsUrl() {
-		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory(
-				0);
+		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		factory.setSsl(getSsl("password", "classpath:test.jks"));
-		EmbeddedWebServer container = factory.getEmbeddedServletContainer(
+		WebServer webServer = factory.getWebServer(
 				new ServletRegistrationBean<>(new ExampleServlet(), "/hello"));
-		container.start();
-		return "https://localhost:" + container.getPort() + "/hello";
+		webServer.start();
+		return "https://localhost:" + webServer.getPort() + "/hello";
 	}
 
 	private Ssl getSsl(String keyPassword, String keyStore) {
