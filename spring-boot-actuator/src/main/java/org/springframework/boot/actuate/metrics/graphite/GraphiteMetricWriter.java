@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,11 @@ public class GraphiteMetricWriter implements MetricWriter {
 	}
 
 	private static String removeTrailingDots(String prefix) {
-		String trimmedPrefix = StringUtils.hasText(prefix) ? prefix : null;
-		while (trimmedPrefix != null && trimmedPrefix.endsWith(".")) {
+		if (!StringUtils.hasText(prefix)) {
+			return null;
+		}
+		String trimmedPrefix = prefix;
+		while (trimmedPrefix.endsWith(".")) {
 			trimmedPrefix = trimmedPrefix.substring(0, trimmedPrefix.length() - 1);
 		}
 
@@ -89,7 +92,7 @@ public class GraphiteMetricWriter implements MetricWriter {
 			stream.write(payload.getBytes());
 		}
 		catch (IOException e) {
-			logger.error(e.getMessage(), e);
+			logger.error(String.format("Unable to write metric %s", metric), e);
 		}
 	}
 }
