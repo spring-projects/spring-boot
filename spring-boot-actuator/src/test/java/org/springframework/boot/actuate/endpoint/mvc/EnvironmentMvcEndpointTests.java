@@ -102,6 +102,16 @@ public class EnvironmentMvcEndpointTests {
 				.andExpect(content().string(containsString("\"fool\":\"baz\"")));
 	}
 
+	@Test
+	public void nestedPathWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty() throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("my.foo", "${my.bar}");
+		((ConfigurableEnvironment) this.context.getEnvironment()).getPropertySources()
+				.addFirst(new MapPropertySource("unresolved-placeholder", map));
+		this.mvc.perform(get("/env/my.*")).andExpect(status().isOk())
+				.andExpect(content().string(containsString("\"my.foo\":\"${my.bar}\"")));
+	}
+
 	@Configuration
 	@Import({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,

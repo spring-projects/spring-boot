@@ -22,8 +22,10 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
+import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -95,7 +97,14 @@ public class EnvironmentMvcEndpoint extends EndpointMvcAdapter
 
 		@Override
 		protected Object getOptionalValue(Environment source, String name) {
-			Object result = source.getProperty(name);
+			PropertyResolver resolver = source;
+			if (source instanceof ConfigurableEnvironment) {
+				resolver = new PropertySourcesPropertyResolver(
+						((ConfigurableEnvironment) source).getPropertySources());
+				((PropertySourcesPropertyResolver) resolver)
+						.setIgnoreUnresolvableNestedPlaceholders(true);
+			}
+			Object result = resolver.getProperty(name);
 			if (result != null) {
 				result = ((EnvironmentEndpoint) getDelegate()).sanitize(name, result);
 			}
