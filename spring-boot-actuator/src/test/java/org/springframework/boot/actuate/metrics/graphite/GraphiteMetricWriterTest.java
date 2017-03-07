@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.metrics.Metric;
@@ -70,7 +69,6 @@ public class GraphiteMetricWriterTest {
 				.isEqualTo("me.gauge.foo 3 1488405");
 	}
 
-	@Ignore
 	@Test
 	public void setDoubleMetric() throws Exception {
 		this.writer.set(new Metric<Double>("gauge.foo", 3.7, new Date(1488405805)));

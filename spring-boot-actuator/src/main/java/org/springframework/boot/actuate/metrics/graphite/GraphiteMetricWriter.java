@@ -87,8 +87,8 @@ public class GraphiteMetricWriter implements MetricWriter {
 
 		try (Socket socket = new Socket(this.host, this.port);
 				OutputStream stream = socket.getOutputStream()) {
-			String payload = String.format("%s %d %d%n", fullMetric,
-					metric.getValue().intValue(), metric.getTimestamp().getTime() / 1000);
+			String payload = String.format("%s %s %d%n", fullMetric,
+					metric.getValue(), metric.getTimestamp().getTime() / 1000);
 			stream.write(payload.getBytes());
 		}
 		catch (IOException e) {
