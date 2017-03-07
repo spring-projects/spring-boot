@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,14 +32,14 @@ public class OutputCaptureTests {
 	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
-	public void testToString() throws Exception {
+	public void toStringShouldReturnAllCapturedOutput() throws Exception {
 		System.out.println("Hello World");
 
 		assertThat(this.outputCapture.toString()).contains("Hello World");
 	}
 
 	@Test
-	public void testReset() throws Exception {
+	public void reset() throws Exception {
 		System.out.println("Hello");
 		this.outputCapture.reset();
 		System.out.println("World");
