@@ -38,6 +38,8 @@ class LoggingSystemProperties {
 
 	static final String LOG_LEVEL_PATTERN = LoggingApplicationListener.LOG_LEVEL_PATTERN;
 
+	static final String LOG_DATEFORMAT_PATTERN = LoggingApplicationListener.LOG_DATEFORMAT_PATTERN;
+
 	private final Environment environment;
 
 	LoggingSystemProperties(Environment environment) {
@@ -56,6 +58,7 @@ class LoggingSystemProperties {
 		setSystemProperty(propertyResolver, CONSOLE_LOG_PATTERN, "pattern.console");
 		setSystemProperty(propertyResolver, FILE_LOG_PATTERN, "pattern.file");
 		setSystemProperty(propertyResolver, LOG_LEVEL_PATTERN, "pattern.level");
+		setSystemProperty(propertyResolver, LOG_DATEFORMAT_PATTERN, "pattern.dateformat");
 		setSystemProperty(PID_KEY, new ApplicationPid().toString());
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
