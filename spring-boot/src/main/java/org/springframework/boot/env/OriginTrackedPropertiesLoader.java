@@ -61,7 +61,7 @@ class OriginTrackedPropertiesLoader {
 	/**
 	 * Load {@code .properties} data and return a map of {@code String} ->
 	 * {@link OriginTrackedValue}.
-	 * @param expandLists if list {@code name[]=a,b,c} shorcuts should be expanded
+	 * @param expandLists if list {@code name[]=a,b,c} shortcuts should be expanded
 	 * @return the loaded properties
 	 * @throws IOException on read error
 	 */
@@ -104,7 +104,7 @@ class OriginTrackedPropertiesLoader {
 		buffer.setLength(0);
 		boolean previousWhitespace = false;
 		while (!reader.isEndOfLine()) {
-			if (reader.isPropertyDelimeter()) {
+			if (reader.isPropertyDelimiter()) {
 				reader.read();
 				return buffer.toString();
 			}
@@ -125,7 +125,7 @@ class OriginTrackedPropertiesLoader {
 			reader.read();
 		}
 		Location location = reader.getLocation();
-		while (!reader.isEndOfLine() && !(splitLists && reader.isListDelimeter())) {
+		while (!reader.isEndOfLine() && !(splitLists && reader.isListDelimiter())) {
 			buffer.append(reader.getCharacter());
 			reader.read();
 		}
@@ -241,11 +241,11 @@ class OriginTrackedPropertiesLoader {
 			return this.character == -1 || (!this.escaped && this.character == '\n');
 		}
 
-		public boolean isListDelimeter() {
+		public boolean isListDelimiter() {
 			return !this.escaped && this.character == ',';
 		}
 
-		public boolean isPropertyDelimeter() {
+		public boolean isPropertyDelimiter() {
 			return !this.escaped && (this.character == '=' || this.character == ':');
 		}
 
