@@ -23,8 +23,8 @@ import java.io.File;
  * loaded from a {@link File} may have an origin made up of the file name along with
  * line/column numbers.
  * <p>
- * Implementations must provide sensible {@link #hashCode()}, {@link #equals(Object)} and
- * {@link #toString()} implementations.
+ * Implementations must provide sensible {@code hashCode()}, {@code equals(...)} and
+ * {@code #toString()} implementations.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
