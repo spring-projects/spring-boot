@@ -302,7 +302,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(loggingInitializationContext, null, null);
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertThat(getLineWithText(output, "Hello world")).contains(LocalDate.now().toString()+"T");
+		assertThat(getLineWithText(output, "Hello world")).contains(LocalDate.now().toString() + "T");
 	}
 
 	@Test
