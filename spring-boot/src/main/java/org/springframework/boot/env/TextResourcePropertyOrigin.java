@@ -21,7 +21,7 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * {@link PropertyOrigin} for an item loaded from a text resource. Provides access to the
- * origina {@link Resource} that loaded the text and a {@link Location} within it.
+ * original {@link Resource} that loaded the text and a {@link Location} within it.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
