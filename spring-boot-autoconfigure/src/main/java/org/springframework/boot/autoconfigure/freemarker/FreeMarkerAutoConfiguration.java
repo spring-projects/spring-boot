@@ -81,7 +81,7 @@ public class FreeMarkerAutoConfiguration {
 	public void checkTemplateLocationExists() {
 		if (this.properties.isCheckTemplateLocation()) {
 			TemplateLocation templatePathLocation = null;
-			List<TemplateLocation> locations = new ArrayList<TemplateLocation>();
+			List<TemplateLocation> locations = new ArrayList<>();
 			for (String templateLoaderPath : this.properties.getTemplateLoaderPath()) {
 				TemplateLocation location = new TemplateLocation(templateLoaderPath);
 				locations.add(location);

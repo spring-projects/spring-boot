@@ -58,8 +58,7 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 	}
 
 	private Manager getManager(EmbeddedWebApplicationContext applicationContext) {
-		EmbeddedWebServer embeddedWebServer = applicationContext
-				.getEmbeddedWebServer();
+		EmbeddedWebServer embeddedWebServer = applicationContext.getEmbeddedWebServer();
 		if (embeddedWebServer instanceof TomcatEmbeddedServletContainer) {
 			return getManager((TomcatEmbeddedServletContainer) embeddedWebServer);
 		}
@@ -77,7 +76,7 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 	}
 
 	private Collection<Metric<?>> metrics(Manager manager) {
-		List<Metric<?>> metrics = new ArrayList<Metric<?>>(2);
+		List<Metric<?>> metrics = new ArrayList<>(2);
 		if (manager instanceof ManagerBase) {
 			addMetric(metrics, "httpsessions.max",
 					((ManagerBase) manager).getMaxActiveSessions());
@@ -87,7 +86,7 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 	}
 
 	private void addMetric(List<Metric<?>> metrics, String name, Integer value) {
-		metrics.add(new Metric<Integer>(name, value));
+		metrics.add(new Metric<>(name, value));
 	}
 
 	@Override

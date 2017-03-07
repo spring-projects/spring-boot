@@ -215,7 +215,7 @@ public class PropertiesConfigurationFactoryTests {
 	}
 
 	private void setupFactory() throws IOException {
-		this.factory = new PropertiesConfigurationFactory<Foo>(Foo.class);
+		this.factory = new PropertiesConfigurationFactory<>(Foo.class);
 		this.factory.setValidator(this.validator);
 		this.factory.setTargetName(this.targetName);
 		this.factory.setIgnoreUnknownFields(this.ignoreUnknownFields);

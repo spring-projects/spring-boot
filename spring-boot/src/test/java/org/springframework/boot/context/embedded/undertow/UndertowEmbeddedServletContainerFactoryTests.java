@@ -73,8 +73,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/hello"));
 		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean<ExampleServlet>(new ExampleServlet(),
-						"/hello"));
+				new ServletRegistrationBean<>(new ExampleServlet(), "/hello"));
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
 		assertThat(getResponse(getLocalUrl("/not-found"))).isEqualTo("Hello World");
@@ -153,7 +152,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 	@Test
 	public void defaultContextPath() throws Exception {
 		UndertowEmbeddedServletContainerFactory factory = getFactory();
-		final AtomicReference<String> contextPath = new AtomicReference<String>();
+		final AtomicReference<String> contextPath = new AtomicReference<>();
 		factory.addDeploymentInfoCustomizers(new UndertowDeploymentInfoCustomizer() {
 
 			@Override
@@ -200,8 +199,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		factory.setAccessLogDirectory(accessLogDirectory);
 		assertThat(accessLogDirectory.listFiles()).isEmpty();
 		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean<ExampleServlet>(new ExampleServlet(),
-						"/hello"));
+				new ServletRegistrationBean<>(new ExampleServlet(), "/hello"));
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
 		File accessLog = new File(accessLogDirectory, expectedFile);
@@ -281,8 +279,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 	protected Collection<Mapping> getExpectedMimeMappings() {
 		// Unlike Tomcat and Jetty, Undertow performs a case-sensitive match on file
 		// extension so it has a mapping for "z" and "Z".
-		Set<Mapping> expectedMappings = new HashSet<Mapping>(
-				super.getExpectedMimeMappings());
+		Set<Mapping> expectedMappings = new HashSet<>(super.getExpectedMimeMappings());
 		expectedMappings.add(new Mapping("Z", "application/x-compress"));
 		return expectedMappings;
 	}

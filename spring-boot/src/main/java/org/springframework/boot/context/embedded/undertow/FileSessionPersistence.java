@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 
 	private void save(Map<String, PersistentSession> sessionData,
 			ObjectOutputStream stream) throws IOException {
-		Map<String, Serializable> session = new LinkedHashMap<String, Serializable>();
+		Map<String, Serializable> session = new LinkedHashMap<>();
 		for (Map.Entry<String, PersistentSession> entry : sessionData.entrySet()) {
 			session.put(entry.getKey(),
 					new SerializablePersistentSession(entry.getValue()));
@@ -110,7 +110,7 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 			throws ClassNotFoundException, IOException {
 		Map<String, SerializablePersistentSession> session = readSession(stream);
 		long time = System.currentTimeMillis();
-		Map<String, PersistentSession> result = new LinkedHashMap<String, PersistentSession>();
+		Map<String, PersistentSession> result = new LinkedHashMap<>();
 		for (Map.Entry<String, SerializablePersistentSession> entry : session
 				.entrySet()) {
 			PersistentSession entrySession = entry.getValue().getPersistentSession();
@@ -152,8 +152,7 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 
 		SerializablePersistentSession(PersistentSession session) {
 			this.expiration = session.getExpiration();
-			this.sessionData = new LinkedHashMap<String, Object>(
-					session.getSessionData());
+			this.sessionData = new LinkedHashMap<>(session.getSessionData());
 		}
 
 		public PersistentSession getPersistentSession() {

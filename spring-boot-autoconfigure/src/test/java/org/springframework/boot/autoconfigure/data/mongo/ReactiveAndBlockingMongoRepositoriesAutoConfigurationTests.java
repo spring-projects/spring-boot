@@ -85,7 +85,7 @@ public class ReactiveAndBlockingMongoRepositoriesAutoConfigurationTests {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			List<String> names = new ArrayList<String>();
+			List<String> names = new ArrayList<>();
 			for (Class<?> type : new Class<?>[] { MongoAutoConfiguration.class,
 					ReactiveMongoAutoConfiguration.class,
 					MongoDataAutoConfiguration.class,

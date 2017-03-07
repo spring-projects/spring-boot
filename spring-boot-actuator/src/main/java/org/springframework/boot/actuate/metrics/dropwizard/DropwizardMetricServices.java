@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,9 +59,9 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 
 	private final ReservoirFactory reservoirFactory;
 
-	private final ConcurrentMap<String, SimpleGauge> gauges = new ConcurrentHashMap<String, SimpleGauge>();
+	private final ConcurrentMap<String, SimpleGauge> gauges = new ConcurrentHashMap<>();
 
-	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<String, String>();
+	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<>();
 
 	/**
 	 * Create a new {@link DropwizardMetricServices} instance.

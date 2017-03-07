@@ -219,7 +219,7 @@ public class DispatcherServletAutoConfigurationTests {
 		@Bean
 		public ServletRegistrationBean<?> dispatcherServletRegistration(
 				DispatcherServlet dispatcherServlet) {
-			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<DispatcherServlet>(
+			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(
 					dispatcherServlet, "/foo");
 			registration.setName("customDispatcher");
 			return registration;

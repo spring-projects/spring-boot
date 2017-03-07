@@ -60,7 +60,7 @@ public class Repackager {
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
-	private List<MainClassTimeoutWarningListener> mainClassTimeoutListeners = new ArrayList<MainClassTimeoutWarningListener>();
+	private List<MainClassTimeoutWarningListener> mainClassTimeoutListeners = new ArrayList<>();
 
 	private String mainClass;
 
@@ -236,8 +236,8 @@ public class Repackager {
 			LaunchScript launchScript) throws IOException {
 		JarWriter writer = new JarWriter(destination, launchScript);
 		try {
-			final List<Library> unpackLibraries = new ArrayList<Library>();
-			final List<Library> standardLibraries = new ArrayList<Library>();
+			final List<Library> unpackLibraries = new ArrayList<>();
+			final List<Library> standardLibraries = new ArrayList<>();
 			libraries.doWithLibraries(new LibraryCallback() {
 
 				@Override
@@ -270,7 +270,7 @@ public class Repackager {
 			final List<Library> unpackLibraries, final List<Library> standardLibraries)
 					throws IOException {
 		writer.writeManifest(buildManifest(sourceJar));
-		Set<String> seen = new HashSet<String>();
+		Set<String> seen = new HashSet<>();
 		writeNestedLibraries(unpackLibraries, seen, writer);
 		if (this.layout instanceof RepackagingLayout) {
 			writer.writeEntries(sourceJar, new RenamingEntryTransformer(

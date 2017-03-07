@@ -173,14 +173,14 @@ public class SpringBootWebSecurityConfigurationTests {
 		TestRestTemplate rest = new TestRestTemplate();
 
 		// not overriding causes forbidden
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 
 		ResponseEntity<Object> result = rest
 				.postForEntity("http://localhost:" + port + "/", form, Object.class);
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 
 		// override method with GET
-		form = new LinkedMultiValueMap<String, String>();
+		form = new LinkedMultiValueMap<>();
 		form.add("_method", "GET");
 
 		result = rest.postForEntity("http://localhost:" + port + "/", form, Object.class);

@@ -91,8 +91,7 @@ public class YamlConfigurationFactory<T>
 	 * @param propertyAliases the property aliases
 	 */
 	public void setPropertyAliases(Map<Class<?>, Map<String, String>> propertyAliases) {
-		this.propertyAliases = new HashMap<Class<?>, Map<String, String>>(
-				propertyAliases);
+		this.propertyAliases = new HashMap<>(propertyAliases);
 	}
 
 	/**

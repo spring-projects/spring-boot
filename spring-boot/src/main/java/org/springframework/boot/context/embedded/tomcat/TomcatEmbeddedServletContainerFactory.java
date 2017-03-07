@@ -108,24 +108,23 @@ public class TomcatEmbeddedServletContainerFactory
 
 	private File baseDirectory;
 
-	private List<Valve> engineValves = new ArrayList<Valve>();
+	private List<Valve> engineValves = new ArrayList<>();
 
-	private List<Valve> contextValves = new ArrayList<Valve>();
+	private List<Valve> contextValves = new ArrayList<>();
 
-	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<LifecycleListener>();
+	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<>();
 
-	private List<TomcatContextCustomizer> tomcatContextCustomizers = new ArrayList<TomcatContextCustomizer>();
+	private List<TomcatContextCustomizer> tomcatContextCustomizers = new ArrayList<>();
 
-	private List<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new ArrayList<TomcatConnectorCustomizer>();
+	private List<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new ArrayList<>();
 
-	private List<Connector> additionalTomcatConnectors = new ArrayList<Connector>();
+	private List<Connector> additionalTomcatConnectors = new ArrayList<>();
 
 	private ResourceLoader resourceLoader;
 
 	private String protocol = DEFAULT_PROTOCOL;
 
-	private Set<String> tldSkipPatterns = new LinkedHashSet<String>(
-			TldSkipPatterns.DEFAULT);
+	private Set<String> tldSkipPatterns = new LinkedHashSet<>(TldSkipPatterns.DEFAULT);
 
 	private Charset uriEncoding = DEFAULT_CHARSET;
 
@@ -575,7 +574,7 @@ public class TomcatEmbeddedServletContainerFactory
 	 */
 	public void setTldSkipPatterns(Collection<String> patterns) {
 		Assert.notNull(patterns, "Patterns must not be null");
-		this.tldSkipPatterns = new LinkedHashSet<String>(patterns);
+		this.tldSkipPatterns = new LinkedHashSet<>(patterns);
 	}
 
 	/**
@@ -605,7 +604,7 @@ public class TomcatEmbeddedServletContainerFactory
 	 */
 	public void setEngineValves(Collection<? extends Valve> engineValves) {
 		Assert.notNull(engineValves, "Valves must not be null");
-		this.engineValves = new ArrayList<Valve>(engineValves);
+		this.engineValves = new ArrayList<>(engineValves);
 	}
 
 	/**
@@ -633,7 +632,7 @@ public class TomcatEmbeddedServletContainerFactory
 	 */
 	public void setContextValves(Collection<? extends Valve> contextValves) {
 		Assert.notNull(contextValves, "Valves must not be null");
-		this.contextValves = new ArrayList<Valve>(contextValves);
+		this.contextValves = new ArrayList<>(contextValves);
 	}
 
 	/**
@@ -664,8 +663,7 @@ public class TomcatEmbeddedServletContainerFactory
 			Collection<? extends LifecycleListener> contextLifecycleListeners) {
 		Assert.notNull(contextLifecycleListeners,
 				"ContextLifecycleListeners must not be null");
-		this.contextLifecycleListeners = new ArrayList<LifecycleListener>(
-				contextLifecycleListeners);
+		this.contextLifecycleListeners = new ArrayList<>(contextLifecycleListeners);
 	}
 
 	/**
@@ -697,8 +695,7 @@ public class TomcatEmbeddedServletContainerFactory
 			Collection<? extends TomcatContextCustomizer> tomcatContextCustomizers) {
 		Assert.notNull(tomcatContextCustomizers,
 				"TomcatContextCustomizers must not be null");
-		this.tomcatContextCustomizers = new ArrayList<TomcatContextCustomizer>(
-				tomcatContextCustomizers);
+		this.tomcatContextCustomizers = new ArrayList<>(tomcatContextCustomizers);
 	}
 
 	/**
@@ -731,8 +728,7 @@ public class TomcatEmbeddedServletContainerFactory
 			Collection<? extends TomcatConnectorCustomizer> tomcatConnectorCustomizers) {
 		Assert.notNull(tomcatConnectorCustomizers,
 				"TomcatConnectorCustomizers must not be null");
-		this.tomcatConnectorCustomizers = new ArrayList<TomcatConnectorCustomizer>(
-				tomcatConnectorCustomizers);
+		this.tomcatConnectorCustomizers = new ArrayList<>(tomcatConnectorCustomizers);
 	}
 
 	/**

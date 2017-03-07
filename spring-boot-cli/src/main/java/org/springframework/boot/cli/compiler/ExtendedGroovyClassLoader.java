@@ -53,7 +53,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 
 	private static final URL[] NO_URLS = new URL[] {};
 
-	private final Map<String, byte[]> classResources = new HashMap<String, byte[]>();
+	private final Map<String, byte[]> classResources = new HashMap<>();
 
 	private final GroovyCompilerScope scope;
 
@@ -183,13 +183,13 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		}
 
 		private URL[] getGroovyJars(final ClassLoader parent) {
-			Set<URL> urls = new HashSet<URL>();
+			Set<URL> urls = new HashSet<>();
 			findGroovyJarsDirectly(parent, urls);
 			if (urls.isEmpty()) {
 				findGroovyJarsFromClassPath(parent, urls);
 			}
 			Assert.state(!urls.isEmpty(), "Unable to find groovy JAR");
-			return new ArrayList<URL>(urls).toArray(new URL[urls.size()]);
+			return new ArrayList<>(urls).toArray(new URL[urls.size()]);
 		}
 
 		private void findGroovyJarsDirectly(ClassLoader classLoader, Set<URL> urls) {

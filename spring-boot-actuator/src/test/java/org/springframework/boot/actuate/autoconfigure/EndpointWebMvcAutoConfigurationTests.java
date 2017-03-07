@@ -117,7 +117,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	private final AnnotationConfigEmbeddedWebApplicationContext applicationContext = new AnnotationConfigEmbeddedWebApplicationContext();
 
-	private static ThreadLocal<Ports> ports = new ThreadLocal<Ports>();
+	private static ThreadLocal<Ports> ports = new ThreadLocal<>();
 
 	@Before
 	public void setUp() {

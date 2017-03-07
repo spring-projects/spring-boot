@@ -38,7 +38,7 @@ public class Jsp {
 	/**
 	 * Init parameters used to configure the JSP servlet.
 	 */
-	private Map<String, String> initParameters = new HashMap<String, String>();
+	private Map<String, String> initParameters = new HashMap<>();
 
 	/**
 	 * Whether or not the JSP servlet should be registered with the embedded servlet

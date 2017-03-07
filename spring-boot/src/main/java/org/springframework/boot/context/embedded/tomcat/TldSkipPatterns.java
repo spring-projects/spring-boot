@@ -31,7 +31,7 @@ final class TldSkipPatterns {
 
 	static {
 		// Same as Tomcat
-		Set<String> patterns = new LinkedHashSet<String>();
+		Set<String> patterns = new LinkedHashSet<>();
 		patterns.add("ant-*.jar");
 		patterns.add("aspectj*.jar");
 		patterns.add("commons-beanutils*.jar");
@@ -75,7 +75,7 @@ final class TldSkipPatterns {
 
 	static {
 		// Additional typical for Spring Boot applications
-		Set<String> patterns = new LinkedHashSet<String>();
+		Set<String> patterns = new LinkedHashSet<>();
 		patterns.add("antlr-*.jar");
 		patterns.add("aopalliance-*.jar");
 		patterns.add("aspectjrt-*.jar");
@@ -127,7 +127,7 @@ final class TldSkipPatterns {
 	static final Set<String> DEFAULT;
 
 	static {
-		Set<String> patterns = new LinkedHashSet<String>();
+		Set<String> patterns = new LinkedHashSet<>();
 		patterns.addAll(TOMCAT);
 		patterns.addAll(ADDITIONAL);
 		DEFAULT = Collections.unmodifiableSet(patterns);

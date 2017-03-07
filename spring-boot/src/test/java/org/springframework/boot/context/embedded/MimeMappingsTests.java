@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public class MimeMappingsTests {
 
 	@Test
 	public void createFromMap() throws Exception {
-		Map<String, String> mappings = new HashMap<String, String>();
+		Map<String, String> mappings = new HashMap<>();
 		mappings.put("foo", "bar");
 		MimeMappings clone = new MimeMappings(mappings);
 		mappings.put("baz", "bar");
@@ -67,7 +67,7 @@ public class MimeMappingsTests {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		mappings.add("baz", "boo");
-		List<MimeMappings.Mapping> mappingList = new ArrayList<MimeMappings.Mapping>();
+		List<MimeMappings.Mapping> mappingList = new ArrayList<>();
 		for (MimeMappings.Mapping mapping : mappings) {
 			mappingList.add(mapping);
 		}
@@ -82,7 +82,7 @@ public class MimeMappingsTests {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		mappings.add("baz", "boo");
-		List<MimeMappings.Mapping> mappingList = new ArrayList<MimeMappings.Mapping>();
+		List<MimeMappings.Mapping> mappingList = new ArrayList<>();
 		mappingList.addAll(mappings.getAll());
 		assertThat(mappingList.get(0).getExtension()).isEqualTo("foo");
 		assertThat(mappingList.get(0).getMimeType()).isEqualTo("bar");

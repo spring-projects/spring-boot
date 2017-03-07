@@ -236,7 +236,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	public void startServletAndFilter() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory.getEmbeddedServletContainer(exampleServletRegistration(),
-				new FilterRegistrationBean<ExampleFilter>(new ExampleFilter()));
+				new FilterRegistrationBean<>(new ExampleFilter()));
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("[Hello World]");
 	}
@@ -409,9 +409,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		Ssl ssl = getSsl(null, "password", "classpath:test.jks");
 		ssl.setEnabled(false);
 		factory.setSsl(ssl);
-		this.container = factory
-				.getEmbeddedServletContainer(new ServletRegistrationBean<ExampleServlet>(
-						new ExampleServlet(true, false), "/hello"));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
@@ -428,9 +427,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	public void sslGetScheme() throws Exception { // gh-2232
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
-		this.container = factory
-				.getEmbeddedServletContainer(new ServletRegistrationBean<ExampleServlet>(
-						new ExampleServlet(true, false), "/hello"));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
@@ -447,9 +445,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	public void serverHeaderIsDisabledByDefaultWhenUsingSsl() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
-		this.container = factory
-				.getEmbeddedServletContainer(new ServletRegistrationBean<ExampleServlet>(
-						new ExampleServlet(true, false), "/hello"));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
@@ -466,9 +463,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.setServerHeader("MyServer");
 		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
-		this.container = factory
-				.getEmbeddedServletContainer(new ServletRegistrationBean<ExampleServlet>(
-						new ExampleServlet(true, false), "/hello"));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
@@ -689,9 +685,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks", null,
 				protocols, ciphers));
-		this.container = factory
-				.getEmbeddedServletContainer(new ServletRegistrationBean<ExampleServlet>(
-						new ExampleServlet(true, false), "/hello"));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
@@ -811,9 +806,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		Compression compression = new Compression();
 		compression.setEnabled(true);
 		factory.setCompression(compression);
-		this.container = factory
-				.getEmbeddedServletContainer(new ServletRegistrationBean<ExampleServlet>(
-						new ExampleServlet(false, true), "/hello"));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean<>(new ExampleServlet(false, true), "/hello"));
 		this.container.start();
 		TestGzipInputStreamFactory inputStreamFactory = new TestGzipInputStreamFactory();
 		Map<String, InputStreamFactory> contentDecoderMap = Collections
@@ -845,7 +839,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void rootServletContextResource() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		final AtomicReference<URL> rootResource = new AtomicReference<URL>();
+		final AtomicReference<URL> rootResource = new AtomicReference<>();
 		this.container = factory
 				.getEmbeddedServletContainer(new ServletContextInitializer() {
 					@Override
@@ -934,7 +928,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void localeCharsetMappingsAreConfigured() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		Map<Locale, Charset> mappings = new HashMap<Locale, Charset>();
+		Map<Locale, Charset> mappings = new HashMap<>();
 		mappings.put(Locale.GERMAN, Charset.forName("UTF-8"));
 		factory.setLocaleCharsetMappings(mappings);
 		this.container = factory.getEmbeddedServletContainer();
@@ -944,7 +938,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void jspServletInitParameters() throws Exception {
-		Map<String, String> initParameters = new HashMap<String, String>();
+		Map<String, String> initParameters = new HashMap<>();
 		initParameters.put("a", "alpha");
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.getJsp().setInitParameters(initParameters);
@@ -1123,9 +1117,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	protected void assertForwardHeaderIsUsed(EmbeddedServletContainerFactory factory)
 			throws IOException, URISyntaxException {
-		this.container = factory
-				.getEmbeddedServletContainer(new ServletRegistrationBean<ExampleServlet>(
-						new ExampleServlet(true, false), "/hello"));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello"), "X-Forwarded-For:140.211.11.130"))
 				.contains("remoteaddr=140.211.11.130");
@@ -1137,13 +1130,12 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			throws Exception;
 
 	protected ServletContextInitializer exampleServletRegistration() {
-		return new ServletRegistrationBean<ExampleServlet>(new ExampleServlet(),
-				"/hello");
+		return new ServletRegistrationBean<>(new ExampleServlet(), "/hello");
 	}
 
 	@SuppressWarnings("serial")
 	private ServletContextInitializer errorServletRegistration() {
-		ServletRegistrationBean<ExampleServlet> bean = new ServletRegistrationBean<ExampleServlet>(
+		ServletRegistrationBean<ExampleServlet> bean = new ServletRegistrationBean<>(
 				new ExampleServlet() {
 
 					@Override
@@ -1158,7 +1150,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	protected final ServletContextInitializer sessionServletRegistration() {
-		ServletRegistrationBean<ExampleServlet> bean = new ServletRegistrationBean<ExampleServlet>(
+		ServletRegistrationBean<ExampleServlet> bean = new ServletRegistrationBean<>(
 				new ExampleServlet() {
 
 					@Override

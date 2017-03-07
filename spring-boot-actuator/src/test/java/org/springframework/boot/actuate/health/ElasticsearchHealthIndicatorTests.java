@@ -85,7 +85,7 @@ public class ElasticsearchHealthIndicatorTests {
 
 	@Test
 	public void certainIndices() {
-		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<ClusterHealthResponse>();
+		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<>();
 		responseFuture.onResponse(new StubClusterHealthResponse());
 		ArgumentCaptor<ClusterHealthRequest> requestCaptor = ArgumentCaptor
 				.forClass(ClusterHealthRequest.class);
@@ -112,7 +112,7 @@ public class ElasticsearchHealthIndicatorTests {
 
 	@Test
 	public void healthDetails() {
-		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<ClusterHealthResponse>();
+		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<>();
 		responseFuture.onResponse(new StubClusterHealthResponse());
 		given(this.cluster.health(any(ClusterHealthRequest.class)))
 				.willReturn(responseFuture);
@@ -131,7 +131,7 @@ public class ElasticsearchHealthIndicatorTests {
 
 	@Test
 	public void redResponseMapsToDown() {
-		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<ClusterHealthResponse>();
+		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<>();
 		responseFuture.onResponse(new StubClusterHealthResponse(ClusterHealthStatus.RED));
 		given(this.cluster.health(any(ClusterHealthRequest.class)))
 				.willReturn(responseFuture);
@@ -140,7 +140,7 @@ public class ElasticsearchHealthIndicatorTests {
 
 	@Test
 	public void yellowResponseMapsToUp() {
-		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<ClusterHealthResponse>();
+		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<>();
 		responseFuture
 				.onResponse(new StubClusterHealthResponse(ClusterHealthStatus.YELLOW));
 		given(this.cluster.health(any(ClusterHealthRequest.class)))
@@ -150,7 +150,7 @@ public class ElasticsearchHealthIndicatorTests {
 
 	@Test
 	public void responseTimeout() {
-		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<ClusterHealthResponse>();
+		PlainActionFuture<ClusterHealthResponse> responseFuture = new PlainActionFuture<>();
 		given(this.cluster.health(any(ClusterHealthRequest.class)))
 				.willReturn(responseFuture);
 		Health health = this.indicator.health();

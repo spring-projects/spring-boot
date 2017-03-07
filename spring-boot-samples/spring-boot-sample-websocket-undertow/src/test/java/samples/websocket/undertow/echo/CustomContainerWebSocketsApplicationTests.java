@@ -109,7 +109,7 @@ public class CustomContainerWebSocketsApplicationTests {
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 
-		private final AtomicReference<String> messagePayload = new AtomicReference<String>();
+		private final AtomicReference<String> messagePayload = new AtomicReference<>();
 
 		@Override
 		public void run(String... args) throws Exception {

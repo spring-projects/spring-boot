@@ -15,8 +15,7 @@
  */
 
 /**
- * Support for Jetty
- * {@link org.springframework.boot.context.embedded.EmbeddedWebServer
+ * Support for Jetty {@link org.springframework.boot.context.embedded.EmbeddedWebServer
  * EmbeddedServletContainers}.
  *
  * @see org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory

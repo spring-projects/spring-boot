@@ -71,7 +71,7 @@ public class SampleTomcatApplicationTests {
 	public void testCompression() throws Exception {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Accept-Encoding", "gzip");
-		HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
+		HttpEntity<?> requestEntity = new HttpEntity<>(requestHeaders);
 		ResponseEntity<byte[]> entity = this.restTemplate.exchange("/", HttpMethod.GET,
 				requestEntity, byte[].class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);

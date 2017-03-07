@@ -60,15 +60,15 @@ import static org.mockito.Mockito.mock;
  */
 public class AutoConfigurationReportLoggingInitializerTests {
 
-	private static ThreadLocal<Log> logThreadLocal = new ThreadLocal<Log>();
+	private static ThreadLocal<Log> logThreadLocal = new ThreadLocal<>();
 
 	private Log log;
 
 	private AutoConfigurationReportLoggingInitializer initializer;
 
-	protected List<String> debugLog = new ArrayList<String>();
+	protected List<String> debugLog = new ArrayList<>();
 
-	protected List<String> infoLog = new ArrayList<String>();
+	protected List<String> infoLog = new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -171,8 +171,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		}
 		// Just basic sanity check, test is for visual inspection
 		String l = this.debugLog.get(0);
-		assertThat(l).contains(
-				"not a servlet web application (OnWebApplicationCondition)");
+		assertThat(l)
+				.contains("not a servlet web application (OnWebApplicationCondition)");
 	}
 
 	@Test

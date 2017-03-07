@@ -77,9 +77,9 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 	private String global;
 
-	private final Map<Integer, String> statuses = new HashMap<Integer, String>();
+	private final Map<Integer, String> statuses = new HashMap<>();
 
-	private final Map<Class<?>, String> exceptions = new HashMap<Class<?>, String>();
+	private final Map<Class<?>, String> exceptions = new HashMap<>();
 
 	private final OncePerRequestFilter delegate = new OncePerRequestFilter() {
 

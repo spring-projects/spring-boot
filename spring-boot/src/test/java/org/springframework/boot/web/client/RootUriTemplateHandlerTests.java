@@ -80,7 +80,7 @@ public class RootUriTemplateHandlerTests {
 
 	@Test
 	public void expandMapVariablesShouldPrefixRoot() throws Exception {
-		HashMap<String, Object> uriVariables = new HashMap<String, Object>();
+		HashMap<String, Object> uriVariables = new HashMap<>();
 		URI expanded = this.handler.expand("/hello", uriVariables);
 		verify(this.delegate).expand("http://example.com/hello", uriVariables);
 		assertThat(expanded).isEqualTo(this.uri);
@@ -89,7 +89,7 @@ public class RootUriTemplateHandlerTests {
 	@Test
 	public void expandMapVariablesWhenPathDoesNotStartWithSlashShouldNotPrefixRoot()
 			throws Exception {
-		HashMap<String, Object> uriVariables = new HashMap<String, Object>();
+		HashMap<String, Object> uriVariables = new HashMap<>();
 		URI expanded = this.handler.expand("http://spring.io/hello", uriVariables);
 		verify(this.delegate).expand("http://spring.io/hello", uriVariables);
 		assertThat(expanded).isEqualTo(this.uri);

@@ -193,7 +193,7 @@ public class RepackageTask extends DefaultTask {
 		private boolean isTaskMatch(Jar task, Object withJarTask) {
 			if (withJarTask == null) {
 				if ("".equals(task.getClassifier())) {
-					Set<Object> tasksWithCustomRepackaging = new HashSet<Object>();
+					Set<Object> tasksWithCustomRepackaging = new HashSet<>();
 					for (RepackageTask repackageTask : RepackageTask.this.getProject()
 							.getTasks().withType(RepackageTask.class)) {
 						if (repackageTask.getWithJarTask() != null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public class RelaxedDataBinder extends DataBinder {
 
 	private boolean ignoreNestedProperties;
 
-	private MultiValueMap<String, String> nameAliases = new LinkedMultiValueMap<String, String>();
+	private MultiValueMap<String, String> nameAliases = new LinkedMultiValueMap<>();
 
 	/**
 	 * Create a new {@link RelaxedDataBinder} instance.
@@ -107,7 +107,7 @@ public class RelaxedDataBinder extends DataBinder {
 	 * @param aliases a map of property name to aliases
 	 */
 	public void setNameAliases(Map<String, List<String>> aliases) {
-		this.nameAliases = new LinkedMultiValueMap<String, String>(aliases);
+		this.nameAliases = new LinkedMultiValueMap<>(aliases);
 	}
 
 	/**
@@ -147,8 +147,8 @@ public class RelaxedDataBinder extends DataBinder {
 		wrapper.setConversionService(
 				new RelaxedConversionService(getConversionService()));
 		wrapper.setAutoGrowNestedPaths(true);
-		List<PropertyValue> sortedValues = new ArrayList<PropertyValue>();
-		Set<String> modifiedNames = new HashSet<String>();
+		List<PropertyValue> sortedValues = new ArrayList<>();
+		Set<String> modifiedNames = new HashSet<>();
 		List<String> sortedNames = getSortedPropertyNames(propertyValues);
 		for (String name : sortedNames) {
 			PropertyValue propertyValue = propertyValues.getPropertyValue(name);
@@ -161,7 +161,7 @@ public class RelaxedDataBinder extends DataBinder {
 	}
 
 	private List<String> getSortedPropertyNames(MutablePropertyValues propertyValues) {
-		List<String> names = new LinkedList<String>();
+		List<String> names = new LinkedList<>();
 		for (PropertyValue propertyValue : propertyValues.getPropertyValueList()) {
 			names.add(propertyValue.getName());
 		}
@@ -178,7 +178,7 @@ public class RelaxedDataBinder extends DataBinder {
 	 * @param names the names to sort
 	 */
 	private void sortPropertyNames(List<String> names) {
-		for (String name : new ArrayList<String>(names)) {
+		for (String name : new ArrayList<>(names)) {
 			int propertyIndex = names.indexOf(name);
 			BeanPath path = new BeanPath(name);
 			for (String prefix : path.prefixes()) {
@@ -343,7 +343,7 @@ public class RelaxedDataBinder extends DataBinder {
 		}
 		Object extend = new LinkedHashMap<String, Object>();
 		if (!elementDescriptor.isMap() && path.isArrayIndex(index)) {
-			extend = new ArrayList<Object>();
+			extend = new ArrayList<>();
 		}
 		wrapper.setPropertyValue(path.prefix(index + 1), extend);
 	}
@@ -372,7 +372,7 @@ public class RelaxedDataBinder extends DataBinder {
 		}
 		Object extend = new LinkedHashMap<String, Object>();
 		if (descriptor.isCollection()) {
-			extend = new ArrayList<Object>();
+			extend = new ArrayList<>();
 		}
 		if (descriptor.getType().equals(Object.class) && path.isLastNode(index)) {
 			extend = BLANK;
@@ -438,7 +438,7 @@ public class RelaxedDataBinder extends DataBinder {
 		if (aliases == null) {
 			return Collections.singleton(name);
 		}
-		List<String> nameAndAliases = new ArrayList<String>(aliases.size() + 1);
+		List<String> nameAndAliases = new ArrayList<>(aliases.size() + 1);
 		nameAndAliases.add(name);
 		nameAndAliases.addAll(aliases);
 		return nameAndAliases;
@@ -486,7 +486,7 @@ public class RelaxedDataBinder extends DataBinder {
 		}
 
 		public List<String> prefixes() {
-			List<String> prefixes = new ArrayList<String>();
+			List<String> prefixes = new ArrayList<>();
 			for (int index = 1; index < this.nodes.size(); index++) {
 				prefixes.add(prefix(index));
 			}
@@ -498,7 +498,7 @@ public class RelaxedDataBinder extends DataBinder {
 		}
 
 		private List<PathNode> splitPath(String path) {
-			List<PathNode> nodes = new ArrayList<PathNode>();
+			List<PathNode> nodes = new ArrayList<>();
 			String current = extractIndexedPaths(path, nodes);
 			for (String name : StringUtils.delimitedListToStringArray(current, ".")) {
 				if (StringUtils.hasText(name)) {
@@ -532,7 +532,7 @@ public class RelaxedDataBinder extends DataBinder {
 		}
 
 		public void collapseKeys(int index) {
-			List<PathNode> revised = new ArrayList<PathNode>();
+			List<PathNode> revised = new ArrayList<>();
 			for (int i = 0; i < index; i++) {
 				revised.add(this.nodes.get(i));
 			}
@@ -683,7 +683,7 @@ public class RelaxedDataBinder extends DataBinder {
 		private static final Set<String> BENIGN_PROPERTY_SOURCE_NAMES;
 
 		static {
-			Set<String> names = new HashSet<String>();
+			Set<String> names = new HashSet<>();
 			names.add(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
 			names.add(StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
 			BENIGN_PROPERTY_SOURCE_NAMES = Collections.unmodifiableSet(names);

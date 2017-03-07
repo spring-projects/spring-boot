@@ -19,8 +19,8 @@ package org.springframework.boot.context.embedded;
 import java.security.KeyStore;
 
 /**
- * Interface to provide SSL key stores for an {@link EmbeddedWebServer} to use. Can
- * be used when file based key stores cannot be used.
+ * Interface to provide SSL key stores for an {@link EmbeddedWebServer} to use. Can be
+ * used when file based key stores cannot be used.
  *
  * @author Phillip Webb
  * @since 1.4.0

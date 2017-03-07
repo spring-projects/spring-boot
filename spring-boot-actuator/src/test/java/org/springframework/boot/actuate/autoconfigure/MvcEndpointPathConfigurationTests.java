@@ -142,9 +142,8 @@ public class MvcEndpointPathConfigurationTests {
 
 	@Configuration
 	@ImportAutoConfiguration({ EndpointAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			AuditAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-			JolokiaAutoConfiguration.class })
+			HttpMessageConvertersAutoConfiguration.class, AuditAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class })
 
 	protected static class TestConfiguration {
 

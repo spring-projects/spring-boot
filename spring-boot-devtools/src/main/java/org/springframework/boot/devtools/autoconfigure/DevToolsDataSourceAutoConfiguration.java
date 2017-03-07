@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ public class DevToolsDataSourceAutoConfiguration {
 	static final class NonEmbeddedInMemoryDatabaseShutdownExecutor
 			implements DisposableBean {
 
-		private static final Set<String> IN_MEMORY_DRIVER_CLASS_NAMES = new HashSet<String>(
+		private static final Set<String> IN_MEMORY_DRIVER_CLASS_NAMES = new HashSet<>(
 				Arrays.asList("org.apache.derby.jdbc.EmbeddedDriver", "org.h2.Driver",
 						"org.h2.jdbcx.JdbcDataSource", "org.hsqldb.jdbcDriver",
 						"org.hsqldb.jdbc.JDBCDriver",

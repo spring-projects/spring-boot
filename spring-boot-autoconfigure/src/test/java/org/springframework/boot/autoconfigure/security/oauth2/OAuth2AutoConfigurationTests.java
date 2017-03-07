@@ -419,8 +419,7 @@ public class OAuth2AutoConfigurationTests {
 		HttpHeaders headers = getHeaders(config);
 		String url = baseUrl + "/oauth/token";
 		JsonNode tokenResponse = rest.postForObject(url,
-				new HttpEntity<MultiValueMap<String, Object>>(getBody(), headers),
-				JsonNode.class);
+				new HttpEntity<>(getBody(), headers), JsonNode.class);
 		String authorizationToken = tokenResponse.findValue("access_token").asText();
 		String tokenType = tokenResponse.findValue("token_type").asText();
 		String scope = tokenResponse.findValues("scope").get(0).toString();
@@ -448,7 +447,7 @@ public class OAuth2AutoConfigurationTests {
 	}
 
 	private MultiValueMap<String, Object> getBody() {
-		MultiValueMap<String, Object> body = new LinkedMultiValueMap<String, Object>();
+		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 		body.set("grant_type", "password");
 		body.set("username", "foo");
 		body.set("password", "bar");

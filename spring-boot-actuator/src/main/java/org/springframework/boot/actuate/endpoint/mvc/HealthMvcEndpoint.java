@@ -60,7 +60,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 
 	private final List<String> roles;
 
-	private Map<String, HttpStatus> statusMapping = new HashMap<String, HttpStatus>();
+	private Map<String, HttpStatus> statusMapping = new HashMap<>();
 
 	private RelaxedPropertyResolver securityPropertyResolver;
 
@@ -101,7 +101,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 	 */
 	public void setStatusMapping(Map<String, HttpStatus> statusMapping) {
 		Assert.notNull(statusMapping, "StatusMapping must not be null");
-		this.statusMapping = new HashMap<String, HttpStatus>(statusMapping);
+		this.statusMapping = new HashMap<>(statusMapping);
 	}
 
 	/**
@@ -145,7 +145,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 		Health health = getHealth(request, principal);
 		HttpStatus status = getStatus(health);
 		if (status != null) {
-			return new ResponseEntity<Health>(health, status);
+			return new ResponseEntity<>(health, status);
 		}
 		return health;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,7 +108,7 @@ public class PropertiesConfigurationFactoryMapTests {
 	}
 
 	private void setupFactory() throws IOException {
-		this.factory = new PropertiesConfigurationFactory<Foo>(Foo.class);
+		this.factory = new PropertiesConfigurationFactory<>(Foo.class);
 		this.factory.setValidator(this.validator);
 		this.factory.setTargetName(this.targetName);
 		this.factory.setIgnoreUnknownFields(this.ignoreUnknownFields);
@@ -118,7 +118,7 @@ public class PropertiesConfigurationFactoryMapTests {
 	// Foo needs to be public and to have setters for all properties
 	public static class Foo {
 
-		private Map<String, Object> map = new HashMap<String, Object>();
+		private Map<String, Object> map = new HashMap<>();
 
 		public Map<String, Object> getMap() {
 			return this.map;

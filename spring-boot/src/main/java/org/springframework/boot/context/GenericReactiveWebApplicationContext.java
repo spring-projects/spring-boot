@@ -25,9 +25,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class GenericReactiveWebApplicationContext
-		extends AnnotationConfigApplicationContext
-		implements ReactiveWebApplicationContext {
+public class GenericReactiveWebApplicationContext extends
+		AnnotationConfigApplicationContext implements ReactiveWebApplicationContext {
 
 	public GenericReactiveWebApplicationContext() {
 		super();

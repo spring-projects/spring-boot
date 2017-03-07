@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +112,7 @@ public class JestAutoConfigurationTests {
 				"spring.data.elasticsearch.properties.http.port:" + port,
 				"spring.elasticsearch.jest.uris:http://localhost:" + port);
 		JestClient client = this.context.getBean(JestClient.class);
-		Map<String, String> source = new HashMap<String, String>();
+		Map<String, String> source = new HashMap<>();
 		source.put("a", "alpha");
 		source.put("b", "bravo");
 		Index index = new Index.Builder(source).index("foo").type("bar").build();

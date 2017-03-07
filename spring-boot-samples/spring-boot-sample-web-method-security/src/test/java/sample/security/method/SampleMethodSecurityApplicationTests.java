@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,14 +72,12 @@ public class SampleMethodSecurityApplicationTests {
 	public void testLogin() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "admin");
 		form.set("password", "admin");
 		getCsrf(form, headers);
 		ResponseEntity<String> entity = this.restTemplate.exchange("/login",
-				HttpMethod.POST,
-				new HttpEntity<MultiValueMap<String, String>>(form, headers),
-				String.class);
+				HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(entity.getHeaders().getLocation().toString())
 				.isEqualTo("http://localhost:" + this.port + "/");
@@ -89,14 +87,12 @@ public class SampleMethodSecurityApplicationTests {
 	public void testDenied() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "user");
 		form.set("password", "user");
 		getCsrf(form, headers);
 		ResponseEntity<String> entity = this.restTemplate.exchange("/login",
-				HttpMethod.POST,
-				new HttpEntity<MultiValueMap<String, String>>(form, headers),
-				String.class);
+				HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		String cookie = entity.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);

@@ -86,9 +86,9 @@ public class MockEmbeddedServletContainerFactory
 
 		private final ServletContextInitializer[] initializers;
 
-		private final List<RegisteredServlet> registeredServlets = new ArrayList<RegisteredServlet>();
+		private final List<RegisteredServlet> registeredServlets = new ArrayList<>();
 
-		private final List<RegisteredFilter> registeredFilters = new ArrayList<RegisteredFilter>();
+		private final List<RegisteredFilter> registeredFilters = new ArrayList<>();
 
 		private final int port;
 
@@ -126,7 +126,7 @@ public class MockEmbeddedServletContainerFactory
 								return registeredFilter.getRegistration();
 							}
 						});
-				final Map<String, String> initParameters = new HashMap<String, String>();
+				final Map<String, String> initParameters = new HashMap<>();
 				given(this.servletContext.setInitParameter(anyString(), anyString()))
 						.will(new Answer<Void>() {
 							@Override
@@ -199,7 +199,7 @@ public class MockEmbeddedServletContainerFactory
 
 		private static class EmptyEnumeration<E> implements Enumeration<E> {
 
-			static final EmptyEnumeration<Object> EMPTY_ENUMERATION = new EmptyEnumeration<Object>();
+			static final EmptyEnumeration<Object> EMPTY_ENUMERATION = new EmptyEnumeration<>();
 
 			@Override
 			public boolean hasMoreElements() {

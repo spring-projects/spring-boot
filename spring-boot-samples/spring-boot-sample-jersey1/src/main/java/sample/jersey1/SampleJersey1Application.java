@@ -47,7 +47,7 @@ public class SampleJersey1Application {
 
 	@Bean
 	public FilterRegistrationBean<ServletContainer> jersey() {
-		FilterRegistrationBean<ServletContainer> bean = new FilterRegistrationBean<ServletContainer>();
+		FilterRegistrationBean<ServletContainer> bean = new FilterRegistrationBean<>();
 		bean.setFilter(new ServletContainer());
 		bean.addInitParameter("com.sun.jersey.config.property.packages",
 				"com.sun.jersey;sample.jersey1");

@@ -98,7 +98,7 @@ class ApplicationBuilder {
 
 	private void writePom(File appFolder, File resourcesJar)
 			throws FileNotFoundException, IOException {
-		Map<String, Object> context = new HashMap<String, Object>();
+		Map<String, Object> context = new HashMap<>();
 		context.put("packaging", this.packaging);
 		context.put("container", this.container);
 		context.put("bootVersion", Versions.getBootVersion());

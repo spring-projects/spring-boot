@@ -65,13 +65,13 @@ public final class RemoteSpringApplication {
 	}
 
 	private Collection<ApplicationContextInitializer<?>> getInitializers() {
-		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
 		initializers.add(new RestartScopeInitializer());
 		return initializers;
 	}
 
 	private Collection<ApplicationListener<?>> getListeners() {
-		List<ApplicationListener<?>> listeners = new ArrayList<ApplicationListener<?>>();
+		List<ApplicationListener<?>> listeners = new ArrayList<>();
 		listeners.add(new AnsiOutputApplicationListener());
 		listeners.add(new ConfigFileApplicationListener());
 		listeners.add(new ClasspathLoggingApplicationListener());

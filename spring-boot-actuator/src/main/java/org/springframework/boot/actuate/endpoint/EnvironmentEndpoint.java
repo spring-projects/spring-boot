@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,14 +54,14 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	@Override
 	public Map<String, Object> invoke() {
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		Map<String, Object> result = new LinkedHashMap<>();
 		result.put("profiles", getEnvironment().getActiveProfiles());
 		for (Entry<String, PropertySource<?>> entry : getPropertySources().entrySet()) {
 			PropertySource<?> source = entry.getValue();
 			String sourceName = entry.getKey();
 			if (source instanceof EnumerablePropertySource) {
 				EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
-				Map<String, Object> properties = new LinkedHashMap<String, Object>();
+				Map<String, Object> properties = new LinkedHashMap<>();
 				for (String name : enumerable.getPropertyNames()) {
 					properties.put(name, sanitize(name, enumerable.getProperty(name)));
 				}
@@ -75,7 +75,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	}
 
 	private Map<String, PropertySource<?>> getPropertySources() {
-		Map<String, PropertySource<?>> map = new LinkedHashMap<String, PropertySource<?>>();
+		Map<String, PropertySource<?>> map = new LinkedHashMap<>();
 		MutablePropertySources sources = null;
 		Environment environment = getEnvironment();
 		if (environment != null && environment instanceof ConfigurableEnvironment) {

@@ -124,7 +124,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 	}
 
 	private List<MessageConverter> getCustomizedConverters() {
-		List<MessageConverter> customizedConverters = new ArrayList<MessageConverter>();
+		List<MessageConverter> customizedConverters = new ArrayList<>();
 		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
 				new ObjectMapper());
 		configuration.configureMessageConverters(customizedConverters);
@@ -146,8 +146,8 @@ public class WebSocketMessagingAutoConfigurationTests {
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
 		WebSocketStompClient stompClient = new WebSocketStompClient(this.sockJsClient);
-		final AtomicReference<Throwable> failure = new AtomicReference<Throwable>();
-		final AtomicReference<Object> result = new AtomicReference<Object>();
+		final AtomicReference<Throwable> failure = new AtomicReference<>();
+		final AtomicReference<Object> result = new AtomicReference<>();
 		final CountDownLatch latch = new CountDownLatch(1);
 		StompSessionHandler handler = new StompSessionHandlerAdapter() {
 

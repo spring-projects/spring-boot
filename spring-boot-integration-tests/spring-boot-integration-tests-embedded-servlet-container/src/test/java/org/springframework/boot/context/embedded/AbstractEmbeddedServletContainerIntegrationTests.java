@@ -48,7 +48,7 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 	protected final RestTemplate rest = new RestTemplate();
 
 	public static Object[] parameters(String packaging) {
-		List<Object> parameters = new ArrayList<Object>();
+		List<Object> parameters = new ArrayList<>();
 		parameters.addAll(createParameters(packaging, "jetty"));
 		parameters.addAll(createParameters(packaging, "tomcat"));
 		parameters.addAll(createParameters(packaging, "undertow"));
@@ -57,7 +57,7 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 
 	private static List<Object> createParameters(String packaging, String container,
 			String... versions) {
-		List<Object> parameters = new ArrayList<Object>();
+		List<Object> parameters = new ArrayList<>();
 		ApplicationBuilder applicationBuilder = new ApplicationBuilder(temporaryFolder,
 				packaging, container);
 		parameters.add(new Object[] {

@@ -136,6 +136,7 @@ public class Book extends TableImpl<Record> {
 	/**
 	 * Rename this table
 	 */
+	@Override
 	public Book rename(String name) {
 		return new Book(name, null);
 	}

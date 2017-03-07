@@ -481,7 +481,7 @@ public class ServerProperties {
 		 * scanning. The special '?' and '*' characters can be used in the pattern to
 		 * match one and only one character and zero or more characters respectively.
 		 */
-		private List<String> additionalTldSkipPatterns = new ArrayList<String>();
+		private List<String> additionalTldSkipPatterns = new ArrayList<>();
 
 		public int getMaxThreads() {
 			return this.maxThreads;

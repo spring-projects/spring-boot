@@ -128,7 +128,7 @@ public class EnvironmentMvcEndpointTests {
 
 	@Test
 	public void regex() throws Exception {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("food", null);
 		((ConfigurableEnvironment) this.context.getEnvironment()).getPropertySources()
 				.addFirst(new MapPropertySource("null-value", map));

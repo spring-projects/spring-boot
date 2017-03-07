@@ -37,8 +37,8 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
 public interface EmbeddedServletContainerFactory {
 
 	/**
-	 * Gets a new fully configured but paused {@link EmbeddedWebServer} instance.
-	 * Clients should not be able to connect to the returned server until
+	 * Gets a new fully configured but paused {@link EmbeddedWebServer} instance. Clients
+	 * should not be able to connect to the returned server until
 	 * {@link EmbeddedWebServer#start()} is called (which happens when the
 	 * {@link ApplicationContext} has been fully refreshed).
 	 * @param initializers {@link ServletContextInitializer}s that should be applied as

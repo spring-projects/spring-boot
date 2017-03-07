@@ -56,7 +56,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedWebServer {
 
 	private final Object monitor = new Object();
 
-	private final Map<Service, Connector[]> serviceConnectors = new HashMap<Service, Connector[]>();
+	private final Map<Service, Connector[]> serviceConnectors = new HashMap<>();
 
 	private final Tomcat tomcat;
 

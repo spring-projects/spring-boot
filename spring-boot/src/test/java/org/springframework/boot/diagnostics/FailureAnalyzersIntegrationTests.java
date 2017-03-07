@@ -43,8 +43,8 @@ public class FailureAnalyzersIntegrationTests {
 	@Test
 	public void analysisIsPerformed() {
 		try {
-			new SpringApplicationBuilder(TestConfiguration.class).web(WebApplicationType.NONE)
-					.run();
+			new SpringApplicationBuilder(TestConfiguration.class)
+					.web(WebApplicationType.NONE).run();
 			fail("Application started successfully");
 		}
 		catch (Exception ex) {

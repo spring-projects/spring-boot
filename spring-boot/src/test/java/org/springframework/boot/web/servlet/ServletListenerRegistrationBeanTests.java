@@ -55,7 +55,7 @@ public class ServletListenerRegistrationBeanTests {
 
 	@Test
 	public void startupWithDefaults() throws Exception {
-		ServletListenerRegistrationBean<ServletContextListener> bean = new ServletListenerRegistrationBean<ServletContextListener>(
+		ServletListenerRegistrationBean<ServletContextListener> bean = new ServletListenerRegistrationBean<>(
 				this.listener);
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addListener(this.listener);
@@ -63,7 +63,7 @@ public class ServletListenerRegistrationBeanTests {
 
 	@Test
 	public void disable() throws Exception {
-		ServletListenerRegistrationBean<ServletContextListener> bean = new ServletListenerRegistrationBean<ServletContextListener>(
+		ServletListenerRegistrationBean<ServletContextListener> bean = new ServletListenerRegistrationBean<>(
 				this.listener);
 		bean.setEnabled(false);
 		bean.onStartup(this.servletContext);

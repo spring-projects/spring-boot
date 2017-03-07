@@ -72,7 +72,7 @@ public class ReactiveWebServerCustomizerBeanPostProcessor
 	private Collection<ReactiveWebServerCustomizer> getCustomizers() {
 		if (this.customizers == null) {
 			// Look up does not include the parent context
-			this.customizers = new ArrayList<ReactiveWebServerCustomizer>(this.beanFactory
+			this.customizers = new ArrayList<>(this.beanFactory
 					.getBeansOfType(ReactiveWebServerCustomizer.class, false, false)
 					.values());
 			Collections.sort(this.customizers, AnnotationAwareOrderComparator.INSTANCE);

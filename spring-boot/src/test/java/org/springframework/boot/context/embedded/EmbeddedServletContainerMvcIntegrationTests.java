@@ -191,7 +191,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 
 		@Bean
 		public ServletRegistrationBean<DispatcherServlet> dispatcherRegistration() {
-			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<DispatcherServlet>(
+			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(
 					dispatcherServlet());
 			registration.addUrlMappings("/spring/*");
 			return registration;

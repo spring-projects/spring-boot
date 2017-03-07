@@ -35,7 +35,7 @@ public class Servlet {
 	/**
 	 * ServletContext parameters.
 	 */
-	private final Map<String, String> contextParameters = new HashMap<String, String>();
+	private final Map<String, String> contextParameters = new HashMap<>();
 
 	/**
 	 * Context path of the application.
@@ -135,6 +135,5 @@ public class Servlet {
 		}
 		return result;
 	}
-
 
 }

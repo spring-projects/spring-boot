@@ -45,7 +45,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	private static final Map<String, Object> PROPERTIES;
 
 	static {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.thymeleaf.cache", "false");
 		properties.put("spring.freemarker.cache", "false");
 		properties.put("spring.groovy.template.cache", "false");

@@ -150,8 +150,8 @@ public class MultipartAutoConfigurationTests {
 	public void containerWithAutomatedMultipartTomcatConfiguration() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				ContainerWithEverythingTomcat.class, BaseConfiguration.class);
-		new RestTemplate().getForObject("http://localhost:"
-				+ this.context.getEmbeddedWebServer().getPort() + "/",
+		new RestTemplate().getForObject(
+				"http://localhost:" + this.context.getEmbeddedWebServer().getPort() + "/",
 				String.class);
 		this.context.getBean(MultipartConfigElement.class);
 		assertThat(this.context.getBean(StandardServletMultipartResolver.class)).isSameAs(
@@ -228,8 +228,8 @@ public class MultipartAutoConfigurationTests {
 
 	private void verifyServletWorks() {
 		RestTemplate restTemplate = new RestTemplate();
-		String url = "http://localhost:"
-				+ this.context.getEmbeddedWebServer().getPort() + "/";
+		String url = "http://localhost:" + this.context.getEmbeddedWebServer().getPort()
+				+ "/";
 		assertThat(restTemplate.getForObject(url, String.class)).isEqualTo("Hello");
 	}
 

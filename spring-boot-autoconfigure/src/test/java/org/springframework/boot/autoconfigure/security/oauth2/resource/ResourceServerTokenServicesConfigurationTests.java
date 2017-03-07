@@ -61,7 +61,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -177,8 +177,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 				"security.oauth2.resource.tokenInfoUri:http://example.com",
 				"security.oauth2.resource.preferTokenInfo:false");
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class,
-				Customizer.class).environment(this.environment).web(WebApplicationType.NONE)
-						.run();
+				Customizer.class).environment(this.environment)
+						.web(WebApplicationType.NONE).run();
 		UserInfoTokenServices services = this.context
 				.getBean(UserInfoTokenServices.class);
 		assertThat(services).isNotNull();

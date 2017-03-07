@@ -221,7 +221,7 @@ public class ErrorMvcAutoConfiguration {
 			if (response.getContentType() == null) {
 				response.setContentType(getContentType());
 			}
-			Map<String, Object> map = new HashMap<String, Object>(model);
+			Map<String, Object> map = new HashMap<>(model);
 			map.put("path", request.getContextPath());
 			PlaceholderResolver resolver = new ExpressionResolver(getExpressions(), map);
 			String result = this.helper.replacePlaceholders(this.template, resolver);
@@ -248,7 +248,7 @@ public class ErrorMvcAutoConfiguration {
 
 		private final SpelExpressionParser parser = new SpelExpressionParser();
 
-		private final Map<String, Expression> expressions = new HashMap<String, Expression>();
+		private final Map<String, Expression> expressions = new HashMap<>();
 
 		@Override
 		public String resolvePlaceholder(String name) {
@@ -309,8 +309,9 @@ public class ErrorMvcAutoConfiguration {
 
 		@Override
 		public void registerErrorPages(ErrorPageRegistry errorPageRegistry) {
-			ErrorPage errorPage = new ErrorPage(this.properties.getServlet().getServletPrefix()
-					+ this.properties.getError().getPath());
+			ErrorPage errorPage = new ErrorPage(
+					this.properties.getServlet().getServletPrefix()
+							+ this.properties.getError().getPath());
 			errorPageRegistry.addErrorPages(errorPage);
 		}
 

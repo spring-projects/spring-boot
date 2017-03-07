@@ -124,7 +124,7 @@ public class UndertowWebServer implements EmbeddedWebServer {
 	}
 
 	private List<UndertowWebServer.Port> getActualPorts() {
-		List<UndertowWebServer.Port> ports = new ArrayList<UndertowWebServer.Port>();
+		List<UndertowWebServer.Port> ports = new ArrayList<>();
 		try {
 			if (!this.autoStart) {
 				ports.add(new UndertowWebServer.Port(-1, "unknown"));
@@ -161,7 +161,7 @@ public class UndertowWebServer implements EmbeddedWebServer {
 	}
 
 	private List<UndertowWebServer.Port> getConfiguredPorts() {
-		List<UndertowWebServer.Port> ports = new ArrayList<UndertowWebServer.Port>();
+		List<UndertowWebServer.Port> ports = new ArrayList<>();
 		for (Object listener : extractListeners()) {
 			try {
 				ports.add(getPortFromListener(listener));

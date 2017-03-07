@@ -76,7 +76,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testConnectionTimeout() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.connection-timeout", "60000");
 		bindProperties(map);
 		assertThat(this.properties.getConnectionTimeout()).isEqualTo(60000);
@@ -104,7 +104,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testTomcatBinding() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.accesslog.pattern", "%h %t '%r' %s %b");
 		map.put("server.tomcat.accesslog.prefix", "foo");
 		map.put("server.tomcat.accesslog.rotate", "false");
@@ -153,7 +153,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizeUriEncoding() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.uriEncoding", "US-ASCII");
 		bindProperties(map);
 		assertThat(this.properties.getTomcat().getUriEncoding())
@@ -162,7 +162,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizeHeaderSize() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.maxHttpHeaderSize", "9999");
 		bindProperties(map);
 		assertThat(this.properties.getMaxHttpHeaderSize()).isEqualTo(9999);
@@ -170,7 +170,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizeJettyAcceptors() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.jetty.acceptors", "10");
 		bindProperties(map);
 		assertThat(this.properties.getJetty().getAcceptors()).isEqualTo(10);
@@ -178,7 +178,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizeJettySelectors() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.jetty.selectors", "10");
 		bindProperties(map);
 		assertThat(this.properties.getJetty().getSelectors()).isEqualTo(10);

@@ -76,7 +76,7 @@ public class ErrorPageRegistrarBeanPostProcessor
 	private Collection<ErrorPageRegistrar> getRegistrars() {
 		if (this.registrars == null) {
 			// Look up does not include the parent context
-			this.registrars = new ArrayList<ErrorPageRegistrar>(this.beanFactory
+			this.registrars = new ArrayList<>(this.beanFactory
 					.getBeansOfType(ErrorPageRegistrar.class, false, false).values());
 			Collections.sort(this.registrars, AnnotationAwareOrderComparator.INSTANCE);
 			this.registrars = Collections.unmodifiableList(this.registrars);

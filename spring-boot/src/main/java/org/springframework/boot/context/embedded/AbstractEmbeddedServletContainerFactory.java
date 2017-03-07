@@ -92,7 +92,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 
 	protected List<URL> getUrlsOfJarsWithMetaInfResources() {
 		ClassLoader classLoader = getClass().getClassLoader();
-		List<URL> staticResourceUrls = new ArrayList<URL>();
+		List<URL> staticResourceUrls = new ArrayList<>();
 		if (classLoader instanceof URLClassLoader) {
 			for (URL url : ((URLClassLoader) classLoader).getURLs()) {
 				try {

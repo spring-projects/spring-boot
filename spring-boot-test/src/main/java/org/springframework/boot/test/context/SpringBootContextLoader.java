@@ -83,7 +83,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	private static final Set<String> INTEGRATION_TEST_ANNOTATIONS;
 
 	static {
-		Set<String> annotations = new LinkedHashSet<String>();
+		Set<String> annotations = new LinkedHashSet<>();
 		annotations.add("org.springframework.boot.test.IntegrationTest");
 		annotations.add("org.springframework.boot.test.WebIntegrationTest");
 		INTEGRATION_TEST_ANNOTATIONS = Collections.unmodifiableSet(annotations);
@@ -139,7 +139,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	}
 
 	private Set<Object> getSources(MergedContextConfiguration mergedConfig) {
-		Set<Object> sources = new LinkedHashSet<Object>();
+		Set<Object> sources = new LinkedHashSet<>();
 		sources.addAll(Arrays.asList(mergedConfig.getClasses()));
 		sources.addAll(Arrays.asList(mergedConfig.getLocations()));
 		Assert.state(!sources.isEmpty(), "No configuration classes "
@@ -156,7 +156,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	}
 
 	protected String[] getInlinedProperties(MergedContextConfiguration config) {
-		ArrayList<String> properties = new ArrayList<String>();
+		ArrayList<String> properties = new ArrayList<>();
 		// JMX bean names will clash if the same bean is used in multiple contexts
 		disableJmx(properties);
 		properties.addAll(Arrays.asList(config.getPropertySourceProperties()));
@@ -188,7 +188,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 
 	private List<ApplicationContextInitializer<?>> getInitializers(
 			MergedContextConfiguration config, SpringApplication application) {
-		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
 		for (ContextCustomizer contextCustomizer : config.getContextCustomizers()) {
 			initializers.add(new ContextCustomizerAdapter(contextCustomizer, config));
 		}

@@ -57,7 +57,7 @@ public class UserInfoTokenServicesTests {
 
 	private OAuth2RestOperations template = mock(OAuth2RestOperations.class);
 
-	private Map<String, Object> map = new LinkedHashMap<String, Object>();
+	private Map<String, Object> map = new LinkedHashMap<>();
 
 	@SuppressWarnings("rawtypes")
 	@Before

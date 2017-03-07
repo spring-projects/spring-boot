@@ -114,7 +114,7 @@ public class InfoMvcEndpointTests {
 
 				@Override
 				public void contribute(Info.Builder builder) {
-					Map<String, Object> content = new LinkedHashMap<String, Object>();
+					Map<String, Object> content = new LinkedHashMap<>();
 					content.put("key11", "value11");
 					content.put("key12", "value12");
 					builder.withDetail("beanName1", content);
@@ -127,7 +127,7 @@ public class InfoMvcEndpointTests {
 			return new InfoContributor() {
 				@Override
 				public void contribute(Info.Builder builder) {
-					Map<String, Object> content = new LinkedHashMap<String, Object>();
+					Map<String, Object> content = new LinkedHashMap<>();
 					content.put("key21", "value21");
 					content.put("key22", "value22");
 					builder.withDetail("beanName2", content);

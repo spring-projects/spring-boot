@@ -284,7 +284,8 @@ public class SpringApplicationBuilderTests {
 	@Test
 	public void initializersCreatedOnceForChild() throws Exception {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
-				ExampleConfig.class).child(ChildConfig.class).web(WebApplicationType.NONE);
+				ExampleConfig.class).child(ChildConfig.class)
+						.web(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(application.application().getInitializers()).hasSize(5);
 	}

@@ -57,8 +57,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * A {@link WebApplicationContext} that can be used to bootstrap itself from a contained
  * {@link EmbeddedServletContainerFactory} bean.
  * <p>
- * This context will create, initialize and run an {@link EmbeddedWebServer} by
- * searching for a single {@link EmbeddedServletContainerFactory} bean within the
+ * This context will create, initialize and run an {@link EmbeddedWebServer} by searching
+ * for a single {@link EmbeddedServletContainerFactory} bean within the
  * {@link ApplicationContext} itself. The {@link EmbeddedServletContainerFactory} is free
  * to use standard Spring concepts (such as dependency injection, lifecycle callbacks and
  * property placeholder variables).
@@ -359,7 +359,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		private static final Set<String> SCOPES;
 
 		static {
-			Set<String> scopes = new LinkedHashSet<String>();
+			Set<String> scopes = new LinkedHashSet<>();
 			scopes.add(WebApplicationContext.SCOPE_REQUEST);
 			scopes.add(WebApplicationContext.SCOPE_SESSION);
 			SCOPES = Collections.unmodifiableSet(scopes);
@@ -367,7 +367,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 
 		private final ConfigurableListableBeanFactory beanFactory;
 
-		private final Map<String, Scope> scopes = new HashMap<String, Scope>();
+		private final Map<String, Scope> scopes = new HashMap<>();
 
 		public ExistingWebApplicationScopes(ConfigurableListableBeanFactory beanFactory) {
 			this.beanFactory = beanFactory;

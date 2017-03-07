@@ -139,7 +139,7 @@ public class DropwizardMetricServicesTests {
 	 */
 	@Test
 	public void testParallelism() throws Exception {
-		List<WriterThread> threads = new ArrayList<WriterThread>();
+		List<WriterThread> threads = new ArrayList<>();
 		ThreadGroup group = new ThreadGroup("threads");
 		for (int i = 0; i < 10; i++) {
 			WriterThread thread = new WriterThread(group, i, this.writer);

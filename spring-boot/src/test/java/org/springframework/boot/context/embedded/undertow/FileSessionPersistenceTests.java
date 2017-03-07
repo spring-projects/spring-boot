@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,8 @@ public class FileSessionPersistenceTests {
 
 	@Test
 	public void persistAndLoad() throws Exception {
-		Map<String, PersistentSession> sessionData = new LinkedHashMap<String, PersistentSession>();
-		Map<String, Object> data = new LinkedHashMap<String, Object>();
+		Map<String, PersistentSession> sessionData = new LinkedHashMap<>();
+		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("spring", "boot");
 		PersistentSession session = new PersistentSession(this.expiration, data);
 		sessionData.put("abc", session);
@@ -79,8 +79,8 @@ public class FileSessionPersistenceTests {
 	@Test
 	public void dontRestoreExpired() throws Exception {
 		Date expired = new Date(System.currentTimeMillis() - 1000);
-		Map<String, PersistentSession> sessionData = new LinkedHashMap<String, PersistentSession>();
-		Map<String, Object> data = new LinkedHashMap<String, Object>();
+		Map<String, PersistentSession> sessionData = new LinkedHashMap<>();
+		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("spring", "boot");
 		PersistentSession session = new PersistentSession(expired, data);
 		sessionData.put("abc", session);
@@ -94,7 +94,7 @@ public class FileSessionPersistenceTests {
 	@Test
 	public void deleteFileOnClear() throws Exception {
 		File sessionFile = new File(this.dir, "test.session");
-		Map<String, PersistentSession> sessionData = new LinkedHashMap<String, PersistentSession>();
+		Map<String, PersistentSession> sessionData = new LinkedHashMap<>();
 		this.persistence.persistSessions("test", sessionData);
 		assertThat(sessionFile.exists()).isTrue();
 		this.persistence.clear("test");

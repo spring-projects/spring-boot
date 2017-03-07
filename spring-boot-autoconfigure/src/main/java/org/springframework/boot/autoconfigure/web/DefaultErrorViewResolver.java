@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	private static final Map<Series, String> SERIES_VIEWS;
 
 	static {
-		Map<Series, String> views = new HashMap<Series, String>();
+		Map<Series, String> views = new HashMap<>();
 		views.put(Series.CLIENT_ERROR, "4xx");
 		views.put(Series.SERVER_ERROR, "5xx");
 		SERIES_VIEWS = Collections.unmodifiableMap(views);

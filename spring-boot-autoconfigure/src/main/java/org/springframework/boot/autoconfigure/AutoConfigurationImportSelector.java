@@ -167,7 +167,7 @@ public class AutoConfigurationImportSelector
 
 	private void checkExcludedClasses(List<String> configurations,
 			Set<String> exclusions) {
-		List<String> invalidExcludes = new ArrayList<String>(exclusions.size());
+		List<String> invalidExcludes = new ArrayList<>(exclusions.size());
 		for (String exclusion : exclusions) {
 			if (ClassUtils.isPresent(exclusion, getClass().getClassLoader())
 					&& !configurations.contains(exclusion)) {
@@ -203,7 +203,7 @@ public class AutoConfigurationImportSelector
 	 */
 	protected Set<String> getExclusions(AnnotationMetadata metadata,
 			AnnotationAttributes attributes) {
-		Set<String> excluded = new LinkedHashSet<String>();
+		Set<String> excluded = new LinkedHashSet<>();
 		excluded.addAll(asList(attributes, "exclude"));
 		excluded.addAll(Arrays.asList(attributes.getStringArray("excludeName")));
 		excluded.addAll(getExcludeAutoConfigurationsProperty());
@@ -218,12 +218,12 @@ public class AutoConfigurationImportSelector
 			if (properties.isEmpty()) {
 				return Collections.emptyList();
 			}
-			List<String> excludes = new ArrayList<String>();
+			List<String> excludes = new ArrayList<>();
 			for (Map.Entry<String, Object> entry : properties.entrySet()) {
 				String name = entry.getKey();
 				Object value = entry.getValue();
 				if (name.isEmpty() || name.startsWith("[") && value != null) {
-					excludes.addAll(new HashSet<String>(Arrays.asList(StringUtils
+					excludes.addAll(new HashSet<>(Arrays.asList(StringUtils
 							.tokenizeToStringArray(String.valueOf(value), ","))));
 				}
 			}
@@ -261,7 +261,7 @@ public class AutoConfigurationImportSelector
 		if (!skipped) {
 			return configurations;
 		}
-		List<String> result = new ArrayList<String>(candidates.length);
+		List<String> result = new ArrayList<>(candidates.length);
 		for (int i = 0; i < candidates.length; i++) {
 			if (!skip[i]) {
 				result.add(candidates[i]);
@@ -273,7 +273,7 @@ public class AutoConfigurationImportSelector
 					+ TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
 					+ " ms");
 		}
-		return new ArrayList<String>(result);
+		return new ArrayList<>(result);
 	}
 
 	protected List<AutoConfigurationImportFilter> getAutoConfigurationImportFilters() {
@@ -293,7 +293,7 @@ public class AutoConfigurationImportSelector
 	}
 
 	protected final <T> List<T> removeDuplicates(List<T> list) {
-		return new ArrayList<T>(new LinkedHashSet<T>(list));
+		return new ArrayList<>(new LinkedHashSet<>(list));
 	}
 
 	protected final List<String> asList(AnnotationAttributes attributes, String name) {

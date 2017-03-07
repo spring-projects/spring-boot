@@ -45,7 +45,7 @@ public class ShutdownMvcEndpoint extends EndpointMvcAdapter {
 	@Override
 	public Object invoke() {
 		if (!getDelegate().isEnabled()) {
-			return new ResponseEntity<Map<String, String>>(
+			return new ResponseEntity<>(
 					Collections.singletonMap("message", "This endpoint is disabled"),
 					HttpStatus.NOT_FOUND);
 		}

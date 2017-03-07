@@ -81,7 +81,7 @@ public class EndpointMBeanExporter extends MBeanExporter
 	private final MetadataNamingStrategy defaultNamingStrategy = new MetadataNamingStrategy(
 			this.attributeSource);
 
-	private final Set<Class<?>> registeredEndpoints = new HashSet<Class<?>>();
+	private final Set<Class<?>> registeredEndpoints = new HashSet<>();
 
 	private volatile boolean autoStartup = true;
 

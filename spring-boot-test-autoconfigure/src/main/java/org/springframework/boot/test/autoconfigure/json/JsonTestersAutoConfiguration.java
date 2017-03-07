@@ -74,8 +74,7 @@ public class JsonTestersAutoConfiguration {
 		@ConditionalOnBean(ObjectMapper.class)
 		public FactoryBean<JacksonTester<?>> jacksonTesterFactoryBean(
 				ObjectMapper mapper) {
-			return new JsonTesterFactoryBean<>(
-					JacksonTester.class, mapper);
+			return new JsonTesterFactoryBean<>(JacksonTester.class, mapper);
 		}
 
 	}

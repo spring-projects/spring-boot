@@ -174,12 +174,12 @@ public class MetricsMvcEndpointTests {
 
 				@Override
 				public Collection<Metric<?>> metrics() {
-					ArrayList<Metric<?>> metrics = new ArrayList<Metric<?>>();
-					metrics.add(new Metric<Integer>("foo", 1));
-					metrics.add(new Metric<Integer>("group1.a", 1));
-					metrics.add(new Metric<Integer>("group1.b", 1));
-					metrics.add(new Metric<Integer>("group2.a", 1));
-					metrics.add(new Metric<Integer>("group2_a", 1));
+					ArrayList<Metric<?>> metrics = new ArrayList<>();
+					metrics.add(new Metric<>("foo", 1));
+					metrics.add(new Metric<>("group1.a", 1));
+					metrics.add(new Metric<>("group1.b", 1));
+					metrics.add(new Metric<>("group2.a", 1));
+					metrics.add(new Metric<>("group2_a", 1));
 					metrics.add(new Metric<Integer>("baz", null));
 					return Collections.unmodifiableList(metrics);
 				}

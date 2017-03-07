@@ -74,7 +74,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 
 	private final DefaultListableBeanFactory beanFactory;
 
-	private final Map<String, Class<?>> beanTypes = new HashMap<String, Class<?>>();
+	private final Map<String, Class<?>> beanTypes = new HashMap<>();
 
 	private int lastBeanDefinitionCount = 0;
 
@@ -112,7 +112,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	 */
 	Set<String> getNamesForType(Class<?> type) {
 		updateTypesIfNecessary();
-		Set<String> matches = new LinkedHashSet<String>();
+		Set<String> matches = new LinkedHashSet<>();
 		for (Map.Entry<String, Class<?>> entry : this.beanTypes.entrySet()) {
 			if (entry.getValue() != null && type.isAssignableFrom(entry.getValue())) {
 				matches.add(entry.getKey());
@@ -132,7 +132,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	 */
 	Set<String> getNamesForAnnotation(Class<? extends Annotation> annotation) {
 		updateTypesIfNecessary();
-		Set<String> matches = new LinkedHashSet<String>();
+		Set<String> matches = new LinkedHashSet<>();
 		for (Map.Entry<String, Class<?>> entry : this.beanTypes.entrySet()) {
 			if (entry.getValue() != null && AnnotationUtils
 					.findAnnotation(entry.getValue(), annotation) != null) {

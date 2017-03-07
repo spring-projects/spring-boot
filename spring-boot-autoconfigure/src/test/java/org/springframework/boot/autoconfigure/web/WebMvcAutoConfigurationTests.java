@@ -384,7 +384,7 @@ public class WebMvcAutoConfigurationTests {
 	@SuppressWarnings("unchecked")
 	protected Map<String, List<Resource>> getMappingLocations(HandlerMapping mapping)
 			throws IllegalAccessException {
-		Map<String, List<Resource>> mappingLocations = new LinkedHashMap<String, List<Resource>>();
+		Map<String, List<Resource>> mappingLocations = new LinkedHashMap<>();
 		if (mapping instanceof SimpleUrlHandlerMapping) {
 			Field locationsField = ReflectionUtils
 					.findField(ResourceHttpRequestHandler.class, "locations");
@@ -710,7 +710,7 @@ public class WebMvcAutoConfigurationTests {
 	private void load(Class<?> config, String... environment) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
-		List<Class<?>> configClasses = new ArrayList<Class<?>>();
+		List<Class<?>> configClasses = new ArrayList<>();
 		if (config != null) {
 			configClasses.add(config);
 		}

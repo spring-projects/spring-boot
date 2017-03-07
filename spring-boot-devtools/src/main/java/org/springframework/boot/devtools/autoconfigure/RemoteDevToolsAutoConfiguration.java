@@ -95,9 +95,11 @@ public class RemoteDevToolsAutoConfiguration {
 	@Bean
 	public HandlerMapper remoteDevToolsHealthCheckHandlerMapper() {
 		Handler handler = new HttpStatusHandler();
-		return new UrlHandlerMapper((this.serverProperties.getServlet().getContextPath() == null ? ""
-				: this.serverProperties.getServlet().getContextPath())
-				+ this.properties.getRemote().getContextPath(), handler);
+		return new UrlHandlerMapper(
+				(this.serverProperties.getServlet().getContextPath() == null ? ""
+						: this.serverProperties.getServlet().getContextPath())
+						+ this.properties.getRemote().getContextPath(),
+				handler);
 	}
 
 	@Bean

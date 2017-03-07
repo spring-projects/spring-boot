@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public class HttpMessageConvertersTests {
 	@Test
 	public void containsDefaults() throws Exception {
 		HttpMessageConverters converters = new HttpMessageConverters();
-		List<Class<?>> converterClasses = new ArrayList<Class<?>>();
+		List<Class<?>> converterClasses = new ArrayList<>();
 		for (HttpMessageConverter<?> converter : converters) {
 			converterClasses.add(converter.getClass());
 		}
@@ -76,7 +76,7 @@ public class HttpMessageConvertersTests {
 				converter2);
 		assertThat(converters.getConverters().contains(converter1)).isTrue();
 		assertThat(converters.getConverters().contains(converter2)).isTrue();
-		List<MappingJackson2HttpMessageConverter> httpConverters = new ArrayList<MappingJackson2HttpMessageConverter>();
+		List<MappingJackson2HttpMessageConverter> httpConverters = new ArrayList<>();
 		for (HttpMessageConverter<?> candidate : converters) {
 			if (candidate instanceof MappingJackson2HttpMessageConverter) {
 				httpConverters.add((MappingJackson2HttpMessageConverter) candidate);
@@ -127,7 +127,7 @@ public class HttpMessageConvertersTests {
 				return converters;
 			};
 		};
-		List<Class<?>> converterClasses = new ArrayList<Class<?>>();
+		List<Class<?>> converterClasses = new ArrayList<>();
 		for (HttpMessageConverter<?> converter : converters) {
 			converterClasses.add(converter.getClass());
 		}
@@ -156,7 +156,7 @@ public class HttpMessageConvertersTests {
 				return converters;
 			};
 		};
-		List<Class<?>> converterClasses = new ArrayList<Class<?>>();
+		List<Class<?>> converterClasses = new ArrayList<>();
 		for (HttpMessageConverter<?> converter : extractFormPartConverters(
 				converters.getConverters())) {
 			converterClasses.add(converter.getClass());

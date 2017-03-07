@@ -111,7 +111,7 @@ class DefaultLogbackConfiguration {
 	}
 
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
-		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<ILoggingEvent>();
+		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		String logPattern = this.patterns.getProperty("console", CONSOLE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
@@ -124,7 +124,7 @@ class DefaultLogbackConfiguration {
 
 	private Appender<ILoggingEvent> fileAppender(LogbackConfigurator config,
 			String logFile) {
-		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<ILoggingEvent>();
+		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		String logPattern = this.patterns.getProperty("file", FILE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
@@ -148,7 +148,7 @@ class DefaultLogbackConfiguration {
 
 	private void setMaxFileSize(RollingFileAppender<ILoggingEvent> appender,
 			LogbackConfigurator config) {
-		SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>();
+		SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<>();
 		try {
 			triggeringPolicy.setMaxFileSize(FileSize.valueOf("10MB"));
 		}

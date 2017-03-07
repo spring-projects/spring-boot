@@ -41,7 +41,7 @@ public class MessageInterpolatorFactory implements ObjectFactory<MessageInterpol
 	private static final Set<String> FALLBACKS;
 
 	static {
-		Set<String> fallbacks = new LinkedHashSet<String>();
+		Set<String> fallbacks = new LinkedHashSet<>();
 		fallbacks.add("org.hibernate.validator.messageinterpolation"
 				+ ".ParameterMessageInterpolator");
 		FALLBACKS = Collections.unmodifiableSet(fallbacks);

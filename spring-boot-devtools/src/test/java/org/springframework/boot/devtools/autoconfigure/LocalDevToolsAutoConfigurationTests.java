@@ -167,7 +167,7 @@ public class LocalDevToolsAutoConfigurationTests {
 
 	@Test
 	public void liveReloadDisabled() throws Exception {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.livereload.enabled", false);
 		this.context = initializeAndRun(Config.class, properties);
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
@@ -202,7 +202,7 @@ public class LocalDevToolsAutoConfigurationTests {
 
 	@Test
 	public void restartDisabled() throws Exception {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.restart.enabled", false);
 		this.context = initializeAndRun(Config.class, properties);
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
@@ -211,7 +211,7 @@ public class LocalDevToolsAutoConfigurationTests {
 
 	@Test
 	public void restartWithTriggerFile() throws Exception {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.restart.trigger-file", "somefile.txt");
 		this.context = initializeAndRun(Config.class, properties);
 		ClassPathFileSystemWatcher classPathWatcher = this.context
@@ -224,7 +224,7 @@ public class LocalDevToolsAutoConfigurationTests {
 
 	@Test
 	public void watchingAdditionalPaths() throws Exception {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.restart.additional-paths",
 				"src/main/java,src/test/java");
 		this.context = initializeAndRun(Config.class, properties);
@@ -268,7 +268,7 @@ public class LocalDevToolsAutoConfigurationTests {
 
 	private Map<String, Object> getDefaultProperties(
 			Map<String, Object> specifiedProperties) {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.thymeleaf.check-template-location", false);
 		properties.put("spring.devtools.livereload.port", this.liveReloadPort);
 		properties.put("server.port", 0);
@@ -307,7 +307,7 @@ public class LocalDevToolsAutoConfigurationTests {
 
 		@Bean
 		public RedisTemplate<Object, Object> sessionRedisTemplate() {
-			RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<Object, Object>();
+			RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
 			redisTemplate.setConnectionFactory(mock(RedisConnectionFactory.class));
 			return redisTemplate;
 		}

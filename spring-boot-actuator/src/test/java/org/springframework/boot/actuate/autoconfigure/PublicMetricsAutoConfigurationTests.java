@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,12 +110,12 @@ public class PublicMetricsAutoConfigurationTests {
 		Collection<Metric<?>> metrics = publicMetrics.metrics();
 		assertThat(metrics).isNotNull();
 		assertThat(6).isEqualTo(metrics.size());
-		assertHasMetric(metrics, new Metric<Double>("bar.val", 3.7d));
-		assertHasMetric(metrics, new Metric<Double>("bar.avg", 3.7d));
-		assertHasMetric(metrics, new Metric<Double>("bar.min", 3.7d));
-		assertHasMetric(metrics, new Metric<Double>("bar.max", 3.7d));
-		assertHasMetric(metrics, new Metric<Double>("bar.alpha", -1.d));
-		assertHasMetric(metrics, new Metric<Long>("bar.count", 1L));
+		assertHasMetric(metrics, new Metric<>("bar.val", 3.7d));
+		assertHasMetric(metrics, new Metric<>("bar.avg", 3.7d));
+		assertHasMetric(metrics, new Metric<>("bar.min", 3.7d));
+		assertHasMetric(metrics, new Metric<>("bar.max", 3.7d));
+		assertHasMetric(metrics, new Metric<>("bar.alpha", -1.d));
+		assertHasMetric(metrics, new Metric<>("bar.count", 1L));
 		context.close();
 	}
 
@@ -227,7 +227,7 @@ public class PublicMetricsAutoConfigurationTests {
 	}
 
 	private void assertMetrics(Collection<Metric<?>> metrics, String... keys) {
-		Map<String, Number> content = new HashMap<String, Number>();
+		Map<String, Number> content = new HashMap<>();
 		for (Metric<?> metric : metrics) {
 			content.put(metric.getName(), metric.getValue());
 		}

@@ -15,8 +15,7 @@
  */
 
 /**
- * Support for Undertow
- * {@link org.springframework.boot.context.embedded.EmbeddedWebServer
+ * Support for Undertow {@link org.springframework.boot.context.embedded.EmbeddedWebServer
  * EmbeddedServletContainers}.
  *
  * @see org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory

@@ -637,7 +637,7 @@ public class CacheAutoConfigurationTests {
 			String... expectedCustomizerNames) {
 		load(config, "spring.cache.type=" + cacheType);
 		CacheManager cacheManager = validateCacheManager(CacheManager.class);
-		List<String> expected = new ArrayList<String>();
+		List<String> expected = new ArrayList<>();
 		expected.addAll(Arrays.asList(expectedCustomizerNames));
 		Map<String, CacheManagerTestCustomizer> map = this.context
 				.getBeansOfType(CacheManagerTestCustomizer.class);
@@ -787,7 +787,7 @@ public class CacheAutoConfigurationTests {
 			return new JCacheManagerCustomizer() {
 				@Override
 				public void customize(javax.cache.CacheManager cacheManager) {
-					MutableConfiguration<?, ?> config = new MutableConfiguration<Object, Object>();
+					MutableConfiguration<?, ?> config = new MutableConfiguration<>();
 					config.setExpiryPolicyFactory(
 							CreatedExpiryPolicy.factoryOf(Duration.TEN_MINUTES));
 					config.setStatisticsEnabled(true);

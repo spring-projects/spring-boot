@@ -129,7 +129,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 
 	private void addConfigAttributesClasses(
 			ContextConfigurationAttributes configAttributes, Class<?>[] classes) {
-		List<Class<?>> combined = new ArrayList<Class<?>>();
+		List<Class<?>> combined = new ArrayList<>();
 		combined.addAll(Arrays.asList(classes));
 		if (configAttributes.getClasses() != null) {
 			combined.addAll(Arrays.asList(configAttributes.getClasses()));
@@ -253,7 +253,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 
 	private List<String> getAndProcessPropertySourceProperties(
 			MergedContextConfiguration mergedConfig) {
-		List<String> propertySourceProperties = new ArrayList<String>(
+		List<String> propertySourceProperties = new ArrayList<>(
 				Arrays.asList(mergedConfig.getPropertySourceProperties()));
 		String differentiator = getDifferentiatorPropertySourceProperty();
 		if (differentiator != null) {

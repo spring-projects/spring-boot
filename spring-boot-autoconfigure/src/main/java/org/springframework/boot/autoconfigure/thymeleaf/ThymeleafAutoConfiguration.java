@@ -159,7 +159,7 @@ public class ThymeleafAutoConfiguration {
 			if (type.getCharset() != null) {
 				return type.toString();
 			}
-			LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
+			LinkedHashMap<String, String> parameters = new LinkedHashMap<>();
 			parameters.put("charset", charset);
 			parameters.putAll(type.getParameters());
 			return new MimeType(type, parameters).toString();

@@ -230,7 +230,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 	private List<String> getNamesOfBeansIgnoredByType(List<String> ignoredTypes,
 			ListableBeanFactory beanFactory, ConditionContext context,
 			boolean considerHierarchy) {
-		List<String> beanNames = new ArrayList<String>();
+		List<String> beanNames = new ArrayList<>();
 		for (String ignoredType : ignoredTypes) {
 			beanNames.addAll(getBeanNamesForType(beanFactory, ignoredType,
 					context.getClassLoader(), considerHierarchy));
@@ -250,7 +250,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			String type, ClassLoader classLoader, boolean considerHierarchy)
 					throws LinkageError {
 		try {
-			Set<String> result = new LinkedHashSet<String>();
+			Set<String> result = new LinkedHashSet<>();
 			collectBeanNamesForType(result, beanFactory,
 					ClassUtils.forName(type, classLoader), considerHierarchy);
 			return result;
@@ -279,7 +279,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 	private String[] getBeanNamesForAnnotation(
 			ConfigurableListableBeanFactory beanFactory, String type,
 			ClassLoader classLoader, boolean considerHierarchy) throws LinkageError {
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		try {
 			@SuppressWarnings("unchecked")
 			Class<? extends Annotation> annotationType = (Class<? extends Annotation>) ClassUtils
@@ -318,7 +318,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 	private List<String> getPrimaryBeans(ConfigurableListableBeanFactory beanFactory,
 			Set<String> beanNames, boolean considerHierarchy) {
-		List<String> primaryBeans = new ArrayList<String>();
+		List<String> primaryBeans = new ArrayList<>();
 		for (String beanName : beanNames) {
 			BeanDefinition beanDefinition = findBeanDefinition(beanFactory, beanName,
 					considerHierarchy);
@@ -347,13 +347,13 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 		private final Class<?> annotationType;
 
-		private final List<String> names = new ArrayList<String>();
+		private final List<String> names = new ArrayList<>();
 
-		private final List<String> types = new ArrayList<String>();
+		private final List<String> types = new ArrayList<>();
 
-		private final List<String> annotations = new ArrayList<String>();
+		private final List<String> annotations = new ArrayList<>();
 
-		private final List<String> ignoredTypes = new ArrayList<String>();
+		private final List<String> ignoredTypes = new ArrayList<>();
 
 		private final SearchStrategy strategy;
 
@@ -523,19 +523,19 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 	static final class MatchResult {
 
-		private final Map<String, Collection<String>> matchedAnnotations = new HashMap<String, Collection<String>>();
+		private final Map<String, Collection<String>> matchedAnnotations = new HashMap<>();
 
-		private final List<String> matchedNames = new ArrayList<String>();
+		private final List<String> matchedNames = new ArrayList<>();
 
-		private final Map<String, Collection<String>> matchedTypes = new HashMap<String, Collection<String>>();
+		private final Map<String, Collection<String>> matchedTypes = new HashMap<>();
 
-		private final List<String> unmatchedAnnotations = new ArrayList<String>();
+		private final List<String> unmatchedAnnotations = new ArrayList<>();
 
-		private final List<String> unmatchedNames = new ArrayList<String>();
+		private final List<String> unmatchedNames = new ArrayList<>();
 
-		private final List<String> unmatchedTypes = new ArrayList<String>();
+		private final List<String> unmatchedTypes = new ArrayList<>();
 
-		private final Set<String> namesOfAllMatches = new HashSet<String>();
+		private final Set<String> namesOfAllMatches = new HashSet<>();
 
 		private void recordMatchedName(String name) {
 			this.matchedNames.add(name);

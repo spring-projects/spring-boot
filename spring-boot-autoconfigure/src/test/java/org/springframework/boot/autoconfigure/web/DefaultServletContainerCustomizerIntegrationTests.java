@@ -156,7 +156,8 @@ public class DefaultServletContainerCustomizerIntegrationTests {
 	protected static class Config {
 
 		@Bean
-		public DefaultServletContainerCustomizer defaultServletContainerCustomizer(ServerProperties properties) {
+		public DefaultServletContainerCustomizer defaultServletContainerCustomizer(
+				ServerProperties properties) {
 			return new DefaultServletContainerCustomizer(properties);
 		}
 

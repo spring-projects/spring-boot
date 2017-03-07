@@ -86,7 +86,7 @@ public class CentralDirectoryParserTests {
 
 	private static class Collector implements CentralDirectoryVisitor {
 
-		private List<CentralDirectoryFileHeader> headers = new ArrayList<CentralDirectoryFileHeader>();
+		private List<CentralDirectoryFileHeader> headers = new ArrayList<>();
 
 		@Override
 		public void visitStart(CentralDirectoryEndRecord endRecord,
@@ -111,7 +111,7 @@ public class CentralDirectoryParserTests {
 
 	private static class MockCentralDirectoryVisitor implements CentralDirectoryVisitor {
 
-		private final List<String> invocations = new ArrayList<String>();
+		private final List<String> invocations = new ArrayList<>();
 
 		@Override
 		public void visitStart(CentralDirectoryEndRecord endRecord,

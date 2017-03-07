@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,7 +123,7 @@ class SpringApplicationBannerPrinter {
 	 */
 	private static class Banners implements Banner {
 
-		private final List<Banner> banners = new ArrayList<Banner>();
+		private final List<Banner> banners = new ArrayList<>();
 
 		public void addIfNotNull(Banner banner) {
 			if (banner != null) {

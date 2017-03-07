@@ -36,9 +36,9 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link EmbeddedWebServer} that can be used to control an embedded Jetty server.
- * Usually this class should be created using the
- * {@link JettyEmbeddedServletContainerFactory} and not directly.
+ * {@link EmbeddedWebServer} that can be used to control an embedded Jetty server. Usually
+ * this class should be created using the {@link JettyEmbeddedServletContainerFactory} and
+ * not directly.
  *
  * @author Phillip Webb
  * @author Dave Syer

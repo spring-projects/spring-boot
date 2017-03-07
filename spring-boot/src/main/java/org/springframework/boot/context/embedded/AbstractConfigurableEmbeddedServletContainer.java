@@ -60,11 +60,11 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 
 	private int port = 8080;
 
-	private List<ServletContextInitializer> initializers = new ArrayList<ServletContextInitializer>();
+	private List<ServletContextInitializer> initializers = new ArrayList<>();
 
 	private File documentRoot;
 
-	private Set<ErrorPage> errorPages = new LinkedHashSet<ErrorPage>();
+	private Set<ErrorPage> errorPages = new LinkedHashSet<>();
 
 	private MimeMappings mimeMappings = new MimeMappings(MimeMappings.DEFAULT);
 
@@ -86,7 +86,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 
 	private String serverHeader;
 
-	private Map<Locale, Charset> localeCharsetMappings = new HashMap<Locale, Charset>();
+	private Map<Locale, Charset> localeCharsetMappings = new HashMap<>();
 
 	/**
 	 * Create a new {@link AbstractConfigurableEmbeddedServletContainer} instance.
@@ -219,7 +219,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	@Override
 	public void setInitializers(List<? extends ServletContextInitializer> initializers) {
 		Assert.notNull(initializers, "Initializers must not be null");
-		this.initializers = new ArrayList<ServletContextInitializer>(initializers);
+		this.initializers = new ArrayList<>(initializers);
 	}
 
 	@Override
@@ -245,7 +245,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	@Override
 	public void setErrorPages(Set<? extends ErrorPage> errorPages) {
 		Assert.notNull(errorPages, "ErrorPages must not be null");
-		this.errorPages = new LinkedHashSet<ErrorPage>(errorPages);
+		this.errorPages = new LinkedHashSet<>(errorPages);
 	}
 
 	@Override
@@ -357,7 +357,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer
 	 */
 	protected final ServletContextInitializer[] mergeInitializers(
 			ServletContextInitializer... initializers) {
-		List<ServletContextInitializer> mergedInitializers = new ArrayList<ServletContextInitializer>();
+		List<ServletContextInitializer> mergedInitializers = new ArrayList<>();
 		mergedInitializers.addAll(Arrays.asList(initializers));
 		mergedInitializers.addAll(this.initializers);
 		return mergedInitializers

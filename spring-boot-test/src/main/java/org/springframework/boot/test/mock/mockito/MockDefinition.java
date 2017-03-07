@@ -60,7 +60,7 @@ class MockDefinition extends Definition {
 	}
 
 	private Set<Class<?>> asClassSet(Class<?>[] classes) {
-		Set<Class<?>> classSet = new LinkedHashSet<Class<?>>();
+		Set<Class<?>> classSet = new LinkedHashSet<>();
 		if (classes != null) {
 			classSet.addAll(Arrays.asList(classes));
 		}

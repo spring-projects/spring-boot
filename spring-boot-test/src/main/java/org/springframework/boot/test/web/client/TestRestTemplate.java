@@ -148,7 +148,7 @@ public class TestRestTemplate {
 		if (interceptors == null) {
 			interceptors = Collections.emptyList();
 		}
-		interceptors = new ArrayList<ClientHttpRequestInterceptor>(interceptors);
+		interceptors = new ArrayList<>(interceptors);
 		Iterator<ClientHttpRequestInterceptor> iterator = interceptors.iterator();
 		while (iterator.hasNext()) {
 			if (iterator.next() instanceof BasicAuthorizationInterceptor) {
@@ -1063,7 +1063,7 @@ public class TestRestTemplate {
 
 		public CustomHttpComponentsClientHttpRequestFactory(
 				HttpClientOption[] httpClientOptions) {
-			Set<HttpClientOption> options = new HashSet<TestRestTemplate.HttpClientOption>(
+			Set<HttpClientOption> options = new HashSet<>(
 					Arrays.asList(httpClientOptions));
 			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES)
 					? CookieSpecs.STANDARD : CookieSpecs.IGNORE_COOKIES);

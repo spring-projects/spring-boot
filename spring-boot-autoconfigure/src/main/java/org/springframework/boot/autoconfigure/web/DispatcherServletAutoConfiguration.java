@@ -138,7 +138,7 @@ public class DispatcherServletAutoConfiguration {
 		@ConditionalOnBean(value = DispatcherServlet.class, name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 		public ServletRegistrationBean<DispatcherServlet> dispatcherServletRegistration(
 				DispatcherServlet dispatcherServlet) {
-			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<DispatcherServlet>(
+			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(
 					dispatcherServlet,
 					this.serverProperties.getServlet().getServletMapping());
 			registration.setName(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);

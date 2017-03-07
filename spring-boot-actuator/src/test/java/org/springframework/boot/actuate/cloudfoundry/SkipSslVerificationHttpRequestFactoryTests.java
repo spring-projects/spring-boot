@@ -67,8 +67,7 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 				0);
 		factory.setSsl(getSsl("password", "classpath:test.jks"));
 		EmbeddedWebServer container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean<ExampleServlet>(new ExampleServlet(),
-						"/hello"));
+				new ServletRegistrationBean<>(new ExampleServlet(), "/hello"));
 		container.start();
 		return "https://localhost:" + container.getPort() + "/hello";
 	}

@@ -77,11 +77,8 @@ public class EmbeddedServletContainerCustomizerBeanPostProcessor
 	private Collection<EmbeddedServletContainerCustomizer> getCustomizers() {
 		if (this.customizers == null) {
 			// Look up does not include the parent context
-			this.customizers = new ArrayList<EmbeddedServletContainerCustomizer>(
-					this.beanFactory
-							.getBeansOfType(EmbeddedServletContainerCustomizer.class,
-									false, false)
-							.values());
+			this.customizers = new ArrayList<>(this.beanFactory.getBeansOfType(
+					EmbeddedServletContainerCustomizer.class, false, false).values());
 			Collections.sort(this.customizers, AnnotationAwareOrderComparator.INSTANCE);
 			this.customizers = Collections.unmodifiableList(this.customizers);
 		}

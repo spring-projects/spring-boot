@@ -98,7 +98,7 @@ public class MongoClientFactory {
 			if (options == null) {
 				options = MongoClientOptions.builder().build();
 			}
-			List<MongoCredential> credentials = new ArrayList<MongoCredential>();
+			List<MongoCredential> credentials = new ArrayList<>();
 			if (hasCustomCredentials()) {
 				String database = this.properties.getAuthenticationDatabase() == null
 						? this.properties.getMongoClientDatabase()

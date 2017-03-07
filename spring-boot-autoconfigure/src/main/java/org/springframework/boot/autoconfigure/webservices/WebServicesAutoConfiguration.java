@@ -62,7 +62,7 @@ public class WebServicesAutoConfiguration {
 		servlet.setApplicationContext(applicationContext);
 		String path = this.properties.getPath();
 		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
-		ServletRegistrationBean<MessageDispatcherServlet> registration = new ServletRegistrationBean<MessageDispatcherServlet>(
+		ServletRegistrationBean<MessageDispatcherServlet> registration = new ServletRegistrationBean<>(
 				servlet, urlMapping);
 		WebServicesProperties.Servlet servletProperties = this.properties.getServlet();
 		registration.setLoadOnStartup(servletProperties.getLoadOnStartup());

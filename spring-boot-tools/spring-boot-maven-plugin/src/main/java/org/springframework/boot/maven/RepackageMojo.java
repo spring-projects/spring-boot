@@ -242,7 +242,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private ArtifactsFilter[] getAdditionalFilters() {
-		List<ArtifactsFilter> filters = new ArrayList<ArtifactsFilter>();
+		List<ArtifactsFilter> filters = new ArrayList<>();
 		if (this.excludeDevtools) {
 			Exclude exclude = new Exclude();
 			exclude.setGroupId("org.springframework.boot");

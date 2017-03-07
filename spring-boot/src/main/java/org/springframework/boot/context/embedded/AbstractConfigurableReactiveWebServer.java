@@ -35,7 +35,7 @@ public class AbstractConfigurableReactiveWebServer
 
 	private int port = 8080;
 
-	private Set<ErrorPage> errorPages = new LinkedHashSet<ErrorPage>();
+	private Set<ErrorPage> errorPages = new LinkedHashSet<>();
 
 	private InetAddress address;
 
@@ -91,7 +91,7 @@ public class AbstractConfigurableReactiveWebServer
 	@Override
 	public void setErrorPages(Set<? extends ErrorPage> errorPages) {
 		Assert.notNull(errorPages, "ErrorPages must not be null");
-		this.errorPages = new LinkedHashSet<ErrorPage>(errorPages);
+		this.errorPages = new LinkedHashSet<>(errorPages);
 	}
 
 	@Override

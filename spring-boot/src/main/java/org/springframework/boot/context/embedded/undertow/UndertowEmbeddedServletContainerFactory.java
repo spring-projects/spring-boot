@@ -102,9 +102,9 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
-	private List<UndertowBuilderCustomizer> builderCustomizers = new ArrayList<UndertowBuilderCustomizer>();
+	private List<UndertowBuilderCustomizer> builderCustomizers = new ArrayList<>();
 
-	private List<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new ArrayList<UndertowDeploymentInfoCustomizer>();
+	private List<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new ArrayList<>();
 
 	private ResourceLoader resourceLoader;
 
@@ -167,7 +167,7 @@ public class UndertowEmbeddedServletContainerFactory
 	public void setBuilderCustomizers(
 			Collection<? extends UndertowBuilderCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		this.builderCustomizers = new ArrayList<UndertowBuilderCustomizer>(customizers);
+		this.builderCustomizers = new ArrayList<>(customizers);
 	}
 
 	/**
@@ -198,8 +198,7 @@ public class UndertowEmbeddedServletContainerFactory
 	public void setDeploymentInfoCustomizers(
 			Collection<? extends UndertowDeploymentInfoCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		this.deploymentInfoCustomizers = new ArrayList<UndertowDeploymentInfoCustomizer>(
-				customizers);
+		this.deploymentInfoCustomizers = new ArrayList<>(customizers);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -225,7 +225,7 @@ public final class MimeMappings implements Iterable<Mapping> {
 	 * Create a new empty {@link MimeMappings} instance.
 	 */
 	public MimeMappings() {
-		this.map = new LinkedHashMap<String, MimeMappings.Mapping>();
+		this.map = new LinkedHashMap<>();
 	}
 
 	/**
@@ -243,7 +243,7 @@ public final class MimeMappings implements Iterable<Mapping> {
 	 */
 	public MimeMappings(Map<String, String> mappings) {
 		Assert.notNull(mappings, "Mappings must not be null");
-		this.map = new LinkedHashMap<String, MimeMappings.Mapping>();
+		this.map = new LinkedHashMap<>();
 		for (Map.Entry<String, String> entry : mappings.entrySet()) {
 			add(entry.getKey(), entry.getValue());
 		}
@@ -256,8 +256,7 @@ public final class MimeMappings implements Iterable<Mapping> {
 	 */
 	private MimeMappings(MimeMappings mappings, boolean mutable) {
 		Assert.notNull(mappings, "Mappings must not be null");
-		this.map = (mutable
-				? new LinkedHashMap<String, MimeMappings.Mapping>(mappings.map)
+		this.map = (mutable ? new LinkedHashMap<>(mappings.map)
 				: Collections.unmodifiableMap(mappings.map));
 	}
 

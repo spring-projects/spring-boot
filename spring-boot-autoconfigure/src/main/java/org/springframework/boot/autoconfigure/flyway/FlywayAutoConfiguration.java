@@ -239,7 +239,7 @@ public class FlywayAutoConfiguration {
 		private static final Set<ConvertiblePair> CONVERTIBLE_TYPES;
 
 		static {
-			Set<ConvertiblePair> types = new HashSet<ConvertiblePair>(2);
+			Set<ConvertiblePair> types = new HashSet<>(2);
 			types.add(new ConvertiblePair(String.class, MigrationVersion.class));
 			types.add(new ConvertiblePair(Number.class, MigrationVersion.class));
 			CONVERTIBLE_TYPES = Collections.unmodifiableSet(types);

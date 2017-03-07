@@ -38,7 +38,7 @@ class SessionRepositoryFilterConfiguration {
 	@Bean
 	public FilterRegistrationBean<SessionRepositoryFilter<?>> sessionRepositoryFilterRegistration(
 			SessionRepositoryFilter<?> filter) {
-		FilterRegistrationBean<SessionRepositoryFilter<?>> registration = new FilterRegistrationBean<SessionRepositoryFilter<?>>(
+		FilterRegistrationBean<SessionRepositoryFilter<?>> registration = new FilterRegistrationBean<>(
 				filter);
 		registration.setDispatcherTypes(EnumSet.of(DispatcherType.ASYNC,
 				DispatcherType.ERROR, DispatcherType.REQUEST));

@@ -99,7 +99,7 @@ public class ReactiveMongoClientFactory {
 
 			Builder builder = builder(settings);
 			if (hasCustomCredentials()) {
-				List<MongoCredential> credentials = new ArrayList<MongoCredential>();
+				List<MongoCredential> credentials = new ArrayList<>();
 				String database = this.properties.getAuthenticationDatabase() == null
 						? this.properties.getMongoClientDatabase()
 						: this.properties.getAuthenticationDatabase();

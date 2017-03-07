@@ -36,8 +36,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link EmbeddedWebServer}s driving {@link ServletContextListener}s
- * correctly
+ * Tests for {@link EmbeddedWebServer}s driving {@link ServletContextListener}s correctly
  *
  * @author Andy Wilkinson
  */
@@ -137,7 +136,7 @@ public class EmbeddedServletContainerServletContextListenerTests {
 
 		@Bean
 		public ServletListenerRegistrationBean<ServletContextListener> registration() {
-			return new ServletListenerRegistrationBean<ServletContextListener>(
+			return new ServletListenerRegistrationBean<>(
 					mock(ServletContextListener.class));
 		}
 

@@ -116,8 +116,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context.register(WebConfiguration.class);
 		this.context.refresh();
 		UserDetails user = getUser();
-		ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(
-				user.getAuthorities());
+		ArrayList<GrantedAuthority> authorities = new ArrayList<>(user.getAuthorities());
 		assertThat(authorities).containsAll(AuthorityUtils
 				.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ACTUATOR"));
 	}

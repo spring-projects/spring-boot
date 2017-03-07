@@ -194,8 +194,8 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 		private final Map<T, LogLevel> nativeToSystem;
 
 		public LogLevels() {
-			this.systemToNative = new HashMap<LogLevel, T>();
-			this.nativeToSystem = new HashMap<T, LogLevel>();
+			this.systemToNative = new HashMap<>();
+			this.nativeToSystem = new HashMap<>();
 		}
 
 		public void map(LogLevel system, T nativeLevel) {
@@ -214,7 +214,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 		}
 
 		public Set<LogLevel> getSupported() {
-			return new LinkedHashSet<LogLevel>(this.nativeToSystem.values());
+			return new LinkedHashSet<>(this.nativeToSystem.values());
 		}
 
 	}

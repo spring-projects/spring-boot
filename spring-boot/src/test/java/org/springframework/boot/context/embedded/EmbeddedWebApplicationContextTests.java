@@ -228,7 +228,7 @@ public class EmbeddedWebApplicationContextTests {
 		addEmbeddedServletContainerFactoryBean();
 		OrderedFilter filter = new OrderedFilter();
 		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));
-		FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<Filter>();
+		FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>();
 		registration.setFilter(mock(Filter.class));
 		registration.setOrder(100);
 		this.context.registerBeanDefinition("filterRegistrationBean",
@@ -387,7 +387,7 @@ public class EmbeddedWebApplicationContextTests {
 		addEmbeddedServletContainerFactoryBean();
 		Servlet servlet = mock(Servlet.class);
 		Filter filter = mock(Filter.class);
-		ServletRegistrationBean<Servlet> initializer = new ServletRegistrationBean<Servlet>(
+		ServletRegistrationBean<Servlet> initializer = new ServletRegistrationBean<>(
 				servlet, "/foo");
 		this.context.registerBeanDefinition("initializerBean",
 				beanDefinition(initializer));
@@ -404,8 +404,7 @@ public class EmbeddedWebApplicationContextTests {
 	public void filterRegistrationBeansSkipsRegisteredFilters() throws Exception {
 		addEmbeddedServletContainerFactoryBean();
 		Filter filter = mock(Filter.class);
-		FilterRegistrationBean<Filter> initializer = new FilterRegistrationBean<Filter>(
-				filter);
+		FilterRegistrationBean<Filter> initializer = new FilterRegistrationBean<>(filter);
 		this.context.registerBeanDefinition("initializerBean",
 				beanDefinition(initializer));
 		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));

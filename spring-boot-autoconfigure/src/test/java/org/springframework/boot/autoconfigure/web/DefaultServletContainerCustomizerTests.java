@@ -84,7 +84,7 @@ public class DefaultServletContainerCustomizerTests {
 	@Test
 	public void tomcatAccessLogCanBeEnabled() {
 		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.accesslog.enabled", "true");
 		bindProperties(map);
 		this.customizer.customize(tomcatContainer);
@@ -96,7 +96,7 @@ public class DefaultServletContainerCustomizerTests {
 	@Test
 	public void tomcatAccessLogIsBufferedByDefault() {
 		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.accesslog.enabled", "true");
 		bindProperties(map);
 		this.customizer.customize(tomcatContainer);
@@ -107,7 +107,7 @@ public class DefaultServletContainerCustomizerTests {
 	@Test
 	public void tomcatAccessLogBufferingCanBeDisabled() {
 		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.accesslog.enabled", "true");
 		map.put("server.tomcat.accesslog.buffered", "false");
 		bindProperties(map);
@@ -118,7 +118,7 @@ public class DefaultServletContainerCustomizerTests {
 
 	@Test
 	public void redirectContextRootCanBeConfigured() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.redirect-context-root", "false");
 		bindProperties(map);
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
@@ -160,7 +160,7 @@ public class DefaultServletContainerCustomizerTests {
 
 	@Test
 	public void customizeSessionProperties() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.session.timeout", "123");
 		map.put("server.session.tracking-modes", "cookie,url");
 		map.put("server.session.cookie.name", "testname");
@@ -201,7 +201,7 @@ public class DefaultServletContainerCustomizerTests {
 
 	@Test
 	public void customizeTomcatDisplayName() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.display-name", "MyBootApp");
 		bindProperties(map);
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
@@ -211,7 +211,7 @@ public class DefaultServletContainerCustomizerTests {
 
 	@Test
 	public void disableTomcatRemoteIpValve() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.remote_ip_header", "");
 		map.put("server.tomcat.protocol_header", "");
 		bindProperties(map);
@@ -227,12 +227,12 @@ public class DefaultServletContainerCustomizerTests {
 		assertThat(
 				((TomcatEmbeddedServletContainer) container.getEmbeddedServletContainer())
 						.getTomcat().getEngine().getBackgroundProcessorDelay())
-				.isEqualTo(30);
+								.isEqualTo(30);
 	}
 
 	@Test
 	public void customTomcatBackgroundProcessorDelay() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.background-processor-delay", "5");
 		bindProperties(map);
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
@@ -240,12 +240,12 @@ public class DefaultServletContainerCustomizerTests {
 		assertThat(
 				((TomcatEmbeddedServletContainer) container.getEmbeddedServletContainer())
 						.getTomcat().getEngine().getBackgroundProcessorDelay())
-				.isEqualTo(5);
+								.isEqualTo(5);
 	}
 
 	@Test
 	public void defaultTomcatRemoteIpValve() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		// Since 1.1.7 you need to specify at least the protocol
 		map.put("server.tomcat.protocol_header", "X-Forwarded-Proto");
 		map.put("server.tomcat.remote_ip_header", "X-Forwarded-For");
@@ -288,7 +288,7 @@ public class DefaultServletContainerCustomizerTests {
 
 	@Test
 	public void customTomcatRemoteIpValve() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.remote_ip_header", "x-my-remote-ip-header");
 		map.put("server.tomcat.protocol_header", "x-my-protocol-header");
 		map.put("server.tomcat.internal_proxies", "192.168.0.1");
@@ -310,7 +310,7 @@ public class DefaultServletContainerCustomizerTests {
 
 	@Test
 	public void customTomcatAcceptCount() {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.accept-count", "10");
 		bindProperties(map);
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(
@@ -330,7 +330,7 @@ public class DefaultServletContainerCustomizerTests {
 
 	@Test
 	public void customTomcatMaxConnections() {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.max-connections", "5");
 		bindProperties(map);
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(
@@ -350,7 +350,7 @@ public class DefaultServletContainerCustomizerTests {
 
 	@Test
 	public void customTomcatMaxHttpPostSize() {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.max-http-post-size", "10000");
 		bindProperties(map);
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(
@@ -370,7 +370,7 @@ public class DefaultServletContainerCustomizerTests {
 
 	@Test
 	public void customizeUndertowAccessLog() {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.undertow.accesslog.enabled", "true");
 		map.put("server.undertow.accesslog.pattern", "foo");
 		map.put("server.undertow.accesslog.prefix", "test_log");
@@ -391,7 +391,7 @@ public class DefaultServletContainerCustomizerTests {
 
 	@Test
 	public void testCustomizeTomcatMinSpareThreads() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.min-spare-threads", "10");
 		bindProperties(map);
 		assertThat(this.properties.getTomcat().getMinSpareThreads()).isEqualTo(10);
@@ -399,7 +399,7 @@ public class DefaultServletContainerCustomizerTests {
 
 	@Test
 	public void customTomcatTldSkip() {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.additional-tld-skip-patterns", "foo.jar,bar.jar");
 		bindProperties(map);
 		testCustomTomcatTldSkip("foo.jar", "bar.jar");
@@ -407,7 +407,7 @@ public class DefaultServletContainerCustomizerTests {
 
 	@Test
 	public void customTomcatTldSkipAsList() {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.additional-tld-skip-patterns[0]", "biz.jar");
 		map.put("server.tomcat.additional-tld-skip-patterns[1]", "bah.jar");
 		bindProperties(map);
@@ -476,7 +476,7 @@ public class DefaultServletContainerCustomizerTests {
 
 	@Test
 	public void sessionStoreDir() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put("server.session.store-dir", "myfolder");
 		bindProperties(map);
 		JettyEmbeddedServletContainerFactory container = spy(

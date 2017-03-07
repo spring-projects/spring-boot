@@ -23,8 +23,8 @@ import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@link GenericReactiveWebApplicationContext} that can be used to bootstrap
- * itself from a contained embedded web server factory bean.
+ * A {@link GenericReactiveWebApplicationContext} that can be used to bootstrap itself
+ * from a contained embedded web server factory bean.
  *
  * @author Brian Clozel
  * @since 2.0.0
@@ -60,7 +60,8 @@ public class EmbeddedReactiveWebApplicationContext
 			createEmbeddedServletContainer();
 		}
 		catch (Throwable ex) {
-			throw new ApplicationContextException("Unable to start reactive web server", ex);
+			throw new ApplicationContextException("Unable to start reactive web server",
+					ex);
 		}
 	}
 
@@ -90,9 +91,9 @@ public class EmbeddedReactiveWebApplicationContext
 	}
 
 	/**
-	 * Return the {@link ReactiveWebServerFactory} that should be used to create
-	 * the reactive web server. By default this method searches for a suitable bean
-	 * in the context itself.
+	 * Return the {@link ReactiveWebServerFactory} that should be used to create the
+	 * reactive web server. By default this method searches for a suitable bean in the
+	 * context itself.
 	 * @return a {@link ReactiveWebServerFactory} (never {@code null})
 	 */
 	protected ReactiveWebServerFactory getReactiveWebServerFactory() {
@@ -114,15 +115,13 @@ public class EmbeddedReactiveWebApplicationContext
 	}
 
 	/**
-	 * Return the {@link HttpHandler} that should be used to process
-	 * the reactive web server. By default this method searches for a suitable bean
-	 * in the context itself.
+	 * Return the {@link HttpHandler} that should be used to process the reactive web
+	 * server. By default this method searches for a suitable bean in the context itself.
 	 * @return a {@link HttpHandler} (never {@code null}
 	 */
 	protected HttpHandler getHttpHandler() {
 		// Use bean names so that we don't consider the hierarchy
-		String[] beanNames = getBeanFactory()
-				.getBeanNamesForType(HttpHandler.class);
+		String[] beanNames = getBeanFactory().getBeanNamesForType(HttpHandler.class);
 		if (beanNames.length == 0) {
 			throw new ApplicationContextException(
 					"Unable to start ReactiveWebApplicationContext due to missing HttpHandler bean.");

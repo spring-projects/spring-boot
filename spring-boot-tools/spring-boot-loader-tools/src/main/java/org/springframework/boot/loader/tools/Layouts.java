@@ -123,7 +123,7 @@ public final class Layouts {
 		private static final Map<LibraryScope, String> SCOPE_DESTINATIONS;
 
 		static {
-			Map<LibraryScope, String> map = new HashMap<LibraryScope, String>();
+			Map<LibraryScope, String> map = new HashMap<>();
 			map.put(LibraryScope.COMPILE, "WEB-INF/lib/");
 			map.put(LibraryScope.CUSTOM, "WEB-INF/lib/");
 			map.put(LibraryScope.RUNTIME, "WEB-INF/lib/");
