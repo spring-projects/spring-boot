@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Collections;
-import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;

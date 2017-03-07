@@ -26,7 +26,6 @@ import java.util.Map;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
-import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 
 import org.junit.Before;
