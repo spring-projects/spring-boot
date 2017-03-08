@@ -103,7 +103,7 @@ public class TextResourcePropertyOriginTests {
 	}
 
 	@Test
-	public void locationEqualsAndHashcodeShouldUseLineAndColumn() throws Exception {
+	public void locationEqualsAndHashCodeShouldUseLineAndColumn() throws Exception {
 		Location location1 = new Location(1, 2);
 		Location location2 = new Location(1, 2);
 		Location location3 = new Location(2, 2);

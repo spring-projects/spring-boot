@@ -127,7 +127,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	 * the case of {@link FactoryBean FactoryBeans}. Will include singletons but will not
 	 * cause early bean initialization.
 	 * @param annotation the annotation to match (must not be {@code null})
-	 * @return the names of beans (or objects created by FactoryBeans) annoated with the
+	 * @return the names of beans (or objects created by FactoryBeans) annotated with the
 	 * given annotation, or an empty set if none
 	 */
 	Set<String> getNamesForAnnotation(Class<? extends Annotation> annotation) {
@@ -188,8 +188,8 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	}
 
 	private void logIgnoredError(String message, String name, Exception ex) {
-		if (BeanTypeRegistry.logger.isDebugEnabled()) {
-			BeanTypeRegistry.logger.debug("Ignoring " + message + " '" + name + "'", ex);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Ignoring " + message + " '" + name + "'", ex);
 		}
 	}
 
