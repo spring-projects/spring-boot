@@ -147,6 +147,17 @@ public class EnvironmentMvcEndpointTests {
 				.andExpect(content().string(containsString("\"my.foo\":\"${my.bar}\"")));
 	}
 
+	@Test
+	public void nestedPathWithSensitivePlaceholderShouldSanitize() throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("my.foo", "${my.password}");
+		map.put("my.password", "hello");
+		((ConfigurableEnvironment) this.context.getEnvironment()).getPropertySources()
+				.addFirst(new MapPropertySource("placeholder", map));
+		this.mvc.perform(get("/env/my.*")).andExpect(status().isOk())
+				.andExpect(content().string(containsString("\"my.foo\":\"******\"")));
+	}
+
 	@Configuration
 	@Import({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
