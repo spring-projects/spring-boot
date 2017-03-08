@@ -13,6 +13,13 @@ org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 
+# AutoConfigureDataLdap auto-configuration imports
+org.springframework.boot.test.autoconfigure.data.ldap.AutoConfigureDataLdap=\
+org.springframework.boot.autoconfigure.data.ldap.LdapDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.ldap.LdapRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration,\
+org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfiguration
+
 # AutoConfigureDataMongo auto-configuration imports
 org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo=\
 org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration,\
