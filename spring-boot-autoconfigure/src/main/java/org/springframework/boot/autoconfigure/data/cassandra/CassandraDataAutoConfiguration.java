@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.datastax.driver.core.Cluster;
@@ -40,6 +41,7 @@ import org.springframework.data.cassandra.config.CassandraEntityClassScanner;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.convert.CassandraConverter;
+import org.springframework.data.cassandra.convert.CustomConversions;
 import org.springframework.data.cassandra.convert.MappingCassandraConverter;
 import org.springframework.data.cassandra.core.CassandraAdminOperations;
 import org.springframework.data.cassandra.core.CassandraTemplate;
@@ -81,7 +83,7 @@ public class CassandraDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraMappingContext cassandraMapping() throws ClassNotFoundException {
+	public CassandraMappingContext cassandraMapping(CustomConversions conversions) throws ClassNotFoundException {
 		BasicCassandraMappingContext context = new BasicCassandraMappingContext();
 		List<String> packages = EntityScanPackages.get(this.beanFactory)
 				.getPackageNames();
@@ -95,13 +97,17 @@ public class CassandraDataAutoConfiguration {
 			context.setUserTypeResolver(new SimpleUserTypeResolver(this.cluster,
 					this.properties.getKeyspaceName()));
 		}
+		context.setCustomConversions(conversions);
 		return context;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraConverter cassandraConverter(CassandraMappingContext mapping) {
-		return new MappingCassandraConverter(mapping);
+	public CassandraConverter cassandraConverter(CassandraMappingContext mapping,
+			CustomConversions conversions) {
+		MappingCassandraConverter converter = new MappingCassandraConverter(mapping);
+		converter.setCustomConversions(conversions);
+		return converter;
 	}
 
 	@Bean
@@ -123,6 +129,12 @@ public class CassandraDataAutoConfiguration {
 	public CassandraTemplate cassandraTemplate(Session session,
 			CassandraConverter converter) throws Exception {
 		return new CassandraTemplate(session, converter);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public CustomConversions cassandraCustomConversions() {
+		return new CustomConversions(Collections.emptyList());
 	}
 
 }
