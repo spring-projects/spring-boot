@@ -40,6 +40,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.Order;
@@ -59,6 +60,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(org.springframework.cache.CacheManager.class)
 @Conditional({ CacheCondition.class,
 		JCacheCacheConfiguration.JCacheAvailableCondition.class })
+@Import(HazelcastJCacheCustomizationConfiguration.class)
 class JCacheCacheConfiguration {
 
 	private final CacheProperties cacheProperties;
@@ -69,15 +71,19 @@ class JCacheCacheConfiguration {
 
 	private final List<JCacheManagerCustomizer> cacheManagerCustomizers;
 
+	private final List<JCachePropertiesCustomizer> cachePropertiesCustomizers;
+
 	JCacheCacheConfiguration(CacheProperties cacheProperties,
 			CacheManagerCustomizers customizers,
 			ObjectProvider<javax.cache.configuration.Configuration<?, ?>> defaultCacheConfigurationProvider,
-			ObjectProvider<List<JCacheManagerCustomizer>> cacheManagerCustomizersProvider) {
+			ObjectProvider<List<JCacheManagerCustomizer>> cacheManagerCustomizersProvider,
+			ObjectProvider<List<JCachePropertiesCustomizer>> cachePropertiesCustomizers) {
 		this.cacheProperties = cacheProperties;
 		this.customizers = customizers;
 		this.defaultCacheConfiguration = defaultCacheConfigurationProvider
 				.getIfAvailable();
 		this.cacheManagerCustomizers = cacheManagerCustomizersProvider.getIfAvailable();
+		this.cachePropertiesCustomizers = cachePropertiesCustomizers.getIfAvailable();
 	}
 
 	@Bean
@@ -103,14 +109,14 @@ class JCacheCacheConfiguration {
 	private CacheManager createCacheManager() throws IOException {
 		CachingProvider cachingProvider = getCachingProvider(
 				this.cacheProperties.getJcache().getProvider());
+		Properties properties = createCacheManagerProperties();
 		Resource configLocation = this.cacheProperties
 				.resolveConfigLocation(this.cacheProperties.getJcache().getConfig());
 		if (configLocation != null) {
 			return cachingProvider.getCacheManager(configLocation.getURI(),
-					cachingProvider.getDefaultClassLoader(),
-					createCacheManagerProperties(configLocation));
+					cachingProvider.getDefaultClassLoader(), properties);
 		}
-		return cachingProvider.getCacheManager();
+		return cachingProvider.getCacheManager(null, null, properties);
 	}
 
 	private CachingProvider getCachingProvider(String cachingProviderFqn) {
@@ -120,12 +126,13 @@ class JCacheCacheConfiguration {
 		return Caching.getCachingProvider();
 	}
 
-	private Properties createCacheManagerProperties(Resource configLocation)
-			throws IOException {
+	private Properties createCacheManagerProperties() {
 		Properties properties = new Properties();
-		// Hazelcast does not use the URI as a mean to specify a custom config.
-		properties.setProperty("hazelcast.config.location",
-				configLocation.getURI().toString());
+		if (this.cachePropertiesCustomizers != null) {
+			for (JCachePropertiesCustomizer customizer : this.cachePropertiesCustomizers) {
+				customizer.customize(this.cacheProperties, properties);
+			}
+		}
 		return properties;
 	}
 
