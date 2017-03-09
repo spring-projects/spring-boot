@@ -190,6 +190,19 @@ public class DispatcherServletAutoConfigurationTests {
 						.getPropertyValue("loadOnStartup")).isEqualTo(5);
 	}
 
+	@Test
+	public void dispatcherServletRegistrationConfig() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(ServerPropertiesAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mvc.dispatch-servlet-order:123");
+		this.context.refresh();
+		ServletRegistrationBean bean = this.context.getBean(ServletRegistrationBean.class);
+		assertEquals(123, bean.getOrder());
+	}
+
 	@Configuration
 	protected static class MultipartConfiguration {
 
