@@ -96,6 +96,22 @@ public class OriginTrackedYamlLoaderTests {
 		assertThat(result.get("name").toString()).isEqualTo("Test Name");
 	}
 
+	@Test
+	public void processListOfMaps() throws Exception {
+		OriginTrackedValue name = getValue("example.foo[0].name");
+		OriginTrackedValue url = getValue("example.foo[0].url");
+		OriginTrackedValue bar1 = getValue("example.foo[0].bar[0].bar1");
+		OriginTrackedValue bar2 = getValue("example.foo[0].bar[1].bar2");
+		assertThat(name.toString()).isEqualTo("springboot");
+		assertThat(getLocation(name)).isEqualTo("22:15");
+		assertThat(url.toString()).isEqualTo("http://springboot.com");
+		assertThat(getLocation(url)).isEqualTo("23:14");
+		assertThat(bar1.toString()).isEqualTo("baz");
+		assertThat(getLocation(bar1)).isEqualTo("25:19");
+		assertThat(bar2.toString()).isEqualTo("bling");
+		assertThat(getLocation(bar2)).isEqualTo("26:19");
+	}
+
 	private OriginTrackedValue getValue(String name) {
 		if (this.result == null) {
 			this.result = this.loader.load();

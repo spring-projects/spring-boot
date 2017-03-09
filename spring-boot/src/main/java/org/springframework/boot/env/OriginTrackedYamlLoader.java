@@ -21,13 +21,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.BaseConstructor;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.error.Mark;
+import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
@@ -92,7 +95,15 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		@Override
 		protected Object constructObject(Node node) {
 			if (node instanceof ScalarNode) {
-				return constructTrackedObject(node, super.constructObject(node));
+				if (!(node instanceof KeyScalarNode)) {
+					return constructTrackedObject(node, super.constructObject(node));
+				}
+			}
+			else if (node instanceof MappingNode) {
+				List<NodeTuple> value = ((MappingNode) node).getValue();
+				List<NodeTuple> updatedValues = value.stream().map(nt -> new NodeTuple(KeyScalarNode.get(nt.getKeyNode()),
+						nt.getValueNode())).collect(Collectors.toList());
+				((MappingNode) node).setValue(updatedValues);
 			}
 			return super.constructObject(node);
 		}
@@ -107,6 +118,24 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 			Location location = new Location(mark.getLine(), mark.getColumn());
 			return new TextResourcePropertyOrigin(OriginTrackedYamlLoader.this.resource,
 					location);
+		}
+
+	}
+
+	/**
+	 * {@link ScalarNode} that replaces the key node in a {@link NodeTuple}.
+	 */
+	private static class KeyScalarNode extends ScalarNode {
+
+		KeyScalarNode(ScalarNode node) {
+			super(node.getTag(), node.getValue(), node.getStartMark(), node.getEndMark(), node.getStyle());
+		}
+
+		private static Node get(Node node) {
+			if (node instanceof ScalarNode) {
+				return new KeyScalarNode((ScalarNode) node);
+			}
+			return node;
 		}
 
 	}

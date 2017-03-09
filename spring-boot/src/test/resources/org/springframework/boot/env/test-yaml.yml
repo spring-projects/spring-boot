@@ -17,6 +17,13 @@ education: |
     4 GCSEs
     3 A-Levels
     BSc in the Internet of Things
+example:
+    foo:
+      - name: springboot
+        url: http://springboot.com
+        bar:
+          - bar1: baz
+          - bar2: bling
 ---
 
 spring:
