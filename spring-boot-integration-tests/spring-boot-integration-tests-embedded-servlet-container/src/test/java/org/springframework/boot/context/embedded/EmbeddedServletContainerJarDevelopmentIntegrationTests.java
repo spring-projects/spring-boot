@@ -29,61 +29,39 @@ import org.springframework.http.ResponseEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for Spring Boot's embedded servlet container support using jar
- * packaging.
+ * Integration tests for Spring Boot's embedded servlet container support when developing
+ * a jar application.
  *
  * @author Andy Wilkinson
  */
 @RunWith(Parameterized.class)
-public class EmbeddedServletContainerJarPackagingIntegrationTests
+public class EmbeddedServletContainerJarDevelopmentIntegrationTests
 		extends AbstractEmbeddedServletContainerIntegrationTests {
 
 	@Parameters(name = "{0}")
 	public static Object[] parameters() {
-		return AbstractEmbeddedServletContainerIntegrationTests.parameters("jar",
-				Arrays.asList(PackagedApplicationLauncher.class,
-						ExplodedApplicationLauncher.class));
+		return AbstractEmbeddedServletContainerIntegrationTests.parameters("jar", Arrays
+				.asList(BootRunApplicationLauncher.class, IdeApplicationLauncher.class));
 	}
 
-	public EmbeddedServletContainerJarPackagingIntegrationTests(String name,
+	public EmbeddedServletContainerJarDevelopmentIntegrationTests(String name,
 			AbstractApplicationLauncher launcher) {
 		super(name, launcher);
 	}
 
 	@Test
-	public void nestedMetaInfResourceIsAvailableViaHttp() throws Exception {
+	public void metaInfResourceFromDependencyIsAvailableViaHttp() throws Exception {
 		ResponseEntity<String> entity = this.rest
 				.getForEntity("/nested-meta-inf-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
-	public void nestedMetaInfResourceIsAvailableViaServletContext() throws Exception {
+	public void metaInfResourceFromDependencyIsAvailableViaServletContext()
+			throws Exception {
 		ResponseEntity<String> entity = this.rest
 				.getForEntity("/nested-meta-inf-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-	}
-
-	@Test
-	public void nestedJarIsNotAvailableViaHttp() throws Exception {
-		ResponseEntity<String> entity = this.rest
-				.getForEntity("/BOOT-INF/lib/resources-1.0.jar", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-	}
-
-	@Test
-	public void applicationClassesAreNotAvailableViaHttp() throws Exception {
-		ResponseEntity<String> entity = this.rest.getForEntity(
-				"/BOOT-INF/classes/com/example/ResourceHandlingApplication.class",
-				String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-	}
-
-	@Test
-	public void launcherIsNotAvailableViaHttp() throws Exception {
-		ResponseEntity<String> entity = this.rest.getForEntity(
-				"/org/springframework/boot/loader/Launcher.class", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 }

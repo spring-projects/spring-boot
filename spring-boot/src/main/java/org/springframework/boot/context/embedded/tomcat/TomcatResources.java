@@ -22,7 +22,6 @@ import java.net.URL;
 import java.util.List;
 
 import javax.naming.directory.DirContext;
-import javax.servlet.ServletContext;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.WebResourceRoot.ResourceSetType;
@@ -56,6 +55,9 @@ abstract class TomcatResources {
 					jar = "jar:" + jar + "!/";
 				}
 				addJar(jar);
+			}
+			else {
+				addDir(file, url);
 			}
 		}
 	}
@@ -127,7 +129,7 @@ abstract class TomcatResources {
 
 		@Override
 		protected void addDir(String dir, URL url) {
-			if (getContext() instanceof ServletContext) {
+			if (getContext() instanceof StandardContext) {
 				try {
 					Class<?> fileDirContextClass = Class
 							.forName("org.apache.naming.resources.FileDirContext");

@@ -414,8 +414,7 @@ public class JettyEmbeddedServletContainerFactory
 					root.isDirectory() ? Resource.newResource(root.getCanonicalFile())
 							: JarResource.newJarResource(Resource.newResource(root)));
 			for (URL resourceJarUrl : this.getUrlsOfJarsWithMetaInfResources()) {
-				Resource resource = Resource
-						.newResource(resourceJarUrl + "META-INF/resources");
+				Resource resource = createResource(resourceJarUrl);
 				// Jetty 9.2 and earlier do not support nested jars. See
 				// https://github.com/eclipse/jetty.project/issues/518
 				if (resource.exists() && resource.isDirectory()) {
@@ -428,6 +427,16 @@ public class JettyEmbeddedServletContainerFactory
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	private Resource createResource(URL url) throws IOException {
+		if ("file".equals(url.getProtocol())) {
+			File file = new File(url.getFile());
+			if (file.isFile()) {
+				return Resource.newResource("jar:" + url + "!/META-INF/resources");
+			}
+		}
+		return Resource.newResource(url + "META-INF/resources");
 	}
 
 	/**
