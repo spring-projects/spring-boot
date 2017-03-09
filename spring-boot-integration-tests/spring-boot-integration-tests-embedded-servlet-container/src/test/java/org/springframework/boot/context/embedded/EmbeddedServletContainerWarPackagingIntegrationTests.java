@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.embedded;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -38,7 +40,9 @@ public class EmbeddedServletContainerWarPackagingIntegrationTests
 
 	@Parameters(name = "{0}")
 	public static Object[] parameters() {
-		return AbstractEmbeddedServletContainerIntegrationTests.parameters("war");
+		return AbstractEmbeddedServletContainerIntegrationTests.parameters("war",
+				Arrays.asList(PackagedApplicationLauncher.class,
+						ExplodedApplicationLauncher.class));
 	}
 
 	public EmbeddedServletContainerWarPackagingIntegrationTests(String name,
