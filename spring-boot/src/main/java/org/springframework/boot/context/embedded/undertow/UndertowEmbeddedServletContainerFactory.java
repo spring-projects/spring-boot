@@ -130,6 +130,8 @@ public class UndertowEmbeddedServletContainerFactory
 	private boolean accessLogRotate = true;
 
 	private boolean useForwardHeaders;
+	
+	private String defaultEncoding = "UTF-8";
 
 	/**
 	 * Create a new {@link UndertowEmbeddedServletContainerFactory} instance.
@@ -369,6 +371,7 @@ public class UndertowEmbeddedServletContainerFactory
 		deployment.setContextPath(getContextPath());
 		deployment.setDisplayName(getDisplayName());
 		deployment.setDeploymentName("spring-boot");
+		deployment.setDefaultEncoding(this.defaultEncoding);
 		if (isRegisterDefaultServlet()) {
 			deployment.addServlet(Servlets.servlet("default", DefaultServlet.class));
 		}
@@ -614,6 +617,10 @@ public class UndertowEmbeddedServletContainerFactory
 
 	protected final boolean isUseForwardHeaders() {
 		return this.useForwardHeaders;
+	}
+	
+	public void setDefaultEncoding(String defaultEncoding){
+		this.defaultEncoding = defaultEncoding;
 	}
 
 	/**
