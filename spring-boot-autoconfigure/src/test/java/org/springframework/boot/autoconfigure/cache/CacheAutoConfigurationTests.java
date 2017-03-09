@@ -669,7 +669,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void jCacheCacheWithCachesAndCustomizer() { // this one
+	public void jCacheCacheWithCachesAndCustomizer() {
 		String cachingProviderFqn = HazelcastCachingProvider.class.getName();
 		try {
 			load(JCacheWithCustomizerConfiguration.class, "spring.cache.type=jcache",
