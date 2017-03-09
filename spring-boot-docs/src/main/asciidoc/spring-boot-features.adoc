@@ -4117,6 +4117,10 @@ NOTE: Since a cache library may offer both a native implementation and JSR-107 s
 Spring Boot will prefer the JSR-107 support so that the same features are available if
 you switch to a different JSR-107 implementation.
 
+TIP: Spring Boot has a <<boot-features-hazelcast,general support for Hazelcast>>t. If
+a single `HazelcastInstance` is available, it is automatically reused for the
+`CacheManager` as well unless the `spring.cache.jcache.config` property is specified.
+
 There are several ways to customize the underlying `javax.cache.cacheManager`:
 
 * Caches can be created on startup via the `spring.cache.cache-names` property. If a
