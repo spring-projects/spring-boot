@@ -96,15 +96,23 @@ public abstract class AbstractEmbeddedServletContainerFactory
 		if (classLoader instanceof URLClassLoader) {
 			for (URL url : ((URLClassLoader) classLoader).getURLs()) {
 				try {
-					URLConnection connection = url.openConnection();
-					if (connection instanceof JarURLConnection) {
-						JarURLConnection jarConnection = (JarURLConnection) connection;
-						JarFile jar = jarConnection.getJarFile();
-						if (jar.getName().endsWith(".jar")
-								&& jar.getJarEntry("META-INF/resources") != null) {
+					if ("file".equals(url.getProtocol())) {
+						File file = new File(url.getFile());
+						if (file.isDirectory()
+								&& new File(file, "META-INF/resources").isDirectory()) {
 							staticResourceUrls.add(url);
 						}
-						jar.close();
+						else if (isResourcesJar(file)) {
+							staticResourceUrls.add(url);
+						}
+					}
+					else {
+						URLConnection connection = url.openConnection();
+						if (connection instanceof JarURLConnection) {
+							if (isResourcesJar((JarURLConnection) connection)) {
+								staticResourceUrls.add(url);
+							}
+						}
 					}
 				}
 				catch (IOException ex) {
@@ -113,6 +121,34 @@ public abstract class AbstractEmbeddedServletContainerFactory
 			}
 		}
 		return staticResourceUrls;
+	}
+
+	private boolean isResourcesJar(JarURLConnection connection) {
+		try {
+			return isResourcesJar(connection.getJarFile());
+		}
+		catch (IOException ex) {
+			return false;
+		}
+	}
+
+	private boolean isResourcesJar(File file) {
+		try {
+			return isResourcesJar(new JarFile(file));
+		}
+		catch (IOException ex) {
+			return false;
+		}
+	}
+
+	private boolean isResourcesJar(JarFile jar) throws IOException {
+		try {
+			return jar.getName().endsWith(".jar")
+					&& (jar.getJarEntry("META-INF/resources") != null);
+		}
+		finally {
+			jar.close();
+		}
 	}
 
 	File getExplodedWarFileDocumentRoot(File codeSourceFile) {

@@ -47,25 +47,33 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 
 	protected final RestTemplate rest = new RestTemplate();
 
-	public static Object[] parameters(String packaging) {
+	public static Object[] parameters(String packaging,
+			List<Class<? extends AbstractApplicationLauncher>> applicationLaunchers) {
 		List<Object> parameters = new ArrayList<>();
-		parameters.addAll(createParameters(packaging, "jetty"));
-		parameters.addAll(createParameters(packaging, "tomcat"));
-		parameters.addAll(createParameters(packaging, "undertow"));
+		parameters.addAll(createParameters(packaging, "jetty", applicationLaunchers));
+		parameters.addAll(createParameters(packaging, "tomcat", applicationLaunchers));
+		parameters.addAll(createParameters(packaging, "undertow", applicationLaunchers));
 		return parameters.toArray(new Object[parameters.size()]);
 	}
 
 	private static List<Object> createParameters(String packaging, String container,
-			String... versions) {
-		List<Object> parameters = new ArrayList<>();
+			List<Class<? extends AbstractApplicationLauncher>> applicationLaunchers) {
+		List<Object> parameters = new ArrayList<Object>();
 		ApplicationBuilder applicationBuilder = new ApplicationBuilder(temporaryFolder,
 				packaging, container);
-		parameters.add(new Object[] {
-				StringUtils.capitalise(container) + " packaged " + packaging,
-				new PackagedApplicationLauncher(applicationBuilder) });
-		parameters.add(new Object[] {
-				StringUtils.capitalise(container) + " exploded " + packaging,
-				new ExplodedApplicationLauncher(applicationBuilder) });
+		for (Class<? extends AbstractApplicationLauncher> launcherClass : applicationLaunchers) {
+			try {
+				AbstractApplicationLauncher launcher = launcherClass
+						.getDeclaredConstructor(ApplicationBuilder.class)
+						.newInstance(applicationBuilder);
+				String name = StringUtils.capitalise(container) + ": "
+						+ launcher.getDescription(packaging);
+				parameters.add(new Object[] { name, launcher });
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+		}
 		return parameters;
 	}
 

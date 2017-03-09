@@ -18,6 +18,7 @@ package org.springframework.boot.context.embedded.undertow;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
@@ -464,11 +465,35 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private ResourceManager getDocumentRootResourceManager() {
 		File root = getCanonicalDocumentRoot();
-		List<URL> metaInfResourceJarUrls = getUrlsOfJarsWithMetaInfResources();
+		List<URL> metaInfResourceUrls = getUrlsOfJarsWithMetaInfResources();
+		List<URL> resourceJarUrls = new ArrayList<URL>();
+		List<ResourceManager> resourceManagers = new ArrayList<ResourceManager>();
 		ResourceManager rootResourceManager = root.isDirectory()
 				? new FileResourceManager(root, 0) : new JarResourceManager(root);
-		return new CompositeResourceManager(rootResourceManager,
-				new MetaInfResourcesResourceManager(metaInfResourceJarUrls));
+		resourceManagers.add(rootResourceManager);
+		for (URL url : metaInfResourceUrls) {
+			if ("file".equals(url.getProtocol())) {
+				File file = new File(url.getFile());
+				if (file.isFile()) {
+					try {
+						resourceJarUrls.add(new URL("jar:" + url + "!/"));
+					}
+					catch (MalformedURLException ex) {
+						throw new RuntimeException(ex);
+					}
+				}
+				else {
+					resourceManagers.add(new FileResourceManager(
+							new File(file, "META-INF/resources"), 0));
+				}
+			}
+			else {
+				resourceJarUrls.add(url);
+			}
+		}
+		resourceManagers.add(new MetaInfResourcesResourceManager(resourceJarUrls));
+		return new CompositeResourceManager(
+				resourceManagers.toArray(new ResourceManager[resourceManagers.size()]));
 	}
 
 	/**
@@ -618,12 +643,17 @@ public class UndertowEmbeddedServletContainerFactory
 		}
 
 		@Override
-		public Resource getResource(String path) throws IOException {
+		public Resource getResource(String path) {
 			for (URL url : this.metaInfResourceJarUrls) {
-				URL resourceUrl = new URL(url + "META-INF/resources" + path);
-				URLConnection connection = resourceUrl.openConnection();
-				if (connection.getContentLength() >= 0) {
-					return new URLResource(resourceUrl, connection, path);
+				try {
+					URL resourceUrl = new URL(url + "META-INF/resources" + path);
+					URLConnection connection = resourceUrl.openConnection();
+					if (connection.getContentLength() >= 0) {
+						return new URLResource(resourceUrl, connection, path);
+					}
+				}
+				catch (IOException ex) {
+					// Continue
 				}
 			}
 			return null;

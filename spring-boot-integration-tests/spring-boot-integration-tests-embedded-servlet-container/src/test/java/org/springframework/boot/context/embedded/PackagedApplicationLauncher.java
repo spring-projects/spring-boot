@@ -33,6 +33,16 @@ class PackagedApplicationLauncher extends AbstractApplicationLauncher {
 	}
 
 	@Override
+	protected File getWorkingDirectory() {
+		return null;
+	}
+
+	@Override
+	protected String getDescription(String packaging) {
+		return "packaged " + packaging;
+	}
+
+	@Override
 	protected List<String> getArguments(File archive) {
 		return Arrays.asList("-jar", archive.getAbsolutePath());
 	}

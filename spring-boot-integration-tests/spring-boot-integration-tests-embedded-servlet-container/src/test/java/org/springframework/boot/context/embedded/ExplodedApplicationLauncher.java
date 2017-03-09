@@ -29,8 +29,8 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StreamUtils;
 
 /**
- * {@link AbstractApplicationLauncher} that launches an exploded Spring Boot application
- * using Spring Boot's Jar or War launcher.
+ * {@link AbstractApplicationLauncher} that launches a Spring Boot application using
+ * {@code JarLauncher} or {@code WarLauncher} and an exploded archive.
  *
  * @author Andy Wilkinson
  */
@@ -40,6 +40,16 @@ class ExplodedApplicationLauncher extends AbstractApplicationLauncher {
 
 	ExplodedApplicationLauncher(ApplicationBuilder applicationBuilder) {
 		super(applicationBuilder);
+	}
+
+	@Override
+	protected File getWorkingDirectory() {
+		return this.exploded;
+	}
+
+	@Override
+	protected String getDescription(String packaging) {
+		return "exploded " + packaging;
 	}
 
 	@Override

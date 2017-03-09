@@ -34,8 +34,6 @@ import org.springframework.util.FileCopyUtils;
  */
 abstract class AbstractApplicationLauncher extends ExternalResource {
 
-	private final File serverPortFile = new File("target/server.port");
-
 	private final ApplicationBuilder applicationBuilder;
 
 	private Process process;
@@ -62,8 +60,15 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 
 	protected abstract List<String> getArguments(File archive);
 
+	protected abstract File getWorkingDirectory();
+
+	protected abstract String getDescription(String packaging);
+
 	private Process startApplication() throws Exception {
-		this.serverPortFile.delete();
+		File workingDirectory = getWorkingDirectory();
+		File serverPortFile = workingDirectory == null ? new File("target/server.port")
+				: new File(workingDirectory, "target/server.port");
+		serverPortFile.delete();
 		File archive = this.applicationBuilder.buildApplication();
 		List<String> arguments = new ArrayList<>();
 		arguments.add(System.getProperty("java.home") + "/bin/java");
@@ -72,14 +77,17 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 				arguments.toArray(new String[arguments.size()]));
 		processBuilder.redirectOutput(Redirect.INHERIT);
 		processBuilder.redirectError(Redirect.INHERIT);
+		if (workingDirectory != null) {
+			processBuilder.directory(workingDirectory);
+		}
 		Process process = processBuilder.start();
-		this.httpPort = awaitServerPort(process);
+		this.httpPort = awaitServerPort(process, serverPortFile);
 		return process;
 	}
 
-	private int awaitServerPort(Process process) throws Exception {
+	private int awaitServerPort(Process process, File serverPortFile) throws Exception {
 		long end = System.currentTimeMillis() + 30000;
-		while (this.serverPortFile.length() == 0) {
+		while (serverPortFile.length() == 0) {
 			if (System.currentTimeMillis() > end) {
 				throw new IllegalStateException(
 						"server.port file was not written within 30 seconds");
@@ -89,8 +97,8 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 			}
 			Thread.sleep(100);
 		}
-		return Integer.parseInt(
-				FileCopyUtils.copyToString(new FileReader(this.serverPortFile)));
+		return Integer
+				.parseInt(FileCopyUtils.copyToString(new FileReader(serverPortFile)));
 	}
 
 }

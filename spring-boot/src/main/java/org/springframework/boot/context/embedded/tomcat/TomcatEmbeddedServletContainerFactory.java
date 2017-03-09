@@ -840,20 +840,23 @@ public class TomcatEmbeddedServletContainerFactory
 						// A jar file in the file system. Convert to Jar URL.
 						jar = "jar:" + jar + "!/";
 					}
-					addJar(jar);
+					addResourceSet(jar);
+				}
+				else {
+					addResourceSet(url.toString());
 				}
 			}
 		}
 
-		private void addJar(String jar) {
+		private void addResourceSet(String resource) {
 			try {
-				if (isInsideNestedJar(jar)) {
+				if (isInsideNestedJar(resource)) {
 					// It's a nested jar but we now don't want the suffix because Tomcat
 					// is going to try and locate it as a root URL (not the resource
 					// inside it)
-					jar = jar.substring(0, jar.length() - 2);
+					resource = resource.substring(0, resource.length() - 2);
 				}
-				URL url = new URL(jar);
+				URL url = new URL(resource);
 				String path = "/META-INF/resources";
 				this.context.getResources().createWebResourceSet(
 						ResourceSetType.RESOURCE_JAR, "/", url, path);
