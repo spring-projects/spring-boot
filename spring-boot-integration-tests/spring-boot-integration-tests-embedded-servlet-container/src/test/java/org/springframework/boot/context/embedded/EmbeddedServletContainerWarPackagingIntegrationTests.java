@@ -58,13 +58,6 @@ public class EmbeddedServletContainerWarPackagingIntegrationTests
 	}
 
 	@Test
-	public void nestedMetaInfResourceIsAvailableViaServletContext() throws Exception {
-		ResponseEntity<String> entity = this.rest
-				.getForEntity("/nested-meta-inf-resource.txt", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-	}
-
-	@Test
 	public void nestedJarIsNotAvailableViaHttp() throws Exception {
 		ResponseEntity<String> entity = this.rest
 				.getForEntity("/WEB-INF/lib/resources-1.0.jar", String.class);
