@@ -482,7 +482,7 @@ is also a good candidate as the primary `@Configuration`.
 
 TIP: Many Spring configuration examples have been published on the Internet that use XML
 configuration. Always try to use the equivalent Java-based configuration if possible.
-Searching for `+enable*+` annotations can be a good starting point.
+Searching for `+Enable*+` annotations can be a good starting point.
 
 
 
