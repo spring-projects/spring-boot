@@ -560,6 +560,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.cassandra.password= # Login password of the server.
 	spring.data.cassandra.read-timeout-millis= # Socket option: read time out.
 	spring.data.cassandra.reconnection-policy= # Reconnection policy class.
+	spring.data.cassandra.repositories.enabled= # Enable Cassandra repositories.
 	spring.data.cassandra.retry-policy= # Class name of the retry policy.
 	spring.data.cassandra.serial-consistency-level= # Queries serial consistency level.
 	spring.data.cassandra.schema-action=none # Schema action to take at startup.
