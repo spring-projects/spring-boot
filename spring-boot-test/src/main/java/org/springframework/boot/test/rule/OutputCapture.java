@@ -91,6 +91,13 @@ public class OutputCapture implements TestRule {
 		this.copy = null;
 	}
 
+	/**
+	 * Discard all currently accumulated output.
+	 */
+	public void reset() {
+		this.copy.reset();
+	}
+
 	public void flush() {
 		try {
 			this.captureOut.flush();
