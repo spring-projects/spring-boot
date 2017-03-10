@@ -85,6 +85,12 @@
     "defaultValue": "none"
   },
   {
+    "name": "spring.data.cassandra.repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Cassandra repositories.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.data.couchbase.consistency",
     "defaultValue": "read-your-own-writes"
   },
