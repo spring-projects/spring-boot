@@ -1006,6 +1006,7 @@ public class ServerProperties
 					this.accesslog.isRequestAttributesEnabled());
 			valve.setRotatable(this.accesslog.isRotate());
 			valve.setBuffered(this.accesslog.isBuffered());
+			valve.setFileDateFormat(this.accesslog.getFileDateFormat());
 			factory.addEngineValves(valve);
 		}
 
@@ -1059,6 +1060,11 @@ public class ServerProperties
 			 * Defer inclusion of the date stamp in the file name until rotate time.
 			 */
 			private boolean renameOnRotate;
+
+			/**
+			 * Date format to place in log file name.
+			 */
+			private String fileDateFormat = ".yyyy-MM-dd";
 
 			/**
 			 * Set request attributes for IP address, Hostname, protocol and port used for
@@ -1125,6 +1131,14 @@ public class ServerProperties
 
 			public void setRenameOnRotate(boolean renameOnRotate) {
 				this.renameOnRotate = renameOnRotate;
+			}
+
+			public String getFileDateFormat() {
+				return this.fileDateFormat;
+			}
+
+			public void setFileDateFormat(String fileDateFormat) {
+				this.fileDateFormat = fileDateFormat;
 			}
 
 			public boolean isRequestAttributesEnabled() {

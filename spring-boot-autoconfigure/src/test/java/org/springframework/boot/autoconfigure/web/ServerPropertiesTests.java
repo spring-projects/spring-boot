@@ -161,6 +161,29 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void tomcatAccessLogFileDateFormatByDefault() {
+		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.accesslog.enabled", "true");
+		bindProperties(map);
+		this.properties.customize(tomcatContainer);
+		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next())
+				.getFileDateFormat()).isEqualTo(".yyyy-MM-dd");
+	}
+
+	@Test
+	public void tomcatAccessLogFileDateFormatCanBeRedefined() {
+		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.accesslog.enabled", "true");
+		map.put("server.tomcat.accesslog.file-date-format", "yyyy-MM-dd.HH");
+		bindProperties(map);
+		this.properties.customize(tomcatContainer);
+		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next())
+				.getFileDateFormat()).isEqualTo("yyyy-MM-dd.HH");
+	}
+
+	@Test
 	public void tomcatAccessLogIsBufferedByDefault() {
 		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
 		Map<String, String> map = new HashMap<String, String>();
