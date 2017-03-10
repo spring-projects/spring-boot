@@ -195,6 +195,7 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.accesslog.buffered=true # Buffer output such that it is only flushed periodically.
 	server.tomcat.accesslog.directory=logs # Directory in which log files are created. Can be relative to the tomcat base dir or absolute.
 	server.tomcat.accesslog.enabled=false # Enable access log.
+	server.tomcat.accesslog.file-date-format=.yyyy-MM-dd # Date format to place in log file name.
 	server.tomcat.accesslog.pattern=common # Format pattern for access logs.
 	server.tomcat.accesslog.prefix=access_log # Log file name prefix.
 	server.tomcat.accesslog.rename-on-rotate=false # Defer inclusion of the date stamp in the file name until rotate time.

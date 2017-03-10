@@ -414,6 +414,7 @@ public class DefaultServletContainerCustomizer
 			valve.setPrefix(tomcatProperties.getAccesslog().getPrefix());
 			valve.setSuffix(tomcatProperties.getAccesslog().getSuffix());
 			valve.setRenameOnRotate(tomcatProperties.getAccesslog().isRenameOnRotate());
+			valve.setFileDateFormat(tomcatProperties.getAccesslog().getFileDateFormat());
 			valve.setRequestAttributesEnabled(
 					tomcatProperties.getAccesslog().isRequestAttributesEnabled());
 			valve.setRotatable(tomcatProperties.getAccesslog().isRotate());

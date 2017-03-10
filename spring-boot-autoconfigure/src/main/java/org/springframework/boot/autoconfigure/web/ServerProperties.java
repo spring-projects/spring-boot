@@ -654,6 +654,11 @@ public class ServerProperties {
 			private boolean renameOnRotate;
 
 			/**
+			 * Date format to place in log file name.
+			 */
+			private String fileDateFormat = ".yyyy-MM-dd";
+
+			/**
 			 * Set request attributes for IP address, Hostname, protocol and port used for
 			 * the request.
 			 */
@@ -718,6 +723,14 @@ public class ServerProperties {
 
 			public void setRenameOnRotate(boolean renameOnRotate) {
 				this.renameOnRotate = renameOnRotate;
+			}
+
+			public String getFileDateFormat() {
+				return this.fileDateFormat;
+			}
+
+			public void setFileDateFormat(String fileDateFormat) {
+				this.fileDateFormat = fileDateFormat;
 			}
 
 			public boolean isRequestAttributesEnabled() {
