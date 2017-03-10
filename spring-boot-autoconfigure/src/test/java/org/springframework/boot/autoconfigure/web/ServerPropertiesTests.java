@@ -168,7 +168,7 @@ public class ServerPropertiesTests {
 		bindProperties(map);
 		this.properties.customize(tomcatContainer);
 		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next())
-				.getFileDateFormat()).isEqualTo("yyyy-MM-dd");
+				.getFileDateFormat()).isEqualTo(".yyyy-MM-dd");
 	}
 
 	@Test
@@ -181,17 +181,6 @@ public class ServerPropertiesTests {
 		this.properties.customize(tomcatContainer);
 		assertThat(((AccessLogValve) tomcatContainer.getEngineValves().iterator().next())
 				.getFileDateFormat()).isEqualTo("yyyy-MM-dd.HH");
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void tomcatAccessLogFileDateFormatWrongFormat() {
-		TomcatEmbeddedServletContainerFactory tomcatContainer = new TomcatEmbeddedServletContainerFactory();
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("server.tomcat.accesslog.enabled", "true");
-		map.put("server.tomcat.accesslog.file-date-format",
-				"this-is-obviously-a-wrong-format");
-		bindProperties(map);
-		this.properties.customize(tomcatContainer);
 	}
 
 	@Test

@@ -1062,6 +1062,11 @@ public class ServerProperties
 			private boolean renameOnRotate;
 
 			/**
+			 * Date format to place in log file name.
+			 */
+			private String fileDateFormat = ".yyyy-MM-dd";
+
+			/**
 			 * Set request attributes for IP address, Hostname, protocol and port used for
 			 * the request.
 			 */
@@ -1071,11 +1076,6 @@ public class ServerProperties
 			 * Buffer output such that it is only flushed periodically.
 			 */
 			private boolean buffered = true;
-
-			/**
-			 * Customized date format in the access log file name.
-			 */
-			private String fileDateFormat = "yyyy-MM-dd";
 
 			public boolean isEnabled() {
 				return this.enabled;
@@ -1133,6 +1133,14 @@ public class ServerProperties
 				this.renameOnRotate = renameOnRotate;
 			}
 
+			public String getFileDateFormat() {
+				return this.fileDateFormat;
+			}
+
+			public void setFileDateFormat(String fileDateFormat) {
+				this.fileDateFormat = fileDateFormat;
+			}
+
 			public boolean isRequestAttributesEnabled() {
 				return this.requestAttributesEnabled;
 			}
@@ -1149,13 +1157,6 @@ public class ServerProperties
 				this.buffered = buffered;
 			}
 
-			public String getFileDateFormat() {
-				return fileDateFormat;
-			}
-
-			public void setFileDateFormat(String fileDateFormat) {
-				this.fileDateFormat = fileDateFormat;
-			}
 		}
 
 	}
