@@ -19,5 +19,11 @@ library:
     <artifactId>neo4j-ogm-embedded-driver</artifactId>
     <version>${neo4j-ogm.version}</version>
 </dependency>
+<dependency>
+    <groupId>org.neo4j</groupId>
+    <artifactId>neo4j</artifactId>
+    <version>3.1.0</version>
+    <scope>runtime</scope>
+</dependency>
 ```
 
