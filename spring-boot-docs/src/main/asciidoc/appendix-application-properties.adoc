@@ -573,6 +573,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.cassandra.load-balancing-policy= # Class name of the load balancing policy.
 	spring.data.cassandra.port= # Port of the Cassandra server.
 	spring.data.cassandra.password= # Login password of the server.
+	spring.data.cassandra.reactive-repositories.enabled= # Enable Cassandra reactive repositories.
 	spring.data.cassandra.read-timeout-millis= # Socket option: read time out.
 	spring.data.cassandra.reconnection-policy= # Reconnection policy class.
 	spring.data.cassandra.repositories.enabled= # Enable Cassandra repositories.
