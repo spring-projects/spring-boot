@@ -61,6 +61,12 @@
     "defaultValue": false
   },
   {
+    "name": "spring.data.cassandra.repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Cassandra repositories.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.data.couchbase.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Couchbase repositories.",
