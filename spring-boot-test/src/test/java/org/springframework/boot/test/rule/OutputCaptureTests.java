@@ -34,7 +34,6 @@ public class OutputCaptureTests {
 	@Test
 	public void toStringShouldReturnAllCapturedOutput() throws Exception {
 		System.out.println("Hello World");
-
 		assertThat(this.outputCapture.toString()).contains("Hello World");
 	}
 
@@ -43,7 +42,6 @@ public class OutputCaptureTests {
 		System.out.println("Hello");
 		this.outputCapture.reset();
 		System.out.println("World");
-
 		assertThat(this.outputCapture.toString()).doesNotContain("Hello")
 				.contains("World");
 	}
