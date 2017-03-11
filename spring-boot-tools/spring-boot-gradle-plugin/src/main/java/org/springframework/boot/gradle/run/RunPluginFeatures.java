@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.ExtraPropertiesExtension;
+import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.application.CreateStartScripts;
@@ -42,8 +43,10 @@ public class RunPluginFeatures implements PluginFeatures {
 
 	@Override
 	public void apply(Project project) {
-		mainClassNameFinder(project);
-		addBootRunTask(project);
+		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
+			mainClassNameFinder(project);
+			addBootRunTask(project);
+		});
 	}
 
 	private void mainClassNameFinder(Project project) {
