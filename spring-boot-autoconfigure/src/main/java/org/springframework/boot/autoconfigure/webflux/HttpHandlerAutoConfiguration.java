@@ -125,10 +125,7 @@ public class HttpHandlerAutoConfiguration {
 					strategiesBuilder.build());
 			WebHttpHandlerBuilder builder = WebHttpHandlerBuilder.webHandler(webHandler)
 					.sessionManager(this.webSessionManager);
-			if (this.webFilters != null) {
-				builder.filters(
-						this.webFilters.toArray(new WebFilter[this.webFilters.size()]));
-			}
+			builder.filters(this.webFilters);
 			return builder.build();
 		}
 
