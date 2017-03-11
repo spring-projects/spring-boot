@@ -38,7 +38,7 @@ diverge from the defaults.
 == System Requirements
 Spring Boot {spring-boot-version} requires http://www.java.com[Java 8] and Spring
 Framework {spring-version} or above. Explicit build support is provided for Maven
-(3.2+), and Gradle 2 (2.9 or later) and 3.
+(3.2+), and Gradle 3 (3.4 or later).
 
 
 [[getting-started-system-requirements-servlet-containers]]
@@ -184,8 +184,8 @@ scope.
 
 [[getting-started-gradle-installation]]
 ==== Gradle installation
-Spring Boot is compatible with Gradle 2 (2.9 or later) and Gradle 3. If you don't already
-have Gradle installed you can follow the instructions at http://www.gradle.org/.
+Spring Boot is compatible with Gradle 3 (3.4 or later). If you don't already have Gradle
+installed you can follow the instructions at http://www.gradle.org/.
 
 Spring Boot dependencies can be declared using the `org.springframework.boot` `group`.
 Typically your project will declare dependencies to one or more

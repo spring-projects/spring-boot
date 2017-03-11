@@ -235,6 +235,11 @@
 				<version>${gradle.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.gradle</groupId>
+				<artifactId>gradle-process-services</artifactId>
+				<version>${gradle.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-runtime</artifactId>
 				<version>1.0.4</version>
