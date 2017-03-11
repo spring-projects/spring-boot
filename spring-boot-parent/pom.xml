@@ -226,6 +226,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.gradle</groupId>
+				<artifactId>gradle-maven</artifactId>
+				<version>${gradle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.gradle</groupId>
 				<artifactId>gradle-platform-jvm</artifactId>
 				<version>${gradle.version}</version>
 			</dependency>

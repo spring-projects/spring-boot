@@ -20,11 +20,14 @@ import java.util.concurrent.Callable;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.maven.MavenResolver;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.Upload;
 
 import org.springframework.boot.gradle.PluginFeatures;
 
@@ -35,17 +38,23 @@ import org.springframework.boot.gradle.PluginFeatures;
  */
 public class BundlingPluginFeatures implements PluginFeatures {
 
+	private SinglePublishedArtifact singlePublishedArtifact;
+
 	@Override
 	public void apply(Project project) {
+		this.singlePublishedArtifact = new SinglePublishedArtifact(
+				project.getConfigurations().create("bootArchives").getArtifacts());
 		project.getPlugins().withType(JavaPlugin.class,
 				(javaPlugin) -> configureBootJarTask(project));
 		project.getPlugins().withType(WarPlugin.class,
 				(warPlugin) -> configureBootWarTask(project));
+		project.afterEvaluate(this::configureBootArchivesUpload);
 	}
 
 	private void configureBootWarTask(Project project) {
 		BootWar bootWar = project.getTasks().create("bootWar", BootWar.class);
 		bootWar.providedClasspath(providedRuntimeConfiguration(project));
+		this.singlePublishedArtifact.addCandidate(new ArchivePublishArtifact(bootWar));
 	}
 
 	private void configureBootJarTask(Project project) {
@@ -56,6 +65,22 @@ public class BundlingPluginFeatures implements PluginFeatures {
 			SourceSet mainSourceSet = convention.getSourceSets()
 					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 			return mainSourceSet.getRuntimeClasspath();
+		});
+		this.singlePublishedArtifact.addCandidate(new ArchivePublishArtifact(bootJar));
+	}
+
+	private void configureBootArchivesUpload(Project project) {
+		Upload upload = project.getTasks().withType(Upload.class)
+				.findByName("uploadBootArchives");
+		if (upload == null) {
+			return;
+		}
+		clearConfigurationMappings(upload);
+	}
+
+	private void clearConfigurationMappings(Upload upload) {
+		upload.getRepositories().withType(MavenResolver.class, (resolver) -> {
+			resolver.getPom().getScopeMappings().getMappings().clear();
 		});
 	}
 

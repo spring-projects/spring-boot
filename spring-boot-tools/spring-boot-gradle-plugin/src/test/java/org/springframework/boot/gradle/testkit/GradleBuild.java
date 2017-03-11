@@ -56,8 +56,7 @@ public class GradleBuild implements TestRule {
 
 	@Override
 	public Statement apply(Statement base, Description description) {
-		String name = description.getTestClass().getSimpleName() + ".gradle";
-		URL scriptUrl = description.getTestClass().getResource(name);
+		URL scriptUrl = findDefaultScript(description);
 		if (scriptUrl != null) {
 			script(scriptUrl.getFile());
 		}
@@ -75,6 +74,24 @@ public class GradleBuild implements TestRule {
 			}
 
 		}, description);
+	}
+
+	private URL findDefaultScript(Description description) {
+		URL scriptUrl = getScriptForTestMethod(description);
+		if (scriptUrl != null) {
+			return scriptUrl;
+		}
+		return getScriptForTestClass(description.getTestClass());
+	}
+
+	private URL getScriptForTestMethod(Description description) {
+		return description.getTestClass()
+				.getResource(description.getTestClass().getSimpleName() + "-"
+						+ description.getMethodName() + ".gradle");
+	}
+
+	private URL getScriptForTestClass(Class<?> testClass) {
+		return testClass.getResource(testClass.getSimpleName() + ".gradle");
 	}
 
 	private void before() throws IOException {
@@ -123,7 +140,15 @@ public class GradleBuild implements TestRule {
 		}
 	}
 
-	public static String getBootVersion() {
+	public File getProjectDir() {
+		return this.projectDir;
+	}
+
+	public void setProjectDir(File projectDir) {
+		this.projectDir = projectDir;
+	}
+
+	private static String getBootVersion() {
 		return evaluateExpression(
 				"/*[local-name()='project']/*[local-name()='parent']/*[local-name()='version']"
 						+ "/text()");
