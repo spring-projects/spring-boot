@@ -19,14 +19,9 @@ package org.springframework.boot.gradle.run;
 import java.util.Collections;
 import java.util.concurrent.Callable;
 
-import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
-import org.gradle.api.plugins.ExtraPropertiesExtension;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
-import org.gradle.api.tasks.SourceSet;
-import org.gradle.api.tasks.application.CreateStartScripts;
 
 import org.springframework.boot.gradle.PluginFeatures;
 
@@ -37,32 +32,12 @@ import org.springframework.boot.gradle.PluginFeatures;
  */
 public class RunPluginFeatures implements PluginFeatures {
 
-	private static final String FIND_MAIN_CLASS_TASK_NAME = "findMainClass";
-
 	private static final String RUN_APP_TASK_NAME = "bootRun";
 
 	@Override
 	public void apply(Project project) {
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
-			mainClassNameFinder(project);
 			addBootRunTask(project);
-		});
-	}
-
-	private void mainClassNameFinder(Project project) {
-		FindMainClassTask findMainClassTask = project.getTasks()
-				.create(FIND_MAIN_CLASS_TASK_NAME, FindMainClassTask.class);
-		SourceSet mainSourceSet = SourceSets.findMainSourceSet(project);
-		if (mainSourceSet != null) {
-			findMainClassTask.setMainClassSourceSetOutput(mainSourceSet.getOutput());
-		}
-		project.getTasks().all(new Action<Task>() {
-			@Override
-			public void execute(Task task) {
-				if (task instanceof BootRunTask || task instanceof CreateStartScripts) {
-					task.dependsOn(FIND_MAIN_CLASS_TASK_NAME);
-				}
-			}
 		});
 	}
 
@@ -76,22 +51,6 @@ public class RunPluginFeatures implements PluginFeatures {
 		run.setGroup("application");
 		run.setClasspath(
 				javaConvention.getSourceSets().findByName("main").getRuntimeClasspath());
-		run.getConventionMapping().map("main", new Callable<Object>() {
-			@Override
-			public Object call() throws Exception {
-				if (project.hasProperty("mainClassName")
-						&& project.property("mainClassName") != null) {
-					return project.property("mainClassName");
-				}
-				ExtraPropertiesExtension extraPropertiesExtension = (ExtraPropertiesExtension) project
-						.getExtensions().getByName("ext");
-				if (extraPropertiesExtension.has("mainClassName")
-						&& extraPropertiesExtension.get("mainClassName") != null) {
-					return extraPropertiesExtension.get("mainClassName");
-				}
-				return null;
-			}
-		});
 		run.getConventionMapping().map("jvmArgs", new Callable<Object>() {
 			@Override
 			public Object call() throws Exception {

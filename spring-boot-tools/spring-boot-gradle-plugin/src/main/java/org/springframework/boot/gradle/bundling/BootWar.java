@@ -29,6 +29,8 @@ import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.War;
 
+import org.springframework.boot.gradle.MainClassSupplier;
+
 /**
  * A custom {@link War} task that produces a Spring Boot executable war.
  *

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.gradle.bundling;
+package org.springframework.boot.gradle;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.gradle.api.file.FileCollection;
@@ -31,41 +32,60 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  *
  * @author Andy Wilkinson
  */
-class MainClassSupplier implements Supplier<String> {
+public class MainClassSupplier implements Supplier<String> {
+
+	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
 	private final Supplier<FileCollection> classpathSupplier;
 
 	private String mainClass;
 
-	MainClassSupplier(Supplier<FileCollection> classpathSupplier) {
+	/**
+	 * Creates a new {@code MainClassSupplier} that will fall back to searching
+	 * directories in the classpath supplied by the given {@code classpathSupplier} for
+	 * the application's main class.
+	 *
+	 * @param classpathSupplier the supplier of the classpath
+	 */
+	public MainClassSupplier(Supplier<FileCollection> classpathSupplier) {
 		this.classpathSupplier = classpathSupplier;
 	}
 
 	@Override
 	public String get() {
-		if (this.mainClass != null) {
-			return this.mainClass;
+		if (this.mainClass == null) {
+			this.mainClass = findMainClass();
 		}
-		return findMainClass();
+		return this.mainClass;
 	}
 
 	private String findMainClass() {
 		FileCollection classpath = this.classpathSupplier.get();
-		return classpath == null ? null
-				: classpath.filter(File::isDirectory).getFiles().stream()
-						.map(this::findMainClass).findFirst().orElse(null);
+		if (classpath == null) {
+			return null;
+		}
+		return classpath.filter(File::isDirectory).getFiles().stream()
+				.map(this::findMainClass).filter(Objects::nonNull).findFirst()
+				.orElse(null);
 	}
 
 	private String findMainClass(File file) {
 		try {
-			return MainClassFinder.findSingleMainClass(file);
+			String result = MainClassFinder.findSingleMainClass(file,
+					SPRING_BOOT_APPLICATION_CLASS_NAME);
+			return result;
 		}
 		catch (IOException ex) {
 			return null;
 		}
 	}
 
-	void setMainClass(String mainClass) {
+	/**
+	 * Sets the {@code mainClass} that will be supplied.
+	 *
+	 * @param mainClass the main class to supply
+	 */
+	public void setMainClass(String mainClass) {
 		this.mainClass = mainClass;
 	}
 

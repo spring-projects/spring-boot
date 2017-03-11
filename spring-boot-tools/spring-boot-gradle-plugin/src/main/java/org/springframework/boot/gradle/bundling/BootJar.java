@@ -28,6 +28,8 @@ import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.bundling.Jar;
 
+import org.springframework.boot.gradle.MainClassSupplier;
+
 /**
  * A custom {@link Jar} task that produces a Spring Boot executable jar.
  *
