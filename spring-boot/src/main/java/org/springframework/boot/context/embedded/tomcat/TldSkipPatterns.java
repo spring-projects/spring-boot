@@ -86,7 +86,6 @@ final class TldSkipPatterns {
 		patterns.add("ehcache-core-*.jar");
 		patterns.add("hibernate-core-*.jar");
 		patterns.add("hibernate-commons-annotations-*.jar");
-		patterns.add("hibernate-entitymanager-*.jar");
 		patterns.add("hibernate-jpa-2.1-api-*.jar");
 		patterns.add("hibernate-validator-*.jar");
 		patterns.add("hsqldb-*.jar");
