@@ -3,6 +3,12 @@
 <import-control pkg="org.springframework.boot">
 	<allow pkg=".*" regex="true" />
 
+	<!-- Logging -->
+	<subpackage name="logging">
+		<disallow pkg="org.springframework.context" />
+		<disallow pkg="org.springframework.boot.context" />
+	</subpackage>
+
 	<!-- Web related concerns -->
 	<subpackage name="web">
 

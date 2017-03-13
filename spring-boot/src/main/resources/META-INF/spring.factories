@@ -22,9 +22,9 @@ org.springframework.boot.context.FileEncodingApplicationListener,\
 org.springframework.boot.context.config.AnsiOutputApplicationListener,\
 org.springframework.boot.context.config.ConfigFileApplicationListener,\
 org.springframework.boot.context.config.DelegatingApplicationListener,\
-org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener,\
-org.springframework.boot.logging.ClasspathLoggingApplicationListener,\
-org.springframework.boot.logging.LoggingApplicationListener
+org.springframework.boot.context.logging.ClasspathLoggingApplicationListener,\
+org.springframework.boot.context.logging.LoggingApplicationListener,\
+org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener
 
 # Environment Post Processors
 org.springframework.boot.env.EnvironmentPostProcessor=\

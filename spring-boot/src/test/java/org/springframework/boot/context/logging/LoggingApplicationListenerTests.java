@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.logging;
+package org.springframework.boot.context.logging;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +40,12 @@ import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
+import org.springframework.boot.logging.AbstractLoggingSystem;
+import org.springframework.boot.logging.LogFile;
+import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggerConfiguration;
+import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.ApplicationEvent;

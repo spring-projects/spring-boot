@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.logging;
+package org.springframework.boot.context.logging;
 
 import java.util.List;
 import java.util.Map;
@@ -31,6 +31,11 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
+import org.springframework.boot.logging.LogFile;
+import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -72,6 +77,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 2.0.0
  * @see LoggingSystem#get(ClassLoader)
  */
 public class LoggingApplicationListener implements GenericApplicationListener {
@@ -93,57 +99,6 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 * @see LoggingSystem#getShutdownHandler
 	 */
 	public static final String REGISTER_SHUTDOWN_HOOK_PROPERTY = "logging.register-shutdown-hook";
-
-	/**
-	 * The name of the Spring property that contains the directory where log files are
-	 * written.
-	 * @deprecated as of 1.5 in favor of {@link LogFile#PATH_PROPERTY}
-	 */
-	@Deprecated
-	public static final String PATH_PROPERTY = LogFile.PATH_PROPERTY;
-
-	/**
-	 * The name of the Spring property that contains the name of the log file. Names can
-	 * be an exact location or relative to the current directory.
-	 * @deprecated as of 1.5 in favor of {@link LogFile#FILE_PROPERTY}
-	 */
-	@Deprecated
-	public static final String FILE_PROPERTY = LogFile.FILE_PROPERTY;
-
-	/**
-	 * The name of the System property that contains the process ID.
-	 */
-	public static final String PID_KEY = "PID";
-
-	/**
-	 * The name of the System property that contains the exception conversion word.
-	 */
-	public static final String EXCEPTION_CONVERSION_WORD = "LOG_EXCEPTION_CONVERSION_WORD";
-
-	/**
-	 * The name of the System property that contains the log file.
-	 */
-	public static final String LOG_FILE = "LOG_FILE";
-
-	/**
-	 * The name of the System property that contains the log path.
-	 */
-	public static final String LOG_PATH = "LOG_PATH";
-
-	/**
-	 * The name of the System property that contains the console log pattern.
-	 */
-	public static final String CONSOLE_LOG_PATTERN = "CONSOLE_LOG_PATTERN";
-
-	/**
-	 * The name of the System property that contains the file log pattern.
-	 */
-	public static final String FILE_LOG_PATTERN = "FILE_LOG_PATTERN";
-
-	/**
-	 * The name of the System property that contains the log level pattern.
-	 */
-	public static final String LOG_LEVEL_PATTERN = "LOG_LEVEL_PATTERN";
 
 	/**
 	 * The name of the {@link LoggingSystem} bean.
