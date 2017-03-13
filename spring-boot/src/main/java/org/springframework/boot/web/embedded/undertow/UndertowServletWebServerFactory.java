@@ -19,12 +19,16 @@ package org.springframework.boot.web.embedded.undertow;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,8 +41,10 @@ import java.util.Set;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509ExtendedKeyManager;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -309,11 +315,21 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 				keyPassword = ssl.getKeyStorePassword().toCharArray();
 			}
 			keyManagerFactory.init(keyStore, keyPassword);
-			return keyManagerFactory.getKeyManagers();
+			return getConfigurableAliasKeyManagers(ssl, keyManagerFactory.getKeyManagers());
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	private KeyManager[] getConfigurableAliasKeyManagers(Ssl ssl, KeyManager[] keyManagers) {
+		for (int i = 0; i < keyManagers.length; i++) {
+			if (keyManagers[i] instanceof X509ExtendedKeyManager) {
+				keyManagers[i] = new ConfigurableAliasKeyManager((X509ExtendedKeyManager) keyManagers[i],
+						ssl.getKeyAlias());
+			}
+		}
+		return keyManagers;
 	}
 
 	private KeyStore getKeyStore() throws Exception {
@@ -690,6 +706,57 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			for (ServletContextInitializer initializer : this.initializers) {
 				initializer.onStartup(servletContext);
 			}
+		}
+	}
+
+	private static class ConfigurableAliasKeyManager extends X509ExtendedKeyManager {
+
+		private final X509ExtendedKeyManager sourceKeyManager;
+
+		private final String alias;
+
+		ConfigurableAliasKeyManager(X509ExtendedKeyManager keyManager, String alias) {
+			this.sourceKeyManager = keyManager;
+			this.alias = alias;
+		}
+
+		@Override
+		public String chooseEngineClientAlias(String[] strings, Principal[] principals, SSLEngine sslEngine) {
+			return this.sourceKeyManager.chooseEngineClientAlias(strings, principals, sslEngine);
+		}
+
+		@Override
+		public String chooseEngineServerAlias(String s, Principal[] principals, SSLEngine sslEngine) {
+			if (this.alias == null) {
+				return this.sourceKeyManager.chooseEngineServerAlias(s, principals, sslEngine);
+			}
+			return this.alias;
+		}
+
+		public String chooseClientAlias(String[] keyType, Principal[] issuers,
+				Socket socket) {
+			return this.sourceKeyManager.chooseClientAlias(keyType, issuers, socket);
+		}
+
+		public String chooseServerAlias(String keyType, Principal[] issuers,
+				Socket socket) {
+			return this.sourceKeyManager.chooseServerAlias(keyType, issuers, socket);
+		}
+
+		public X509Certificate[] getCertificateChain(String alias) {
+			return this.sourceKeyManager.getCertificateChain(alias);
+		}
+
+		public String[] getClientAliases(String keyType, Principal[] issuers) {
+			return this.sourceKeyManager.getClientAliases(keyType, issuers);
+		}
+
+		public PrivateKey getPrivateKey(String alias) {
+			return this.sourceKeyManager.getPrivateKey(alias);
+		}
+
+		public String[] getServerAliases(String keyType, Principal[] issuers) {
+			return this.sourceKeyManager.getServerAliases(keyType, issuers);
 		}
 
 	}

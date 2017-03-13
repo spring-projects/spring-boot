@@ -34,6 +34,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -447,6 +448,24 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	public void sslKeyAlias() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(getSsl(null, "password", "test-alias", "src/test/resources/test.jks"));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
+		this.container.start();
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder()
+						.loadTrustMaterial(null, new SerialNumberValidatingTrustSelfSignedStrategy("77e7c302")).build());
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+				.build();
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
+				httpClient);
+		assertThat(getResponse(getLocalUrl("https", "/hello"), requestFactory))
+				.contains("scheme=https");
+	}
+
+	@Test
 	public void serverHeaderIsDisabledByDefaultWhenUsingSsl() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
@@ -659,12 +678,24 @@ public abstract class AbstractServletWebServerFactoryTests {
 		return getSsl(clientAuth, keyPassword, keyStore, null, null, null);
 	}
 
+	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyAlias, String keyStore) {
+		return getSsl(clientAuth, keyPassword, keyAlias, keyStore, null, null, null);
+	}
+
 	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore,
+			String trustStore, String[] supportedProtocols, String[] ciphers) {
+		return getSsl(clientAuth, keyPassword, null, keyStore, trustStore, supportedProtocols, ciphers);
+	}
+
+	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyAlias, String keyStore,
 			String trustStore, String[] supportedProtocols, String[] ciphers) {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(clientAuth);
 		if (keyPassword != null) {
 			ssl.setKeyPassword(keyPassword);
+		}
+		if (keyAlias != null) {
+			ssl.setKeyAlias(keyAlias);
 		}
 		if (keyStore != null) {
 			ssl.setKeyStore(keyStore);
@@ -1252,6 +1283,27 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public interface BlockedPortAction {
 
 		void run(int port);
+
+	}
+
+	/**
+	 * {@link TrustSelfSignedStrategy} that also validates certificate serial
+	 * number.
+	 */
+	private static final class SerialNumberValidatingTrustSelfSignedStrategy extends TrustSelfSignedStrategy {
+
+		private final String serialNumber;
+
+		private SerialNumberValidatingTrustSelfSignedStrategy(String serialNumber) {
+			this.serialNumber = serialNumber;
+		}
+
+		@Override
+		public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+			String hexSerialNumber = chain[0].getSerialNumber().toString(16);
+			boolean isMatch = hexSerialNumber.equals(this.serialNumber);
+			return super.isTrusted(chain, authType) && isMatch;
+		}
 
 	}
 
