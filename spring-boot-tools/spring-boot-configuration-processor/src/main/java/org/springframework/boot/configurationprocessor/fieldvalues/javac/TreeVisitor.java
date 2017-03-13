@@ -22,6 +22,7 @@ package org.springframework.boot.configurationprocessor.fieldvalues.javac;
  * @author Phillip Webb
  * @since 1.2.0
  */
+@FunctionalInterface
 interface TreeVisitor {
 
 	void visitVariable(VariableTree variable) throws Exception;
