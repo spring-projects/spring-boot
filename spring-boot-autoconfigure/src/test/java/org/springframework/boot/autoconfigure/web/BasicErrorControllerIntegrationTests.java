@@ -54,6 +54,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractView;
 
@@ -65,6 +66,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Kim Saabye Pedersen
  */
 @RunWith(SpringRunner.class)
 @DirtiesContext
@@ -89,6 +91,21 @@ public class BasicErrorControllerIntegrationTests {
 		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
 				IllegalStateException.class, "Expected!", "/");
 		assertThat(entity.getBody().containsKey("trace")).isFalse();
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void testErrorForCustomAttributes() throws Exception {
+		load("--server.error.include-session-attributes=foo",
+				"--server.error.include-request-attributes=moo");
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("?trace=true"), Map.class);
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
+				IllegalStateException.class, "Expected!", "/");
+		assertThat(entity.getBody()
+				.containsKey(RequestAttributes.REFERENCE_SESSION + ".foo")).isTrue();
+		assertThat(entity.getBody()
+				.containsKey(RequestAttributes.REFERENCE_REQUEST + ".moo")).isTrue();
 	}
 
 	@Test
@@ -228,7 +245,7 @@ public class BasicErrorControllerIntegrationTests {
 				@Override
 				protected void renderMergedOutputModel(Map<String, Object> model,
 						HttpServletRequest request, HttpServletResponse response)
-								throws Exception {
+						throws Exception {
 					response.getWriter().write("ERROR_BEAN");
 				}
 			};

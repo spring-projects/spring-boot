@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestAttributes;
@@ -26,10 +27,24 @@ import org.springframework.web.servlet.ModelAndView;
  * Provides access to error attributes which can be logged or presented to the user.
  *
  * @author Phillip Webb
+ * @author Kim Saabye Pedersen
  * @since 1.1.0
  * @see DefaultErrorAttributes
  */
 public interface ErrorAttributes {
+
+	/**
+	 * Returns a {@link Map} of the error attributes. The map can be used as the model of
+	 * an error page {@link ModelAndView}, or returned as a {@link ResponseBody}.
+	 * @param requestAttributes the source request attributes
+	 * @param includeStackTrace if stack trace elements should be included
+	 * @param includeRequestAttributes request properties to include
+	 * @param includeSessionAttributes session properties to include
+	 * @return a map of error attributes
+	 */
+	Map<String, Object> getErrorAttributes(RequestAttributes requestAttributes,
+			boolean includeStackTrace, Set<String> includeRequestAttributes,
+			Set<String> includeSessionAttributes);
 
 	/**
 	 * Returns a {@link Map} of the error attributes. The map can be used as the model of

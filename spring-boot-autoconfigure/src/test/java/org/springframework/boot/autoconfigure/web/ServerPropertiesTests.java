@@ -39,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Quinten De Swaef
  * @author Venil Noronha
+ * @author Kim Saabye Pedersen
  */
 public class ServerPropertiesTests {
 
@@ -100,6 +101,20 @@ public class ServerPropertiesTests {
 		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 		assertThat(this.properties.getServlet().getServletMapping()).isEqualTo("/foo/*");
 		assertThat(this.properties.getServlet().getServletPrefix()).isEqualTo("/foo");
+	}
+
+	@Test
+	public void testErrorBinding() throws Exception {
+		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
+		binder.bind(new MutablePropertyValues(Collections
+				.singletonMap("server.error.includeRequestAttributes", "foo,bar")));
+		binder.bind(new MutablePropertyValues(Collections
+				.singletonMap("server.error.includeSessionAttributes", "mooh,booh")));
+		assertThat(binder.getBindingResult().hasErrors()).isFalse();
+		assertThat(this.properties.getError().getIncludeRequestAttributes())
+				.contains("foo", "bar");
+		assertThat(this.properties.getError().getIncludeSessionAttributes())
+				.contains("mooh", "booh");
 	}
 
 	@Test

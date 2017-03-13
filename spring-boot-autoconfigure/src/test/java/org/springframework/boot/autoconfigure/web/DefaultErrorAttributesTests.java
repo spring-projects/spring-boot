@@ -16,8 +16,10 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -41,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link DefaultErrorAttributes}.
  *
  * @author Phillip Webb
+ * @author Kim Saabye Pedersen
  */
 public class DefaultErrorAttributesTests {
 
@@ -149,6 +152,19 @@ public class DefaultErrorAttributesTests {
 		assertThat(attributes.get("exception"))
 				.isEqualTo(OutOfMemoryError.class.getName());
 		assertThat(attributes.get("message")).isEqualTo("Test error");
+	}
+
+	@Test
+	public void getCustomErrorAttributes() throws Exception {
+		this.request.setAttribute("foo", "foovalue");
+		this.request.getSession().setAttribute("moo", "moovalue");
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(
+				this.requestAttributes, false, new HashSet<String>(Arrays.asList("foo")),
+				new HashSet<String>(Arrays.asList("moo")));
+		assertThat(attributes.get(RequestAttributes.REFERENCE_REQUEST + ".foo"))
+				.isEqualTo("foovalue");
+		assertThat(attributes.get(RequestAttributes.REFERENCE_SESSION + ".moo"))
+				.isEqualTo("moovalue");
 	}
 
 	@Test
