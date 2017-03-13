@@ -54,7 +54,6 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 				WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				WebClientAutoConfiguration.class,
 				EndpointWebMvcManagementContextConfiguration.class);

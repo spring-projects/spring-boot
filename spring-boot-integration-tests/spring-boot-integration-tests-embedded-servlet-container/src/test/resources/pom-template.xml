@@ -16,7 +16,6 @@
 
 	<properties>
 		<resourcesJarPath>{{resourcesJarPath}}</resourcesJarPath>
-		{{containerVersion}}
 	</properties>
 
 	<dependencies>
@@ -44,13 +43,6 @@
 			<scope>system</scope>
 			<systemPath>${resourcesJarPath}</systemPath>
 		</dependency>
-	{{#additionalDependencies}}
-		<dependency>
-			<groupId>{{groupId}}</groupId>
-			<artifactId>{{artifactId}}</artifactId>
-			<version>{{version}}</version>
-		</dependency>
-	{{/additionalDependencies}}
 	</dependencies>
 
 	<build>

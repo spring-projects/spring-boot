@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,13 +29,13 @@ import java.util.List;
  */
 public class Hints {
 
-	private final List<ValueHint> keyHints = new ArrayList<ValueHint>();
+	private final List<ValueHint> keyHints = new ArrayList<>();
 
-	private final List<ValueProvider> keyProviders = new ArrayList<ValueProvider>();
+	private final List<ValueProvider> keyProviders = new ArrayList<>();
 
-	private final List<ValueHint> valueHints = new ArrayList<ValueHint>();
+	private final List<ValueHint> valueHints = new ArrayList<>();
 
-	private final List<ValueProvider> valueProviders = new ArrayList<ValueProvider>();
+	private final List<ValueProvider> valueProviders = new ArrayList<>();
 
 	/**
 	 * The list of well-defined keys, if any. Only applicable if the type of the related

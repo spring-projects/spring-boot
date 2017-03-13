@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public class WebClientAutoConfiguration {
 			List<RestTemplateCustomizer> customizers = this.restTemplateCustomizers
 					.getIfAvailable();
 			if (!CollectionUtils.isEmpty(customizers)) {
-				customizers = new ArrayList<RestTemplateCustomizer>(customizers);
+				customizers = new ArrayList<>(customizers);
 				AnnotationAwareOrderComparator.sort(customizers);
 				builder = builder.customizers(customizers);
 			}

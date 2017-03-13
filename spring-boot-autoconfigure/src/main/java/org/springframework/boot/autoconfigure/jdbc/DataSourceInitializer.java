@@ -134,7 +134,7 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 			return getResources(propertyName, resources, true);
 		}
 		String platform = this.properties.getPlatform();
-		List<String> fallbackResources = new ArrayList<String>();
+		List<String> fallbackResources = new ArrayList<>();
 		fallbackResources.add("classpath*:" + fallback + "-" + platform + ".sql");
 		fallbackResources.add("classpath*:" + fallback + ".sql");
 		return getResources(propertyName, fallbackResources, false);
@@ -142,7 +142,7 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 
 	private List<Resource> getResources(String propertyName, List<String> locations,
 			boolean validate) {
-		List<Resource> resources = new ArrayList<Resource>();
+		List<Resource> resources = new ArrayList<>();
 		for (String location : locations) {
 			for (Resource resource : doGetResources(location)) {
 				if (resource.exists()) {

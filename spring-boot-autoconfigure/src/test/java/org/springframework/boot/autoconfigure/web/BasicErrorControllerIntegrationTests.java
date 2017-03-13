@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -203,7 +203,7 @@ public class BasicErrorControllerIntegrationTests {
 	}
 
 	private void load(String... arguments) {
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		args.add("--server.port=0");
 		if (arguments != null) {
 			args.addAll(Arrays.asList(arguments));

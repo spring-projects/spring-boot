@@ -52,9 +52,9 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 
 	private final PropertyNamePatternsMatcher includes;
 
-	private final Map<String, PropertyValue> propertyValues = new LinkedHashMap<String, PropertyValue>();
+	private final Map<String, PropertyValue> propertyValues = new LinkedHashMap<>();
 
-	private final ConcurrentHashMap<String, PropertySource<?>> collectionOwners = new ConcurrentHashMap<String, PropertySource<?>>();
+	private final ConcurrentHashMap<String, PropertySource<?>> collectionOwners = new ConcurrentHashMap<>();
 
 	private final boolean resolvePlaceholders;
 

@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Collections;
-import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -45,7 +44,7 @@ public class ShutdownMvcEndpoint extends EndpointMvcAdapter {
 	@Override
 	public Object invoke() {
 		if (!getDelegate().isEnabled()) {
-			return new ResponseEntity<Map<String, String>>(
+			return new ResponseEntity<>(
 					Collections.singletonMap("message", "This endpoint is disabled"),
 					HttpStatus.NOT_FOUND);
 		}

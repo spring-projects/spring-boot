@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -74,7 +75,7 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 	public void validateReadyFlag() {
 		final ObjectName objectName = createObjectName(OBJECT_NAME);
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		application.addListeners(new ApplicationListener<ContextRefreshedEvent>() {
 			@Override
 			public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -114,7 +115,7 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 	public void environmentIsExposed() {
 		final ObjectName objectName = createObjectName(OBJECT_NAME);
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--foo.bar=blam");
 		assertThat(isApplicationReady(objectName)).isTrue();
 		assertThat(isApplicationEmbeddedWebApplication(objectName)).isFalse();
@@ -126,7 +127,7 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 	public void shutdownApp() throws InstanceNotFoundException {
 		final ObjectName objectName = createObjectName(OBJECT_NAME);
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(this.context.isRunning()).isTrue();
 		invokeShutdown(objectName);

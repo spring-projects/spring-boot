@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,7 @@ public class GroovyBeansTransformation implements ASTTransformation {
 		for (ASTNode node : nodes) {
 			if (node instanceof ModuleNode) {
 				ModuleNode module = (ModuleNode) node;
-				for (ClassNode classNode : new ArrayList<ClassNode>(
-						module.getClasses())) {
+				for (ClassNode classNode : new ArrayList<>(module.getClasses())) {
 					if (classNode.isScript()) {
 						classNode.visitContents(new ClassVisitor(source, classNode));
 					}

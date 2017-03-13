@@ -38,11 +38,9 @@ public class InstallTests {
 	}
 
 	@Test
-	public void cleanInstallApp() throws Exception {
+	public void cleanInstallDist() throws Exception {
 		this.project = new ProjectCreator().createProject("install-app");
-		// "install" from the application plugin was renamed "installApp" in Gradle
-		// 1.0
-		this.project.newBuild().forTasks("installApp")
+		this.project.newBuild().forTasks("installDist")
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
 	}
 

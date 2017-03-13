@@ -421,7 +421,7 @@ public final class ConditionMessage {
 		};
 
 		public Collection<?> applyTo(Collection<?> items) {
-			List<Object> result = new ArrayList<Object>();
+			List<Object> result = new ArrayList<>();
 			for (Object item : items) {
 				result.add(applyToItem(item));
 			}

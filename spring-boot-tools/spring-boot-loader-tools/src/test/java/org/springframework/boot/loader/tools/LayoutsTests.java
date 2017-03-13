@@ -86,18 +86,4 @@ public class LayoutsTests {
 				.isEqualTo("WEB-INF/lib/");
 	}
 
-	@Test
-	@SuppressWarnings("deprecation")
-	public void moduleLayout() throws Exception {
-		Layout layout = new Layouts.Module();
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE))
-				.isEqualTo("lib/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED))
-				.isNull();
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME))
-				.isEqualTo("lib/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM))
-				.isEqualTo("lib/");
-	}
-
 }

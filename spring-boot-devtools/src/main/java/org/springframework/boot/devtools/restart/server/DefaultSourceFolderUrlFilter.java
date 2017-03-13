@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class DefaultSourceFolderUrlFilter implements SourceFolderUrlFilter {
 	private static final Pattern VERSION_PATTERN = Pattern
 			.compile("^-\\d+(?:\\.\\d+)*(?:[.-].+)?$");
 
-	private static final Set<String> SKIPPED_PROJECTS = new HashSet<String>(Arrays.asList(
+	private static final Set<String> SKIPPED_PROJECTS = new HashSet<>(Arrays.asList(
 			"spring-boot", "spring-boot-devtools", "spring-boot-autoconfigure",
 			"spring-boot-actuator", "spring-boot-starter"));
 

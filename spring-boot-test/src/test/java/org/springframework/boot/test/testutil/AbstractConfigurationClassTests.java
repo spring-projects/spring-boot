@@ -48,7 +48,7 @@ public abstract class AbstractConfigurationClassTests {
 
 	@Test
 	public void allBeanMethodsArePublic() throws IOException, ClassNotFoundException {
-		Set<String> nonPublicBeanMethods = new HashSet<String>();
+		Set<String> nonPublicBeanMethods = new HashSet<>();
 		for (AnnotationMetadata configurationClass : findConfigurationClasses()) {
 			Set<MethodMetadata> beanMethods = configurationClass
 					.getAnnotatedMethods(Bean.class.getName());
@@ -63,7 +63,7 @@ public abstract class AbstractConfigurationClassTests {
 	}
 
 	private Set<AnnotationMetadata> findConfigurationClasses() throws IOException {
-		Set<AnnotationMetadata> configurationClasses = new HashSet<AnnotationMetadata>();
+		Set<AnnotationMetadata> configurationClasses = new HashSet<>();
 		Resource[] resources = this.resolver.getResources("classpath*:"
 				+ getClass().getPackage().getName().replace('.', '/') + "/**/*.class");
 		for (Resource resource : resources) {

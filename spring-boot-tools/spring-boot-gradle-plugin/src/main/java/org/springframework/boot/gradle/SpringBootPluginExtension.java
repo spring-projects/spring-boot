@@ -304,12 +304,6 @@ public class SpringBootPluginExtension {
 
 		DIR(new Layouts.Expanded()),
 
-		/**
-		 * Module Layout.
-		 * @deprecated as of 1.5 in favor of a custom {@link LayoutFactory}
-		 */
-		@Deprecated MODULE(new Layouts.Module()),
-
 		NONE(new Layouts.None());
 
 		Layout layout;

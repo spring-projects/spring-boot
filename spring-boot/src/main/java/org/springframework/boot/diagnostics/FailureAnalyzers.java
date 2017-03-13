@@ -73,7 +73,7 @@ public final class FailureAnalyzers {
 	private List<FailureAnalyzer> loadFailureAnalyzers(ClassLoader classLoader) {
 		List<String> analyzerNames = SpringFactoriesLoader
 				.loadFactoryNames(FailureAnalyzer.class, classLoader);
-		List<FailureAnalyzer> analyzers = new ArrayList<FailureAnalyzer>();
+		List<FailureAnalyzer> analyzers = new ArrayList<>();
 		for (String analyzerName : analyzerNames) {
 			try {
 				Constructor<?> constructor = ClassUtils.forName(analyzerName, classLoader)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public class DefaultCounterService implements CounterService {
 
 	private final MetricWriter writer;
 
-	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<String, String>();
+	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<>();
 
 	/**
 	 * Create a {@link DefaultCounterService} instance.
@@ -41,12 +41,12 @@ public class DefaultCounterService implements CounterService {
 
 	@Override
 	public void increment(String metricName) {
-		this.writer.increment(new Delta<Long>(wrap(metricName), 1L));
+		this.writer.increment(new Delta<>(wrap(metricName), 1L));
 	}
 
 	@Override
 	public void decrement(String metricName) {
-		this.writer.increment(new Delta<Long>(wrap(metricName), -1L));
+		this.writer.increment(new Delta<>(wrap(metricName), -1L));
 	}
 
 	@Override

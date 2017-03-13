@@ -70,7 +70,7 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 				: new File(workingDirectory, "target/server.port");
 		serverPortFile.delete();
 		File archive = this.applicationBuilder.buildApplication();
-		List<String> arguments = new ArrayList<String>();
+		List<String> arguments = new ArrayList<>();
 		arguments.add(System.getProperty("java.home") + "/bin/java");
 		arguments.addAll(getArguments(archive));
 		ProcessBuilder processBuilder = new ProcessBuilder(

@@ -4,6 +4,11 @@
 
 	<queue name="foobar"/>
 
+	<map name="foobar">
+		<time-to-live-seconds>3600</time-to-live-seconds>
+		<max-idle-seconds>600</max-idle-seconds>
+	</map>
+
 	<network>
 		<join>
 			<tcp-ip enabled="false"/>

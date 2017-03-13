@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,7 +132,7 @@ public class RedisMultiMetricRepositoryTests {
 		this.repository.increment("foo", new Delta<Number>("foo.bar", 2));
 		this.repository.increment("foo", new Delta<Number>("foo.spam", 1));
 		Metric<?> bar = null;
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		for (Metric<?> metric : this.repository.findAll("foo")) {
 			names.add(metric.getName());
 			if (metric.getName().equals("foo.bar")) {

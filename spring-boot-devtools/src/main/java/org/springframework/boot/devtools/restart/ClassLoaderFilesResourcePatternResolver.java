@@ -108,7 +108,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 
 	@Override
 	public Resource[] getResources(String locationPattern) throws IOException {
-		List<Resource> resources = new ArrayList<Resource>();
+		List<Resource> resources = new ArrayList<>();
 		Resource[] candidates = this.patternResolverDelegate
 				.getResources(locationPattern);
 		for (Resource candidate : candidates) {
@@ -122,7 +122,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 
 	private List<Resource> getAdditionalResources(String locationPattern)
 			throws MalformedURLException {
-		List<Resource> additionalResources = new ArrayList<Resource>();
+		List<Resource> additionalResources = new ArrayList<>();
 		String trimmedLocationPattern = trimLocationPattern(locationPattern);
 		for (SourceFolder sourceFolder : this.classLoaderFiles.getSourceFolders()) {
 			for (Entry<String, ClassLoaderFile> entry : sourceFolder.getFilesEntrySet()) {

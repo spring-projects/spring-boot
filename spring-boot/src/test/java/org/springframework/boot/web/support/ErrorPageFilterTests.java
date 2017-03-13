@@ -32,7 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.boot.testutil.InternalOutputCapture;
-import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockFilterConfig;
@@ -524,7 +524,7 @@ public class ErrorPageFilterTests {
 	private void setUpAsyncDispatch() throws Exception {
 		this.request.setAsyncSupported(true);
 		this.request.setAsyncStarted(true);
-		DeferredResult<String> result = new DeferredResult<String>();
+		DeferredResult<String> result = new DeferredResult<>();
 		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(this.request);
 		asyncManager.setAsyncWebRequest(
 				new StandardServletAsyncWebRequest(this.request, this.response));
@@ -538,7 +538,7 @@ public class ErrorPageFilterTests {
 	private static final class DispatchRecordingMockHttpServletRequest
 			extends MockHttpServletRequest {
 
-		private final Map<String, AttributeCapturingRequestDispatcher> dispatchers = new HashMap<String, AttributeCapturingRequestDispatcher>();
+		private final Map<String, AttributeCapturingRequestDispatcher> dispatchers = new HashMap<>();
 
 		private DispatchRecordingMockHttpServletRequest() {
 			super("GET", "/test/path");
@@ -559,7 +559,7 @@ public class ErrorPageFilterTests {
 		private static final class AttributeCapturingRequestDispatcher
 				extends MockRequestDispatcher {
 
-			private final Map<String, Object> requestAttributes = new HashMap<String, Object>();
+			private final Map<String, Object> requestAttributes = new HashMap<>();
 
 			private AttributeCapturingRequestDispatcher(String resource) {
 				super(resource);

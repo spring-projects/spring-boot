@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,13 @@ import java.lang.reflect.Constructor;
 import org.apache.catalina.Context;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * {@link WebSocketContainerCustomizer} for {@link TomcatEmbeddedServletContainerFactory}.
+ * {@link WebSocketContainerCustomizer} for {@link TomcatServletWebServerFactory}.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -35,7 +35,7 @@ import org.springframework.util.ReflectionUtils;
  * @since 1.2.0
  */
 public class TomcatWebSocketContainerCustomizer
-		extends WebSocketContainerCustomizer<TomcatEmbeddedServletContainerFactory> {
+		extends WebSocketContainerCustomizer<TomcatServletWebServerFactory> {
 
 	private static final String TOMCAT_7_LISTENER_TYPE = "org.apache.catalina.deploy.ApplicationListener";
 
@@ -44,12 +44,14 @@ public class TomcatWebSocketContainerCustomizer
 	private static final String WS_LISTENER = "org.apache.tomcat.websocket.server.WsContextListener";
 
 	@Override
-	public void doCustomize(TomcatEmbeddedServletContainerFactory tomcatContainer) {
-		tomcatContainer.addContextCustomizers(new TomcatContextCustomizer() {
+	public void doCustomize(TomcatServletWebServerFactory factory) {
+		factory.addContextCustomizers(new TomcatContextCustomizer() {
+
 			@Override
 			public void customize(Context context) {
 				addListener(context, findListenerType());
 			}
+
 		});
 	}
 
@@ -65,10 +67,9 @@ public class TomcatWebSocketContainerCustomizer
 	}
 
 	/**
-	 * Instead of registering the WsSci directly as a ServletContainerInitializer, we use
-	 * the ApplicationListener provided by Tomcat. Unfortunately the ApplicationListener
-	 * class moved packages in Tomcat 8 and been deleted in 8.0.8 so we have to use
-	 * reflection.
+	 * Instead of registering directly as a ServletContainerInitializer, we use the
+	 * ApplicationListener provided by Tomcat. Unfortunately the ApplicationListener class
+	 * moved packages in Tomcat 8 and been deleted in 8.0.8 so we have to use reflection.
 	 * @param context the current context
 	 * @param listenerType the type of listener to add
 	 */

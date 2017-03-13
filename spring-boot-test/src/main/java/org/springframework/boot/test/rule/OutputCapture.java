@@ -49,7 +49,7 @@ public class OutputCapture implements TestRule {
 
 	private ByteArrayOutputStream copy;
 
-	private List<Matcher<? super String>> matchers = new ArrayList<Matcher<? super String>>();
+	private List<Matcher<? super String>> matchers = new ArrayList<>();
 
 	@Override
 	public Statement apply(final Statement base, Description description) {

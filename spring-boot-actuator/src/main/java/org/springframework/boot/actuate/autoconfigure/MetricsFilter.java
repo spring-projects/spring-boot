@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ final class MetricsFilter extends OncePerRequestFilter {
 	private static final Set<PatternReplacer> STATUS_REPLACERS;
 
 	static {
-		Set<PatternReplacer> replacements = new LinkedHashSet<PatternReplacer>();
+		Set<PatternReplacer> replacements = new LinkedHashSet<>();
 		replacements.add(new PatternReplacer("\\{(.+?)(?::.+)?\\}", 0, "-$1-"));
 		replacements.add(new PatternReplacer("**", Pattern.LITERAL, "-star-star-"));
 		replacements.add(new PatternReplacer("*", Pattern.LITERAL, "-star-"));
@@ -77,7 +77,7 @@ final class MetricsFilter extends OncePerRequestFilter {
 	private static final Set<PatternReplacer> KEY_REPLACERS;
 
 	static {
-		Set<PatternReplacer> replacements = new LinkedHashSet<PatternReplacer>();
+		Set<PatternReplacer> replacements = new LinkedHashSet<>();
 		replacements.add(new PatternReplacer("/", Pattern.LITERAL, "."));
 		replacements.add(new PatternReplacer("..", Pattern.LITERAL, "."));
 		KEY_REPLACERS = Collections.unmodifiableSet(replacements);

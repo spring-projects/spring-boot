@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,9 @@ class RawConfigurationMetadata {
 	RawConfigurationMetadata(List<ConfigurationMetadataSource> sources,
 			List<ConfigurationMetadataItem> items,
 			List<ConfigurationMetadataHint> hints) {
-		this.sources = new ArrayList<ConfigurationMetadataSource>(sources);
-		this.items = new ArrayList<ConfigurationMetadataItem>(items);
-		this.hints = new ArrayList<ConfigurationMetadataHint>(hints);
+		this.sources = new ArrayList<>(sources);
+		this.items = new ArrayList<>(items);
+		this.hints = new ArrayList<>(hints);
 		for (ConfigurationMetadataItem item : this.items) {
 			resolveName(item);
 		}

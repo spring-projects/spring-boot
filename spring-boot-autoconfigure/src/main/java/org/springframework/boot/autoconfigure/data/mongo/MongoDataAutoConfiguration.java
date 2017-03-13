@@ -22,6 +22,7 @@ import java.util.Collections;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactory;
@@ -123,7 +124,7 @@ public class MongoDataAutoConfiguration {
 		Class<?> strategyClass = this.properties.getFieldNamingStrategy();
 		if (strategyClass != null) {
 			context.setFieldNamingStrategy(
-					(FieldNamingStrategy) BeanUtils.instantiate(strategyClass));
+					(FieldNamingStrategy) BeanUtils.instantiateClass(strategyClass));
 		}
 		context.setSimpleTypeHolder(conversions.getSimpleTypeHolder());
 		return context;
@@ -162,7 +163,7 @@ public class MongoDataAutoConfiguration {
 		}
 
 		@Override
-		public DB getDb() throws DataAccessException {
+		public MongoDatabase getDb() throws DataAccessException {
 			String gridFsDatabase = this.properties.getGridFsDatabase();
 			if (StringUtils.hasText(gridFsDatabase)) {
 				return this.mongoDbFactory.getDb(gridFsDatabase);
@@ -171,13 +172,18 @@ public class MongoDataAutoConfiguration {
 		}
 
 		@Override
-		public DB getDb(String dbName) throws DataAccessException {
+		public MongoDatabase getDb(String dbName) throws DataAccessException {
 			return this.mongoDbFactory.getDb(dbName);
 		}
 
 		@Override
 		public PersistenceExceptionTranslator getExceptionTranslator() {
 			return this.mongoDbFactory.getExceptionTranslator();
+		}
+
+		@Override
+		public DB getLegacyDb() {
+			return this.mongoDbFactory.getLegacyDb();
 		}
 
 	}

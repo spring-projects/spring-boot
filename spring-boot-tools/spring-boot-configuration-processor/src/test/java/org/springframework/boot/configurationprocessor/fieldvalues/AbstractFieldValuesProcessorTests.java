@@ -97,7 +97,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 
 		private FieldValuesParser processor;
 
-		private Map<String, Object> values = new HashMap<String, Object>();
+		private Map<String, Object> values = new HashMap<>();
 
 		@Override
 		public synchronized void init(ProcessingEnvironment env) {

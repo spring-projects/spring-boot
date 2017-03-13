@@ -63,7 +63,7 @@ public class ConditionalOnBeanTests {
 		this.context.register(FooConfiguration.class,
 				OnBeanNameAndTypeConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.containsBean("bar")).isFalse();
 	}
 
 	@Test

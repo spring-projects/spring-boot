@@ -201,7 +201,7 @@ public class HealthIndicatorAutoConfiguration {
 			if (candidates == null) {
 				return null;
 			}
-			Map<String, DataSource> dataSources = new LinkedHashMap<String, DataSource>();
+			Map<String, DataSource> dataSources = new LinkedHashMap<>();
 			for (Map.Entry<String, DataSource> entry : candidates.entrySet()) {
 				if (!(entry.getValue() instanceof AbstractRoutingDataSource)) {
 					dataSources.put(entry.getKey(), entry.getValue());

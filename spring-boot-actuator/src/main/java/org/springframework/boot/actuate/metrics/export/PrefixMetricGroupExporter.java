@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,9 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 
 	private final PrefixMetricWriter writer;
 
-	private ConcurrentMap<String, Long> counts = new ConcurrentHashMap<String, Long>();
+	private ConcurrentMap<String, Long> counts = new ConcurrentHashMap<>();
 
-	private Set<String> groups = new HashSet<String>();
+	private Set<String> groups = new HashSet<>();
 
 	/**
 	 * Create a new exporter for metrics to a writer based on an empty prefix for the
@@ -112,7 +112,7 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 		else {
 			this.counts.putIfAbsent(value.getName(), delta);
 		}
-		return new Delta<Long>(value.getName(), delta, value.getTimestamp());
+		return new Delta<>(value.getName(), delta, value.getTimestamp());
 	}
 
 }
