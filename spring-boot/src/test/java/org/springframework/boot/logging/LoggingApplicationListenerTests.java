@@ -108,6 +108,7 @@ public class LoggingApplicationListenerTests {
 		if (this.context != null) {
 			this.context.close();
 		}
+		LoggingSystem.get(getClass().getClassLoader()).cleanUp();
 	}
 
 	private String tmpDir() {
