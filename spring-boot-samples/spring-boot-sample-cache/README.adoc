@@ -76,6 +76,9 @@ to the project to enable support for Hazelcast.  Since there is a default
 `hazelcast.xml` configuration file at the root of the classpath, it is used to
 automatically configure the underlying `HazelcastInstance`.
 
+It is also possible to use Infinispan Spring Boot Starter to bootstrap application easier.
+For more information, check https://github.com/infinispan/infinispan-spring-boot[the documentation].
+
 TIP: Run sample cache application using Hazelcast with
 `$mvn spring-boot:run -Phazelcast`.
 
