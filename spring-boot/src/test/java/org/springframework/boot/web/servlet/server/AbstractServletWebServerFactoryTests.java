@@ -449,11 +449,11 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	@Test
 	public void sslKeyAlias() throws Exception {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		AbstractServletWebServerFactory factory = getFactory();
 		factory.setSsl(getSsl(null, "password", "test-alias", "src/test/resources/test.jks"));
-		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
-		this.container.start();
+		this.webServer = factory.getWebServer(
+				new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));
+		this.webServer.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
 						.loadTrustMaterial(null, new SerialNumberValidatingTrustSelfSignedStrategy("77e7c302")).build());
