@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -63,7 +64,9 @@ class IdeApplicationLauncher extends AbstractApplicationLauncher {
 			File targetClasses = populateTargetClasses(archive);
 			File dependencies = populateDependencies(archive);
 			File resourcesProject = explodedResourcesProject(dependencies);
-			populateSrcMainWebapp();
+			if (archive.getName().endsWith(".war")) {
+				populateSrcMainWebapp();
+			}
 			List<String> classpath = new ArrayList<String>();
 			classpath.add(targetClasses.getAbsolutePath());
 			for (File dependency : dependencies.listFiles()) {
@@ -80,21 +83,25 @@ class IdeApplicationLauncher extends AbstractApplicationLauncher {
 		}
 	}
 
-	private File populateTargetClasses(File archive) {
+	private File populateTargetClasses(File archive) throws IOException {
 		File targetClasses = new File(this.exploded, "target/classes");
 		targetClasses.mkdirs();
-		new File(this.exploded, getClassesPath(archive)).renameTo(targetClasses);
+		File source = new File(this.exploded, getClassesPath(archive));
+		FileSystemUtils.copyRecursively(source, targetClasses);
+		FileSystemUtils.deleteRecursively(source);
 		return targetClasses;
 	}
 
-	private File populateDependencies(File archive) {
+	private File populateDependencies(File archive) throws IOException {
 		File dependencies = new File(this.exploded, "dependencies");
 		dependencies.mkdirs();
 		List<String> libPaths = getLibPaths(archive);
 		for (String libPath : libPaths) {
-			for (File jar : new File(this.exploded, libPath).listFiles()) {
-				jar.renameTo(new File(dependencies, jar.getName()));
+			File libDirectory = new File(this.exploded, libPath);
+			for (File jar : libDirectory.listFiles()) {
+				FileCopyUtils.copy(jar, new File(dependencies, jar.getName()));
 			}
+			FileSystemUtils.deleteRecursively(libDirectory);
 		}
 		return dependencies;
 	}
@@ -108,11 +115,12 @@ class IdeApplicationLauncher extends AbstractApplicationLauncher {
 		return resourcesProject;
 	}
 
-	private void populateSrcMainWebapp() {
+	private void populateSrcMainWebapp() throws IOException {
 		File srcMainWebapp = new File(this.exploded, "src/main/webapp");
 		srcMainWebapp.mkdirs();
-		new File(this.exploded, "webapp-resource.txt")
-				.renameTo(new File(srcMainWebapp, "webapp-resource.txt"));
+		File source = new File(this.exploded, "webapp-resource.txt");
+		FileCopyUtils.copy(source, new File(srcMainWebapp, "webapp-resource.txt"));
+		source.delete();
 	}
 
 	private void deleteLauncherClasses() {
