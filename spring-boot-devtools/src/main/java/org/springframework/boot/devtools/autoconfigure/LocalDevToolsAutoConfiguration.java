@@ -58,6 +58,7 @@ public class LocalDevToolsAutoConfiguration {
 	/**
 	 * Local LiveReload configuration.
 	 */
+	@Configuration
 	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
