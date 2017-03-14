@@ -17,7 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.net.InetAddress;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -168,7 +169,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		/**
 		 * Comma-separated list of roles that can access the management endpoint.
 		 */
-		private List<String> roles = Arrays.asList("ACTUATOR");
+		private List<String> roles = new ArrayList<String>(Collections.singletonList("ACTUATOR"));
 
 		/**
 		 * Session creating policy for security use (always, never, if_required,
