@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationprocessor;
+package org.springframework.boot.configurationprocessor.metadata;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,10 +24,6 @@ import java.util.Map;
 import org.assertj.core.api.Condition;
 import org.hamcrest.collection.IsMapContaining;
 
-import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
-import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
-import org.springframework.boot.configurationprocessor.metadata.ItemHint;
-import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
 import org.springframework.util.ObjectUtils;
 
