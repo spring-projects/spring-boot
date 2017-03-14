@@ -18,10 +18,9 @@ package org.springframework.boot.gradle.testkit;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +40,7 @@ import org.xml.sax.InputSource;
 
 import org.springframework.asm.ClassVisitor;
 import org.springframework.boot.loader.tools.LaunchScript;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * A {@link TestRule} for running a Gradle build using {@link GradleRunner}.
@@ -143,9 +143,10 @@ public class GradleBuild implements TestRule {
 	}
 
 	public GradleRunner prepareRunner(String... arguments) throws IOException {
-		Files.copy(new File(this.script).toPath(),
-				new File(this.projectDir, "build.gradle").toPath(),
-				StandardCopyOption.REPLACE_EXISTING);
+		String scriptContent = FileCopyUtils.copyToString(new FileReader(this.script))
+				.replace("{version}", getBootVersion());
+		FileCopyUtils.copy(scriptContent,
+				new FileWriter(new File(this.projectDir, "build.gradle")));
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
 				.forwardOutput();
 		List<String> allArguments = new ArrayList<String>();
