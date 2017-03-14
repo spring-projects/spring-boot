@@ -29,7 +29,7 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.testutil.MockServlet;
-import org.springframework.boot.web.servlet.context.config.ExampleEmbeddedWebApplicationConfiguration;
+import org.springframework.boot.web.servlet.context.config.ExampleServletWebServerApplicationConfiguration;
 import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
@@ -55,14 +55,15 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	@Test
 	public void createFromScan() throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				ExampleEmbeddedWebApplicationConfiguration.class.getPackage().getName());
+				ExampleServletWebServerApplicationConfiguration.class.getPackage()
+						.getName());
 		verifyContext();
 	}
 
 	@Test
 	public void sessionScopeAvailable() throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				ExampleEmbeddedWebApplicationConfiguration.class,
+				ExampleServletWebServerApplicationConfiguration.class,
 				SessionScopedComponent.class);
 		verifyContext();
 	}
@@ -70,7 +71,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	@Test
 	public void sessionScopeAvailableToServlet() throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				ExampleEmbeddedWebApplicationConfiguration.class,
+				ExampleServletWebServerApplicationConfiguration.class,
 				ExampleServletWithAutowired.class, SessionScopedComponent.class);
 		Servlet servlet = this.context.getBean(ExampleServletWithAutowired.class);
 		assertThat(servlet).isNotNull();
@@ -79,14 +80,14 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	@Test
 	public void createFromConfigClass() throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
-				ExampleEmbeddedWebApplicationConfiguration.class);
+				ExampleServletWebServerApplicationConfiguration.class);
 		verifyContext();
 	}
 
 	@Test
 	public void registerAndRefresh() throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		this.context.register(ExampleEmbeddedWebApplicationConfiguration.class);
+		this.context.register(ExampleServletWebServerApplicationConfiguration.class);
 		this.context.refresh();
 		verifyContext();
 	}
@@ -94,8 +95,8 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	@Test
 	public void scanAndRefresh() throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		this.context.scan(
-				ExampleEmbeddedWebApplicationConfiguration.class.getPackage().getName());
+		this.context.scan(ExampleServletWebServerApplicationConfiguration.class
+				.getPackage().getName());
 		this.context.refresh();
 		verifyContext();
 	}

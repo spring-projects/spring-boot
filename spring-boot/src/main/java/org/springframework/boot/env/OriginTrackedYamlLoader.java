@@ -76,19 +76,14 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 	public Map<String, Object> load() {
 		final Map<String, Object> result = new LinkedHashMap<String, Object>();
-		process(new MatchCallback() {
-
-			@Override
-			public void process(Properties properties, Map<String, Object> map) {
-				result.putAll(getFlattenedMap(map));
-			}
-
+		process((properties, map) -> {
+			result.putAll(getFlattenedMap(map));
 		});
 		return result;
 	}
 
 	/**
-	 * {@link Constructor}.
+	 * {@link Constructor} that tracks property origins.
 	 */
 	private class OriginTrackingConstructor extends StrictMapAppenderConstructor {
 
@@ -100,12 +95,14 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 				}
 			}
 			else if (node instanceof MappingNode) {
-				List<NodeTuple> value = ((MappingNode) node).getValue();
-				List<NodeTuple> updatedValues = value.stream().map(nt -> new NodeTuple(KeyScalarNode.get(nt.getKeyNode()),
-						nt.getValueNode())).collect(Collectors.toList());
-				((MappingNode) node).setValue(updatedValues);
+				replaceMappingNodeKeys((MappingNode) node);
 			}
 			return super.constructObject(node);
+		}
+
+		private void replaceMappingNodeKeys(MappingNode node) {
+			node.setValue(node.getValue().stream().map(KeyScalarNode::get)
+					.collect(Collectors.toList()));
 		}
 
 		private Object constructTrackedObject(Node node, Object value) {
@@ -128,7 +125,14 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	private static class KeyScalarNode extends ScalarNode {
 
 		KeyScalarNode(ScalarNode node) {
-			super(node.getTag(), node.getValue(), node.getStartMark(), node.getEndMark(), node.getStyle());
+			super(node.getTag(), node.getValue(), node.getStartMark(), node.getEndMark(),
+					node.getStyle());
+		}
+
+		public static NodeTuple get(NodeTuple nodeTuple) {
+			Node keyNode = nodeTuple.getKeyNode();
+			Node valueNode = nodeTuple.getValueNode();
+			return new NodeTuple(KeyScalarNode.get(keyNode), valueNode);
 		}
 
 		private static Node get(Node node) {
@@ -155,6 +159,10 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 	}
 
+	/**
+	 * {@link SpringProfileDocumentMatcher} that deals with {@link OriginTrackedValue
+	 * OriginTrackedValues}.
+	 */
 	private static class OriginTrackedSpringProfileDocumentMatcher
 			extends SpringProfileDocumentMatcher {
 
