@@ -4338,10 +4338,10 @@ See
 {sc-spring-boot-autoconfigure}/jms/activemq/ActiveMQProperties.{sc-ext}[`ActiveMQProperties`]
 for more of the supported options.
 
+NOTE: If you are using `spring.activemq.pool.enabled=true` don't forget to add `org.apache.activemq:activemq-pool` to your application.
+
 By default, ActiveMQ creates a destination if it does not exist yet, so destinations are
 resolved against their provided names.
-
-
 
 [[boot-features-artemis]]
 ==== Artemis support
