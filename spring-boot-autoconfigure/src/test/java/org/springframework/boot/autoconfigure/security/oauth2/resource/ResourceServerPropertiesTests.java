@@ -56,6 +56,14 @@ public class ResourceServerPropertiesTests {
 	}
 
 	@Test
+	public void validateWhenClientIdNullShouldNotFail() throws Exception {
+		this.properties = new ResourceServerProperties(null, "secret");
+		setListableBeanFactory();
+		this.properties.validate(this.properties, this.errors);
+		verifyZeroInteractions(this.errors);
+	}
+
+	@Test
 	public void validateWhenBothJwtAndJwkKeyUrisPresentShouldFail() throws Exception {
 		this.properties.getJwk().setKeySetUri("http://my-auth-server/token_keys");
 		this.properties.getJwt().setKeyUri("http://my-auth-server/token_key");

@@ -207,6 +207,9 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 	}
 
 	private void validate(ResourceServerProperties target, Errors errors) {
+		if (!StringUtils.hasText(this.clientId)) {
+			return;
+		}
 		boolean jwtConfigPresent = StringUtils.hasText(this.jwt.getKeyUri())
 				|| StringUtils.hasText(this.jwt.getKeyValue());
 		boolean jwkConfigPresent = StringUtils.hasText(this.jwk.getKeySetUri());
@@ -228,8 +231,7 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 								+ "JWT verifier key");
 			}
 			if (StringUtils.hasText(target.getTokenInfoUri()) && isPreferTokenInfo()) {
-				if (StringUtils.hasText(this.clientId)
-						&& !StringUtils.hasText(this.clientSecret)) {
+				if (!StringUtils.hasText(this.clientSecret)) {
 					errors.rejectValue("clientSecret", "missing.clientSecret",
 							"Missing client secret");
 				}
