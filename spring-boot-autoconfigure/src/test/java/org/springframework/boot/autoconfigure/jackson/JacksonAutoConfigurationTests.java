@@ -30,6 +30,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -38,7 +40,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
@@ -59,6 +60,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -445,10 +447,12 @@ public class JacksonAutoConfigurationTests {
 			Class<?>... configClasses) {
 		this.context.register(configClasses);
 		this.context.refresh();
-		Annotated annotated = mock(Annotated.class);
-		Mode mode = this.context.getBean(ObjectMapper.class).getDeserializationConfig()
-				.getAnnotationIntrospector().findCreatorBinding(annotated);
-		assertThat(mode).isEqualTo(expectedMode);
+		DeserializationConfig deserializationConfig = this.context
+				.getBean(ObjectMapper.class).getDeserializationConfig();
+		AnnotationIntrospector annotationIntrospector = deserializationConfig
+				.getAnnotationIntrospector().allIntrospectors().iterator().next();
+		assertThat(ReflectionTestUtils.getField(annotationIntrospector, "creatorBinding"))
+				.isEqualTo(expectedMode);
 	}
 
 	public static class MyDateFormat extends SimpleDateFormat {
