@@ -42,7 +42,6 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.boot.diagnostics.FailureAnalyzers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -328,7 +327,7 @@ public class SpringApplication {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
-		FailureAnalyzers analyzers = null;
+		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
 		configureHeadlessProperty();
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
@@ -341,7 +340,8 @@ public class SpringApplication {
 			bindToSpringApplication(environment);
 			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
-			analyzers = new FailureAnalyzers(context);
+			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
+					new Class[] { ConfigurableApplicationContext.class }, context);
 			prepareContext(context, environment, listeners, applicationArguments,
 					printedBanner);
 			refreshContext(context);
@@ -355,7 +355,7 @@ public class SpringApplication {
 			return context;
 		}
 		catch (Throwable ex) {
-			handleRunFailure(context, listeners, analyzers, ex);
+			handleRunFailure(context, listeners, exceptionReporters, ex);
 			throw new IllegalStateException(ex);
 		}
 	}
@@ -423,11 +423,11 @@ public class SpringApplication {
 				SpringApplicationRunListener.class, types, this, args));
 	}
 
-	private <T> Collection<? extends T> getSpringFactoriesInstances(Class<T> type) {
+	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type) {
 		return getSpringFactoriesInstances(type, new Class<?>[] {});
 	}
 
-	private <T> Collection<? extends T> getSpringFactoriesInstances(Class<T> type,
+	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type,
 			Class<?>[] parameterTypes, Object... args) {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		// Use names and ensure unique to protect against duplicates
@@ -853,15 +853,15 @@ public class SpringApplication {
 	}
 
 	private void handleRunFailure(ConfigurableApplicationContext context,
-			SpringApplicationRunListeners listeners, FailureAnalyzers analyzers,
-			Throwable exception) {
+			SpringApplicationRunListeners listeners,
+			Collection<SpringBootExceptionReporter> exceptionReporters, Throwable exception) {
 		try {
 			try {
 				handleExitCode(context, exception);
 				listeners.finished(context, exception);
 			}
 			finally {
-				reportFailure(analyzers, exception);
+				reportFailure(exceptionReporters, exception);
 				if (context != null) {
 					context.close();
 				}
@@ -873,11 +873,14 @@ public class SpringApplication {
 		ReflectionUtils.rethrowRuntimeException(exception);
 	}
 
-	private void reportFailure(FailureAnalyzers analyzers, Throwable failure) {
+	private void reportFailure(Collection<SpringBootExceptionReporter> exceptionReporters,
+			Throwable failure) {
 		try {
-			if (analyzers != null && analyzers.analyzeAndReport(failure)) {
-				registerLoggedException(failure);
-				return;
+			for (SpringBootExceptionReporter reporter : exceptionReporters) {
+				if (reporter.reportException(failure)) {
+					registerLoggedException(failure);
+					return;
+				}
 			}
 		}
 		catch (Throwable ex) {
