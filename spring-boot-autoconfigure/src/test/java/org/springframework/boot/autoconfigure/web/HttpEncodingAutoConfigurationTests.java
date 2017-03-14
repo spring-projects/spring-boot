@@ -31,11 +31,11 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.boot.web.servlet.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactoryCustomizer;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -145,8 +145,7 @@ public class HttpEncodingAutoConfigurationTests {
 	@Test
 	public void noLocaleCharsetMapping() {
 		load(EmptyConfiguration.class);
-		Map<String, ServletWebServerFactoryCustomizer> beans = this.context
-				.getBeansOfType(ServletWebServerFactoryCustomizer.class);
+		Map<String, WebServerFactoryCustomizer<?>> beans = getWebServerFactoryCustomizerBeans();
 		assertThat(beans.size()).isEqualTo(1);
 		assertThat(this.context.getBean(MockServletWebServerFactory.class)
 				.getLocaleCharsetMappings().size()).isEqualTo(0);
@@ -156,8 +155,7 @@ public class HttpEncodingAutoConfigurationTests {
 	public void customLocaleCharsetMappings() {
 		load(EmptyConfiguration.class, "spring.http.encoding.mapping.en:UTF-8",
 				"spring.http.encoding.mapping.fr_FR:UTF-8");
-		Map<String, ServletWebServerFactoryCustomizer> beans = this.context
-				.getBeansOfType(ServletWebServerFactoryCustomizer.class);
+		Map<String, WebServerFactoryCustomizer<?>> beans = getWebServerFactoryCustomizerBeans();
 		assertThat(beans.size()).isEqualTo(1);
 		assertThat(this.context.getBean(MockServletWebServerFactory.class)
 				.getLocaleCharsetMappings().size()).isEqualTo(2);
@@ -167,6 +165,11 @@ public class HttpEncodingAutoConfigurationTests {
 		assertThat(this.context.getBean(MockServletWebServerFactory.class)
 				.getLocaleCharsetMappings().get(Locale.FRANCE))
 						.isEqualTo(Charset.forName("UTF-8"));
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Map<String, WebServerFactoryCustomizer<?>> getWebServerFactoryCustomizerBeans() {
+		return (Map) this.context.getBeansOfType(WebServerFactoryCustomizer.class);
 	}
 
 	private void assertCharacterEncodingFilter(CharacterEncodingFilter actual,
@@ -235,8 +238,8 @@ public class HttpEncodingAutoConfigurationTests {
 		}
 
 		@Bean
-		public ServletWebServerFactoryCustomizerBeanPostProcessor ServletWebServerCustomizerBeanPostProcessor() {
-			return new ServletWebServerFactoryCustomizerBeanPostProcessor();
+		public WebServerFactoryCustomizerBeanPostProcessor ServletWebServerCustomizerBeanPostProcessor() {
+			return new WebServerFactoryCustomizerBeanPostProcessor();
 		}
 
 	}

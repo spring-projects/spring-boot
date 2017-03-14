@@ -16,13 +16,10 @@
 
 package org.springframework.boot.context.embedded;
 
-import org.apache.catalina.Context;
 import org.apache.tomcat.util.http.LegacyCookieProcessor;
 
-import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactoryCustomizer;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -34,33 +31,16 @@ import org.springframework.context.annotation.Configuration;
 public class TomcatLegacyCookieProcessorExample {
 
 	/**
-	 * Configuration class that declares the required
-	 * {@link ServletWebServerFactoryCustomizer}.
+	 * Configuration class that declares the required {@link WebServerFactoryCustomizer}.
 	 */
 	@Configuration
 	static class LegacyCookieProcessorConfiguration {
 
 		// tag::customizer[]
 		@Bean
-		public ServletWebServerFactoryCustomizer cookieProcessorCustomizer() {
-			return new ServletWebServerFactoryCustomizer() {
-
-				@Override
-				public void customize(ConfigurableServletWebServerFactory serverFactory) {
-					if (serverFactory instanceof TomcatServletWebServerFactory) {
-						((TomcatServletWebServerFactory) serverFactory)
-								.addContextCustomizers(new TomcatContextCustomizer() {
-
-							@Override
-							public void customize(Context context) {
-								context.setCookieProcessor(new LegacyCookieProcessor());
-							}
-
-						});
-					}
-				}
-
-			};
+		public WebServerFactoryCustomizer<TomcatServletWebServerFactory> cookieProcessorCustomizer() {
+			return (serverFactory) -> serverFactory.addContextCustomizers(
+					(context) -> context.setCookieProcessor(new LegacyCookieProcessor()));
 		}
 		// end::customizer[]
 

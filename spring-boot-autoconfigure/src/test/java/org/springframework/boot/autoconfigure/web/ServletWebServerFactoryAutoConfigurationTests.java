@@ -27,12 +27,12 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -246,7 +246,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 
 	@Component
 	public static class CallbackEmbeddedServerFactoryCustomizer
-			implements ServletWebServerFactoryCustomizer {
+			implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
 
 		@Override
 		public void customize(ConfigurableServletWebServerFactory serverFactory) {

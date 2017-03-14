@@ -48,9 +48,8 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -171,8 +170,8 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	}
 
-	static class ServerFactoryCustomization
-			implements ServletWebServerFactoryCustomizer, Ordered {
+	static class ServerFactoryCustomization implements
+			WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>, Ordered {
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
@@ -215,7 +214,8 @@ public class EndpointWebMvcChildContextConfiguration {
 			}
 			webServerFactory.setServerHeader(this.server.getServerHeader());
 			webServerFactory.setAddress(this.managementServerProperties.getAddress());
-			webServerFactory.addErrorPages(new ErrorPage(this.server.getError().getPath()));
+			webServerFactory
+					.addErrorPages(new ErrorPage(this.server.getError().getPath()));
 		}
 
 	}
@@ -343,14 +343,7 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	}
 
-	static abstract class AccessLogCustomizer<T extends ServletWebServerFactory>
-			implements ServletWebServerFactoryCustomizer, Ordered {
-
-		private final Class<T> factoryClass;
-
-		AccessLogCustomizer(Class<T> factoryClass) {
-			this.factoryClass = factoryClass;
-		}
+	static abstract class AccessLogCustomizer implements Ordered {
 
 		protected String customizePrefix(String prefix) {
 			return "management_" + prefix;
@@ -361,23 +354,10 @@ public class EndpointWebMvcChildContextConfiguration {
 			return 1;
 		}
 
-		@Override
-		public void customize(ConfigurableServletWebServerFactory serverFactory) {
-			if (this.factoryClass.isInstance(serverFactory)) {
-				customize(this.factoryClass.cast(serverFactory));
-			}
-		}
-
-		abstract void customize(T webServerFactory);
-
 	}
 
-	static class TomcatAccessLogCustomizer
-			extends AccessLogCustomizer<TomcatServletWebServerFactory> {
-
-		TomcatAccessLogCustomizer() {
-			super(TomcatServletWebServerFactory.class);
-		}
+	static class TomcatAccessLogCustomizer extends AccessLogCustomizer
+			implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
 		@Override
 		public void customize(TomcatServletWebServerFactory serverFactory) {
@@ -400,16 +380,13 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	}
 
-	static class UndertowAccessLogCustomizer
-			extends AccessLogCustomizer<UndertowServletWebServerFactory> {
-
-		UndertowAccessLogCustomizer() {
-			super(UndertowServletWebServerFactory.class);
-		}
+	static class UndertowAccessLogCustomizer extends AccessLogCustomizer
+			implements WebServerFactoryCustomizer<UndertowServletWebServerFactory> {
 
 		@Override
 		public void customize(UndertowServletWebServerFactory serverFactory) {
-			serverFactory.setAccessLogPrefix(customizePrefix(serverFactory.getAccessLogPrefix()));
+			serverFactory.setAccessLogPrefix(
+					customizePrefix(serverFactory.getAccessLogPrefix()));
 		}
 
 	}

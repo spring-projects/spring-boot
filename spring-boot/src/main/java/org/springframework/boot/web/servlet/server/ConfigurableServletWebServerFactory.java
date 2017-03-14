@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 import org.springframework.boot.web.server.MimeMappings;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 
 /**
@@ -37,7 +38,7 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
  * @author Brian Clozel
  * @since 2.0.0
  * @see ServletWebServerFactory
- * @see ServletWebServerFactoryCustomizer
+ * @see WebServerFactoryCustomizer
  */
 public interface ConfigurableServletWebServerFactory
 		extends ConfigurableWebServerFactory {

@@ -23,11 +23,13 @@ import org.apache.catalina.Context;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.core.Ordered;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * {@link WebSocketContainerCustomizer} for {@link TomcatServletWebServerFactory}.
+ * WebSocket customizer for {@link TomcatServletWebServerFactory}.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -35,7 +37,7 @@ import org.springframework.util.ReflectionUtils;
  * @since 1.2.0
  */
 public class TomcatWebSocketContainerCustomizer
-		extends WebSocketContainerCustomizer<TomcatServletWebServerFactory> {
+		implements WebServerFactoryCustomizer<TomcatServletWebServerFactory>, Ordered {
 
 	private static final String TOMCAT_7_LISTENER_TYPE = "org.apache.catalina.deploy.ApplicationListener";
 
@@ -44,7 +46,7 @@ public class TomcatWebSocketContainerCustomizer
 	private static final String WS_LISTENER = "org.apache.tomcat.websocket.server.WsContextListener";
 
 	@Override
-	public void doCustomize(TomcatServletWebServerFactory factory) {
+	public void customize(TomcatServletWebServerFactory factory) {
 		factory.addContextCustomizers(new TomcatContextCustomizer() {
 
 			@Override
@@ -87,6 +89,11 @@ public class TomcatWebSocketContainerCustomizer
 			ReflectionUtils.invokeMethod(ClassUtils.getMethod(contextClass,
 					"addApplicationListener", listenerType), context, instance);
 		}
+	}
+
+	@Override
+	public int getOrder() {
+		return 0;
 	}
 
 }

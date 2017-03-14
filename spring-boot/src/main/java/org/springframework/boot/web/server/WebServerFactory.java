@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.reactive.server;
+package org.springframework.boot.web.server;
 
 /**
- * Strategy interface for customizing auto-configured reactive web servers. Any beans of
- * this type will get a callback with the server factory before the server itself is
- * started, so you can set the port, address, error pages etc.
- * @author Brian Clozel
+ * Tagging interface for factories that create a {@link WebServer}.
+ *
+ * @author Phillip Webb
  * @since 2.0.0
+ * @see WebServer
+ * @see org.springframework.boot.web.servlet.server.ServletWebServerFactory
+ * @see org.springframework.boot.web.reactive.server.ReactiveWebServerFactory
  */
-@FunctionalInterface
-public interface ReactiveWebServerCustomizer {
+public interface WebServerFactory {
 
-	/**
-	 * Customize the specified {@link ConfigurableReactiveWebServerFactory}.
-	 * @param server the server to customize
-	 */
-	void customize(ConfigurableReactiveWebServerFactory server);
 }

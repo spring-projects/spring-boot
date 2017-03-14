@@ -23,8 +23,9 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
-import org.springframework.boot.web.reactive.server.ReactiveWebServerCustomizer;
+import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +51,7 @@ public class ReactiveWebServerAutoConfigurationTests {
 		this.context = new ReactiveWebServerApplicationContext(BaseConfiguration.class);
 		assertThat(this.context.getBeansOfType(ReactiveWebServerFactory.class))
 				.hasSize(1);
-		assertThat(this.context.getBeansOfType(ReactiveWebServerCustomizer.class))
+		assertThat(this.context.getBeansOfType(WebServerFactoryCustomizer.class))
 				.hasSize(1);
 		assertThat(this.context.getBeansOfType(DefaultReactiveWebServerCustomizer.class))
 				.hasSize(1);
@@ -115,7 +116,7 @@ public class ReactiveWebServerAutoConfigurationTests {
 	protected static class ReactiveWebServerCustomization {
 
 		@Bean
-		public ReactiveWebServerCustomizer reactiveWebServerCustomizer() {
+		public WebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory> reactiveWebServerCustomizer() {
 			return (server) -> server.setPort(9000);
 		}
 

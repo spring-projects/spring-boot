@@ -50,12 +50,10 @@ import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowBuilderCustomizer;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.InitParameterConfiguringServletContextInitializer;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactoryCustomizer;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
@@ -63,15 +61,15 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Customizer used by an {@link ServletWebServerFactory} when an
- * {@link ServletWebServerFactoryCustomizerBeanPostProcessor} is active.
+ * Default {@link WebServerFactoryCustomizer} for {@link ServerProperties}.
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
  * @since 2.0.0
  */
 public class DefaultServletWebServerFactoryCustomizer
-		implements ServletWebServerFactoryCustomizer, EnvironmentAware, Ordered {
+		implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>,
+		EnvironmentAware, Ordered {
 
 	private final ServerProperties serverProperties;
 

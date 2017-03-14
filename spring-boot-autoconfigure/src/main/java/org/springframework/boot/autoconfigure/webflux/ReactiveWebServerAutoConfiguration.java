@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.reactive.server.ReactiveWebServerCustomizerBeanPostProcessor;
+import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -62,7 +62,7 @@ public class ReactiveWebServerAutoConfiguration {
 	}
 
 	/**
-	 * Registers a {@link ReactiveWebServerCustomizerBeanPostProcessor}. Registered via
+	 * Registers a {@link WebServerFactoryCustomizerBeanPostProcessor}. Registered via
 	 * {@link ImportBeanDefinitionRegistrar} for early registration.
 	 */
 	public static class BeanPostProcessorsRegistrar
@@ -84,12 +84,12 @@ public class ReactiveWebServerAutoConfiguration {
 				return;
 			}
 			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(
-					ReactiveWebServerCustomizerBeanPostProcessor.class, true, false))) {
+					WebServerFactoryCustomizerBeanPostProcessor.class, true, false))) {
 				RootBeanDefinition beanDefinition = new RootBeanDefinition(
-						ReactiveWebServerCustomizerBeanPostProcessor.class);
+						WebServerFactoryCustomizerBeanPostProcessor.class);
 				beanDefinition.setSynthetic(true);
 				registry.registerBeanDefinition(
-						"reactiveWebServerCustomizerBeanPostProcessor", beanDefinition);
+						"webServerFactoryCustomizerBeanPostProcessor", beanDefinition);
 
 			}
 		}

@@ -18,20 +18,17 @@ package org.springframework.boot.autoconfigure.webflux;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
-import org.springframework.boot.web.reactive.server.ReactiveWebServerCustomizer;
-import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactoryCustomizerBeanPostProcessor;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
 
 /**
- * Customizer used by an {@link ReactiveWebServerFactory} when an
- * {@link ServletWebServerFactoryCustomizerBeanPostProcessor} is active.
+ * Default {@link WebServerFactoryCustomizer} for reactive servers.
  *
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class DefaultReactiveWebServerCustomizer
-		implements ReactiveWebServerCustomizer, Ordered {
+public class DefaultReactiveWebServerCustomizer implements
+		WebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory>, Ordered {
 
 	private final ServerProperties serverProperties;
 

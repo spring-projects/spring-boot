@@ -44,8 +44,8 @@ import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor;
+import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -124,8 +124,8 @@ public class ServletWebServerFactoryAutoConfiguration {
 	}
 
 	/**
-	 * Registers a {@link ServletWebServerFactoryCustomizerBeanPostProcessor}. Registered
-	 * via {@link ImportBeanDefinitionRegistrar} for early registration.
+	 * Registers a {@link WebServerFactoryCustomizerBeanPostProcessor}. Registered via
+	 * {@link ImportBeanDefinitionRegistrar} for early registration.
 	 */
 	public static class BeanPostProcessorsRegistrar
 			implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
@@ -146,8 +146,8 @@ public class ServletWebServerFactoryAutoConfiguration {
 				return;
 			}
 			registerSyntheticBeanIfMissing(registry,
-					"ServletWebServerCustomizerBeanPostProcessor",
-					ServletWebServerFactoryCustomizerBeanPostProcessor.class);
+					"webServerFactoryCustomizerBeanPostProcessor",
+					WebServerFactoryCustomizerBeanPostProcessor.class);
 			registerSyntheticBeanIfMissing(registry,
 					"errorPageRegistrarBeanPostProcessor",
 					ErrorPageRegistrarBeanPostProcessor.class);

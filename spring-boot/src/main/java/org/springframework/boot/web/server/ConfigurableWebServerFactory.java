@@ -20,12 +20,14 @@ import java.net.InetAddress;
 import java.util.Set;
 
 /**
- * Simple interface that represents customizations to an web server factory.
+ * Simple interface that represents customizations to a {@link WebServerFactory}.
  *
+ * @author Phillip Webb
  * @author Brian Clozel
  * @since 2.0.0
  */
-public interface ConfigurableWebServerFactory extends ErrorPageRegistry {
+public interface ConfigurableWebServerFactory
+		extends WebServerFactory, ErrorPageRegistry {
 
 	/**
 	 * Sets the port that the web server should listen on. If not specified port '8080'

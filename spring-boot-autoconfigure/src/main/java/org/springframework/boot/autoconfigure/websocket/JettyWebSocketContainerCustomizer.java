@@ -23,9 +23,11 @@ import org.eclipse.jetty.websocket.jsr356.server.ServerContainer;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.core.Ordered;
 
 /**
- * {@link WebSocketContainerCustomizer} for {@link JettyServletWebServerFactory}.
+ * WebSocket customizer for {@link JettyServletWebServerFactory}.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -33,10 +35,10 @@ import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
  * @since 1.2.0
  */
 public class JettyWebSocketContainerCustomizer
-		extends WebSocketContainerCustomizer<JettyServletWebServerFactory> {
+		implements WebServerFactoryCustomizer<JettyServletWebServerFactory>, Ordered {
 
 	@Override
-	protected void doCustomize(JettyServletWebServerFactory factory) {
+	public void customize(JettyServletWebServerFactory factory) {
 		factory.addConfigurations(new AbstractConfiguration() {
 
 			@Override
@@ -47,6 +49,11 @@ public class JettyWebSocketContainerCustomizer
 			}
 
 		});
+	}
+
+	@Override
+	public int getOrder() {
+		return 0;
 	}
 
 }
