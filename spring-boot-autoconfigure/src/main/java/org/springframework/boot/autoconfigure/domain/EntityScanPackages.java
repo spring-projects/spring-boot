@@ -31,9 +31,7 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -143,7 +141,6 @@ public class EntityScanPackages {
 	 * {@link ImportBeanDefinitionRegistrar} to store the base package from the importing
 	 * configuration.
 	 */
-	@Order(Ordered.HIGHEST_PRECEDENCE)
 	static class Registrar implements ImportBeanDefinitionRegistrar {
 
 		@Override
