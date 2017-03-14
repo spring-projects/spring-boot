@@ -4343,6 +4343,8 @@ NOTE: If you are using pooled connections by setting `spring.activemq.pool.enabl
 By default, ActiveMQ creates a destination if it does not exist yet, so destinations are
 resolved against their provided names.
 
+
+
 [[boot-features-artemis]]
 ==== Artemis support
 Spring Boot can auto-configure a `ConnectionFactory` when it detects that Artemis is
