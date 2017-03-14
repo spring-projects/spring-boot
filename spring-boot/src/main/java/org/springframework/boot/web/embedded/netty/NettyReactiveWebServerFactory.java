@@ -16,8 +16,6 @@
 
 package org.springframework.boot.web.embedded.netty;
 
-import java.util.Map;
-
 import reactor.ipc.netty.http.server.HttpServer;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
@@ -46,14 +44,6 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		HttpServer server = createHttpServer();
 		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(
 				httpHandler);
-		return new NettyWebServer(server, handlerAdapter);
-	}
-
-	@Override
-	public WebServer getWebServer(Map<String, HttpHandler> handlerMap) {
-		HttpServer server = createHttpServer();
-		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(
-				handlerMap);
 		return new NettyWebServer(server, handlerAdapter);
 	}
 

@@ -17,7 +17,6 @@
 package org.springframework.boot.web.embedded.tomcat;
 
 import java.io.File;
-import java.util.Map;
 
 import org.apache.catalina.Host;
 import org.apache.catalina.connector.Connector;
@@ -69,14 +68,6 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	public WebServer getWebServer(HttpHandler httpHandler) {
 		Tomcat tomcatServer = createTomcatServer();
 		TomcatHttpHandlerAdapter servlet = new TomcatHttpHandlerAdapter(httpHandler);
-		prepareContext(tomcatServer.getHost(), servlet);
-		return new TomcatWebServer(tomcatServer, getPort() >= 0);
-	}
-
-	@Override
-	public WebServer getWebServer(Map<String, HttpHandler> handlerMap) {
-		Tomcat tomcatServer = createTomcatServer();
-		TomcatHttpHandlerAdapter servlet = new TomcatHttpHandlerAdapter(handlerMap);
 		prepareContext(tomcatServer.getHost(), servlet);
 		return new TomcatWebServer(tomcatServer, getPort() >= 0);
 	}

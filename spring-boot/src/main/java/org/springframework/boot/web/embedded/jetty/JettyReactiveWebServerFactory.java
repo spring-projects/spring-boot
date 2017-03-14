@@ -17,7 +17,6 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import java.net.InetSocketAddress;
-import java.util.Map;
 
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
@@ -62,8 +61,8 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	/**
-	 * Create a new {@link JettyServletWebServerFactory} that listens for requests
-	 * using the specified port.
+	 * Create a new {@link JettyServletWebServerFactory} that listens for requests using
+	 * the specified port.
 	 * @param port the port to listen on
 	 */
 	public JettyReactiveWebServerFactory(int port) {
@@ -73,13 +72,6 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	@Override
 	public WebServer getWebServer(HttpHandler httpHandler) {
 		JettyHttpHandlerAdapter servlet = new JettyHttpHandlerAdapter(httpHandler);
-		Server server = createJettyServer(servlet);
-		return new JettyWebServer(server, getPort() >= 0);
-	}
-
-	@Override
-	public WebServer getWebServer(Map<String, HttpHandler> handlerMap) {
-		JettyHttpHandlerAdapter servlet = new JettyHttpHandlerAdapter(handlerMap);
 		Server server = createJettyServer(servlet);
 		return new JettyWebServer(server, getPort() >= 0);
 	}

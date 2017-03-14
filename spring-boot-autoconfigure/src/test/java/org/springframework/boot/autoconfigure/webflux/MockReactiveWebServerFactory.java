@@ -41,12 +41,6 @@ public class MockReactiveWebServerFactory extends AbstractReactiveWebServerFacto
 		return this.webServer;
 	}
 
-	@Override
-	public WebServer getWebServer(Map<String, HttpHandler> handlerMap) {
-		this.webServer = spy(new MockReactiveWebServer(handlerMap, getPort()));
-		return this.webServer;
-	}
-
 	public MockReactiveWebServer getWebServer() {
 		return this.webServer;
 	}

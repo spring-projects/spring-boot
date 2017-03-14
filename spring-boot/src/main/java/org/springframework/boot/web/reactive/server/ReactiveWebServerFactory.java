@@ -16,8 +16,6 @@
 
 package org.springframework.boot.web.reactive.server;
 
-import java.util.Map;
-
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.HttpHandler;
 
@@ -28,6 +26,7 @@ import org.springframework.http.server.reactive.HttpHandler;
  * @since 2.0.0
  * @see WebServer
  */
+@FunctionalInterface
 public interface ReactiveWebServerFactory {
 
 	/**
@@ -40,13 +39,5 @@ public interface ReactiveWebServerFactory {
 	 * @see WebServer#stop()
 	 */
 	WebServer getWebServer(HttpHandler httpHandler);
-
-	/**
-	 * Register a map of {@link HttpHandler}s, each to a specific context path.
-	 * @param handlerMap a map of context paths and the associated {@code HttpHandler}
-	 * @return a fully configured and started {@link WebServer}
-	 * @see WebServer#stop()
-	 */
-	WebServer getWebServer(Map<String, HttpHandler> handlerMap);
 
 }
