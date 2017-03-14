@@ -70,4 +70,11 @@ public class WebMvcTestWebDriverIntegrationTests {
 		assertThat(previousWebDriver).isNotNull().isNotSameAs(this.webDriver);
 	}
 
+	@Test
+	public void shouldAutoConfigureWebClient2() throws Exception {
+		this.webDriver.get("/html");
+		WebElement element = this.webDriver.findElement(By.tagName("body"));
+		assertThat(element.getText()).isEqualTo("Hello");
+	}
+
 }
