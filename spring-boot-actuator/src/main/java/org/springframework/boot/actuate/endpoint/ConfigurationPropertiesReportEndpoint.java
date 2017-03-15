@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
@@ -172,7 +171,7 @@ public class ConfigurationPropertiesReportEndpoint
 	 */
 	protected void configureObjectMapper(ObjectMapper mapper) {
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		mapper.setSerializationInclusion(Include.NON_NULL);
+		mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
 		applyCglibFilters(mapper);
 		applySerializationModifier(mapper);
 	}

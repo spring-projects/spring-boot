@@ -61,18 +61,6 @@ public class ConfigurationPropertiesReportEndpointTests
 		assertThat(nestedProperties).isNotNull();
 		assertThat(nestedProperties.get("prefix")).isEqualTo("test");
 		assertThat(nestedProperties.get("properties")).isNotNull();
-
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void entriesWithNullValuesAreNotIncluded() {
-		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("testProperties");
-		assertThat((Map<String, Object>) nestedProperties.get("properties"))
-				.doesNotContainKey("nullValue");
 	}
 
 	@Test
@@ -286,8 +274,6 @@ public class ConfigurationPropertiesReportEndpointTests
 
 		private List<List<ListItem>> listOfListItems = new ArrayList<>();
 
-		private String nullValue = null;
-
 		public TestProperties() {
 			this.secrets.put("mine", "myPrivateThing");
 			this.secrets.put("yours", "yourPrivateThing");
@@ -349,14 +335,6 @@ public class ConfigurationPropertiesReportEndpointTests
 
 		public void setListOfListItems(List<List<ListItem>> listOfListItems) {
 			this.listOfListItems = listOfListItems;
-		}
-
-		public String getNullValue() {
-			return this.nullValue;
-		}
-
-		public void setNullValue(String nullValue) {
-			this.nullValue = nullValue;
 		}
 
 		public static class Hidden {
