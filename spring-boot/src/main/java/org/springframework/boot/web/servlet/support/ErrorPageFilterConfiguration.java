@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.support;
+package org.springframework.boot.web.servlet.support;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -45,11 +45,11 @@
 				<allow pkg="org.springframework.boot.web.server" />
 				<allow pkg="org.springframework.boot.web.servlet" />
 			</subpackage>
-		</subpackage>
-		<subpackage name="support">
-			<allow pkg="javax.servlet" />
-			<allow pkg="org.springframework.boot.web.servlet" />
-			<allow pkg="org.springframework.boot.web.server" />
+			<subpackage name="support">
+				<allow pkg="javax.servlet" />
+				<allow pkg="org.springframework.boot.web.servlet" />
+				<allow pkg="org.springframework.boot.web.server" />
+			</subpackage>
 		</subpackage>
 
 		<!-- Reactive -->

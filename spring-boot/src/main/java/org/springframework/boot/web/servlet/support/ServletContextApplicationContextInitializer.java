@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.support;
+package org.springframework.boot.web.servlet.support;
 
 import javax.servlet.ServletContext;
 
@@ -29,7 +29,7 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author Dave Syer
  * @author Phillip Webb
- * @since 1.4.0
+ * @since 2.0.0
  */
 public class ServletContextApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableWebApplicationContext>, Ordered {

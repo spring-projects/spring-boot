@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.support;
+package org.springframework.boot.web.servlet.support;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -53,7 +53,7 @@ import org.springframework.web.util.NestedServletException;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 1.4.0
+ * @since 2.0.0
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ErrorPageFilter implements Filter, ErrorPageRegistry {

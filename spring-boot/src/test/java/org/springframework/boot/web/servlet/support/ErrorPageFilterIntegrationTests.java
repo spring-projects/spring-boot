@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.support;
+package org.springframework.boot.web.servlet.support;
 
 import java.net.URI;
 import java.util.concurrent.CountDownLatch;
@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
-import org.springframework.boot.web.support.ErrorPageFilterIntegrationTests.EmbeddedWebContextLoader;
+import org.springframework.boot.web.servlet.support.ErrorPageFilterIntegrationTests.EmbeddedWebContextLoader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

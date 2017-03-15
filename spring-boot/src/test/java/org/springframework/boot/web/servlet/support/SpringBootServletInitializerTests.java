@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.support;
+package org.springframework.boot.web.servlet.support;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;

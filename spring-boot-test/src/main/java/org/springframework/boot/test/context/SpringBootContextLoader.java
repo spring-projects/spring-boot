@@ -31,7 +31,7 @@ import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
-import org.springframework.boot.web.support.ServletContextApplicationContextInitializer;
+import org.springframework.boot.web.servlet.support.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;

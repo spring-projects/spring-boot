@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.support;
+package org.springframework.boot.web.servlet.support;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
@@ -58,7 +58,7 @@ import org.springframework.web.context.WebApplicationContext;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 1.4.0
+ * @since 2.0.0
  * @see #configure(SpringApplicationBuilder)
  */
 public abstract class SpringBootServletInitializer implements WebApplicationInitializer {
