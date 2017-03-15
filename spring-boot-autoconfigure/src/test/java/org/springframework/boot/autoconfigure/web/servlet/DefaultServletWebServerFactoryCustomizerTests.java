@@ -349,14 +349,14 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		this.customizer.customize(factory);
-		TomcatWebServer embeddedfactory = (TomcatWebServer) factory.getWebServer();
-		embeddedfactory.start();
+		TomcatWebServer embeddedFactory = (TomcatWebServer) factory.getWebServer();
+		embeddedFactory.start();
 		try {
-			assertThat(((AbstractProtocol<?>) embeddedfactory.getTomcat().getConnector()
+			assertThat(((AbstractProtocol<?>) embeddedFactory.getTomcat().getConnector()
 					.getProtocolHandler()).getBacklog()).isEqualTo(10);
 		}
 		finally {
-			embeddedfactory.stop();
+			embeddedFactory.stop();
 		}
 	}
 
@@ -367,14 +367,14 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		this.customizer.customize(factory);
-		TomcatWebServer embeddedfactory = (TomcatWebServer) factory.getWebServer();
-		embeddedfactory.start();
+		TomcatWebServer embeddedFactory = (TomcatWebServer) factory.getWebServer();
+		embeddedFactory.start();
 		try {
-			assertThat(((AbstractProtocol<?>) embeddedfactory.getTomcat().getConnector()
+			assertThat(((AbstractProtocol<?>) embeddedFactory.getTomcat().getConnector()
 					.getProtocolHandler()).getMaxConnections()).isEqualTo(5);
 		}
 		finally {
-			embeddedfactory.stop();
+			embeddedFactory.stop();
 		}
 	}
 
@@ -385,14 +385,14 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		this.customizer.customize(factory);
-		TomcatWebServer embeddedfactory = (TomcatWebServer) factory.getWebServer();
-		embeddedfactory.start();
+		TomcatWebServer embeddedFactory = (TomcatWebServer) factory.getWebServer();
+		embeddedFactory.start();
 		try {
-			assertThat(embeddedfactory.getTomcat().getConnector().getMaxPostSize())
+			assertThat(embeddedFactory.getTomcat().getConnector().getMaxPostSize())
 					.isEqualTo(10000);
 		}
 		finally {
-			embeddedfactory.stop();
+			embeddedFactory.stop();
 		}
 	}
 
