@@ -20,7 +20,7 @@ import org.junit.After;
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.autoconfigure.webflux.MockReactiveWebServerFactory;
+import org.springframework.boot.autoconfigure.web.reactive.MockReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;

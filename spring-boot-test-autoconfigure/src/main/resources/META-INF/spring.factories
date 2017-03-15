@@ -54,7 +54,7 @@ org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientAutoConfig
 org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebFlux=\
 org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
-org.springframework.boot.autoconfigure.webflux.WebFluxAnnotationAutoConfiguration
+org.springframework.boot.autoconfigure.web.reactive.WebFluxAnnotationAutoConfiguration
 
 # AutoConfigureMockMvc auto-configuration imports
 org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc=\
@@ -79,9 +79,9 @@ org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManagerAutoConfigu
 org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient=\
 org.springframework.boot.test.autoconfigure.web.client.WebClientRestTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
+org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration,\
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration
+org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration
 
 # AutoConfigureWebMvc auto-configuration imports
 org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc=\
@@ -90,13 +90,13 @@ org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration,\
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
 org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration,\
+org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration,\
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration
+org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
 
 # DefaultTestExecutionListenersPostProcessors
 org.springframework.boot.test.context.DefaultTestExecutionListenersPostProcessor=\

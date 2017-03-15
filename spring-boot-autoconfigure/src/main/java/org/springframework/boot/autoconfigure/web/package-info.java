@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for embedded web servers and Spring MVC.
+ * Auto-configuration for common web concerns.
  */
 package org.springframework.boot.autoconfigure.web;

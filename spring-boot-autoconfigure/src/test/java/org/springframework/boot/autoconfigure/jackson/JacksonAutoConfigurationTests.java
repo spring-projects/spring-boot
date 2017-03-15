@@ -49,7 +49,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.jackson.JsonObjectSerializer;
 import org.springframework.boot.test.util.EnvironmentTestUtils;

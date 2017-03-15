@@ -16,7 +16,12 @@
 
 package org.springframework.boot.web.reactive.server;
 
+import java.net.URL;
+
+import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -31,6 +36,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -66,6 +72,14 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 				// Ignore
 			}
 		}
+	}
+
+	@BeforeClass
+	@AfterClass
+	public static void uninstallUrlStreamHandlerFactory() {
+		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
+				null);
+		ReflectionTestUtils.setField(URL.class, "factory", null);
 	}
 
 	protected abstract AbstractReactiveWebServerFactory getFactory();

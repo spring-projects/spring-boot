@@ -17,23 +17,27 @@
 package org.springframework.boot.autoconfigure.security.oauth2;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.authserver.OAuth2AuthorizationServerConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.method.OAuth2MethodSecurityConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
-import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -117,6 +121,14 @@ public class OAuth2AutoConfigurationTests {
 	private static final Class<?> AUTHORIZATION_SERVER_CONFIG = OAuth2AuthorizationServerConfiguration.class;
 
 	private AnnotationConfigServletWebServerApplicationContext context;
+
+	@BeforeClass
+	@AfterClass
+	public static void uninstallUrlStreamHandlerFactory() {
+		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
+				null);
+		ReflectionTestUtils.setField(URL.class, "factory", null);
+	}
 
 	@Test
 	public void testDefaultConfiguration() {
@@ -410,8 +422,7 @@ public class OAuth2AutoConfigurationTests {
 	}
 
 	private void verifyAuthentication(ClientDetails config, HttpStatus finalStatus) {
-		String baseUrl = "http://localhost:"
-				+ this.context.getWebServer().getPort();
+		String baseUrl = "http://localhost:" + this.context.getWebServer().getPort();
 		TestRestTemplate rest = new TestRestTemplate();
 		// First, verify the web endpoint can't be reached
 		assertEndpointUnauthorized(baseUrl, rest);

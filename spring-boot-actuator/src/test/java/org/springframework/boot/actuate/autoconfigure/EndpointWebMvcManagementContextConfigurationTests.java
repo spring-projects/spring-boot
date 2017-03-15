@@ -25,11 +25,11 @@ import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpointSecurityInterceptor;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -55,7 +55,7 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				WebClientAutoConfiguration.class,
+				RestTemplateAutoConfiguration.class,
 				EndpointWebMvcManagementContextConfiguration.class);
 	}
 

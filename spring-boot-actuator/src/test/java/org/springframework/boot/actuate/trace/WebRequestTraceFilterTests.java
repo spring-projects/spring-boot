@@ -32,7 +32,7 @@ import javax.servlet.ServletResponse;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.trace.TraceProperties.Include;
-import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
+import org.springframework.boot.autoconfigure.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
