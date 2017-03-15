@@ -227,7 +227,7 @@
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j</artifactId>
 			<version>3.1.0</version>
-			<scope>runtime</scope>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
