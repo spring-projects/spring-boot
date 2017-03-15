@@ -161,8 +161,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void startServlet() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		this.webServer = factory
-				.getWebServer(exampleServletRegistration());
+		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
 		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
 	}
@@ -170,8 +169,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void startCalledTwice() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		this.webServer = factory
-				.getWebServer(exampleServletRegistration());
+		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
 		int port = this.webServer.getPort();
 		this.webServer.start();
@@ -183,8 +181,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void stopCalledTwice() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		this.webServer = factory
-				.getWebServer(exampleServletRegistration());
+		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
 		this.webServer.stop();
 		this.webServer.stop();
@@ -194,8 +191,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void emptyServerWhenPortIsMinusOne() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.setPort(-1);
-		this.webServer = factory
-				.getWebServer(exampleServletRegistration());
+		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
 		assertThat(this.webServer.getPort()).isLessThan(0); // Jetty is -2
 	}
@@ -203,8 +199,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void stopServlet() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		this.webServer = factory
-				.getWebServer(exampleServletRegistration());
+		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
 		int port = this.webServer.getPort();
 		this.webServer.stop();
@@ -217,8 +212,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void restartWithKeepAlive() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		this.webServer = factory
-				.getWebServer(exampleServletRegistration());
+		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
 		HttpComponentsAsyncClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsAsyncClientHttpRequestFactory();
 		ListenableFuture<ClientHttpResponse> response1 = clientHttpRequestFactory
@@ -227,8 +221,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		assertThat(response1.get(10, TimeUnit.SECONDS).getRawStatusCode()).isEqualTo(200);
 
 		this.webServer.stop();
-		this.webServer = factory
-				.getWebServer(exampleServletRegistration());
+		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
 
 		ListenableFuture<ClientHttpResponse> response2 = clientHttpRequestFactory
@@ -251,20 +244,18 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void startBlocksUntilReadyToServe() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		final Date[] date = new Date[1];
-		this.webServer = factory
-				.getWebServer(new ServletContextInitializer() {
-					@Override
-					public void onStartup(ServletContext servletContext)
-							throws ServletException {
-						try {
-							Thread.sleep(500);
-							date[0] = new Date();
-						}
-						catch (InterruptedException ex) {
-							throw new ServletException(ex);
-						}
-					}
-				});
+		this.webServer = factory.getWebServer(new ServletContextInitializer() {
+			@Override
+			public void onStartup(ServletContext servletContext) throws ServletException {
+				try {
+					Thread.sleep(500);
+					date[0] = new Date();
+				}
+				catch (InterruptedException ex) {
+					throw new ServletException(ex);
+				}
+			}
+		});
 		this.webServer.start();
 		assertThat(date[0]).isNotNull();
 	}
@@ -273,14 +264,12 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void loadOnStartAfterContextIsInitialized() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		final InitCountingServlet servlet = new InitCountingServlet();
-		this.webServer = factory
-				.getWebServer(new ServletContextInitializer() {
-					@Override
-					public void onStartup(ServletContext servletContext)
-							throws ServletException {
-						servletContext.addServlet("test", servlet).setLoadOnStartup(1);
-					}
-				});
+		this.webServer = factory.getWebServer(new ServletContextInitializer() {
+			@Override
+			public void onStartup(ServletContext servletContext) throws ServletException {
+				servletContext.addServlet("test", servlet).setLoadOnStartup(1);
+			}
+		});
 		assertThat(servlet.getInitCount()).isEqualTo(0);
 		this.webServer.start();
 		assertThat(servlet.getInitCount()).isEqualTo(1);
@@ -291,8 +280,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		AbstractServletWebServerFactory factory = getFactory();
 		int specificPort = SocketUtils.findAvailableTcpPort(41000);
 		factory.setPort(specificPort);
-		this.webServer = factory
-				.getWebServer(exampleServletRegistration());
+		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
 		assertThat(getResponse("http://localhost:" + specificPort + "/hello"))
 				.isEqualTo("Hello World");
@@ -303,8 +291,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void specificContextRoot() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.setContextPath("/say");
-		this.webServer = factory
-				.getWebServer(exampleServletRegistration());
+		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
 		assertThat(getResponse(getLocalUrl("/say/hello"))).isEqualTo("Hello World");
 	}
@@ -340,8 +327,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		}
 		factory.setInitializers(Arrays.asList(initializers[2], initializers[3]));
 		factory.addInitializers(initializers[4], initializers[5]);
-		this.webServer = factory.getWebServer(initializers[0],
-				initializers[1]);
+		this.webServer = factory.getWebServer(initializers[0], initializers[1]);
 		this.webServer.start();
 		InOrder ordered = inOrder((Object[]) initializers);
 		for (ServletContextInitializer initializer : initializers) {
@@ -450,13 +436,15 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void sslKeyAlias() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.setSsl(getSsl(null, "password", "test-alias", "src/test/resources/test.jks"));
+		factory.setSsl(
+				getSsl(null, "password", "test-alias", "src/test/resources/test.jks"));
 		this.webServer = factory.getWebServer(
 				new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));
 		this.webServer.start();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
-				new SSLContextBuilder()
-						.loadTrustMaterial(null, new SerialNumberValidatingTrustSelfSignedStrategy("77e7c302")).build());
+				new SSLContextBuilder().loadTrustMaterial(null,
+						new SerialNumberValidatingTrustSelfSignedStrategy("77e7c302"))
+						.build());
 		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
 				.build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
@@ -666,8 +654,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void cannotReadClassPathFiles() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		this.webServer = factory
-				.getWebServer(exampleServletRegistration());
+		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
 		ClientHttpResponse response = getClientResponse(
 				getLocalUrl("/org/springframework/boot/SpringApplication.class"));
@@ -678,17 +665,20 @@ public abstract class AbstractServletWebServerFactoryTests {
 		return getSsl(clientAuth, keyPassword, keyStore, null, null, null);
 	}
 
-	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyAlias, String keyStore) {
+	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyAlias,
+			String keyStore) {
 		return getSsl(clientAuth, keyPassword, keyAlias, keyStore, null, null, null);
 	}
 
 	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore,
 			String trustStore, String[] supportedProtocols, String[] ciphers) {
-		return getSsl(clientAuth, keyPassword, null, keyStore, trustStore, supportedProtocols, ciphers);
+		return getSsl(clientAuth, keyPassword, null, keyStore, trustStore,
+				supportedProtocols, ciphers);
 	}
 
-	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyAlias, String keyStore,
-			String trustStore, String[] supportedProtocols, String[] ciphers) {
+	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyAlias,
+			String keyStore, String trustStore, String[] supportedProtocols,
+			String[] ciphers) {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(clientAuth);
 		if (keyPassword != null) {
@@ -751,14 +741,12 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void persistSession() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.setPersistSession(true);
-		this.webServer = factory
-				.getWebServer(sessionServletRegistration());
+		this.webServer = factory.getWebServer(sessionServletRegistration());
 		this.webServer.start();
 		String s1 = getResponse(getLocalUrl("/session"));
 		String s2 = getResponse(getLocalUrl("/session"));
 		this.webServer.stop();
-		this.webServer = factory
-				.getWebServer(sessionServletRegistration());
+		this.webServer = factory.getWebServer(sessionServletRegistration());
 		this.webServer.start();
 		String s3 = getResponse(getLocalUrl("/session"));
 		String message = "Session error s1=" + s1 + " s2=" + s2 + " s3=" + s3;
@@ -772,8 +760,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		File sessionStoreDir = this.temporaryFolder.newFolder();
 		factory.setPersistSession(true);
 		factory.setSessionStoreDir(sessionStoreDir);
-		this.webServer = factory
-				.getWebServer(sessionServletRegistration());
+		this.webServer = factory.getWebServer(sessionServletRegistration());
 		this.webServer.start();
 		getResponse(getLocalUrl("/session"));
 		this.webServer.stop();
@@ -876,19 +863,17 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void rootServletContextResource() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		final AtomicReference<URL> rootResource = new AtomicReference<>();
-		this.webServer = factory
-				.getWebServer(new ServletContextInitializer() {
-					@Override
-					public void onStartup(ServletContext servletContext)
-							throws ServletException {
-						try {
-							rootResource.set(servletContext.getResource("/"));
-						}
-						catch (MalformedURLException ex) {
-							throw new ServletException(ex);
-						}
-					}
-				});
+		this.webServer = factory.getWebServer(new ServletContextInitializer() {
+			@Override
+			public void onStartup(ServletContext servletContext) throws ServletException {
+				try {
+					rootResource.set(servletContext.getResource("/"));
+				}
+				catch (MalformedURLException ex) {
+					throw new ServletException(ex);
+				}
+			}
+		});
 		this.webServer.start();
 		assertThat(rootResource.get()).isNotNull();
 	}
@@ -897,8 +882,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void customServerHeader() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.setServerHeader("MyServer");
-		this.webServer = factory
-				.getWebServer(exampleServletRegistration());
+		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
 		ClientHttpResponse response = getClientResponse(getLocalUrl("/hello"));
 		assertThat(response.getHeaders().getFirst("server")).isEqualTo("MyServer");
@@ -907,8 +891,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void serverHeaderIsDisabledByDefault() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		this.webServer = factory
-				.getWebServer(exampleServletRegistration());
+		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
 		ClientHttpResponse response = getClientResponse(getLocalUrl("/hello"));
 		assertThat(response.getHeaders().getFirst("server")).isNull();
@@ -993,24 +976,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 		EmbeddedServletOptions options = (EmbeddedServletOptions) ReflectionTestUtils
 				.getField(jspServlet, "options");
 		assertThat(options.getDevelopment()).isEqualTo(false);
-	}
-
-	@Test
-	public void explodedWarFileDocumentRootWhenRunningFromExplodedWar() throws Exception {
-		AbstractServletWebServerFactory factory = getFactory();
-		File webInfClasses = this.temporaryFolder.newFolder("test.war", "WEB-INF", "lib",
-				"spring-boot.jar");
-		File documentRoot = factory.getExplodedWarFileDocumentRoot(webInfClasses);
-		assertThat(documentRoot)
-				.isEqualTo(webInfClasses.getParentFile().getParentFile().getParentFile());
-	}
-
-	@Test
-	public void explodedWarFileDocumentRootWhenRunningFromPackagedWar() throws Exception {
-		AbstractServletWebServerFactory factory = getFactory();
-		File codeSourceFile = this.temporaryFolder.newFile("test.war");
-		File documentRoot = factory.getExplodedWarFileDocumentRoot(codeSourceFile);
-		assertThat(documentRoot).isNull();
 	}
 
 	protected abstract void addConnector(int port,
@@ -1287,10 +1252,10 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	/**
-	 * {@link TrustSelfSignedStrategy} that also validates certificate serial
-	 * number.
+	 * {@link TrustSelfSignedStrategy} that also validates certificate serial number.
 	 */
-	private static final class SerialNumberValidatingTrustSelfSignedStrategy extends TrustSelfSignedStrategy {
+	private static final class SerialNumberValidatingTrustSelfSignedStrategy
+			extends TrustSelfSignedStrategy {
 
 		private final String serialNumber;
 
@@ -1299,7 +1264,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 		}
 
 		@Override
-		public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+		public boolean isTrusted(X509Certificate[] chain, String authType)
+				throws CertificateException {
 			String hexSerialNumber = chain[0].getSerialNumber().toString(16);
 			boolean isMatch = hexSerialNumber.equals(this.serialNumber);
 			return super.isTrusted(chain, authType) && isMatch;
