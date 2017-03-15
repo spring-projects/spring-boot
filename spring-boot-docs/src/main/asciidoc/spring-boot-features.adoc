@@ -565,8 +565,8 @@ specified by the `spring.profiles.active` property are added after those configu
 the `SpringApplication` API and therefore take precedence.
 
 NOTE: If you have specified any files in `spring.config.location`, profile-specific
-variants of those files will not be considered. Use directories in`spring.config.location`
-if you also want to also use profile-specific properties.
+variants of those files will not be considered. Use directories in
+`spring.config.location` if you also want to also use profile-specific properties.
 
 
 
@@ -3984,7 +3984,7 @@ NOTE: Since a cache library may offer both a native implementation and JSR-107 s
 Spring Boot will prefer the JSR-107 support so that the same features are available if
 you switch to a different JSR-107 implementation.
 
-TIP: Spring Boot has a <<boot-features-hazelcast,general support for Hazelcast>>t. If
+TIP: Spring Boot has a <<boot-features-hazelcast,general support for Hazelcast>>. If
 a single `HazelcastInstance` is available, it is automatically reused for the
 `CacheManager` as well unless the `spring.cache.jcache.config` property is specified.
 
