@@ -21,6 +21,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
@@ -55,6 +56,9 @@ public abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests 
 	@Autowired
 	private WebTestClient webClient;
 
+	@Autowired
+	private TestRestTemplate restTemplate;
+
 	public ReactiveWebApplicationContext getContext() {
 		return this.context;
 	}
@@ -71,6 +75,12 @@ public abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests 
 	public void injectWebTestClient() {
 		this.webClient.get().uri("/").exchange().expectBody(String.class).value()
 				.isEqualTo("Hello World");
+	}
+
+	@Test
+	public void injectTestRestTemplate() {
+		String body = this.restTemplate.getForObject("/", String.class);
+		assertThat(body).isEqualTo("Hello World");
 	}
 
 	@Test
