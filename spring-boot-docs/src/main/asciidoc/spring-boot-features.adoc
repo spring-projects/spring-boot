@@ -4334,6 +4334,16 @@ ActiveMQ configuration is controlled by external configuration properties in
 	spring.activemq.password=secret
 ----
 
+You can also pool JMS resources by adding a dependency to
+`org.apache.activemq:activemq-pool` and configure the `PooledConnectionFactory`
+accordingly:
+
+[source,properties,indent=0]
+----
+	spring.activemq.pool.enabled=true
+	spring.activemq.pool.max-connections=50
+----
+
 See
 {sc-spring-boot-autoconfigure}/jms/activemq/ActiveMQProperties.{sc-ext}[`ActiveMQProperties`]
 for more of the supported options.
