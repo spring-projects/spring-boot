@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ public class BuildInfo extends DefaultTask {
 	private String projectName = getProject().getName();
 
 	@Input
-	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+	private Map<String, Object> additionalProperties = new HashMap<>();
 
 	@TaskAction
 	public void generateBuildProperties() {
@@ -127,7 +127,7 @@ public class BuildInfo extends DefaultTask {
 	}
 
 	private Map<String, String> coerceToStringValues(Map<String, Object> input) {
-		Map<String, String> output = new HashMap<String, String>();
+		Map<String, String> output = new HashMap<>();
 		for (Entry<String, Object> entry : input.entrySet()) {
 			output.put(entry.getKey(), entry.getValue().toString());
 		}

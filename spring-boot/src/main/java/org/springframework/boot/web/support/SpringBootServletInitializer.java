@@ -28,8 +28,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.ParentContextApplicationContextInitializer;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -41,8 +41,7 @@ import org.springframework.web.context.WebApplicationContext;
 /**
  * An opinionated {@link WebApplicationInitializer} to run a {@link SpringApplication}
  * from a traditional WAR deployment. Binds {@link Servlet}, {@link Filter} and
- * {@link ServletContextInitializer} beans from the application context to the servlet
- * container.
+ * {@link ServletContextInitializer} beans from the application context to the server.
  * <p>
  * To configure the application either override the
  * {@link #configure(SpringApplicationBuilder)} method (calling
@@ -53,7 +52,7 @@ import org.springframework.web.context.WebApplicationContext;
  * order.
  * <p>
  * Note that a WebApplicationInitializer is only needed if you are building a war file and
- * deploying it. If you prefer to run an embedded container then you won't need this at
+ * deploying it. If you prefer to run an embedded web server then you won't need this at
  * all.
  *
  * @author Dave Syer
@@ -70,8 +69,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	/**
 	 * Set if the {@link ErrorPageFilter} should be registered. Set to {@code false} if
-	 * error page mappings should be handled via the Servlet container and not Spring
-	 * Boot.
+	 * error page mappings should be handled via the server and not Spring Boot.
 	 * @param registerErrorPageFilter if the {@link ErrorPageFilter} should be registered.
 	 */
 	protected final void setRegisterErrorPageFilter(boolean registerErrorPageFilter) {
@@ -114,7 +112,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		builder.initializers(
 				new ServletContextApplicationContextInitializer(servletContext));
 		builder.listeners(new ServletContextApplicationListener(servletContext));
-		builder.contextClass(AnnotationConfigEmbeddedWebApplicationContext.class);
+		builder.contextClass(AnnotationConfigServletWebServerApplicationContext.class);
 		builder = configure(builder);
 		SpringApplication application = builder.build();
 		if (application.getSources().isEmpty() && AnnotationUtils

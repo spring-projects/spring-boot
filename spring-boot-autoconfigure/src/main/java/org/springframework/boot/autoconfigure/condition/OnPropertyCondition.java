@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,8 @@ class OnPropertyCondition extends SpringBootCondition {
 		List<AnnotationAttributes> allAnnotationAttributes = annotationAttributesFromMultiValueMap(
 				metadata.getAllAnnotationAttributes(
 						ConditionalOnProperty.class.getName()));
-		List<ConditionMessage> noMatch = new ArrayList<ConditionMessage>();
-		List<ConditionMessage> match = new ArrayList<ConditionMessage>();
+		List<ConditionMessage> noMatch = new ArrayList<>();
+		List<ConditionMessage> match = new ArrayList<>();
 		for (AnnotationAttributes annotationAttributes : allAnnotationAttributes) {
 			ConditionOutcome outcome = determineOutcome(annotationAttributes,
 					context.getEnvironment());
@@ -69,7 +69,7 @@ class OnPropertyCondition extends SpringBootCondition {
 
 	private List<AnnotationAttributes> annotationAttributesFromMultiValueMap(
 			MultiValueMap<String, Object> multiValueMap) {
-		List<Map<String, Object>> maps = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> maps = new ArrayList<>();
 		for (Entry<String, List<Object>> entry : multiValueMap.entrySet()) {
 			for (int i = 0; i < entry.getValue().size(); i++) {
 				Map<String, Object> map;
@@ -77,14 +77,13 @@ class OnPropertyCondition extends SpringBootCondition {
 					map = maps.get(i);
 				}
 				else {
-					map = new HashMap<String, Object>();
+					map = new HashMap<>();
 					maps.add(map);
 				}
 				map.put(entry.getKey(), entry.getValue().get(i));
 			}
 		}
-		List<AnnotationAttributes> annotationAttributes = new ArrayList<AnnotationAttributes>(
-				maps.size());
+		List<AnnotationAttributes> annotationAttributes = new ArrayList<>(maps.size());
 		for (Map<String, Object> map : maps) {
 			annotationAttributes.add(AnnotationAttributes.fromMap(map));
 		}
@@ -94,8 +93,8 @@ class OnPropertyCondition extends SpringBootCondition {
 	private ConditionOutcome determineOutcome(AnnotationAttributes annotationAttributes,
 			PropertyResolver resolver) {
 		Spec spec = new Spec(annotationAttributes);
-		List<String> missingProperties = new ArrayList<String>();
-		List<String> nonMatchingProperties = new ArrayList<String>();
+		List<String> missingProperties = new ArrayList<>();
+		List<String> nonMatchingProperties = new ArrayList<>();
 		spec.collectProperties(resolver, missingProperties, nonMatchingProperties);
 		if (!missingProperties.isEmpty()) {
 			return ConditionOutcome.noMatch(

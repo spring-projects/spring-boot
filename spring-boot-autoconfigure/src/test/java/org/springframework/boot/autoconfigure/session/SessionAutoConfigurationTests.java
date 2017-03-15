@@ -18,6 +18,9 @@ package org.springframework.boot.autoconfigure.session;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
+
+import javax.servlet.DispatcherType;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,12 +31,15 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.ExpiringSession;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
+import org.springframework.session.web.http.SessionRepositoryFilter;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -122,6 +128,19 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		this.thrown.expectMessage("No session repository could be auto-configured");
 		this.thrown.expectMessage("session store type is 'JDBC'");
 		load("spring.session.store-type=jdbc");
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void filterIsRegisteredWithAsyncErrorAndRequestDispatcherTypes() {
+		load("spring.session.store-type=hash-map");
+		FilterRegistrationBean<?> registration = this.context
+				.getBean(FilterRegistrationBean.class);
+		assertThat(registration.getFilter())
+				.isSameAs(this.context.getBean(SessionRepositoryFilter.class));
+		assertThat((EnumSet<DispatcherType>) ReflectionTestUtils.getField(registration,
+				"dispatcherTypes")).containsOnly(DispatcherType.ASYNC,
+						DispatcherType.ERROR, DispatcherType.REQUEST);
 	}
 
 	@Configuration

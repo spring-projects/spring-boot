@@ -155,7 +155,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private static AtomicBoolean shutdownHookRegistered = new AtomicBoolean(false);
 
 	static {
-		LOG_LEVEL_LOGGERS = new LinkedMultiValueMap<LogLevel, String>();
+		LOG_LEVEL_LOGGERS = new LinkedMultiValueMap<>();
 		LOG_LEVEL_LOGGERS.add(LogLevel.DEBUG, "org.springframework.boot");
 		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.springframework");
 		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.apache.tomcat");

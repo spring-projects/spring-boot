@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeStacktrace;
-import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
+import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +38,7 @@ import org.springframework.web.servlet.ModelAndView;
  * Basic global error {@link Controller}, rendering {@link ErrorAttributes}. More specific
  * errors can be handled either using Spring MVC abstractions (e.g.
  * {@code @ExceptionHandler}) or by adding servlet
- * {@link AbstractEmbeddedServletContainerFactory#setErrorPages container error pages}.
+ * {@link AbstractServletWebServerFactory#setErrorPages server error pages}.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -99,7 +99,7 @@ public class BasicErrorController extends AbstractErrorController {
 		Map<String, Object> body = getErrorAttributes(request,
 				isIncludeStackTrace(request, MediaType.ALL));
 		HttpStatus status = getStatus(request);
-		return new ResponseEntity<Map<String, Object>>(body, status);
+		return new ResponseEntity<>(body, status);
 	}
 
 	/**

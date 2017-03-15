@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,9 +43,9 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
 	private AtomicLong seq = new AtomicLong();
 
-	private Deque<Object> responses = new ArrayDeque<Object>();
+	private Deque<Object> responses = new ArrayDeque<>();
 
-	private List<MockClientHttpRequest> executedRequests = new ArrayList<MockClientHttpRequest>();
+	private List<MockClientHttpRequest> executedRequests = new ArrayList<>();
 
 	@Override
 	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod)

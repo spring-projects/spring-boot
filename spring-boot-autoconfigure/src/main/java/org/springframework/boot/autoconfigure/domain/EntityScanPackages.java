@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ public class EntityScanPackages {
 	private final List<String> packageNames;
 
 	EntityScanPackages(String... packageNames) {
-		List<String> packages = new ArrayList<String>();
+		List<String> packages = new ArrayList<>();
 		for (String name : packageNames) {
 			if (StringUtils.hasText(name)) {
 				packages.add(name);
@@ -133,7 +133,7 @@ public class EntityScanPackages {
 			Collection<String> packageNames) {
 		String[] existing = (String[]) constructorArguments
 				.getIndexedArgumentValue(0, String[].class).getValue();
-		Set<String> merged = new LinkedHashSet<String>();
+		Set<String> merged = new LinkedHashSet<>();
 		merged.addAll(Arrays.asList(existing));
 		merged.addAll(packageNames);
 		return merged.toArray(new String[merged.size()]);
@@ -158,7 +158,7 @@ public class EntityScanPackages {
 			String[] basePackages = attributes.getStringArray("basePackages");
 			Class<?>[] basePackageClasses = attributes
 					.getClassArray("basePackageClasses");
-			Set<String> packagesToScan = new LinkedHashSet<String>();
+			Set<String> packagesToScan = new LinkedHashSet<>();
 			packagesToScan.addAll(Arrays.asList(basePackages));
 			for (Class<?> basePackageClass : basePackageClasses) {
 				packagesToScan.add(ClassUtils.getPackageName(basePackageClass));

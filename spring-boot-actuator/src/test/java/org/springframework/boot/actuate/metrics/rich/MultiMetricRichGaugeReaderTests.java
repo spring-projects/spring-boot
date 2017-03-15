@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ public class MultiMetricRichGaugeReaderTests {
 
 	@Test
 	public void countOne() {
-		this.data.set(new Metric<Integer>("foo", 1));
-		this.data.set(new Metric<Integer>("foo", 1));
+		this.data.set(new Metric<>("foo", 1));
+		this.data.set(new Metric<>("foo", 1));
 		this.exporter.export();
 		// Check the exporter worked
 		assertThat(this.repository.countGroups()).isEqualTo(1);
@@ -56,8 +56,8 @@ public class MultiMetricRichGaugeReaderTests {
 
 	@Test
 	public void countTwo() {
-		this.data.set(new Metric<Integer>("foo", 1));
-		this.data.set(new Metric<Integer>("bar", 1));
+		this.data.set(new Metric<>("foo", 1));
+		this.data.set(new Metric<>("bar", 1));
 		this.exporter.export();
 		assertThat(this.reader.count()).isEqualTo(2);
 		RichGauge one = this.reader.findOne("foo");

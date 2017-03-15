@@ -28,16 +28,17 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.OAuth2ClientProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2RestOperationsConfiguration;
 import org.springframework.boot.autoconfigure.social.FacebookAutoConfiguration;
 import org.springframework.boot.autoconfigure.social.SocialWebAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,7 +61,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -101,7 +102,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 				"security.oauth2.resource.tokenInfoUri:http://example.com",
 				"security.oauth2.resource.clientId=acme");
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
-				.environment(this.environment).web(false).run();
+				.environment(this.environment).web(WebApplicationType.NONE).run();
 		RemoteTokenServices services = this.context.getBean(RemoteTokenServices.class);
 		assertThat(services).isNotNull();
 	}
@@ -111,7 +112,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"security.oauth2.resource.userInfoUri:http://example.com");
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
-				.environment(this.environment).web(false).run();
+				.environment(this.environment).web(WebApplicationType.NONE).run();
 		UserInfoTokenServices services = this.context
 				.getBean(UserInfoTokenServices.class);
 		assertThat(services).isNotNull();
@@ -122,7 +123,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"security.oauth2.resource.userInfoUri:http://example.com");
 		this.context = new SpringApplicationBuilder(AuthoritiesConfiguration.class)
-				.environment(this.environment).web(false).run();
+				.environment(this.environment).web(WebApplicationType.NONE).run();
 		UserInfoTokenServices services = this.context
 				.getBean(UserInfoTokenServices.class);
 		assertThat(services).isNotNull();
@@ -135,7 +136,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"security.oauth2.resource.userInfoUri:http://example.com");
 		this.context = new SpringApplicationBuilder(PrincipalConfiguration.class)
-				.environment(this.environment).web(false).run();
+				.environment(this.environment).web(WebApplicationType.NONE).run();
 		UserInfoTokenServices services = this.context
 				.getBean(UserInfoTokenServices.class);
 		assertThat(services).isNotNull();
@@ -150,7 +151,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 				"security.oauth2.resource.userInfoUri:http://example.com",
 				"server.port=-1", "debug=true");
 		this.context = new SpringApplicationBuilder(ResourceNoClientConfiguration.class)
-				.environment(this.environment).web(true).run();
+				.environment(this.environment).web(WebApplicationType.SERVLET).run();
 		BeanDefinition bean = ((BeanDefinitionRegistry) this.context)
 				.getBeanDefinition("scopedTarget.oauth2ClientContext");
 		assertThat(bean.getScope()).isEqualTo("request");
@@ -163,7 +164,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 				"security.oauth2.resource.tokenInfoUri:http://example.com",
 				"security.oauth2.resource.preferTokenInfo:false");
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
-				.environment(this.environment).web(false).run();
+				.environment(this.environment).web(WebApplicationType.NONE).run();
 		UserInfoTokenServices services = this.context
 				.getBean(UserInfoTokenServices.class);
 		assertThat(services).isNotNull();
@@ -176,7 +177,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 				"security.oauth2.resource.tokenInfoUri:http://example.com",
 				"security.oauth2.resource.preferTokenInfo:false");
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class,
-				Customizer.class).environment(this.environment).web(false).run();
+				Customizer.class).environment(this.environment)
+						.web(WebApplicationType.NONE).run();
 		UserInfoTokenServices services = this.context
 				.getBean(UserInfoTokenServices.class);
 		assertThat(services).isNotNull();
@@ -187,7 +189,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"security.oauth2.resource.jwt.keyValue=FOOBAR");
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
-				.environment(this.environment).web(false).run();
+				.environment(this.environment).web(WebApplicationType.NONE).run();
 		DefaultTokenServices services = this.context.getBean(DefaultTokenServices.class);
 		assertThat(services).isNotNull();
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
@@ -199,7 +201,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"security.oauth2.resource.jwt.keyValue=" + PUBLIC_KEY);
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
-				.environment(this.environment).web(false).run();
+				.environment(this.environment).web(WebApplicationType.NONE).run();
 		DefaultTokenServices services = this.context.getBean(DefaultTokenServices.class);
 		assertThat(services).isNotNull();
 	}
@@ -223,7 +225,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 				"spring.social.facebook.app-id=foo",
 				"spring.social.facebook.app-secret=bar");
 		this.context = new SpringApplicationBuilder(SocialResourceConfiguration.class)
-				.environment(this.environment).web(true).run();
+				.environment(this.environment).web(WebApplicationType.SERVLET).run();
 		ConnectionFactoryLocator connectionFactory = this.context
 				.getBean(ConnectionFactoryLocator.class);
 		assertThat(connectionFactory).isNotNull();
@@ -238,7 +240,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 				"security.oauth2.resource.userInfoUri:http://example.com");
 		this.context = new SpringApplicationBuilder(
 				CustomUserInfoRestTemplateFactory.class, ResourceConfiguration.class)
-						.environment(this.environment).web(false).run();
+						.environment(this.environment).web(WebApplicationType.NONE).run();
 		assertThat(this.context.getBeansOfType(UserInfoRestTemplateFactory.class))
 				.hasSize(1);
 		assertThat(this.context.getBean(UserInfoRestTemplateFactory.class))
@@ -315,8 +317,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 	protected static class ResourceNoClientConfiguration extends ResourceConfiguration {
 
 		@Bean
-		public MockEmbeddedServletContainerFactory embeddedServletContainerFactory() {
-			return new MockEmbeddedServletContainerFactory();
+		public MockServletWebServerFactory webServerFactory() {
+			return new MockServletWebServerFactory();
 		}
 
 	}
@@ -342,8 +344,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 	protected static class SocialResourceConfiguration extends ResourceConfiguration {
 
 		@Bean
-		public EmbeddedServletContainerFactory embeddedServletContainerFactory() {
-			return mock(EmbeddedServletContainerFactory.class);
+		public ServletWebServerFactory webServerFactory() {
+			return mock(ServletWebServerFactory.class);
 		}
 
 	}

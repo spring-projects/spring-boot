@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public class PropertySourcesPropertyValuesTests {
 
 	@Test
 	public void testOrderPreserved() {
-		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
+		LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 		map.put("one", 1);
 		map.put("two", 2);
 		map.put("three", 3);
@@ -92,7 +92,7 @@ public class PropertySourcesPropertyValuesTests {
 				this.propertySources);
 		PropertyValue[] values = propertyValues.getPropertyValues();
 		assertThat(values).hasSize(6);
-		Collection<String> names = new ArrayList<String>();
+		Collection<String> names = new ArrayList<>();
 		for (PropertyValue value : values) {
 			names.add(value.getName());
 		}
@@ -200,7 +200,7 @@ public class PropertySourcesPropertyValuesTests {
 	public void testCollectionProperty() throws Exception {
 		ListBean target = new ListBean();
 		DataBinder binder = new DataBinder(target);
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		Map<String, Object> map = new LinkedHashMap<>();
 		map.put("list[0]", "v0");
 		map.put("list[1]", "v1");
 		this.propertySources.addFirst(new MapPropertySource("values", map));
@@ -212,9 +212,9 @@ public class PropertySourcesPropertyValuesTests {
 	public void testFirstCollectionPropertyWins() throws Exception {
 		ListBean target = new ListBean();
 		DataBinder binder = new DataBinder(target);
-		Map<String, Object> first = new LinkedHashMap<String, Object>();
+		Map<String, Object> first = new LinkedHashMap<>();
 		first.put("list[0]", "f0");
-		Map<String, Object> second = new LinkedHashMap<String, Object>();
+		Map<String, Object> second = new LinkedHashMap<>();
 		second.put("list[0]", "s0");
 		second.put("list[1]", "s1");
 		this.propertySources.addFirst(new MapPropertySource("s", second));
@@ -227,9 +227,9 @@ public class PropertySourcesPropertyValuesTests {
 	public void testFirstCollectionPropertyWinsNestedAttributes() throws Exception {
 		ListTestBean target = new ListTestBean();
 		DataBinder binder = new DataBinder(target);
-		Map<String, Object> first = new LinkedHashMap<String, Object>();
+		Map<String, Object> first = new LinkedHashMap<>();
 		first.put("list[0].description", "another description");
-		Map<String, Object> second = new LinkedHashMap<String, Object>();
+		Map<String, Object> second = new LinkedHashMap<>();
 		second.put("list[0].name", "first name");
 		second.put("list[0].description", "first description");
 		second.put("list[1].name", "second name");
@@ -283,7 +283,7 @@ public class PropertySourcesPropertyValuesTests {
 
 	public static class ListBean {
 
-		private List<String> list = new ArrayList<String>();
+		private List<String> list = new ArrayList<>();
 
 		public List<String> getList() {
 			return this.list;
@@ -297,7 +297,7 @@ public class PropertySourcesPropertyValuesTests {
 
 	public static class ListTestBean {
 
-		private List<TestBean> list = new ArrayList<TestBean>();
+		private List<TestBean> list = new ArrayList<>();
 
 		public List<TestBean> getList() {
 			return this.list;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,9 @@ import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.cbor.MappingJackson2CborHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.smile.MappingJackson2SmileHttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
@@ -52,7 +54,7 @@ public class HttpMessageConvertersTests {
 	@Test
 	public void containsDefaults() throws Exception {
 		HttpMessageConverters converters = new HttpMessageConverters();
-		List<Class<?>> converterClasses = new ArrayList<Class<?>>();
+		List<Class<?>> converterClasses = new ArrayList<>();
 		for (HttpMessageConverter<?> converter : converters) {
 			converterClasses.add(converter.getClass());
 		}
@@ -61,6 +63,8 @@ public class HttpMessageConvertersTests {
 				SourceHttpMessageConverter.class,
 				AllEncompassingFormHttpMessageConverter.class,
 				MappingJackson2HttpMessageConverter.class,
+				MappingJackson2SmileHttpMessageConverter.class,
+				MappingJackson2CborHttpMessageConverter.class,
 				MappingJackson2XmlHttpMessageConverter.class);
 	}
 
@@ -72,7 +76,7 @@ public class HttpMessageConvertersTests {
 				converter2);
 		assertThat(converters.getConverters().contains(converter1)).isTrue();
 		assertThat(converters.getConverters().contains(converter2)).isTrue();
-		List<MappingJackson2HttpMessageConverter> httpConverters = new ArrayList<MappingJackson2HttpMessageConverter>();
+		List<MappingJackson2HttpMessageConverter> httpConverters = new ArrayList<>();
 		for (HttpMessageConverter<?> candidate : converters) {
 			if (candidate instanceof MappingJackson2HttpMessageConverter) {
 				httpConverters.add((MappingJackson2HttpMessageConverter) candidate);
@@ -123,7 +127,7 @@ public class HttpMessageConvertersTests {
 				return converters;
 			};
 		};
-		List<Class<?>> converterClasses = new ArrayList<Class<?>>();
+		List<Class<?>> converterClasses = new ArrayList<>();
 		for (HttpMessageConverter<?> converter : converters) {
 			converterClasses.add(converter.getClass());
 		}
@@ -131,7 +135,9 @@ public class HttpMessageConvertersTests {
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
 				SourceHttpMessageConverter.class,
 				AllEncompassingFormHttpMessageConverter.class,
-				MappingJackson2HttpMessageConverter.class);
+				MappingJackson2HttpMessageConverter.class,
+				MappingJackson2SmileHttpMessageConverter.class,
+				MappingJackson2CborHttpMessageConverter.class);
 	}
 
 	@Test
@@ -150,7 +156,7 @@ public class HttpMessageConvertersTests {
 				return converters;
 			};
 		};
-		List<Class<?>> converterClasses = new ArrayList<Class<?>>();
+		List<Class<?>> converterClasses = new ArrayList<>();
 		for (HttpMessageConverter<?> converter : extractFormPartConverters(
 				converters.getConverters())) {
 			converterClasses.add(converter.getClass());
@@ -158,7 +164,8 @@ public class HttpMessageConvertersTests {
 		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
 				SourceHttpMessageConverter.class,
-				MappingJackson2HttpMessageConverter.class);
+				MappingJackson2HttpMessageConverter.class,
+				MappingJackson2SmileHttpMessageConverter.class);
 	}
 
 	@SuppressWarnings("unchecked")

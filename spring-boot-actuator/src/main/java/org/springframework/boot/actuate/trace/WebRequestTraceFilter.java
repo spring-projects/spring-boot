@@ -120,8 +120,8 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		Throwable exception = (Throwable) request
 				.getAttribute("javax.servlet.error.exception");
 		Principal userPrincipal = request.getUserPrincipal();
-		Map<String, Object> trace = new LinkedHashMap<String, Object>();
-		Map<String, Object> headers = new LinkedHashMap<String, Object>();
+		Map<String, Object> trace = new LinkedHashMap<>();
+		Map<String, Object> headers = new LinkedHashMap<>();
 		trace.put("method", request.getMethod());
 		trace.put("path", request.getRequestURI());
 		trace.put("headers", headers);
@@ -152,7 +152,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	}
 
 	private Map<String, Object> getRequestHeaders(HttpServletRequest request) {
-		Map<String, Object> headers = new LinkedHashMap<String, Object>();
+		Map<String, Object> headers = new LinkedHashMap<>();
 		Set<String> excludedHeaders = getExcludeHeaders();
 		Enumeration<String> names = request.getHeaderNames();
 		while (names.hasMoreElements()) {
@@ -166,7 +166,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	}
 
 	private Set<String> getExcludeHeaders() {
-		Set<String> excludedHeaders = new HashSet<String>();
+		Set<String> excludedHeaders = new HashSet<>();
 		if (!isIncluded(Include.COOKIES)) {
 			excludedHeaders.add("cookie");
 		}
@@ -204,7 +204,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	}
 
 	private Map<String, String> getResponseHeaders(HttpServletResponse response) {
-		Map<String, String> headers = new LinkedHashMap<String, String>();
+		Map<String, String> headers = new LinkedHashMap<>();
 		for (String header : response.getHeaderNames()) {
 			String value = response.getHeader(header);
 			headers.put(header, value);

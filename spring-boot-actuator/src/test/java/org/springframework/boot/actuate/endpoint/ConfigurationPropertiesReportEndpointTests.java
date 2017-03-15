@@ -266,13 +266,13 @@ public class ConfigurationPropertiesReportEndpointTests
 
 		private Boolean mixedBoolean = true;
 
-		private Map<String, Object> secrets = new HashMap<String, Object>();
+		private Map<String, Object> secrets = new HashMap<>();
 
 		private Hidden hidden = new Hidden();
 
-		private List<ListItem> listItems = new ArrayList<ListItem>();
+		private List<ListItem> listItems = new ArrayList<>();
 
-		private List<List<ListItem>> listOfListItems = new ArrayList<List<ListItem>>();
+		private List<List<ListItem>> listOfListItems = new ArrayList<>();
 
 		public TestProperties() {
 			this.secrets.put("mine", "myPrivateThing");

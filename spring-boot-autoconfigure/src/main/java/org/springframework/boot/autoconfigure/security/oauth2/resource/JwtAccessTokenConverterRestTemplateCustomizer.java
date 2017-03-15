@@ -28,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
  * @see JwtAccessTokenConverter#setSigningKey(String)
  * @see JwtAccessTokenConverter#setVerifierKey(String)
  */
+@FunctionalInterface
 public interface JwtAccessTokenConverterRestTemplateCustomizer {
 
 	/**

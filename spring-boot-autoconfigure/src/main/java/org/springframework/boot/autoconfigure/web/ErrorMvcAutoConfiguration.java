@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,15 +39,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.servlet.ErrorPage;
-import org.springframework.boot.web.servlet.ErrorPageRegistrar;
-import org.springframework.boot.web.servlet.ErrorPageRegistry;
+import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.ErrorPageRegistrar;
+import org.springframework.boot.web.server.ErrorPageRegistry;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactoryCustomizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -75,11 +76,11 @@ import org.springframework.web.util.HtmlUtils;
  * @author Stephane Nicoll
  */
 @Configuration
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 // Load before the main WebMvcAutoConfiguration so that the error View is available
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
-@EnableConfigurationProperties(ResourceProperties.class)
+@EnableConfigurationProperties({ ServerProperties.class, ResourceProperties.class })
 public class ErrorMvcAutoConfiguration {
 
 	private final ServerProperties serverProperties;
@@ -220,7 +221,7 @@ public class ErrorMvcAutoConfiguration {
 			if (response.getContentType() == null) {
 				response.setContentType(getContentType());
 			}
-			Map<String, Object> map = new HashMap<String, Object>(model);
+			Map<String, Object> map = new HashMap<>(model);
 			map.put("path", request.getContextPath());
 			PlaceholderResolver resolver = new ExpressionResolver(getExpressions(), map);
 			String result = this.helper.replacePlaceholders(this.template, resolver);
@@ -247,7 +248,7 @@ public class ErrorMvcAutoConfiguration {
 
 		private final SpelExpressionParser parser = new SpelExpressionParser();
 
-		private final Map<String, Expression> expressions = new HashMap<String, Expression>();
+		private final Map<String, Expression> expressions = new HashMap<>();
 
 		@Override
 		public String resolvePlaceholder(String name) {
@@ -295,8 +296,7 @@ public class ErrorMvcAutoConfiguration {
 	}
 
 	/**
-	 * {@link EmbeddedServletContainerCustomizer} that configures the container's error
-	 * pages.
+	 * {@link ServletWebServerFactoryCustomizer} that configures the server's error pages.
 	 */
 	private static class ErrorPageCustomizer implements ErrorPageRegistrar, Ordered {
 
@@ -308,8 +308,9 @@ public class ErrorMvcAutoConfiguration {
 
 		@Override
 		public void registerErrorPages(ErrorPageRegistry errorPageRegistry) {
-			ErrorPage errorPage = new ErrorPage(this.properties.getServletPrefix()
-					+ this.properties.getError().getPath());
+			ErrorPage errorPage = new ErrorPage(
+					this.properties.getServlet().getServletPrefix()
+							+ this.properties.getError().getPath());
 			errorPageRegistry.addErrorPages(errorPage);
 		}
 

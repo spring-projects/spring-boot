@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,13 +34,12 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.autoconfigure.web.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.CompositeMessageConverter;
@@ -79,7 +78,7 @@ import static org.junit.Assert.fail;
  */
 public class WebSocketMessagingAutoConfigurationTests {
 
-	private AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
+	private AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
 
 	private SockJsClient sockJsClient;
 
@@ -125,7 +124,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 	}
 
 	private List<MessageConverter> getCustomizedConverters() {
-		List<MessageConverter> customizedConverters = new ArrayList<MessageConverter>();
+		List<MessageConverter> customizedConverters = new ArrayList<>();
 		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
 				new ObjectMapper());
 		configuration.configureMessageConverters(customizedConverters);
@@ -147,8 +146,8 @@ public class WebSocketMessagingAutoConfigurationTests {
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
 		WebSocketStompClient stompClient = new WebSocketStompClient(this.sockJsClient);
-		final AtomicReference<Throwable> failure = new AtomicReference<Throwable>();
-		final AtomicReference<Object> result = new AtomicReference<Object>();
+		final AtomicReference<Throwable> failure = new AtomicReference<>();
+		final AtomicReference<Object> result = new AtomicReference<>();
 		final CountDownLatch latch = new CountDownLatch(1);
 		StompSessionHandler handler = new StompSessionHandlerAdapter() {
 
@@ -209,8 +208,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 	@EnableConfigurationProperties
 	@EnableWebSocketMessageBroker
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
+			ServletWebServerFactoryAutoConfiguration.class,
 			WebSocketMessagingAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class })
 	static class WebSocketMessagingConfiguration
@@ -232,8 +230,8 @@ public class WebSocketMessagingAutoConfigurationTests {
 		}
 
 		@Bean
-		public TomcatEmbeddedServletContainerFactory tomcat() {
-			return new TomcatEmbeddedServletContainerFactory(0);
+		public TomcatServletWebServerFactory tomcat() {
+			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean

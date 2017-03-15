@@ -38,7 +38,7 @@ public class TraceProperties {
 	private static final Set<Include> DEFAULT_INCLUDES;
 
 	static {
-		Set<Include> defaultIncludes = new LinkedHashSet<Include>();
+		Set<Include> defaultIncludes = new LinkedHashSet<>();
 		defaultIncludes.add(Include.REQUEST_HEADERS);
 		defaultIncludes.add(Include.RESPONSE_HEADERS);
 		defaultIncludes.add(Include.COOKIES);
@@ -50,7 +50,7 @@ public class TraceProperties {
 	 * Items to be included in the trace. Defaults to request/response headers (including
 	 * cookies) and errors.
 	 */
-	private Set<Include> include = new HashSet<Include>(DEFAULT_INCLUDES);
+	private Set<Include> include = new HashSet<>(DEFAULT_INCLUDES);
 
 	public Set<Include> getInclude() {
 		return this.include;

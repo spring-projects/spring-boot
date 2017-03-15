@@ -86,7 +86,7 @@ public class WebMvcProperties {
 	/**
 	 * Maps file extensions to media types for content negotiation, e.g. yml->text/yaml.
 	 */
-	private Map<String, MediaType> mediaTypes = new LinkedHashMap<String, MediaType>();
+	private Map<String, MediaType> mediaTypes = new LinkedHashMap<>();
 
 	/**
 	 * Path pattern used for static resources.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.yaml.snakeyaml.nodes.NodeId;
  */
 public class YamlJavaBeanPropertyConstructor extends Constructor {
 
-	private final Map<Class<?>, Map<String, Property>> properties = new HashMap<Class<?>, Map<String, Property>>();
+	private final Map<Class<?>, Map<String, Property>> properties = new HashMap<>();
 
 	private final PropertyUtils propertyUtils = new PropertyUtils();
 
@@ -66,7 +66,7 @@ public class YamlJavaBeanPropertyConstructor extends Constructor {
 	protected final void addPropertyAlias(String alias, Class<?> type, String name) {
 		Map<String, Property> typeMap = this.properties.get(type);
 		if (typeMap == null) {
-			typeMap = new HashMap<String, Property>();
+			typeMap = new HashMap<>();
 			this.properties.put(type, typeMap);
 		}
 		try {

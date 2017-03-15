@@ -36,7 +36,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.jta.atomikos.properties")
 public class AtomikosProperties {
 
-	private final Map<String, String> values = new TreeMap<String, String>();
+	private final Map<String, String> values = new TreeMap<>();
 
 	/**
 	 * Transaction manager implementation that should be started.

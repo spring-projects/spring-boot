@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,24 @@
 
 package org.springframework.boot.autoconfigure.websocket;
 
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
 
 /**
- * {@link EmbeddedServletContainerCustomizer} to configure websockets for a given
- * {@link EmbeddedServletContainerFactory}.
+ * {@link ServletWebServerFactoryCustomizer} to configure websockets for a given
+ * {@link ServletWebServerFactory}.
  *
- * @param <T> the embedded servlet container factory
+ * @param <T> the {@link ServletWebServerFactory}
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @since 1.2.0
  */
-public abstract class WebSocketContainerCustomizer<T extends EmbeddedServletContainerFactory>
-		implements EmbeddedServletContainerCustomizer, Ordered {
+public abstract class WebSocketContainerCustomizer<T extends ServletWebServerFactory>
+		implements ServletWebServerFactoryCustomizer, Ordered {
 
 	@Override
 	public int getOrder() {
@@ -42,17 +42,17 @@ public abstract class WebSocketContainerCustomizer<T extends EmbeddedServletCont
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void customize(ConfigurableEmbeddedServletContainer container) {
-		if (getContainerType().isAssignableFrom(container.getClass())) {
-			doCustomize((T) container);
+	public void customize(ConfigurableServletWebServerFactory factory) {
+		if (getWebServerFactoryType().isAssignableFrom(factory.getClass())) {
+			doCustomize((T) factory);
 		}
 	}
 
-	protected Class<?> getContainerType() {
+	protected Class<?> getWebServerFactoryType() {
 		return ResolvableType.forClass(WebSocketContainerCustomizer.class, getClass())
 				.resolveGeneric();
 	}
 
-	protected abstract void doCustomize(T container);
+	protected abstract void doCustomize(T factory);
 
 }

@@ -27,10 +27,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.spring4.view.ThymeleafView;
-import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring5.view.ThymeleafView;
+import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
-import org.thymeleaf.templateresolver.TemplateResolver;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -92,10 +92,9 @@ public class ThymeleafAutoConfigurationTests {
 		this.context.register(ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		this.context.getBean(TemplateEngine.class).initialize();
 		ITemplateResolver resolver = this.context.getBean(ITemplateResolver.class);
-		assertThat(resolver instanceof TemplateResolver).isTrue();
-		assertThat(((TemplateResolver) resolver).getCharacterEncoding())
+		assertThat(resolver instanceof SpringResourceTemplateResolver).isTrue();
+		assertThat(((SpringResourceTemplateResolver) resolver).getCharacterEncoding())
 				.isEqualTo("UTF-16");
 		ThymeleafViewResolver views = this.context.getBean(ThymeleafViewResolver.class);
 		assertThat(views.getCharacterEncoding()).isEqualTo("UTF-16");
@@ -109,7 +108,6 @@ public class ThymeleafAutoConfigurationTests {
 		this.context.register(ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		this.context.getBean(TemplateEngine.class).initialize();
 		ITemplateResolver resolver = this.context.getBean(ITemplateResolver.class);
 		assertThat(resolver.getOrder()).isEqualTo(Integer.valueOf(25));
 	}
@@ -252,8 +250,8 @@ public class ThymeleafAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.thymeleaf.cache:false");
 		this.context.refresh();
 		assertThat(this.context.getBean(ThymeleafViewResolver.class).isCache()).isFalse();
-		TemplateResolver templateResolver = this.context.getBean(TemplateResolver.class);
-		templateResolver.initialize();
+		SpringResourceTemplateResolver templateResolver = this.context
+				.getBean(SpringResourceTemplateResolver.class);
 		assertThat(templateResolver.isCacheable()).isFalse();
 	}
 

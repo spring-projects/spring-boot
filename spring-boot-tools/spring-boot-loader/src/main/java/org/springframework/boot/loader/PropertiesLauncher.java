@@ -121,7 +121,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private final File home;
 
-	private List<String> paths = new ArrayList<String>();
+	private List<String> paths = new ArrayList<>();
 
 	private final Properties properties = new Properties();
 
@@ -149,7 +149,7 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private void initializeProperties() throws Exception, IOException {
-		List<String> configs = new ArrayList<String>();
+		List<String> configs = new ArrayList<>();
 		if (getProperty(CONFIG_LOCATION) != null) {
 			configs.add(getProperty(CONFIG_LOCATION));
 		}
@@ -296,7 +296,7 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private List<String> parsePathsProperty(String commaSeparatedPaths) {
-		List<String> paths = new ArrayList<String>();
+		List<String> paths = new ArrayList<>();
 		for (String path : commaSeparatedPaths.split(",")) {
 			path = cleanupPath(path);
 			// Empty path (i.e. the archive itself if running from a JAR) is always added
@@ -432,11 +432,11 @@ public class PropertiesLauncher extends Launcher {
 
 	@Override
 	protected List<Archive> getClassPathArchives() throws Exception {
-		List<Archive> lib = new ArrayList<Archive>();
+		List<Archive> lib = new ArrayList<>();
 		for (String path : this.paths) {
 			for (Archive archive : getClassPathArchives(path)) {
 				if (archive instanceof ExplodedArchive) {
-					List<Archive> nested = new ArrayList<Archive>(
+					List<Archive> nested = new ArrayList<>(
 							archive.getNestedArchives(new ArchiveEntryFilter()));
 					nested.add(0, archive);
 					lib.addAll(nested);
@@ -452,7 +452,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private List<Archive> getClassPathArchives(String path) throws Exception {
 		String root = cleanupPath(stripFileUrlPrefix(path));
-		List<Archive> lib = new ArrayList<Archive>();
+		List<Archive> lib = new ArrayList<>();
 		File file = new File(root);
 		if (!isAbsolutePath(root)) {
 			file = new File(this.home, root);
