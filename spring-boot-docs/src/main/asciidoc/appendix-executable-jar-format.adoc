@@ -217,7 +217,7 @@ NOTE: `PropertiesLauncher` supports loading properties from
 |`loader.home`
 |Used to resolve relative paths in `loader.path`. E.g. `loader.path=lib` then
  `${loader.home}/lib` is a classpath location (along with all jar files in that
- directory). Also used to locate a `loader.properties file`. Example `file:///opt/app`
+ directory). Also used to locate a `loader.properties` file. Example `file:///opt/app`
  (defaults to `${user.dir}`).
 
 |`loader.args`
