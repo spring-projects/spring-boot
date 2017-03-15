@@ -68,7 +68,7 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 	}
 
 	@Test
-	public void healthWhenRightRoleNotPresentShouldExposeHealthDetails()
+	public void healthWhenRightRoleNotPresentShouldNotExposeHealthDetails()
 			throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
@@ -77,7 +77,7 @@ public class NoSpringSecurityHealthMvcEndpointIntegrationTests {
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 		mockMvc.perform(get("/health").with(getRequestPostProcessor()))
 				.andExpect(status().isOk())
-				.andExpect(content().string(containsString("\"status\":\"UP\"")));
+				.andExpect(content().string("{\"status\":\"UP\"}"));
 	}
 
 	@Test

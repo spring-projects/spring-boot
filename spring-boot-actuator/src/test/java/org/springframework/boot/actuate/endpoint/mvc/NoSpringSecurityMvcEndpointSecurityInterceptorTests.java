@@ -23,14 +23,12 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
 import org.springframework.boot.junit.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.junit.runner.classpath.ModifiedClassPathRunner;
-import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.method.HandlerMethod;
@@ -46,9 +44,6 @@ import static org.mockito.Mockito.mock;
 @RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("spring-security-*.jar")
 public class NoSpringSecurityMvcEndpointSecurityInterceptorTests {
-
-	@Rule
-	public OutputCapture output = new OutputCapture();
 
 	private MvcEndpointSecurityInterceptor securityInterceptor;
 
