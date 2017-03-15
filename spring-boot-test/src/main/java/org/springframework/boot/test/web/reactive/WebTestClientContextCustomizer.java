@@ -23,7 +23,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.reactive.server.AbstractConfigurableReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -120,9 +120,10 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 		private boolean isSslEnabled(ApplicationContext context) {
 			try {
-				AbstractConfigurableReactiveWebServerFactory webServerFactory = context
-						.getBean(AbstractConfigurableReactiveWebServerFactory.class);
-				return webServerFactory.getSsl() != null && webServerFactory.getSsl().isEnabled();
+				AbstractReactiveWebServerFactory webServerFactory = context
+						.getBean(AbstractReactiveWebServerFactory.class);
+				return webServerFactory.getSsl() != null
+						&& webServerFactory.getSsl().isEnabled();
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				return false;

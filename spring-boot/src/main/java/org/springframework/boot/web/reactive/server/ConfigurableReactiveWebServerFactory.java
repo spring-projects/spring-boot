@@ -19,11 +19,12 @@ package org.springframework.boot.web.reactive.server;
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 
 /**
- * Interface that represents customizations to a {@link ReactiveWebServerFactory}.
+ * Configurable {@link ReactiveWebServerFactory}.
  *
  * @author Brian Clozel
  * @since 2.0.0
  */
-public interface ConfigurableReactiveWebServerFactory extends ConfigurableWebServerFactory {
+public interface ConfigurableReactiveWebServerFactory
+		extends ConfigurableWebServerFactory, ReactiveWebServerFactory {
 
 }

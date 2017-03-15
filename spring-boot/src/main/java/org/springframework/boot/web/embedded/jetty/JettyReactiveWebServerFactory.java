@@ -18,6 +18,8 @@ package org.springframework.boot.web.embedded.jetty;
 
 import java.net.InetSocketAddress;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -40,6 +42,9 @@ import org.springframework.http.server.reactive.JettyHttpHandlerAdapter;
  * @since 2.0.0
  */
 public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFactory {
+
+	private static final Log logger = LogFactory
+			.getLog(JettyReactiveWebServerFactory.class);
 
 	/**
 	 * The number of acceptor threads to use.
@@ -85,7 +90,8 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		ServletContextHandler contextHandler = new ServletContextHandler(server, "",
 				false, false);
 		contextHandler.addServlet(servletHolder, "/");
-		this.logger.info("Server initialized with port: " + port);
+		JettyReactiveWebServerFactory.logger
+				.info("Server initialized with port: " + port);
 		return server;
 	}
 

@@ -16,13 +16,7 @@
 
 package org.springframework.boot.web.reactive.server;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.boot.web.server.WebServerException;
+import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 
 /**
  * Abstract base class for {@link ReactiveWebServerFactory} implementations.
@@ -30,37 +24,15 @@ import org.springframework.boot.web.server.WebServerException;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public abstract class AbstractReactiveWebServerFactory extends
-		AbstractConfigurableReactiveWebServerFactory implements ReactiveWebServerFactory {
-
-	protected final Log logger = LogFactory.getLog(getClass());
+public abstract class AbstractReactiveWebServerFactory
+		extends AbstractConfigurableWebServerFactory
+		implements ConfigurableReactiveWebServerFactory {
 
 	public AbstractReactiveWebServerFactory() {
 	}
 
 	public AbstractReactiveWebServerFactory(int port) {
 		super(port);
-	}
-
-	/**
-	 * Return the absolute temp dir for given web server.
-	 * @param prefix server name
-	 * @return The temp dir for given server.
-	 */
-	protected File createTempDir(String prefix) {
-		try {
-			File tempDir = File.createTempFile(prefix + ".", "." + getPort());
-			tempDir.delete();
-			tempDir.mkdir();
-			tempDir.deleteOnExit();
-			return tempDir;
-		}
-		catch (IOException ex) {
-			throw new WebServerException(
-					"Unable to create tempDir. java.io.tmpdir is set to "
-							+ System.getProperty("java.io.tmpdir"),
-					ex);
-		}
 	}
 
 }

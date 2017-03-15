@@ -14,33 +14,37 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.reactive.server;
+package org.springframework.boot.web.server;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.springframework.boot.web.server.Compression;
-import org.springframework.boot.web.server.ErrorPage;
-import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.util.Assert;
 
 /**
- * Abstract base class for {@link ConfigurableReactiveWebServerFactory} implementations.
+ * Abstract base class for {@link ConfigurableWebServerFactory} implementations.
  *
+ * @author Phillip Webb
+ * @author Dave Syer
+ * @author Andy Wilkinson
+ * @author Stephane Nicoll
+ * @author Ivan Sopov
+ * @author Eddú Meléndez
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class AbstractConfigurableReactiveWebServerFactory
-		implements ConfigurableReactiveWebServerFactory {
+public class AbstractConfigurableWebServerFactory
+		implements ConfigurableWebServerFactory {
 
 	private int port = 8080;
 
-	private Set<ErrorPage> errorPages = new LinkedHashSet<>();
-
 	private InetAddress address;
+
+	private Set<ErrorPage> errorPages = new LinkedHashSet<>();
 
 	private Ssl ssl;
 
@@ -51,31 +55,26 @@ public class AbstractConfigurableReactiveWebServerFactory
 	private String serverHeader;
 
 	/**
-	 * Create a new {@link AbstractConfigurableReactiveWebServerFactory} instance.
+	 * Create a new {@link AbstractConfigurableWebServerFactory} instance.
 	 */
-	public AbstractConfigurableReactiveWebServerFactory() {
+	public AbstractConfigurableWebServerFactory() {
 	}
 
 	/**
-	 * Create a new {@link AbstractConfigurableReactiveWebServerFactory} instance with the
+	 * Create a new {@link AbstractConfigurableWebServerFactory} instance with the
 	 * specified port.
-	 * @param port the port number for the reactive web server
+	 * @param port the port number for the web server
 	 */
-	public AbstractConfigurableReactiveWebServerFactory(int port) {
+	public AbstractConfigurableWebServerFactory(int port) {
 		this.port = port;
 	}
 
-	@Override
-	public void setAddress(InetAddress address) {
-		this.address = address;
-	}
-
 	/**
-	 * Return the address that the reactive web server binds to.
-	 * @return the address
+	 * The port that the web server server listens on.
+	 * @return the port
 	 */
-	public InetAddress getAddress() {
-		return this.address;
+	public int getPort() {
+		return this.port;
 	}
 
 	@Override
@@ -84,11 +83,25 @@ public class AbstractConfigurableReactiveWebServerFactory
 	}
 
 	/**
-	 * The port that the reactive web server listens on.
-	 * @return the port
+	 * Return the address that the web server binds to.
+	 * @return the address
 	 */
-	public int getPort() {
-		return this.port;
+	public InetAddress getAddress() {
+		return this.address;
+	}
+
+	@Override
+	public void setAddress(InetAddress address) {
+		this.address = address;
+	}
+
+	/**
+	 * Returns a mutable set of {@link ErrorPage ErrorPages} that will be used when
+	 * handling exceptions.
+	 * @return the error pages
+	 */
+	public Set<ErrorPage> getErrorPages() {
+		return this.errorPages;
 	}
 
 	@Override
@@ -103,13 +116,8 @@ public class AbstractConfigurableReactiveWebServerFactory
 		this.errorPages.addAll(Arrays.asList(errorPages));
 	}
 
-	/**
-	 * Return a mutable set of {@link ErrorPage ErrorPages} that will be used when
-	 * handling exceptions.
-	 * @return the error pages
-	 */
-	public Set<ErrorPage> getErrorPages() {
-		return this.errorPages;
+	public Ssl getSsl() {
+		return this.ssl;
 	}
 
 	@Override
@@ -117,17 +125,13 @@ public class AbstractConfigurableReactiveWebServerFactory
 		this.ssl = ssl;
 	}
 
-	public Ssl getSsl() {
-		return this.ssl;
+	public SslStoreProvider getSslStoreProvider() {
+		return this.sslStoreProvider;
 	}
 
 	@Override
 	public void setSslStoreProvider(SslStoreProvider sslStoreProvider) {
 		this.sslStoreProvider = sslStoreProvider;
-	}
-
-	public SslStoreProvider getSslStoreProvider() {
-		return this.sslStoreProvider;
 	}
 
 	public Compression getCompression() {
@@ -146,6 +150,27 @@ public class AbstractConfigurableReactiveWebServerFactory
 	@Override
 	public void setServerHeader(String serverHeader) {
 		this.serverHeader = serverHeader;
+	}
+
+	/**
+	 * Return the absolute temp dir for given web server.
+	 * @param prefix server name
+	 * @return The temp dir for given server.
+	 */
+	protected final File createTempDir(String prefix) {
+		try {
+			File tempDir = File.createTempFile(prefix + ".", "." + getPort());
+			tempDir.delete();
+			tempDir.mkdir();
+			tempDir.deleteOnExit();
+			return tempDir;
+		}
+		catch (IOException ex) {
+			throw new WebServerException(
+					"Unable to create tempDir. java.io.tmpdir is set to "
+							+ System.getProperty("java.io.tmpdir"),
+					ex);
+		}
 	}
 
 }

@@ -26,7 +26,7 @@ import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.boot.web.servlet.server.AbstractConfigurableServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -106,8 +106,8 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 
 		private boolean isSslEnabled(ApplicationContext context) {
 			try {
-				AbstractConfigurableServletWebServerFactory webServerFactory = context
-						.getBean(AbstractConfigurableServletWebServerFactory.class);
+				AbstractServletWebServerFactory webServerFactory = context
+						.getBean(AbstractServletWebServerFactory.class);
 				return webServerFactory.getSsl() != null
 						&& webServerFactory.getSsl().isEnabled();
 			}
