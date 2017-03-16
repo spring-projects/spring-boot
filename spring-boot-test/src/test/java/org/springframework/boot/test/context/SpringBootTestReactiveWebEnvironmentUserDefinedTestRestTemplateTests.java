@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
@@ -33,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringBootTest} in a reactive environment configured with
- * a user-defined {@link TestRestTemplate}.
+ * a user-defined {@link RestTemplate} that is named {@code testRestTemplate}.
  *
  * @author Madhura Bhave
  */

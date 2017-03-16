@@ -31,7 +31,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringBootTest} configured with {@link WebEnvironment#RANDOM_PORT}.
+ * Tests for {@link SpringBootTest} configured with a user-defined {@link RestTemplate}
+ * that is named {@code testRestTemplate}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -39,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DirtiesContext
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "value=123" })
-public class SpringBootTestTestRestTemplateDefinedByUser
+public class SpringBootTestUserDefinedTestRestTemplateTests
 		extends AbstractSpringBootTestWebServerWebEnvironmentTests {
 
 	@Test
