@@ -16,13 +16,21 @@
 
 package org.springframework.boot.gradle.bundling;
 
+import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ModuleDependency;
+import org.gradle.api.artifacts.PublishArtifact;
 import org.gradle.api.artifacts.maven.MavenResolver;
+import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
+import org.gradle.api.internal.attributes.Usages;
+import org.gradle.api.internal.component.SoftwareComponentInternal;
+import org.gradle.api.internal.component.UsageContext;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.WarPlugin;
@@ -54,7 +62,9 @@ public class BundlingPluginFeatures implements PluginFeatures {
 	private void configureBootWarTask(Project project) {
 		BootWar bootWar = project.getTasks().create("bootWar", BootWar.class);
 		bootWar.providedClasspath(providedRuntimeConfiguration(project));
-		this.singlePublishedArtifact.addCandidate(new ArchivePublishArtifact(bootWar));
+		ArchivePublishArtifact artifact = new ArchivePublishArtifact(bootWar);
+		this.singlePublishedArtifact.addCandidate(artifact);
+		project.getComponents().add(new BootSoftwareComponent(artifact, "bootWeb"));
 	}
 
 	private void configureBootJarTask(Project project) {
@@ -66,7 +76,9 @@ public class BundlingPluginFeatures implements PluginFeatures {
 					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 			return mainSourceSet.getRuntimeClasspath();
 		});
-		this.singlePublishedArtifact.addCandidate(new ArchivePublishArtifact(bootJar));
+		ArchivePublishArtifact artifact = new ArchivePublishArtifact(bootJar);
+		this.singlePublishedArtifact.addCandidate(artifact);
+		project.getComponents().add(new BootSoftwareComponent(artifact, "bootJava"));
 	}
 
 	private void configureBootArchivesUpload(Project project) {
@@ -87,6 +99,60 @@ public class BundlingPluginFeatures implements PluginFeatures {
 	private Configuration providedRuntimeConfiguration(Project project) {
 		return project.getConfigurations()
 				.getByName(WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME);
+	}
+
+	/**
+	 * {@link SofwareComponent} for a Spring Boot fat jar or war.
+	 */
+	private static final class BootSoftwareComponent
+			implements SoftwareComponentInternal {
+
+		private final PublishArtifact artifact;
+
+		private final String name;
+
+		private BootSoftwareComponent(PublishArtifact artifact, String name) {
+			this.artifact = artifact;
+			this.name = name;
+		}
+
+		@Override
+		public String getName() {
+			return this.name;
+		}
+
+		@Override
+		public Set<UsageContext> getUsages() {
+			return Collections.singleton(new BootUsageContext(this.artifact));
+		}
+
+		private static final class BootUsageContext implements UsageContext {
+
+			private static final Usage USAGE = Usages.usage("master");
+
+			private final PublishArtifact artifact;
+
+			private BootUsageContext(PublishArtifact artifact) {
+				this.artifact = artifact;
+			}
+
+			@Override
+			public Usage getUsage() {
+				return USAGE;
+			}
+
+			@Override
+			public Set<PublishArtifact> getArtifacts() {
+				return Collections.singleton(this.artifact);
+			}
+
+			@Override
+			public Set<ModuleDependency> getDependencies() {
+				return Collections.emptySet();
+			}
+
+		}
+
 	}
 
 }
