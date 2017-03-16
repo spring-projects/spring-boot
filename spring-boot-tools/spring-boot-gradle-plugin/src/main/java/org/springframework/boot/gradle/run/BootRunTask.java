@@ -26,7 +26,6 @@ import org.gradle.api.internal.file.collections.SimpleFileCollection;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSet;
 
-import org.springframework.boot.gradle.MainClassSupplier;
 import org.springframework.boot.loader.tools.FileUtils;
 
 /**
@@ -37,9 +36,6 @@ import org.springframework.boot.loader.tools.FileUtils;
  * @author Andy Wilkinson
  */
 public class BootRunTask extends JavaExec {
-
-	private final MainClassSupplier mainClassSupplier = new MainClassSupplier(
-			this::getClasspath);
 
 	/**
 	 * Whether or not resources (typically in {@code src/main/resources} are added
@@ -65,17 +61,6 @@ public class BootRunTask extends JavaExec {
 		}
 		addResourcesIfNecessary();
 		super.exec();
-	}
-
-	@Override
-	public String getMain() {
-		return this.mainClassSupplier.get();
-	}
-
-	@Override
-	public JavaExec setMain(String mainClassName) {
-		this.mainClassSupplier.setMainClass(mainClassName);
-		return super.setMain(mainClassName);
 	}
 
 	private void addResourcesIfNecessary() {

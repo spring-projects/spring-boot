@@ -19,52 +19,40 @@ package org.springframework.boot.gradle;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import org.gradle.api.file.FileCollection;
 
 import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
- * Supplies the main class for an application by returning a configured main class if
- * available. If a main class is not available, directories in the application's classpath
- * are searched.
+ * Resolves the main class for an application.
  *
  * @author Andy Wilkinson
  */
-public class MainClassSupplier implements Supplier<String> {
+public class MainClassResolver {
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
-	private final Supplier<FileCollection> classpathSupplier;
-
-	private String mainClass;
+	private final FileCollection classpath;
 
 	/**
-	 * Creates a new {@code MainClassSupplier} that will fall back to searching
-	 * directories in the classpath supplied by the given {@code classpathSupplier} for
+	 * Creates a new {@code MainClassResolver} that will search
+	 * directories in the given {@code classpath} for
 	 * the application's main class.
 	 *
-	 * @param classpathSupplier the supplier of the classpath
+	 * @param classpath the classpath
 	 */
-	public MainClassSupplier(Supplier<FileCollection> classpathSupplier) {
-		this.classpathSupplier = classpathSupplier;
+	public MainClassResolver(FileCollection classpath) {
+		this.classpath = classpath;
 	}
 
-	@Override
-	public String get() {
-		if (this.mainClass == null) {
-			this.mainClass = findMainClass();
-		}
-		return this.mainClass;
-	}
-
-	private String findMainClass() {
-		FileCollection classpath = this.classpathSupplier.get();
-		if (classpath == null) {
-			return null;
-		}
-		return classpath.filter(File::isDirectory).getFiles().stream()
+	/**
+	 * Resolves the main class.
+	 *
+	 * @return the main class or {@code null}
+	 */
+	public String resolveMainClass() {
+		return this.classpath.filter(File::isDirectory).getFiles().stream()
 				.map(this::findMainClass).filter(Objects::nonNull).findFirst()
 				.orElse(null);
 	}
@@ -78,15 +66,6 @@ public class MainClassSupplier implements Supplier<String> {
 		catch (IOException ex) {
 			return null;
 		}
-	}
-
-	/**
-	 * Sets the {@code mainClass} that will be supplied.
-	 *
-	 * @param mainClass the main class to supply
-	 */
-	public void setMainClass(String mainClass) {
-		this.mainClass = mainClass;
 	}
 
 }

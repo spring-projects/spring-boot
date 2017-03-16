@@ -37,25 +37,21 @@ class BootArchiveSupport {
 
 	private final PatternSet requiresUnpack = new PatternSet();
 
-	private final MainClassSupplier mainClassSupplier;
-
 	private final Set<String> storedPathPrefixes;
 
 	private String loaderMainClass;
 
 	private LaunchScriptConfiguration launchScript = new LaunchScriptConfiguration();
 
-	BootArchiveSupport(MainClassSupplier mainClassSupplier,
-			String... storedPathPrefixes) {
-		this.mainClassSupplier = mainClassSupplier;
+	BootArchiveSupport(String... storedPathPrefixes) {
 		this.storedPathPrefixes = new HashSet<>(Arrays.asList(storedPathPrefixes));
 		this.requiresUnpack.include(Specs.satisfyNone());
 	}
 
-	void configureManifest(Jar jar) {
+	void configureManifest(Jar jar, String mainClass) {
 		Attributes attributes = jar.getManifest().getAttributes();
 		attributes.putIfAbsent("Main-Class", this.loaderMainClass);
-		attributes.putIfAbsent("Start-Class", this.mainClassSupplier.get());
+		attributes.putIfAbsent("Start-Class", mainClass);
 	}
 
 	CopyAction createCopyAction(Jar jar) {

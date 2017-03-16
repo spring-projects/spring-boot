@@ -29,8 +29,6 @@ import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.War;
 
-import org.springframework.boot.gradle.MainClassSupplier;
-
 /**
  * A custom {@link War} task that produces a Spring Boot executable war.
  *
@@ -38,11 +36,8 @@ import org.springframework.boot.gradle.MainClassSupplier;
  */
 public class BootWar extends War implements BootArchive {
 
-	private final MainClassSupplier mainClassSupplier = new MainClassSupplier(
-			this::getClasspath);
-
-	private final BootArchiveSupport support = new BootArchiveSupport(
-			this.mainClassSupplier, "WEB-INF/lib/", "WEB-INF/lib-provided");
+	private final BootArchiveSupport support = new BootArchiveSupport("WEB-INF/lib/",
+			"WEB-INF/lib-provided");
 
 	private String mainClass;
 
@@ -60,7 +55,7 @@ public class BootWar extends War implements BootArchive {
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(this);
+		this.support.configureManifest(this, getMainClass());
 		super.copy();
 	}
 
@@ -77,7 +72,6 @@ public class BootWar extends War implements BootArchive {
 	@Override
 	public void setMainClass(String mainClass) {
 		this.mainClass = mainClass;
-		this.mainClassSupplier.setMainClass(mainClass);
 	}
 
 	@Override

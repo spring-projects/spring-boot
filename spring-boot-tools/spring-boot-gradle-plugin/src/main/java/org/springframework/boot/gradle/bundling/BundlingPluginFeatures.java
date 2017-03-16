@@ -37,6 +37,7 @@ import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.Upload;
 
+import org.springframework.boot.gradle.MainClassResolver;
 import org.springframework.boot.gradle.PluginFeatures;
 
 /**
@@ -65,6 +66,9 @@ public class BundlingPluginFeatures implements PluginFeatures {
 		ArchivePublishArtifact artifact = new ArchivePublishArtifact(bootWar);
 		this.singlePublishedArtifact.addCandidate(artifact);
 		project.getComponents().add(new BootSoftwareComponent(artifact, "bootWeb"));
+		bootWar.conventionMapping("mainClass", () -> {
+			return new MainClassResolver(bootWar.getClasspath()).resolveMainClass();
+		});
 	}
 
 	private void configureBootJarTask(Project project) {
@@ -79,6 +83,9 @@ public class BundlingPluginFeatures implements PluginFeatures {
 		ArchivePublishArtifact artifact = new ArchivePublishArtifact(bootJar);
 		this.singlePublishedArtifact.addCandidate(artifact);
 		project.getComponents().add(new BootSoftwareComponent(artifact, "bootJava"));
+		bootJar.conventionMapping("mainClass", () -> {
+			return new MainClassResolver(bootJar.getClasspath()).resolveMainClass();
+		});
 	}
 
 	private void configureBootArchivesUpload(Project project) {

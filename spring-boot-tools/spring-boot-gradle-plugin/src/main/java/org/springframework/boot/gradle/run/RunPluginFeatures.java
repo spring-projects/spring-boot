@@ -23,6 +23,7 @@ import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 
+import org.springframework.boot.gradle.MainClassResolver;
 import org.springframework.boot.gradle.PluginFeatures;
 
 /**
@@ -59,6 +60,9 @@ public class RunPluginFeatures implements PluginFeatures {
 				}
 				return Collections.emptyList();
 			}
+		});
+		run.conventionMapping("main", () -> {
+			return new MainClassResolver(run.getClasspath()).resolveMainClass();
 		});
 	}
 

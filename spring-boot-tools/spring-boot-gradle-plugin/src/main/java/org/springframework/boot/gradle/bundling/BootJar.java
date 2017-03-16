@@ -28,8 +28,6 @@ import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.bundling.Jar;
 
-import org.springframework.boot.gradle.MainClassSupplier;
-
 /**
  * A custom {@link Jar} task that produces a Spring Boot executable jar.
  *
@@ -37,10 +35,7 @@ import org.springframework.boot.gradle.MainClassSupplier;
  */
 public class BootJar extends Jar implements BootArchive {
 
-	private final MainClassSupplier mainClassSupplier = new MainClassSupplier(
-			this::getClasspath);
-
-	private BootArchiveSupport support = new BootArchiveSupport(this.mainClassSupplier, "BOOT-INF/lib");
+	private BootArchiveSupport support = new BootArchiveSupport("BOOT-INF/lib");
 
 	private FileCollection classpath;
 
@@ -65,7 +60,7 @@ public class BootJar extends Jar implements BootArchive {
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(this);
+		this.support.configureManifest(this, getMainClass());
 		super.copy();
 	}
 
@@ -82,7 +77,6 @@ public class BootJar extends Jar implements BootArchive {
 	@Override
 	public void setMainClass(String mainClass) {
 		this.mainClass = mainClass;
-		this.mainClassSupplier.setMainClass(mainClass);
 	}
 
 	@Override
