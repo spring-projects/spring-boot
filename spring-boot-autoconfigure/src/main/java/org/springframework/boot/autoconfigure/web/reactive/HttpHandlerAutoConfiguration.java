@@ -38,6 +38,7 @@ import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.reactive.function.server.HandlerStrategies;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
+import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebHandler;
@@ -85,16 +86,16 @@ public class HttpHandlerAutoConfiguration {
 
 		private final WebSessionManager webSessionManager;
 
-		private final List<HttpMessageReader> messageReaders;
+		private final List<HttpMessageReader<?>> messageReaders;
 
-		private final List<HttpMessageWriter> messageWriters;
+		private final List<HttpMessageWriter<?>> messageWriters;
 
 		private final List<ViewResolver> viewResolvers;
 
 		public FunctionalConfig(ObjectProvider<List<WebFilter>> webFilters,
 				ObjectProvider<WebSessionManager> webSessionManager,
-				ObjectProvider<List<HttpMessageReader>> messageReaders,
-				ObjectProvider<List<HttpMessageWriter>> messageWriters,
+				ObjectProvider<List<HttpMessageReader<?>>> messageReaders,
+				ObjectProvider<List<HttpMessageWriter<?>>> messageWriters,
 				ObjectProvider<List<ViewResolver>> viewResolvers) {
 			this.webFilters = webFilters.getIfAvailable();
 			if (this.webFilters != null) {
@@ -107,9 +108,10 @@ public class HttpHandlerAutoConfiguration {
 		}
 
 		@Bean
-		public HttpHandler httpHandler(List<RouterFunction> routerFunctions) {
+		public <T extends ServerResponse> HttpHandler httpHandler(
+				List<RouterFunction<T>> routerFunctions) {
 			routerFunctions.sort(new AnnotationAwareOrderComparator());
-			RouterFunction routerFunction = routerFunctions.stream()
+			RouterFunction<T> routerFunction = routerFunctions.stream()
 					.reduce(RouterFunction::and).get();
 			HandlerStrategies.Builder strategiesBuilder = HandlerStrategies.builder();
 			if (this.messageReaders != null) {

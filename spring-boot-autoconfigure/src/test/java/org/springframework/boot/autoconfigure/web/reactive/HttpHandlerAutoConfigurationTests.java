@@ -31,6 +31,7 @@ import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
+import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebHandler;
 import org.springframework.web.server.handler.FilteringWebHandler;
@@ -149,9 +150,9 @@ public class HttpHandlerAutoConfigurationTests {
 	protected static class FunctionalConfig {
 
 		@Bean
-		public RouterFunction routerFunction() {
+		public RouterFunction<ServerResponse> routerFunction() {
 			return RouterFunctions.route(RequestPredicates.GET("/test"),
-					serverRequest -> null);
+					(serverRequest) -> null);
 		}
 
 	}
@@ -160,9 +161,9 @@ public class HttpHandlerAutoConfigurationTests {
 	protected static class FunctionalConfigWithWebFilters {
 
 		@Bean
-		public RouterFunction routerFunction() {
+		public RouterFunction<ServerResponse> routerFunction() {
 			return RouterFunctions.route(RequestPredicates.GET("/test"),
-					serverRequest -> null);
+					(serverRequest) -> null);
 		}
 
 		@Bean
@@ -181,9 +182,9 @@ public class HttpHandlerAutoConfigurationTests {
 		}
 
 		@Bean
-		public RouterFunction routerFunction() {
+		public RouterFunction<ServerResponse> routerFunction() {
 			return RouterFunctions.route(RequestPredicates.GET("/test"),
-					serverRequest -> null);
+					(serverRequest) -> null);
 		}
 
 	}

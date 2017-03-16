@@ -252,7 +252,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"security.oauth2.resource.jwt.key-uri=http://localhost:12345/banana");
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
-				.environment(this.environment).web(false).run();
+				.environment(this.environment).web(WebApplicationType.NONE).run();
 		assertThat(this.context.getBeansOfType(JwtAccessTokenConverter.class)).hasSize(1);
 	}
 
@@ -262,7 +262,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 				"security.oauth2.resource.jwt.key-uri=http://localhost:12345/banana");
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class,
 				JwtAccessTokenConverterRestTemplateCustomizerConfiguration.class)
-						.environment(this.environment).web(false).run();
+						.environment(this.environment).web(WebApplicationType.NONE).run();
 		JwtAccessTokenConverterRestTemplateCustomizer customizer = this.context
 				.getBean(JwtAccessTokenConverterRestTemplateCustomizer.class);
 		verify(customizer).customize(any(RestTemplate.class));
