@@ -24,6 +24,7 @@ import org.neo4j.ogm.session.Session;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.neo4j.Neo4jTestServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -37,6 +38,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DataNeo4jTest
 public class DataNeo4jTestIntegrationTests {
+
+	@Rule
+	public Neo4jTestServer server = new Neo4jTestServer(
+			new String[]{"org.springframework.boot.test.autoconfigure.data.neo4j"});
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();

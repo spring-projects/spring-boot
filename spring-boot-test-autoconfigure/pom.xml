@@ -218,15 +218,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.neo4j</groupId>
-			<artifactId>neo4j-ogm-embedded-driver</artifactId>
-			<version>${neo4j-ogm.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.neo4j</groupId>
-			<artifactId>neo4j</artifactId>
-			<version>3.1.0</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot</artifactId>
+			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
