@@ -164,7 +164,6 @@ class OriginTrackedPropertiesLoader {
 			this.character = this.reader.read();
 			this.columnNumber++;
 			skipLeadingWhitespace();
-			skipComment();
 			if (this.character == '\\') {
 				this.escaped = true;
 				readEscaped();
@@ -181,6 +180,7 @@ class OriginTrackedPropertiesLoader {
 					this.character = this.reader.read();
 					this.columnNumber++;
 				}
+				skipComment();
 			}
 		}
 
