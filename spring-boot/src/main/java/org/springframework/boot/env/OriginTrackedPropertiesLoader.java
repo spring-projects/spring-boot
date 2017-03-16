@@ -71,6 +71,7 @@ class OriginTrackedPropertiesLoader {
 			StringBuilder buffer = new StringBuilder();
 			while (reader.read()) {
 				String key = loadKey(buffer, reader).trim();
+				System.out.println(key);
 				if (expandLists && key.endsWith("[]")) {
 					key = key.substring(0, key.length() - 2);
 					int index = 0;
@@ -160,11 +161,19 @@ class OriginTrackedPropertiesLoader {
 		}
 
 		public boolean read() throws IOException {
+			return read(false);
+		}
+
+		public boolean read(boolean wrappedLine) throws IOException {
 			this.escaped = false;
 			this.character = this.reader.read();
 			this.columnNumber++;
-			skipLeadingWhitespace();
-			skipComment();
+			if (this.columnNumber == 0) {
+				skipLeadingWhitespace();
+				if (!wrappedLine) {
+					skipComment();
+				}
+			}
 			if (this.character == '\\') {
 				this.escaped = true;
 				readEscaped();
@@ -176,11 +185,9 @@ class OriginTrackedPropertiesLoader {
 		}
 
 		private void skipLeadingWhitespace() throws IOException {
-			if (this.columnNumber == 0) {
-				while (isWhiteSpace()) {
-					this.character = this.reader.read();
-					this.columnNumber++;
-				}
+			while (isWhiteSpace()) {
+				this.character = this.reader.read();
+				this.columnNumber++;
 			}
 		}
 
@@ -202,7 +209,7 @@ class OriginTrackedPropertiesLoader {
 			}
 			else if (this.character == '\n') {
 				this.columnNumber = -1;
-				read();
+				read(true);
 			}
 			else if (this.character == 'u') {
 				readUnicode();

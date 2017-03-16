@@ -52,7 +52,7 @@ public class OriginTrackedPropertiesLoaderTests {
 		Properties ours = new Properties();
 		new OriginTrackedPropertiesLoader(this.resource).load(false)
 				.forEach((k, v) -> ours.put(k, v.getValue()));
-		assertThat(java).isEqualTo(ours);
+		assertThat(ours).isEqualTo(java);
 	}
 
 	@Test
@@ -95,6 +95,20 @@ public class OriginTrackedPropertiesLoaderTests {
 		OriginTrackedValue value = this.properties.get("test-tab-property");
 		assertThat(getValue(value)).isEqualTo("foo\tbar");
 		assertThat(getLocation(value)).isEqualTo("16:19");
+	}
+
+	@Test
+	public void getPropertyWithBang() throws Exception {
+		OriginTrackedValue value = this.properties.get("test-bang-property");
+		assertThat(getValue(value)).isEqualTo("foo!");
+		assertThat(getLocation(value)).isEqualTo("34:20");
+	}
+
+	@Test
+	public void getPropertyWithValueComment() throws Exception {
+		OriginTrackedValue value = this.properties.get("test-property-value-comment");
+		assertThat(getValue(value)).isEqualTo("foo !bar #foo");
+		assertThat(getLocation(value)).isEqualTo("36:29");
 	}
 
 	@Test
