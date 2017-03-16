@@ -16,10 +16,12 @@
 
 package org.springframework.boot.test.autoconfigure.data.neo4j;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.neo4j.Neo4jTestServer;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -34,6 +36,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DataNeo4jTest(includeFilters = @Filter(Service.class))
 public class DataNeo4jTestWithIncludeFilterIntegrationTests {
+
+	@Rule
+	public Neo4jTestServer server = new Neo4jTestServer(
+			new String[]{"org.springframework.boot.test.autoconfigure.data.neo4j"});
 
 	@Autowired
 	private ExampleService service;
