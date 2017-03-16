@@ -40,7 +40,7 @@ public class WebMvcTestOneControllerIntegrationTests {
 	private MockMvc mvc;
 
 	@Test
-	public void shouldFindController1() throws Exception {
+	public void shouldNotFindController1() throws Exception {
 		this.mvc.perform(get("/one")).andExpect(status().isNotFound());
 	}
 
