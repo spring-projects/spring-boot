@@ -7,6 +7,7 @@
 		<version>2.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-gradle-plugin</artifactId>
+	<packaging>pom</packaging>
 	<name>Spring Boot Gradle Plugin</name>
 	<description>Spring Boot Gradle Plugin</description>
 	<url>http://projects.spring.io/spring-boot/</url>
@@ -16,9 +17,9 @@
 	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
+		<gradle.executable>./gradlew</gradle.executable>
 	</properties>
 	<dependencies>
-		<!-- Compile -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-loader-tools</artifactId>
@@ -27,58 +28,89 @@
 			<groupId>io.spring.gradle</groupId>
 			<artifactId>dependency-management-plugin</artifactId>
 		</dependency>
-		<!-- Provided -->
-		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.gradle</groupId>
-			<artifactId>gradle-base-services</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.gradle</groupId>
-			<artifactId>gradle-core</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.gradle</groupId>
-			<artifactId>gradle-language-java</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.gradle</groupId>
-			<artifactId>gradle-language-jvm</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.gradle</groupId>
-			<artifactId>gradle-platform-jvm</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.gradle</groupId>
-			<artifactId>gradle-plugins</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.gradle</groupId>
-			<artifactId>gradle-process-services</artifactId>
-			<scope>provided</scope>
-		</dependency>
 	</dependencies>
-	<repositories>
-		<repository>
-			<id>gradle</id>
-			<url>http://repo.gradle.org/gradle/libs-releases-local</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-help-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>effective-pom</goal>
+						</goals>
+						<configuration>
+							<output>${project.build.directory}/effective-pom.xml</output>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>gradle</id>
+						<phase>prepare-package</phase>
+						<configuration>
+							<executable>${gradle.executable}</executable>
+							<arguments>
+								<argument>clean</argument>
+								<argument>build</argument>
+								<argument>-Pversion=${project.version}</argument>
+							</arguments>
+						</configuration>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.12</version>
+				<executions>
+					<execution>
+						<id>attach-artifacts</id>
+						<phase>package</phase>
+						<goals>
+							<goal>attach-artifact</goal>
+						</goals>
+						<configuration>
+							<artifacts>
+								<artifact>
+									<file>build/libs/${project.artifactId}-${project.version}.jar</file>
+									<type>jar</type>
+								</artifact>
+								<artifact>
+									<file>build/libs/${project.artifactId}-${project.version}-javadoc.jar</file>
+									<type>jar</type>
+									<classifier>javadoc</classifier>
+								</artifact>
+								<artifact>
+									<file>build/libs/${project.artifactId}-${project.version}-sources.jar</file>
+									<type>jar</type>
+									<classifier>sources</classifier>
+								</artifact>
+							</artifacts>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<profiles>
+		<profile>
+			<id>windows</id>
+			<activation>
+				<os>
+					<name>windows</name>
+				</os>
+			</activation>
+			<properties>
+				<gradle.executable>gradlew.bat</gradle.executable>
+			</properties>
+		</profile>
+	</profiles>
 </project>
