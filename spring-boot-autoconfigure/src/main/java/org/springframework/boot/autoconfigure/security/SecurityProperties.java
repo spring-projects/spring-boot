@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigure.security;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -90,7 +92,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 	/**
 	 * Comma-separated list of paths to exclude from the default secured paths.
 	 */
-	private List<String> ignored = new ArrayList<String>();
+	private List<String> ignored = new ArrayList<>();
 
 	private final User user = new User();
 
@@ -356,8 +358,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 		/**
 		 * Granted roles for the default user name.
 		 */
-		private List<String> role = new ArrayList<String>(
-				Collections.singletonList("USER"));
+		private List<String> role = new ArrayList<>(Collections.singletonList("USER"));
 
 		private boolean defaultPassword = true;
 
