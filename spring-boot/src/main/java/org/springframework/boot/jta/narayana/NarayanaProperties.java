@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.jta.narayana;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -90,22 +91,22 @@ public class NarayanaProperties {
 	/**
 	 * Comma-separated list of orphan filters.
 	 */
-	private List<String> xaResourceOrphanFilters = Arrays.asList(
+	private List<String> xaResourceOrphanFilters = new ArrayList<String>(Arrays.asList(
 			"com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter",
-			"com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter");
+			"com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter"));
 
 	/**
 	 * Comma-separated list of recovery modules.
 	 */
-	private List<String> recoveryModules = Arrays.asList(
+	private List<String> recoveryModules = new ArrayList<String>(Arrays.asList(
 			"com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule",
-			"com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule");
+			"com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule"));
 
 	/**
 	 * Comma-separated list of expiry scanners.
 	 */
-	private List<String> expiryScanners = Collections.singletonList(
-			"com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner");
+	private List<String> expiryScanners = new ArrayList<String>(Collections.singletonList(
+			"com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner"));
 
 	public String getLogDir() {
 		return this.logDir;
