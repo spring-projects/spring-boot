@@ -67,7 +67,7 @@ public class Neo4jTestServer implements TestRule {
 	}
 
 	private void testConnection(SessionFactory sessionFactory) {
-		sessionFactory.openSession();
+		sessionFactory.openSession().beginTransaction().close();
 	}
 
 	private static class Neo4jStatement extends Statement {
