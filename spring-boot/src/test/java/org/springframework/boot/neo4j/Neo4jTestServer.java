@@ -46,8 +46,7 @@ public class Neo4jTestServer implements TestRule {
 	@Override
 	public Statement apply(Statement base, Description description) {
 		try {
-			SessionFactory sessionFactory = createSessionFactory();
-			this.sessionFactory = sessionFactory;
+			this.sessionFactory = createSessionFactory();
 			return new Neo4jStatement(base, this.sessionFactory);
 		}
 		catch (Exception ex) {

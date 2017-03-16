@@ -26,7 +26,8 @@ org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfigura
 # AutoConfigureDataNeo4j auto-configuration imports
 org.springframework.boot.test.autoconfigure.data.neo4j.AutoConfigureDataNeo4j=\
 org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration,\
-org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration
+org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 
 # AutoConfigureJdbc auto-configuration imports
 org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureJdbc=\
