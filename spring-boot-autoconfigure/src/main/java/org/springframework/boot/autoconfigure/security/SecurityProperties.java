@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.security;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -314,7 +314,8 @@ public class SecurityProperties implements SecurityPrerequisite {
 		/**
 		 * Granted roles for the default user name.
 		 */
-		private List<String> role = new ArrayList<String>(Arrays.asList("USER"));
+		private List<String> role = new ArrayList<String>(
+				Collections.singletonList("USER"));
 
 		private boolean defaultPassword = true;
 
