@@ -33,7 +33,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Utility that can be used to {@link MutablePropertySources} using
+ * Utility that can be used update {@link MutablePropertySources} using
  * {@link PropertySourceLoader}s.
  *
  * @author Phillip Webb

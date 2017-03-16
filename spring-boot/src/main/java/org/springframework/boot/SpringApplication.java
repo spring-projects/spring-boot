@@ -140,8 +140,8 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * Configuration properties are also bound to the {@link SpringApplication}. This makes it
  * possible to set {@link SpringApplication} properties dynamically, like the sources
  * ("spring.main.sources" - a CSV list) the flag to indicate a web environment
- * ("spring.main.web_environment=true") or the flag to switch off the banner
- * ("spring.main.show_banner=false").
+ * ("spring.main.web-application-type=none") or the flag to switch off the banner
+ * ("spring.main.banner-mode=off").
  *
  * @author Phillip Webb
  * @author Dave Syer
@@ -340,7 +340,8 @@ public class SpringApplication {
 			bindToSpringApplication(environment);
 			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
-			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
+			exceptionReporters = getSpringFactoriesInstances(
+					SpringBootExceptionReporter.class,
 					new Class[] { ConfigurableApplicationContext.class }, context);
 			prepareContext(context, environment, listeners, applicationArguments,
 					printedBanner);
@@ -854,7 +855,8 @@ public class SpringApplication {
 
 	private void handleRunFailure(ConfigurableApplicationContext context,
 			SpringApplicationRunListeners listeners,
-			Collection<SpringBootExceptionReporter> exceptionReporters, Throwable exception) {
+			Collection<SpringBootExceptionReporter> exceptionReporters,
+			Throwable exception) {
 		try {
 			try {
 				handleExitCode(context, exception);
