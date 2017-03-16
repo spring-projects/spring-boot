@@ -98,6 +98,13 @@ public class OriginTrackedPropertiesLoaderTests {
 	}
 
 	@Test
+	public void getPropertyWithBang() throws Exception {
+		OriginTrackedValue value = this.properties.get("test-bang-property");
+		assertThat(getValue(value)).isEqualTo("foo!");
+		assertThat(getLocation(value)).isEqualTo("34:20");
+	}
+
+	@Test
 	public void getPropertyWithCarriageReturn() throws Exception {
 		OriginTrackedValue value = this.properties.get("test-return-property");
 		assertThat(getValue(value)).isEqualTo("foo\rbar");
