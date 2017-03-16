@@ -27,8 +27,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
  * {@link Condition} that checks for the presence or absence of
@@ -102,9 +102,9 @@ class OnWebApplicationCondition extends SpringBootCondition {
 				return ConditionOutcome.match(message.foundExactly("'session' scope"));
 			}
 		}
-		if (context.getEnvironment() instanceof StandardServletEnvironment) {
+		if (context.getEnvironment() instanceof ConfigurableWebEnvironment) {
 			return ConditionOutcome
-					.match(message.foundExactly("StandardServletEnvironment"));
+					.match(message.foundExactly("ConfigurableWebEnvironment"));
 		}
 		if (context.getResourceLoader() instanceof WebApplicationContext) {
 			return ConditionOutcome.match(message.foundExactly("WebApplicationContext"));
