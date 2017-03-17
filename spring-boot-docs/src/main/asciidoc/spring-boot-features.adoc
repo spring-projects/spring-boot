@@ -2687,20 +2687,7 @@ to the home page at "/" and keep the default for everything else:
 
 [source,java,indent=0]
 ----
-	@Configuration
-	public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-		@Override
-		public void init(WebSecurity web) {
-			web.ignore("/");
-		}
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
-		}
-
-	}
+include::{code-examples}/web/security/UnauthenticatedAccessExample.java[tag=configuration]
 ----
 
 
