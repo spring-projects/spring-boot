@@ -43,6 +43,7 @@ public class TraceProperties {
 		defaultIncludes.add(Include.RESPONSE_HEADERS);
 		defaultIncludes.add(Include.COOKIES);
 		defaultIncludes.add(Include.ERRORS);
+		defaultIncludes.add(Include.TIME_TAKEN);
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(defaultIncludes);
 	}
 
@@ -139,6 +140,11 @@ public class TraceProperties {
 		 * Include the remote user.
 		 */
 		REMOTE_USER,
+
+		/**
+		 * Include the time taken to service the request.
+		 */
+		TIME_TAKEN
 
 	}
 
