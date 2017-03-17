@@ -2685,11 +2685,12 @@ annotation will cause it to be decorated and enhanced with the necessary pieces 
 the `/login` path working. For example, here we simply allow unauthenticated access
 to the home page at "/" and keep the default for everything else:
 
-
 [source,java,indent=0]
 ----
-include::{code-examples}/web/security/UnAuthenticatedAccessExample.java[tag=configuration]
+include::{code-examples}/web/security/UnauthenticatedAccessExample.java[tag=configuration]
 ----
+
+
 
 [[boot-features-security-actuator]]
 === Actuator Security

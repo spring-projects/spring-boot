@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,29 +22,31 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
- * Example configuration for using a {@link WebSecurityConfigurerAdapter} to configure unauthenticated access
- * to the home page at "/"
+ * Example configuration for using a {@link WebSecurityConfigurerAdapter} to configure
+ * unauthenticated access to the home page at "/".
  *
  * @author Robert Stern
  */
-public class UnAuthenticatedAccessExample {
+public class UnauthenticatedAccessExample {
 
-    // tag::configuration[]
-    /**
-     * {@link WebSecurityConfigurerAdapter} that provides init to configure
-     * {@link WebSecurity} argument to customize access rules
-     */
-    @Configuration
-    static class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+	/**
+	 * {@link WebSecurityConfigurerAdapter} that provides init to configure
+	 * {@link WebSecurity} argument to customize access rules.
+	 */
+	// tag::configuration[]
+	@Configuration
+	static class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-        @Override
-        public void init(WebSecurity web) {
-            web.ignoring().antMatchers("/");
-        }
+		@Override
+		public void init(WebSecurity web) {
+			web.ignoring().antMatchers("/");
+		}
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
-        }
-    }
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
+		}
+	}
+	// end::configuration[]
+
 }
