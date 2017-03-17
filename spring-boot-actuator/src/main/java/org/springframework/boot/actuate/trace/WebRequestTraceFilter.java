@@ -97,10 +97,13 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		this.order = order;
 	}
 
+
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,
 			HttpServletResponse response, FilterChain filterChain)
 					throws ServletException, IOException {
+		long startTime = System.currentTimeMillis();
 		Map<String, Object> trace = getTrace(request);
 		logTrace(request, trace);
 		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
@@ -109,6 +112,8 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 			status = response.getStatus();
 		}
 		finally {
+			long endTime = System.currentTimeMillis();
+			addTimeTaken(startTime, endTime, trace);
 			enhanceTrace(trace, status == response.getStatus() ? response
 					: new CustomStatusResponseWrapper(response, status));
 			this.repository.add(trace);
@@ -193,6 +198,11 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	 * @since 1.4.0
 	 */
 	protected void postProcessRequestHeaders(Map<String, Object> headers) {
+	}
+
+	private void addTimeTaken(long startTime, long endTime, Map<String, Object> trace) {
+		long timeTaken = endTime - startTime;
+		add(trace, Include.TIME_TAKEN, "timeTaken", "" + timeTaken);
 	}
 
 	@SuppressWarnings("unchecked")
