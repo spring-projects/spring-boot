@@ -64,6 +64,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	static {
 		LEVELS.map(LogLevel.TRACE, Level.TRACE);
+		LEVELS.map(LogLevel.TRACE, Level.ALL);
 		LEVELS.map(LogLevel.DEBUG, Level.DEBUG);
 		LEVELS.map(LogLevel.INFO, Level.INFO);
 		LEVELS.map(LogLevel.WARN, Level.WARN);
@@ -259,7 +260,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		return new ShutdownHandler();
 	}
 
-	private ch.qos.logback.classic.Logger getLogger(String name) {
+	ch.qos.logback.classic.Logger getLogger(String name) {
 		LoggerContext factory = getLoggerContext();
 		if (StringUtils.isEmpty(name) || ROOT_LOGGER_NAME.equals(name)) {
 			name = Logger.ROOT_LOGGER_NAME;

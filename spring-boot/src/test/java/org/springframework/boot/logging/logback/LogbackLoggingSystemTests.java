@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.LoggerContextListener;
@@ -64,6 +65,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Ben Hale
+ * @author Madhura Bhave
  */
 public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
@@ -203,6 +205,27 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 				.getLoggerConfiguration(getClass().getName());
 		assertThat(configuration).isEqualTo(new LoggerConfiguration(getClass().getName(),
 				LogLevel.DEBUG, LogLevel.DEBUG));
+	}
+
+	@Test
+	public void getLoggingConfigurationForALL() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		Logger logger = this.loggingSystem.getLogger(getClass().getName());
+		logger.setLevel(Level.ALL);
+		LoggerConfiguration configuration = this.loggingSystem
+				.getLoggerConfiguration(getClass().getName());
+		assertThat(configuration).isEqualTo(new LoggerConfiguration(getClass().getName(),
+				LogLevel.TRACE, LogLevel.TRACE));
+	}
+
+	@Test
+	public void systemLevelTraceShouldReturnNativeLevelTraceNotAll() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.TRACE);
+		Logger logger = this.loggingSystem.getLogger(getClass().getName());
+		assertThat(logger.getLevel()).isEqualTo(Level.TRACE);
 	}
 
 	@Test
