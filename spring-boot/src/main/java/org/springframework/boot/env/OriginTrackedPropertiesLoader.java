@@ -71,7 +71,6 @@ class OriginTrackedPropertiesLoader {
 			StringBuilder buffer = new StringBuilder();
 			while (reader.read()) {
 				String key = loadKey(buffer, reader).trim();
-				System.out.println(key);
 				if (expandLists && key.endsWith("[]")) {
 					key = key.substring(0, key.length() - 2);
 					int index = 0;
