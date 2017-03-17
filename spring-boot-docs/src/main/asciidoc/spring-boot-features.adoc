@@ -2709,7 +2709,7 @@ to the home page at "/" and keep the default for everything else:
 
 		@Override
 		public void init(WebSecurity web) {
-			web.ignore("/");
+			web.ignoring().antMatchers("/");
 		}
 
 		@Override
