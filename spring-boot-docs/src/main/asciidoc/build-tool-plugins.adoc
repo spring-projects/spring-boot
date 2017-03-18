@@ -473,7 +473,7 @@ The following configuration options are available:
  (defaults to a guess based on the archive type). See
  <<build-tool-plugins-gradle-configuration-layouts,available layouts for more details>>.
 
-|'layoutFactory`
+|`layoutFactory`
 |A layout factory that can be used if a custom layout is required. Alternative layouts
 can be provided by 3rd parties. Layout factories are only used when `layout` is not
 specified.
