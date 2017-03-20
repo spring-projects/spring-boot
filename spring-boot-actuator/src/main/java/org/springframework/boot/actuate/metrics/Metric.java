@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ public class Metric<T extends Number> {
 	 * @return a new {@link Metric} instance
 	 */
 	public Metric<Long> increment(int amount) {
-		return new Metric<Long>(this.getName(),
+		return new Metric<>(this.getName(),
 				Long.valueOf(this.getValue().longValue() + amount));
 	}
 
@@ -102,7 +102,7 @@ public class Metric<T extends Number> {
 	 * @return a new {@link Metric} instance
 	 */
 	public <S extends Number> Metric<S> set(S value) {
-		return new Metric<S>(this.getName(), value);
+		return new Metric<>(this.getName(), value);
 	}
 
 	@Override
@@ -126,9 +126,9 @@ public class Metric<T extends Number> {
 		if (obj instanceof Metric) {
 			Metric<?> other = (Metric<?>) obj;
 			boolean rtn = true;
-			rtn &= ObjectUtils.nullSafeEquals(this.name, other.name);
-			rtn &= ObjectUtils.nullSafeEquals(this.timestamp, other.timestamp);
-			rtn &= ObjectUtils.nullSafeEquals(this.value, other.value);
+			rtn = rtn && ObjectUtils.nullSafeEquals(this.name, other.name);
+			rtn = rtn && ObjectUtils.nullSafeEquals(this.timestamp, other.timestamp);
+			rtn = rtn && ObjectUtils.nullSafeEquals(this.value, other.value);
 			return rtn;
 		}
 		return super.equals(obj);

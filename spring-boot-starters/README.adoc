@@ -109,7 +109,13 @@ do as they were designed before this was clarified.
 | LDAP
 | https://github.com/eddumelendez/ldap-spring-boot
 
+| http://infinispan.org/[Infinispan]
+| https://github.com/infinispan/infinispan-spring-boot
+
 | http://restfb.com/[RestFB] Messenger
 | https://github.com/marsbits/restfbmessenger
+
+| http://square.github.io/okhttp/[OkHttp]
+| https://github.com/freefair/okhttp-spring-boot
 
 |===

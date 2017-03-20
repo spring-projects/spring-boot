@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,8 @@ package org.springframework.boot.autoconfigure.webservices;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
 
 /**
  * {@link ConfigurationProperties} for Spring Web Services.
@@ -31,14 +29,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@ConfigurationProperties("spring.webservices")
+@ConfigurationProperties(prefix = "spring.webservices")
 public class WebServicesProperties {
 
 	/**
 	 * Path that serves as the base URI for the services.
 	 */
-	@NotNull
-	@Pattern(regexp = "/[^?#]*", message = "Path must start with /")
 	private String path = "/services";
 
 	private final Servlet servlet = new Servlet();
@@ -48,6 +44,9 @@ public class WebServicesProperties {
 	}
 
 	public void setPath(String path) {
+		Assert.notNull(path, "Path must not be null");
+		Assert.isTrue(path.isEmpty() || path.startsWith("/"),
+				"Path must start with / or be empty");
 		this.path = path;
 	}
 
@@ -60,7 +59,7 @@ public class WebServicesProperties {
 		/**
 		 * Servlet init parameters to pass to Spring Web Services.
 		 */
-		private Map<String, String> init = new HashMap<String, String>();
+		private Map<String, String> init = new HashMap<>();
 
 		/**
 		 * Load on startup priority of the Spring Web Services servlet.

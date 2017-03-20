@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.web.client;
 
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -26,8 +26,6 @@ import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.test.autoconfigure.filter.AnnotationCustomizableTypeExcludeFilter;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.type.classreading.MetadataReader;
-import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -42,7 +40,7 @@ class RestClientExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 
 	static {
-		Set<Class<?>> includes = new LinkedHashSet<Class<?>>();
+		Set<Class<?>> includes = new LinkedHashSet<>();
 		if (ClassUtils.isPresent("com.fasterxml.jackson.databind.Module",
 				RestClientExcludeFilter.class.getClassLoader())) {
 			try {
@@ -63,20 +61,6 @@ class RestClientExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	RestClientExcludeFilter(Class<?> testClass) {
 		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
 				RestClientTest.class);
-	}
-
-	@Override
-	protected boolean defaultInclude(MetadataReader metadataReader,
-			MetadataReaderFactory metadataReaderFactory) throws IOException {
-		if (super.defaultInclude(metadataReader, metadataReaderFactory)) {
-			return true;
-		}
-		for (Class<?> controller : this.annotation.components()) {
-			if (isTypeOrAnnotated(metadataReader, metadataReaderFactory, controller)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@Override
@@ -103,6 +87,11 @@ class RestClientExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	@Override
 	protected Set<Class<?>> getDefaultIncludes() {
 		return DEFAULT_INCLUDES;
+	}
+
+	@Override
+	protected Set<Class<?>> getComponentIncludes() {
+		return new LinkedHashSet<>(Arrays.asList(this.annotation.components()));
 	}
 
 }

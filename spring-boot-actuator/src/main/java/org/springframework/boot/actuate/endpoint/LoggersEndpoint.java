@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public class LoggersEndpoint extends AbstractEndpoint<Map<String, Object>> {
 		if (configurations == null) {
 			return Collections.emptyMap();
 		}
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		Map<String, Object> result = new LinkedHashMap<>();
 		result.put("levels", getLevels());
 		result.put("loggers", getLoggers(configurations));
 		return result;
@@ -67,13 +67,12 @@ public class LoggersEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private NavigableSet<LogLevel> getLevels() {
 		Set<LogLevel> levels = this.loggingSystem.getSupportedLogLevels();
-		return new TreeSet<LogLevel>(levels).descendingSet();
+		return new TreeSet<>(levels).descendingSet();
 	}
 
 	private Map<String, LoggerLevels> getLoggers(
 			Collection<LoggerConfiguration> configurations) {
-		Map<String, LoggerLevels> loggers = new LinkedHashMap<String, LoggerLevels>(
-				configurations.size());
+		Map<String, LoggerLevels> loggers = new LinkedHashMap<>(configurations.size());
 		for (LoggerConfiguration configuration : configurations) {
 			loggers.put(configuration.getName(), new LoggerLevels(configuration));
 		}

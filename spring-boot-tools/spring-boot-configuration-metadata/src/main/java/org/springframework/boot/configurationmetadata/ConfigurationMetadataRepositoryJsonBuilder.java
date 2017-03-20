@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONException;
-
 /**
  * Load a {@link ConfigurationMetadataRepository} from the content of arbitrary
  * resource(s).
@@ -43,7 +41,7 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 
 	private final JsonReader reader = new JsonReader();
 
-	private final List<SimpleConfigurationMetadataRepository> repositories = new ArrayList<SimpleConfigurationMetadataRepository>();
+	private final List<SimpleConfigurationMetadataRepository> repositories = new ArrayList<>();
 
 	private ConfigurationMetadataRepositoryJsonBuilder(Charset defaultCharset) {
 		this.defaultCharset = defaultCharset;
@@ -104,13 +102,8 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 			RawConfigurationMetadata metadata = this.reader.read(in, charset);
 			return create(metadata);
 		}
-		catch (IOException ex) {
-			throw new IllegalArgumentException(
-					"Failed to read configuration " + "metadata", ex);
-		}
-		catch (JSONException ex) {
-			throw new IllegalArgumentException(
-					"Invalid configuration " + "metadata document", ex);
+		catch (Exception ex) {
+			throw new IllegalStateException("Failed to read configuration metadata", ex);
 		}
 	}
 

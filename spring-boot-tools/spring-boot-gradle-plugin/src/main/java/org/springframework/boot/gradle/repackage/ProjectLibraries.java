@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.gradle.repackage;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -50,6 +51,8 @@ class ProjectLibraries implements Libraries {
 
 	private final boolean excludeDevtools;
 
+	private final TargetConfigurationResolver targetConfigurationResolver;
+
 	private String providedConfigurationName = "providedRuntime";
 
 	private String customConfigurationName = null;
@@ -65,6 +68,17 @@ class ProjectLibraries implements Libraries {
 		this.project = project;
 		this.extension = extension;
 		this.excludeDevtools = excludeDevTools;
+		this.targetConfigurationResolver = createTargetConfigurationResolver();
+	}
+
+	private static TargetConfigurationResolver createTargetConfigurationResolver() {
+		try {
+			return new Gradle3TargetConfigurationResolver(
+					ProjectDependency.class.getMethod("getTargetConfiguration"));
+		}
+		catch (Exception ex) {
+			return new Gradle2TargetConfigurationResolver();
+		}
 	}
 
 	/**
@@ -105,7 +119,7 @@ class ProjectLibraries implements Libraries {
 		if (configuration == null) {
 			return null;
 		}
-		Set<GradleLibrary> libraries = new LinkedHashSet<GradleLibrary>();
+		Set<GradleLibrary> libraries = new LinkedHashSet<>();
 		for (ResolvedArtifact artifact : configuration.getResolvedConfiguration()
 				.getResolvedArtifacts()) {
 			libraries.add(new ResolvedArtifactLibrary(artifact, scope));
@@ -116,7 +130,7 @@ class ProjectLibraries implements Libraries {
 
 	private Set<GradleLibrary> getLibrariesForFileDependencies(
 			Configuration configuration, LibraryScope scope) {
-		Set<GradleLibrary> libraries = new LinkedHashSet<GradleLibrary>();
+		Set<GradleLibrary> libraries = new LinkedHashSet<>();
 		for (Dependency dependency : configuration.getIncoming().getDependencies()) {
 			if (dependency instanceof FileCollectionDependency) {
 				FileCollectionDependency fileDependency = (FileCollectionDependency) dependency;
@@ -127,8 +141,11 @@ class ProjectLibraries implements Libraries {
 			}
 			else if (dependency instanceof ProjectDependency) {
 				ProjectDependency projectDependency = (ProjectDependency) dependency;
-				libraries.addAll(getLibrariesForFileDependencies(
-						projectDependency.getProjectConfiguration(), scope));
+				libraries
+						.addAll(getLibrariesForFileDependencies(
+								this.targetConfigurationResolver
+										.resolveTargetConfiguration(projectDependency),
+								scope));
 			}
 		}
 		return libraries;
@@ -139,11 +156,11 @@ class ProjectLibraries implements Libraries {
 		if (source == null || toRemove == null) {
 			return source;
 		}
-		Set<File> filesToRemove = new HashSet<File>();
+		Set<File> filesToRemove = new HashSet<>();
 		for (GradleLibrary library : toRemove) {
 			filesToRemove.add(library.getFile());
 		}
-		Set<GradleLibrary> result = new LinkedHashSet<GradleLibrary>();
+		Set<GradleLibrary> result = new LinkedHashSet<>();
 		for (GradleLibrary library : source) {
 			if (!filesToRemove.contains(library.getFile())) {
 				result.add(library);
@@ -178,8 +195,8 @@ class ProjectLibraries implements Libraries {
 	}
 
 	private Set<String> getDuplicates(Set<GradleLibrary> libraries) {
-		Set<String> duplicates = new HashSet<String>();
-		Set<String> seen = new HashSet<String>();
+		Set<String> duplicates = new HashSet<>();
+		Set<String> seen = new HashSet<>();
 		for (GradleLibrary library : libraries) {
 			if (library.getFile() != null && !seen.add(library.getFile().getName())) {
 				duplicates.add(library.getFile().getName());
@@ -257,6 +274,59 @@ class ProjectLibraries implements Libraries {
 						.contains(id.getGroup() + ":" + id.getName());
 			}
 			return false;
+		}
+
+	}
+
+	/**
+	 * Strategy used to resolve configurations regardless of the underlying Gradle
+	 * version.
+	 */
+	private interface TargetConfigurationResolver {
+
+		Configuration resolveTargetConfiguration(ProjectDependency projectDependency);
+
+	}
+
+	/**
+	 * {@link TargetConfigurationResolver} for Gradle 2.x.
+	 */
+	private static final class Gradle2TargetConfigurationResolver
+			implements TargetConfigurationResolver {
+
+		@Override
+		public Configuration resolveTargetConfiguration(
+				ProjectDependency projectDependency) {
+			return projectDependency.getProjectConfiguration();
+		}
+
+	}
+
+	/**
+	 * {@link TargetConfigurationResolver} for Gradle 3.x.
+	 */
+	private static final class Gradle3TargetConfigurationResolver
+			implements TargetConfigurationResolver {
+
+		private final Method getTargetConfiguration;
+
+		private Gradle3TargetConfigurationResolver(Method getTargetConfiguration) {
+			this.getTargetConfiguration = getTargetConfiguration;
+		}
+
+		@Override
+		public Configuration resolveTargetConfiguration(
+				ProjectDependency projectDependency) {
+			try {
+				String configurationName = (String) this.getTargetConfiguration
+						.invoke(projectDependency);
+				return projectDependency.getDependencyProject().getConfigurations()
+						.getByName(configurationName == null
+								? Dependency.DEFAULT_CONFIGURATION : configurationName);
+			}
+			catch (Exception ex) {
+				throw new RuntimeException("Failed to get target configuration", ex);
+			}
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,20 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.context.annotation.DeferredImportSelector;
+import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 
 /**
  * Selects configuration classes for the management context configuration. Entries are
@@ -36,6 +39,7 @@ import org.springframework.core.type.AnnotationMetadata;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @see ManagementContextConfiguration
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
@@ -46,17 +50,81 @@ class ManagementContextConfigurationsImportSelector
 
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
-		// Find all possible auto configuration classes, filtering duplicates
-		List<String> factories = new ArrayList<String>(
-				new LinkedHashSet<String>(SpringFactoriesLoader.loadFactoryNames(
-						ManagementContextConfiguration.class, this.classLoader)));
-		AnnotationAwareOrderComparator.sort(factories);
-		return factories.toArray(new String[0]);
+		// Find all management context configuration classes, filtering duplicates
+		List<ManagementConfiguration> configurations = getConfigurations();
+		OrderComparator.sort(configurations);
+		List<String> names = new ArrayList<>();
+		for (ManagementConfiguration configuration : configurations) {
+			names.add(configuration.getClassName());
+		}
+		return names.toArray(new String[names.size()]);
+	}
+
+	private List<ManagementConfiguration> getConfigurations() {
+		SimpleMetadataReaderFactory readerFactory = new SimpleMetadataReaderFactory(
+				this.classLoader);
+		List<ManagementConfiguration> configurations = new ArrayList<>();
+		for (String className : loadFactoryNames()) {
+			getConfiguration(readerFactory, configurations, className);
+		}
+		return configurations;
+	}
+
+	private void getConfiguration(SimpleMetadataReaderFactory readerFactory,
+			List<ManagementConfiguration> configurations, String className) {
+		try {
+			MetadataReader metadataReader = readerFactory.getMetadataReader(className);
+			configurations.add(new ManagementConfiguration(metadataReader));
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(
+					"Failed to read annotation metadata for '" + className + "'", ex);
+		}
+	}
+
+	protected List<String> loadFactoryNames() {
+		return SpringFactoriesLoader
+				.loadFactoryNames(ManagementContextConfiguration.class, this.classLoader);
 	}
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
+	}
+
+	/**
+	 * A management configuration class which can be sorted according to {@code @Order}.
+	 */
+	private static final class ManagementConfiguration implements Ordered {
+
+		private final String className;
+
+		private final int order;
+
+		ManagementConfiguration(MetadataReader metadataReader) {
+			AnnotationMetadata annotationMetadata = metadataReader
+					.getAnnotationMetadata();
+			this.order = readOrder(annotationMetadata);
+			this.className = metadataReader.getClassMetadata().getClassName();
+		}
+
+		private int readOrder(AnnotationMetadata annotationMetadata) {
+			Map<String, Object> attributes = annotationMetadata
+					.getAnnotationAttributes(Order.class.getName());
+			Integer order = (attributes == null ? null
+					: (Integer) attributes.get("value"));
+			return (order == null ? Ordered.LOWEST_PRECEDENCE : order);
+		}
+
+		public String getClassName() {
+			return this.className;
+		}
+
+		@Override
+		public int getOrder() {
+			return this.order;
+		}
+
 	}
 
 }

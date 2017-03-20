@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,13 +32,13 @@ import org.springframework.util.PatternMatchUtils;
  * @author Simon Buettner
  * @since 1.3.0
  */
-@ConfigurationProperties("spring.metrics.export")
+@ConfigurationProperties(prefix = "spring.metrics.export")
 public class MetricExportProperties extends TriggerProperties {
 
 	/**
 	 * Specific trigger properties per MetricWriter bean name.
 	 */
-	private Map<String, SpecificTriggerProperties> triggers = new LinkedHashMap<String, SpecificTriggerProperties>();
+	private Map<String, SpecificTriggerProperties> triggers = new LinkedHashMap<>();
 
 	private Aggregate aggregate = new Aggregate();
 

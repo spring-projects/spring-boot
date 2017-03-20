@@ -565,8 +565,8 @@ specified by the `spring.profiles.active` property are added after those configu
 the `SpringApplication` API and therefore take precedence.
 
 NOTE: If you have specified any files in `spring.config.location`, profile-specific
-variants of those files will not be considered. Use directories in`spring.config.location`
-if you also want to also use profile-specific properties.
+variants of those files will not be considered. Use directories in
+`spring.config.location` if you also want to also use profile-specific properties.
 
 
 
@@ -1090,13 +1090,16 @@ only rely on custom converters qualified with `@ConfigurationPropertiesBinding`.
 
 [[boot-features-external-config-validation]]
 ==== @ConfigurationProperties Validation
-Spring Boot will attempt to validate external configuration, by default using JSR-303
-(if it is on the classpath). You can simply add JSR-303 `javax.validation` constraint
-annotations to your `@ConfigurationProperties` class:
+Spring Boot will attempt to validate `@ConfigurationProperties` classes whenever they
+are annotated with Spring's `@Validated` annotation. You can use JSR-303 `javax.validation`
+constraint annotations directly on your configuration class. Simply ensure that a
+compliant JSR-303 implementation is on your classpath, then add constraint annotations to
+your fields:
 
 [source,java,indent=0]
 ----
 	@ConfigurationProperties(prefix="foo")
+	@Validated
 	public class FooProperties {
 
 		@NotNull
@@ -1114,6 +1117,7 @@ as `@Valid` to trigger its validation. For example, building upon the above
 [source,java,indent=0]
 ----
 	@ConfigurationProperties(prefix="connection")
+	@Validated
 	public class FooProperties {
 
 		@NotNull
@@ -1572,6 +1576,16 @@ NOTE: You cannot use extensions in the standard `logback.xml` configuration file
 it's loaded too early. You need to either use `logback-spring.xml` or define a
 `logging.config` property.
 
+WARNING: The extensions cannot be used with Logback's
+http://logback.qos.ch/manual/configuration.html#autoScan[configuration scanning]. If you
+attempt to do so, making changes to the configuration file will result in an error similar
+to one of the following being logged:
+
+----
+ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProperty], current ElementPath is [[configuration][springProperty]]
+ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProfile], current ElementPath is [[configuration][springProfile]]
+----
+
 
 
 ==== Profile-specific configuration
@@ -1688,7 +1702,7 @@ The auto-configuration adds the following features on top of Spring's defaults:
 * Support for `HttpMessageConverters` (see below).
 * Automatic registration of `MessageCodesResolver` (see below).
 * Static `index.html` support.
-* Custom `Favicon` support.
+* Custom `Favicon` support (see below).
 * Automatic use of a `ConfigurableWebBindingInitializer` bean (see below).
 
 If you want to keep Spring Boot MVC features, and
@@ -1806,11 +1820,20 @@ Spring decides not to handle it. Most of the time this will not happen (unless y
 the default MVC configuration) because Spring will always be able to handle requests
 through the `DispatcherServlet`.
 
-You can customize the static resource locations using `spring.resources.staticLocations`
-(replacing the default values with a list of directory locations). If you do this the
-default welcome page detection will switch to your custom locations, so if there is an
-`index.html` in any of your locations on startup, it will be the home page of the
-application.
+By default, resources are mapped on `+/**+` but you can tune that via
+`spring.mvc.static-path-pattern`. For instance, relocating all resources to `/resources/**`
+can be achieved as follows:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.mvc.static-path-pattern=/resources/**
+----
+
+You can also customize the static resource locations using
+`spring.resources.static-locations` (replacing the default values with a list of directory
+locations). If you do this the default welcome page detection will switch to your custom
+locations, so if there is an `index.html` in any of your locations on startup, it will be
+the home page of the application.
 
 In addition to the '`standard`' static resource locations above, a special case is made
 for http://www.webjars.org/[Webjars content]. Any resources with a path in `+/webjars/**+`
@@ -1875,6 +1898,14 @@ This feature has been thoroughly described in a dedicated
 https://spring.io/blog/2014/07/24/spring-framework-4-1-handling-static-web-resources[blog post]
 and in Spring Framework's {spring-reference}/#mvc-config-static-resources[reference documentation].
 ====
+
+
+
+[[boot-features-spring-mvc-favicon]]
+==== Custom Favicon
+Spring Boot looks for a `favicon.ico` in the configured static content locations and the
+root of the classpath (in that order). If such file is present, it is automatically used
+as the favicon of the application.
 
 
 
@@ -2221,6 +2252,13 @@ Spring Boot includes support for embedded Tomcat, Jetty, and Undertow servers. M
 developers will simply use the appropriate '`Starter`' to obtain a fully configured
 instance. By default the embedded server will listen for HTTP requests on port `8080`.
 
+WARNING: If you choose to use Tomcat on CentOS be aware that, by default, a temporary
+directory is used to store compiled JSPs, file uploads etc. This directory may be
+deleted by `tmpwatch` while your application is running leading to failures. To avoid
+this, you may want to customize your `tmpwatch` configuration so that `tomcat.*`
+directories are not deleted, or configure `server.tomcat.basedir` so that embedded Tomcat
+uses a different location.
+
 
 
 [[boot-features-embedded-container-servlets-filters-listeners]]
@@ -2519,6 +2557,11 @@ WARNING: If you use the `security.oauth2.resource.jwt.key-uri` the authorization
 needs to be running when your application starts up. It will log a warning if it can't
 find the key, and tell you what to do to fix it.
 
+OAuth2 resources are protected by a filter chain with order
+`security.oauth2.resource.filter-order` and the default is after the filter protecting the
+actuator endpoints by default (so actuator endpoints will stay on HTTP Basic unless you
+change the order).
+
 
 
 [[boot-features-security-oauth2-token-type]]
@@ -2533,14 +2576,15 @@ which suits most providers and matches the spec, but if you need to change it yo
 [[boot-features-security-custom-user-info]]
 === Customizing the User Info RestTemplate
 If you have a `user-info-uri`, the resource server features use an `OAuth2RestTemplate`
-internally to fetch user details for authentication. This is provided as a qualified
-`@Bean` with id `userInfoRestTemplate`, but you shouldn't need to know that to just
-use it. The default should be fine for most providers, but occasionally you might need to
-add additional interceptors, or change the request authenticator (which is how the token
-gets attached to outgoing requests). To add a customization just create a bean of type
-`UserInfoRestTemplateCustomizer` - it has a single method that will be called after the
-bean is created but before it is initialized. The rest template that is being customized
-here is _only_ used internally to carry out authentication.
+internally to fetch user details for authentication. This is provided as a `@Bean` of
+type `UserInfoRestTemplateFactory`. The default should be fine for most providers, but
+occasionally you might need to add additional interceptors, or change the request
+authenticator (which is how the token gets attached to outgoing requests). To add a
+customization just create a bean of type `UserInfoRestTemplateCustomizer` - it has a
+single method that will be called after the bean is created but before it is initialized.
+The rest template that is being customized here is _only_ used internally to carry out
+authentication. Alternatively, you could define your own `UserInfoRestTemplateFactory`
+`@Bean` to take full control.
 
 [TIP]
 ====
@@ -2660,20 +2704,7 @@ to the home page at "/" and keep the default for everything else:
 
 [source,java,indent=0]
 ----
-	@Configuration
-	public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-		@Override
-		public void init(WebSecurity web) {
-			web.ignore("/");
-		}
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
-		}
-
-	}
+include::{code-examples}/web/security/UnauthenticatedAccessExample.java[tag=configuration]
 ----
 
 
@@ -2683,8 +2714,9 @@ to the home page at "/" and keep the default for everything else:
 If the Actuator is also in use, you will find:
 
 * The management endpoints are secure even if the application endpoints are insecure.
-* Security events are transformed into `AuditEvents` and published to the `AuditService`.
-* The default user will have the `ADMIN` role as well as the `USER` role.
+* Security events are transformed into `AuditEvent` instances and published to the
+`AuditEventRepository`.
+* The default user will have the `ACTUATOR` role as well as the `USER` role.
 
 The Actuator security features can be modified using external properties
 (`+management.security.*+`). To override the application access rules
@@ -2711,7 +2743,7 @@ Java's `javax.sql.DataSource` interface provides a standard method of working wi
 database connections. Traditionally a DataSource uses a `URL` along with some
 credentials to establish a database connection.
 
-TIP: Check also <<the '`How-to`' section,howto.adoc#howto-configure-a-datasource] for more
+TIP: Check also <<howto.adoc#howto-configure-a-datasource,the '`How-to`' section>> for more
 advanced examples, typically to take full control over the configuration of the
 DataSource.
 
@@ -3032,6 +3064,16 @@ Hibernate autoconfig is active because the `ddl-auto` settings are more fine-gra
 
 
 
+[[boot-features-jpa-in-web-environment]]
+==== Open EntityManager in View
+If you are running a web application, Spring Boot will by default register
+{spring-javadoc}/orm/jpa/support/OpenEntityManagerInViewInterceptor.html[`OpenEntityManagerInViewInterceptor`]
+to apply the "Open EntityManager in View" pattern, i.e. to allow for lazy loading in web
+views. If you don't want this behavior you should set `spring.jpa.open-in-view` to
+`false` in your `application.properties`.
+
+
+
 [[boot-features-sql-h2-console]]
 === Using H2's web console
 The http://www.h2database.com[H2 database] provides a
@@ -3189,11 +3231,12 @@ https://github.com/spring-projects/spring-data-elasticsearch/[Elasticsearch],
 http://projects.spring.io/spring-data-solr/[Solr],
 http://projects.spring.io/spring-data-redis/[Redis],
 http://projects.spring.io/spring-data-gemfire/[Gemfire],
+http://projects.spring.io/spring-data-cassandra/[Cassandra],
 http://projects.spring.io/spring-data-couchbase/[Couchbase] and
-http://projects.spring.io/spring-data-cassandra/[Cassandra].
+http://projects.spring.io/spring-data-ldap/[LDAP].
 Spring Boot provides auto-configuration for Redis, MongoDB, Neo4j, Elasticsearch, Solr
-and Cassandra; you can make use of the other projects, but you will need to configure
-them yourself. Refer to the appropriate reference documentation at
+Cassandra, Couchbase and LDAP; you can make use of the other projects, but you will need
+to configure them yourself. Refer to the appropriate reference documentation at
 http://projects.spring.io/spring-data[projects.spring.io/spring-data].
 
 
@@ -3244,7 +3287,8 @@ pooled connection factory by default.
 http://www.mongodb.com/[MongoDB] is an open-source NoSQL document database that uses a
 JSON-like schema instead of traditional table-based relational data. Spring Boot offers
 several conveniences for working with MongoDB, including the
-`spring-boot-starter-data-mongodb` '`Starter`'.
+`spring-boot-starter-data-mongodb` and `spring-boot-starter-data-mongodb-reactive`
+'`Starters`'.
 
 
 
@@ -3387,6 +3431,9 @@ property. To use a randomly allocated free port use a value of zero. The `MongoC
 created by `MongoAutoConfiguration` will be automatically configured to use the randomly
 allocated port.
 
+NOTE: If you do not configure a custom port, the embedded support will use a random port
+by default (rather than 27017).
+
 If you have SLF4J on the classpath, output produced by Mongo will be automatically routed
 to a logger named `org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongo`.
 
@@ -3461,13 +3508,13 @@ persistence for the embedded mode:
 [[boot-features-neo4j-ogm-session]]
 ==== Neo4jSession
 
-By default, the lifetime of the session is scoped to the application. If you are running a
-web application, you can change it so that the session is bound to the thread for the
-entire processing of the request (i.e. the "Open Session in View" pattern):
+By default, if you are running a web application, the session is bound to the thread for
+the entire processing of the request (i.e. the "Open Session in View" pattern). If you
+don't want this behavior add the following to your `application.properties`:
 
 
 ----
-	spring.data.neo4j.open-in-view=true
+	spring.data.neo4j.open-in-view=false
 ----
 
 
@@ -3604,6 +3651,15 @@ configured:
 	spring.elasticsearch.jest.password=secret
 ----
 
+You can also register an arbitrary number of beans implementing
+`HttpClientConfigBuilderCustomizer` for more advanced customizations. The example below
+tunes additional HTTP settings:
+
+[source,java,indent=0]
+----
+include::{code-examples}/elasticsearch/jest/JestClientCustomizationExample.java[tag=customizer]
+----
+
 To take full control over the registration, define a `JestClient` bean.
 
 
@@ -3723,6 +3779,7 @@ TIP: For complete details of Spring Data Cassandra, refer to their
 http://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
 
 
+
 [[boot-features-couchbase]]
 === Couchbase
 http://www.couchbase.com/[Couchbase] is an open-source, distributed multi-model NoSQL
@@ -3828,6 +3885,93 @@ TIP: If you want to fully bypass the auto-configuration for Spring Data Couchbas
 your own `org.springframework.data.couchbase.config.AbstractCouchbaseDataConfiguration`
 implementation.
 
+
+
+[[boot-features-ldap]]
+=== LDAP
+https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol[LDAP] (Lightweight
+Directory Access Protocol) is an open, vendor-neutral, industry standard application
+protocol for accessing and maintaining distributed directory information services over an
+IP network. Spring Boot offers auto-configuration for any compliant LDAP server as well
+as support for the embedded in-memory LDAP server from
+https://www.ldap.com/unboundid-ldap-sdk-for-java[UnboundID].
+
+LDAP abstractions are provided by
+https://github.com/spring-projects/spring-data-ldap[Spring Data LDAP].
+There is a `spring-boot-starter-data-ldap` '`Starter`' for collecting the dependencies in
+a convenient way.
+
+
+
+[[boot-features-ldap-connecting]]
+==== Connecting to an LDAP server
+To connect to an LDAP server make sure you declare a dependency on the
+`spring-boot-starter-data-ldap` '`Starter`' or `spring-ldap-core` then declare the
+URLs of your server in your application.properties:
+
+[source,properties,indent=0]
+----
+	spring.ldap.urls=ldap://myserver:1235
+	spring.ldap.username=admin
+	spring.ldap.password=secret
+----
+
+If you need to customize connection settings you can use the `spring.ldap.base` and
+`spring.ldap.base-environment` properties.
+
+
+
+[[boot-features-ldap-spring-data-repositories]]
+==== Spring Data LDAP repositories
+Spring Data includes repository support for LDAP. For complete details of Spring
+Data LDAP, refer to their
+http://docs.spring.io/spring-data/ldap/docs/1.0.x/reference/html/[reference documentation].
+
+You can also inject an auto-configured `LdapTemplate` instance as you would with any
+other Spring Bean.
+
+
+[source,java,indent=0]
+----
+	@Component
+	public class MyBean {
+
+		private final LdapTemplate template;
+
+		@Autowired
+		public MyBean(LdapTemplate template) {
+			this.template = template;
+		}
+
+		// ...
+
+	}
+----
+
+
+
+[[boot-features-ldap-embedded]]
+==== Embedded in-memory LDAP server
+For testing purposes Spring Boot supports auto-configuration of an in-memory LDAP server
+from https://www.ldap.com/unboundid-ldap-sdk-for-java[UnboundID]. To configure the server
+add a dependency to `com.unboundid:unboundid-ldapsdk` and declare a `base-dn` property:
+
+[source,properties,indent=0]
+----
+	spring.ldap.embedded.base-dn=dc=spring,dc=io
+----
+
+By default the server will start on a random port and they trigger the regular LDAP support
+(there is no need to specify a `spring.ldap.urls` property).
+
+If there is a `schema.ldif` file on your classpath it will be used to initialize the
+server. You can also use the `spring.ldap.embedded.ldif` property if you want to load
+the initialization script from a different resource.
+
+By default, a standard schema will be used to validate `LDIF` files, you can turn off
+validation altogether using the `spring.ldap.embedded.validation.enabled` property. If
+you have custom attributes, you can use `spring.ldap.embedded.validation.schema` to define
+your custom attribute types or object classes.
 
 
 [[boot-features-caching]]
@@ -3960,6 +4104,10 @@ NOTE: Since a cache library may offer both a native implementation and JSR-107 s
 Spring Boot will prefer the JSR-107 support so that the same features are available if
 you switch to a different JSR-107 implementation.
 
+TIP: Spring Boot has a <<boot-features-hazelcast,general support for Hazelcast>>. If
+a single `HazelcastInstance` is available, it is automatically reused for the
+`CacheManager` as well unless the `spring.cache.jcache.config` property is specified.
+
 There are several ways to customize the underlying `javax.cache.cacheManager`:
 
 * Caches can be created on startup via the `spring.cache.cache-names` property. If a
@@ -3994,18 +4142,6 @@ the cache manager. An alternate configuration file can be provided as well using
 Spring Boot has a <<boot-features-hazelcast,general support for Hazelcast>>. If
 a `HazelcastInstance` has been auto-configured, it is automatically wrapped in a
 `CacheManager`.
-
-If for some reason you need a different `HazelcastInstance` for caching, you can
-request Spring Boot to create a separate one that will be only used by the
-`CacheManager`:
-
-[source,properties,indent=0]
-----
-	spring.cache.hazelcast.config=classpath:config/my-cache-hazelcast.xml
-----
-
-TIP: If a separate `HazelcastInstance` is created that way, it is not registered
-in the application context.
 
 
 
@@ -4064,7 +4200,7 @@ cache:
 		public CacheManagerCustomizer<CouchbaseCacheManager> cacheManagerCustomizer() {
 			return c -> {
 				c.prepareCache("biz", CacheBuilder.newInstance(anotherBucket())
-						.withExpirationInMillis(2000));
+						.withExpiration(2));
 			};
 		}
 
@@ -4183,6 +4319,16 @@ ActiveMQ configuration is controlled by external configuration properties in
 	spring.activemq.broker-url=tcp://192.168.1.210:9876
 	spring.activemq.user=admin
 	spring.activemq.password=secret
+----
+
+You can also pool JMS resources by adding a dependency to
+`org.apache.activemq:activemq-pool` and configure the `PooledConnectionFactory`
+accordingly:
+
+[source,properties,indent=0]
+----
+	spring.activemq.pool.enabled=true
+	spring.activemq.pool.max-connections=50
 ----
 
 See
@@ -4445,8 +4591,9 @@ the broker connection is lost. Retries are disabled by default.
 ==== Receiving a message
 When the Rabbit infrastructure is present, any bean can be annotated with
 `@RabbitListener` to create a listener endpoint. If no `RabbitListenerContainerFactory`
-has been defined, a default one is configured automatically.  If a `MessageConverter`
-beans is defined, it is associated automatically to the default factory.
+has been defined, a default one is configured automatically.  If a `MessageConverter` or
+`MessageRecoverer` beans are defined, they are associated automatically to the default
+factory.
 
 The following component creates a listener endpoint on the `someQueue` queue:
 
@@ -4509,9 +4656,11 @@ Then you can use in any `@RabbitListener`-annotated method as follows:
 	}
 ----
 
-You can enable retries to handle situations where your listener throws an exception.
-When retries are exhausted, the message will be rejected and either dropped or routed to a
-dead-letter exchange if the broker is configured so. Retries are disabled by default.
+You can enable retries to handle situations where your listener throws an exception. By
+default `RejectAndDontRequeueRecoverer` is used but you can define a `MessageRecoverer`
+of your own. When retries are exhausted, the message will be rejected and either dropped
+or routed to a dead-letter exchange if the broker is configured so. Retries are disabled
+by default.
 
 IMPORTANT: If retries are not enabled and the listener throws an exception, by default the
 delivery will be retried indefinitely. You can modify this behavior in two ways; set the
@@ -4543,7 +4692,7 @@ for more of the supported options.
 
 
 [[boot-features-kafka-sending-a-message]]
-=== Sending a Message
+==== Sending a Message
 Spring's `KafkaTemplate` is auto-configured and you can autowire them directly in your own
 beans:
 
@@ -4567,7 +4716,7 @@ public class MyBean {
 
 
 [[boot-features-kafka-receiving-a-message]]
-=== Receiving a Message
+==== Receiving a Message
 When the Apache Kafka infrastructure is present, any bean can be annotated with
 `@KafkaListener` to create a listener endpoint. If no `KafkaListenerContainerFactory`
 has been defined, a default one is configured automatically with keys defined in
@@ -4591,7 +4740,7 @@ The following component creates a listener endpoint on the `someTopic` topic:
 
 
 [[boot-features-kafka-extra-props]]
-=== Additional Kafka Properties
+==== Additional Kafka Properties
 The properties supported by auto configuration are shown in
 <<common-application-properties>>. Note that these properties (hyphenated or camelCase)
 map directly to the Apache Kafka dotted properties for the most part, refer to the Apache
@@ -4730,6 +4879,16 @@ exists. The sender can be further customized by configuration items from the `sp
 namespace, see the
 {sc-spring-boot-autoconfigure}/mail/MailProperties.{sc-ext}[`MailProperties`] for more
 details.
+
+In particular, certain default timeout values are infinite and you may want to change that
+to avoid having a thread blocked by an unresponsive mail server:
+
+[source,properties,indent=0]
+----
+	spring.mail.properties.mail.smtp.connecttimeout=5000
+	spring.mail.properties.mail.smtp.timeout=3000
+	spring.mail.properties.mail.smtp.writetimeout=5000
+----
 
 
 
@@ -4941,7 +5100,7 @@ Spring Boot provides Spring Session auto-configuration for a wide range of store
 * Hazelcast
 * HashMap
 
-If Spring Session is available, you only need to choose the
+If Spring Session is available, you must choose the
 {sc-spring-boot-autoconfigure}/session/StoreType.{sc-ext}[`StoreType`] that you wish to
 use to store the sessions. For instance to use JDBC as backend store, you'd configure
 your application as follows:
@@ -4950,9 +5109,6 @@ your application as follows:
 ----
     spring.session.store-type=jdbc
 ----
-
-NOTE: For backward compatibility if Redis is available Spring Session will be automatically
-configured to use Redis.
 
 TIP: You can disable Spring Session by setting the `store-type` to `none`.
 
@@ -4998,7 +5154,7 @@ If you use the
 the following provided libraries:
 
 * http://junit.org[JUnit] -- The de-facto standard for unit testing Java applications.
-* {spring-reference}/#integration-testing.html[Spring Test] & Spring Boot Test --
+* {spring-reference}/#integration-testing[Spring Test] & Spring Boot Test --
   Utilities and integration test support for Spring Boot applications.
 * http://joel-costigliola.github.io/assertj/[AssertJ] -- A fluent assertion library.
 * http://hamcrest.org/JavaHamcrest/[Hamcrest] -- A library of matcher objects (also known
@@ -5205,6 +5361,10 @@ used to automatically configure such '`slices`'. Each of them works in a similar
 providing a `@...Test` annotation that loads the `ApplicationContext` and one or
 more `@AutoConfigure...` annotations that can be used to customize auto-configuration
 settings.
+
+NOTE: Each slice loads a very restricted set of auto-configuration classes. If you need to
+exclude one of them, most `@...Test` annotations provide an `excludeAutoConfiguration`
+attribute. Alternatively, you can use `@ImportAutoConfiguration#exclude`.
 
 TIP: It's also possible to use the `@AutoConfigure...` annotations with the standard
 `@SpringBootTest` annotation. You can use this combination if you're not interested
@@ -5497,6 +5657,55 @@ If you prefer your test to run against a real database, you can use the
 `@AutoConfigureTestDatabase` annotation the same way as for `DataJpaTest`.
 
 A list of the auto-configuration that is enabled by `@JdbcTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+
+
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-mongo-test]]
+==== Auto-configured Data MongoDB tests
+`@DataMongoTest` can be used if you want to test MongoDB applications. By default, it will
+configure an in-memory embedded MongoDB (if available), configure a `MongoTemplate`, scan
+for `@Document` classes and configure Spring Data MongoDB repositories. Regular
+`@Component` beans will not be loaded into the `ApplicationContext`:
+
+[source,java,indent=0]
+----
+	import org.junit.runner.RunWith;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+	import org.springframework.data.mongodb.core.MongoTemplate;
+	import org.springframework.test.context.junit4.SpringRunner;
+
+	@RunWith(SpringRunner.class)
+	@DataMongoTest
+	public class ExampleDataMongoTests {
+
+		@Autowired
+		private MongoTemplate mongoTemplate;
+
+		//
+	}
+----
+
+In-memory embedded MongoDB generally works well for tests since it is fast and doesn't
+require any developer installation. If, however, you prefer to run tests against a real
+MongoDB server you should exclude the embedded MongoDB auto-configuration:
+
+[source,java,indent=0]
+----
+	import org.junit.runner.RunWith;
+    import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
+	import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+
+	@RunWith(SpringRunner.class)
+	@DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
+	public class ExampleDataMongoNonEmbeddedTests {
+
+	}
+----
+
+A list of the auto-configuration that is enabled by `@DataMongoTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 

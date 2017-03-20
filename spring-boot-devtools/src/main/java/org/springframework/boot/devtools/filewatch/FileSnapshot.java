@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,9 +59,9 @@ class FileSnapshot {
 		if (obj instanceof FileSnapshot) {
 			FileSnapshot other = (FileSnapshot) obj;
 			boolean equals = this.file.equals(other.file);
-			equals &= this.exists == other.exists;
-			equals &= this.length == other.length;
-			equals &= this.lastModified == other.lastModified;
+			equals = equals && this.exists == other.exists;
+			equals = equals && this.length == other.length;
+			equals = equals && this.lastModified == other.lastModified;
 			return equals;
 		}
 		return super.equals(obj);

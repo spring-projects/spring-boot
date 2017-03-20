@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,7 +128,7 @@ public class EndpointMBeanExporterTests {
 		this.context.registerBeanDefinition("endpoint1",
 				new RootBeanDefinition(TestEndpoint.class));
 		this.context.registerBeanDefinition("endpoint2",
-				new RootBeanDefinition(TestEndpoint.class));
+				new RootBeanDefinition(TestEndpoint2.class));
 		this.context.refresh();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 		assertThat(mbeanExporter.getServer()
@@ -155,7 +155,7 @@ public class EndpointMBeanExporterTests {
 
 	@Test
 	public void testRegistrationWithDifferentDomainAndIdentity() throws Exception {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("domain", "test-domain");
 		properties.put("ensureUniqueRuntimeObjectNames", true);
 		this.context = new GenericApplicationContext();
@@ -174,7 +174,7 @@ public class EndpointMBeanExporterTests {
 	@Test
 	public void testRegistrationWithDifferentDomainAndIdentityAndStaticNames()
 			throws Exception {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("domain", "test-domain");
 		properties.put("ensureUniqueRuntimeObjectNames", true);
 		Properties staticNames = new Properties();
@@ -329,16 +329,20 @@ public class EndpointMBeanExporterTests {
 
 	}
 
+	public static class TestEndpoint2 extends TestEndpoint {
+
+	}
+
 	public static class JsonMapConversionEndpoint
 			extends AbstractEndpoint<Map<String, Object>> {
 
 		public JsonMapConversionEndpoint() {
-			super("json-map-conversion");
+			super("json_map_conversion");
 		}
 
 		@Override
 		public Map<String, Object> invoke() {
-			Map<String, Object> result = new LinkedHashMap<String, Object>();
+			Map<String, Object> result = new LinkedHashMap<>();
 			result.put("date", new Date());
 			return result;
 		}
@@ -349,7 +353,7 @@ public class EndpointMBeanExporterTests {
 			extends AbstractEndpoint<List<Object>> {
 
 		public JsonListConversionEndpoint() {
-			super("json-list-conversion");
+			super("json_list_conversion");
 		}
 
 		@Override

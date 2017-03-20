@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ public class ResourceBanner implements Banner {
 
 	protected List<PropertyResolver> getPropertyResolvers(Environment environment,
 			Class<?> sourceClass) {
-		List<PropertyResolver> resolvers = new ArrayList<PropertyResolver>();
+		List<PropertyResolver> resolvers = new ArrayList<>();
 		resolvers.add(environment);
 		resolvers.add(getVersionResolver(sourceClass));
 		resolvers.add(getAnsiResolver());
@@ -96,7 +96,7 @@ public class ResourceBanner implements Banner {
 	private Map<String, Object> getVersionsMap(Class<?> sourceClass) {
 		String appVersion = getApplicationVersion(sourceClass);
 		String bootVersion = getBootVersion();
-		Map<String, Object> versions = new HashMap<String, Object>();
+		Map<String, Object> versions = new HashMap<>();
 		versions.put("application.version", getVersionString(appVersion, false));
 		versions.put("spring-boot.version", getVersionString(bootVersion, false));
 		versions.put("application.formatted-version", getVersionString(appVersion, true));

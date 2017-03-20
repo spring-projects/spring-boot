@@ -54,10 +54,9 @@ public class CassandraAutoConfiguration {
 	private final List<ClusterBuilderCustomizer> builderCustomizers;
 
 	public CassandraAutoConfiguration(CassandraProperties properties,
-			ObjectProvider<List<ClusterBuilderCustomizer>> builderCustomizersProvider) {
+			ObjectProvider<List<ClusterBuilderCustomizer>> builderCustomizers) {
 		this.properties = properties;
-		this.builderCustomizers = builderCustomizersProvider
-				.getIfAvailable();
+		this.builderCustomizers = builderCustomizers.getIfAvailable();
 	}
 
 	@Bean

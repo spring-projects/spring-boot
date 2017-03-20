@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,10 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -47,9 +47,9 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -60,15 +60,15 @@ import static org.mockito.Mockito.mock;
  */
 public class AutoConfigurationReportLoggingInitializerTests {
 
-	private static ThreadLocal<Log> logThreadLocal = new ThreadLocal<Log>();
+	private static ThreadLocal<Log> logThreadLocal = new ThreadLocal<>();
 
 	private Log log;
 
 	private AutoConfigurationReportLoggingInitializer initializer;
 
-	protected List<String> debugLog = new ArrayList<String>();
+	protected List<String> debugLog = new ArrayList<>();
 
-	protected List<String> infoLog = new ArrayList<String>();
+	protected List<String> infoLog = new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -88,7 +88,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 						.add(String.valueOf(invocation.getArguments()[0]));
 			}
 
-		}).given(this.log).debug(anyObject());
+		}).given(this.log).debug(any());
 
 		given(this.log.isInfoEnabled()).willReturn(info);
 		willAnswer(new Answer<Object>() {
@@ -99,7 +99,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 						.add(String.valueOf(invocation.getArguments()[0]));
 			}
 
-		}).given(this.log).info(anyObject());
+		}).given(this.log).info(any());
 
 		LogFactory.releaseAll();
 		System.setProperty(LogFactory.FACTORY_PROPERTY, MockLogFactory.class.getName());
@@ -171,7 +171,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		}
 		// Just basic sanity check, test is for visual inspection
 		String l = this.debugLog.get(0);
-		assertThat(l).contains("not a web application (OnWebApplicationCondition)");
+		assertThat(l)
+				.contains("not a servlet web application (OnWebApplicationCondition)");
 	}
 
 	@Test

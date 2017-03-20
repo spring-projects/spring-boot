@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 class OAuth2ProtectedResourceDetailsConfiguration {
 
 	@Bean
-	@ConfigurationProperties("security.oauth2.client")
+	@ConfigurationProperties(prefix = "security.oauth2.client")
 	@Primary
 	public AuthorizationCodeResourceDetails oauth2RemoteResource() {
 		return new AuthorizationCodeResourceDetails();

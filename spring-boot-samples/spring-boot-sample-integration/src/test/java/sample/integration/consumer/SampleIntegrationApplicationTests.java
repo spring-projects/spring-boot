@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package sample.integration.consumer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -50,9 +51,15 @@ public class SampleIntegrationApplicationTests {
 	private ConfigurableApplicationContext context;
 
 	@Before
-	public void deleteOutput() {
-		FileSystemUtils.deleteRecursively(new File("target/input"));
-		FileSystemUtils.deleteRecursively(new File("target/output"));
+	public void deleteInputAndOutput() throws InterruptedException {
+		deleteIfExists(new File("target/input"));
+		deleteIfExists(new File("target/output"));
+	}
+
+	private void deleteIfExists(File directory) throws InterruptedException {
+		if (directory.exists()) {
+			assertThat(FileSystemUtils.deleteRecursively(directory)).isTrue();
+		}
 	}
 
 	@After
@@ -90,8 +97,14 @@ public class SampleIntegrationApplicationTests {
 						}
 						StringBuilder builder = new StringBuilder();
 						for (Resource resource : resources) {
-							builder.append(new String(StreamUtils
-									.copyToByteArray(resource.getInputStream())));
+							InputStream inputStream = resource.getInputStream();
+							try {
+								builder.append(new String(
+										StreamUtils.copyToByteArray(inputStream)));
+							}
+							finally {
+								inputStream.close();
+							}
 						}
 						return builder.toString();
 					}

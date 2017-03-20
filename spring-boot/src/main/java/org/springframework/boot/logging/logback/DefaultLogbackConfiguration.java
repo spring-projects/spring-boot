@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,11 +108,10 @@ class DefaultLogbackConfiguration {
 		config.logger("org.hibernate.validator.internal.util.Version", Level.WARN);
 		config.logger("org.springframework.boot.actuate.endpoint.jmx", null, false,
 				debugRemapAppender);
-		config.logger("org.thymeleaf", null, false, debugRemapAppender);
 	}
 
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
-		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<ILoggingEvent>();
+		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		String logPattern = this.patterns.getProperty("console", CONSOLE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
@@ -125,7 +124,7 @@ class DefaultLogbackConfiguration {
 
 	private Appender<ILoggingEvent> fileAppender(LogbackConfigurator config,
 			String logFile) {
-		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<ILoggingEvent>();
+		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		String logPattern = this.patterns.getProperty("file", FILE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
@@ -149,7 +148,7 @@ class DefaultLogbackConfiguration {
 
 	private void setMaxFileSize(RollingFileAppender<ILoggingEvent> appender,
 			LogbackConfigurator config) {
-		SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>();
+		SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<>();
 		try {
 			triggeringPolicy.setMaxFileSize(FileSize.valueOf("10MB"));
 		}

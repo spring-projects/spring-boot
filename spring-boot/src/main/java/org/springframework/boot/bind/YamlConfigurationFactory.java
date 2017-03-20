@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -56,8 +55,6 @@ public class YamlConfigurationFactory<T>
 
 	private final Class<?> type;
 
-	private boolean exceptionIfInvalid;
-
 	private String yaml;
 
 	private Resource resource;
@@ -76,7 +73,7 @@ public class YamlConfigurationFactory<T>
 	 * @param type the root type
 	 */
 	public YamlConfigurationFactory(Class<?> type) {
-		Assert.notNull(type);
+		Assert.notNull(type, "Root type must not be null");
 		this.type = type;
 	}
 
@@ -94,8 +91,7 @@ public class YamlConfigurationFactory<T>
 	 * @param propertyAliases the property aliases
 	 */
 	public void setPropertyAliases(Map<Class<?>, Map<String, String>> propertyAliases) {
-		this.propertyAliases = new HashMap<Class<?>, Map<String, String>>(
-				propertyAliases);
+		this.propertyAliases = new HashMap<>(propertyAliases);
 	}
 
 	/**
@@ -122,10 +118,6 @@ public class YamlConfigurationFactory<T>
 		this.validator = validator;
 	}
 
-	public void setExceptionIfInvalid(boolean exceptionIfInvalid) {
-		this.exceptionIfInvalid = exceptionIfInvalid;
-	}
-
 	@Override
 	@SuppressWarnings("unchecked")
 	public void afterPropertiesSet() throws Exception {
@@ -136,23 +128,14 @@ public class YamlConfigurationFactory<T>
 		}
 		Assert.state(this.yaml != null, "Yaml document should not be null: "
 				+ "either set it directly or set the resource to load it from");
-		try {
-			if (logger.isTraceEnabled()) {
-				logger.trace(String.format("Yaml document is %n%s", this.yaml));
-			}
-			Constructor constructor = new YamlJavaBeanPropertyConstructor(this.type,
-					this.propertyAliases);
-			this.configuration = (T) (new Yaml(constructor)).load(this.yaml);
-			if (this.validator != null) {
-				validate();
-			}
+		if (logger.isTraceEnabled()) {
+			logger.trace(String.format("Yaml document is %n%s", this.yaml));
 		}
-		catch (YAMLException ex) {
-			if (this.exceptionIfInvalid) {
-				throw ex;
-			}
-			logger.error("Failed to load YAML validation bean. "
-					+ "Your YAML file may be invalid.", ex);
+		Constructor constructor = new YamlJavaBeanPropertyConstructor(this.type,
+				this.propertyAliases);
+		this.configuration = (T) (new Yaml(constructor)).load(this.yaml);
+		if (this.validator != null) {
+			validate();
 		}
 	}
 
@@ -165,10 +148,7 @@ public class YamlConfigurationFactory<T>
 			for (ObjectError error : errors.getAllErrors()) {
 				logger.error(getErrorMessage(error));
 			}
-			if (this.exceptionIfInvalid) {
-				BindException summary = new BindException(errors);
-				throw summary;
-			}
+			throw new BindException(errors);
 		}
 	}
 

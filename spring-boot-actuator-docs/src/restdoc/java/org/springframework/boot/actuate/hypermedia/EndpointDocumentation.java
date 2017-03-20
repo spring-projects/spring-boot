@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.mvc.ActuatorMediaTypes;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -76,8 +77,9 @@ public class EndpointDocumentation {
 
 	static final File LOG_FILE = new File("target/logs/spring.log");
 
-	private static final Set<String> SKIPPED = Collections.<String>unmodifiableSet(
-			new HashSet<String>(Arrays.asList("/docs", "/logfile", "/heapdump")));
+	private static final Set<String> SKIPPED = Collections
+			.<String>unmodifiableSet(new HashSet<>(
+					Arrays.asList("/docs", "/logfile", "/heapdump", "/auditevents")));
 
 	@Autowired
 	private MvcEndpoints mvcEndpoints;
@@ -122,16 +124,45 @@ public class EndpointDocumentation {
 	public void setLogger() throws Exception {
 		this.mockMvc
 				.perform(post("/loggers/org.springframework.boot")
-						.contentType(MediaType.APPLICATION_JSON)
+						.contentType(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON)
 						.content("{\"configuredLevel\": \"DEBUG\"}"))
 				.andExpect(status().isOk()).andDo(document("set-logger"));
 	}
 
 	@Test
+	public void auditEvents() throws Exception {
+		this.mockMvc
+				.perform(get("/auditevents").param("after", "2016-11-01T10:00:00+0000")
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+				.andExpect(status().isOk()).andDo(document("auditevents"));
+	}
+
+	@Test
+	public void auditEventsByPrincipal() throws Exception {
+		this.mockMvc
+				.perform(get("/auditevents").param("principal", "admin")
+						.param("after", "2016-11-01T10:00:00+0000")
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("auditevents/filter-by-principal"));
+	}
+
+	@Test
+	public void auditEventsByPrincipalAndType() throws Exception {
+		this.mockMvc
+				.perform(get("/auditevents").param("principal", "admin")
+						.param("after", "2016-11-01T10:00:00+0000")
+						.param("type", "AUTHENTICATION_SUCCESS")
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("auditevents/filter-by-principal-and-type"));
+	}
+
+	@Test
 	public void endpoints() throws Exception {
 		final File docs = new File("src/main/asciidoc");
-		final Map<String, Object> model = new LinkedHashMap<String, Object>();
-		final List<EndpointDoc> endpoints = new ArrayList<EndpointDoc>();
+		final Map<String, Object> model = new LinkedHashMap<>();
+		final List<EndpointDoc> endpoints = new ArrayList<>();
 		model.put("endpoints", endpoints);
 		for (MvcEndpoint endpoint : getEndpoints()) {
 			final String endpointPath = (StringUtils.hasText(endpoint.getPath())
@@ -139,7 +170,9 @@ public class EndpointDocumentation {
 			if (!SKIPPED.contains(endpointPath)) {
 				String output = endpointPath.substring(1);
 				output = output.length() > 0 ? output : "./";
-				this.mockMvc.perform(get(endpointPath).accept(MediaType.APPLICATION_JSON))
+				this.mockMvc
+						.perform(get(endpointPath)
+								.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
 						.andExpect(status().isOk()).andDo(document(output))
 						.andDo(new ResultHandler() {
 
@@ -167,7 +200,7 @@ public class EndpointDocumentation {
 	}
 
 	private Collection<? extends MvcEndpoint> getEndpoints() {
-		List<? extends MvcEndpoint> endpoints = new ArrayList<MvcEndpoint>(
+		List<? extends MvcEndpoint> endpoints = new ArrayList<>(
 				this.mvcEndpoints.getEndpoints());
 		Collections.sort(endpoints, new Comparator<MvcEndpoint>() {
 			@Override

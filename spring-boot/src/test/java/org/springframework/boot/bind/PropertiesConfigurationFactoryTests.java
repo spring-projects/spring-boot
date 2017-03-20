@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import javax.validation.constraints.NotNull;
 import org.junit.Test;
 
 import org.springframework.beans.NotWritablePropertyException;
-import org.springframework.boot.context.config.RandomValuePropertySource;
+import org.springframework.boot.env.RandomValuePropertySource;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertiesPropertySource;
@@ -81,15 +81,6 @@ public class PropertiesConfigurationFactoryTests {
 		this.validator = new SpringValidatorAdapter(
 				Validation.buildDefaultValidatorFactory().getValidator());
 		createFoo("bar: blah");
-	}
-
-	@Test
-	public void testValidationErrorCanBeSuppressed() throws Exception {
-		this.validator = new SpringValidatorAdapter(
-				Validation.buildDefaultValidatorFactory().getValidator());
-		setupFactory();
-		this.factory.setExceptionIfInvalid(false);
-		bindFoo("bar: blah");
 	}
 
 	@Test
@@ -224,7 +215,7 @@ public class PropertiesConfigurationFactoryTests {
 	}
 
 	private void setupFactory() throws IOException {
-		this.factory = new PropertiesConfigurationFactory<Foo>(Foo.class);
+		this.factory = new PropertiesConfigurationFactory<>(Foo.class);
 		this.factory.setValidator(this.validator);
 		this.factory.setTargetName(this.targetName);
 		this.factory.setIgnoreUnknownFields(this.ignoreUnknownFields);

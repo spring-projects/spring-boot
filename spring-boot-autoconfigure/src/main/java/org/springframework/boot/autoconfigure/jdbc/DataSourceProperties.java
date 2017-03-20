@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
@@ -158,9 +156,6 @@ public class DataSourceProperties
 	private Xa xa = new Xa();
 
 	private String uniqueName;
-
-	@NestedConfigurationProperty
-	private final TransactionProperties transaction = new TransactionProperties();
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
@@ -478,10 +473,6 @@ public class DataSourceProperties
 		this.xa = xa;
 	}
 
-	public TransactionProperties getTransaction() {
-		return this.transaction;
-	}
-
 	/**
 	 * XA Specific datasource settings.
 	 */
@@ -495,7 +486,7 @@ public class DataSourceProperties
 		/**
 		 * Properties to pass to the XA data source.
 		 */
-		private Map<String, String> properties = new LinkedHashMap<String, String>();
+		private Map<String, String> properties = new LinkedHashMap<>();
 
 		public String getDataSourceClassName() {
 			return this.dataSourceClassName;

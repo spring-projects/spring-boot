@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ public class LimitedEnvironmentEndpoint extends EnvironmentEndpoint {
 	private static final MultiValueMap<String, String> INCLUDES;
 
 	static {
-		Map<String, List<String>> includes = new LinkedHashMap<String, List<String>>();
-		List<String> systemProperties = new ArrayList<String>();
+		Map<String, List<String>> includes = new LinkedHashMap<>();
+		List<String> systemProperties = new ArrayList<>();
 		systemProperties.add("java.runtime.name");
 		systemProperties.add("sun.boot.library.path");
 		systemProperties.add("java.vendor.url");
@@ -61,14 +61,13 @@ public class LimitedEnvironmentEndpoint extends EnvironmentEndpoint {
 		systemProperties.add("java.vendor");
 		systemProperties.add("file.separator");
 		includes.put("systemProperties", systemProperties);
-		List<String> systemEnvironment = new ArrayList<String>();
+		List<String> systemEnvironment = new ArrayList<>();
 		systemEnvironment.add("SHELL");
 		systemEnvironment.add("TMPDIR");
 		systemEnvironment.add("DISPLAY");
 		systemEnvironment.add("LOGNAME");
 		includes.put("systemEnvironment", systemEnvironment);
-		INCLUDES = new LinkedMultiValueMap<String, String>(
-				Collections.unmodifiableMap(includes));
+		INCLUDES = new LinkedMultiValueMap<>(Collections.unmodifiableMap(includes));
 	}
 
 	@Override

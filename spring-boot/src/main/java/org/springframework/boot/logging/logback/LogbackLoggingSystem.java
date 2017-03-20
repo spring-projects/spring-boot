@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,10 +60,11 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	private static final String CONFIGURATION_FILE_PROPERTY = "logback.configurationFile";
 
-	private static final LogLevels<Level> LEVELS = new LogLevels<Level>();
+	private static final LogLevels<Level> LEVELS = new LogLevels<>();
 
 	static {
 		LEVELS.map(LogLevel.TRACE, Level.TRACE);
+		LEVELS.map(LogLevel.TRACE, Level.ALL);
 		LEVELS.map(LogLevel.DEBUG, Level.DEBUG);
 		LEVELS.map(LogLevel.INFO, Level.INFO);
 		LEVELS.map(LogLevel.WARN, Level.WARN);
@@ -193,9 +194,11 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public void cleanUp() {
-		markAsUninitialized(getLoggerContext());
+		LoggerContext context = getLoggerContext();
+		markAsUninitialized(context);
 		super.cleanUp();
-		getLoggerContext().getStatusManager().clear();
+		context.getStatusManager().clear();
+		context.getTurboFilterList().remove(FILTER);
 	}
 
 	@Override
@@ -211,7 +214,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public List<LoggerConfiguration> getLoggerConfigurations() {
-		List<LoggerConfiguration> result = new ArrayList<LoggerConfiguration>();
+		List<LoggerConfiguration> result = new ArrayList<>();
 		for (ch.qos.logback.classic.Logger logger : getLoggerContext().getLoggerList()) {
 			result.add(getLoggerConfiguration(logger));
 		}
@@ -257,7 +260,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		return new ShutdownHandler();
 	}
 
-	private ch.qos.logback.classic.Logger getLogger(String name) {
+	ch.qos.logback.classic.Logger getLogger(String name) {
 		LoggerContext factory = getLoggerContext();
 		if (StringUtils.isEmpty(name) || ROOT_LOGGER_NAME.equals(name)) {
 			name = Logger.ROOT_LOGGER_NAME;

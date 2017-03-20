@@ -25,9 +25,11 @@ import javax.transaction.UserTransaction;
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
 import org.jboss.tm.XAResourceRecoveryRegistry;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 import org.springframework.boot.jta.XADataSourceWrapper;
@@ -60,8 +62,13 @@ public class NarayanaJtaConfiguration {
 
 	private final JtaProperties jtaProperties;
 
-	public NarayanaJtaConfiguration(JtaProperties jtaProperties) {
+	private final TransactionManagerCustomizers transactionManagerCustomizers;
+
+	public NarayanaJtaConfiguration(JtaProperties jtaProperties,
+			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 		this.jtaProperties = jtaProperties;
+		this.transactionManagerCustomizers = transactionManagerCustomizers
+				.getIfAvailable();
 	}
 
 	@Bean
@@ -121,7 +128,9 @@ public class NarayanaJtaConfiguration {
 			TransactionManager transactionManager) {
 		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(
 				userTransaction, transactionManager);
-		this.jtaProperties.getTransaction().applyTo(jtaTransactionManager);
+		if (this.transactionManagerCustomizers != null) {
+			this.transactionManagerCustomizers.customize(jtaTransactionManager);
+		}
 		return jtaTransactionManager;
 	}
 

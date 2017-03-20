@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,9 +52,9 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 
 	private final PropertyNamePatternsMatcher includes;
 
-	private final Map<String, PropertyValue> propertyValues = new LinkedHashMap<String, PropertyValue>();
+	private final Map<String, PropertyValue> propertyValues = new LinkedHashMap<>();
 
-	private final ConcurrentHashMap<String, PropertySource<?>> collectionOwners = new ConcurrentHashMap<String, PropertySource<?>>();
+	private final ConcurrentHashMap<String, PropertySource<?>> collectionOwners = new ConcurrentHashMap<>();
 
 	private final boolean resolvePlaceholders;
 
@@ -63,8 +63,20 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	 * @param propertySources a PropertySources instance
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources) {
+		this(propertySources, true);
+	}
+
+	/**
+	 * Create a new PropertyValues from the given PropertySources that will optionally
+	 * resolve placeholders.
+	 * @param propertySources a PropertySources instance
+	 * @param resolvePlaceholders {@code true} if placeholders should be resolved.
+	 * @since 1.5.2
+	 */
+	public PropertySourcesPropertyValues(PropertySources propertySources,
+			boolean resolvePlaceholders) {
 		this(propertySources, (Collection<String>) null, PropertyNamePatternsMatcher.ALL,
-				true);
+				resolvePlaceholders);
 	}
 
 	/**

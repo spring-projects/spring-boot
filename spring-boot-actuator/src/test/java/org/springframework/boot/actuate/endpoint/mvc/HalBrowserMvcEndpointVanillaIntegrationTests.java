@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,8 +119,8 @@ public class HalBrowserMvcEndpointVanillaIntegrationTests {
 
 	@Test
 	public void endpointsEachHaveSelf() throws Exception {
-		Set<String> collections = new HashSet<String>(
-				Arrays.asList("/trace", "/beans", "/dump", "/heapdump", "/loggers"));
+		Set<String> collections = new HashSet<>(Arrays.asList("/trace", "/beans", "/dump",
+				"/heapdump", "/loggers", "/auditevents"));
 		for (MvcEndpoint endpoint : this.mvcEndpoints.getEndpoints()) {
 			String path = endpoint.getPath();
 			if (collections.contains(path)) {

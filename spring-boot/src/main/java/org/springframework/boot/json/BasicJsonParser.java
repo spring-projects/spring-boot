@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public class BasicJsonParser implements JsonParser {
 	}
 
 	private List<Object> parseListInternal(String json) {
-		List<Object> list = new ArrayList<Object>();
+		List<Object> list = new ArrayList<>();
 		json = trimLeadingCharacter(trimTrailingCharacter(json, ']'), '[');
 		for (String value : tokenize(json)) {
 			list.add(parseInternal(value));
@@ -107,7 +107,7 @@ public class BasicJsonParser implements JsonParser {
 	}
 
 	private Map<String, Object> parseMapInternal(String json) {
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		Map<String, Object> map = new LinkedHashMap<>();
 		json = trimLeadingCharacter(trimTrailingCharacter(json, '}'), '{');
 		for (String pair : tokenize(json)) {
 			String[] values = StringUtils.trimArrayElements(StringUtils.split(pair, ":"));
@@ -124,7 +124,7 @@ public class BasicJsonParser implements JsonParser {
 	}
 
 	private List<String> tokenize(String json) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		int index = 0;
 		int inObject = 0;
 		int inList = 0;

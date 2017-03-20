@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,7 +168,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 		}
 
 		private List<URL> getClassPathUrls(GroovyCompiler compiler) {
-			return new ArrayList<URL>(Arrays.asList(compiler.getLoader().getURLs()));
+			return new ArrayList<>(Arrays.asList(compiler.getLoader().getURLs()));
 		}
 
 		private List<MatchedResource> findMatchingClasspathEntries(List<URL> classpath,
@@ -176,7 +176,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 			ResourceMatcher matcher = new ResourceMatcher(
 					options.valuesOf(this.includeOption),
 					options.valuesOf(this.excludeOption));
-			List<File> roots = new ArrayList<File>();
+			List<File> roots = new ArrayList<>();
 			for (URL classpathEntry : classpath) {
 				roots.add(new File(URI.create(classpathEntry.toString())));
 			}
@@ -215,7 +215,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 
 		private List<Library> createLibraries(List<URL> dependencies)
 				throws URISyntaxException {
-			List<Library> libraries = new ArrayList<Library>();
+			List<Library> libraries = new ArrayList<>();
 			for (URL dependency : dependencies) {
 				File file = new File(dependency.toURI());
 				libraries.add(new Library(file, getLibraryScope(file)));
@@ -264,7 +264,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 			if (classLoader == null) {
 				classLoader = Thread.currentThread().getContextClassLoader();
 			}
-			String name = sourceClass.replace(".", "/") + ".class";
+			String name = sourceClass.replace('.', '/') + ".class";
 			InputStream stream = classLoader.getResourceAsStream(name);
 			writer.writeEntry(this.layout.getClassesLocation() + name, stream);
 		}
@@ -277,7 +277,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 
 		private List<Library> addClasspathEntries(JarWriter writer,
 				List<MatchedResource> entries) throws IOException {
-			List<Library> libraries = new ArrayList<Library>();
+			List<Library> libraries = new ArrayList<>();
 			for (MatchedResource entry : entries) {
 				if (entry.isRoot()) {
 					libraries.add(new Library(entry.getFile(), LibraryScope.COMPILE));
@@ -329,7 +329,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 		private void disableGrabResolvers(List<? extends AnnotatedNode> nodes) {
 			for (AnnotatedNode classNode : nodes) {
 				List<AnnotationNode> annotations = classNode.getAnnotations();
-				for (AnnotationNode node : new ArrayList<AnnotationNode>(annotations)) {
+				for (AnnotationNode node : new ArrayList<>(annotations)) {
 					if (node.getClassNode().getNameWithoutPackage()
 							.equals("GrabResolver")) {
 						node.setMember("initClass", new ConstantExpression(false));

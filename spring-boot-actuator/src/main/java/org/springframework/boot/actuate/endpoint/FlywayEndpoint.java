@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,9 +56,9 @@ public class FlywayEndpoint extends AbstractEndpoint<List<FlywayReport>> {
 
 	@Override
 	public List<FlywayReport> invoke() {
-		List<FlywayReport> reports = new ArrayList<FlywayReport>();
+		List<FlywayReport> reports = new ArrayList<>();
 		for (Map.Entry<String, Flyway> entry : this.flyways.entrySet()) {
-			List<FlywayMigration> migrations = new ArrayList<FlywayMigration>();
+			List<FlywayMigration> migrations = new ArrayList<>();
 			for (MigrationInfo info : entry.getValue().info().all()) {
 				migrations.add(new FlywayMigration(info));
 			}

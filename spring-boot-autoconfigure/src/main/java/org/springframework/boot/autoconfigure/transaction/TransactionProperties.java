@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,20 @@
 
 package org.springframework.boot.autoconfigure.transaction;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 
 /**
- * Nested configuration properties that can be applied to an
+ * Configuration properties that can be applied to an
  * {@link AbstractPlatformTransactionManager}.
  *
  * @author Kazuki Shimizu
+ * @author Phillip Webb
  * @since 1.5.0
  */
-public class TransactionProperties {
+@ConfigurationProperties(prefix = "spring.transaction")
+public class TransactionProperties implements
+		PlatformTransactionManagerCustomizer<AbstractPlatformTransactionManager> {
 
 	/**
 	 * Default transaction timeout in seconds.
@@ -33,7 +37,7 @@ public class TransactionProperties {
 	private Integer defaultTimeout;
 
 	/**
-	 * Perform the rollback on commit failurures.
+	 * Perform the rollback on commit failures.
 	 */
 	private Boolean rollbackOnCommitFailure;
 
@@ -53,11 +57,8 @@ public class TransactionProperties {
 		this.rollbackOnCommitFailure = rollbackOnCommitFailure;
 	}
 
-	/**
-	 * Apply all transaction custom properties to the specified transaction manager.
-	 * @param transactionManager the target transaction manager
-	 */
-	public void applyTo(AbstractPlatformTransactionManager transactionManager) {
+	@Override
+	public void customize(AbstractPlatformTransactionManager transactionManager) {
 		if (this.defaultTimeout != null) {
 			transactionManager.setDefaultTimeout(this.defaultTimeout);
 		}

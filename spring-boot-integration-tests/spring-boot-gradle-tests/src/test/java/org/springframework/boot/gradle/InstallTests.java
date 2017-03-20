@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +38,9 @@ public class InstallTests {
 	}
 
 	@Test
-	public void cleanInstallApp() throws Exception {
+	public void cleanInstallDist() throws Exception {
 		this.project = new ProjectCreator().createProject("install-app");
-		// "install" from the application plugin was renamed "installApp" in Gradle
-		// 1.0
-		this.project.newBuild().forTasks("installApp")
+		this.project.newBuild().forTasks("installDist")
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
 	}
 

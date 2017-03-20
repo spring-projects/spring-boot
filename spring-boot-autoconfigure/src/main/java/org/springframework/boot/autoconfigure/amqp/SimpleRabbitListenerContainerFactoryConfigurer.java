@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties.ListenerRetry;
@@ -36,6 +37,8 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer {
 
 	private MessageConverter messageConverter;
 
+	private MessageRecoverer messageRecoverer;
+
 	private RabbitProperties rabbitProperties;
 
 	/**
@@ -45,6 +48,14 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer {
 	 */
 	void setMessageConverter(MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
+	}
+
+	/**
+	 * Set the {@link MessageRecoverer} to use or {@code null} to rely on the default.
+	 * @param messageRecoverer the {@link MessageRecoverer}
+	 */
+	void setMessageRecoverer(MessageRecoverer messageRecoverer) {
+		this.messageRecoverer = messageRecoverer;
 	}
 
 	/**
@@ -101,7 +112,9 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer {
 			builder.maxAttempts(retryConfig.getMaxAttempts());
 			builder.backOffOptions(retryConfig.getInitialInterval(),
 					retryConfig.getMultiplier(), retryConfig.getMaxInterval());
-			builder.recoverer(new RejectAndDontRequeueRecoverer());
+			MessageRecoverer recoverer = (this.messageRecoverer != null
+					? this.messageRecoverer : new RejectAndDontRequeueRecoverer());
+			builder.recoverer(recoverer);
 			factory.setAdviceChain(builder.build());
 		}
 

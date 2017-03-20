@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,17 +93,16 @@ public class EndpointAutoConfiguration {
 
 	private final TraceRepository traceRepository;
 
-	public EndpointAutoConfiguration(
-			ObjectProvider<HealthAggregator> healthAggregatorProvider,
-			ObjectProvider<Map<String, HealthIndicator>> healthIndicatorsProvider,
-			ObjectProvider<List<InfoContributor>> infoContributorsProvider,
-			ObjectProvider<Collection<PublicMetrics>> publicMetricsProvider,
-			ObjectProvider<TraceRepository> traceRepositoryProvider) {
-		this.healthAggregator = healthAggregatorProvider.getIfAvailable();
-		this.healthIndicators = healthIndicatorsProvider.getIfAvailable();
-		this.infoContributors = infoContributorsProvider.getIfAvailable();
-		this.publicMetrics = publicMetricsProvider.getIfAvailable();
-		this.traceRepository = traceRepositoryProvider.getIfAvailable();
+	public EndpointAutoConfiguration(ObjectProvider<HealthAggregator> healthAggregator,
+			ObjectProvider<Map<String, HealthIndicator>> healthIndicators,
+			ObjectProvider<List<InfoContributor>> infoContributors,
+			ObjectProvider<Collection<PublicMetrics>> publicMetrics,
+			ObjectProvider<TraceRepository> traceRepository) {
+		this.healthAggregator = healthAggregator.getIfAvailable();
+		this.healthIndicators = healthIndicators.getIfAvailable();
+		this.infoContributors = infoContributors.getIfAvailable();
+		this.publicMetrics = publicMetrics.getIfAvailable();
+		this.traceRepository = traceRepository.getIfAvailable();
 	}
 
 	@Bean
@@ -146,7 +145,7 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public MetricsEndpoint metricsEndpoint() {
-		List<PublicMetrics> publicMetrics = new ArrayList<PublicMetrics>();
+		List<PublicMetrics> publicMetrics = new ArrayList<>();
 		if (this.publicMetrics != null) {
 			publicMetrics.addAll(this.publicMetrics);
 		}

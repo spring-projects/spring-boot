@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,19 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.net.InetAddress;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.boot.autoconfigure.security.SecurityPrerequisite;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.web.server.Ssl;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -78,7 +79,6 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	/**
 	 * Management endpoint context-path.
 	 */
-	@NotNull
 	private String contextPath = "";
 
 	/**
@@ -133,6 +133,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	}
 
 	public void setContextPath(String contextPath) {
+		Assert.notNull(contextPath, "ContextPath must not be null");
 		this.contextPath = cleanContextPath(contextPath);
 	}
 
@@ -168,7 +169,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		/**
 		 * Comma-separated list of roles that can access the management endpoint.
 		 */
-		private List<String> roles = Arrays.asList("ACTUATOR");
+		private List<String> roles = new ArrayList<String>(Collections.singletonList("ACTUATOR"));
 
 		/**
 		 * Session creating policy for security use (always, never, if_required,

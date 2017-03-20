@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -38,6 +38,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -48,6 +50,7 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -76,6 +79,36 @@ public class EnvironmentMvcEndpointTests {
 	}
 
 	@Test
+	public void homeContentTypeDefaultsToActuatorV1Json() throws Exception {
+		this.mvc.perform(get("/env")).andExpect(status().isOk())
+				.andExpect(header().string("Content-Type",
+						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+	}
+
+	@Test
+	public void homeContentTypeCanBeApplicationJson() throws Exception {
+		this.mvc.perform(
+				get("/env").header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk()).andExpect(header().string("Content-Type",
+						MediaType.APPLICATION_JSON_UTF8_VALUE));
+	}
+
+	@Test
+	public void subContentTypeDefaultsToActuatorV1Json() throws Exception {
+		this.mvc.perform(get("/env/foo")).andExpect(status().isOk())
+				.andExpect(header().string("Content-Type",
+						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+	}
+
+	@Test
+	public void subContentTypeCanBeApplicationJson() throws Exception {
+		this.mvc.perform(get("/env/foo").header(HttpHeaders.ACCEPT,
+				MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
+				.andExpect(header().string("Content-Type",
+						MediaType.APPLICATION_JSON_UTF8_VALUE));
+	}
+
+	@Test
 	public void home() throws Exception {
 		this.mvc.perform(get("/env")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("systemProperties")));
@@ -95,7 +128,7 @@ public class EnvironmentMvcEndpointTests {
 
 	@Test
 	public void regex() throws Exception {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("food", null);
 		((ConfigurableEnvironment) this.context.getEnvironment()).getPropertySources()
 				.addFirst(new MapPropertySource("null-value", map));
@@ -104,11 +137,31 @@ public class EnvironmentMvcEndpointTests {
 				.andExpect(content().string(containsString("\"fool\":\"baz\"")));
 	}
 
+	@Test
+	public void nestedPathWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty() throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("my.foo", "${my.bar}");
+		((ConfigurableEnvironment) this.context.getEnvironment()).getPropertySources()
+				.addFirst(new MapPropertySource("unresolved-placeholder", map));
+		this.mvc.perform(get("/env/my.*")).andExpect(status().isOk())
+				.andExpect(content().string(containsString("\"my.foo\":\"${my.bar}\"")));
+	}
+
+	@Test
+	public void nestedPathWithSensitivePlaceholderShouldSanitize() throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("my.foo", "${my.password}");
+		map.put("my.password", "hello");
+		((ConfigurableEnvironment) this.context.getEnvironment()).getPropertySources()
+				.addFirst(new MapPropertySource("placeholder", map));
+		this.mvc.perform(get("/env/my.*")).andExpect(status().isOk())
+				.andExpect(content().string(containsString("\"my.foo\":\"******\"")));
+	}
+
 	@Configuration
 	@Import({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class })
+			EndpointWebMvcAutoConfiguration.class, AuditAutoConfiguration.class })
 	public static class TestConfiguration {
 
 		@Bean

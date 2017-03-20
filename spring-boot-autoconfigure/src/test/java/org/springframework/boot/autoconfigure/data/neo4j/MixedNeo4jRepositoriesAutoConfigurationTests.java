@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,7 +155,7 @@ public class MixedNeo4jRepositoriesAutoConfigurationTests {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			List<String> names = new ArrayList<String>();
+			List<String> names = new ArrayList<>();
 			for (Class<?> type : new Class<?>[] { DataSourceAutoConfiguration.class,
 					HibernateJpaAutoConfiguration.class,
 					JpaRepositoriesAutoConfiguration.class,

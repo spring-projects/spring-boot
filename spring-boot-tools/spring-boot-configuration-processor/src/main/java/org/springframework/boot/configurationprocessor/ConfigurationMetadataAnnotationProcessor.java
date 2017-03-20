@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.configurationprocessor;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.LinkedHashMap;
@@ -134,7 +133,12 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			}
 		}
 		if (roundEnv.processingOver()) {
-			writeMetaData();
+			try {
+				writeMetaData();
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException("Failed to write metadata", ex);
+			}
 		}
 		return false;
 	}
@@ -381,7 +385,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private Map<String, Object> getAnnotationElementValues(AnnotationMirror annotation) {
-		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		Map<String, Object> values = new LinkedHashMap<>();
 		for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation
 				.getElementValues().entrySet()) {
 			values.put(entry.getKey().getSimpleName().toString(),
@@ -390,16 +394,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return values;
 	}
 
-	protected ConfigurationMetadata writeMetaData() {
+	protected ConfigurationMetadata writeMetaData() throws Exception {
 		ConfigurationMetadata metadata = this.metadataCollector.getMetadata();
 		metadata = mergeAdditionalMetadata(metadata);
 		if (!metadata.getItems().isEmpty()) {
-			try {
-				this.metadataStore.writeMetadata(metadata);
-			}
-			catch (IOException ex) {
-				throw new IllegalStateException("Failed to write metadata", ex);
-			}
+			this.metadataStore.writeMetadata(metadata);
 			return metadata;
 		}
 		return null;

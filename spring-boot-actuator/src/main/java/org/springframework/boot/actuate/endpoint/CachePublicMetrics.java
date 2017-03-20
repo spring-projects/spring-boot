@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class CachePublicMetrics implements PublicMetrics {
 
 	@Override
 	public Collection<Metric<?>> metrics() {
-		Collection<Metric<?>> metrics = new HashSet<Metric<?>>();
+		Collection<Metric<?>> metrics = new HashSet<>();
 		for (Map.Entry<String, List<CacheManagerBean>> entry : getCacheManagerBeans()
 				.entrySet()) {
 			addMetrics(metrics, entry.getKey(), entry.getValue());
@@ -56,7 +56,7 @@ public class CachePublicMetrics implements PublicMetrics {
 	}
 
 	private MultiValueMap<String, CacheManagerBean> getCacheManagerBeans() {
-		MultiValueMap<String, CacheManagerBean> cacheManagerNamesByCacheName = new LinkedMultiValueMap<String, CacheManagerBean>();
+		MultiValueMap<String, CacheManagerBean> cacheManagerNamesByCacheName = new LinkedMultiValueMap<>();
 		for (Map.Entry<String, CacheManager> entry : this.cacheManagers.entrySet()) {
 			for (String cacheName : entry.getValue().getCacheNames()) {
 				cacheManagerNamesByCacheName.add(cacheName,

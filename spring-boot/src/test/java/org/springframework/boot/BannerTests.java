@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -72,7 +72,7 @@ public class BannerTests {
 	@Test
 	public void testDefaultBanner() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(this.out.toString()).contains(":: Spring Boot ::");
 	}
@@ -80,7 +80,7 @@ public class BannerTests {
 	@Test
 	public void testDefaultBannerInLog() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(this.out.toString()).contains(":: Spring Boot ::");
 	}
@@ -88,7 +88,7 @@ public class BannerTests {
 	@Test
 	public void testCustomBanner() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setBanner(new DummyBanner());
 		this.context = application.run();
 		assertThat(this.out.toString()).contains("My Banner");
@@ -97,7 +97,7 @@ public class BannerTests {
 	@Test
 	public void testBannerInContext() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(this.context.containsBean("springBootBanner")).isTrue();
 	}
@@ -105,7 +105,7 @@ public class BannerTests {
 	@Test
 	public void testCustomBannerInContext() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		Banner banner = mock(Banner.class);
 		application.setBanner(banner);
 		this.context = application.run();
@@ -124,7 +124,7 @@ public class BannerTests {
 	public void testDisableBannerInContext() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setBannerMode(Mode.OFF);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(this.context.containsBean("springBootBanner")).isFalse();
 	}

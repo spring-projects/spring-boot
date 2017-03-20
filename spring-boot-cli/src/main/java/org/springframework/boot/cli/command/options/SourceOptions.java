@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public class SourceOptions {
 	}
 
 	private SourceOptions(List<?> nonOptionArguments, ClassLoader classLoader) {
-		List<String> sources = new ArrayList<String>();
+		List<String> sources = new ArrayList<>();
 		int sourceArgCount = 0;
 		for (Object option : nonOptionArguments) {
 			if (option instanceof String) {
@@ -79,7 +79,7 @@ public class SourceOptions {
 				if ("--".equals(filename)) {
 					break;
 				}
-				List<String> urls = new ArrayList<String>();
+				List<String> urls = new ArrayList<>();
 				File fileCandidate = new File(filename);
 				if (fileCandidate.isFile()) {
 					urls.add(fileCandidate.getAbsoluteFile().toURI().toString());

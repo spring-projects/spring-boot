@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ public class OAuth2RestOperationsConfiguration {
 	protected static class SingletonScopedConfiguration {
 
 		@Bean
-		@ConfigurationProperties("security.oauth2.client")
+		@ConfigurationProperties(prefix = "security.oauth2.client")
 		@Primary
 		public ClientCredentialsResourceDetails oauth2RemoteResource() {
 			ClientCredentialsResourceDetails details = new ClientCredentialsResourceDetails();
@@ -95,9 +95,9 @@ public class OAuth2RestOperationsConfiguration {
 	protected static class SessionScopedConfiguration {
 
 		@Bean
-		public FilterRegistrationBean oauth2ClientFilterRegistration(
+		public FilterRegistrationBean<OAuth2ClientContextFilter> oauth2ClientFilterRegistration(
 				OAuth2ClientContextFilter filter, SecurityProperties security) {
-			FilterRegistrationBean registration = new FilterRegistrationBean();
+			FilterRegistrationBean<OAuth2ClientContextFilter> registration = new FilterRegistrationBean<>();
 			registration.setFilter(filter);
 			registration.setOrder(security.getFilterOrder() - 10);
 			return registration;

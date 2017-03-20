@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,9 @@ import java.util.List;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -45,7 +46,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @since 1.4.0
  */
 @Configuration
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(WebMvcProperties.class)
 public class MockMvcAutoConfiguration {
@@ -74,7 +75,7 @@ public class MockMvcAutoConfiguration {
 	}
 
 	@Bean
-	@ConfigurationProperties("spring.test.mockmvc")
+	@ConfigurationProperties(prefix = "spring.test.mockmvc")
 	public SpringBootMockMvcBuilderCustomizer springBootMockMvcBuilderCustomizer() {
 		return new SpringBootMockMvcBuilderCustomizer(this.context);
 	}

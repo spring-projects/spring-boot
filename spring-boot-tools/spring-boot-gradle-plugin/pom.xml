@@ -63,6 +63,11 @@
 			<artifactId>gradle-plugins</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.gradle</groupId>
+			<artifactId>gradle-process-services</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>

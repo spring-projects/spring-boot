@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,23 +48,25 @@ public class LiquibaseEndpoint extends AbstractEndpoint<List<LiquibaseReport>> {
 		this(Collections.singletonMap("default", liquibase));
 	}
 
-	public LiquibaseEndpoint(Map<String, SpringLiquibase> liquibase) {
+	public LiquibaseEndpoint(Map<String, SpringLiquibase> liquibases) {
 		super("liquibase");
-		Assert.notEmpty(liquibase, "Liquibase must be specified");
-		this.liquibases = liquibase;
+		Assert.notEmpty(liquibases, "Liquibases must be specified");
+		this.liquibases = liquibases;
 	}
 
 	@Override
 	public List<LiquibaseReport> invoke() {
-		List<LiquibaseReport> reports = new ArrayList<LiquibaseReport>();
+		List<LiquibaseReport> reports = new ArrayList<>();
 		DatabaseFactory factory = DatabaseFactory.getInstance();
 		StandardChangeLogHistoryService service = new StandardChangeLogHistoryService();
 		for (Map.Entry<String, SpringLiquibase> entry : this.liquibases.entrySet()) {
 			try {
 				DataSource dataSource = entry.getValue().getDataSource();
-				JdbcConnection connection = new JdbcConnection(dataSource.getConnection());
+				JdbcConnection connection = new JdbcConnection(
+						dataSource.getConnection());
 				try {
-					Database database = factory.findCorrectDatabaseImplementation(connection);
+					Database database = factory
+							.findCorrectDatabaseImplementation(connection);
 					reports.add(new LiquibaseReport(entry.getKey(),
 							service.queryDatabaseChangeLogTable(database)));
 				}

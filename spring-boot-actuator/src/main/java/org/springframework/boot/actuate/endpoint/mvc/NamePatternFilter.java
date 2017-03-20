@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ abstract class NamePatternFilter<T> {
 	public Map<String, Object> getResults(String name) {
 		if (!isRegex(name)) {
 			Object value = getValue(this.source, name);
-			Map<String, Object> result = new HashMap<String, Object>();
+			Map<String, Object> result = new HashMap<>();
 			result.put(name, value);
 			return result;
 		}
@@ -76,7 +76,7 @@ abstract class NamePatternFilter<T> {
 	/**
 	 * Callback used to add a name.
 	 */
-	protected interface NameCallback {
+	interface NameCallback {
 
 		void addName(String name);
 
@@ -89,7 +89,7 @@ abstract class NamePatternFilter<T> {
 
 		private final Pattern pattern;
 
-		private final Map<String, Object> results = new LinkedHashMap<String, Object>();
+		private final Map<String, Object> results = new LinkedHashMap<>();
 
 		ResultCollectingNameCallback(Pattern pattern) {
 			this.pattern = pattern;

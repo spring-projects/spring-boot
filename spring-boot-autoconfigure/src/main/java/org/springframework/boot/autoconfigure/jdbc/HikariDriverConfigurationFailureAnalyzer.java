@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 class HikariDriverConfigurationFailureAnalyzer
 		extends AbstractFailureAnalyzer<IllegalStateException> {
 
-	private static final String EXPECTED_MESSAGE = "both driverClassName and "
-			+ "dataSourceClassName are specified, one or the other should be used";
+	private static final String EXPECTED_MESSAGE = "cannot use driverClassName and "
+			+ "dataSourceClassName together.";
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure,

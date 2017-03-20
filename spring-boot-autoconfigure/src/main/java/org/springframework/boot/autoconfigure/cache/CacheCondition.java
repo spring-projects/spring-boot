@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ class CacheCondition extends SpringBootCondition {
 		}
 		CacheType cacheType = CacheConfigurations
 				.getType(((AnnotationMetadata) metadata).getClassName());
-		String value = resolver.getProperty("type").replace("-", "_").toUpperCase();
+		String value = resolver.getProperty("type").replace('-', '_').toUpperCase();
 		if (value.equals(cacheType.name())) {
 			return ConditionOutcome.match(message.because(value + " cache type"));
 		}

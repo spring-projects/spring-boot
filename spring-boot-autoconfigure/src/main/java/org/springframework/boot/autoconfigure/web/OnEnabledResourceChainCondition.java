@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ package org.springframework.boot.autoconfigure.web;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.PropertySourcesPropertyValues;
-import org.springframework.boot.bind.RelaxedDataBinder;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 
@@ -32,6 +32,7 @@ import org.springframework.util.ClassUtils;
  * enabled.
  *
  * @author Stephane Nicoll
+ * @author Phillip Webb
  * @see ConditionalOnEnabledResourceChain
  */
 class OnEnabledResourceChainCondition extends SpringBootCondition {
@@ -43,10 +44,10 @@ class OnEnabledResourceChainCondition extends SpringBootCondition {
 			AnnotatedTypeMetadata metadata) {
 		ConfigurableEnvironment environment = (ConfigurableEnvironment) context
 				.getEnvironment();
-		ResourceProperties properties = new ResourceProperties();
-		RelaxedDataBinder binder = new RelaxedDataBinder(properties, "spring.resources");
-		binder.bind(new PropertySourcesPropertyValues(environment.getPropertySources()));
-		Boolean match = properties.getChain().getEnabled();
+		boolean fixed = getEnabledProperty(environment, "strategy.fixed.", false);
+		boolean content = getEnabledProperty(environment, "strategy.content.", false);
+		Boolean chain = getEnabledProperty(environment, "", null);
+		Boolean match = ResourceProperties.Chain.getEnabled(fixed, content, chain);
 		ConditionMessage.Builder message = ConditionMessage
 				.forCondition(ConditionalOnEnabledResourceChain.class);
 		if (match == null) {
@@ -61,6 +62,13 @@ class OnEnabledResourceChainCondition extends SpringBootCondition {
 			return ConditionOutcome.match(message.because("enabled"));
 		}
 		return ConditionOutcome.noMatch(message.because("disabled"));
+	}
+
+	private Boolean getEnabledProperty(ConfigurableEnvironment environment, String key,
+			Boolean defaultValue) {
+		PropertyResolver resolver = new RelaxedPropertyResolver(environment,
+				"spring.resources.chain." + key);
+		return resolver.getProperty("enabled", Boolean.class, defaultValue);
 	}
 
 }

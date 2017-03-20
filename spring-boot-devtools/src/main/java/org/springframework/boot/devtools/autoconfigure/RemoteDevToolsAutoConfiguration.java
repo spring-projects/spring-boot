@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 @ConditionalOnProperty(prefix = "spring.devtools.remote", name = "secret")
 @ConditionalOnClass({ Filter.class, ServerHttpRequest.class })
-@EnableConfigurationProperties(DevToolsProperties.class)
+@EnableConfigurationProperties({ ServerProperties.class, DevToolsProperties.class })
 public class RemoteDevToolsAutoConfiguration {
 
 	private static final Log logger = LogFactory
@@ -95,9 +95,11 @@ public class RemoteDevToolsAutoConfiguration {
 	@Bean
 	public HandlerMapper remoteDevToolsHealthCheckHandlerMapper() {
 		Handler handler = new HttpStatusHandler();
-		return new UrlHandlerMapper((this.serverProperties.getContextPath() == null ? ""
-				: this.serverProperties.getContextPath())
-				+ this.properties.getRemote().getContextPath(), handler);
+		return new UrlHandlerMapper(
+				(this.serverProperties.getServlet().getContextPath() == null ? ""
+						: this.serverProperties.getServlet().getContextPath())
+						+ this.properties.getRemote().getContextPath(),
+				handler);
 	}
 
 	@Bean
@@ -136,8 +138,8 @@ public class RemoteDevToolsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "remoteRestartHandlerMapper")
 		public UrlHandlerMapper remoteRestartHandlerMapper(HttpRestartServer server) {
-			String url = (this.serverProperties.getContextPath() == null ? ""
-					: this.serverProperties.getContextPath())
+			String url = (this.serverProperties.getServlet().getContextPath() == null ? ""
+					: this.serverProperties.getServlet().getContextPath())
 					+ this.properties.getRemote().getContextPath() + "/restart";
 			logger.warn("Listening for remote restart updates on " + url);
 			Handler handler = new HttpRestartServerHandler(server);
@@ -162,8 +164,8 @@ public class RemoteDevToolsAutoConfiguration {
 		@ConditionalOnMissingBean(name = "remoteDebugHandlerMapper")
 		public UrlHandlerMapper remoteDebugHandlerMapper(
 				@Qualifier("remoteDebugHttpTunnelServer") HttpTunnelServer server) {
-			String url = (this.serverProperties.getContextPath() == null ? ""
-					: this.serverProperties.getContextPath())
+			String url = (this.serverProperties.getServlet().getContextPath() == null ? ""
+					: this.serverProperties.getServlet().getContextPath())
 					+ this.properties.getRemote().getContextPath() + "/debug";
 			logger.warn("Listening for remote debug traffic on " + url);
 			Handler handler = new HttpTunnelServerHandler(server);

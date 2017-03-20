@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.validation.BindException;
+import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -173,15 +174,14 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void testNoExceptionOnValidation() {
-		this.context.register(NoExceptionIfInvalidTestConfiguration.class);
+	public void testNoExceptionOnValidationWithoutValidated() {
+		this.context.register(IgnoredIfInvalidButNotValidatedTestConfiguration.class);
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"name=foo");
+				"name:foo");
 		this.context.refresh();
-		assertThat(this.context
-				.getBeanNamesForType(NoExceptionIfInvalidTestProperties.class))
-						.hasSize(1);
-		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
+		IgnoredIfInvalidButNotValidatedTestProperties bean = this.context
+				.getBean(IgnoredIfInvalidButNotValidatedTestProperties.class);
+		assertThat(bean.getDescription()).isNull();
 	}
 
 	@Test
@@ -228,7 +228,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testCollectionPropertiesBindingWithOver256Elements() {
 		this.context.register(TestConfiguration.class);
-		List<String> pairs = new ArrayList<String>();
+		List<String> pairs = new ArrayList<>();
 		pairs.add("name:foo");
 		for (int i = 0; i < 1000; i++) {
 			pairs.add("list[" + i + "]:" + i);
@@ -292,16 +292,19 @@ public class EnableConfigurationPropertiesTests {
 	public void testBindingWithParentContext() {
 		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
 		parent.register(TestConfiguration.class);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(parent, "name=parent");
 		parent.refresh();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"name=foo");
 		this.context.setParent(parent);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"name=child");
 		this.context.register(TestConfiguration.class, TestConsumer.class);
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(TestProperties.class).length)
-				.isEqualTo(1);
+				.isEqualTo(0);
 		assertThat(parent.getBeanNamesForType(TestProperties.class).length).isEqualTo(1);
-		assertThat(this.context.getBean(TestConsumer.class).getName()).isEqualTo("foo");
+		assertThat(this.context.getBean(TestConsumer.class).getName())
+				.isEqualTo("parent");
+		parent.close();
 	}
 
 	@Test
@@ -433,8 +436,8 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Configuration
-	@EnableConfigurationProperties(NoExceptionIfInvalidTestProperties.class)
-	protected static class NoExceptionIfInvalidTestConfiguration {
+	@EnableConfigurationProperties(IgnoredIfInvalidButNotValidatedTestProperties.class)
+	protected static class IgnoredIfInvalidButNotValidatedTestConfiguration {
 
 	}
 
@@ -620,7 +623,7 @@ public class EnableConfigurationPropertiesTests {
 
 		private int[] array;
 
-		private final List<Integer> list = new ArrayList<Integer>();
+		private final List<Integer> list = new ArrayList<>();
 
 		// No getter - you should be able to bind to a write-only bean
 
@@ -658,6 +661,7 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@ConfigurationProperties
+	@Validated
 	protected static class ExceptionIfInvalidTestProperties extends TestProperties {
 
 		@NotNull
@@ -673,8 +677,9 @@ public class EnableConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(exceptionIfInvalid = false)
-	protected static class NoExceptionIfInvalidTestProperties extends TestProperties {
+	@ConfigurationProperties
+	protected static class IgnoredIfInvalidButNotValidatedTestProperties
+			extends TestProperties {
 
 		@NotNull
 		private String description;

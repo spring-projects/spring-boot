@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ abstract class DataSourceConfiguration {
 	static class Tomcat extends DataSourceConfiguration {
 
 		@Bean
-		@ConfigurationProperties("spring.datasource.tomcat")
+		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
 		public org.apache.tomcat.jdbc.pool.DataSource dataSource(
 				DataSourceProperties properties) {
 			org.apache.tomcat.jdbc.pool.DataSource dataSource = createDataSource(
@@ -75,7 +75,7 @@ abstract class DataSourceConfiguration {
 	static class Hikari extends DataSourceConfiguration {
 
 		@Bean
-		@ConfigurationProperties("spring.datasource.hikari")
+		@ConfigurationProperties(prefix = "spring.datasource.hikari")
 		public HikariDataSource dataSource(DataSourceProperties properties) {
 			return createDataSource(properties, HikariDataSource.class);
 		}
@@ -90,7 +90,7 @@ abstract class DataSourceConfiguration {
 	static class Dbcp2 extends DataSourceConfiguration {
 
 		@Bean
-		@ConfigurationProperties("spring.datasource.dbcp2")
+		@ConfigurationProperties(prefix = "spring.datasource.dbcp2")
 		public org.apache.commons.dbcp2.BasicDataSource dataSource(
 				DataSourceProperties properties) {
 			return createDataSource(properties,

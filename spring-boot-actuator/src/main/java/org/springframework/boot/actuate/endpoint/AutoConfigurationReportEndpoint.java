@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,8 +77,8 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 		private final Report parent;
 
 		public Report(ConditionEvaluationReport report) {
-			this.positiveMatches = new LinkedMultiValueMap<String, MessageAndCondition>();
-			this.negativeMatches = new LinkedHashMap<String, MessageAndConditions>();
+			this.positiveMatches = new LinkedMultiValueMap<>();
+			this.negativeMatches = new LinkedHashMap<>();
 			this.exclusions = report.getExclusions();
 			for (Map.Entry<String, ConditionAndOutcomes> entry : report
 					.getConditionAndOutcomesBySource().entrySet()) {
@@ -131,9 +131,9 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 	@JsonPropertyOrder({ "notMatched", "matched" })
 	public static class MessageAndConditions {
 
-		private final List<MessageAndCondition> notMatched = new ArrayList<MessageAndCondition>();
+		private final List<MessageAndCondition> notMatched = new ArrayList<>();
 
-		private final List<MessageAndCondition> matched = new ArrayList<MessageAndCondition>();
+		private final List<MessageAndCondition> matched = new ArrayList<>();
 
 		public MessageAndConditions(ConditionAndOutcomes conditionAndOutcomes) {
 			for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {

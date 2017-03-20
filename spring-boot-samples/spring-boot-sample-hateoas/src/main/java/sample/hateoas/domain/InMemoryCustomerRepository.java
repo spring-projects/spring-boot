@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.springframework.util.ObjectUtils;
 @Repository
 public class InMemoryCustomerRepository implements CustomerRepository {
 
-	private final List<Customer> customers = new ArrayList<Customer>();
+	private final List<Customer> customers = new ArrayList<>();
 
 	public InMemoryCustomerRepository() {
 		this.customers.add(new Customer(1L, "Oliver", "Gierke"));

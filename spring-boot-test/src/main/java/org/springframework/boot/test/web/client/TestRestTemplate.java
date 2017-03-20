@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -48,7 +49,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -57,7 +57,7 @@ import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.DefaultUriTemplateHandler;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriTemplateHandler;
 
 /**
@@ -144,16 +144,24 @@ public class TestRestTemplate {
 		if (username == null) {
 			return;
 		}
-		List<ClientHttpRequestInterceptor> interceptors = Collections
-				.<ClientHttpRequestInterceptor>singletonList(
-						new BasicAuthorizationInterceptor(username, password));
-		restTemplate.setRequestFactory(new InterceptingClientHttpRequestFactory(
-				restTemplate.getRequestFactory(), interceptors));
+		List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
+		if (interceptors == null) {
+			interceptors = Collections.emptyList();
+		}
+		interceptors = new ArrayList<>(interceptors);
+		Iterator<ClientHttpRequestInterceptor> iterator = interceptors.iterator();
+		while (iterator.hasNext()) {
+			if (iterator.next() instanceof BasicAuthorizationInterceptor) {
+				iterator.remove();
+			}
+		}
+		interceptors.add(new BasicAuthorizationInterceptor(username, password));
+		restTemplate.setInterceptors(interceptors);
 	}
 
 	/**
 	 * Configure the {@link UriTemplateHandler} to use to expand URI templates. By default
-	 * the {@link DefaultUriTemplateHandler} is used which relies on Spring's URI template
+	 * the {@link DefaultUriBuilderFactory} is used which relies on Spring's URI template
 	 * support and exposes several useful properties that customize its behavior for
 	 * encoding and for prepending a common base URL. An alternative implementation may be
 	 * used to plug an external URI template library.
@@ -210,7 +218,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#getForObject(java.net.URI, java.lang.Class)
 	 */
 	public <T> T getForObject(URI url, Class<T> responseType) throws RestClientException {
-		return this.restTemplate.getForObject(url, responseType);
+		return this.restTemplate.getForObject(applyRootUriIfNecessary(url), responseType);
 	}
 
 	/**
@@ -262,7 +270,7 @@ public class TestRestTemplate {
 	 */
 	public <T> ResponseEntity<T> getForEntity(URI url, Class<T> responseType)
 			throws RestClientException {
-		return this.restTemplate.getForEntity(url, responseType);
+		return this.restTemplate.getForEntity(applyRootUriIfNecessary(url), responseType);
 	}
 
 	/**
@@ -303,7 +311,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#headForHeaders(java.net.URI)
 	 */
 	public HttpHeaders headForHeaders(URI url) throws RestClientException {
-		return this.restTemplate.headForHeaders(url);
+		return this.restTemplate.headForHeaders(applyRootUriIfNecessary(url));
 	}
 
 	/**
@@ -367,7 +375,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#postForLocation(java.net.URI, java.lang.Object)
 	 */
 	public URI postForLocation(URI url, Object request) throws RestClientException {
-		return this.restTemplate.postForLocation(url, request);
+		return this.restTemplate.postForLocation(applyRootUriIfNecessary(url), request);
 	}
 
 	/**
@@ -435,7 +443,8 @@ public class TestRestTemplate {
 	 */
 	public <T> T postForObject(URI url, Object request, Class<T> responseType)
 			throws RestClientException {
-		return this.restTemplate.postForObject(url, request, responseType);
+		return this.restTemplate.postForObject(applyRootUriIfNecessary(url), request,
+				responseType);
 	}
 
 	/**
@@ -504,7 +513,8 @@ public class TestRestTemplate {
 	 */
 	public <T> ResponseEntity<T> postForEntity(URI url, Object request,
 			Class<T> responseType) throws RestClientException {
-		return this.restTemplate.postForEntity(url, request, responseType);
+		return this.restTemplate.postForEntity(applyRootUriIfNecessary(url), request,
+				responseType);
 	}
 
 	/**
@@ -557,7 +567,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#put(java.net.URI, java.lang.Object)
 	 */
 	public void put(URI url, Object request) throws RestClientException {
-		this.restTemplate.put(url, request);
+		this.restTemplate.put(applyRootUriIfNecessary(url), request);
 	}
 
 	/**
@@ -575,10 +585,10 @@ public class TestRestTemplate {
 	 * @param <T> the type of the return value
 	 * @return the converted object
 	 * @throws RestClientException on client-side HTTP error
+	 * @since 1.4.4
 	 * @see HttpEntity
-	 * @since 1.4.3
 	 */
-	<T> T patchForObject(String url, Object request, Class<T> responseType,
+	public <T> T patchForObject(String url, Object request, Class<T> responseType,
 			Object... uriVariables) throws RestClientException {
 		return this.restTemplate.patchForObject(url, request, responseType, uriVariables);
 	}
@@ -598,10 +608,10 @@ public class TestRestTemplate {
 	 * @param <T> the type of the return value
 	 * @return the converted object
 	 * @throws RestClientException on client-side HTTP error
+	 * @since 1.4.4
 	 * @see HttpEntity
-	 * @since 1.4.3
 	 */
-	<T> T patchForObject(String url, Object request, Class<T> responseType,
+	public <T> T patchForObject(String url, Object request, Class<T> responseType,
 			Map<String, ?> uriVariables) throws RestClientException {
 		return this.restTemplate.patchForObject(url, request, responseType, uriVariables);
 	}
@@ -618,12 +628,13 @@ public class TestRestTemplate {
 	 * @param <T> the type of the return value
 	 * @return the converted object
 	 * @throws RestClientException on client-side HTTP error
+	 * @since 1.4.4
 	 * @see HttpEntity
-	 * @since 1.4.3
 	 */
-	<T> T patchForObject(URI url, Object request, Class<T> responseType)
+	public <T> T patchForObject(URI url, Object request, Class<T> responseType)
 			throws RestClientException {
-		return this.restTemplate.patchForObject(url, request, responseType);
+		return this.restTemplate.patchForObject(applyRootUriIfNecessary(url), request,
+				responseType);
 
 	}
 
@@ -661,7 +672,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#delete(java.net.URI)
 	 */
 	public void delete(URI url) throws RestClientException {
-		this.restTemplate.delete(url);
+		this.restTemplate.delete(applyRootUriIfNecessary(url));
 	}
 
 	/**
@@ -702,7 +713,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#optionsForAllow(java.net.URI)
 	 */
 	public Set<HttpMethod> optionsForAllow(URI url) throws RestClientException {
-		return this.restTemplate.optionsForAllow(url);
+		return this.restTemplate.optionsForAllow(applyRootUriIfNecessary(url));
 	}
 
 	/**
@@ -770,7 +781,8 @@ public class TestRestTemplate {
 	public <T> ResponseEntity<T> exchange(URI url, HttpMethod method,
 			HttpEntity<?> requestEntity, Class<T> responseType)
 					throws RestClientException {
-		return this.restTemplate.exchange(url, method, requestEntity, responseType);
+		return this.restTemplate.exchange(applyRootUriIfNecessary(url), method,
+				requestEntity, responseType);
 	}
 
 	/**
@@ -852,7 +864,8 @@ public class TestRestTemplate {
 	public <T> ResponseEntity<T> exchange(URI url, HttpMethod method,
 			HttpEntity<?> requestEntity, ParameterizedTypeReference<T> responseType)
 					throws RestClientException {
-		return this.restTemplate.exchange(url, method, requestEntity, responseType);
+		return this.restTemplate.exchange(applyRootUriIfNecessary(url), method,
+				requestEntity, responseType);
 	}
 
 	/**
@@ -872,7 +885,8 @@ public class TestRestTemplate {
 	 */
 	public <T> ResponseEntity<T> exchange(RequestEntity<?> requestEntity,
 			Class<T> responseType) throws RestClientException {
-		return this.restTemplate.exchange(requestEntity, responseType);
+		return this.restTemplate.exchange(
+				createRequestEntityWithRootAppliedUri(requestEntity), responseType);
 	}
 
 	/**
@@ -894,7 +908,8 @@ public class TestRestTemplate {
 	 */
 	public <T> ResponseEntity<T> exchange(RequestEntity<?> requestEntity,
 			ParameterizedTypeReference<T> responseType) throws RestClientException {
-		return this.restTemplate.exchange(requestEntity, responseType);
+		return this.restTemplate.exchange(
+				createRequestEntityWithRootAppliedUri(requestEntity), responseType);
 	}
 
 	/**
@@ -961,7 +976,8 @@ public class TestRestTemplate {
 	 */
 	public <T> T execute(URI url, HttpMethod method, RequestCallback requestCallback,
 			ResponseExtractor<T> responseExtractor) throws RestClientException {
-		return this.restTemplate.execute(url, method, requestCallback, responseExtractor);
+		return this.restTemplate.execute(applyRootUriIfNecessary(url), method,
+				requestCallback, responseExtractor);
 	}
 
 	/**
@@ -985,8 +1001,7 @@ public class TestRestTemplate {
 	public TestRestTemplate withBasicAuth(String username, String password) {
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.setMessageConverters(getRestTemplate().getMessageConverters());
-		restTemplate.setInterceptors(
-				removeBasicAuthInterceptorIfPresent(getRestTemplate().getInterceptors()));
+		restTemplate.setInterceptors(getRestTemplate().getInterceptors());
 		restTemplate.setRequestFactory(getRestTemplate().getRequestFactory());
 		restTemplate.setUriTemplateHandler(getRestTemplate().getUriTemplateHandler());
 		TestRestTemplate testRestTemplate = new TestRestTemplate(restTemplate, username,
@@ -996,17 +1011,22 @@ public class TestRestTemplate {
 		return testRestTemplate;
 	}
 
-	private List<ClientHttpRequestInterceptor> removeBasicAuthInterceptorIfPresent(
-			List<ClientHttpRequestInterceptor> interceptors) {
-		List<ClientHttpRequestInterceptor> updatedInterceptors = new ArrayList<ClientHttpRequestInterceptor>(
-				interceptors);
-		Iterator<ClientHttpRequestInterceptor> iterator = updatedInterceptors.iterator();
-		while (iterator.hasNext()) {
-			if (iterator.next() instanceof BasicAuthorizationInterceptor) {
-				iterator.remove();
-			}
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private RequestEntity<?> createRequestEntityWithRootAppliedUri(
+			RequestEntity<?> requestEntity) {
+		return new RequestEntity(requestEntity.getBody(), requestEntity.getHeaders(),
+				requestEntity.getMethod(),
+				applyRootUriIfNecessary(requestEntity.getUrl()), requestEntity.getType());
+	}
+
+	private URI applyRootUriIfNecessary(URI uri) {
+		UriTemplateHandler uriTemplateHandler = this.restTemplate.getUriTemplateHandler();
+		if ((uriTemplateHandler instanceof RootUriTemplateHandler)
+				&& uri.toString().startsWith("/")) {
+			return URI.create(((RootUriTemplateHandler) uriTemplateHandler).getRootUri()
+					+ uri.toString());
 		}
-		return interceptors;
+		return uri;
 	}
 
 	/**
@@ -1043,7 +1063,7 @@ public class TestRestTemplate {
 
 		public CustomHttpComponentsClientHttpRequestFactory(
 				HttpClientOption[] httpClientOptions) {
-			Set<HttpClientOption> options = new HashSet<TestRestTemplate.HttpClientOption>(
+			Set<HttpClientOption> options = new HashSet<>(
 					Arrays.asList(httpClientOptions));
 			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES)
 					? CookieSpecs.STANDARD : CookieSpecs.IGNORE_COOKIES);

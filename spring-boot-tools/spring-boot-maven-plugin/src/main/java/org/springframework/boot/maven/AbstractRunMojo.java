@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -270,7 +270,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private void doRunWithForkedJvm(String startClassName)
 			throws MojoExecutionException, MojoFailureException {
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		addAgents(args);
 		addJvmArgs(args);
 		addClasspath(args);
@@ -392,7 +392,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	protected URL[] getClassPathUrls() throws MojoExecutionException {
 		try {
-			List<URL> urls = new ArrayList<URL>();
+			List<URL> urls = new ArrayList<>();
 			addUserDefinedFolders(urls);
 			addResources(urls);
 			addProjectClasses(urls);

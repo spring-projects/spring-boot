@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,8 @@ import javax.servlet.ServletResponse;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.trace.TraceProperties.Include;
-import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
+import org.springframework.boot.autoconfigure.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -51,6 +52,7 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Venil Noronha
  * @author Stephane Nicoll
+ * @author Madhura Bhave
  */
 public class WebRequestTraceFilterTests {
 
@@ -170,6 +172,49 @@ public class WebRequestTraceFilterTests {
 
 	@Test
 	@SuppressWarnings({ "unchecked" })
+	public void filterDoesNotAddAuthorizationHeaderWithoutAuthorizationHeaderInclude()
+			throws ServletException, IOException {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
+		request.addHeader("Authorization", "my-auth-header");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		this.filter.doFilterInternal(request, response, new FilterChain() {
+
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+			}
+
+		});
+		Map<String, Object> info = this.repository.findAll().iterator().next().getInfo();
+		Map<String, Object> headers = (Map<String, Object>) info.get("headers");
+		assertThat(((Map<Object, Object>) headers.get("request"))).hasSize(0);
+	}
+
+	@Test
+	@SuppressWarnings({ "unchecked" })
+	public void filterAddsAuthorizationHeaderWhenAuthorizationHeaderIncluded()
+			throws ServletException, IOException {
+		this.properties.setInclude(
+				EnumSet.of(Include.REQUEST_HEADERS, Include.AUTHORIZATION_HEADER));
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
+		request.addHeader("Authorization", "my-auth-header");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		this.filter.doFilterInternal(request, response, new FilterChain() {
+
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+			}
+
+		});
+		Map<String, Object> info = this.repository.findAll().iterator().next().getInfo();
+		Map<String, Object> headers = (Map<String, Object>) info.get("headers");
+		assertThat(((Map<Object, Object>) headers.get("request")))
+				.containsKey("Authorization");
+	}
+
+	@Test
+	@SuppressWarnings({ "unchecked" })
 	public void filterDoesNotAddResponseCookiesWithCookiesExclude()
 			throws ServletException, IOException {
 		this.properties.setInclude(Collections.singleton(Include.RESPONSE_HEADERS));
@@ -196,6 +241,18 @@ public class WebRequestTraceFilterTests {
 		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) trace
 				.get("headers")).get("response");
 		assertThat(map.get("status").toString()).isEqualTo("404");
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void filterAddsTimeTaken() throws Exception {
+		MockHttpServletRequest request = spy(new MockHttpServletRequest("GET", "/foo"));
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		MockFilterChain chain = new MockFilterChain();
+		this.filter.doFilter(request, response, chain);
+		String timeTaken = (String) this.repository.findAll()
+				.iterator().next().getInfo().get("timeTaken");
+		assertThat(timeTaken).isNotNull();
 	}
 
 	@Test

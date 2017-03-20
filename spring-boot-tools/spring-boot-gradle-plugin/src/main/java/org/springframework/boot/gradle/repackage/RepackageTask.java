@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
+import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.Repackager;
 import org.springframework.boot.loader.tools.Repackager.MainClassTimeoutWarningListener;
 import org.springframework.util.FileCopyUtils;
@@ -143,8 +144,8 @@ public class RepackageTask extends DefaultTask {
 		SpringBootPluginExtension extension = project.getExtensions()
 				.getByType(SpringBootPluginExtension.class);
 		ProjectLibraries libraries = new ProjectLibraries(project, extension,
-				(this.excludeDevtools != null && this.excludeDevtools)
-						|| extension.isExcludeDevtools());
+				this.excludeDevtools == null ? extension.isExcludeDevtools()
+						: this.excludeDevtools);
 		if (extension.getProvidedConfiguration() != null) {
 			libraries.setProvidedConfigurationName(extension.getProvidedConfiguration());
 		}
@@ -192,7 +193,7 @@ public class RepackageTask extends DefaultTask {
 		private boolean isTaskMatch(Jar task, Object withJarTask) {
 			if (withJarTask == null) {
 				if ("".equals(task.getClassifier())) {
-					Set<Object> tasksWithCustomRepackaging = new HashSet<Object>();
+					Set<Object> tasksWithCustomRepackaging = new HashSet<>();
 					for (RepackageTask repackageTask : RepackageTask.this.getProject()
 							.getTasks().withType(RepackageTask.class)) {
 						if (repackageTask.getWithJarTask() != null) {
@@ -218,8 +219,9 @@ public class RepackageTask extends DefaultTask {
 			repackager.addMainClassTimeoutWarningListener(
 					new LoggingMainClassTimeoutWarningListener());
 			setMainClass(repackager);
-			if (this.extension.convertLayout() != null) {
-				repackager.setLayout(this.extension.convertLayout());
+			Layout layout = this.extension.convertLayout();
+			if (layout != null) {
+				repackager.setLayout(layout);
 			}
 			repackager.setBackupSource(this.extension.isBackupSource());
 			try {

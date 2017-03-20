@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
@@ -60,6 +62,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Oliver Gierke
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
+ * @author Eddú Meléndez
  */
 @EnableConfigurationProperties(JpaProperties.class)
 @Import(DataSourceInitializedPublisher.Registrar.class)
@@ -71,20 +74,27 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	private final JtaTransactionManager jtaTransactionManager;
 
+	private final TransactionManagerCustomizers transactionManagerCustomizers;
+
 	private ConfigurableListableBeanFactory beanFactory;
 
 	protected JpaBaseConfiguration(DataSource dataSource, JpaProperties properties,
-			ObjectProvider<JtaTransactionManager> jtaTransactionManagerProvider) {
+			ObjectProvider<JtaTransactionManager> jtaTransactionManager,
+			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 		this.dataSource = dataSource;
 		this.properties = properties;
-		this.jtaTransactionManager = jtaTransactionManagerProvider.getIfAvailable();
+		this.jtaTransactionManager = jtaTransactionManager.getIfAvailable();
+		this.transactionManagerCustomizers = transactionManagerCustomizers
+				.getIfAvailable();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(PlatformTransactionManager.class)
 	public PlatformTransactionManager transactionManager() {
 		JpaTransactionManager transactionManager = new JpaTransactionManager();
-		this.properties.getTransaction().applyTo(transactionManager);
+		if (this.transactionManagerCustomizers != null) {
+			this.transactionManagerCustomizers.customize(transactionManager);
+		}
 		return transactionManager;
 	}
 
@@ -93,7 +103,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	public JpaVendorAdapter jpaVendorAdapter() {
 		AbstractJpaVendorAdapter adapter = createJpaVendorAdapter();
 		adapter.setShowSql(this.properties.isShowSql());
-		adapter.setDatabase(this.properties.getDatabase());
+		adapter.setDatabase(this.properties.determineDatabase(this.dataSource));
 		adapter.setDatabasePlatform(this.properties.getDatabasePlatform());
 		adapter.setGenerateDdl(this.properties.isGenerateDdl());
 		return adapter;
@@ -103,10 +113,10 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@ConditionalOnMissingBean
 	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(
 			JpaVendorAdapter jpaVendorAdapter,
-			ObjectProvider<PersistenceUnitManager> persistenceUnitManagerProvider) {
+			ObjectProvider<PersistenceUnitManager> persistenceUnitManager) {
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(
 				jpaVendorAdapter, this.properties.getProperties(),
-				persistenceUnitManagerProvider.getIfAvailable());
+				persistenceUnitManager.getIfAvailable());
 		builder.setCallback(getVendorCallback());
 		return builder;
 	}
@@ -186,7 +196,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	}
 
 	@Configuration
-	@ConditionalOnWebApplication
+	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnClass(WebMvcConfigurerAdapter.class)
 	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class,
 			OpenEntityManagerInViewFilter.class })

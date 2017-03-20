@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,13 +42,11 @@ public class YamlConfigurationFactoryTests {
 
 	private Validator validator;
 
-	private final Map<Class<?>, Map<String, String>> aliases = new HashMap<Class<?>, Map<String, String>>();
+	private final Map<Class<?>, Map<String, String>> aliases = new HashMap<>();
 
 	private Foo createFoo(final String yaml) throws Exception {
-		YamlConfigurationFactory<Foo> factory = new YamlConfigurationFactory<Foo>(
-				Foo.class);
+		YamlConfigurationFactory<Foo> factory = new YamlConfigurationFactory<>(Foo.class);
 		factory.setYaml(yaml);
-		factory.setExceptionIfInvalid(true);
 		factory.setPropertyAliases(this.aliases);
 		factory.setValidator(this.validator);
 		factory.setMessageSource(new StaticMessageSource());
@@ -57,10 +55,8 @@ public class YamlConfigurationFactoryTests {
 	}
 
 	private Jee createJee(final String yaml) throws Exception {
-		YamlConfigurationFactory<Jee> factory = new YamlConfigurationFactory<Jee>(
-				Jee.class);
+		YamlConfigurationFactory<Jee> factory = new YamlConfigurationFactory<>(Jee.class);
 		factory.setYaml(yaml);
-		factory.setExceptionIfInvalid(true);
 		factory.setPropertyAliases(this.aliases);
 		factory.setValidator(this.validator);
 		factory.setMessageSource(new StaticMessageSource());

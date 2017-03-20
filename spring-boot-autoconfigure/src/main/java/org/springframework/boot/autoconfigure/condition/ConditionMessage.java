@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -301,8 +301,8 @@ public final class ConditionMessage {
 			if (StringUtils.isEmpty(reason)) {
 				return new ConditionMessage(ConditionMessage.this, this.condition);
 			}
-			return new ConditionMessage(ConditionMessage.this,
-					this.condition + " " + reason);
+			return new ConditionMessage(ConditionMessage.this, this.condition
+					+ (StringUtils.isEmpty(this.condition) ? "" : " ") + reason);
 		}
 
 	}
@@ -421,7 +421,7 @@ public final class ConditionMessage {
 		};
 
 		public Collection<?> applyTo(Collection<?> items) {
-			List<Object> result = new ArrayList<Object>();
+			List<Object> result = new ArrayList<>();
 			for (Object item : items) {
 				result.add(applyToItem(item));
 			}

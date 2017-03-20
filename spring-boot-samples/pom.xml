@@ -37,6 +37,7 @@
 		<module>spring-boot-sample-data-couchbase</module>
 		<module>spring-boot-sample-data-elasticsearch</module>
 		<module>spring-boot-sample-data-jpa</module>
+		<module>spring-boot-sample-data-ldap</module>
 		<module>spring-boot-sample-data-mongodb</module>
 		<module>spring-boot-sample-data-neo4j</module>
 		<module>spring-boot-sample-data-redis</module>
@@ -49,15 +50,13 @@
 		<module>spring-boot-sample-hypermedia-gson</module>
 		<module>spring-boot-sample-hypermedia-jpa</module>
 		<module>spring-boot-sample-hypermedia-ui</module>
+		<module>spring-boot-sample-hypermedia-ui-secure</module>
 		<module>spring-boot-sample-integration</module>
 		<module>spring-boot-sample-jersey</module>
 		<module>spring-boot-sample-jersey1</module>
 		<module>spring-boot-sample-jetty</module>
 		<module>spring-boot-sample-jetty-jsp</module>
 		<module>spring-boot-sample-jetty-ssl</module>
-		<module>spring-boot-sample-jetty8</module>
-		<module>spring-boot-sample-jetty8-ssl</module>
-		<module>spring-boot-sample-jetty92</module>
 		<module>spring-boot-sample-jooq</module>
 		<module>spring-boot-sample-jpa</module>
 		<module>spring-boot-sample-jta-atomikos</module>
@@ -74,6 +73,7 @@
 		<module>spring-boot-sample-property-validation</module>
 		<module>spring-boot-sample-secure</module>
 		<module>spring-boot-sample-secure-oauth2</module>
+		<module>spring-boot-sample-secure-oauth2-actuator</module>
 		<module>spring-boot-sample-secure-oauth2-resource</module>
 		<module>spring-boot-sample-servlet</module>
 		<module>spring-boot-sample-session-redis</module>
@@ -85,8 +85,6 @@
 		<module>spring-boot-sample-tomcat-jsp</module>
 		<module>spring-boot-sample-tomcat-ssl</module>
 		<module>spring-boot-sample-tomcat-multi-connectors</module>
-		<module>spring-boot-sample-tomcat7-jsp</module>
-		<module>spring-boot-sample-tomcat7-ssl</module>
 		<module>spring-boot-sample-tomcat80-ssl</module>
 		<module>spring-boot-sample-traditional</module>
 		<module>spring-boot-sample-undertow</module>
@@ -102,8 +100,8 @@
 		<module>spring-boot-sample-web-secure-github</module>
 		<module>spring-boot-sample-web-secure-jdbc</module>
 		<module>spring-boot-sample-web-static</module>
-		<module>spring-boot-sample-web-thymeleaf3</module>
 		<module>spring-boot-sample-web-ui</module>
+		<module>spring-boot-sample-webflux</module>
 		<module>spring-boot-sample-websocket-jetty</module>
 		<module>spring-boot-sample-websocket-tomcat</module>
 		<module>spring-boot-sample-websocket-undertow</module>
