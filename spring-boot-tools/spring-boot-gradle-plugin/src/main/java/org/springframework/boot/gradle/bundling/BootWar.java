@@ -112,4 +112,14 @@ public class BootWar extends War implements BootArchive {
 				classpath);
 	}
 
+	@Override
+	public boolean isExcludeDevtools() {
+		return this.support.isExcludeDevtools();
+	}
+
+	@Override
+	public void setExcludeDevtools(boolean excludeDevtools) {
+		this.support.setExcludeDevtools(excludeDevtools);
+	}
+
 }

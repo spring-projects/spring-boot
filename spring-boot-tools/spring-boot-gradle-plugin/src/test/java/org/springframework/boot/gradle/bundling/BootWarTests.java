@@ -47,4 +47,33 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 		}
 	}
 
+	@Test
+	public void devtoolsJarIsExcludedByDefaultWhenItsOnTheProvidedClasspath()
+			throws IOException {
+		getTask().setMainClass("com.example.Main");
+		getTask().providedClasspath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
+		getTask().execute();
+		assertThat(getTask().getArchivePath().exists());
+		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
+			assertThat(jarFile
+					.getEntry("WEB-INF/lib-provided/spring-boot-devtools-0.1.2.jar"))
+							.isNull();
+		}
+	}
+
+	@Test
+	public void devtoolsJarCanBeIncludedWhenItsOnTheProvidedClasspath()
+			throws IOException {
+		getTask().setMainClass("com.example.Main");
+		getTask().providedClasspath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
+		getTask().setExcludeDevtools(false);
+		getTask().execute();
+		assertThat(getTask().getArchivePath().exists());
+		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
+			assertThat(jarFile
+					.getEntry("WEB-INF/lib-provided/spring-boot-devtools-0.1.2.jar"))
+							.isNotNull();
+		}
+	}
+
 }

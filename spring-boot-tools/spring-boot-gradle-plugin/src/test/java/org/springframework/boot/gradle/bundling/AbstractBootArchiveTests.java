@@ -262,6 +262,31 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		assertThat(textFiles).containsExactly("alpha.txt", "bravo.txt", "charlie.txt");
 	}
 
+	@Test
+	public void devtoolsJarIsExcludedByDefault() throws IOException {
+		this.task.setMainClass("com.example.Main");
+		this.task.classpath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
+		this.task.execute();
+		assertThat(this.task.getArchivePath().exists());
+		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
+			assertThat(jarFile.getEntry(this.libPath + "/spring-boot-devtools-0.1.2.jar"))
+					.isNull();
+		}
+	}
+
+	@Test
+	public void devtoolsJarCanBeIncluded() throws IOException {
+		this.task.setMainClass("com.example.Main");
+		this.task.classpath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
+		this.task.setExcludeDevtools(false);
+		this.task.execute();
+		assertThat(this.task.getArchivePath().exists());
+		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
+			assertThat(jarFile.getEntry(this.libPath + "/spring-boot-devtools-0.1.2.jar"))
+					.isNotNull();
+		}
+	}
+
 	private T configure(T task) throws IOException {
 		AbstractArchiveTask archiveTask = task;
 		archiveTask.setBaseName("test");

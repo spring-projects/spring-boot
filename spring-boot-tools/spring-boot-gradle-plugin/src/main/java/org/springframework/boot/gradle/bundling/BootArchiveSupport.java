@@ -45,13 +45,18 @@ class BootArchiveSupport {
 
 	private final Set<String> storedPathPrefixes;
 
+	private final PatternSet exclusions = new PatternSet();
+
 	private String loaderMainClass;
 
 	private LaunchScriptConfiguration launchScript = new LaunchScriptConfiguration();
 
+	private boolean excludeDevtools = true;
+
 	BootArchiveSupport(String... storedPathPrefixes) {
 		this.storedPathPrefixes = new HashSet<>(Arrays.asList(storedPathPrefixes));
 		this.requiresUnpack.include(Specs.satisfyNone());
+		configureExclusions();
 	}
 
 	void configureManifest(Jar jar, String mainClass) {
@@ -62,16 +67,13 @@ class BootArchiveSupport {
 
 	CopyAction createCopyAction(Jar jar) {
 		CopyAction copyAction = new BootZipCopyAction(jar.getArchivePath(),
-				jar.isPreserveFileTimestamps(), this::requiresUnpacking,
-				this.launchScript, this.storedPathPrefixes);
+				jar.isPreserveFileTimestamps(), this.requiresUnpack.getAsSpec(),
+				this.exclusions.getAsExcludeSpec(), this.launchScript,
+				this.storedPathPrefixes);
 		if (!jar.isReproducibleFileOrder()) {
 			return copyAction;
 		}
 		return new ReproducibleOrderingCopyAction(copyAction);
-	}
-
-	private boolean requiresUnpacking(FileTreeElement fileTreeElement) {
-		return this.requiresUnpack.getAsSpec().isSatisfiedBy(fileTreeElement);
 	}
 
 	String getLoaderMainClass() {
@@ -96,6 +98,23 @@ class BootArchiveSupport {
 
 	void requiresUnpack(Spec<FileTreeElement> spec) {
 		this.requiresUnpack.include(spec);
+	}
+
+	boolean isExcludeDevtools() {
+		return this.excludeDevtools;
+	}
+
+	void setExcludeDevtools(boolean excludeDevtools) {
+		this.excludeDevtools = excludeDevtools;
+		configureExclusions();
+	}
+
+	private void configureExclusions() {
+		Set<String> excludes = new HashSet<String>();
+		if (this.excludeDevtools) {
+			excludes.add("**/spring-boot-devtools-*.jar");
+		}
+		this.exclusions.setExcludes(excludes);
 	}
 
 	private static final class ReproducibleOrderingCopyAction implements CopyAction {

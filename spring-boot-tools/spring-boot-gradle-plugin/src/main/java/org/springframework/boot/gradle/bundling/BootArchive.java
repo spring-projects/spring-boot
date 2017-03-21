@@ -99,4 +99,22 @@ public interface BootArchive extends Task {
 	 */
 	void classpath(Object... classpath);
 
+	/**
+	 * Returns {@code true} if the Devtools jar should be excluded, otherwise
+	 * {@code false}.
+	 *
+	 * @return {@code true} if the Devtools jar should be excluded, or {@code false} if
+	 * not
+	 */
+	@Input
+	boolean isExcludeDevtools();
+
+	/**
+	 * Sets whether or not the Devtools jar should be excluded.
+	 *
+	 * @param excludeDevtools {@code true} if the Devtools jar should be excluded, or
+	 * {@code false} if not
+	 */
+	void setExcludeDevtools(boolean excludeDevtools);
+
 }

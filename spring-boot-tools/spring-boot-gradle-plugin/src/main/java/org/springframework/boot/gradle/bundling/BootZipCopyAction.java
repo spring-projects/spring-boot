@@ -55,16 +55,19 @@ class BootZipCopyAction implements CopyAction {
 
 	private final Spec<FileTreeElement> requiresUnpack;
 
+	private final Spec<FileTreeElement> exclusions;
+
 	private final LaunchScriptConfiguration launchScript;
 
 	private final Set<String> storedPathPrefixes;
 
 	BootZipCopyAction(File output, boolean preserveFileTimestamps,
-			Spec<FileTreeElement> requiresUnpack, LaunchScriptConfiguration launchScript,
-			Set<String> storedPathPrefixes) {
+			Spec<FileTreeElement> requiresUnpack, Spec<FileTreeElement> exclusions,
+			LaunchScriptConfiguration launchScript, Set<String> storedPathPrefixes) {
 		this.output = output;
 		this.preserveFileTimestamps = preserveFileTimestamps;
 		this.requiresUnpack = requiresUnpack;
+		this.exclusions = exclusions;
 		this.launchScript = launchScript;
 		this.storedPathPrefixes = storedPathPrefixes;
 	}
@@ -83,7 +86,7 @@ class BootZipCopyAction implements CopyAction {
 		}
 		try {
 			stream.process(new ZipStreamAction(zipStream, this.output,
-					this.preserveFileTimestamps, this.requiresUnpack,
+					this.preserveFileTimestamps, this.requiresUnpack, this.exclusions,
 					this.storedPathPrefixes));
 		}
 		finally {
@@ -148,20 +151,26 @@ class BootZipCopyAction implements CopyAction {
 
 		private final Spec<FileTreeElement> requiresUnpack;
 
+		private final Spec<FileTreeElement> exclusions;
+
 		private final Set<String> storedPathPrefixes;
 
 		private ZipStreamAction(ZipOutputStream zipStream, File output,
 				boolean preserveFileTimestamps, Spec<FileTreeElement> requiresUnpack,
-				Set<String> storedPathPrefixes) {
+				Spec<FileTreeElement> exclusions, Set<String> storedPathPrefixes) {
 			this.zipStream = zipStream;
 			this.output = output;
 			this.preserveFileTimestamps = preserveFileTimestamps;
 			this.requiresUnpack = requiresUnpack;
+			this.exclusions = exclusions;
 			this.storedPathPrefixes = storedPathPrefixes;
 		}
 
 		@Override
 		public void processFile(FileCopyDetailsInternal details) {
+			if (this.exclusions.isSatisfiedBy(details)) {
+				return;
+			}
 			try {
 				if (details.isDirectory()) {
 					createDirectory(details);
