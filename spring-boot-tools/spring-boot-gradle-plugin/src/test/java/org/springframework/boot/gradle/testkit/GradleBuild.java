@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.testkit;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -25,6 +26,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
@@ -32,6 +37,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import org.xml.sax.InputSource;
 
 import org.springframework.boot.loader.tools.LaunchScript;
 
@@ -80,12 +86,18 @@ public class GradleBuild implements TestRule {
 	}
 
 	private String pluginClasspath() {
-		return new File("build/classes/main").getAbsolutePath() + ","
-				+ new File("build/resources/main").getAbsolutePath() + ","
-				+ LaunchScript.class.getProtectionDomain().getCodeSource().getLocation()
-						.getPath()
-				+ "," + DependencyManagementPlugin.class.getProtectionDomain()
-						.getCodeSource().getLocation().getPath();
+		return absolutePath("bin") + "," + absolutePath("build/classes/main") + ","
+				+ absolutePath("build/resources/main") + ","
+				+ pathOfJarContaining(LaunchScript.class) + ","
+				+ pathOfJarContaining(DependencyManagementPlugin.class);
+	}
+
+	private String absolutePath(String path) {
+		return new File(path).getAbsolutePath();
+	}
+
+	private String pathOfJarContaining(Class<?> type) {
+		return type.getProtectionDomain().getCodeSource().getLocation().getPath();
 	}
 
 	public GradleBuild script(String script) {
@@ -102,11 +114,31 @@ public class GradleBuild implements TestRule {
 					.withProjectDir(this.projectDir).forwardOutput();
 			List<String> allArguments = new ArrayList<String>();
 			allArguments.add("-PpluginClasspath=" + pluginClasspath());
+			allArguments.add("-PbootVersion=" + getBootVersion());
 			allArguments.addAll(Arrays.asList(arguments));
 			return gradleRunner.withArguments(allArguments).build();
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex);
+		}
+	}
+
+	public static String getBootVersion() {
+		return evaluateExpression(
+				"/*[local-name()='project']/*[local-name()='parent']/*[local-name()='version']"
+						+ "/text()");
+	}
+
+	private static String evaluateExpression(String expression) {
+		try {
+			XPathFactory xPathFactory = XPathFactory.newInstance();
+			XPath xpath = xPathFactory.newXPath();
+			XPathExpression expr = xpath.compile(expression);
+			String version = expr.evaluate(new InputSource(new FileReader("pom.xml")));
+			return version;
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Failed to evaluate expression", ex);
 		}
 	}
 
