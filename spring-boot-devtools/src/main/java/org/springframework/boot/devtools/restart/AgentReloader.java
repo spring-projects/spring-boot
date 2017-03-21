@@ -36,6 +36,7 @@ public abstract class AgentReloader {
 		Set<String> agentClasses = new LinkedHashSet<String>();
 		agentClasses.add("org.zeroturnaround.javarebel.Integration");
 		agentClasses.add("org.zeroturnaround.javarebel.ReloaderFactory");
+		agentClasses.add("org.hotswap.agent.HotswapAgent"); // relevant for http://hotswapagent.org/ (https://github.com/HotswapProjects/HotswapAgent)
 		AGENT_CLASSES = Collections.unmodifiableSet(agentClasses);
 	}
 
