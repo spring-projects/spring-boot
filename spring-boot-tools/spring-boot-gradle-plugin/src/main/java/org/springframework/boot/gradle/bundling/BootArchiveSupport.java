@@ -18,13 +18,19 @@ package org.springframework.boot.gradle.bundling;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.gradle.api.file.FileTreeElement;
+import org.gradle.api.file.RelativePath;
 import org.gradle.api.internal.file.copy.CopyAction;
+import org.gradle.api.internal.file.copy.CopyActionProcessingStream;
+import org.gradle.api.internal.file.copy.FileCopyDetailsInternal;
 import org.gradle.api.java.archives.Attributes;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.specs.Specs;
+import org.gradle.api.tasks.WorkResult;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.util.PatternSet;
 
@@ -55,8 +61,13 @@ class BootArchiveSupport {
 	}
 
 	CopyAction createCopyAction(Jar jar) {
-		return new BootZipCopyAction(jar.getArchivePath(), this::requiresUnpacking,
+		CopyAction copyAction = new BootZipCopyAction(jar.getArchivePath(),
+				jar.isPreserveFileTimestamps(), this::requiresUnpacking,
 				this.launchScript, this.storedPathPrefixes);
+		if (!jar.isReproducibleFileOrder()) {
+			return copyAction;
+		}
+		return new ReproducibleOrderingCopyAction(copyAction);
 	}
 
 	private boolean requiresUnpacking(FileTreeElement fileTreeElement) {
@@ -85,6 +96,27 @@ class BootArchiveSupport {
 
 	void requiresUnpack(Spec<FileTreeElement> spec) {
 		this.requiresUnpack.include(spec);
+	}
+
+	private static final class ReproducibleOrderingCopyAction implements CopyAction {
+
+		private final CopyAction delegate;
+
+		private ReproducibleOrderingCopyAction(CopyAction delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public WorkResult execute(CopyActionProcessingStream stream) {
+			return this.delegate.execute((action) -> {
+				Map<RelativePath, FileCopyDetailsInternal> detailsByPath = new TreeMap<>();
+				stream.process((details) -> {
+					detailsByPath.put(details.getRelativePath(), details);
+				});
+				detailsByPath.values().stream().forEach(action::processFile);
+			});
+		}
+
 	}
 
 }

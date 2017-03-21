@@ -28,6 +28,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.gradle.api.GradleException;
+import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.CopyActionProcessingStreamAction;
 import org.gradle.api.internal.file.copy.CopyAction;
@@ -35,6 +36,7 @@ import org.gradle.api.internal.file.copy.CopyActionProcessingStream;
 import org.gradle.api.internal.file.copy.FileCopyDetailsInternal;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.WorkResult;
+import org.gradle.util.GUtil;
 
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.FileUtils;
@@ -49,15 +51,19 @@ class BootZipCopyAction implements CopyAction {
 
 	private final File output;
 
+	private final boolean preserveFileTimestamps;
+
 	private final Spec<FileTreeElement> requiresUnpack;
 
 	private final LaunchScriptConfiguration launchScript;
 
 	private final Set<String> storedPathPrefixes;
 
-	BootZipCopyAction(File output, Spec<FileTreeElement> requiresUnpack,
-			LaunchScriptConfiguration launchScript, Set<String> storedPathPrefixes) {
+	BootZipCopyAction(File output, boolean preserveFileTimestamps,
+			Spec<FileTreeElement> requiresUnpack, LaunchScriptConfiguration launchScript,
+			Set<String> storedPathPrefixes) {
 		this.output = output;
+		this.preserveFileTimestamps = preserveFileTimestamps;
 		this.requiresUnpack = requiresUnpack;
 		this.launchScript = launchScript;
 		this.storedPathPrefixes = storedPathPrefixes;
@@ -77,7 +83,8 @@ class BootZipCopyAction implements CopyAction {
 		}
 		try {
 			stream.process(new ZipStreamAction(zipStream, this.output,
-					this.requiresUnpack, this.storedPathPrefixes));
+					this.preserveFileTimestamps, this.requiresUnpack,
+					this.storedPathPrefixes));
 		}
 		finally {
 			try {
@@ -100,6 +107,9 @@ class BootZipCopyAction implements CopyAction {
 			byte[] buffer = new byte[4096];
 			while ((entry = in.getNextEntry()) != null) {
 				if (entry.getName().endsWith((".class"))) {
+					if (!this.preserveFileTimestamps) {
+						entry.setTime(GUtil.CONSTANT_TIME_FOR_ZIP_ENTRIES);
+					}
 					out.putNextEntry(entry);
 					int read;
 					while ((read = in.read(buffer)) > 0) {
@@ -134,14 +144,18 @@ class BootZipCopyAction implements CopyAction {
 
 		private final File output;
 
+		private final boolean preserveFileTimestamps;
+
 		private final Spec<FileTreeElement> requiresUnpack;
 
 		private final Set<String> storedPathPrefixes;
 
 		private ZipStreamAction(ZipOutputStream zipStream, File output,
-				Spec<FileTreeElement> requiresUnpack, Set<String> storedPathPrefixes) {
+				boolean preserveFileTimestamps, Spec<FileTreeElement> requiresUnpack,
+				Set<String> storedPathPrefixes) {
 			this.zipStream = zipStream;
 			this.output = output;
+			this.preserveFileTimestamps = preserveFileTimestamps;
 			this.requiresUnpack = requiresUnpack;
 			this.storedPathPrefixes = storedPathPrefixes;
 		}
@@ -165,7 +179,7 @@ class BootZipCopyAction implements CopyAction {
 		private void createDirectory(FileCopyDetailsInternal details) throws IOException {
 			ZipEntry archiveEntry = new ZipEntry(
 					details.getRelativePath().getPathString() + '/');
-			archiveEntry.setTime(details.getLastModified());
+			archiveEntry.setTime(getTime(details));
 			this.zipStream.putNextEntry(archiveEntry);
 			this.zipStream.closeEntry();
 		}
@@ -173,7 +187,7 @@ class BootZipCopyAction implements CopyAction {
 		private void createFile(FileCopyDetailsInternal details) throws IOException {
 			String relativePath = details.getRelativePath().getPathString();
 			ZipEntry archiveEntry = new ZipEntry(relativePath);
-			archiveEntry.setTime(details.getLastModified());
+			archiveEntry.setTime(getTime(details));
 			this.zipStream.putNextEntry(archiveEntry);
 			if (isStoredEntry(relativePath)) {
 				archiveEntry.setMethod(ZipEntry.STORED);
@@ -200,6 +214,11 @@ class BootZipCopyAction implements CopyAction {
 				}
 			}
 			return false;
+		}
+
+		private long getTime(FileCopyDetails details) {
+			return this.preserveFileTimestamps ? details.getLastModified()
+					: GUtil.CONSTANT_TIME_FOR_ZIP_ENTRIES;
 		}
 
 	}

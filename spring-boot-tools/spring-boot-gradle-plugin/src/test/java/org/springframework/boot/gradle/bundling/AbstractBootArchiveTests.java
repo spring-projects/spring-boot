@@ -20,13 +20,18 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.gradle.api.Project;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.testfixtures.ProjectBuilder;
+import org.gradle.util.GUtil;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -218,6 +223,43 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Start-Class"))
 					.isEqualTo("com.example.CustomMain");
 		}
+	}
+
+	@Test
+	public void fileTimestampPreservationCanBeDisabled() throws IOException {
+		this.task.setMainClass("com.example.Main");
+		this.task.setPreserveFileTimestamps(false);
+		this.task.execute();
+		assertThat(this.task.getArchivePath().exists());
+		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
+			Enumeration<JarEntry> entries = jarFile.entries();
+			while (entries.hasMoreElements()) {
+				JarEntry entry = entries.nextElement();
+				assertThat(entry.getTime())
+						.isEqualTo(GUtil.CONSTANT_TIME_FOR_ZIP_ENTRIES);
+			}
+		}
+	}
+
+	@Test
+	public void reproducibleOrderingCanBeEnabled() throws IOException {
+		this.task.setMainClass("com.example.Main");
+		this.task.from(this.temp.newFile("bravo.txt"), this.temp.newFile("alpha.txt"),
+				this.temp.newFile("charlie.txt"));
+		this.task.setReproducibleFileOrder(true);
+		this.task.execute();
+		assertThat(this.task.getArchivePath().exists());
+		List<String> textFiles = new ArrayList<>();
+		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
+			Enumeration<JarEntry> entries = jarFile.entries();
+			while (entries.hasMoreElements()) {
+				JarEntry entry = entries.nextElement();
+				if (entry.getName().endsWith(".txt")) {
+					textFiles.add(entry.getName());
+				}
+			}
+		}
+		assertThat(textFiles).containsExactly("alpha.txt", "bravo.txt", "charlie.txt");
 	}
 
 	private T configure(T task) throws IOException {
