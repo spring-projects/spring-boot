@@ -46,7 +46,7 @@ Framework {spring-version} or above. Explicit build support is provided for Mave
 The following embedded servlet containers are supported out of the box:
 
 |===
-|Name |Servlet Version |
+|Name |Servlet Version
 
 |Tomcat 8.5
 |3.1
