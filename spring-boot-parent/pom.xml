@@ -689,6 +689,13 @@
 						<enabled>false</enabled>
 					</snapshots>
 				</repository>
+				<repository>
+					<id>neo4j-snapshots</id>
+					<url>http://m2.neo4j.org/content/repositories/snapshots</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
 			</repositories>
 			<pluginRepositories>
 				<pluginRepository>
@@ -752,6 +759,13 @@
 					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
 					<snapshots>
 						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>neo4j-snapshots</id>
+					<url>http://m2.neo4j.org/content/repositories/snapshots</url>
+					<snapshots>
+						<enabled>true</enabled>
 					</snapshots>
 				</repository>
 			</repositories>
@@ -836,6 +850,13 @@
 					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
 					<snapshots>
 						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>neo4j-snapshots</id>
+					<url>http://m2.neo4j.org/content/repositories/snapshots</url>
+					<snapshots>
+						<enabled>true</enabled>
 					</snapshots>
 				</repository>
 			</repositories>

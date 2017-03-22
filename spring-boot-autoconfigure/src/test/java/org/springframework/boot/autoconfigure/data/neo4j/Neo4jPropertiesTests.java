@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,8 @@ import java.net.URLClassLoader;
 import com.hazelcast.util.Base64;
 import org.junit.After;
 import org.junit.Test;
-import org.neo4j.ogm.authentication.Credentials;
 import org.neo4j.ogm.config.Configuration;
-import org.neo4j.ogm.config.DriverConfiguration;
+import org.neo4j.ogm.config.Credentials;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
@@ -56,15 +55,15 @@ public class Neo4jPropertiesTests {
 	}
 
 	@Test
-	public void defaultUseHttpDriverIfEmbeddedDriverIsNotAvailable() {
+	public void defaultUseBoltDriverIfEmbeddedDriverIsNotAvailable() {
 		Neo4jProperties properties = load(false);
 		Configuration configuration = properties.createConfiguration();
-		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
-				Neo4jProperties.DEFAULT_HTTP_URI);
+		assertDriver(configuration, Neo4jProperties.BOLT_DRIVER,
+				Neo4jProperties.DEFAULT_BOLT_URI);
 	}
 
 	@Test
-	public void httpUriUseHttpServer() {
+	public void httpUriUseHttpDriver() {
 		Neo4jProperties properties = load(true,
 				"spring.data.neo4j.uri=http://localhost:7474");
 		Configuration configuration = properties.createConfiguration();
@@ -109,12 +108,12 @@ public class Neo4jPropertiesTests {
 	}
 
 	@Test
-	public void embeddedModeDisabledUseHttpUri() {
+	public void embeddedModeDisabledUseBoltUri() {
 		Neo4jProperties properties = load(true,
 				"spring.data.neo4j.embedded.enabled=false");
 		Configuration configuration = properties.createConfiguration();
-		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
-				Neo4jProperties.DEFAULT_HTTP_URI);
+		assertDriver(configuration, Neo4jProperties.BOLT_DRIVER,
+				Neo4jProperties.DEFAULT_BOLT_URI);
 	}
 
 	@Test
@@ -128,14 +127,13 @@ public class Neo4jPropertiesTests {
 
 	private static void assertDriver(Configuration actual, String driver, String uri) {
 		assertThat(actual).isNotNull();
-		DriverConfiguration driverConfig = actual.driverConfiguration();
-		assertThat(driverConfig.getDriverClassName()).isEqualTo(driver);
-		assertThat(driverConfig.getURI()).isEqualTo(uri);
+		assertThat(actual.getDriverClassName()).isEqualTo(driver);
+		assertThat(actual.getURI()).isEqualTo(uri);
 	}
 
 	private static void assertCredentials(Configuration actual, String username,
 			String password) {
-		Credentials<?> credentials = actual.driverConfiguration().getCredentials();
+		Credentials<?> credentials = actual.getCredentials();
 		if (username == null & password == null) {
 			assertThat(credentials).isNull();
 		}

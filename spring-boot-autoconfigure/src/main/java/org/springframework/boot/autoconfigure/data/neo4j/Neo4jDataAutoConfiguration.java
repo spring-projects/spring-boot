@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 
 import java.util.List;
 
+import org.neo4j.ogm.config.Components;
 import org.neo4j.ogm.session.SessionFactory;
 import org.neo4j.ogm.session.event.EventListener;
 
@@ -37,8 +38,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.neo4j.template.Neo4jOperations;
-import org.springframework.data.neo4j.template.Neo4jTemplate;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.data.neo4j.web.support.OpenSessionInViewInterceptor;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -60,13 +59,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @ConditionalOnClass({ SessionFactory.class, PlatformTransactionManager.class })
 @ConditionalOnMissingBean(SessionFactory.class)
 @EnableConfigurationProperties(Neo4jProperties.class)
-@SuppressWarnings("deprecation")
 public class Neo4jDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	public org.neo4j.ogm.config.Configuration configuration(Neo4jProperties properties) {
-		return properties.createConfiguration();
+		org.neo4j.ogm.config.Configuration configuration = properties
+				.createConfiguration();
+		Components.configure(configuration);
+		return configuration;
 	}
 
 	@Bean
@@ -82,12 +83,6 @@ public class Neo4jDataAutoConfiguration {
 			}
 		}
 		return sessionFactory;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(Neo4jOperations.class)
-	public Neo4jTemplate neo4jTemplate(SessionFactory sessionFactory) {
-		return new Neo4jTemplate(sessionFactory);
 	}
 
 	@Bean

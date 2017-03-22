@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.neo4j.ogm.config.Configuration;
-import org.neo4j.ogm.config.DriverConfiguration;
 
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -43,7 +42,7 @@ public class Neo4jProperties implements ApplicationContextAware {
 
 	static final String HTTP_DRIVER = "org.neo4j.ogm.drivers.http.driver.HttpDriver";
 
-	static final String DEFAULT_HTTP_URI = "http://localhost:7474";
+	static final String DEFAULT_BOLT_URI = "bolt://localhost:7687";
 
 	static final String BOLT_DRIVER = "org.neo4j.ogm.drivers.bolt.driver.BoltDriver";
 
@@ -61,11 +60,6 @@ public class Neo4jProperties implements ApplicationContextAware {
 	 * Login password of the server.
 	 */
 	private String password;
-
-	/**
-	 * Compiler to use.
-	 */
-	private String compiler;
 
 	private final Embedded embedded = new Embedded();
 
@@ -95,14 +89,6 @@ public class Neo4jProperties implements ApplicationContextAware {
 		this.password = password;
 	}
 
-	public String getCompiler() {
-		return this.compiler;
-	}
-
-	public void setCompiler(String compiler) {
-		this.compiler = compiler;
-	}
-
 	public Embedded getEmbedded() {
 		return this.embedded;
 	}
@@ -118,29 +104,25 @@ public class Neo4jProperties implements ApplicationContextAware {
 	 */
 	public Configuration createConfiguration() {
 		Configuration configuration = new Configuration();
-		configureDriver(configuration.driverConfiguration());
-		if (this.compiler != null) {
-			configuration.compilerConfiguration().setCompilerClassName(this.compiler);
-		}
+		configureDriver(configuration);
 		return configuration;
 	}
 
-	private void configureDriver(DriverConfiguration driverConfiguration) {
+	private void configureDriver(Configuration configuration) {
 		if (this.uri != null) {
-			configureDriverFromUri(driverConfiguration, this.uri);
+			configureDriverFromUri(configuration, this.uri);
 		}
 		else {
-			configureDriverWithDefaults(driverConfiguration);
+			configureDriverWithDefaults(configuration);
 		}
 		if (this.username != null && this.password != null) {
-			driverConfiguration.setCredentials(this.username, this.password);
+			configuration.setCredentials(this.username, this.password);
 		}
 	}
 
-	private void configureDriverFromUri(DriverConfiguration driverConfiguration,
-			String uri) {
-		driverConfiguration.setDriverClassName(deduceDriverFromUri());
-		driverConfiguration.setURI(uri);
+	private void configureDriverFromUri(Configuration configuration, String uri) {
+		configuration.setDriverClassName(deduceDriverFromUri());
+		configuration.setURI(uri);
 	}
 
 	private String deduceDriverFromUri() {
@@ -165,14 +147,14 @@ public class Neo4jProperties implements ApplicationContextAware {
 		}
 	}
 
-	private void configureDriverWithDefaults(DriverConfiguration driverConfiguration) {
+	private void configureDriverWithDefaults(Configuration configuration) {
 		if (getEmbedded().isEnabled()
 				&& ClassUtils.isPresent(EMBEDDED_DRIVER, this.classLoader)) {
-			driverConfiguration.setDriverClassName(EMBEDDED_DRIVER);
+			configuration.setDriverClassName(EMBEDDED_DRIVER);
 			return;
 		}
-		driverConfiguration.setDriverClassName(HTTP_DRIVER);
-		driverConfiguration.setURI(DEFAULT_HTTP_URI);
+		configuration.setDriverClassName(BOLT_DRIVER);
+		configuration.setURI(DEFAULT_BOLT_URI);
 	}
 
 	public static class Embedded {
