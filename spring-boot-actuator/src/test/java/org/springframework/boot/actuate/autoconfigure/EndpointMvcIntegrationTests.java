@@ -71,7 +71,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "foo.bar=baz")
 @DirtiesContext
 @TestPropertySource(properties = "management.security.enabled=false")
 public class EndpointMvcIntegrationTests {
@@ -85,8 +85,8 @@ public class EndpointMvcIntegrationTests {
 	@Test
 	public void envEndpointNotHidden() throws InterruptedException {
 		String body = new TestRestTemplate().getForObject(
-				"http://localhost:" + this.port + "/env/user.dir", String.class);
-		assertThat(body).isNotNull().contains("spring-boot-actuator");
+				"http://localhost:" + this.port + "/env/foo.bar", String.class);
+		assertThat(body).isNotNull().contains("\"baz\"");
 		assertThat(this.interceptor.invoked()).isTrue();
 	}
 
