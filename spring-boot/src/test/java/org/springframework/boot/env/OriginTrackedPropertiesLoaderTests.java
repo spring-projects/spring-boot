@@ -112,6 +112,13 @@ public class OriginTrackedPropertiesLoaderTests {
 	}
 
 	@Test
+	public void getPropertyWithMultilineImmediateBang() {
+		OriginTrackedValue value = this.properties.get("test-multiline-immediate-bang");
+		assertThat(getValue(value)).isEqualTo("!foo");
+		assertThat(getLocation(value)).isEqualTo("39:1");
+	}
+
+	@Test
 	public void getPropertyWithCarriageReturn() throws Exception {
 		OriginTrackedValue value = this.properties.get("test-return-property");
 		assertThat(getValue(value)).isEqualTo("foo\rbar");
