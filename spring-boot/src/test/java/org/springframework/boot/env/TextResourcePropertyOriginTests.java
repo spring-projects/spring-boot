@@ -109,6 +109,7 @@ public class TextResourcePropertyOriginTests {
 		Location location3 = new Location(2, 2);
 		assertThat(location1.hashCode()).isEqualTo(location1.hashCode());
 		assertThat(location1.hashCode()).isEqualTo(location2.hashCode());
+		assertThat(location1.hashCode()).isNotEqualTo(location3.hashCode());
 		assertThat(location1).isEqualTo(location1);
 		assertThat(location1).isEqualTo(location2);
 		assertThat(location1).isNotEqualTo(location3);
@@ -126,6 +127,8 @@ public class TextResourcePropertyOriginTests {
 				new ClassPathResource("foo2.txt"), new Location(1, 2));
 		assertThat(origin1.hashCode()).isEqualTo(origin1.hashCode());
 		assertThat(origin1.hashCode()).isEqualTo(origin2.hashCode());
+		assertThat(origin1.hashCode()).isNotEqualTo(origin3.hashCode());
+		assertThat(origin1.hashCode()).isNotEqualTo(origin4.hashCode());
 		assertThat(origin1).isEqualTo(origin1);
 		assertThat(origin1).isEqualTo(origin2);
 		assertThat(origin1).isNotEqualTo(origin3);
