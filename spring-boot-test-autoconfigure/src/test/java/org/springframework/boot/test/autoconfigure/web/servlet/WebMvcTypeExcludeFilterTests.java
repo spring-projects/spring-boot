@@ -25,6 +25,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,7 @@ public class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, Controller2.class)).isFalse();
 		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
 		assertThat(excludes(filter, ExampleWeb.class)).isFalse();
+		assertThat(excludes(filter, ExampleMessageConverter.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 	}
@@ -62,6 +64,7 @@ public class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, Controller2.class)).isTrue();
 		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
 		assertThat(excludes(filter, ExampleWeb.class)).isFalse();
+		assertThat(excludes(filter, ExampleMessageConverter.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 	}
@@ -74,6 +77,7 @@ public class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, Controller2.class)).isTrue();
 		assertThat(excludes(filter, ExampleControllerAdvice.class)).isTrue();
 		assertThat(excludes(filter, ExampleWeb.class)).isTrue();
+		assertThat(excludes(filter, ExampleMessageConverter.class)).isTrue();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 	}
@@ -86,6 +90,7 @@ public class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, Controller2.class)).isFalse();
 		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
 		assertThat(excludes(filter, ExampleWeb.class)).isFalse();
+		assertThat(excludes(filter, ExampleMessageConverter.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isFalse();
 	}
@@ -98,6 +103,7 @@ public class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, Controller2.class)).isFalse();
 		assertThat(excludes(filter, ExampleControllerAdvice.class)).isFalse();
 		assertThat(excludes(filter, ExampleWeb.class)).isFalse();
+		assertThat(excludes(filter, ExampleMessageConverter.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 	}
@@ -150,6 +156,10 @@ public class WebMvcTypeExcludeFilterTests {
 	}
 
 	static class ExampleWeb extends WebMvcConfigurerAdapter {
+
+	}
+
+	static class ExampleMessageConverter extends MappingJackson2HttpMessageConverter {
 
 	}
 
