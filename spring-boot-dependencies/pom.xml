@@ -1903,11 +1903,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.neo4j</groupId>
-				<artifactId>neo4j-ogm-compiler</artifactId>
-				<version>${neo4j-ogm.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.neo4j</groupId>
 				<artifactId>neo4j-ogm-core</artifactId>
 				<version>${neo4j-ogm.version}</version>
 			</dependency>
