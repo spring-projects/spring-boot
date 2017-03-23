@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Itegration tests for the default error view.
+ * Integration tests for the default error view.
  *
  * @author Dave Syer
  */
