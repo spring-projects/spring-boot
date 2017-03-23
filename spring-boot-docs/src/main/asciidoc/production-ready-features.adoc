@@ -1510,6 +1510,28 @@ and obtain basic information about the last 100 requests:
 	}]
 ----
 
+The following are included in the trace by default:
+
+[cols="1,2"]
+|===
+|Name |Description
+
+|Request Headers
+|Headers from the request.
+
+|Response Headers
+|Headers from the response.
+
+|Cookies
+|`Cookie` from request headers and `Set-Cookie` from response headers.
+
+|Errors
+|The error attributes (if any).
+
+|Time Taken
+|The time taken to service the request in milliseconds.
+|===
+
 
 
 [[production-ready-custom-tracing]]
