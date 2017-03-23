@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,38 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.json;
+package org.springframework.boot.test.autoconfigure.json;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 import org.springframework.util.ObjectUtils;
 
 /**
- * Example object used for serialization.
+ * Example object to read/write as JSON with view
+ *
+ * @author Madhura Bhave
  */
-public class ExampleObject {
+public class ExampleJsonObjectWithView {
 
-	private String name;
+	@JsonView(TestView.class)
+	private String value;
 
-	private int age;
+	private int id;
 
-	public String getName() {
-		return this.name;
+	public String getValue() {
+		return this.value;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setValue(String value) {
+		this.value = value;
 	}
 
-	public int getAge() {
-		return this.age;
+	public int getId() {
+		return this.id;
 	}
 
-	public void setAge(int age) {
-		this.age = age;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	@Override
@@ -53,14 +58,18 @@ public class ExampleObject {
 		if (obj == null || obj.getClass() != getClass()) {
 			return false;
 		}
-		ExampleObject other = (ExampleObject) obj;
-		return ObjectUtils.nullSafeEquals(this.name, other.name)
-				&& ObjectUtils.nullSafeEquals(this.age, other.age);
+		ExampleJsonObjectWithView other = (ExampleJsonObjectWithView) obj;
+		return ObjectUtils.nullSafeEquals(this.value, other.value)
+				&& ObjectUtils.nullSafeEquals(this.id, other.id);
 	}
 
 	@Override
 	public String toString() {
-		return this.name + " " + this.age;
+		return this.value + " " + this.id;
+	}
+
+	static class TestView {
+
 	}
 
 }
