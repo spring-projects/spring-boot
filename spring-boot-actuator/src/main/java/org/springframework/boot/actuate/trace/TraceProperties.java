@@ -142,7 +142,7 @@ public class TraceProperties {
 		REMOTE_USER,
 
 		/**
-		 * Include the time taken to service the request.
+		 * Include the time taken to service the request in milliseconds.
 		 */
 		TIME_TAKEN
 
