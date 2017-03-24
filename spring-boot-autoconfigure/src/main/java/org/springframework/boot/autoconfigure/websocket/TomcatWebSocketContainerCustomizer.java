@@ -16,17 +16,13 @@
 
 package org.springframework.boot.autoconfigure.websocket;
 
-import java.lang.reflect.Constructor;
-
 import org.apache.catalina.Context;
+import org.apache.tomcat.websocket.server.WsContextListener;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * WebSocket customizer for {@link TomcatServletWebServerFactory}.
@@ -39,56 +35,16 @@ import org.springframework.util.ReflectionUtils;
 public class TomcatWebSocketContainerCustomizer
 		implements WebServerFactoryCustomizer<TomcatServletWebServerFactory>, Ordered {
 
-	private static final String TOMCAT_7_LISTENER_TYPE = "org.apache.catalina.deploy.ApplicationListener";
-
-	private static final String TOMCAT_8_LISTENER_TYPE = "org.apache.tomcat.util.descriptor.web.ApplicationListener";
-
-	private static final String WS_LISTENER = "org.apache.tomcat.websocket.server.WsContextListener";
-
 	@Override
 	public void customize(TomcatServletWebServerFactory factory) {
 		factory.addContextCustomizers(new TomcatContextCustomizer() {
 
 			@Override
 			public void customize(Context context) {
-				addListener(context, findListenerType());
+				context.addApplicationListener(WsContextListener.class.getName());
 			}
 
 		});
-	}
-
-	private Class<?> findListenerType() {
-		if (ClassUtils.isPresent(TOMCAT_7_LISTENER_TYPE, null)) {
-			return ClassUtils.resolveClassName(TOMCAT_7_LISTENER_TYPE, null);
-		}
-		if (ClassUtils.isPresent(TOMCAT_8_LISTENER_TYPE, null)) {
-			return ClassUtils.resolveClassName(TOMCAT_8_LISTENER_TYPE, null);
-		}
-		// With Tomcat 8.0.8 ApplicationListener is not required
-		return null;
-	}
-
-	/**
-	 * Instead of registering directly as a ServletContainerInitializer, we use the
-	 * ApplicationListener provided by Tomcat. Unfortunately the ApplicationListener class
-	 * moved packages in Tomcat 8 and been deleted in 8.0.8 so we have to use reflection.
-	 * @param context the current context
-	 * @param listenerType the type of listener to add
-	 */
-	private void addListener(Context context, Class<?> listenerType) {
-		Class<? extends Context> contextClass = context.getClass();
-		if (listenerType == null) {
-			ReflectionUtils.invokeMethod(ClassUtils.getMethod(contextClass,
-					"addApplicationListener", String.class), context, WS_LISTENER);
-
-		}
-		else {
-			Constructor<?> constructor = ClassUtils
-					.getConstructorIfAvailable(listenerType, String.class, boolean.class);
-			Object instance = BeanUtils.instantiateClass(constructor, WS_LISTENER, false);
-			ReflectionUtils.invokeMethod(ClassUtils.getMethod(contextClass,
-					"addApplicationListener", listenerType), context, instance);
-		}
 	}
 
 	@Override
