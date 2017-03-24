@@ -202,7 +202,7 @@ public class JpaProperties {
 						this.useNewIdGeneratorMappings.toString());
 			}
 			else if (!result.containsKey(USE_NEW_ID_GENERATOR_MAPPINGS)) {
-				result.put(USE_NEW_ID_GENERATOR_MAPPINGS, "false");
+				result.put(USE_NEW_ID_GENERATOR_MAPPINGS, "true");
 			}
 		}
 
