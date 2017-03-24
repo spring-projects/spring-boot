@@ -5770,7 +5770,7 @@ remove the need for Spring REST Docs' JUnit rule.
 
 	@RunWith(SpringRunner.class)
 	@WebMvcTest(UserController.class)
-	@AutoConfigureRestDocs("target/generated-snippets")
+	@AutoConfigureRestDocs
 	public class UserDocumentationTests {
 
 		@Autowired
@@ -5786,10 +5786,11 @@ remove the need for Spring REST Docs' JUnit rule.
 	}
 ----
 
-In addition to configuring the output directory, `@AutoConfigureRestDocs` can also
-configure the host, scheme, and port that will appear in any documented URIs. If you
-require more control over Spring REST Docs' configuration a
-`RestDocsMockMvcConfigurationCustomizer` bean can be used:
+`@AutoConfigureRestDocs` can be used to override the default output directory
+(`target/generated-snippets` if you are using Maven or `build/generated-snippets` if you
+are using Gradle). It can also be used to configure the host, scheme, and port that will
+appear in any documented URIs. If you require more control over Spring REST Docs'
+configuration a `RestDocsMockMvcConfigurationCustomizer` bean can be used:
 
 [source,java,indent=0]
 ----
