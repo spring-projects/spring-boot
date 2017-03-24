@@ -1192,7 +1192,7 @@ public class SpringApplication {
 	 * application sources are defined via a {@literal --spring.main.sources} command line
 	 * argument.
 	 * <p>
-	 * Most developers will want to define their own main method can call the
+	 * Most developers will want to define their own main method and call the
 	 * {@link #run(Object, String...) run} method instead.
 	 * @param args command line arguments
 	 * @throws Exception if the application cannot be started
