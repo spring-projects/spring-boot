@@ -88,6 +88,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	public void startStopServer() {
 		this.webServer = getFactory().getWebServer(new EchoHandler());
 		this.webServer.start();
+		assertThat(this.output.toString()).contains("started on port");
 		Mono<String> result = getWebClient().post().uri("/test")
 				.contentType(MediaType.TEXT_PLAIN)
 				.exchange(BodyInserters.fromObject("Hello World"))

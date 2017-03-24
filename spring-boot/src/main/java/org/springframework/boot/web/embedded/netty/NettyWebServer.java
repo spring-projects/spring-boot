@@ -16,9 +16,12 @@
 
 package org.springframework.boot.web.embedded.netty;
 
+import java.net.BindException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import reactor.core.Loopback;
 import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.http.server.HttpServer;
@@ -33,9 +36,12 @@ import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
  * directly.
  *
  * @author Brian Clozel
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 public class NettyWebServer implements WebServer, Loopback {
+
+	private static final Log logger = LogFactory.getLog(NettyWebServer.class);
 
 	private static CountDownLatch latch = new CountDownLatch(1);
 
@@ -64,10 +70,30 @@ public class NettyWebServer implements WebServer, Loopback {
 	@Override
 	public void start() throws WebServerException {
 		if (this.nettyContext.get() == null) {
-			this.nettyContext
-					.set(this.reactorServer.newHandler(this.handlerAdapter).block());
+			try {
+				this.nettyContext
+						.set(this.reactorServer.newHandler(this.handlerAdapter).block());
+			}
+			catch (Exception ex) {
+				if (findBindException(ex) != null) {
+//					throw new PortInUseException();
+				}
+				throw new WebServerException("Unable to start Netty", ex);
+			}
+			NettyWebServer.logger.info("Netty started on port(s): " + getPort());
 			startDaemonAwaitThread();
 		}
+	}
+
+	private BindException findBindException(Exception ex) {
+		Throwable candidate = ex;
+		while (candidate != null) {
+			if (candidate instanceof BindException) {
+				return (BindException) candidate;
+			}
+			candidate = candidate.getCause();
+		}
+		return null;
 	}
 
 	private void startDaemonAwaitThread() {
