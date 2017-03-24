@@ -238,7 +238,7 @@ public class EndpointWebMvcAutoConfiguration
 	// Put Servlets and Filters in their own nested class so they don't force early
 	// instantiation of ManagementServerProperties.
 	@Configuration
-	@ConditionalOnProperty(prefix = "management", name = "add-application-context-header", matchIfMissing = true, havingValue = "true")
+	@ConditionalOnProperty(prefix = "management", name = "add-application-context-header", havingValue = "true")
 	protected static class ApplicationContextFilterConfiguration {
 
 		@Bean

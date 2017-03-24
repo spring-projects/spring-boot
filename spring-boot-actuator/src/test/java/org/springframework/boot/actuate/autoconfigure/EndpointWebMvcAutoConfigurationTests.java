@@ -146,22 +146,22 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/controller", ports.get().management, null);
 		assertContent("/endpoint", ports.get().management, null);
 		assertThat(hasHeader("/endpoint", ports.get().server, "X-Application-Context"))
-				.isTrue();
+				.isFalse();
 		assertThat(this.applicationContext.containsBean("applicationContextIdFilter"))
-				.isTrue();
+				.isFalse();
 	}
 
 	@Test
-	public void onSamePortWithoutHeader() throws Exception {
+	public void onSamePortWithHeader() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"management.add-application-context-header:false");
+				"management.add-application-context-header:true");
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertThat(hasHeader("/endpoint", ports.get().server, "X-Application-Context"))
-				.isFalse();
+				.isTrue();
 		assertThat(this.applicationContext.containsBean("applicationContextIdFilter"))
-				.isFalse();
+				.isTrue();
 	}
 
 	@Test

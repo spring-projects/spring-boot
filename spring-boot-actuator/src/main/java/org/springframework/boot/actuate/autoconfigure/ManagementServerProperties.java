@@ -84,7 +84,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	/**
 	 * Add the "X-Application-Context" HTTP header in each response.
 	 */
-	private boolean addApplicationContextHeader = true;
+	private boolean addApplicationContextHeader = false;
 
 	private final Security security = new Security();
 
