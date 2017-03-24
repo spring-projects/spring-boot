@@ -42,7 +42,7 @@ public class CityRepositoryIntegrationTests {
 	@Test
 	public void findsFirstPageOfCities() {
 
-		Page<City> cities = this.repository.findAll(new PageRequest(0, 10));
+		Page<City> cities = this.repository.findAll(PageRequest.of(0, 10));
 		assertThat(cities.getTotalElements()).isGreaterThan(20L);
 	}
 }
