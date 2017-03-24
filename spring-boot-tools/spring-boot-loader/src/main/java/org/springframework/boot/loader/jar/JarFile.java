@@ -247,7 +247,7 @@ public class JarFile extends java.util.jar.JarFile {
 		try {
 			return createJarFileFromEntry(entry);
 		}
-		catch (IOException ex) {
+		catch (Exception ex) {
 			throw new IOException(
 					"Unable to open nested jar file '" + entry.getName() + "'", ex);
 		}
