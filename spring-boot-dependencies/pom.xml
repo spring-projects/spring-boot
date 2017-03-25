@@ -2191,6 +2191,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.restdocs</groupId>
+				<artifactId>spring-restdocs-asciidoctor</artifactId>
+				<version>${spring-restdocs.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.restdocs</groupId>
 				<artifactId>spring-restdocs-core</artifactId>
 				<version>${spring-restdocs.version}</version>
 			</dependency>
