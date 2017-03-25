@@ -139,7 +139,7 @@
 		<narayana.version>5.5.5.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.0.0-SNAPSHOT</neo4j-ogm.version>
-		<netty.version>4.1.8.Final</netty.version>
+		<netty.version>4.1.9.Final</netty.version>
 		<postgresql.version>9.4.1212.jre7</postgresql.version>
 		<querydsl.version>4.1.4</querydsl.version>
 		<reactor-bom.version>Aluminium-BUILD-SNAPSHOT</reactor-bom.version>
