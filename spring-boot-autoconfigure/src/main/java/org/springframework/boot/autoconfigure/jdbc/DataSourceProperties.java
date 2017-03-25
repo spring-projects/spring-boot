@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Benedikt Ritter
  * @author Eddú Meléndez
+ * @author Arthur Gavlyukovskiy
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.datasource")
@@ -69,6 +70,13 @@ public class DataSourceProperties
 	 * is auto-detected from the classpath.
 	 */
 	private Class<? extends DataSource> type;
+
+	/**
+	 * List of fully qualified names of the connection pool proxies, that will be applied
+	 * in the same order,  each proxy class must have constructor that accepts real data
+	 * source. By default, it is auto-detected from the classpath.
+	 */
+	private List<Class<? extends DataSource>> proxyTypes;
 
 	/**
 	 * Fully qualified name of the JDBC driver. Auto-detected based on the URL by default.
@@ -179,7 +187,8 @@ public class DataSourceProperties
 	 * this instance
 	 */
 	public DataSourceBuilder initializeDataSourceBuilder() {
-		return DataSourceBuilder.create(getClassLoader()).type(getType())
+		return DataSourceBuilder.create(getClassLoader())
+				.type(getType()).proxyTypes(getProxyTypes())
 				.driverClassName(determineDriverClassName()).url(determineUrl())
 				.username(determineUsername()).password(determinePassword());
 	}
@@ -206,6 +215,14 @@ public class DataSourceProperties
 
 	public void setType(Class<? extends DataSource> type) {
 		this.type = type;
+	}
+
+	public List<Class<? extends DataSource>> getProxyTypes() {
+		return this.proxyTypes;
+	}
+
+	public void setProxyTypes(List<Class<? extends DataSource>> proxyTypes) {
+		this.proxyTypes = proxyTypes;
 	}
 
 	/**

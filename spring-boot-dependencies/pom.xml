@@ -191,6 +191,9 @@
 		<webjars-locator.version>0.32-1</webjars-locator.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
+		<p6spy.version>3.0.0</p6spy.version>
+		<datasource-proxy.version>1.4.1</datasource-proxy.version>
+		<flexy-pool.version>1.2.7</flexy-pool.version>
 		<!-- Plugin versions -->
 		<build-helper-maven-plugin.version>1.10</build-helper-maven-plugin.version>
 		<exec-maven-plugin.version>1.5.0</exec-maven-plugin.version>
@@ -2400,6 +2403,21 @@
 				<groupId>xml-apis</groupId>
 				<artifactId>xml-apis</artifactId>
 				<version>${xml-apis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>p6spy</groupId>
+				<artifactId>p6spy</artifactId>
+				<version>${p6spy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.ttddyy</groupId>
+				<artifactId>datasource-proxy</artifactId>
+				<version>${datasource-proxy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.vladmihalcea.flexy-pool</groupId>
+				<artifactId>flexy-pool-core</artifactId>
+				<version>${flexy-pool.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

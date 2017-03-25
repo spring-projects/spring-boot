@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 
 import javax.sql.DataSource;
 
@@ -104,7 +105,9 @@ public class HikariDataSourceConfigurationTests {
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.hikari")
 		public DataSource dataSource() {
-			return DataSourceBuilder.create().type(HikariDataSource.class).build();
+			return DataSourceBuilder.create().type(HikariDataSource.class)
+					.proxyTypes(Collections.<Class<? extends DataSource>>emptyList())
+					.build();
 		}
 
 	}

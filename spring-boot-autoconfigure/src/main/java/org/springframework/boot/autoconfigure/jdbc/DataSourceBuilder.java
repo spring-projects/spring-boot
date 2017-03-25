@@ -16,10 +16,16 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.MutablePropertyValues;
@@ -37,9 +43,13 @@ import org.springframework.util.ClassUtils;
  * {@code @ConfigurationProperties}.
  *
  * @author Dave Syer
+ * @author Arthur Gavlyukovskiy
  * @since 1.1.0
  */
 public class DataSourceBuilder {
+
+	private static final Log logger = LogFactory
+			.getLog(DataSourceBuilder.class);
 
 	private static final String[] DATA_SOURCE_TYPE_NAMES = new String[] {
 			"org.apache.tomcat.jdbc.pool.DataSource",
@@ -47,7 +57,14 @@ public class DataSourceBuilder {
 			"org.apache.commons.dbcp.BasicDataSource", // deprecated
 			"org.apache.commons.dbcp2.BasicDataSource" };
 
+	private static final String[] DATA_SOURCE_PROXY_TYPE_NAMES = new String[] {
+			"com.p6spy.engine.spy.P6DataSource",
+			"net.ttddyy.dsproxy.support.ProxyDataSource",
+			"com.vladmihalcea.flexypool.FlexyPoolDataSource" };
+
 	private Class<? extends DataSource> type;
+
+	private List<Class<? extends DataSource>> proxyTypes;
 
 	private ClassLoader classLoader;
 
@@ -70,6 +87,27 @@ public class DataSourceBuilder {
 		DataSource result = BeanUtils.instantiate(type);
 		maybeGetDriverClassName();
 		bind(result);
+		List<Class<? extends DataSource>> proxyTypes = findProxyTypes();
+		for (Class<? extends DataSource> proxyType : proxyTypes) {
+			try {
+				result = wrap(result, proxyType);
+			}
+			catch (RuntimeException e) {
+				if (this.proxyTypes != null && this.proxyTypes.contains(proxyType)) {
+					// this is user specified proxy data source, exception thrown in user
+					// code should be re-thrown
+					throw e;
+				}
+				// Some data sources may have dependency on the configuration file
+				// e.g. flexy-pool.properties, just continue if this file was not found
+				logger.warn("Can't wrap data source: " + result
+						+ " in proxy data source of type: " + type
+						+ " due to thrown exception: " + e + ". "
+						+ "Please consider fix exception in data source implementation"
+						+ " or explicitly set 'spring.datasource.proxyType' with"
+						+ " appropriate list of proxy data source providers.");
+			}
+		}
 		return result;
 	}
 
@@ -90,6 +128,13 @@ public class DataSourceBuilder {
 
 	public DataSourceBuilder type(Class<? extends DataSource> type) {
 		this.type = type;
+		return this;
+	}
+
+	public DataSourceBuilder proxyTypes(List<Class<? extends DataSource>> proxyTypes) {
+		if (proxyTypes != null) {
+			this.proxyTypes = new ArrayList<Class<? extends DataSource>>(proxyTypes);
+		}
 		return this;
 	}
 
@@ -136,6 +181,31 @@ public class DataSourceBuilder {
 			return type;
 		}
 		throw new IllegalStateException("No supported DataSource type found");
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Class<? extends DataSource>> findProxyTypes() {
+		if (this.proxyTypes != null) {
+			return this.proxyTypes;
+		}
+		List<Class<? extends DataSource>> proxyTypes = new ArrayList<Class<? extends DataSource>>();
+		for (String name : DATA_SOURCE_PROXY_TYPE_NAMES) {
+			try {
+				proxyTypes.add((Class<? extends DataSource>) ClassUtils.forName(name, this.classLoader));
+			}
+			catch (Exception ex) {
+				// Swallow and continue
+			}
+		}
+		return proxyTypes;
+	}
+
+	private DataSource wrap(DataSource result, Class<? extends DataSource> proxyType) {
+		Constructor<? extends DataSource> constructor = ClassUtils.getConstructorIfAvailable(proxyType, DataSource.class);
+		if (constructor == null) {
+			throw new IllegalStateException("No constructor accepting real DataSource in proxy class " + proxyType);
+		}
+		return BeanUtils.instantiateClass(constructor, result);
 	}
 
 }

@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.jdbc.metadata;
 
+import java.util.Collections;
+
+import javax.sql.DataSource;
+
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -90,7 +94,9 @@ public class CommonsDbcpDataSourcePoolMetadataTests
 	}
 
 	private BasicDataSource createDataSource() {
-		return (BasicDataSource) initializeBuilder().type(BasicDataSource.class).build();
+		return (BasicDataSource) initializeBuilder().type(BasicDataSource.class)
+				.proxyTypes(Collections.<Class<? extends DataSource>>emptyList())
+				.build();
 	}
 
 }

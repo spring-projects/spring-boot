@@ -29,12 +29,19 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
+import com.p6spy.engine.spy.P6DataSource;
+import com.vladmihalcea.flexypool.FlexyPoolDataSource;
+import com.vladmihalcea.flexypool.config.PropertyLoader;
+import com.vladmihalcea.flexypool.metric.MetricsFactory;
+import com.vladmihalcea.flexypool.metric.MetricsFactoryService;
 import com.zaxxer.hikari.HikariDataSource;
+import net.ttddyy.dsproxy.support.ProxyDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.jdbc.DatabaseDriver;
@@ -45,6 +52,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.RETURNS_MOCKS;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -68,6 +76,7 @@ public class DataSourceAutoConfigurationTests {
 	@After
 	public void restore() {
 		EmbeddedDatabaseConnection.override = null;
+		System.clearProperty(PropertyLoader.PROPERTIES_FILE_PATH);
 		this.context.close();
 	}
 
@@ -81,6 +90,8 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void testDataSourceHasEmbeddedDefault() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.proxyTypes:");
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -115,6 +126,8 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void tomcatValidatesConnectionByDefault() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.proxyTypes:");
 		org.apache.tomcat.jdbc.pool.DataSource dataSource = autoConfigureDataSource(
 				org.apache.tomcat.jdbc.pool.DataSource.class);
 		assertThat(dataSource.isTestOnBorrow()).isTrue();
@@ -124,6 +137,8 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void hikariIsFallback() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.proxyTypes:");
 		HikariDataSource dataSource = autoConfigureDataSource(HikariDataSource.class,
 				"org.apache.tomcat");
 		assertThat(dataSource.getJdbcUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
@@ -131,6 +146,8 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void hikariValidatesConnectionByDefault() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.proxyTypes:");
 		HikariDataSource dataSource = autoConfigureDataSource(HikariDataSource.class,
 				"org.apache.tomcat");
 		assertThat(dataSource.getConnectionTestQuery()).isNull();
@@ -140,6 +157,8 @@ public class DataSourceAutoConfigurationTests {
 	@Test
 	@Deprecated
 	public void commonsDbcpIsFallback() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.proxyTypes:");
 		org.apache.commons.dbcp.BasicDataSource dataSource = autoConfigureDataSource(
 				org.apache.commons.dbcp.BasicDataSource.class, "org.apache.tomcat",
 				"com.zaxxer.hikari");
@@ -149,6 +168,8 @@ public class DataSourceAutoConfigurationTests {
 	@Test
 	@Deprecated
 	public void commonsDbcpValidatesConnectionByDefault() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.proxyTypes:");
 		org.apache.commons.dbcp.BasicDataSource dataSource = autoConfigureDataSource(
 				org.apache.commons.dbcp.BasicDataSource.class, "org.apache.tomcat",
 				"com.zaxxer.hikari");
@@ -159,6 +180,8 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void commonsDbcp2IsFallback() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.proxyTypes:");
 		BasicDataSource dataSource = autoConfigureDataSource(BasicDataSource.class,
 				"org.apache.tomcat", "com.zaxxer.hikari", "org.apache.commons.dbcp.");
 		assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
@@ -166,6 +189,8 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void commonsDbcp2ValidatesConnectionByDefault() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.proxyTypes:");
 		org.apache.commons.dbcp2.BasicDataSource dataSource = autoConfigureDataSource(
 				org.apache.commons.dbcp2.BasicDataSource.class, "org.apache.tomcat",
 				"com.zaxxer.hikari", "org.apache.commons.dbcp.");
@@ -177,7 +202,8 @@ public class DataSourceAutoConfigurationTests {
 	public void testEmbeddedTypeDefaultsUsername() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb");
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
+				"spring.datasource.proxyTypes:");
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -197,7 +223,8 @@ public class DataSourceAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
-				"spring.datasource.type:" + SimpleDriverDataSource.class.getName());
+				"spring.datasource.type:" + SimpleDriverDataSource.class.getName(),
+				"spring.datasource.proxyTypes:");
 		this.context.setClassLoader(
 				new HidePackagesClassLoader("org.apache.tomcat", "com.zaxxer.hikari",
 						"org.apache.commons.dbcp", "org.apache.commons.dbcp2"));
@@ -209,7 +236,8 @@ public class DataSourceAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
-				"spring.datasource.type:" + SimpleDriverDataSource.class.getName());
+				"spring.datasource.type:" + SimpleDriverDataSource.class.getName(),
+				"spring.datasource.proxyTypes:");
 		testExplicitType();
 	}
 
@@ -229,7 +257,8 @@ public class DataSourceAutoConfigurationTests {
 				"spring.datasource.driverClassName:"
 						+ "org.springframework.boot.autoconfigure.jdbc."
 						+ "DataSourceAutoConfigurationTests$DatabaseTestDriver",
-				"spring.datasource.url:jdbc:foo://localhost");
+				"spring.datasource.url:jdbc:foo://localhost",
+				"spring.datasource.proxyTypes:");
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -239,6 +268,205 @@ public class DataSourceAutoConfigurationTests {
 		assertThat(pool.getDriverClassName()).isEqualTo(
 				"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseTestDriver");
 		assertThat(pool.getUsername()).isNull();
+	}
+
+	@Test
+	public void testProxyWrappingInDefaultOrder() throws Exception {
+		System.setProperty(PropertyLoader.PROPERTIES_FILE_PATH, "db/proxy/flexy-pool.properties");
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+
+		assertDataSourceInDefaultOrder(org.apache.tomcat.jdbc.pool.DataSource.class);
+	}
+
+	private DataSource assertDataSourceInDefaultOrder(Class<? extends DataSource> realDataSourceClass) {
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertThat(dataSource).isNotNull();
+		assertThat(dataSource).isInstanceOf(FlexyPoolDataSource.class);
+
+		DataSource proxyDataSource = (DataSource) new DirectFieldAccessor(dataSource)
+				.getPropertyValue("targetDataSource");
+		assertThat(proxyDataSource).isNotNull();
+		assertThat(proxyDataSource).isInstanceOf(ProxyDataSource.class);
+
+		DataSource p6DataSource = (DataSource) new DirectFieldAccessor(proxyDataSource)
+				.getPropertyValue("dataSource");
+		assertThat(p6DataSource).isNotNull();
+		assertThat(p6DataSource).isInstanceOf(P6DataSource.class);
+
+		DataSource realDataSource = (DataSource) new DirectFieldAccessor(p6DataSource)
+				.getPropertyValue("realDataSource");
+		assertThat(realDataSource).isNotNull();
+		assertThat(realDataSource).isInstanceOf(realDataSourceClass);
+		return realDataSource;
+	}
+
+	@Test
+	public void testProxyWrappingInSpecificOrder() throws Exception {
+		System.setProperty(PropertyLoader.PROPERTIES_FILE_PATH, "db/proxy/flexy-pool.properties");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.proxyTypes:" +
+						"com.vladmihalcea.flexypool.FlexyPoolDataSource, " +
+						"com.p6spy.engine.spy.P6DataSource, " +
+						"net.ttddyy.dsproxy.support.ProxyDataSource");
+
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertThat(dataSource).isNotNull();
+		assertThat(dataSource).isInstanceOf(ProxyDataSource.class);
+
+		DataSource p6DataSource = (DataSource) new DirectFieldAccessor(dataSource)
+				.getPropertyValue("dataSource");
+		assertThat(p6DataSource).isNotNull();
+		assertThat(p6DataSource).isInstanceOf(P6DataSource.class);
+
+		DataSource flexyDataSource = (DataSource) new DirectFieldAccessor(p6DataSource)
+				.getPropertyValue("realDataSource");
+		assertThat(flexyDataSource).isNotNull();
+		assertThat(flexyDataSource).isInstanceOf(FlexyPoolDataSource.class);
+
+		DataSource realDataSource = (DataSource) new DirectFieldAccessor(flexyDataSource)
+				.getPropertyValue("targetDataSource");
+		assertThat(realDataSource).isNotNull();
+		assertThat(realDataSource).isInstanceOf(org.apache.tomcat.jdbc.pool.DataSource.class);
+	}
+
+	@Test
+	public void testProxyWrappingWhenDefaultProxyProviderInstanceThrowException() throws Exception {
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertThat(dataSource).isNotNull();
+		assertThat(dataSource).isInstanceOf(ProxyDataSource.class);
+
+		DataSource p6DataSource = (DataSource) new DirectFieldAccessor(dataSource)
+				.getPropertyValue("dataSource");
+		assertThat(p6DataSource).isNotNull();
+		assertThat(p6DataSource).isInstanceOf(P6DataSource.class);
+
+		DataSource realDataSource = (DataSource) new DirectFieldAccessor(p6DataSource)
+				.getPropertyValue("realDataSource");
+		assertThat(realDataSource).isNotNull();
+		assertThat(realDataSource).isInstanceOf(org.apache.tomcat.jdbc.pool.DataSource.class);
+	}
+
+	@Test
+	public void testCustomProxySpecified() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.proxyTypes:" +
+						CustomDataSourceProxy.class.getName());
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertThat(dataSource).isNotNull();
+		assertThat(dataSource).isInstanceOf(CustomDataSourceProxy.class);
+	}
+
+	@Test(expected = BeanCreationException.class)
+	public void testCustomProxySpecifiedWithoutDelegateConstructor() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.proxyTypes:" +
+						CustomDataSourceProxyNoConstructor.class.getName());
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertThat(dataSource).isNotNull();
+		assertThat(dataSource).isNotInstanceOf(CustomDataSourceProxyNoConstructor.class);
+	}
+
+	@Test
+	public void testProxyOverExplicitTypeDataSource() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
+				"spring.datasource.type:" + SimpleDriverDataSource.class.getName(),
+				"spring.datasource.proxyTypes:" + CustomDataSourceProxy.class.getName());
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(DataSource.class)).hasSize(1);
+		DataSource bean = this.context.getBean(DataSource.class);
+		assertThat(bean).isNotNull();
+		assertThat(bean.getClass()).isEqualTo(CustomDataSourceProxy.class);
+		assertThat(((CustomDataSourceProxy) bean).getDelegate()).isInstanceOf(SimpleDriverDataSource.class);
+	}
+
+	@Test
+	public void testProxyWrappingWhenDefaultProxyProviderNotAvailable() throws Exception {
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.setClassLoader(new HidePackagesClassLoader("com.vladmihalcea.flexypool"));
+		this.context.refresh();
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertThat(dataSource).isNotNull();
+		assertThat(dataSource).isInstanceOf(ProxyDataSource.class);
+
+		DataSource p6DataSource = (DataSource) new DirectFieldAccessor(dataSource)
+				.getPropertyValue("dataSource");
+		assertThat(p6DataSource).isNotNull();
+		assertThat(p6DataSource).isInstanceOf(P6DataSource.class);
+
+		DataSource realDataSource = (DataSource) new DirectFieldAccessor(p6DataSource)
+				.getPropertyValue("realDataSource");
+		assertThat(realDataSource).isNotNull();
+		assertThat(realDataSource).isInstanceOf(org.apache.tomcat.jdbc.pool.DataSource.class);
+	}
+
+	@Test
+	public void proxyOverHikariIsFallback() throws Exception {
+		HikariDataSource dataSource = autoConfigureDataSourceWithProxy(HikariDataSource.class,
+				"org.apache.tomcat");
+		assertThat(dataSource.getJdbcUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
+	}
+
+	@Test
+	public void proxyOverHikariValidatesConnectionByDefault() throws Exception {
+		HikariDataSource dataSource = autoConfigureDataSourceWithProxy(HikariDataSource.class,
+				"org.apache.tomcat");
+		assertThat(dataSource.getConnectionTestQuery()).isNull();
+		// Use Connection#isValid()
+	}
+
+	@Test
+	@Deprecated
+	public void proxyOverCommonsDbcpIsFallback() throws Exception {
+		org.apache.commons.dbcp.BasicDataSource dataSource = autoConfigureDataSourceWithProxy(
+				org.apache.commons.dbcp.BasicDataSource.class, "org.apache.tomcat",
+				"com.zaxxer.hikari");
+		assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
+	}
+
+	@Test
+	@Deprecated
+	public void proxyOverCommonsDbcpValidatesConnectionByDefault() {
+		org.apache.commons.dbcp.BasicDataSource dataSource = autoConfigureDataSourceWithProxy(
+				org.apache.commons.dbcp.BasicDataSource.class, "org.apache.tomcat",
+				"com.zaxxer.hikari");
+		assertThat(dataSource.getTestOnBorrow()).isTrue();
+		assertThat(dataSource.getValidationQuery())
+				.isEqualTo(DatabaseDriver.HSQLDB.getValidationQuery());
+	}
+
+	@Test
+	public void proxyOverCommonsDbcp2IsFallback() throws Exception {
+		BasicDataSource dataSource = autoConfigureDataSourceWithProxy(BasicDataSource.class,
+				"org.apache.tomcat", "com.zaxxer.hikari", "org.apache.commons.dbcp.");
+		assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
+	}
+
+	@Test
+	public void proxyOverCommonsDbcp2ValidatesConnectionByDefault() throws Exception {
+		org.apache.commons.dbcp2.BasicDataSource dataSource = autoConfigureDataSourceWithProxy(
+				org.apache.commons.dbcp2.BasicDataSource.class, "org.apache.tomcat",
+				"com.zaxxer.hikari", "org.apache.commons.dbcp.");
+		assertThat(dataSource.getTestOnBorrow()).isEqualTo(true);
+		assertThat(dataSource.getValidationQuery()).isNull(); // Use Connection#isValid()
 	}
 
 	@Test
@@ -264,6 +492,22 @@ public class DataSourceAutoConfigurationTests {
 		DataSource bean = this.context.getBean(DataSource.class);
 		assertThat(bean).isInstanceOf(expectedType);
 		return (T) bean;
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends DataSource> T autoConfigureDataSourceWithProxy(Class<T> expectedType,
+			final String... hiddenPackages) {
+		System.setProperty(PropertyLoader.PROPERTIES_FILE_PATH, "db/proxy/flexy-pool.properties");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb");
+		this.context.setClassLoader(new HidePackagesClassLoader(hiddenPackages));
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource bean = this.context.getBean(DataSource.class);
+		DataSource realDataSource = assertDataSourceInDefaultOrder(expectedType);
+		return (T) realDataSource;
 	}
 
 	@Configuration
@@ -345,4 +589,18 @@ public class DataSourceAutoConfigurationTests {
 
 	}
 
+	public static class TestMetricsFactoryService implements MetricsFactoryService {
+
+		@Override
+		public MetricsFactory load() {
+			return mock(MetricsFactory.class, RETURNS_MOCKS);
+		}
+	}
+
+	public static class CustomDataSourceProxyNoConstructor extends CustomDataSourceProxy {
+
+		public CustomDataSourceProxyNoConstructor() {
+			super(null);
+		}
+	}
 }

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.util.Collections;
+
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -49,6 +51,7 @@ public class CommonsDbcpDataSourceConfigurationTests {
 		this.context.register(CommonsDbcpDataSourceConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(DataSource.class)).isNotNull();
+		assertThat(this.context.getBean(BasicDataSource.class)).isNotNull();
 		this.context.close();
 	}
 
@@ -95,7 +98,9 @@ public class CommonsDbcpDataSourceConfigurationTests {
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.dbcp")
 		public DataSource dataSource() {
-			return DataSourceBuilder.create().type(BasicDataSource.class).build();
+			return DataSourceBuilder.create().type(BasicDataSource.class)
+					.proxyTypes(Collections.<Class<? extends DataSource>>emptyList())
+					.build();
 		}
 
 	}

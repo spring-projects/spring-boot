@@ -63,7 +63,8 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+				"spring.datasource.initialize:false",
+				"spring.datasource.proxyTypes:");
 		this.context.register(TestConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
@@ -73,7 +74,8 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	public void testMixedRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+				"spring.datasource.initialize:false",
+				"spring.datasource.proxyTypes:");
 		this.context.register(MixedConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CountryRepository.class)).isNotNull();
@@ -84,7 +86,8 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	public void testJpaRepositoryConfigurationWithMongoTemplate() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+				"spring.datasource.initialize:false",
+				"spring.datasource.proxyTypes:");
 		this.context.register(JpaConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
@@ -94,7 +97,8 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	public void testJpaRepositoryConfigurationWithMongoOverlap() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:false");
+				"spring.datasource.initialize:false",
+				"spring.datasource.proxyTypes:");
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
@@ -106,7 +110,8 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.initialize:false",
-				"spring.data.mongodb.repositories.enabled:false");
+				"spring.data.mongodb.repositories.enabled:false",
+				"spring.datasource.proxyTypes:");
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
