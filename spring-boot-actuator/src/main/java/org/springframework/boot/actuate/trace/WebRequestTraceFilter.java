@@ -202,7 +202,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 
 	private void addTimeTaken(long startTime, long endTime, Map<String, Object> trace) {
 		long timeTaken = endTime - startTime;
-		add(trace, Include.TIME_TAKEN, "timeTaken", "" + timeTaken);
+		add(trace, Include.TIME_TAKEN, "timeTaken", String.valueOf(timeTaken));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -222,7 +222,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		if (!isIncluded(Include.COOKIES)) {
 			headers.remove("Set-Cookie");
 		}
-		headers.put("status", "" + response.getStatus());
+		headers.put("status", String.valueOf(response.getStatus()));
 		return headers;
 	}
 
