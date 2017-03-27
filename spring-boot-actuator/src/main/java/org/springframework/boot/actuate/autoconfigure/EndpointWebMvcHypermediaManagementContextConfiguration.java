@@ -250,7 +250,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 			if (messageConverter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
 				List<MediaType> supportedMediaTypes = new ArrayList<>(
 						messageConverter.getSupportedMediaTypes());
-				supportedMediaTypes.add(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON);
+				supportedMediaTypes.add(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON);
 				((AbstractHttpMessageConverter<?>) messageConverter)
 						.setSupportedMediaTypes(supportedMediaTypes);
 			}

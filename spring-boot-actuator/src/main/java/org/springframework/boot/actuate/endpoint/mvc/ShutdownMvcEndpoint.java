@@ -38,7 +38,7 @@ public class ShutdownMvcEndpoint extends EndpointMvcAdapter {
 		super(delegate);
 	}
 
-	@PostMapping(produces = { ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON_VALUE,
+	@PostMapping(produces = { ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON_VALUE,
 			MediaType.APPLICATION_JSON_VALUE })
 	@ResponseBody
 	@Override

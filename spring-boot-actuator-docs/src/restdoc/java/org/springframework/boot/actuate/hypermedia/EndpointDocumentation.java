@@ -124,7 +124,7 @@ public class EndpointDocumentation {
 	public void setLogger() throws Exception {
 		this.mockMvc
 				.perform(post("/loggers/org.springframework.boot")
-						.contentType(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON)
+						.contentType(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON)
 						.content("{\"configuredLevel\": \"DEBUG\"}"))
 				.andExpect(status().isOk()).andDo(document("set-logger"));
 	}
@@ -133,7 +133,7 @@ public class EndpointDocumentation {
 	public void auditEvents() throws Exception {
 		this.mockMvc
 				.perform(get("/auditevents").param("after", "2016-11-01T10:00:00+0000")
-						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk()).andDo(document("auditevents"));
 	}
 
@@ -142,7 +142,7 @@ public class EndpointDocumentation {
 		this.mockMvc
 				.perform(get("/auditevents").param("principal", "admin")
 						.param("after", "2016-11-01T10:00:00+0000")
-						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk())
 				.andDo(document("auditevents/filter-by-principal"));
 	}
@@ -153,7 +153,7 @@ public class EndpointDocumentation {
 				.perform(get("/auditevents").param("principal", "admin")
 						.param("after", "2016-11-01T10:00:00+0000")
 						.param("type", "AUTHENTICATION_SUCCESS")
-						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk())
 				.andDo(document("auditevents/filter-by-principal-and-type"));
 	}
@@ -172,7 +172,7 @@ public class EndpointDocumentation {
 				output = output.length() > 0 ? output : "./";
 				this.mockMvc
 						.perform(get(endpointPath)
-								.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+								.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 						.andExpect(status().isOk()).andDo(document(output))
 						.andDo(new ResultHandler() {
 

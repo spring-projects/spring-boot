@@ -83,10 +83,10 @@ public class MetricsMvcEndpointTests {
 	}
 
 	@Test
-	public void homeContentTypeDefaultsToActuatorV1Json() throws Exception {
+	public void homeContentTypeDefaultsToActuatorV2Json() throws Exception {
 		this.mvc.perform(get("/metrics")).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
-						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+						"application/vnd.spring-boot.actuator.v2+json;charset=UTF-8"));
 	}
 
 	@Test
@@ -98,10 +98,10 @@ public class MetricsMvcEndpointTests {
 	}
 
 	@Test
-	public void specificMetricContentTypeDefaultsToActuatorV1Json() throws Exception {
+	public void specificMetricContentTypeDefaultsToActuatorV2Json() throws Exception {
 		this.mvc.perform(get("/metrics/foo")).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
-						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+						"application/vnd.spring-boot.actuator.v2+json;charset=UTF-8"));
 	}
 
 	@Test

@@ -74,10 +74,10 @@ public class ShutdownMvcEndpointTests {
 	}
 
 	@Test
-	public void contentTypeDefaultsToActuatorV1Json() throws Exception {
+	public void contentTypeDefaultsToActuatorV2Json() throws Exception {
 		this.mvc.perform(post("/shutdown")).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
-						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+						"application/vnd.spring-boot.actuator.v2+json;charset=UTF-8"));
 		assertThat(this.context.getBean(CountDownLatch.class).await(30, TimeUnit.SECONDS))
 				.isTrue();
 	}

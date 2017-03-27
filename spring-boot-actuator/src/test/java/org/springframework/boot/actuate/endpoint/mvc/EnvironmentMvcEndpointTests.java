@@ -79,10 +79,10 @@ public class EnvironmentMvcEndpointTests {
 	}
 
 	@Test
-	public void homeContentTypeDefaultsToActuatorV1Json() throws Exception {
+	public void homeContentTypeDefaultsToActuatorV2Json() throws Exception {
 		this.mvc.perform(get("/env")).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
-						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+						"application/vnd.spring-boot.actuator.v2+json;charset=UTF-8"));
 	}
 
 	@Test
@@ -94,10 +94,10 @@ public class EnvironmentMvcEndpointTests {
 	}
 
 	@Test
-	public void subContentTypeDefaultsToActuatorV1Json() throws Exception {
+	public void subContentTypeDefaultsToActuatorV2Json() throws Exception {
 		this.mvc.perform(get("/env/foo")).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
-						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+						"application/vnd.spring-boot.actuator.v2+json;charset=UTF-8"));
 	}
 
 	@Test

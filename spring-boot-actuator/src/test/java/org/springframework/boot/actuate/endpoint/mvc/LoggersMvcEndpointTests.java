@@ -130,10 +130,10 @@ public class LoggersMvcEndpointTests {
 	}
 
 	@Test
-	public void contentTypeForGetDefaultsToActuatorV1Json() throws Exception {
+	public void contentTypeForGetDefaultsToActuatorV2Json() throws Exception {
 		this.mvc.perform(get("/loggers")).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
-						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+						"application/vnd.spring-boot.actuator.v2+json;charset=UTF-8"));
 	}
 
 	@Test
@@ -152,9 +152,9 @@ public class LoggersMvcEndpointTests {
 	}
 
 	@Test
-	public void setLoggerUsingActuatorV1JsonShouldSetLogLevel() throws Exception {
+	public void setLoggerUsingActuatorV2JsonShouldSetLogLevel() throws Exception {
 		this.mvc.perform(post("/loggers/ROOT")
-				.contentType(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON)
+				.contentType(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON)
 				.content("{\"configuredLevel\":\"debug\"}")).andExpect(status().isOk());
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
