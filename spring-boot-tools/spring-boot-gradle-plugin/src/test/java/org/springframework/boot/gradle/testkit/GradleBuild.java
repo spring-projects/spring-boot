@@ -39,6 +39,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.xml.sax.InputSource;
 
+import org.springframework.asm.ClassVisitor;
 import org.springframework.boot.loader.tools.LaunchScript;
 
 /**
@@ -106,6 +107,7 @@ public class GradleBuild implements TestRule {
 		return absolutePath("bin") + "," + absolutePath("build/classes/main") + ","
 				+ absolutePath("build/resources/main") + ","
 				+ pathOfJarContaining(LaunchScript.class) + ","
+				+ pathOfJarContaining(ClassVisitor.class) + ","
 				+ pathOfJarContaining(DependencyManagementPlugin.class);
 	}
 

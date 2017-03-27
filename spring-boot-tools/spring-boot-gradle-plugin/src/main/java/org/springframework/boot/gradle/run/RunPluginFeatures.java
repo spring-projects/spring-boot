@@ -22,6 +22,7 @@ import java.util.concurrent.Callable;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.tasks.SourceSet;
 
 import org.springframework.boot.gradle.MainClassResolver;
 import org.springframework.boot.gradle.PluginFeatures;
@@ -30,6 +31,7 @@ import org.springframework.boot.gradle.PluginFeatures;
  * {@link PluginFeatures} to add run support.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class RunPluginFeatures implements PluginFeatures {
 
@@ -46,12 +48,12 @@ public class RunPluginFeatures implements PluginFeatures {
 		final JavaPluginConvention javaConvention = project.getConvention()
 				.getPlugin(JavaPluginConvention.class);
 
-		BootRunTask run = project.getTasks().create(RUN_APP_TASK_NAME, BootRunTask.class);
+		BootRun run = project.getTasks().create(RUN_APP_TASK_NAME, BootRun.class);
 		run.setDescription("Run the project with support for "
 				+ "auto-detecting main class and reloading static resources");
 		run.setGroup("application");
-		run.setClasspath(
-				javaConvention.getSourceSets().findByName("main").getRuntimeClasspath());
+		run.classpath(javaConvention.getSourceSets()
+				.findByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath());
 		run.getConventionMapping().map("jvmArgs", new Callable<Object>() {
 			@Override
 			public Object call() throws Exception {
