@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.bundling;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -41,19 +42,30 @@ import org.gradle.api.tasks.util.PatternSet;
  */
 class BootArchiveSupport {
 
+	private static final Set<String> DEFAULT_LAUNCHER_CLASSES;
+
+	static {
+		Set<String> defaultLauncherClasses = new HashSet<String>();
+		defaultLauncherClasses.add("org.springframework.boot.loader.JarLauncher");
+		defaultLauncherClasses.add("org.springframework.boot.loader.PropertiesLauncher");
+		defaultLauncherClasses.add("org.springframework.boot.loader.WarLauncher");
+		DEFAULT_LAUNCHER_CLASSES = Collections.unmodifiableSet(defaultLauncherClasses);
+	}
+
 	private final PatternSet requiresUnpack = new PatternSet();
 
 	private final Set<String> storedPathPrefixes;
 
 	private final PatternSet exclusions = new PatternSet();
 
-	private String loaderMainClass;
+	private final String loaderMainClass;
 
 	private LaunchScriptConfiguration launchScript = new LaunchScriptConfiguration();
 
 	private boolean excludeDevtools = true;
 
-	BootArchiveSupport(String... storedPathPrefixes) {
+	BootArchiveSupport(String loaderMainClass, String... storedPathPrefixes) {
+		this.loaderMainClass = loaderMainClass;
 		this.storedPathPrefixes = new HashSet<>(Arrays.asList(storedPathPrefixes));
 		this.requiresUnpack.include(Specs.satisfyNone());
 		configureExclusions();
@@ -67,21 +79,18 @@ class BootArchiveSupport {
 
 	CopyAction createCopyAction(Jar jar) {
 		CopyAction copyAction = new BootZipCopyAction(jar.getArchivePath(),
-				jar.isPreserveFileTimestamps(), this.requiresUnpack.getAsSpec(),
-				this.exclusions.getAsExcludeSpec(), this.launchScript,
-				this.storedPathPrefixes);
+				jar.isPreserveFileTimestamps(), isUsingDefaultLoader(jar),
+				this.requiresUnpack.getAsSpec(), this.exclusions.getAsExcludeSpec(),
+				this.launchScript, this.storedPathPrefixes);
 		if (!jar.isReproducibleFileOrder()) {
 			return copyAction;
 		}
 		return new ReproducibleOrderingCopyAction(copyAction);
 	}
 
-	String getLoaderMainClass() {
-		return this.loaderMainClass;
-	}
-
-	void setLoaderMainClass(String loaderMainClass) {
-		this.loaderMainClass = loaderMainClass;
+	private boolean isUsingDefaultLoader(Jar jar) {
+		return DEFAULT_LAUNCHER_CLASSES
+				.contains(jar.getManifest().getAttributes().get("Main-Class"));
 	}
 
 	LaunchScriptConfiguration getLaunchScript() {

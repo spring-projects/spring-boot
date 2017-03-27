@@ -53,6 +53,8 @@ class BootZipCopyAction implements CopyAction {
 
 	private final boolean preserveFileTimestamps;
 
+	private final boolean includeDefaultLoader;
+
 	private final Spec<FileTreeElement> requiresUnpack;
 
 	private final Spec<FileTreeElement> exclusions;
@@ -62,10 +64,12 @@ class BootZipCopyAction implements CopyAction {
 	private final Set<String> storedPathPrefixes;
 
 	BootZipCopyAction(File output, boolean preserveFileTimestamps,
-			Spec<FileTreeElement> requiresUnpack, Spec<FileTreeElement> exclusions,
-			LaunchScriptConfiguration launchScript, Set<String> storedPathPrefixes) {
+			boolean includeDefaultLoader, Spec<FileTreeElement> requiresUnpack,
+			Spec<FileTreeElement> exclusions, LaunchScriptConfiguration launchScript,
+			Set<String> storedPathPrefixes) {
 		this.output = output;
 		this.preserveFileTimestamps = preserveFileTimestamps;
+		this.includeDefaultLoader = includeDefaultLoader;
 		this.requiresUnpack = requiresUnpack;
 		this.exclusions = exclusions;
 		this.launchScript = launchScript;
@@ -79,7 +83,7 @@ class BootZipCopyAction implements CopyAction {
 			FileOutputStream fileStream = new FileOutputStream(this.output);
 			writeLaunchScriptIfNecessary(fileStream);
 			zipStream = new ZipOutputStream(fileStream);
-			writeLoaderClasses(zipStream);
+			writeLoaderClassesIfNecessary(zipStream);
 		}
 		catch (IOException ex) {
 			throw new GradleException("Failed to create " + this.output, ex);
@@ -102,8 +106,13 @@ class BootZipCopyAction implements CopyAction {
 		};
 	}
 
-	private void writeLoaderClasses(ZipOutputStream out) {
+	private void writeLoaderClassesIfNecessary(ZipOutputStream out) {
+		if (this.includeDefaultLoader) {
+			writeLoaderClasses(out);
+		}
+	}
 
+	private void writeLoaderClasses(ZipOutputStream out) {
 		ZipEntry entry;
 		try (ZipInputStream in = new ZipInputStream(getClass()
 				.getResourceAsStream("/META-INF/loader/spring-boot-loader.jar"))) {

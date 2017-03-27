@@ -35,14 +35,14 @@ import org.gradle.api.tasks.bundling.Jar;
  */
 public class BootJar extends Jar implements BootArchive {
 
-	private BootArchiveSupport support = new BootArchiveSupport("BOOT-INF/lib");
+	private BootArchiveSupport support = new BootArchiveSupport(
+			"org.springframework.boot.loader.JarLauncher", "BOOT-INF/lib");
 
 	private FileCollection classpath;
 
 	private String mainClass;
 
 	public BootJar() {
-		this.support.setLoaderMainClass("org.springframework.boot.loader.JarLauncher");
 		CopySpec bootInf = getRootSpec().addChildBeforeSpec(getMainSpec())
 				.into("BOOT-INF");
 		bootInf.into("lib", classpathFiles(File::isFile));

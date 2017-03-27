@@ -136,6 +136,20 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
+	public void loaderIsWrittenToTheRootOfTheJarWhenUsingThePropertiesLauncher()
+			throws IOException {
+		this.task.setMainClass("com.example.Main");
+		this.task.execute();
+		this.task.getManifest().getAttributes().put("Main-Class",
+				"org.springframework.boot.loader.PropertiesLauncher");
+		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
+			assertThat(jarFile.getEntry(
+					"org/springframework/boot/loader/LaunchedURLClassLoader.class"))
+							.isNotNull();
+		}
+	}
+
+	@Test
 	public void unpackCommentIsAddedToEntryIdentifiedByAPattern() throws IOException {
 		this.task.setMainClass("com.example.Main");
 		this.task.classpath(this.temp.newFile("one.jar"), this.temp.newFile("two.jar"));
@@ -207,6 +221,9 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 					.isEqualTo("com.example.CustomLauncher");
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Start-Class"))
 					.isEqualTo("com.example.Main");
+			assertThat(jarFile.getEntry(
+					"org/springframework/boot/loader/LaunchedURLClassLoader.class"))
+							.isNull();
 		}
 	}
 

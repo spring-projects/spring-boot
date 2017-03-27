@@ -36,7 +36,8 @@ import org.gradle.api.tasks.bundling.War;
  */
 public class BootWar extends War implements BootArchive {
 
-	private final BootArchiveSupport support = new BootArchiveSupport("WEB-INF/lib/",
+	private final BootArchiveSupport support = new BootArchiveSupport(
+			"org.springframework.boot.loader.WarLauncher", "WEB-INF/lib/",
 			"WEB-INF/lib-provided");
 
 	private String mainClass;
@@ -44,7 +45,6 @@ public class BootWar extends War implements BootArchive {
 	private FileCollection providedClasspath;
 
 	public BootWar() {
-		this.support.setLoaderMainClass("org.springframework.boot.loader.WarLauncher");
 		getWebInf().into("lib-provided", (copySpec) -> {
 			copySpec.from((Callable<Iterable<File>>) () -> {
 				return this.providedClasspath == null ? Collections.emptyList()
