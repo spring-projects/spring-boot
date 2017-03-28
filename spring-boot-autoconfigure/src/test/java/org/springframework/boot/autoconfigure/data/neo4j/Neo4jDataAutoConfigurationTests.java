@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Test;
-import org.neo4j.ogm.drivers.http.driver.HttpDriver;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 import org.neo4j.ogm.session.event.Event;
@@ -180,9 +179,8 @@ public class Neo4jDataAutoConfigurationTests {
 
 		@Bean
 		public org.neo4j.ogm.config.Configuration myConfiguration() {
-			org.neo4j.ogm.config.Configuration configuration = new org.neo4j.ogm.config.Configuration();
-			configuration.setDriverClassName(HttpDriver.class.getName());
-			return configuration;
+			return new org.neo4j.ogm.config.Configuration.Builder()
+					.uri("http://localhost:12345").build();
 		}
 
 	}

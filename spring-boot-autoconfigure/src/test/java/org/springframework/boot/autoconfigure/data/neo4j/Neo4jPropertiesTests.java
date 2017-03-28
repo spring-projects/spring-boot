@@ -102,8 +102,7 @@ public class Neo4jPropertiesTests {
 		Neo4jProperties properties = load(true,
 				"spring.data.neo4j.uri=http://user:secret@my-server:7474");
 		Configuration configuration = properties.createConfiguration();
-		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER,
-				"http://user:secret@my-server:7474");
+		assertDriver(configuration, Neo4jProperties.HTTP_DRIVER, "http://my-server:7474");
 		assertCredentials(configuration, "user", "secret");
 	}
 
@@ -119,10 +118,10 @@ public class Neo4jPropertiesTests {
 	@Test
 	public void embeddedModeWithRelativeLocation() {
 		Neo4jProperties properties = load(true,
-				"spring.data.neo4j.uri=target/neo4j/my.db");
+				"spring.data.neo4j.uri=file:target/neo4j/my.db");
 		Configuration configuration = properties.createConfiguration();
 		assertDriver(configuration, Neo4jProperties.EMBEDDED_DRIVER,
-				"target/neo4j/my.db");
+				"file:target/neo4j/my.db");
 	}
 
 	private static void assertDriver(Configuration actual, String driver, String uri) {

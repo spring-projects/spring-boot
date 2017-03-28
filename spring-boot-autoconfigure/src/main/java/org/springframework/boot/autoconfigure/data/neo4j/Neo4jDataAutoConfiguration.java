@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 
 import java.util.List;
 
-import org.neo4j.ogm.config.Components;
 import org.neo4j.ogm.session.SessionFactory;
 import org.neo4j.ogm.session.event.EventListener;
 
@@ -66,7 +65,6 @@ public class Neo4jDataAutoConfiguration {
 	public org.neo4j.ogm.config.Configuration configuration(Neo4jProperties properties) {
 		org.neo4j.ogm.config.Configuration configuration = properties
 				.createConfiguration();
-		Components.configure(configuration);
 		return configuration;
 	}
 
