@@ -21,7 +21,7 @@ import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Set;
+import java.util.function.Function;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -61,19 +61,19 @@ class BootZipCopyAction implements CopyAction {
 
 	private final LaunchScriptConfiguration launchScript;
 
-	private final Set<String> storedPathPrefixes;
+	private final Function<FileCopyDetails, ZipCompression> compressionResolver;
 
 	BootZipCopyAction(File output, boolean preserveFileTimestamps,
 			boolean includeDefaultLoader, Spec<FileTreeElement> requiresUnpack,
 			Spec<FileTreeElement> exclusions, LaunchScriptConfiguration launchScript,
-			Set<String> storedPathPrefixes) {
+			Function<FileCopyDetails, ZipCompression> compressionResolver) {
 		this.output = output;
 		this.preserveFileTimestamps = preserveFileTimestamps;
 		this.includeDefaultLoader = includeDefaultLoader;
 		this.requiresUnpack = requiresUnpack;
 		this.exclusions = exclusions;
 		this.launchScript = launchScript;
-		this.storedPathPrefixes = storedPathPrefixes;
+		this.compressionResolver = compressionResolver;
 	}
 
 	@Override
@@ -91,7 +91,7 @@ class BootZipCopyAction implements CopyAction {
 		try {
 			stream.process(new ZipStreamAction(zipStream, this.output,
 					this.preserveFileTimestamps, this.requiresUnpack, this.exclusions,
-					this.storedPathPrefixes));
+					this.compressionResolver));
 		}
 		finally {
 			try {
@@ -162,17 +162,18 @@ class BootZipCopyAction implements CopyAction {
 
 		private final Spec<FileTreeElement> exclusions;
 
-		private final Set<String> storedPathPrefixes;
+		private final Function<FileCopyDetails, ZipCompression> compressionType;
 
 		private ZipStreamAction(ZipOutputStream zipStream, File output,
 				boolean preserveFileTimestamps, Spec<FileTreeElement> requiresUnpack,
-				Spec<FileTreeElement> exclusions, Set<String> storedPathPrefixes) {
+				Spec<FileTreeElement> exclusions,
+				Function<FileCopyDetails, ZipCompression> compressionType) {
 			this.zipStream = zipStream;
 			this.output = output;
 			this.preserveFileTimestamps = preserveFileTimestamps;
 			this.requiresUnpack = requiresUnpack;
 			this.exclusions = exclusions;
-			this.storedPathPrefixes = storedPathPrefixes;
+			this.compressionType = compressionType;
 		}
 
 		@Override
@@ -207,7 +208,8 @@ class BootZipCopyAction implements CopyAction {
 			ZipEntry archiveEntry = new ZipEntry(relativePath);
 			archiveEntry.setTime(getTime(details));
 			this.zipStream.putNextEntry(archiveEntry);
-			if (isStoredEntry(relativePath)) {
+			ZipCompression compression = this.compressionType.apply(details);
+			if (compression == ZipCompression.STORED) {
 				archiveEntry.setMethod(ZipEntry.STORED);
 				archiveEntry.setSize(details.getSize());
 				archiveEntry.setCompressedSize(details.getSize());
@@ -223,15 +225,6 @@ class BootZipCopyAction implements CopyAction {
 				details.copyTo(this.zipStream);
 			}
 			this.zipStream.closeEntry();
-		}
-
-		private boolean isStoredEntry(String relativePath) {
-			for (String prefix : this.storedPathPrefixes) {
-				if (relativePath.startsWith(prefix)) {
-					return true;
-				}
-			}
-			return false;
 		}
 
 		private long getTime(FileCopyDetails details) {

@@ -23,6 +23,7 @@ import java.util.concurrent.Callable;
 import org.gradle.api.Action;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.specs.Spec;
@@ -36,7 +37,7 @@ import org.gradle.api.tasks.bundling.Jar;
 public class BootJar extends Jar implements BootArchive {
 
 	private BootArchiveSupport support = new BootArchiveSupport(
-			"org.springframework.boot.loader.JarLauncher", "BOOT-INF/lib");
+			"org.springframework.boot.loader.JarLauncher", this::resolveZipCompression);
 
 	private FileCollection classpath;
 
@@ -120,6 +121,23 @@ public class BootJar extends Jar implements BootArchive {
 	@Override
 	public void setExcludeDevtools(boolean excludeDevtools) {
 		this.support.setExcludeDevtools(excludeDevtools);
+	}
+
+	/**
+	 * Returns the {@link ZipCompression} that should be used when adding the file
+	 * represented by the given {@code details} to the jar.
+	 * <p>
+	 * By default, any file in {@code BOOT-INF/lib/} is stored and all other files are
+	 * deflated.
+	 *
+	 * @param details the details
+	 * @return the compression to use
+	 */
+	protected ZipCompression resolveZipCompression(FileCopyDetails details) {
+		if (details.getRelativePath().getPathString().startsWith("BOOT-INF/lib/")) {
+			return ZipCompression.STORED;
+		}
+		return ZipCompression.DEFLATED;
 	}
 
 }

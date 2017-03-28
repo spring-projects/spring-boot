@@ -23,6 +23,7 @@ import java.util.concurrent.Callable;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.specs.Spec;
@@ -37,8 +38,7 @@ import org.gradle.api.tasks.bundling.War;
 public class BootWar extends War implements BootArchive {
 
 	private final BootArchiveSupport support = new BootArchiveSupport(
-			"org.springframework.boot.loader.WarLauncher", "WEB-INF/lib/",
-			"WEB-INF/lib-provided");
+			"org.springframework.boot.loader.WarLauncher", this::resolveZipCompression);
 
 	private String mainClass;
 
@@ -120,6 +120,25 @@ public class BootWar extends War implements BootArchive {
 	@Override
 	public void setExcludeDevtools(boolean excludeDevtools) {
 		this.support.setExcludeDevtools(excludeDevtools);
+	}
+
+	/**
+	 * Returns the {@link ZipCompression} that should be used when adding the file
+	 * represented by the given {@code details} to the jar.
+	 * <p>
+	 * By default, any file in {@code WEB-INF/lib/} or {@code WEB-INF/lib-provided/} is
+	 * stored and all other files are deflated.
+	 *
+	 * @param details the details
+	 * @return the compression to use
+	 */
+	protected ZipCompression resolveZipCompression(FileCopyDetails details) {
+		String relativePath = details.getRelativePath().getPathString();
+		if (relativePath.startsWith("WEB-INF/lib/")
+				|| relativePath.startsWith("WEB-INF/lib-provided/")) {
+			return ZipCompression.STORED;
+		}
+		return ZipCompression.DEFLATED;
 	}
 
 }

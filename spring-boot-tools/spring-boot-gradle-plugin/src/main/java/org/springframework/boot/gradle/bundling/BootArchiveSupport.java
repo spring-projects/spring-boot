@@ -16,13 +16,14 @@
 
 package org.springframework.boot.gradle.bundling;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Function;
 
+import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.file.RelativePath;
 import org.gradle.api.internal.file.copy.CopyAction;
@@ -54,7 +55,7 @@ class BootArchiveSupport {
 
 	private final PatternSet requiresUnpack = new PatternSet();
 
-	private final Set<String> storedPathPrefixes;
+	private final Function<FileCopyDetails, ZipCompression> compressionResolver;
 
 	private final PatternSet exclusions = new PatternSet();
 
@@ -64,9 +65,10 @@ class BootArchiveSupport {
 
 	private boolean excludeDevtools = true;
 
-	BootArchiveSupport(String loaderMainClass, String... storedPathPrefixes) {
+	BootArchiveSupport(String loaderMainClass,
+			Function<FileCopyDetails, ZipCompression> compressionResolver) {
 		this.loaderMainClass = loaderMainClass;
-		this.storedPathPrefixes = new HashSet<>(Arrays.asList(storedPathPrefixes));
+		this.compressionResolver = compressionResolver;
 		this.requiresUnpack.include(Specs.satisfyNone());
 		configureExclusions();
 	}
@@ -81,7 +83,7 @@ class BootArchiveSupport {
 		CopyAction copyAction = new BootZipCopyAction(jar.getArchivePath(),
 				jar.isPreserveFileTimestamps(), isUsingDefaultLoader(jar),
 				this.requiresUnpack.getAsSpec(), this.exclusions.getAsExcludeSpec(),
-				this.launchScript, this.storedPathPrefixes);
+				this.launchScript, this.compressionResolver);
 		if (!jar.isReproducibleFileOrder()) {
 			return copyAction;
 		}
