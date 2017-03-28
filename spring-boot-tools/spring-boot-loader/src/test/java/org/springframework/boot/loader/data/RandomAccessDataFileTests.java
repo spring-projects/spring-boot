@@ -87,28 +87,28 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void fileNotNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.equals("File must not be null");
+		this.thrown.expectMessage("File must not be null");
 		new RandomAccessDataFile(null);
 	}
 
 	@Test
 	public void fileExists() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.equals("File must exist");
+		this.thrown.expectMessage("File must exist");
 		new RandomAccessDataFile(new File("/does/not/exist"));
 	}
 
 	@Test
 	public void fileNotNullWithConcurrentReads() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.equals("File must not be null");
+		this.thrown.expectMessage("File must not be null");
 		new RandomAccessDataFile(null, 1);
 	}
 
 	@Test
 	public void fileExistsWithConcurrentReads() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.equals("File must exist");
+		this.thrown.expectMessage("File must exist");
 		new RandomAccessDataFile(new File("/does/not/exist"), 1);
 	}
 

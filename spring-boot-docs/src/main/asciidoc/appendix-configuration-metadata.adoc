@@ -719,7 +719,7 @@ an optional dependency, for example with Maven you would add:
 	</dependency>
 ----
 
-With Gradle, you can use the https://github.com/spring-projects/gradle-plugins/tree/master/propdeps-plugin[propdeps-plugin]
+With Gradle, you can use the https://github.com/spring-gradle-plugins/propdeps-plugin[propdeps-plugin]
 and specify:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
