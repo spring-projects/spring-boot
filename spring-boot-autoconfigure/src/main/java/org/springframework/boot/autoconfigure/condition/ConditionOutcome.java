@@ -124,7 +124,7 @@ public class ConditionOutcome {
 
 	@Override
 	public int hashCode() {
-		return ObjectUtils.hashCode(this.match) * 31
+		return Boolean.hashCode(this.match) * 31
 				+ ObjectUtils.nullSafeHashCode(this.message);
 	}
 
