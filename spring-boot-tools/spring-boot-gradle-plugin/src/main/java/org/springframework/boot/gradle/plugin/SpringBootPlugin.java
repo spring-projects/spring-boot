@@ -22,7 +22,7 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.tasks.compile.JavaCompile;
 
-import org.springframework.boot.gradle.SpringBootPluginExtension;
+import org.springframework.boot.gradle.SpringBootExtension;
 import org.springframework.boot.gradle.application.ApplicationPluginFeatures;
 import org.springframework.boot.gradle.bundling.BundlingPluginFeatures;
 import org.springframework.boot.gradle.dependencymanagement.DependencyManagementPluginFeatures;
@@ -39,7 +39,7 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		project.getExtensions().create("springBoot", SpringBootPluginExtension.class,
+		project.getExtensions().create("springBoot", SpringBootExtension.class,
 				project);
 		new ApplicationPluginFeatures().apply(project);
 		new BundlingPluginFeatures().apply(project);
