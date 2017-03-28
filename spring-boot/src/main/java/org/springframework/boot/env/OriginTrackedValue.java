@@ -65,7 +65,7 @@ class OriginTrackedValue {
 	 * the resulting {@link OriginTrackedValue}.
 	 * @param value the source value
 	 * @param origin the origin
-	 * @return a {@link OriginTrackedValue} or {@code null} if the source value was
+	 * @return an {@link OriginTrackedValue} or {@code null} if the source value was
 	 * {@code null}.
 	 */
 	public static OriginTrackedValue of(Object value, PropertyOrigin origin) {

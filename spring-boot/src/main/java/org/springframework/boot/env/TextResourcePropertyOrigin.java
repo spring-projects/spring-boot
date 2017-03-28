@@ -40,7 +40,7 @@ public class TextResourcePropertyOrigin implements PropertyOrigin {
 
 	/**
 	 * Return the resource where the property originated.
-	 * @return the resource the text resource or {@code null}
+	 * @return the text resource or {@code null}
 	 */
 	public Resource getResource() {
 		return this.resource;
