@@ -1,0 +1,18 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+def property(String name, Object defaultValue) {
+	project.hasProperty(name) ? project.getProperty(name) : defaultValue
+}
+
+task buildInfo(type: org.springframework.boot.gradle.buildinfo.BuildInfo) {
+	destinationDir file(property('buildInfoDestinationDir', project.buildDir))
+	projectArtifact property('buildInfoProjectArtifact', 'foo')
+	projectVersion property('buildInfoProjectVersion', '1.0')
+	projectGroup property('buildInfoProjectGroup', 'foo')
+	projectName property('buildInfoProjectName', 'foo')
+	additionalProperties 'additional': property('buildInfoAdditionalProperty', 'foo')
+}

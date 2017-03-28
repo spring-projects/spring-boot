@@ -16,9 +16,15 @@
 
 package org.springframework.boot.gradle;
 
+import java.io.File;
+import java.util.concurrent.Callable;
+
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.bundling.Jar;
 
 import org.springframework.boot.gradle.buildinfo.BuildInfo;
 
@@ -43,7 +49,11 @@ public class SpringBootExtension {
 
 	/**
 	 * Creates a new {@link BuildInfo} task named {@code bootBuildInfo} and configures the
-	 * {@code classes} task to depend upon it.
+	 * Java plugin's {@code classes} task to depend upon it.
+	 * <p>
+	 * By default, the task's destination dir will be a directory named {@code META-INF}
+	 * beneath the main source set's resources output directory, and the task's project
+	 * artifact will be the base name of the {@code bootWar} or {@code bootJar} task.
 	 */
 	public void buildInfo() {
 		this.buildInfo(null);
@@ -51,16 +61,39 @@ public class SpringBootExtension {
 
 	/**
 	 * Creates a new {@link BuildInfo} task named {@code bootBuildInfo} and configures the
-	 * {@code classes} task to depend upon it. The task is passed to the given
-	 * {@code configurer} for further configuration.
+	 * Java plugin's {@code classes} task to depend upon it. The task is passed to the
+	 * given {@code configurer} for further configuration.
+	 * <p>
+	 * By default, the task's destination dir will be a directory named {@code META-INF}
+	 * beneath the main source set's resources output directory, and the task's project
+	 * artifact will be the base name of the {@code bootWar} or {@code bootJar} task.
 	 *
 	 * @param configurer the task configurer
 	 */
 	public void buildInfo(Action<BuildInfo> configurer) {
 		BuildInfo bootBuildInfo = this.project.getTasks().create("bootBuildInfo",
 				BuildInfo.class);
-		this.project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME)
-				.dependsOn(bootBuildInfo);
+		this.project.getPlugins().withType(JavaPlugin.class, (plugin) -> {
+			this.project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME)
+					.dependsOn(bootBuildInfo);
+			bootBuildInfo.getConventionMapping().map("projectArtifact",
+					(Callable<String>) () -> {
+				Jar artifactTask = (Jar) this.project.getTasks().findByName("bootWar");
+				if (artifactTask == null) {
+					artifactTask = (Jar) this.project.getTasks().findByName("bootJar");
+				}
+				String result = artifactTask == null ? null : artifactTask.getBaseName();
+				return result;
+			});
+			bootBuildInfo.getConventionMapping().map("destinationDir",
+					(Callable<File>) () -> {
+				return new File(
+						this.project.getConvention().getPlugin(JavaPluginConvention.class)
+								.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+								.getOutput().getResourcesDir(),
+						"META-INF");
+			});
+		});
 		if (configurer != null) {
 			configurer.execute(bootBuildInfo);
 		}

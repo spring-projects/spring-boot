@@ -22,62 +22,53 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.gradle.api.DefaultTask;
-import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.Task;
+import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskExecutionException;
-import org.gradle.api.tasks.bundling.Jar;
 
 import org.springframework.boot.loader.tools.BuildPropertiesWriter;
 import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetails;
 
 /**
- * {@link DefaultTask} for generating a {@code build-info.properties} file from a
- * {@code Project}.
- * <p>
- * By default, the {@code build-info.properties} file is generated in
- * project.buildDir/resources/main/META-INF.
- * </p>
+ * {@link Task} for generating a {@code build-info.properties} file from a
+ * {@code Project}. The {@link #setDestinationDir destination dir} and
+ * {@link #setProjectArtifact project artifact} must be configured before execution.
  *
  * @author Andy Wilkinson
  */
-public class BuildInfo extends DefaultTask {
+public class BuildInfo extends ConventionTask {
 
-	@OutputFile
-	private File outputFile = getProject().file(new File(getProject().getBuildDir(),
-			"resources/main/META-INF/build-info.properties"));
+	private File destinationDir;
 
-	@Input
 	private String projectGroup = getProject().getGroup().toString();
 
-	@Input
-	private String projectArtifact = ((Jar) getProject().getTasks()
-			.getByName(JavaPlugin.JAR_TASK_NAME)).getBaseName();
+	private String projectArtifact;
 
-	@Input
 	private String projectVersion = getProject().getVersion().toString();
 
-	@Input
 	private String projectName = getProject().getName();
 
-	@Input
 	private Map<String, Object> additionalProperties = new HashMap<>();
 
 	@TaskAction
 	public void generateBuildProperties() {
 		try {
-			new BuildPropertiesWriter(this.outputFile)
-					.writeBuildProperties(new ProjectDetails(this.projectGroup,
-							this.projectArtifact, this.projectVersion, this.projectName,
-							coerceToStringValues(this.additionalProperties)));
+			new BuildPropertiesWriter(
+					new File(getDestinationDir(), "build-info.properties"))
+							.writeBuildProperties(new ProjectDetails(this.projectGroup,
+									getProjectArtifact(), this.projectVersion,
+									this.projectName,
+									coerceToStringValues(this.additionalProperties)));
 		}
 		catch (IOException ex) {
 			throw new TaskExecutionException(this, ex);
 		}
 	}
 
+	@Input
 	public String getProjectGroup() {
 		return this.projectGroup;
 	}
@@ -86,6 +77,7 @@ public class BuildInfo extends DefaultTask {
 		this.projectGroup = projectGroup;
 	}
 
+	@Input
 	public String getProjectArtifact() {
 		return this.projectArtifact;
 	}
@@ -94,6 +86,7 @@ public class BuildInfo extends DefaultTask {
 		this.projectArtifact = projectArtifact;
 	}
 
+	@Input
 	public String getProjectVersion() {
 		return this.projectVersion;
 	}
@@ -102,6 +95,7 @@ public class BuildInfo extends DefaultTask {
 		this.projectVersion = projectVersion;
 	}
 
+	@Input
 	public String getProjectName() {
 		return this.projectName;
 	}
@@ -110,14 +104,16 @@ public class BuildInfo extends DefaultTask {
 		this.projectName = projectName;
 	}
 
-	public File getOutputFile() {
-		return this.outputFile;
+	@OutputDirectory
+	public File getDestinationDir() {
+		return this.destinationDir;
 	}
 
-	public void setOutputFile(File outputFile) {
-		this.outputFile = outputFile;
+	public void setDestinationDir(File destinationDir) {
+		this.destinationDir = destinationDir;
 	}
 
+	@Input
 	public Map<String, Object> getAdditionalProperties() {
 		return this.additionalProperties;
 	}
