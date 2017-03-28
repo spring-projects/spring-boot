@@ -19,6 +19,7 @@ package org.springframework.boot.devtools.filewatch;
 import java.io.File;
 
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 /**
  * A snapshot of a File at a given point in time.
@@ -58,7 +59,7 @@ class FileSnapshot {
 		}
 		if (obj instanceof FileSnapshot) {
 			FileSnapshot other = (FileSnapshot) obj;
-			boolean equals = this.file.equals(other.file);
+			boolean equals = ObjectUtils.nullSafeEquals(this.file, other.file);
 			equals = equals && this.exists == other.exists;
 			equals = equals && this.length == other.length;
 			equals = equals && this.lastModified == other.lastModified;
@@ -69,10 +70,10 @@ class FileSnapshot {
 
 	@Override
 	public int hashCode() {
-		int hashCode = this.file.hashCode();
-		hashCode = 31 * hashCode + (this.exists ? 1231 : 1237);
-		hashCode = 31 * hashCode + (int) (this.length ^ (this.length >>> 32));
-		hashCode = 31 * hashCode + (int) (this.lastModified ^ (this.lastModified >>> 32));
+		int hashCode = ObjectUtils.nullSafeHashCode(file);
+		hashCode = 31 * hashCode + ObjectUtils.hashCode(exists);
+		hashCode = 31 * hashCode + ObjectUtils.hashCode(length);
+		hashCode = 31 * hashCode + ObjectUtils.hashCode(lastModified);
 		return hashCode;
 	}
 
