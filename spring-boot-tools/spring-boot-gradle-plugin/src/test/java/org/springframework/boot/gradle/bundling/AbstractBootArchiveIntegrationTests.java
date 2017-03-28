@@ -16,7 +16,9 @@
 
 package org.springframework.boot.gradle.bundling;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.jar.JarFile;
 
 import org.gradle.testkit.runner.InvalidRunnerConfigurationException;
 import org.gradle.testkit.runner.TaskOutcome;
@@ -95,6 +97,19 @@ public abstract class AbstractBootArchiveIntegrationTests {
 		assertThat(this.gradleBuild.build("-PincludeLaunchScript=true",
 				"-PlaunchScriptProperty=bar", this.taskName).task(":" + this.taskName)
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+	}
+
+	@Test
+	public void applicationPluginMainClassNameIsUsed() throws IOException {
+		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName)
+				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		try (JarFile jarFile = new JarFile(
+				new File(this.gradleBuild.getProjectDir(), "build/libs")
+						.listFiles()[0])) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Start-Class"))
+					.isEqualTo("com.example.CustomMain");
+		}
+
 	}
 
 }

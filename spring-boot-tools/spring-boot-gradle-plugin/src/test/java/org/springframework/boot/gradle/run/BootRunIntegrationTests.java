@@ -66,6 +66,24 @@ public class BootRunIntegrationTests {
 		assertThat(result.getOutput()).doesNotContain(urlOf("build/resources/main"));
 	}
 
+	@Test
+	public void applicationPluginMainClassNameIsUsed() throws IOException {
+		BuildResult result = this.gradleBuild.build("echoMainClassName");
+		assertThat(result.task(":echoMainClassName").getOutcome())
+				.isEqualTo(TaskOutcome.UP_TO_DATE);
+		assertThat(result.getOutput())
+				.contains("Main class name = com.example.CustomMainClass");
+	}
+
+	@Test
+	public void applicationPluginJvmArgumentsAreUsed() throws IOException {
+		BuildResult result = this.gradleBuild.build("echoJvmArguments");
+		assertThat(result.task(":echoJvmArguments").getOutcome())
+				.isEqualTo(TaskOutcome.UP_TO_DATE);
+		assertThat(result.getOutput())
+				.contains("JVM arguments = [-Dcom.foo=bar, -Dcom.bar=baz]");
+	}
+
 	private String urlOf(String path) throws IOException {
 		return new File(this.gradleBuild.getProjectDir().getCanonicalFile(), path).toURI()
 				.toURL().toString();

@@ -19,6 +19,7 @@ package org.springframework.boot.gradle.bundling;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -66,9 +67,8 @@ public class BundlingPluginFeatures implements PluginFeatures {
 		ArchivePublishArtifact artifact = new ArchivePublishArtifact(bootWar);
 		this.singlePublishedArtifact.addCandidate(artifact);
 		project.getComponents().add(new BootSoftwareComponent(artifact, "bootWeb"));
-		bootWar.conventionMapping("mainClass", () -> {
-			return new MainClassResolver(bootWar.getClasspath()).resolveMainClass();
-		});
+		bootWar.conventionMapping("mainClass",
+				mainClassConvention(project, bootWar::getClasspath));
 	}
 
 	private void configureBootJarTask(Project project) {
@@ -83,9 +83,18 @@ public class BundlingPluginFeatures implements PluginFeatures {
 		ArchivePublishArtifact artifact = new ArchivePublishArtifact(bootJar);
 		this.singlePublishedArtifact.addCandidate(artifact);
 		project.getComponents().add(new BootSoftwareComponent(artifact, "bootJava"));
-		bootJar.conventionMapping("mainClass", () -> {
-			return new MainClassResolver(bootJar.getClasspath()).resolveMainClass();
-		});
+		bootJar.conventionMapping("mainClass",
+				mainClassConvention(project, bootJar::getClasspath));
+	}
+
+	private Callable<Object> mainClassConvention(Project project,
+			Supplier<FileCollection> classpathSupplier) {
+		return () -> {
+			if (project.hasProperty("mainClassName")) {
+				return project.property("mainClassName");
+			}
+			return new MainClassResolver(classpathSupplier.get()).resolveMainClass();
+		};
 	}
 
 	private void configureBootArchivesUpload(Project project) {
