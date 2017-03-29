@@ -126,20 +126,33 @@ public class GradleBuild implements TestRule {
 
 	public BuildResult build(String... arguments) {
 		try {
-			Files.copy(new File(this.script).toPath(),
-					new File(this.projectDir, "build.gradle").toPath(),
-					StandardCopyOption.REPLACE_EXISTING);
-			GradleRunner gradleRunner = GradleRunner.create()
-					.withProjectDir(this.projectDir).forwardOutput();
-			List<String> allArguments = new ArrayList<String>();
-			allArguments.add("-PpluginClasspath=" + pluginClasspath());
-			allArguments.add("-PbootVersion=" + getBootVersion());
-			allArguments.addAll(Arrays.asList(arguments));
-			return gradleRunner.withArguments(allArguments).build();
+			return prepareRunner(arguments).build();
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	public BuildResult buildAndFail(String... arguments) {
+		try {
+			return prepareRunner(arguments).buildAndFail();
+		}
+		catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	public GradleRunner prepareRunner(String... arguments) throws IOException {
+		Files.copy(new File(this.script).toPath(),
+				new File(this.projectDir, "build.gradle").toPath(),
+				StandardCopyOption.REPLACE_EXISTING);
+		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
+				.forwardOutput();
+		List<String> allArguments = new ArrayList<String>();
+		allArguments.add("-PpluginClasspath=" + pluginClasspath());
+		allArguments.add("-PbootVersion=" + getBootVersion());
+		allArguments.addAll(Arrays.asList(arguments));
+		return gradleRunner.withArguments(allArguments);
 	}
 
 	public File getProjectDir() {

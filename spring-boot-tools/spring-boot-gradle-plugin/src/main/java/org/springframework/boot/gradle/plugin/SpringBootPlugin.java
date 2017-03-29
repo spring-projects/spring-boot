@@ -78,6 +78,14 @@ public class SpringBootPlugin implements Plugin<Project> {
 			project.getPlugins().withType(action.getPluginClass(),
 					plugin -> action.execute(project));
 		}
+		UnresolvedDependenciesAnalyzer unresolvedDependenciesAnalyzer = new UnresolvedDependenciesAnalyzer();
+		project.getConfigurations().all(configuration -> configuration.getIncoming()
+				.afterResolve(resolvableDependencies -> unresolvedDependenciesAnalyzer
+						.analyze(configuration.getResolvedConfiguration()
+								.getLenientConfiguration()
+								.getUnresolvedModuleDependencies())));
+		project.getGradle().buildFinished(
+				buildResult -> unresolvedDependenciesAnalyzer.buildFinished(project));
 	}
 
 }
