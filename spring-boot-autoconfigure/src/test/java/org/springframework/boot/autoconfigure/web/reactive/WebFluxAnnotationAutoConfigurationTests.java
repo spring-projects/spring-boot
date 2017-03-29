@@ -91,7 +91,7 @@ public class WebFluxAnnotationAutoConfigurationTests {
 		load(CustomArgumentResolvers.class);
 		RequestMappingHandlerAdapter adapter = this.context
 				.getBean(RequestMappingHandlerAdapter.class);
-		assertThat(adapter.getArgumentResolvers()).contains(
+		assertThat(adapter.getCustomArgumentResolvers()).contains(
 				this.context.getBean("firstResolver",
 						HandlerMethodArgumentResolver.class),
 				this.context.getBean("secondResolver",
