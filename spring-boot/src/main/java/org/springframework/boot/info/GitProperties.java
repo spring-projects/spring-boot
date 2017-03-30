@@ -54,6 +54,11 @@ public class GitProperties extends InfoProperties {
 	 * @return the short commit id
 	 */
 	public String getShortCommitId() {
+		String idAbbrev = get("commit.id.abbrev");
+		if (idAbbrev != null) {
+			return idAbbrev;
+		}
+
 		String id = getCommitId();
 		if (id == null) {
 			return null;
