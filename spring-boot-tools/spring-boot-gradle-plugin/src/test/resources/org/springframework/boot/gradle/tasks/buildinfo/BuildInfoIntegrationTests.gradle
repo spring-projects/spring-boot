@@ -10,9 +10,11 @@ def property(String name, Object defaultValue) {
 
 task buildInfo(type: org.springframework.boot.gradle.tasks.buildinfo.BuildInfo) {
 	destinationDir file(property('buildInfoDestinationDir', project.buildDir))
-	projectArtifact property('buildInfoProjectArtifact', 'foo')
-	projectVersion property('buildInfoProjectVersion', '1.0')
-	projectGroup property('buildInfoProjectGroup', 'foo')
-	projectName property('buildInfoProjectName', 'foo')
-	additionalProperties 'additional': property('buildInfoAdditionalProperty', 'foo')
+	properties {
+		artifact = property('buildInfoArtifact', 'foo')
+		version = property('buildInfoVersion', '1.0')
+		group = property('buildInfoGroup', 'foo')
+		name = property('buildInfoName', 'foo')
+		additional = ['additional': property('buildInfoAdditional', 'foo')]
+	}
 }

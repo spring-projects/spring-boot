@@ -27,6 +27,7 @@ import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.bundling.Jar;
 
 import org.springframework.boot.gradle.tasks.buildinfo.BuildInfo;
+import org.springframework.boot.gradle.tasks.buildinfo.BuildInfoProperties;
 
 /**
  * Entry point to Spring Boot's Gradle DSL.
@@ -76,8 +77,12 @@ public class SpringBootExtension {
 		this.project.getPlugins().withType(JavaPlugin.class, plugin -> {
 			this.project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME)
 					.dependsOn(bootBuildInfo);
-			bootBuildInfo.getConventionMapping().map("projectArtifact",
-					(Callable<String>) () -> determineArtifactBaseName());
+			this.project.afterEvaluate(evaluated -> {
+				BuildInfoProperties properties = bootBuildInfo.getProperties();
+				if (properties.getArtifact() == null) {
+					properties.setArtifact(determineArtifactBaseName());
+				}
+			});
 			bootBuildInfo.getConventionMapping()
 					.map("destinationDir",
 							(Callable<File>) () -> new File(

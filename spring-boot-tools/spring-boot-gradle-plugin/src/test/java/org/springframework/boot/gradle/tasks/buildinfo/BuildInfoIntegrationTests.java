@@ -16,6 +16,11 @@
 
 package org.springframework.boot.gradle.tasks.buildinfo;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
+
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,9 +40,29 @@ public class BuildInfoIntegrationTests {
 	public final GradleBuild gradleBuild = new GradleBuild();
 
 	@Test
+	public void defaultValues() {
+		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
+		Properties buildInfoProperties = buildInfoProperties();
+		assertThat(buildInfoProperties).containsKey("build.time");
+		assertThat(buildInfoProperties).containsEntry("build.artifact", "unspecified");
+		assertThat(buildInfoProperties).containsEntry("build.group", "");
+		assertThat(buildInfoProperties).containsEntry("build.name",
+				this.gradleBuild.getProjectDir().getName());
+		assertThat(buildInfoProperties).containsEntry("build.version", "unspecified");
+	}
+
+	@Test
 	public void basicExecution() {
 		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
+		Properties buildInfoProperties = buildInfoProperties();
+		assertThat(buildInfoProperties).containsKey("build.time");
+		assertThat(buildInfoProperties).containsEntry("build.artifact", "foo");
+		assertThat(buildInfoProperties).containsEntry("build.group", "foo");
+		assertThat(buildInfoProperties).containsEntry("build.additional", "foo");
+		assertThat(buildInfoProperties).containsEntry("build.name", "foo");
+		assertThat(buildInfoProperties).containsEntry("build.version", "1.0");
 	}
 
 	@Test
@@ -55,34 +80,48 @@ public class BuildInfoIntegrationTests {
 
 	@Test
 	public void notUpToDateWhenProjectArtifactChanges() {
-		notUpToDateWithChangeToProperty("buildInfoProjectArtifact");
+		notUpToDateWithChangeToProperty("buildInfoArtifact");
 	}
 
 	@Test
 	public void notUpToDateWhenProjectGroupChanges() {
-		notUpToDateWithChangeToProperty("buildInfoProjectGroup");
+		notUpToDateWithChangeToProperty("buildInfoGroup");
 	}
 
 	@Test
 	public void notUpToDateWhenProjectVersionChanges() {
-		notUpToDateWithChangeToProperty("buildInfoProjectVersion");
+		notUpToDateWithChangeToProperty("buildInfoVersion");
 	}
 
 	@Test
 	public void notUpToDateWhenProjectNameChanges() {
-		notUpToDateWithChangeToProperty("buildInfoProjectName");
+		notUpToDateWithChangeToProperty("buildInfoName");
 	}
 
 	@Test
 	public void notUpToDateWhenAdditionalPropertyChanges() {
-		notUpToDateWithChangeToProperty("buildInfoAdditionalProperty");
+		notUpToDateWithChangeToProperty("buildInfoAdditional");
 	}
 
 	private void notUpToDateWithChangeToProperty(String name) {
-		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("buildInfo", "--stacktrace").task(":buildInfo")
+				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.build("buildInfo", "-P" + name + "=changed")
 				.task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+	}
+
+	private Properties buildInfoProperties() {
+		File file = new File(this.gradleBuild.getProjectDir(),
+				"build/build-info.properties");
+		assertThat(file).isFile();
+		Properties properties = new Properties();
+		try (FileReader reader = new FileReader(file)) {
+			properties.load(reader);
+			return properties;
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 }

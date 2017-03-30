@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.gradle.api.Action;
+import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.tasks.Input;
@@ -34,92 +36,77 @@ import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetail
 
 /**
  * {@link Task} for generating a {@code build-info.properties} file from a
- * {@code Project}. The {@link #setDestinationDir destination dir} and
- * {@link #setProjectArtifact project artifact} must be configured before execution.
+ * {@code Project}.
  *
  * @author Andy Wilkinson
  */
 public class BuildInfo extends ConventionTask {
 
+	private final BuildInfoProperties properties = new BuildInfoProperties(getProject());
+
 	private File destinationDir;
 
-	private String projectGroup = getProject().getGroup().toString();
-
-	private String projectArtifact;
-
-	private String projectVersion = getProject().getVersion().toString();
-
-	private String projectName = getProject().getName();
-
-	private Map<String, Object> additionalProperties = new HashMap<>();
-
+	/**
+	 * Generates the {@code build-info.properties} file in the configured
+	 * {@link #setDestinationDir(File) destination}.
+	 */
 	@TaskAction
 	public void generateBuildProperties() {
 		try {
 			new BuildPropertiesWriter(
 					new File(getDestinationDir(), "build-info.properties"))
-							.writeBuildProperties(new ProjectDetails(this.projectGroup,
-									getProjectArtifact(), this.projectVersion,
-									this.projectName,
-									coerceToStringValues(this.additionalProperties)));
+							.writeBuildProperties(new ProjectDetails(
+									this.properties.getGroup(),
+									this.properties.getArtifact() == null ? "unspecified"
+											: this.properties.getArtifact(),
+									this.properties.getVersion(),
+									this.properties.getName(), coerceToStringValues(
+											this.properties.getAdditional())));
 		}
 		catch (IOException ex) {
 			throw new TaskExecutionException(this, ex);
 		}
 	}
 
-	@Input
-	public String getProjectGroup() {
-		return this.projectGroup;
-	}
-
-	public void setProjectGroup(String projectGroup) {
-		this.projectGroup = projectGroup;
-	}
-
-	@Input
-	public String getProjectArtifact() {
-		return this.projectArtifact;
-	}
-
-	public void setProjectArtifact(String projectArtifact) {
-		this.projectArtifact = projectArtifact;
-	}
-
-	@Input
-	public String getProjectVersion() {
-		return this.projectVersion;
-	}
-
-	public void setProjectVersion(String projectVersion) {
-		this.projectVersion = projectVersion;
-	}
-
-	@Input
-	public String getProjectName() {
-		return this.projectName;
-	}
-
-	public void setProjectName(String projectName) {
-		this.projectName = projectName;
-	}
-
+	/**
+	 * Returns the directory to which the {@code build-info.properties} file will be
+	 * written. Defaults to the {@link Project#getBuildDir() Project's build directory}.
+	 *
+	 * @return the destination directory
+	 */
 	@OutputDirectory
 	public File getDestinationDir() {
-		return this.destinationDir;
+		return this.destinationDir != null ? this.destinationDir
+				: getProject().getBuildDir();
 	}
 
+	/**
+	 * Sets the directory to which the {@code build-info.properties} file will be written.
+	 *
+	 * @param destinationDir the destination directory
+	 */
 	public void setDestinationDir(File destinationDir) {
 		this.destinationDir = destinationDir;
 	}
 
+	/**
+	 * Returns the {@link BuildInfoProperties properties} that will be included in the
+	 * {@code build-info.properties} file.
+	 *
+	 * @return the properties
+	 */
 	@Input
-	public Map<String, Object> getAdditionalProperties() {
-		return this.additionalProperties;
+	public BuildInfoProperties getProperties() {
+		return this.properties;
 	}
 
-	public void setAdditionalProperties(Map<String, Object> additionalProperties) {
-		this.additionalProperties = additionalProperties;
+	/**
+	 * Executes the given {@code action} on the {@link #getProperties()} properties.
+	 *
+	 * @param action the action
+	 */
+	public void properties(Action<BuildInfoProperties> action) {
+		action.execute(this.properties);
 	}
 
 	private Map<String, String> coerceToStringValues(Map<String, Object> input) {
