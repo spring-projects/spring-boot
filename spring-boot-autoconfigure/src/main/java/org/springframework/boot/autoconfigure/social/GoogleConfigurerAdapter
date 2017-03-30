@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package hello;
+package org.springframework.boot.autoconfigure.social;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
