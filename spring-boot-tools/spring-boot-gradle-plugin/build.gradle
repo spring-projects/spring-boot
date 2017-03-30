@@ -37,6 +37,7 @@ dependencies {
 	compile localGroovy()
 	compile gradleApi()
 	testCompile gradleTestKit()
+	testCompile 'org.apache.commons:commons-compress:1.13'
 }
 
 jar {
