@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,6 +74,14 @@ public class GitPropertiesTests {
 	}
 
 	@Test
+	public void shortCommitUsedIfPresent() {
+		GitProperties properties = new GitProperties(
+				createProperties("master", "abcdefghijklmno", "abcdefgh", "1457527123"));
+		assertThat(properties.getCommitId()).isEqualTo("abcdefghijklmno");
+		assertThat(properties.getShortCommitId()).isEqualTo("abcdefgh");
+	}
+
+	@Test
 	public void shortenCommitIdShorterThan7() {
 		GitProperties properties = new GitProperties(
 				createProperties("master", "abc", null, "1457527123"));
@@ -87,14 +95,6 @@ public class GitPropertiesTests {
 				createProperties("master", "abcdefghijklmno", null, "1457527123"));
 		assertThat(properties.getCommitId()).isEqualTo("abcdefghijklmno");
 		assertThat(properties.getShortCommitId()).isEqualTo("abcdefg");
-	}
-
-	@Test
-	public void shortCommitIdCustomLength() {
-		GitProperties properties = new GitProperties(
-				createProperties("master", "abcdefghijklmno", "abcdefgh", "1457527123"));
-		assertThat(properties.getCommitId()).isEqualTo("abcdefghijklmno");
-		assertThat(properties.getShortCommitId()).isEqualTo("abcdefgh");
 	}
 
 	private static Properties createProperties(String branch, String commitId,
