@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 
 	@Override
 	public Collection<Metric<?>> metrics() {
-		Collection<Metric<?>> result = new LinkedHashSet<Metric<?>>();
+		Collection<Metric<?>> result = new LinkedHashSet<>();
 		addBasicMetrics(result);
 		addManagementMetrics(result);
 		return result;
@@ -69,8 +69,8 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 		result.add(newMemoryMetric("mem",
 				runtime.totalMemory() + getTotalNonHeapMemoryIfPossible()));
 		result.add(newMemoryMetric("mem.free", runtime.freeMemory()));
-		result.add(new Metric<Integer>("processors", runtime.availableProcessors()));
-		result.add(new Metric<Long>("instance.uptime",
+		result.add(new Metric<>("processors", runtime.availableProcessors()));
+		result.add(new Metric<>("instance.uptime",
 				System.currentTimeMillis() - this.timestamp));
 	}
 
@@ -91,9 +91,9 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 	private void addManagementMetrics(Collection<Metric<?>> result) {
 		try {
 			// Add JVM up time in ms
-			result.add(new Metric<Long>("uptime",
+			result.add(new Metric<>("uptime",
 					ManagementFactory.getRuntimeMXBean().getUptime()));
-			result.add(new Metric<Double>("systemload.average",
+			result.add(new Metric<>("systemload.average",
 					ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage()));
 			addHeapMetrics(result);
 			addNonHeapMetrics(result);
@@ -133,7 +133,7 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 	}
 
 	private Metric<Long> newMemoryMetric(String name, long bytes) {
-		return new Metric<Long>(name, bytes / 1024);
+		return new Metric<>(name, bytes / 1024);
 	}
 
 	/**
@@ -142,13 +142,13 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 	 */
 	protected void addThreadMetrics(Collection<Metric<?>> result) {
 		ThreadMXBean threadMxBean = ManagementFactory.getThreadMXBean();
-		result.add(new Metric<Long>("threads.peak",
-				(long) threadMxBean.getPeakThreadCount()));
-		result.add(new Metric<Long>("threads.daemon",
+		result.add(
+				new Metric<>("threads.peak", (long) threadMxBean.getPeakThreadCount()));
+		result.add(new Metric<>("threads.daemon",
 				(long) threadMxBean.getDaemonThreadCount()));
-		result.add(new Metric<Long>("threads.totalStarted",
+		result.add(new Metric<>("threads.totalStarted",
 				threadMxBean.getTotalStartedThreadCount()));
-		result.add(new Metric<Long>("threads", (long) threadMxBean.getThreadCount()));
+		result.add(new Metric<>("threads", (long) threadMxBean.getThreadCount()));
 	}
 
 	/**
@@ -157,11 +157,11 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 	 */
 	protected void addClassLoadingMetrics(Collection<Metric<?>> result) {
 		ClassLoadingMXBean classLoadingMxBean = ManagementFactory.getClassLoadingMXBean();
-		result.add(new Metric<Long>("classes",
-				(long) classLoadingMxBean.getLoadedClassCount()));
-		result.add(new Metric<Long>("classes.loaded",
+		result.add(
+				new Metric<>("classes", (long) classLoadingMxBean.getLoadedClassCount()));
+		result.add(new Metric<>("classes.loaded",
 				classLoadingMxBean.getTotalLoadedClassCount()));
-		result.add(new Metric<Long>("classes.unloaded",
+		result.add(new Metric<>("classes.unloaded",
 				classLoadingMxBean.getUnloadedClassCount()));
 	}
 
@@ -174,9 +174,9 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 				.getGarbageCollectorMXBeans();
 		for (GarbageCollectorMXBean garbageCollectorMXBean : garbageCollectorMxBeans) {
 			String name = beautifyGcName(garbageCollectorMXBean.getName());
-			result.add(new Metric<Long>("gc." + name + ".count",
+			result.add(new Metric<>("gc." + name + ".count",
 					garbageCollectorMXBean.getCollectionCount()));
-			result.add(new Metric<Long>("gc." + name + ".time",
+			result.add(new Metric<>("gc." + name + ".time",
 					garbageCollectorMXBean.getCollectionTime()));
 		}
 	}

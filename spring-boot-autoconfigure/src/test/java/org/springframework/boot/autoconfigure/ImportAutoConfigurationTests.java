@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public class ImportAutoConfigurationTests {
 				config);
 		String shortName = ClassUtils.getShortName(ImportAutoConfigurationTests.class);
 		int beginIndex = shortName.length() + 1;
-		List<String> orderedConfigBeans = new ArrayList<String>();
+		List<String> orderedConfigBeans = new ArrayList<>();
 		for (String bean : context.getBeanDefinitionNames()) {
 			if (bean.contains("$Config")) {
 				String shortBeanName = ClassUtils.getShortName(bean);

@@ -54,7 +54,7 @@ public class KafkaSpecialProducerConsumerConfigExample {
 			Map<String, Object> producerProperties = properties.buildProducerProperties();
 			producerProperties.put(CommonClientConfigs.METRIC_REPORTER_CLASSES_CONFIG,
 					MyProducerMetricsReporter.class);
-			return new DefaultKafkaProducerFactory<Object, Object>(producerProperties);
+			return new DefaultKafkaProducerFactory<>(producerProperties);
 		}
 
 		/**
@@ -67,7 +67,7 @@ public class KafkaSpecialProducerConsumerConfigExample {
 			Map<String, Object> consumerProperties = properties.buildConsumerProperties();
 			consumerProperties.put(CommonClientConfigs.METRIC_REPORTER_CLASSES_CONFIG,
 					MyConsumerMetricsReporter.class);
-			return new DefaultKafkaConsumerFactory<Object, Object>(consumerProperties);
+			return new DefaultKafkaConsumerFactory<>(consumerProperties);
 		}
 
 	}

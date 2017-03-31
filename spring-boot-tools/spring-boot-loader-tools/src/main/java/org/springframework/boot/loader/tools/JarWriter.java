@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,6 @@ import java.util.jar.Manifest;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
-import org.springframework.lang.UsesJava7;
-
 /**
  * Writes JAR content, ensuring valid directory entries are always create and duplicate
  * items are ignored.
@@ -59,7 +57,7 @@ public class JarWriter implements LoaderClassesWriter {
 
 	private final JarOutputStream jarOutput;
 
-	private final Set<String> writtenEntries = new HashSet<String>();
+	private final Set<String> writtenEntries = new HashSet<>();
 
 	/**
 	 * Create a new {@link JarWriter} instance.
@@ -88,11 +86,10 @@ public class JarWriter implements LoaderClassesWriter {
 		this.jarOutput = new JarOutputStream(fileOutputStream);
 	}
 
-	@UsesJava7
 	private void setExecutableFilePermission(File file) {
 		try {
 			Path path = file.toPath();
-			Set<PosixFilePermission> permissions = new HashSet<PosixFilePermission>(
+			Set<PosixFilePermission> permissions = new HashSet<>(
 					Files.getPosixFilePermissions(path));
 			permissions.add(PosixFilePermission.OWNER_EXECUTE);
 			Files.setPosixFilePermissions(path, permissions);

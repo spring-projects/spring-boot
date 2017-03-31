@@ -71,7 +71,7 @@ public class AutoConfigureAnnotationProcessorTests {
 	@Test
 	public void annotatedMethod() throws Exception {
 		Properties properties = compile(TestMethodConfiguration.class);
-		List<String> matching = new ArrayList<String>();
+		List<String> matching = new ArrayList<>();
 		for (Object key : properties.keySet()) {
 			if (key.toString().startsWith(
 					"org.springframework.boot.autoconfigureprocessor.TestMethodConfiguration")) {

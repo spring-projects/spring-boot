@@ -31,13 +31,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Controller;
@@ -59,13 +58,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MustacheAutoConfigurationIntegrationTests {
 
 	@Autowired
-	private EmbeddedWebApplicationContext context;
+	private ServletWebServerApplicationContext context;
 
 	private int port;
 
 	@Before
 	public void init() {
-		this.port = this.context.getEmbeddedServletContainer().getPort();
+		this.port = this.context.getWebServer().getPort();
 	}
 
 	@Test
@@ -113,8 +112,7 @@ public class MustacheAutoConfigurationIntegrationTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Import({ MustacheAutoConfiguration.class,
-			EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
+			ServletWebServerFactoryAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {

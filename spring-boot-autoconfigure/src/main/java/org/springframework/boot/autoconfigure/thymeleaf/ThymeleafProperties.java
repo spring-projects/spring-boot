@@ -39,7 +39,7 @@ public class ThymeleafProperties {
 	public static final String DEFAULT_SUFFIX = ".html";
 
 	/**
-	 * Check that the template exists before rendering it (Thymeleaf 3+).
+	 * Check that the template exists before rendering it.
 	 */
 	private boolean checkTemplate = true;
 
@@ -59,9 +59,10 @@ public class ThymeleafProperties {
 	private String suffix = DEFAULT_SUFFIX;
 
 	/**
-	 * Template mode to be applied to templates. See also StandardTemplateModeHandlers.
+	 * Template mode to be applied to templates. See also
+	 * org.thymeleaf.templatemode.TemplateMode.
 	 */
-	private String mode = "HTML5";
+	private String mode = "HTML";
 
 	/**
 	 * Template encoding.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,11 +67,11 @@ public class BootRunTask extends JavaExec {
 			SourceSet mainSourceSet = SourceSets.findMainSourceSet(getProject());
 			final File outputDir = (mainSourceSet == null ? null
 					: mainSourceSet.getOutput().getResourcesDir());
-			final Set<File> resources = new LinkedHashSet<File>();
+			final Set<File> resources = new LinkedHashSet<>();
 			if (mainSourceSet != null) {
 				resources.addAll(mainSourceSet.getResources().getSrcDirs());
 			}
-			List<File> classPath = new ArrayList<File>(getClasspath().getFiles());
+			List<File> classPath = new ArrayList<>(getClasspath().getFiles());
 			classPath.addAll(0, resources);
 			getLogger().info("Adding classpath: " + resources);
 			setClasspath(new SimpleFileCollection(classPath));

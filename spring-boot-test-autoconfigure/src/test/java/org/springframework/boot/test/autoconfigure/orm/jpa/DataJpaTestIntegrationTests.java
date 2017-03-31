@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,6 +43,7 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest
+@TestPropertySource(properties = "spring.jpa.hibernate.use-new-id-generator-mappings=false")
 public class DataJpaTestIntegrationTests {
 
 	@Rule

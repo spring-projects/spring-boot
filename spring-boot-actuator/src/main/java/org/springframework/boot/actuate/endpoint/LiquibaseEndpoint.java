@@ -56,7 +56,7 @@ public class LiquibaseEndpoint extends AbstractEndpoint<List<LiquibaseReport>> {
 
 	@Override
 	public List<LiquibaseReport> invoke() {
-		List<LiquibaseReport> reports = new ArrayList<LiquibaseReport>();
+		List<LiquibaseReport> reports = new ArrayList<>();
 		DatabaseFactory factory = DatabaseFactory.getInstance();
 		StandardChangeLogHistoryService service = new StandardChangeLogHistoryService();
 		for (Map.Entry<String, SpringLiquibase> entry : this.liquibases.entrySet()) {

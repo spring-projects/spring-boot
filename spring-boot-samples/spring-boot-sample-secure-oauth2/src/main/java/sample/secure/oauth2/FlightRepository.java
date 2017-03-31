@@ -16,6 +16,8 @@
 
 package sample.secure.oauth2;
 
+import java.util.Optional;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -33,7 +35,7 @@ public interface FlightRepository extends CrudRepository<Flight, Long> {
 
 	@Override
 	@PreAuthorize("#oauth2.hasScope('read')")
-	Flight findOne(Long aLong);
+	Optional<Flight> findOne(Long aLong);
 
 	@Override
 	@PreAuthorize("#oauth2.hasScope('write')")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ class LogbackConfigurator {
 		Map<String, String> registry = (Map<String, String>) this.context
 				.getObject(CoreConstants.PATTERN_RULE_REGISTRY);
 		if (registry == null) {
-			registry = new HashMap<String, String>();
+			registry = new HashMap<>();
 			this.context.putObject(CoreConstants.PATTERN_RULE_REGISTRY, registry);
 		}
 		registry.put(conversionWord, converterClass.getName());

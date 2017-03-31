@@ -74,7 +74,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 
 	private final DefaultListableBeanFactory beanFactory;
 
-	private final Map<String, Class<?>> beanTypes = new HashMap<String, Class<?>>();
+	private final Map<String, Class<?>> beanTypes = new HashMap<>();
 
 	private int lastBeanDefinitionCount = 0;
 
@@ -112,7 +112,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	 */
 	Set<String> getNamesForType(Class<?> type) {
 		updateTypesIfNecessary();
-		Set<String> matches = new LinkedHashSet<String>();
+		Set<String> matches = new LinkedHashSet<>();
 		for (Map.Entry<String, Class<?>> entry : this.beanTypes.entrySet()) {
 			if (entry.getValue() != null && type.isAssignableFrom(entry.getValue())) {
 				matches.add(entry.getKey());
@@ -127,12 +127,12 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	 * the case of {@link FactoryBean FactoryBeans}. Will include singletons but will not
 	 * cause early bean initialization.
 	 * @param annotation the annotation to match (must not be {@code null})
-	 * @return the names of beans (or objects created by FactoryBeans) annoated with the
+	 * @return the names of beans (or objects created by FactoryBeans) annotated with the
 	 * given annotation, or an empty set if none
 	 */
 	Set<String> getNamesForAnnotation(Class<? extends Annotation> annotation) {
 		updateTypesIfNecessary();
-		Set<String> matches = new LinkedHashSet<String>();
+		Set<String> matches = new LinkedHashSet<>();
 		for (Map.Entry<String, Class<?>> entry : this.beanTypes.entrySet()) {
 			if (entry.getValue() != null && AnnotationUtils
 					.findAnnotation(entry.getValue(), annotation) != null) {
@@ -188,8 +188,8 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	}
 
 	private void logIgnoredError(String message, String name, Exception ex) {
-		if (BeanTypeRegistry.logger.isDebugEnabled()) {
-			BeanTypeRegistry.logger.debug("Ignoring " + message + " '" + name + "'", ex);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Ignoring " + message + " '" + name + "'", ex);
 		}
 	}
 

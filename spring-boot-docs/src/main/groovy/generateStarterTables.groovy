@@ -29,7 +29,7 @@ boolean isTechnicalStarter(def starter) {
 }
 
 boolean isProductionStarter(def starter) {
-	starter.name in ['spring-boot-starter-actuator', 'spring-boot-starter-remote-shell']
+	starter.name in ['spring-boot-starter-actuator']
 }
 
 boolean isStarter(def dependencies) {

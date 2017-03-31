@@ -17,28 +17,31 @@
 package org.springframework.boot.autoconfigure.security.oauth2;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.authserver.OAuth2AuthorizationServerConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.method.OAuth2MethodSecurityConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
-import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -117,11 +120,19 @@ public class OAuth2AutoConfigurationTests {
 
 	private static final Class<?> AUTHORIZATION_SERVER_CONFIG = OAuth2AuthorizationServerConfiguration.class;
 
-	private AnnotationConfigEmbeddedWebApplicationContext context;
+	private AnnotationConfigServletWebServerApplicationContext context;
+
+	@BeforeClass
+	@AfterClass
+	public static void uninstallUrlStreamHandlerFactory() {
+		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
+				null);
+		ReflectionTestUtils.setField(URL.class, "factory", null);
+	}
 
 	@Test
 	public void testDefaultConfiguration() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(AuthorizationAndResourceServerConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
@@ -149,7 +160,7 @@ public class OAuth2AutoConfigurationTests {
 
 	@Test
 	public void methodSecurityExpressionHandlerIsConfiguredWithRoleHierarchyFromTheContext() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(RoleHierarchyConfiguration.class,
 				AuthorizationAndResourceServerConfiguration.class,
 				MinimalSecureWebApplication.class);
@@ -165,7 +176,7 @@ public class OAuth2AutoConfigurationTests {
 
 	@Test
 	public void methodSecurityExpressionHandlerIsConfiguredWithPermissionEvaluatorFromTheContext() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(PermissionEvaluatorConfiguration.class,
 				AuthorizationAndResourceServerConfiguration.class,
 				MinimalSecureWebApplication.class);
@@ -182,7 +193,7 @@ public class OAuth2AutoConfigurationTests {
 
 	@Test
 	public void testEnvironmentalOverrides() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"security.oauth2.client.clientId:myclientid",
 				"security.oauth2.client.clientSecret:mysecret",
@@ -205,7 +216,7 @@ public class OAuth2AutoConfigurationTests {
 
 	@Test
 	public void testDisablingResourceServer() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(AuthorizationServerConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
@@ -215,7 +226,7 @@ public class OAuth2AutoConfigurationTests {
 
 	@Test
 	public void testClientIsNotResourceServer() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(ClientConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
@@ -227,7 +238,7 @@ public class OAuth2AutoConfigurationTests {
 
 	@Test
 	public void testCanUseClientCredentials() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(TestSecurityConfiguration.class,
 				MinimalSecureWebApplication.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -242,7 +253,7 @@ public class OAuth2AutoConfigurationTests {
 
 	@Test
 	public void testCanUseClientCredentialsWithEnableOAuth2Client() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(ClientConfiguration.class,
 				MinimalSecureWebApplication.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -275,7 +286,7 @@ public class OAuth2AutoConfigurationTests {
 
 	@Test
 	public void testDisablingAuthorizationServer() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(ResourceServerConfiguration.class,
 				MinimalSecureWebApplication.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -289,7 +300,7 @@ public class OAuth2AutoConfigurationTests {
 
 	@Test
 	public void testResourceServerOverride() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(AuthorizationAndResourceServerConfiguration.class,
 				CustomResourceServer.class, MinimalSecureWebApplication.class);
 		this.context.refresh();
@@ -302,7 +313,7 @@ public class OAuth2AutoConfigurationTests {
 
 	@Test
 	public void testAuthorizationServerOverride() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"security.oauth2.resourceId:resource-id");
 		this.context.register(AuthorizationAndResourceServerConfiguration.class,
@@ -322,7 +333,7 @@ public class OAuth2AutoConfigurationTests {
 
 	@Test
 	public void testDefaultPrePostSecurityAnnotations() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(AuthorizationAndResourceServerConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
@@ -340,7 +351,7 @@ public class OAuth2AutoConfigurationTests {
 
 	@Test
 	public void testClassicSecurityAnnotationOverride() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(SecuredEnabledConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
@@ -358,7 +369,7 @@ public class OAuth2AutoConfigurationTests {
 
 	@Test
 	public void testJsr250SecurityAnnotationOverride() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(Jsr250EnabledConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
@@ -376,7 +387,7 @@ public class OAuth2AutoConfigurationTests {
 
 	@Test
 	public void testMethodSecurityBackingOff() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(CustomMethodSecurity.class, TestSecurityConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
@@ -392,7 +403,7 @@ public class OAuth2AutoConfigurationTests {
 	@Test
 	public void resourceServerConditionWhenJwkConfigurationPresentShouldMatch()
 			throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"security.oauth2.resource.jwk.key-set-uri:http://my-auth-server/token_keys");
 		this.context.register(ResourceServerConfiguration.class,
@@ -411,8 +422,7 @@ public class OAuth2AutoConfigurationTests {
 	}
 
 	private void verifyAuthentication(ClientDetails config, HttpStatus finalStatus) {
-		String baseUrl = "http://localhost:"
-				+ this.context.getEmbeddedServletContainer().getPort();
+		String baseUrl = "http://localhost:" + this.context.getWebServer().getPort();
 		TestRestTemplate rest = new TestRestTemplate();
 		// First, verify the web endpoint can't be reached
 		assertEndpointUnauthorized(baseUrl, rest);
@@ -420,8 +430,7 @@ public class OAuth2AutoConfigurationTests {
 		HttpHeaders headers = getHeaders(config);
 		String url = baseUrl + "/oauth/token";
 		JsonNode tokenResponse = rest.postForObject(url,
-				new HttpEntity<MultiValueMap<String, Object>>(getBody(), headers),
-				JsonNode.class);
+				new HttpEntity<>(getBody(), headers), JsonNode.class);
 		String authorizationToken = tokenResponse.findValue("access_token").asText();
 		String tokenType = tokenResponse.findValue("token_type").asText();
 		String scope = tokenResponse.findValues("scope").get(0).toString();
@@ -449,7 +458,7 @@ public class OAuth2AutoConfigurationTests {
 	}
 
 	private MultiValueMap<String, Object> getBody() {
-		MultiValueMap<String, Object> body = new LinkedMultiValueMap<String, Object>();
+		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 		body.set("grant_type", "password");
 		body.set("username", "foo");
 		body.set("password", "bar");
@@ -474,9 +483,9 @@ public class OAuth2AutoConfigurationTests {
 
 	@Configuration
 	@Import({ UseFreePortEmbeddedContainerConfiguration.class,
-			SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, OAuth2AutoConfiguration.class,
-			WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
+			SecurityAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+			OAuth2AutoConfiguration.class, WebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class })
 	protected static class MinimalSecureWebApplication {
 
 	}
@@ -575,8 +584,8 @@ public class OAuth2AutoConfigurationTests {
 	protected static class UseFreePortEmbeddedContainerConfiguration {
 
 		@Bean
-		TomcatEmbeddedServletContainerFactory containerFactory() {
-			return new TomcatEmbeddedServletContainerFactory(0);
+		TomcatServletWebServerFactory webServerFactory() {
+			return new TomcatServletWebServerFactory(0);
 		}
 
 	}

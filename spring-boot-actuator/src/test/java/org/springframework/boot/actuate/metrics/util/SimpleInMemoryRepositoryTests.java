@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class SimpleInMemoryRepositoryTests {
 
-	private final SimpleInMemoryRepository<String> repository = new SimpleInMemoryRepository<String>();
+	private final SimpleInMemoryRepository<String> repository = new SimpleInMemoryRepository<>();
 
 	@Test
 	public void setAndGet() {
@@ -88,8 +88,8 @@ public class SimpleInMemoryRepositoryTests {
 
 	@Test
 	public void updateConcurrent() throws Exception {
-		SimpleInMemoryRepository<Integer> repository = new SimpleInMemoryRepository<Integer>();
-		Collection<Callable<Boolean>> tasks = new ArrayList<Callable<Boolean>>();
+		SimpleInMemoryRepository<Integer> repository = new SimpleInMemoryRepository<>();
+		Collection<Callable<Boolean>> tasks = new ArrayList<>();
 		for (int i = 0; i < 1000; i++) {
 			tasks.add(new RepositoryUpdate(repository, 1));
 			tasks.add(new RepositoryUpdate(repository, -1));

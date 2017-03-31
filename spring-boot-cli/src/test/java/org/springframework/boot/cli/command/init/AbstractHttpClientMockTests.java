@@ -27,7 +27,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicHeader;
-import org.hamcrest.Matcher;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mockito.ArgumentMatcher;
@@ -36,9 +35,9 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -143,14 +142,14 @@ public abstract class AbstractHttpClientMockTests {
 		given(response.getFirstHeader(headerName)).willReturn(header);
 	}
 
-	private Matcher<HttpGet> getForMetadata(boolean serviceCapabilities) {
+	private ArgumentMatcher<HttpGet> getForMetadata(boolean serviceCapabilities) {
 		if (!serviceCapabilities) {
 			return new HasAcceptHeader(InitializrService.ACCEPT_META_DATA, true);
 		}
 		return new HasAcceptHeader(InitializrService.ACCEPT_SERVICE_CAPABILITIES, true);
 	}
 
-	private Matcher<HttpGet> getForNonMetadata() {
+	private ArgumentMatcher<HttpGet> getForNonMetadata() {
 		return new HasAcceptHeader(InitializrService.ACCEPT_META_DATA, false);
 	}
 
@@ -188,7 +187,7 @@ public abstract class AbstractHttpClientMockTests {
 
 	}
 
-	private static class HasAcceptHeader extends ArgumentMatcher<HttpGet> {
+	private static class HasAcceptHeader implements ArgumentMatcher<HttpGet> {
 
 		private final String value;
 
@@ -200,11 +199,10 @@ public abstract class AbstractHttpClientMockTests {
 		}
 
 		@Override
-		public boolean matches(Object argument) {
-			if (!(argument instanceof HttpGet)) {
+		public boolean matches(HttpGet get) {
+			if (get == null) {
 				return false;
 			}
-			HttpGet get = (HttpGet) argument;
 			Header acceptHeader = get.getFirstHeader(HttpHeaders.ACCEPT);
 			if (this.shouldMatch) {
 				return acceptHeader != null && this.value.equals(acceptHeader.getValue());

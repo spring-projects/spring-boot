@@ -53,7 +53,7 @@ class ManagementContextConfigurationsImportSelector
 		// Find all management context configuration classes, filtering duplicates
 		List<ManagementConfiguration> configurations = getConfigurations();
 		OrderComparator.sort(configurations);
-		List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<>();
 		for (ManagementConfiguration configuration : configurations) {
 			names.add(configuration.getClassName());
 		}
@@ -63,7 +63,7 @@ class ManagementContextConfigurationsImportSelector
 	private List<ManagementConfiguration> getConfigurations() {
 		SimpleMetadataReaderFactory readerFactory = new SimpleMetadataReaderFactory(
 				this.classLoader);
-		List<ManagementConfiguration> configurations = new ArrayList<ManagementConfiguration>();
+		List<ManagementConfiguration> configurations = new ArrayList<>();
 		for (String className : loadFactoryNames()) {
 			getConfiguration(readerFactory, configurations, className);
 		}

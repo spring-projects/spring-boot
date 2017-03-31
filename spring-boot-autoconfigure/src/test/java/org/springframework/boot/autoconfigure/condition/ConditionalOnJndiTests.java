@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -142,7 +142,7 @@ public class ConditionalOnJndiTests {
 
 	private AnnotatedTypeMetadata mockMetaData(String... value) {
 		AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
-		Map<String, Object> attributes = new HashMap<String, Object>();
+		Map<String, Object> attributes = new HashMap<>();
 		attributes.put("value", value);
 		given(metadata.getAnnotationAttributes(ConditionalOnJndi.class.getName()))
 				.willReturn(attributes);

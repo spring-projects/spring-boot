@@ -53,7 +53,7 @@ public class HypermediaEndpointDocumentation {
 	public void beans() throws Exception {
 		this.mockMvc
 				.perform(get("/beans")
-						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk()).andDo(document("beans/hypermedia"));
 	}
 
@@ -61,7 +61,7 @@ public class HypermediaEndpointDocumentation {
 	public void metrics() throws Exception {
 		this.mockMvc
 				.perform(get("/metrics")
-						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$._links.self.href")
 						.value("http://localhost:8080/metrics"))
@@ -72,7 +72,7 @@ public class HypermediaEndpointDocumentation {
 	public void home() throws Exception {
 		this.mockMvc
 				.perform(get("/actuator")
-						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk()).andDo(document("admin"));
 	}
 

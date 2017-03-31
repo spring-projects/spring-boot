@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public class SampleController {
 	@PostMapping("/")
 	@ResponseBody
 	public Map<String, Object> olleh(@Validated Message message) {
-		Map<String, Object> model = new LinkedHashMap<String, Object>();
+		Map<String, Object> model = new LinkedHashMap<>();
 		model.put("message", message.getValue());
 		model.put("title", "Hello Home");
 		model.put("date", new Date());

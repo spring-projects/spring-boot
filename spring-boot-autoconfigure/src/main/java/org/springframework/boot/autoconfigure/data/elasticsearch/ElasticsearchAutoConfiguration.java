@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 	private static final Map<String, String> DEFAULTS;
 
 	static {
-		Map<String, String> defaults = new LinkedHashMap<String, String>();
+		Map<String, String> defaults = new LinkedHashMap<>();
 		defaults.put("http.enabled", String.valueOf(false));
 		defaults.put("node.local", String.valueOf(true));
 		defaults.put("path.home", System.getProperty("user.dir"));

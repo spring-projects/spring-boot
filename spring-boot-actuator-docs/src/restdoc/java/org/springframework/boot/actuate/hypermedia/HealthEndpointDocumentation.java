@@ -52,7 +52,7 @@ public class HealthEndpointDocumentation {
 	public void health() throws Exception {
 		this.mockMvc
 				.perform(get("/health")
-						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk()).andDo(document("health/insensitive"));
 	}
 

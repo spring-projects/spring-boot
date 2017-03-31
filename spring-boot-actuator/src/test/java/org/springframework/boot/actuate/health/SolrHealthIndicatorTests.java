@@ -66,7 +66,7 @@ public class SolrHealthIndicatorTests {
 	public void solrIsUp() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		SolrPingResponse pingResponse = new SolrPingResponse();
-		NamedList<Object> response = new NamedList<Object>();
+		NamedList<Object> response = new NamedList<>();
 		response.add("status", "OK");
 		pingResponse.setResponse(response);
 		given(solrClient.ping()).willReturn(pingResponse);

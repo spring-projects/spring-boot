@@ -150,8 +150,8 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> map = (Map<String, Object>) nestedProperties
 				.get("properties");
 		assertThat(map).isNotNull();
-		assertThat(map).hasSize(3);
-		assertThat((map.get("map"))).isNull();
+		assertThat(map).hasSize(2);
+		assertThat(map).doesNotContainKey("map");
 	}
 
 	@Test

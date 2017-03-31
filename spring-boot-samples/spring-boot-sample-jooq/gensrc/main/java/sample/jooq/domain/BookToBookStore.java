@@ -124,6 +124,7 @@ public class BookToBookStore extends TableImpl<Record> {
 	/**
 	 * Rename this table
 	 */
+	@Override
 	public BookToBookStore rename(String name) {
 		return new BookToBookStore(name, null);
 	}

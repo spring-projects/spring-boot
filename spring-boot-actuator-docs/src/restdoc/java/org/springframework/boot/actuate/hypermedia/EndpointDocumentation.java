@@ -78,7 +78,7 @@ public class EndpointDocumentation {
 	static final File LOG_FILE = new File("target/logs/spring.log");
 
 	private static final Set<String> SKIPPED = Collections
-			.<String>unmodifiableSet(new HashSet<String>(
+			.<String>unmodifiableSet(new HashSet<>(
 					Arrays.asList("/docs", "/logfile", "/heapdump", "/auditevents")));
 
 	@Autowired
@@ -124,7 +124,7 @@ public class EndpointDocumentation {
 	public void setLogger() throws Exception {
 		this.mockMvc
 				.perform(post("/loggers/org.springframework.boot")
-						.contentType(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON)
+						.contentType(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON)
 						.content("{\"configuredLevel\": \"DEBUG\"}"))
 				.andExpect(status().isOk()).andDo(document("set-logger"));
 	}
@@ -133,7 +133,7 @@ public class EndpointDocumentation {
 	public void auditEvents() throws Exception {
 		this.mockMvc
 				.perform(get("/auditevents").param("after", "2016-11-01T10:00:00+0000")
-						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk()).andDo(document("auditevents"));
 	}
 
@@ -142,7 +142,7 @@ public class EndpointDocumentation {
 		this.mockMvc
 				.perform(get("/auditevents").param("principal", "admin")
 						.param("after", "2016-11-01T10:00:00+0000")
-						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk())
 				.andDo(document("auditevents/filter-by-principal"));
 	}
@@ -153,7 +153,7 @@ public class EndpointDocumentation {
 				.perform(get("/auditevents").param("principal", "admin")
 						.param("after", "2016-11-01T10:00:00+0000")
 						.param("type", "AUTHENTICATION_SUCCESS")
-						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk())
 				.andDo(document("auditevents/filter-by-principal-and-type"));
 	}
@@ -161,8 +161,8 @@ public class EndpointDocumentation {
 	@Test
 	public void endpoints() throws Exception {
 		final File docs = new File("src/main/asciidoc");
-		final Map<String, Object> model = new LinkedHashMap<String, Object>();
-		final List<EndpointDoc> endpoints = new ArrayList<EndpointDoc>();
+		final Map<String, Object> model = new LinkedHashMap<>();
+		final List<EndpointDoc> endpoints = new ArrayList<>();
 		model.put("endpoints", endpoints);
 		for (MvcEndpoint endpoint : getEndpoints()) {
 			final String endpointPath = (StringUtils.hasText(endpoint.getPath())
@@ -172,7 +172,7 @@ public class EndpointDocumentation {
 				output = output.length() > 0 ? output : "./";
 				this.mockMvc
 						.perform(get(endpointPath)
-								.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON))
+								.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 						.andExpect(status().isOk()).andDo(document(output))
 						.andDo(new ResultHandler() {
 
@@ -200,7 +200,7 @@ public class EndpointDocumentation {
 	}
 
 	private Collection<? extends MvcEndpoint> getEndpoints() {
-		List<? extends MvcEndpoint> endpoints = new ArrayList<MvcEndpoint>(
+		List<? extends MvcEndpoint> endpoints = new ArrayList<>(
 				this.mvcEndpoints.getEndpoints());
 		Collections.sort(endpoints, new Comparator<MvcEndpoint>() {
 			@Override

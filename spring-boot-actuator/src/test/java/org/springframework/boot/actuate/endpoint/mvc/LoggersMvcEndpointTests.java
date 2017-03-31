@@ -27,11 +27,10 @@ import org.mockito.Mockito;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
@@ -131,10 +130,10 @@ public class LoggersMvcEndpointTests {
 	}
 
 	@Test
-	public void contentTypeForGetDefaultsToActuatorV1Json() throws Exception {
+	public void contentTypeForGetDefaultsToActuatorV2Json() throws Exception {
 		this.mvc.perform(get("/loggers")).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
-						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+						"application/vnd.spring-boot.actuator.v2+json;charset=UTF-8"));
 	}
 
 	@Test
@@ -153,9 +152,9 @@ public class LoggersMvcEndpointTests {
 	}
 
 	@Test
-	public void setLoggerUsingActuatorV1JsonShouldSetLogLevel() throws Exception {
+	public void setLoggerUsingActuatorV2JsonShouldSetLogLevel() throws Exception {
 		this.mvc.perform(post("/loggers/ROOT")
-				.contentType(ActuatorMediaTypes.APPLICATION_ACTUATOR_V1_JSON)
+				.contentType(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON)
 				.content("{\"configuredLevel\":\"debug\"}")).andExpect(status().isOk());
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
@@ -172,8 +171,7 @@ public class LoggersMvcEndpointTests {
 	@Configuration
 	@Import({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class })
+			EndpointWebMvcAutoConfiguration.class, WebMvcAutoConfiguration.class })
 	public static class TestConfiguration {
 
 		@Bean

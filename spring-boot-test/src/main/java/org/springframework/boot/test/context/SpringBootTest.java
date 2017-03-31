@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,10 @@ import java.lang.annotation.Target;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AliasFor;
@@ -51,11 +53,11 @@ import org.springframework.web.context.WebApplicationContext;
  * <li>Allows custom {@link Environment} properties to be defined using the
  * {@link #properties() properties attribute}.</li>
  * <li>Provides support for different {@link #webEnvironment() webEnvironment} modes,
- * including the ability to start a fully running container listening on a
+ * including the ability to start a fully running web server listening on a
  * {@link WebEnvironment#DEFINED_PORT defined} or {@link WebEnvironment#RANDOM_PORT
  * random} port.</li>
  * <li>Registers a {@link org.springframework.boot.test.web.client.TestRestTemplate
- * TestRestTemplate} bean for use in web tests that are using a fully running container.
+ * TestRestTemplate} bean for use in web tests that are using a fully running web server.
  * </li>
  * </ul>
  *
@@ -112,28 +114,31 @@ public @interface SpringBootTest {
 	enum WebEnvironment {
 
 		/**
-		 * Creates a {@link WebApplicationContext} with a mock servlet environment or a
-		 * regular {@link ApplicationContext} if servlet APIs are not on the classpath.
+		 * Creates a {@link WebApplicationContext} with a mock servlet environment if
+		 * servlet APIs are on the classpath, a {@link ReactiveWebApplicationContext} if
+		 * Spring WebFlux is on the classpath or a regular {@link ApplicationContext}
+		 * otherwise.
 		 */
 		MOCK(false),
 
 		/**
-		 * Creates an {@link EmbeddedWebApplicationContext} and sets a
-		 * {@code server.port=0} {@link Environment} property (which usually triggers
-		 * listening on a random port). Often used in conjunction with a
-		 * {@link LocalServerPort} injected field on the test.
+		 * Creates a (reactive) web application context and sets a {@code server.port=0}
+		 * {@link Environment} property (which usually triggers listening on a random
+		 * port). Often used in conjunction with a {@link LocalServerPort} injected field
+		 * on the test.
 		 */
 		RANDOM_PORT(true),
 
 		/**
-		 * Creates an {@link EmbeddedWebApplicationContext} without defining any
+		 * Creates a (reactive) web application context without defining any
 		 * {@code server.port=0} {@link Environment} property.
 		 */
 		DEFINED_PORT(true),
 
 		/**
 		 * Creates an {@link ApplicationContext} and sets
-		 * {@link SpringApplication#setWebEnvironment(boolean)} to {@code false}.
+		 * {@link SpringApplication#setWebApplicationType(WebApplicationType)} to
+		 * {@link WebApplicationType#NONE}.
 		 */
 		NONE(false);
 
@@ -144,8 +149,8 @@ public @interface SpringBootTest {
 		}
 
 		/**
-		 * Return if the environment uses an {@link EmbeddedWebApplicationContext}.
-		 * @return if an {@link EmbeddedWebApplicationContext} is used.
+		 * Return if the environment uses an {@link ServletWebServerApplicationContext}.
+		 * @return if an {@link ServletWebServerApplicationContext} is used.
 		 */
 		public boolean isEmbedded() {
 			return this.embedded;

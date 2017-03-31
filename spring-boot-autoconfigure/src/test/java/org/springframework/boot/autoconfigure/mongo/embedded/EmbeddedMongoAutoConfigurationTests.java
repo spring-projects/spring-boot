@@ -19,11 +19,11 @@ package org.springframework.boot.autoconfigure.mongo.embedded;
 import java.io.File;
 import java.net.UnknownHostException;
 
-import com.mongodb.CommandResult;
 import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.Storage;
 import de.flapdoodle.embed.mongo.distribution.Feature;
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
 
@@ -172,7 +172,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 				MongoDataAutoConfiguration.class, EmbeddedMongoAutoConfiguration.class);
 		this.context.refresh();
 		MongoTemplate mongo = this.context.getBean(MongoTemplate.class);
-		CommandResult buildInfo = mongo.executeCommand("{ buildInfo: 1 }");
+		Document buildInfo = mongo.executeCommand("{ buildInfo: 1 }");
 
 		assertThat(buildInfo.getString("version")).isEqualTo(expectedVersion);
 	}

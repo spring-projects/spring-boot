@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public class RelaxedPropertyResolverTests {
 	@Before
 	public void setup() {
 		this.environment = new StandardEnvironment();
-		this.source = new LinkedHashMap<String, Object>();
+		this.source = new LinkedHashMap<>();
 		this.source.put("myString", "value");
 		this.source.put("myobject", "object");
 		this.source.put("myInteger", 123);
@@ -116,14 +116,6 @@ public class RelaxedPropertyResolverTests {
 				.isEqualTo(123);
 		assertThat(this.resolver.getProperty("my-missing", Integer.class, 345))
 				.isEqualTo(345);
-	}
-
-	@Test
-	@Deprecated
-	public void getPropertyAsClass() throws Exception {
-		assertThat(this.resolver.getPropertyAsClass("my-class", String.class))
-				.isEqualTo(String.class);
-		assertThat(this.resolver.getPropertyAsClass("my-missing", String.class)).isNull();
 	}
 
 	@Test

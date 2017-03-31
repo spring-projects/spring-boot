@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ public abstract class AbstractEndpointHandlerMappingTests {
 	public void securityInterceptorShouldBePresentForNonCorsRequest() throws Exception {
 		HandlerInterceptor securityInterceptor = mock(HandlerInterceptor.class);
 		TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("a"));
-		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<TestActionEndpoint>(
+		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<>(
 				Collections.singletonList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.setSecurityInterceptor(securityInterceptor);
@@ -56,7 +56,7 @@ public abstract class AbstractEndpointHandlerMappingTests {
 	@Test
 	public void securityInterceptorIfNullShouldNotBeAdded() throws Exception {
 		TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("a"));
-		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<TestActionEndpoint>(
+		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<>(
 				Collections.singletonList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
@@ -68,7 +68,7 @@ public abstract class AbstractEndpointHandlerMappingTests {
 			throws Exception {
 		HandlerInterceptor securityInterceptor = mock(HandlerInterceptor.class);
 		TestActionEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("a"));
-		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<TestActionEndpoint>(
+		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<>(
 				Collections.singletonList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.setSecurityInterceptor(securityInterceptor);
@@ -84,7 +84,7 @@ public abstract class AbstractEndpointHandlerMappingTests {
 	public void pathNotMappedWhenGetPathReturnsNull() throws Exception {
 		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
 		TestActionEndpoint other = new TestActionEndpoint(new TestEndpoint("b"));
-		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<MvcEndpoint>(
+		AbstractEndpointHandlerMapping<?> mapping = new TestEndpointHandlerMapping<>(
 				Arrays.<MvcEndpoint>asList(endpoint, other));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();

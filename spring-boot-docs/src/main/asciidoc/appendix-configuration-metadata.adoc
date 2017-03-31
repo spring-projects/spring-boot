@@ -42,7 +42,7 @@ categorized under "hints":
 			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties"
 		},
 		{
-			"name": "server.servlet-path",
+			"name": "server.servlet.path",
 			"type": "java.lang.String",
 			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties",
 			"defaultValue": "/"
@@ -84,18 +84,18 @@ categorized under "hints":
 ----
 
 Each "`property`" is a configuration item that the user specifies with a given value.
-For example `server.port` and `server.servlet-path` might be specified in
+For example `server.port` and `server.servlet.path` might be specified in
 `application.properties` as follows:
 
 [source,properties,indent=0]
 ----
 	server.port=9090
-	server.servlet-path=/home
+	server.servlet.path=/home
 ----
 
 The "`groups`" are higher level items that don't themselves specify a value, but instead
 provide a contextual grouping for properties. For example the `server.port` and
-`server.servlet-path` properties are part of the `server` group.
+`server.servlet.path` properties are part of the `server` group.
 
 NOTE: It is not required that every "`property`" has a "`group`", some properties might
 just exist in their own right.
@@ -160,7 +160,7 @@ The JSON object contained in the `properties` array can contain the following at
 |`name`
 | String
 | The full name of the property. Names are in lowercase dashed form (e.g.
-  `server.servlet-path`). This attribute is mandatory.
+  `server.servlet.path`). This attribute is mandatory.
 
 |`type`
 | String
@@ -270,7 +270,7 @@ The JSON object contained in the `hints` array can contain the following attribu
 |`name`
 | String
 | The full name of the property that this hint refers to. Names are in lowercase dashed
-  form (e.g. `server.servlet-path`). If the property refers to a map (e.g.
+  form (e.g. `server.servlet.path`). If the property refers to a map (e.g.
   `system.contexts`) the hint either applies to the _keys_ of the map (`system.context.keys`)
    or the values (`system.context.values`). This attribute is mandatory.
 
@@ -495,14 +495,14 @@ provider supports these parameters:
 |===
 
 
-The meta-data snippet below corresponds to the standard `server.jsp-servlet.class-name`
+The meta-data snippet below corresponds to the standard `server.servlet.jsp.class-name`
 property that defines the `JspServlet` class name to use:
 
 [source,json,indent=0]
 ----
 	{"hints": [
 		{
-			"name": "server.jsp-servlet.class-name",
+			"name": "server.servlet.jsp.class-name",
 			"providers": [
 				{
 					"name": "class-reference",

@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
@@ -36,8 +37,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.neo4j.template.Neo4jOperations;
-import org.springframework.data.neo4j.template.Neo4jTemplate;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.data.neo4j.web.support.OpenSessionInViewInterceptor;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -59,13 +58,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @ConditionalOnClass({ SessionFactory.class, PlatformTransactionManager.class })
 @ConditionalOnMissingBean(SessionFactory.class)
 @EnableConfigurationProperties(Neo4jProperties.class)
-@SuppressWarnings("deprecation")
 public class Neo4jDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	public org.neo4j.ogm.config.Configuration configuration(Neo4jProperties properties) {
-		return properties.createConfiguration();
+		org.neo4j.ogm.config.Configuration configuration = properties
+				.createConfiguration();
+		return configuration;
 	}
 
 	@Bean
@@ -81,12 +81,6 @@ public class Neo4jDataAutoConfiguration {
 			}
 		}
 		return sessionFactory;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(Neo4jOperations.class)
-	public Neo4jTemplate neo4jTemplate(SessionFactory sessionFactory) {
-		return new Neo4jTemplate(sessionFactory);
 	}
 
 	@Bean
@@ -116,7 +110,7 @@ public class Neo4jDataAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnWebApplication
+	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnClass({ WebMvcConfigurerAdapter.class,
 			OpenSessionInViewInterceptor.class })
 	@ConditionalOnMissingBean(OpenSessionInViewInterceptor.class)

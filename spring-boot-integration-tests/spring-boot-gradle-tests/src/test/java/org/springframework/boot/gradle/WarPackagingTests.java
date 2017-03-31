@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,11 +44,11 @@ public class WarPackagingTests {
 
 	private static final String WEB_INF_LIB_PREFIX = "WEB-INF/lib/";
 
-	private static final Set<String> TOMCAT_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<String>(
+	private static final Set<String> TOMCAT_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<>(
 			Arrays.asList("spring-boot-starter-tomcat-", "tomcat-embed-core-",
 					"tomcat-embed-el-", "tomcat-embed-websocket-"));
 
-	private static final Set<String> JETTY_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<String>(
+	private static final Set<String> JETTY_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<>(
 			Arrays.asList("spring-boot-starter-jetty-", "jetty-continuation",
 					"jetty-util-", "javax.servlet-", "jetty-client", "jetty-io-",
 					"jetty-http-", "jetty-server-", "jetty-security-", "jetty-servlet-",
@@ -70,21 +70,21 @@ public class WarPackagingTests {
 
 	@Test
 	public void onlyTomcatIsPackagedInWebInfLibProvided() throws IOException {
-		checkWebInfEntriesForServletContainer("tomcat",
+		checkWebInfEntriesForWebServer("tomcat",
 				TOMCAT_EXPECTED_IN_WEB_INF_LIB_PROVIDED);
 	}
 
 	@Test
 	public void onlyJettyIsPackagedInWebInfLibProvided() throws IOException {
-		checkWebInfEntriesForServletContainer("jetty",
+		checkWebInfEntriesForWebServer("jetty",
 				JETTY_EXPECTED_IN_WEB_INF_LIB_PROVIDED);
 	}
 
-	private void checkWebInfEntriesForServletContainer(String servletContainer,
+	private void checkWebInfEntriesForWebServer(String webServer,
 			Set<String> expectedLibProvidedEntries) throws IOException {
 		project.newBuild().forTasks("clean", "build")
 				.withArguments("-PbootVersion=" + BOOT_VERSION,
-						"-PservletContainer=" + servletContainer)
+						"-PservletContainer=" + webServer)
 				.run();
 
 		JarFile war = new JarFile("target/war-packaging/build/libs/war-packaging.war");
@@ -105,7 +105,7 @@ public class WarPackagingTests {
 			throws IOException {
 		Set<String> entries = getWebInfLibProvidedEntries(war);
 		assertThat(entries).hasSameSizeAs(expectedEntries);
-		List<String> unexpectedLibProvidedEntries = new ArrayList<String>();
+		List<String> unexpectedLibProvidedEntries = new ArrayList<>();
 		for (String entry : entries) {
 			if (!isExpectedInWebInfLibProvided(entry, expectedEntries)) {
 				unexpectedLibProvidedEntries.add(entry);
@@ -117,7 +117,7 @@ public class WarPackagingTests {
 	private void checkWebInfLibEntries(JarFile war, Set<String> entriesOnlyInLibProvided)
 			throws IOException {
 		Set<String> entries = getWebInfLibEntries(war);
-		List<String> unexpectedLibEntries = new ArrayList<String>();
+		List<String> unexpectedLibEntries = new ArrayList<>();
 		for (String entry : entries) {
 			if (!isExpectedInWebInfLib(entry, entriesOnlyInLibProvided)) {
 				unexpectedLibEntries.add(entry);
@@ -127,7 +127,7 @@ public class WarPackagingTests {
 	}
 
 	private Set<String> getWebInfLibProvidedEntries(JarFile war) throws IOException {
-		Set<String> webInfLibProvidedEntries = new HashSet<String>();
+		Set<String> webInfLibProvidedEntries = new HashSet<>();
 		Enumeration<JarEntry> entries = war.entries();
 		while (entries.hasMoreElements()) {
 			String name = entries.nextElement().getName();
@@ -139,7 +139,7 @@ public class WarPackagingTests {
 	}
 
 	private Set<String> getWebInfLibEntries(JarFile war) throws IOException {
-		Set<String> webInfLibEntries = new HashSet<String>();
+		Set<String> webInfLibEntries = new HashSet<>();
 		Enumeration<JarEntry> entries = war.entries();
 		while (entries.hasMoreElements()) {
 			String name = entries.nextElement().getName();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ class OnBootstrapHostsCondition extends SpringBootCondition {
 
 		PropertyResolver(PropertySources propertySources, String prefix) {
 			this.prefix = prefix;
-			this.content = new HashMap<String, Object>();
+			this.content = new HashMap<>();
 			DataBinder binder = new RelaxedDataBinder(this.content, this.prefix);
 			binder.bind(new PropertySourcesPropertyValues(propertySources));
 		}
@@ -78,7 +78,7 @@ class OnBootstrapHostsCondition extends SpringBootCondition {
 				for (String relaxedKey : keys) {
 					String key = prefix + relaxedKey;
 					if (this.content.containsKey(relaxedKey)) {
-						return new AbstractMap.SimpleEntry<String, Object>(key,
+						return new AbstractMap.SimpleEntry<>(key,
 								this.content.get(relaxedKey));
 					}
 				}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class InMemoryMultiMetricRepositoryTests {
 		this.repository.increment("foo", new Delta<Number>("bar", 1));
 		this.repository.increment("foo", new Delta<Number>("bar", 1));
 		this.repository.increment("foo", new Delta<Number>("spam", 1));
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		for (Metric<?> metric : this.repository.findAll("foo")) {
 			names.add(metric.getName());
 		}
@@ -53,7 +53,7 @@ public class InMemoryMultiMetricRepositoryTests {
 	@Test
 	public void prefixWithWildcard() {
 		this.repository.increment("foo", new Delta<Number>("bar", 1));
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		for (Metric<?> metric : this.repository.findAll("foo.*")) {
 			names.add(metric.getName());
 		}
@@ -64,7 +64,7 @@ public class InMemoryMultiMetricRepositoryTests {
 	@Test
 	public void prefixWithPeriod() {
 		this.repository.increment("foo", new Delta<Number>("bar", 1));
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		for (Metric<?> metric : this.repository.findAll("foo.")) {
 			names.add(metric.getName());
 		}
@@ -76,7 +76,7 @@ public class InMemoryMultiMetricRepositoryTests {
 	public void onlyRegisteredPrefixCounted() {
 		this.repository.increment("foo", new Delta<Number>("bar", 1));
 		this.repository.increment("foobar", new Delta<Number>("spam", 1));
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		for (Metric<?> metric : this.repository.findAll("foo")) {
 			names.add(metric.getName());
 		}
@@ -89,7 +89,7 @@ public class InMemoryMultiMetricRepositoryTests {
 		this.repository.increment("foo", new Delta<Number>("foo.bar", 1));
 		this.repository.increment("foo", new Delta<Number>("foo.bar", 2));
 		this.repository.increment("foo", new Delta<Number>("foo.spam", 1));
-		Map<String, Metric<?>> metrics = new HashMap<String, Metric<?>>();
+		Map<String, Metric<?>> metrics = new HashMap<>();
 		for (Metric<?> metric : this.repository.findAll("foo")) {
 			metrics.put(metric.getName(), metric);
 		}

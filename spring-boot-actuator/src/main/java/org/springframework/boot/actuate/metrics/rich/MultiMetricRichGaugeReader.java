@@ -73,7 +73,7 @@ public class MultiMetricRichGaugeReader implements RichGaugeReader {
 
 	@Override
 	public Iterable<RichGauge> findAll() {
-		List<RichGauge> result = new ArrayList<RichGauge>();
+		List<RichGauge> result = new ArrayList<>();
 		for (String name : this.repository.groups()) {
 			result.add(findOne(name));
 		}

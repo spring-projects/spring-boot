@@ -185,19 +185,6 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
-	@Deprecated
-	public void testNoExceptionOnValidation() {
-		this.context.register(NoExceptionIfInvalidTestConfiguration.class);
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"name=foo");
-		this.context.refresh();
-		assertThat(this.context
-				.getBeanNamesForType(NoExceptionIfInvalidTestProperties.class))
-						.hasSize(1);
-		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
-	}
-
-	@Test
 	public void testNestedPropertiesBinding() {
 		this.context.register(NestedConfiguration.class);
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
@@ -241,7 +228,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testCollectionPropertiesBindingWithOver256Elements() {
 		this.context.register(TestConfiguration.class);
-		List<String> pairs = new ArrayList<String>();
+		List<String> pairs = new ArrayList<>();
 		pairs.add("name:foo");
 		for (int i = 0; i < 1000; i++) {
 			pairs.add("list[" + i + "]:" + i);
@@ -305,16 +292,19 @@ public class EnableConfigurationPropertiesTests {
 	public void testBindingWithParentContext() {
 		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
 		parent.register(TestConfiguration.class);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(parent, "name=parent");
 		parent.refresh();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"name=foo");
 		this.context.setParent(parent);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"name=child");
 		this.context.register(TestConfiguration.class, TestConsumer.class);
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(TestProperties.class).length)
-				.isEqualTo(1);
+				.isEqualTo(0);
 		assertThat(parent.getBeanNamesForType(TestProperties.class).length).isEqualTo(1);
-		assertThat(this.context.getBean(TestConsumer.class).getName()).isEqualTo("foo");
+		assertThat(this.context.getBean(TestConsumer.class).getName())
+				.isEqualTo("parent");
+		parent.close();
 	}
 
 	@Test
@@ -448,13 +438,6 @@ public class EnableConfigurationPropertiesTests {
 	@Configuration
 	@EnableConfigurationProperties(IgnoredIfInvalidButNotValidatedTestProperties.class)
 	protected static class IgnoredIfInvalidButNotValidatedTestConfiguration {
-
-	}
-
-	@Configuration
-	@EnableConfigurationProperties(NoExceptionIfInvalidTestProperties.class)
-	@Deprecated
-	protected static class NoExceptionIfInvalidTestConfiguration {
 
 	}
 
@@ -640,7 +623,7 @@ public class EnableConfigurationPropertiesTests {
 
 		private int[] array;
 
-		private final List<Integer> list = new ArrayList<Integer>();
+		private final List<Integer> list = new ArrayList<>();
 
 		// No getter - you should be able to bind to a write-only bean
 
@@ -697,24 +680,6 @@ public class EnableConfigurationPropertiesTests {
 	@ConfigurationProperties
 	protected static class IgnoredIfInvalidButNotValidatedTestProperties
 			extends TestProperties {
-
-		@NotNull
-		private String description;
-
-		public String getDescription() {
-			return this.description;
-		}
-
-		public void setDescription(String description) {
-			this.description = description;
-		}
-
-	}
-
-	@ConfigurationProperties(exceptionIfInvalid = false)
-	@Validated
-	@Deprecated
-	protected static class NoExceptionIfInvalidTestProperties extends TestProperties {
 
 		@NotNull
 		private String description;
