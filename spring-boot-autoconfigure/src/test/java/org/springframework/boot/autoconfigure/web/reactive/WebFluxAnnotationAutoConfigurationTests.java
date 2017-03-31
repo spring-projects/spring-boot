@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.validation.ValidatorFactory;
@@ -34,6 +35,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
@@ -59,6 +61,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link WebFluxAnnotationAutoConfiguration}.
  *
  * @author Brian Clozel
+ * @author Andy Wilkinson
  */
 public class WebFluxAnnotationAutoConfigurationTests {
 
@@ -86,16 +89,19 @@ public class WebFluxAnnotationAutoConfigurationTests {
 				.isNotNull();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldRegisterCustomHandlerMethodArgumentResolver() throws Exception {
 		load(CustomArgumentResolvers.class);
 		RequestMappingHandlerAdapter adapter = this.context
 				.getBean(RequestMappingHandlerAdapter.class);
-		assertThat(adapter.getCustomArgumentResolvers()).contains(
-				this.context.getBean("firstResolver",
-						HandlerMethodArgumentResolver.class),
-				this.context.getBean("secondResolver",
-						HandlerMethodArgumentResolver.class));
+		assertThat((List<HandlerMethodArgumentResolver>) ReflectionTestUtils
+				.getField(adapter.getArgumentResolverConfigurer(), "customResolvers"))
+						.contains(
+								this.context.getBean("firstResolver",
+										HandlerMethodArgumentResolver.class),
+						this.context.getBean("secondResolver",
+								HandlerMethodArgumentResolver.class));
 	}
 
 	@Test

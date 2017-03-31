@@ -62,6 +62,7 @@ import org.springframework.web.reactive.resource.GzipResourceResolver;
 import org.springframework.web.reactive.resource.ResourceResolver;
 import org.springframework.web.reactive.resource.VersionResourceResolver;
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolver;
+import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer;
 import org.springframework.web.reactive.result.view.ViewResolver;
 
 /**
@@ -70,6 +71,7 @@ import org.springframework.web.reactive.result.view.ViewResolver;
  * @author Brian Clozel
  * @author Rob Winch
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  * @since 2.0.0
  */
 @Configuration
@@ -114,9 +116,9 @@ public class WebFluxAnnotationAutoConfiguration {
 		}
 
 		@Override
-		public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+		public void configureArgumentResolvers(ArgumentResolverConfigurer configurer) {
 			if (this.argumentResolvers != null) {
-				resolvers.addAll(this.argumentResolvers);
+				this.argumentResolvers.stream().forEach(configurer::addCustomResolver);
 			}
 		}
 
