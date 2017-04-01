@@ -1087,7 +1087,7 @@ content into your application; rather pick only the properties that you need.
 	jolokia.config.*= # See Jolokia manual
 
 	# MANAGEMENT HTTP SERVER ({sc-spring-boot-actuator}/autoconfigure/ManagementServerProperties.{sc-ext}[ManagementServerProperties])
-	management.add-application-context-header=true # Add the "X-Application-Context" HTTP header in each response.
+	management.add-application-context-header=false # Add the "X-Application-Context" HTTP header in each response.
 	management.address= # Network address that the management endpoints should bind to.
 	management.context-path= # Management endpoint context-path. For instance `/actuator`
 	management.cloudfoundry.enabled= # Enable extended Cloud Foundry actuator endpoints
