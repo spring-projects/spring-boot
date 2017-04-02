@@ -28,7 +28,6 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
  * {@link TypeExcludeFilter} for {@link DataNeo4jTest @DataNeo4jTest}.
  *
  * @author Eddú Meléndez
- * @since 2.0.0
  */
 class DataNeo4jTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 

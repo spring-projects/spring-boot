@@ -43,9 +43,11 @@ import org.springframework.transaction.annotation.Transactional;
  * configuration relevant to Neo4j tests.
  * <p>
  * By default, tests annotated with {@code @DataNeo4jTest} will use an embedded in-memory
- * Neo4j process (if available).
+ * Neo4j process (if available). They will also be transactional with the usual
+ * test-related semantics (i.e. rollback by default).
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 @Target(ElementType.TYPE)

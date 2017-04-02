@@ -37,4 +37,5 @@ public class ExampleService {
 	public boolean hasNode(Class<?> clazz) {
 		return this.session.countEntitiesOfType(clazz) == 1;
 	}
+
 }

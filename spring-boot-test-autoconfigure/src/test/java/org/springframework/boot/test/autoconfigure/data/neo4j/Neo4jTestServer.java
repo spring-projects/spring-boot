@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.neo4j;
+package org.springframework.boot.test.autoconfigure.data.neo4j;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,13 +23,14 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.neo4j.ogm.config.Configuration;
-import org.neo4j.ogm.config.DriverConfiguration;
 import org.neo4j.ogm.session.SessionFactory;
 
 /**
- * {@link TestRule} for working with an optional Neo4j server.
+ * {@link TestRule} for working with an optional Neo4j server running on localhost. Make
+ * sure to disable authentication if you haven't done so already.
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
 public class Neo4jTestServer implements TestRule {
 
@@ -55,12 +56,13 @@ public class Neo4jTestServer implements TestRule {
 		}
 	}
 
-	private SessionFactory createSessionFactory() {
-		Configuration configuration = new Configuration();
-		DriverConfiguration driverConfiguration = configuration.driverConfiguration();
-		driverConfiguration.setDriverClassName("org.neo4j.ogm.drivers.http.driver.HttpDriver");
-		driverConfiguration.setURI("http://localhost:7474");
+	public SessionFactory getSessionFactory() {
+		return this.sessionFactory;
+	}
 
+	private SessionFactory createSessionFactory() {
+		Configuration configuration = new Configuration.Builder()
+				.uri("bolt://localhost:7687").build();
 		SessionFactory sessionFactory = new SessionFactory(configuration, this.packages);
 		testConnection(sessionFactory);
 		return sessionFactory;
