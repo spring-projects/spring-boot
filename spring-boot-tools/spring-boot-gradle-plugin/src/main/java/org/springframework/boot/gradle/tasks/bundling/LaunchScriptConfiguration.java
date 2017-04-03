@@ -28,6 +28,7 @@ import org.springframework.boot.loader.tools.FileUtils;
  * Encapsulates the configuration of the launch script for an executable jar or war.
  *
  * @author Andy Wilkinson
+ * @since 2.0.0
  */
 public class LaunchScriptConfiguration implements Serializable {
 
@@ -37,26 +38,60 @@ public class LaunchScriptConfiguration implements Serializable {
 
 	private File script;
 
+	/**
+	 * Returns whether the launch script is included. Defaults to {@code false}.
+	 *
+	 * @return {@code true} is the script is included, otherwise {@code false}.
+	 */
 	public boolean isIncluded() {
 		return this.included;
 	}
 
+	/**
+	 * Sets whether the launch script is included. Defaults to {@code false}.
+	 *
+	 * @param included {@code true} is the script is included, otherwise {@code false}.
+	 */
 	public void setIncluded(boolean included) {
 		this.included = included;
 	}
 
+	/**
+	 * Returns the properties that are applied to the launch script when it's being
+	 * including in the executable archive.
+	 *
+	 * @return the properties
+	 */
 	public Map<String, String> getProperties() {
 		return this.properties;
 	}
 
+	/**
+	 * Sets the properties that are applied to the launch script when it's being including
+	 * in the executable archive.
+	 *
+	 * @param properties the properties
+	 */
 	public void properties(Map<String, String> properties) {
 		this.properties.putAll(properties);
 	}
 
+	/**
+	 * Returns the script {@link File} that will be included in the executable archive.
+	 * When {@code null}, the default launch script will be used.
+	 *
+	 * @return the script file
+	 */
 	public File getScript() {
 		return this.script;
 	}
 
+	/**
+	 * Sets the script {@link File} that will be included in the executable archive. When
+	 * {@code null}, the default launch script will be used.
+	 *
+	 * @param script the script file
+	 */
 	public void setScript(File script) {
 		this.script = script;
 	}

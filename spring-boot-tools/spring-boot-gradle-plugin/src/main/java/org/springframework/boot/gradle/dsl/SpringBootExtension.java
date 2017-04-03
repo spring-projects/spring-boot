@@ -33,6 +33,7 @@ import org.springframework.boot.gradle.tasks.buildinfo.BuildInfoProperties;
  * Entry point to Spring Boot's Gradle DSL.
  *
  * @author Andy Wilkinson
+ * @since 2.0.0
  */
 public class SpringBootExtension {
 

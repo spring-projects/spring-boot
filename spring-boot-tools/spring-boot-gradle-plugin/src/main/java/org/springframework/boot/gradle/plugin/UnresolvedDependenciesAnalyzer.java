@@ -40,7 +40,7 @@ class UnresolvedDependenciesAnalyzer {
 
 	private Set<ModuleVersionSelector> dependenciesWithNoVersion = new HashSet<>();
 
-	public void analyze(Set<UnresolvedDependency> unresolvedDependencies) {
+	void analyze(Set<UnresolvedDependency> unresolvedDependencies) {
 		this.dependenciesWithNoVersion = unresolvedDependencies.stream()
 				.map(unresolvedDependency -> unresolvedDependency.getSelector())
 				.filter(this::hasNoVersion).collect(Collectors.toSet());

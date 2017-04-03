@@ -25,6 +25,7 @@ import org.gradle.api.tasks.SourceSetOutput;
  * Custom {@link JavaExec} task for running a Spring Boot application.
  *
  * @author Andy Wilkinson
+ * @since 2.0.0
  */
 public class BootRun extends JavaExec {
 

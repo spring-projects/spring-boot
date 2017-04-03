@@ -39,26 +39,36 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	/**
 	 * The name of the {@link Configuration} that contains Spring Boot archives.
+	 *
+	 * @since 2.0.0
 	 */
 	public static final String BOOT_ARCHIVES_CONFIURATION_NAME = "bootArchives";
 
 	/**
 	 * The name of the {@link SoftwareComponent} for a Spring Boot Java application.
+	 *
+	 * @since 2.0.0
 	 */
 	public static final String BOOT_JAVA_SOFTWARE_COMPONENT_NAME = "bootJava";
 
 	/**
 	 * The name of the {@link SoftwareComponent} for a Spring Boot Web application.
+	 *
+	 * @since 2.0.0
 	 */
 	public static final String BOOT_WEB_SOFTWARE_COMPONENT_NAME = "bootWeb";
 
 	/**
 	 * The name of the default {@link BootJar} task.
+	 *
+	 * @since 2.0.0
 	 */
 	public static final String BOOT_JAR_TASK_NAME = "bootJar";
 
 	/**
 	 * The name of the default {@link BootWar} task.
+	 *
+	 * @since 2.0.0
 	 */
 	public static final String BOOT_WAR_TASK_NAME = "bootWar";
 

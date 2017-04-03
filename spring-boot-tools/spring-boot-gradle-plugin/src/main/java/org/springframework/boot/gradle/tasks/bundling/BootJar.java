@@ -33,6 +33,7 @@ import org.gradle.api.tasks.bundling.Jar;
  * A custom {@link Jar} task that produces a Spring Boot executable jar.
  *
  * @author Andy Wilkinson
+ * @since 2.0.0
  */
 public class BootJar extends Jar implements BootArchive {
 
@@ -43,6 +44,9 @@ public class BootJar extends Jar implements BootArchive {
 
 	private String mainClass;
 
+	/**
+	 * Creates a new {@code BootJar} task.
+	 */
 	public BootJar() {
 		CopySpec bootInf = getRootSpec().addChildBeforeSpec(getMainSpec())
 				.into("BOOT-INF");

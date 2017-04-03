@@ -30,6 +30,7 @@ import org.gradle.api.tasks.Optional;
  * A Spring Boot "fat" archive task.
  *
  * @author Andy Wilkinson
+ * @since 2.0.0
  */
 public interface BootArchive extends Task {
 

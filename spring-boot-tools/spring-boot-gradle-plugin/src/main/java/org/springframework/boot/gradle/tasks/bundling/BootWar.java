@@ -34,6 +34,7 @@ import org.gradle.api.tasks.bundling.War;
  * A custom {@link War} task that produces a Spring Boot executable war.
  *
  * @author Andy Wilkinson
+ * @since 2.0.0
  */
 public class BootWar extends War implements BootArchive {
 
@@ -44,6 +45,9 @@ public class BootWar extends War implements BootArchive {
 
 	private FileCollection providedClasspath;
 
+	/**
+	 * Creates a new {@code BootWar} task.
+	 */
 	public BootWar() {
 		getWebInf().into("lib-provided",
 				copySpec -> copySpec
@@ -92,14 +96,21 @@ public class BootWar extends War implements BootArchive {
 		action.execute(getLaunchScript());
 	}
 
+	/**
+	 * Returns the provided classpath, the contents of which will be included in the
+	 * {@code WEB-INF/lib-provided} directory of the war.
+	 *
+	 * @return the provided classpath
+	 */
 	@Optional
 	public FileCollection getProvidedClasspath() {
 		return this.providedClasspath;
 	}
 
 	/**
-	 * Adds files to the provided classpath to include in the war. The given
-	 * {@code classpath} are evaluated as per {@link Project#files(Object...)}.
+	 * Adds files to the provided classpath to include in the {@code WEB-INF/lib-provided}
+	 * directory of the war. The given {@code classpath} are evaluated as per
+	 * {@link Project#files(Object...)}.
 	 *
 	 * @param classpath the additions to the classpath
 	 */
