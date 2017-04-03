@@ -48,7 +48,6 @@ import org.springframework.jndi.JndiLocatorDelegate;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.ClassUtils;
 
@@ -61,8 +60,7 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class,
-		EnableTransactionManagement.class, EntityManager.class })
+@ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class, EntityManager.class })
 @Conditional(HibernateEntityManagerCondition.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class })
 public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
