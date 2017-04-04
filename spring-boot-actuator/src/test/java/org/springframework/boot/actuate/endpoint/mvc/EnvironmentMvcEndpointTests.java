@@ -139,7 +139,8 @@ public class EnvironmentMvcEndpointTests {
 	}
 
 	@Test
-	public void nestedPathWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty() throws Exception {
+	public void nestedPathWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty()
+			throws Exception {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("my.foo", "${my.bar}");
 		((ConfigurableEnvironment) this.context.getEnvironment()).getPropertySources()

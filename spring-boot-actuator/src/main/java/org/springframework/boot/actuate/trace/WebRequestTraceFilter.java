@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -97,13 +98,11 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		this.order = order;
 	}
 
-
-
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,
 			HttpServletResponse response, FilterChain filterChain)
 					throws ServletException, IOException {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 		Map<String, Object> trace = getTrace(request);
 		logTrace(request, trace);
 		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
@@ -112,8 +111,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 			status = response.getStatus();
 		}
 		finally {
-			long endTime = System.currentTimeMillis();
-			addTimeTaken(startTime, endTime, trace);
+			addTimeTaken(trace, startTime);
 			enhanceTrace(trace, status == response.getStatus() ? response
 					: new CustomStatusResponseWrapper(response, status));
 			this.repository.add(trace);
@@ -200,9 +198,10 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	protected void postProcessRequestHeaders(Map<String, Object> headers) {
 	}
 
-	private void addTimeTaken(long startTime, long endTime, Map<String, Object> trace) {
-		long timeTaken = endTime - startTime;
-		add(trace, Include.TIME_TAKEN, "timeTaken", "" + timeTaken);
+	private void addTimeTaken(Map<String, Object> trace, long startTime) {
+		long timeTaken = System.nanoTime() - startTime;
+		add(trace, Include.TIME_TAKEN, "timeTaken",
+				"" + TimeUnit.NANOSECONDS.toMillis(timeTaken));
 	}
 
 	@SuppressWarnings("unchecked")

@@ -49,6 +49,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPInputStream;
 
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.servlet.GenericServlet;
 import javax.servlet.ServletContext;
@@ -68,6 +69,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.TrustStrategy;
 import org.apache.jasper.EmbeddedServletOptions;
 import org.apache.jasper.servlet.JspServlet;
 import org.junit.After;
@@ -445,19 +447,21 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void sslKeyAlias() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		factory.setSsl(getSsl(null, "password", "test-alias", "src/test/resources/test.jks"));
-		this.container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(true, false), "/hello"));
+		Ssl ssl = getSsl(null, "password", "test-alias", "src/test/resources/test.jks");
+		factory.setSsl(ssl);
+		ServletRegistrationBean registration = new ServletRegistrationBean(
+				new ExampleServlet(true, false), "/hello");
+		this.container = factory.getEmbeddedServletContainer(registration);
 		this.container.start();
-		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
-				new SSLContextBuilder()
-						.loadTrustMaterial(null, new SerialNumberValidatingTrustSelfSignedStrategy("77e7c302")).build());
-		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
-				.build();
-		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
-				httpClient);
-		assertThat(getResponse(getLocalUrl("https", "/hello"), requestFactory))
-				.contains("scheme=https");
+		TrustStrategy trustStrategy = new SerialNumberValidatingTrustSelfSignedStrategy(
+				"77e7c302");
+		SSLContext sslContext = new SSLContextBuilder()
+				.loadTrustMaterial(null, trustStrategy).build();
+		HttpClient httpClient = HttpClients.custom()
+				.setSSLSocketFactory(new SSLConnectionSocketFactory(sslContext)).build();
+		String response = getResponse(getLocalUrl("https", "/hello"),
+				new HttpComponentsClientHttpRequestFactory(httpClient));
+		assertThat(response).contains("scheme=https");
 	}
 
 	@Test
@@ -673,17 +677,20 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		return getSsl(clientAuth, keyPassword, keyStore, null, null, null);
 	}
 
-	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyAlias, String keyStore) {
+	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyAlias,
+			String keyStore) {
 		return getSsl(clientAuth, keyPassword, keyAlias, keyStore, null, null, null);
 	}
 
 	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore,
 			String trustStore, String[] supportedProtocols, String[] ciphers) {
-		return getSsl(clientAuth, keyPassword, null, keyStore, trustStore, supportedProtocols, ciphers);
+		return getSsl(clientAuth, keyPassword, null, keyStore, trustStore,
+				supportedProtocols, ciphers);
 	}
 
-	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyAlias, String keyStore,
-			String trustStore, String[] supportedProtocols, String[] ciphers) {
+	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyAlias,
+			String keyStore, String trustStore, String[] supportedProtocols,
+			String[] ciphers) {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(clientAuth);
 		if (keyPassword != null) {
@@ -1279,10 +1286,10 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	/**
-	 * {@link TrustSelfSignedStrategy} that also validates certificate serial
-	 * number.
+	 * {@link TrustSelfSignedStrategy} that also validates certificate serial number.
 	 */
-	private static final class SerialNumberValidatingTrustSelfSignedStrategy extends TrustSelfSignedStrategy {
+	private static final class SerialNumberValidatingTrustSelfSignedStrategy
+			extends TrustSelfSignedStrategy {
 
 		private final String serialNumber;
 
@@ -1291,7 +1298,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		}
 
 		@Override
-		public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+		public boolean isTrusted(X509Certificate[] chain, String authType)
+				throws CertificateException {
 			String hexSerialNumber = chain[0].getSerialNumber().toString(16);
 			boolean isMatch = hexSerialNumber.equals(this.serialNumber);
 			return super.isTrusted(chain, authType) && isMatch;
