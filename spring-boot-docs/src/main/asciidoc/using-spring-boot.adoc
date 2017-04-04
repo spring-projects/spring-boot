@@ -41,8 +41,8 @@ feel that's necessary.
 The curated list contains all the spring modules that you can use with Spring Boot as
 well as a refined list of third party libraries. The list is available as a standard
 <<using-boot-maven-without-a-parent,Bills of Materials (`spring-boot-dependencies`)>>
-and additional dedicated support for <<using-boot-maven-parent-pom,Maven>> and
-<<build-tool-plugins-gradle-dependency-management,Gradle>> are available as well.
+that can be used with both <<using-boot-maven-parent-pom,Maven>> and
+{spring-boot-gradle-plugin}[Gradle].
 
 WARNING: Each release of Spring Boot is associated with a base version of the Spring
 Framework so we **highly** recommend you to not specify its version on your own.
@@ -194,70 +194,8 @@ the parent.
 
 [[using-boot-gradle]]
 === Gradle
-Gradle users can directly import '`starters`' in their `dependencies` section. Unlike
-Maven, there is no "`super parent`" to import to share some configuration.
-
-[source,groovy,indent=0,subs="attributes"]
-----
-	repositories {
-ifeval::["{spring-boot-repo}" != "release"]
-		maven { url "http://repo.spring.io/snapshot" }
-		maven { url "http://repo.spring.io/milestone" }
-endif::[]
-ifeval::["{spring-boot-repo}" == "release"]
-		jcenter()
-endif::[]
-	}
-
-	dependencies {
-		compile("org.springframework.boot:spring-boot-starter-web:{spring-boot-version}")
-	}
-----
-
-The <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin,
-`spring-boot-gradle-plugin`>> is also available and provides tasks to create executable
-jars and run projects from source. It also provides
-<<build-tool-plugins-gradle-dependency-management, dependency management>> that, among
-other capabilities, allows you to omit the version number for any dependencies that are
-managed by Spring Boot:
-
-[source,groovy,indent=0,subs="attributes"]
-----
-ifeval::["{spring-boot-repo}" == "release"]
-	plugins {
-		id 'org.springframework.boot' version '{spring-boot-version}'
-		id 'java'
-	}
-endif::[]
-ifeval::["{spring-boot-repo}" != "release"]
-	buildscript {
-		repositories {
-			jcenter()
-			maven { url 'http://repo.spring.io/snapshot' }
-			maven { url 'http://repo.spring.io/milestone' }
-		}
-		dependencies {
-			classpath 'org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}'
-		}
-	}
-
-	apply plugin: 'java'
-	apply plugin: 'org.springframework.boot'
-endif::[]
-
-	repositories {
-		jcenter()
-ifeval::["{spring-boot-repo}" != "release"]
-		maven { url 'http://repo.spring.io/snapshot' }
-		maven { url 'http://repo.spring.io/milestone' }
-endif::[]
-	}
-
-	dependencies {
-		compile("org.springframework.boot:spring-boot-starter-web")
-		testCompile("org.springframework.boot:spring-boot-starter-test")
-	}
-----
+To learn about using Spring Boot with Gradle, please refer to the
+{spring-boot-gradle-plugin}[documentation for Spring Boot's Gradle plugin].
 
 
 
@@ -704,8 +642,8 @@ You might also want to use the useful operating system environment variable:
 [[using-boot-running-with-the-gradle-plugin]]
 === Using the Gradle plugin
 The Spring Boot Gradle plugin also includes a `bootRun` task which can be used to run
-your application in an exploded form. The `bootRun` task is added whenever you import
-the `spring-boot-gradle-plugin`:
+your application in an exploded form. The `bootRun` task is added whenever you apply the
+the `org.springframework.boot` and `java` plugins:
 
 [indent=0,subs="attributes"]
 ----

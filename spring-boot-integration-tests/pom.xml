@@ -23,7 +23,6 @@
 	<modules>
 		<module>spring-boot-devtools-tests</module>
 		<module>spring-boot-integration-tests-embedded-servlet-container</module>
-		<module>spring-boot-gradle-tests</module>
 		<module>spring-boot-launch-script-tests</module>
 		<module>spring-boot-security-tests</module>
 	</modules>
