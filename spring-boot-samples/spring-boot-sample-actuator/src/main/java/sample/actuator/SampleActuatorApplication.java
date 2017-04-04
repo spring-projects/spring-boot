@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Bean;
 public class SampleActuatorApplication {
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleActuatorApplication.class, args).close();
+		SpringApplication.run(SampleActuatorApplication.class, args);
 	}
 
 	@Bean
