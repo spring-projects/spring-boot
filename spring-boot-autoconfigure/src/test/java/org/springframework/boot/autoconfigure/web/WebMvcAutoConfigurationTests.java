@@ -570,6 +570,15 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	public void welcomePageRootHandlerIsNotRegisteredWhenStaticPathPatternIsNotSlashStarStar() {
+		load("spring.resources.static-locations:classpath:/welcome-page/",
+				"spring.mvc.static-path-pattern:/foo/**");
+		WelcomePageHandlerMapping welcomePageHandlerMapping = this.context
+				.getBean(WelcomePageHandlerMapping.class);
+		assertThat(welcomePageHandlerMapping.getRootHandler()).isNull();
+	}
+
+	@Test
 	public void welcomePageMappingHandlesRequestsThatAcceptTextHtml() throws Exception {
 		load("spring.resources.static-locations:classpath:/welcome-page/");
 		assertThat(this.context.getBeansOfType(WelcomePageHandlerMapping.class))
