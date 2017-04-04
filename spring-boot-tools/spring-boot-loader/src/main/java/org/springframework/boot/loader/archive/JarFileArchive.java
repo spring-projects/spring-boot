@@ -100,8 +100,14 @@ public class JarFileArchive implements Archive {
 		if (jarEntry.getComment().startsWith(UNPACK_MARKER)) {
 			return getUnpackedNestedArchive(jarEntry);
 		}
-		JarFile jarFile = this.jarFile.getNestedJarFile(jarEntry);
-		return new JarFileArchive(jarFile);
+		try {
+			JarFile jarFile = this.jarFile.getNestedJarFile(jarEntry);
+			return new JarFileArchive(jarFile);
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(
+					"Failed to get nested archive for entry " + entry.getName(), ex);
+		}
 	}
 
 	private Archive getUnpackedNestedArchive(JarEntry jarEntry) throws IOException {
