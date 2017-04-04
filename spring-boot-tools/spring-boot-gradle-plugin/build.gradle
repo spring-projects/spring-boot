@@ -6,6 +6,7 @@ plugins {
 
 repositories {
 	mavenLocal()
+	mavenCentral()
 }
 
 def addDependency(configurationName, dependency) {
