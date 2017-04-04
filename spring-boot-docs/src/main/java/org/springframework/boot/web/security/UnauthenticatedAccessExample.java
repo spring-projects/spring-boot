@@ -46,6 +46,7 @@ public class UnauthenticatedAccessExample {
 		protected void configure(HttpSecurity http) throws Exception {
 			http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
 		}
+
 	}
 	// end::configuration[]
 
