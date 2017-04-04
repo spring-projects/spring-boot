@@ -22,7 +22,6 @@ import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
 import org.springframework.boot.actuate.endpoint.LoggersEndpoint.LoggerLevels;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.logging.LogLevel;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  *
  * @author Ben Hale
  * @author Kazuki Shimizu
+ * @author Eddú Meléndez
  * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "endpoints.loggers")
@@ -69,9 +69,14 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 			return getDisabledResponse();
 		}
 		String level = configuration.get("configuredLevel");
-		LogLevel logLevel = level == null ? null : LogLevel.valueOf(level.toUpperCase());
-		this.delegate.setLogLevel(name, logLevel);
-		return HttpEntity.EMPTY;
+		try {
+			LogLevel logLevel = level == null ? null : LogLevel.valueOf(level.toUpperCase());
+			this.delegate.setLogLevel(name, logLevel);
+			return ResponseEntity.ok().build();
+		}
+		catch (IllegalArgumentException ex) {
+			return ResponseEntity.badRequest().build();
+		}
 	}
 
 }
