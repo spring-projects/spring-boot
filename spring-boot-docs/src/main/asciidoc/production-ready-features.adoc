@@ -602,7 +602,8 @@ those values (so you can use anything that is legal in a URL path). For example,
 the location of the `/health` endpoint to `/ping/me` you can set
 `endpoints.health.path=/ping/me`.
 
-NOTE: Even if an endpoint path is configured separately, it is still relative to the `management.context-path`.
+NOTE: Even if an endpoint path is configured separately, it is still relative to the
+`management.context-path`.
 
 TIP: If you provide a custom `MvcEndpoint` remember to include a settable `path` property,
 and default it to `/{id}` if you want your code to behave like the standard MVC endpoints.

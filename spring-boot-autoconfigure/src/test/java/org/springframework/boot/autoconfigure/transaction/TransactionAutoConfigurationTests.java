@@ -104,40 +104,43 @@ public class TransactionAutoConfigurationTests {
 		assertThat(field).hasSize(1).first().isInstanceOf(TransactionProperties.class);
 	}
 
-
 	@Test
 	public void transactionNotManagedWithNoTransactionManager() {
 		load(BaseConfiguration.class);
-		assertThat(this.context.getBean(TransactionalService.class)
-				.isTransactionActive()).isFalse();
+		assertThat(this.context.getBean(TransactionalService.class).isTransactionActive())
+				.isFalse();
 	}
 
 	@Test
 	public void transactionManagerUsesCglibByDefault() {
 		load(TransactionManagersConfiguration.class);
-		assertThat(this.context.getBean(AnotherServiceImpl.class)
-				.isTransactionActive()).isTrue();
-		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class)).hasSize(1);
+		assertThat(this.context.getBean(AnotherServiceImpl.class).isTransactionActive())
+				.isTrue();
+		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class))
+				.hasSize(1);
 	}
 
 	@Test
 	public void transactionManagerCanBeConfiguredToJdkProxy() {
-		load(TransactionManagersConfiguration.class, "spring.aop.proxy-target-class=false");
-		assertThat(this.context.getBean(AnotherService.class)
-				.isTransactionActive()).isTrue();
+		load(TransactionManagersConfiguration.class,
+				"spring.aop.proxy-target-class=false");
+		assertThat(this.context.getBean(AnotherService.class).isTransactionActive())
+				.isTrue();
 		assertThat(this.context.getBeansOfType(AnotherServiceImpl.class)).hasSize(0);
-		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class)).hasSize(0);
+		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class))
+				.hasSize(0);
 	}
 
 	@Test
 	public void customEnableTransactionManagementTakesPrecedence() {
 		load(new Class<?>[] { CustomTransactionManagementConfiguration.class,
-						TransactionManagersConfiguration.class },
+				TransactionManagersConfiguration.class },
 				"spring.aop.proxy-target-class=true");
-		assertThat(this.context.getBean(AnotherService.class)
-				.isTransactionActive()).isTrue();
+		assertThat(this.context.getBean(AnotherService.class).isTransactionActive())
+				.isTrue();
 		assertThat(this.context.getBeansOfType(AnotherServiceImpl.class)).hasSize(0);
-		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class)).hasSize(0);
+		assertThat(this.context.getBeansOfType(TransactionalServiceImpl.class))
+				.hasSize(0);
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -235,11 +238,11 @@ public class TransactionAutoConfigurationTests {
 
 	static class TransactionalServiceImpl implements TransactionalService {
 
-
 		@Override
 		public boolean isTransactionActive() {
 			return TransactionSynchronizationManager.isActualTransactionActive();
 		}
+
 	}
 
 	interface AnotherService {
@@ -250,12 +253,12 @@ public class TransactionAutoConfigurationTests {
 
 	static class AnotherServiceImpl implements AnotherService {
 
-
 		@Override
 		@Transactional
 		public boolean isTransactionActive() {
 			return TransactionSynchronizationManager.isActualTransactionActive();
 		}
+
 	}
 
 }

@@ -61,7 +61,8 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 		Map<String, Object> result = new LinkedHashMap<>();
 		result.put("profiles", getEnvironment().getActiveProfiles());
 		PropertyResolver resolver = getResolver();
-		for (Entry<String, PropertySource<?>> entry : getPropertySourcesAsMap().entrySet()) {
+		for (Entry<String, PropertySource<?>> entry : getPropertySourcesAsMap()
+				.entrySet()) {
 			PropertySource<?> source = entry.getValue();
 			String sourceName = entry.getKey();
 			if (source instanceof EnumerablePropertySource) {
@@ -88,8 +89,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private Map<String, PropertySource<?>> getPropertySourcesAsMap() {
 		Map<String, PropertySource<?>> map = new LinkedHashMap<String, PropertySource<?>>();
-		MutablePropertySources sources = getPropertySources();
-		for (PropertySource<?> source : sources) {
+		for (PropertySource<?> source : getPropertySources()) {
 			extract("", map, source);
 		}
 		return map;
@@ -138,12 +138,11 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	}
 
 	/**
-	 * {@link PropertySourcesPropertyResolver} that sanitizes sensitive placeholders
-	 * if present.
-	 *
-	 * @author Madhura Bhave
+	 * {@link PropertySourcesPropertyResolver} that sanitizes sensitive placeholders if
+	 * present.
 	 */
-	private class PlaceholderSanitizingPropertyResolver extends PropertySourcesPropertyResolver {
+	private class PlaceholderSanitizingPropertyResolver
+			extends PropertySourcesPropertyResolver {
 
 		private final Sanitizer sanitizer;
 
@@ -152,8 +151,8 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 		 * @param propertySources the set of {@link PropertySource} objects to use
 		 * @param sanitizer the sanitizer used to sanitize sensitive values
 		 */
-		PlaceholderSanitizingPropertyResolver(PropertySources
-				propertySources, Sanitizer sanitizer) {
+		PlaceholderSanitizingPropertyResolver(PropertySources propertySources,
+				Sanitizer sanitizer) {
 			super(propertySources);
 			this.sanitizer = sanitizer;
 		}
@@ -163,6 +162,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 			String value = super.getPropertyAsRawString(key);
 			return (String) this.sanitizer.sanitize(key, value);
 		}
+
 	}
 
 }

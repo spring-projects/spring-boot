@@ -49,6 +49,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPInputStream;
 
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.servlet.GenericServlet;
 import javax.servlet.ServletContext;
@@ -68,6 +69,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.TrustStrategy;
 import org.apache.jasper.EmbeddedServletOptions;
 import org.apache.jasper.servlet.JspServlet;
 import org.junit.After;
@@ -436,21 +438,21 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void sslKeyAlias() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.setSsl(
-				getSsl(null, "password", "test-alias", "src/test/resources/test.jks"));
-		this.webServer = factory.getWebServer(
-				new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));
+		Ssl ssl = getSsl(null, "password", "test-alias", "src/test/resources/test.jks");
+		factory.setSsl(ssl);
+		ServletRegistrationBean<ExampleServlet> registration = new ServletRegistrationBean<>(
+				new ExampleServlet(true, false), "/hello");
+		this.webServer = factory.getWebServer(registration);
 		this.webServer.start();
-		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
-				new SSLContextBuilder().loadTrustMaterial(null,
-						new SerialNumberValidatingTrustSelfSignedStrategy("77e7c302"))
-						.build());
-		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
-				.build();
-		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
-				httpClient);
-		assertThat(getResponse(getLocalUrl("https", "/hello"), requestFactory))
-				.contains("scheme=https");
+		TrustStrategy trustStrategy = new SerialNumberValidatingTrustSelfSignedStrategy(
+				"77e7c302");
+		SSLContext sslContext = new SSLContextBuilder()
+				.loadTrustMaterial(null, trustStrategy).build();
+		HttpClient httpClient = HttpClients.custom()
+				.setSSLSocketFactory(new SSLConnectionSocketFactory(sslContext)).build();
+		String response = getResponse(getLocalUrl("https", "/hello"),
+				new HttpComponentsClientHttpRequestFactory(httpClient));
+		assertThat(response).contains("scheme=https");
 	}
 
 	@Test

@@ -499,7 +499,8 @@ public class CacheAutoConfigurationTests {
 			load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
 					"spring.cache.jcache.provider=" + cachingProviderFqn,
 					"spring.cache.jcache.config=" + configLocation);
-			JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
+			JCacheCacheManager cacheManager = validateCacheManager(
+					JCacheCacheManager.class);
 
 			Resource configResource = new ClassPathResource(configLocation);
 			assertThat(cacheManager.getCacheManager().getURI())
@@ -515,14 +516,15 @@ public class CacheAutoConfigurationTests {
 	public void hazelcastAsJCacheWithExistingHazelcastInstance() throws IOException {
 		String cachingProviderFqn = HazelcastCachingProvider.class.getName();
 		load(new Class[] { HazelcastAutoConfiguration.class,
-						DefaultCacheConfiguration.class }, "spring.cache.type=jcache",
+				DefaultCacheConfiguration.class }, "spring.cache.type=jcache",
 				"spring.cache.jcache.provider=" + cachingProviderFqn);
 		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
 		javax.cache.CacheManager jCacheManager = cacheManager.getCacheManager();
-		assertThat(jCacheManager).isInstanceOf(
-				com.hazelcast.cache.HazelcastCacheManager.class);
+		assertThat(jCacheManager)
+				.isInstanceOf(com.hazelcast.cache.HazelcastCacheManager.class);
 		assertThat(this.context.getBeansOfType(HazelcastInstance.class)).hasSize(1);
-		HazelcastInstance hazelcastInstance = this.context.getBean(HazelcastInstance.class);
+		HazelcastInstance hazelcastInstance = this.context
+				.getBean(HazelcastInstance.class);
 		assertThat(((com.hazelcast.cache.HazelcastCacheManager) jCacheManager)
 				.getHazelcastInstance()).isSameAs(hazelcastInstance);
 		assertThat(hazelcastInstance.getName()).isEqualTo("default-instance");
@@ -596,7 +598,8 @@ public class CacheAutoConfigurationTests {
 			load(JCacheWithCustomizerConfiguration.class, "spring.cache.type=jcache",
 					"spring.cache.jcache.provider=" + cachingProviderFqn,
 					"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-			JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
+			JCacheCacheManager cacheManager = validateCacheManager(
+					JCacheCacheManager.class);
 			// see customizer
 			assertThat(cacheManager.getCacheNames()).containsOnly("foo", "custom1");
 		}

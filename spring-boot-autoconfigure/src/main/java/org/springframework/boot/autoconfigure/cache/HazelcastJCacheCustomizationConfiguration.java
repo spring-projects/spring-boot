@@ -40,8 +40,7 @@ class HazelcastJCacheCustomizationConfiguration {
 	@Bean
 	public HazelcastPropertiesCustomizer hazelcastPropertiesCustomizer(
 			ObjectProvider<HazelcastInstance> hazelcastInstance) {
-		return new HazelcastPropertiesCustomizer(
-				hazelcastInstance.getIfUnique());
+		return new HazelcastPropertiesCustomizer(hazelcastInstance.getIfUnique());
 	}
 
 	private static class HazelcastPropertiesCustomizer
@@ -72,8 +71,8 @@ class HazelcastJCacheCustomizationConfiguration {
 				return config.getURI();
 			}
 			catch (IOException ex) {
-				throw new IllegalArgumentException(
-						"Could not get URI from " + config, ex);
+				throw new IllegalArgumentException("Could not get URI from " + config,
+						ex);
 			}
 		}
 
