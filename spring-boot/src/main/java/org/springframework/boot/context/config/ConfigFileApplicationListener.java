@@ -186,12 +186,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 	protected void addPropertySources(ConfigurableEnvironment environment,
 			ResourceLoader resourceLoader) {
 		RandomValuePropertySource.addToEnvironment(environment);
-		try {
-			new Loader(environment, resourceLoader).load();
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException("Unable to load configuration files", ex);
-		}
+		new Loader(environment, resourceLoader).load();
 	}
 
 	/**
@@ -297,7 +292,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 					: resourceLoader;
 		}
 
-		public void load() throws IOException {
+		public void load() {
 			this.propertiesLoader = new PropertySourcesLoader();
 			this.activatedProfiles = false;
 			this.profiles = Collections.asLifoQueue(new LinkedList<Profile>());
@@ -385,8 +380,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			return unprocessedActiveProfiles;
 		}
 
-		private void load(String location, String name, Profile profile)
-				throws IOException {
+		private void load(String location, String name, Profile profile) {
 			String group = "profile=" + (profile == null ? "" : profile);
 			if (!StringUtils.hasText(name)) {
 				// Try to load directly from the location
@@ -418,6 +412,18 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		}
 
 		private PropertySource<?> loadIntoGroup(String identifier, String location,
+				Profile profile) {
+			try {
+				return doLoadIntoGroup(identifier, location, profile);
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException(
+						"Failed to load property source from location '" + location + "'",
+						ex);
+			}
+		}
+
+		private PropertySource<?> doLoadIntoGroup(String identifier, String location,
 				Profile profile) throws IOException {
 			Resource resource = this.resourceLoader.getResource(location);
 			PropertySource<?> propertySource = null;
