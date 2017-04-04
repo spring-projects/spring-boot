@@ -64,6 +64,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Ben Hale
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -166,6 +167,14 @@ public class LoggersMvcEndpointTests {
 		this.mvc.perform(post("/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
 				.content("{\"configuredLevel\":\"DEBUG\"}"))
 				.andExpect(status().isNotFound());
+		verifyZeroInteractions(this.loggingSystem);
+	}
+
+	@Test
+	public void setLoggerWithWrongLogLevel() throws Exception {
+		this.mvc.perform(post("/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"configuredLevel\":\"other\"}"))
+				.andExpect(status().is4xxClientError());
 		verifyZeroInteractions(this.loggingSystem);
 	}
 
