@@ -104,7 +104,7 @@ final class ChangeableUrls implements Iterable<URL> {
 			return Collections.<URL>emptyList();
 		}
 		try {
-			return getUrlsFromClassPathAttribute(url, jarFile.getManifest());
+			return getUrlsFromManifestClassPathAttribute(jarFile);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(
@@ -126,7 +126,9 @@ final class ChangeableUrls implements Iterable<URL> {
 		return null;
 	}
 
-	private static List<URL> getUrlsFromClassPathAttribute(URL base, Manifest manifest) {
+	private static List<URL> getUrlsFromManifestClassPathAttribute(JarFile jarFile)
+			throws IOException {
+		Manifest manifest = jarFile.getManifest();
 		if (manifest == null) {
 			return Collections.<URL>emptyList();
 		}
@@ -137,9 +139,18 @@ final class ChangeableUrls implements Iterable<URL> {
 		}
 		String[] entries = StringUtils.delimitedListToStringArray(classPath, " ");
 		List<URL> urls = new ArrayList<>(entries.length);
+		File parent = new File(jarFile.getName()).getParentFile();
 		for (String entry : entries) {
 			try {
-				urls.add(new URL(base, entry));
+				File referenced = new File(parent, entry);
+				if (referenced.exists()) {
+					urls.add(referenced.toURI().toURL());
+				}
+				else {
+					System.err.println("Ignoring Class-Path entry " + entry + " found in"
+							+ jarFile.getName() + " as " + referenced
+							+ " does not exist");
+				}
 			}
 			catch (MalformedURLException ex) {
 				throw new IllegalStateException(
