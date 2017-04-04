@@ -305,7 +305,8 @@ public class WebMvcAutoConfiguration {
 		@Bean
 		public WelcomePageHandlerMapping welcomePageHandlerMapping(
 				ResourceProperties resourceProperties) {
-			return new WelcomePageHandlerMapping(resourceProperties.getWelcomePage());
+			return new WelcomePageHandlerMapping(resourceProperties.getWelcomePage(),
+					this.mvcProperties.getStaticPathPattern());
 		}
 
 		private void customizeResourceHandlerRegistration(
@@ -524,8 +525,9 @@ public class WebMvcAutoConfiguration {
 		private static final Log logger = LogFactory
 				.getLog(WelcomePageHandlerMapping.class);
 
-		private WelcomePageHandlerMapping(Resource welcomePage) {
-			if (welcomePage != null) {
+		private WelcomePageHandlerMapping(Resource welcomePage,
+				String staticPathPattern) {
+			if (welcomePage != null && "/**".equals(staticPathPattern)) {
 				logger.info("Adding welcome page: " + welcomePage);
 				ParameterizableViewController controller = new ParameterizableViewController();
 				controller.setViewName("forward:index.html");
