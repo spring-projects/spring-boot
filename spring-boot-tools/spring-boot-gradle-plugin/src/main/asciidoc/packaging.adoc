@@ -37,7 +37,7 @@ include::../gradle/packaging/war-container-dependency.gradle[tags=dependencies]
 This ensures that they are package in the war file's `WEB-INF/lib-provided` directory
 from where they will not conflict with the external container's own classes.
 
-NOTE: `providedRuntime` is prefered to Gradle's `compileOnly` configuration as, among
+NOTE: `providedRuntime` is preferred to Gradle's `compileOnly` configuration as, among
 other limitations, `compileOnly` dependencies are not on the test classpath so any
 web-based integration tests will fail.
 
@@ -60,7 +60,7 @@ By default, the executable archive's main class will be configured automatically
 looking for a class with a `public static void main(String[])` method in directories on
 the task's classpath.
 
-The main class can also be configured explicity using the task's `mainClass` property:
+The main class can also be configured explicitly using the task's `mainClass` property:
 
 [source,groovy,indent=0,subs="verbatim"]
 ----

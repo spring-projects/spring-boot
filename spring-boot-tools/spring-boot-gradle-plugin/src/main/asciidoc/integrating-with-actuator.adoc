@@ -16,7 +16,7 @@ include::../gradle/integrating-with-actuator/build-info-basic.gradle[tags=build-
 ----
 
 This will configure a {build-info-javadoc}[`BuildInfo`] task named `bootBuildInfo` and, if
-it exists, make the Java plugin's `classes` task depend upon it. The task's desination
+it exists, make the Java plugin's `classes` task depend upon it. The task's destination
 directory will be `META-INF` in the output directory of the main source set's resources
 (typically `build/resources/main`).
 

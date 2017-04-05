@@ -34,7 +34,7 @@ include::../gradle/publishing/maven-publish.gradle[tags=publishing]
 
 
 
-[[publishing-your-application-distrubution]]
+[[publishing-your-application-distribution]]
 === Distributing with the `application` plugin
 
 When the {application-plugin}[`application` plugin] is applied a distribution named
