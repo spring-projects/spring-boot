@@ -18,7 +18,6 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.function.Function;
@@ -221,24 +220,27 @@ class BootZipCopyAction implements CopyAction {
 			String relativePath = details.getRelativePath().getPathString();
 			ZipEntry archiveEntry = new ZipEntry(relativePath);
 			archiveEntry.setTime(getTime(details));
-			this.zipStream.putNextEntry(archiveEntry);
 			ZipCompression compression = this.compressionType.apply(details);
 			if (compression == ZipCompression.STORED) {
-				archiveEntry.setMethod(ZipEntry.STORED);
-				archiveEntry.setSize(details.getSize());
-				archiveEntry.setCompressedSize(details.getSize());
-				Crc32OutputStream crcStream = new Crc32OutputStream(this.zipStream);
-				details.copyTo(crcStream);
-				archiveEntry.setCrc(crcStream.getCrc());
-				if (this.requiresUnpack.isSatisfiedBy(details)) {
-					archiveEntry.setComment(
-							"UNPACK:" + FileUtils.sha1Hash(details.getFile()));
-				}
+				prepareStoredEntry(details, archiveEntry);
 			}
-			else {
-				details.copyTo(this.zipStream);
-			}
+			this.zipStream.putNextEntry(archiveEntry);
+			details.copyTo(this.zipStream);
 			this.zipStream.closeEntry();
+		}
+
+		private void prepareStoredEntry(FileCopyDetailsInternal details,
+				ZipEntry archiveEntry) throws IOException {
+			archiveEntry.setMethod(ZipEntry.STORED);
+			archiveEntry.setSize(details.getSize());
+			archiveEntry.setCompressedSize(details.getSize());
+			Crc32OutputStream crcStream = new Crc32OutputStream();
+			details.copyTo(crcStream);
+			archiveEntry.setCrc(crcStream.getCrc());
+			if (this.requiresUnpack.isSatisfiedBy(details)) {
+				archiveEntry
+						.setComment("UNPACK:" + FileUtils.sha1Hash(details.getFile()));
+			}
 		}
 
 		private long getTime(FileCopyDetails details) {
@@ -249,33 +251,25 @@ class BootZipCopyAction implements CopyAction {
 	}
 
 	/**
-	 * A {@code FilterOutputStream} that provides a CRC-32 of the data that is written to
-	 * it.
+	 * An {@code OutputStream} that provides a CRC-32 of the data that is written to it.
 	 */
-	private static final class Crc32OutputStream extends FilterOutputStream {
+	private static final class Crc32OutputStream extends OutputStream {
 
 		private final CRC32 crc32 = new CRC32();
-
-		private Crc32OutputStream(OutputStream out) {
-			super(out);
-		}
 
 		@Override
 		public void write(int b) throws IOException {
 			this.crc32.update(b);
-			this.out.write(b);
 		}
 
 		@Override
 		public void write(byte[] b) throws IOException {
 			this.crc32.update(b);
-			this.out.write(b);
 		}
 
 		@Override
 		public void write(byte[] b, int off, int len) throws IOException {
 			this.crc32.update(b, off, len);
-			this.out.write(b, off, len);
 		}
 
 		private long getCrc() {
