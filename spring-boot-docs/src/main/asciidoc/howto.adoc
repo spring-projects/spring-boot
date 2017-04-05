@@ -2818,7 +2818,7 @@ And if you're using Gradle:
 	}
 ----
 
-NOTE: `providedRuntime` is prefered to Gradle's `compileOnly` configuration as, among other
+NOTE: `providedRuntime` is preferred to Gradle's `compileOnly` configuration as, among other
 limitations, `compileOnly` dependencies are not on the test classpath so any web-based
 integration tests will fail.
 

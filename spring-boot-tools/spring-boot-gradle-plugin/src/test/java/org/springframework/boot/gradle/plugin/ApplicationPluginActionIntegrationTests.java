@@ -64,7 +64,7 @@ public class ApplicationPluginActionIntegrationTests {
 	}
 
 	@Test
-	public void applyingApplictionPluginCreatesBootStartScriptsTask() {
+	public void applyingApplicationPluginCreatesBootStartScriptsTask() {
 		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootStartScripts",
 				"-PapplyApplicationPlugin").getOutput())
 						.contains("bootStartScripts exists = true");

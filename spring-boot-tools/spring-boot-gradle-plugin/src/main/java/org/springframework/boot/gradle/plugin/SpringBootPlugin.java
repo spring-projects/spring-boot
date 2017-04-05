@@ -42,7 +42,7 @@ public class SpringBootPlugin implements Plugin<Project> {
 	 *
 	 * @since 2.0.0
 	 */
-	public static final String BOOT_ARCHIVES_CONFIURATION_NAME = "bootArchives";
+	public static final String BOOT_ARCHIVES_CONFIGURATION_NAME = "bootArchives";
 
 	/**
 	 * The name of the {@link SoftwareComponent} for a Spring Boot Java application.
@@ -76,7 +76,7 @@ public class SpringBootPlugin implements Plugin<Project> {
 	public void apply(Project project) {
 		project.getExtensions().create("springBoot", SpringBootExtension.class, project);
 		Configuration bootArchives = project.getConfigurations()
-				.create(BOOT_ARCHIVES_CONFIURATION_NAME);
+				.create(BOOT_ARCHIVES_CONFIGURATION_NAME);
 		SinglePublishedArtifact singlePublishedArtifact = new SinglePublishedArtifact(
 				bootArchives.getArtifacts());
 		List<PluginApplicationAction> actions = Arrays.asList(
