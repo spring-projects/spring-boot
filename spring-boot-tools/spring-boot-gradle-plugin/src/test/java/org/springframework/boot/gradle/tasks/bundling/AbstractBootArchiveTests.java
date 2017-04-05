@@ -132,6 +132,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			assertThat(jarFile.getEntry(
 					"org/springframework/boot/loader/LaunchedURLClassLoader.class"))
 							.isNotNull();
+			assertThat(jarFile.getEntry("org/springframework/boot/loader/")).isNotNull();
 		}
 	}
 
@@ -146,6 +147,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			assertThat(jarFile.getEntry(
 					"org/springframework/boot/loader/LaunchedURLClassLoader.class"))
 							.isNotNull();
+			assertThat(jarFile.getEntry("org/springframework/boot/loader/")).isNotNull();
 		}
 	}
 

@@ -115,6 +115,9 @@ class BootZipCopyAction implements CopyAction {
 		try (ZipInputStream in = new ZipInputStream(getClass()
 				.getResourceAsStream("/META-INF/loader/spring-boot-loader.jar"))) {
 			while ((entry = in.getNextEntry()) != null) {
+				if (entry.isDirectory() && !entry.getName().startsWith("META-INF/")) {
+					writeDirectory(entry, out);
+				}
 				if (entry.getName().endsWith(".class")) {
 					writeClass(entry, in, out);
 				}
@@ -125,13 +128,21 @@ class BootZipCopyAction implements CopyAction {
 		}
 	}
 
-	private void writeClass(ZipEntry entry, ZipInputStream in, ZipOutputStream out)
-			throws IOException {
-		byte[] buffer = new byte[4096];
+	private void writeDirectory(ZipEntry entry, ZipOutputStream out) throws IOException {
 		if (!this.preserveFileTimestamps) {
 			entry.setTime(GUtil.CONSTANT_TIME_FOR_ZIP_ENTRIES);
 		}
 		out.putNextEntry(entry);
+		out.closeEntry();
+	}
+
+	private void writeClass(ZipEntry entry, ZipInputStream in, ZipOutputStream out)
+			throws IOException {
+		if (!this.preserveFileTimestamps) {
+			entry.setTime(GUtil.CONSTANT_TIME_FOR_ZIP_ENTRIES);
+		}
+		out.putNextEntry(entry);
+		byte[] buffer = new byte[4096];
 		int read;
 		while ((read = in.read(buffer)) > 0) {
 			out.write(buffer, 0, read);
