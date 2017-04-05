@@ -19,7 +19,7 @@ Andy Wilkinson
 :maven-publish-plugin: {gradle-userguide}/maven_publish_plugin.html
 :software-component: {gradle-userguide}/software_model_extend.html
 :kotlin-plugin: https://kotlinlang.org/docs/reference/using-gradle.html
-:spring-boot-docs: https://docs.spring.io/spring-boot/{version}
+:spring-boot-docs: https://docs.spring.io/spring-boot/docs/{version}
 :api-documentation: {spring-boot-docs}/gradle-plugin/api
 :spring-boot-reference: {spring-boot-docs}/reference/htmlsingle
 :build-info-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/buildinfo/BuildInfo.html
