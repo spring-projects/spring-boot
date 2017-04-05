@@ -184,6 +184,23 @@ public class ServerPropertiesTests {
 		assertThat(this.properties.getJetty().getSelectors()).isEqualTo(10);
 	}
 
+	@Test
+	public void testJettyBinding() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.jetty.accesslog.enabled", "true");
+		map.put("server.jetty.accesslog.filename", "foo.txt");
+		map.put("server.jetty.accesslog.retainDays", "4");
+		map.put("server.jetty.accesslog.append", "true");
+		map.put("server.jetty.accesslog.filenameDateFormat", "yyyymmdd");
+		bindProperties(map);
+		ServerProperties.Jetty jetty = this.properties.getJetty();
+		assertThat(jetty.getAccesslog().isEnabled()).isEqualTo(true);
+		assertThat(jetty.getAccesslog().getFilename()).isEqualTo("foo.txt");
+		assertThat(jetty.getAccesslog().getRetainDays()).isEqualTo(4);
+		assertThat(jetty.getAccesslog().isAppend()).isEqualTo(true);
+		assertThat(jetty.getAccesslog().getFilenameDateFormat()).isEqualTo("yyyymmdd");
+	}
+
 	private void bindProperties(Map<String, String> map) {
 		new RelaxedDataBinder(this.properties, "server")
 				.bind(new MutablePropertyValues(map));

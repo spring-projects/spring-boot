@@ -26,6 +26,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jetty.server.AbstractConnector;
+import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.NCSARequestLog;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.HandlerWrapper;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -900,6 +910,8 @@ public class ServerProperties {
 		 */
 		private Integer selectors;
 
+		private final Accesslog accesslog = new Accesslog();
+
 		public int getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
 		}
@@ -922,6 +934,157 @@ public class ServerProperties {
 
 		public void setSelectors(Integer selectors) {
 			this.selectors = selectors;
+		}
+
+		public Accesslog getAccesslog() {
+			return this.accesslog;
+		}
+
+		public static class Accesslog {
+
+			/**
+			 * Enable access log.
+			 */
+			private boolean enabled;
+
+			/**
+			 * accesslog filename. If no filename, logs will be redirected to System.err
+			 */
+			private String filename;
+
+			/**
+			 * number of days before rotated log files are deleted. Default 31
+			 */
+			private int retainDays = 31;
+
+			/**
+			 * append to log.
+			 */
+			private boolean append;
+
+			/**
+			 * the log file name date format.
+			 */
+			private String filenameDateFormat;
+
+			/**
+			 * extended NCSA format.
+			 */
+			private boolean extended;
+
+			/**
+			 * Set the timezone of the request log.
+			 */
+			private String logTimeZone;
+
+			/**
+			 * Controls logging of the request cookies.
+			 */
+			private boolean logCookies;
+
+			/**
+			 * Controls logging of the request hostname.
+			 */
+			private boolean logServer;
+
+			/**
+			 * Controls logging of request processing time.
+			 */
+			private boolean logLatency;
+
+			/**
+			 * Set the timestamp format for request log entries in the file. If this is not set, the pre-formated request
+			 * timestamp is used.
+			 */
+			private String logDateFormat;
+
+			public boolean isEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
+			}
+
+			public String getFilename() {
+				return this.filename;
+			}
+
+			public void setFilename(String filename) {
+				this.filename = filename;
+			}
+
+			public int getRetainDays() {
+				return this.retainDays;
+			}
+
+			public void setRetainDays(int retainDays) {
+				this.retainDays = retainDays;
+			}
+
+			public boolean isAppend() {
+				return this.append;
+			}
+
+			public void setAppend(boolean append) {
+				this.append = append;
+			}
+
+			public String getFilenameDateFormat() {
+				return this.filenameDateFormat;
+			}
+
+			public void setFilenameDateFormat(String filenameDateFormat) {
+				this.filenameDateFormat = filenameDateFormat;
+			}
+
+			public boolean isExtended() {
+				return this.extended;
+			}
+
+			public void setExtended(boolean extended) {
+				this.extended = extended;
+			}
+
+			public String getLogTimeZone() {
+				return this.logTimeZone;
+			}
+
+			public void setLogTimeZone(String logTimeZone) {
+				this.logTimeZone = logTimeZone;
+			}
+
+			public boolean isLogCookies() {
+				return this.logCookies;
+			}
+
+			public void setLogCookies(boolean logCookies) {
+				this.logCookies = logCookies;
+			}
+
+			public boolean isLogServer() {
+				return logServer;
+			}
+
+			public void setLogServer( boolean logServer ) {
+				this.logServer = logServer;
+			}
+
+			public boolean isLogLatency() {
+				return logLatency;
+			}
+
+			public void setLogLatency( boolean logLatency ) {
+				this.logLatency = logLatency;
+			}
+
+			public String getLogDateFormat() {
+				return logDateFormat;
+			}
+
+			public void setLogDateFormat( String logDateFormat ) {
+				this.logDateFormat = logDateFormat;
+			}
 		}
 
 	}

@@ -36,6 +36,7 @@ import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
@@ -541,6 +542,9 @@ public class DefaultServletWebServerFactoryCustomizer
 				customizeConnectionTimeout(factory,
 						serverProperties.getConnectionTimeout());
 			}
+			if (jettyProperties.getAccesslog().isEnabled()) {
+				customizeAccesslog(factory, jettyProperties.getAccesslog());
+			}
 		}
 
 		private static void customizeConnectionTimeout(
@@ -635,6 +639,32 @@ public class DefaultServletWebServerFactoryCustomizer
 					}
 				}
 
+			});
+		}
+
+		private static void customizeAccesslog(JettyServletWebServerFactory factory,
+											   final ServerProperties.Jetty.Accesslog accesslog) {
+			factory.addServerCustomizers( server -> {
+				NCSARequestLog requestLog = new NCSARequestLog();
+				if (accesslog.getFilename() != null) {
+					requestLog.setFilename(accesslog.getFilename());
+				}
+				if (accesslog.getFilenameDateFormat() != null) {
+					requestLog.setFilenameDateFormat(accesslog.getFilenameDateFormat());
+				}
+				if (accesslog.getRetainDays() > 0) {
+					requestLog.setRetainDays(accesslog.getRetainDays());
+				}
+				requestLog.setLogTimeZone(accesslog.getLogTimeZone());
+				requestLog.setExtended(accesslog.isExtended());
+				requestLog.setAppend(accesslog.isAppend());
+				requestLog.setLogCookies(accesslog.isLogCookies());
+				requestLog.setLogServer( accesslog.isLogServer() );
+				requestLog.setLogLatency( accesslog.isLogLatency() );
+				if (!StringUtils.isEmpty( accesslog.getLogDateFormat() )) {
+					requestLog.setLogDateFormat( accesslog.getLogDateFormat() );
+				}
+				server.setRequestLog(requestLog);
 			});
 		}
 	}
