@@ -17,7 +17,7 @@ the runtime classpath of the main source set.
 By default, the main class will be configured automatically by looking for a class with a
 `public static void main(String[])` method in directories on the task's classpath.
 
-The main class can also be configured explicity using the task's `main` property:
+The main class can also be configured explicitly using the task's `main` property:
 
 [source,groovy,indent=0,subs="verbatim"]
 ----
