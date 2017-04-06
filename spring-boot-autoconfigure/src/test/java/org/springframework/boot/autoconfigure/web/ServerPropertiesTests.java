@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -443,6 +443,25 @@ public class ServerPropertiesTests {
 		assertThat(remoteIpValve.getRemoteIpHeader()).isEqualTo("x-my-remote-ip-header");
 		assertThat(remoteIpValve.getPortHeader()).isEqualTo("x-my-forward-port");
 		assertThat(remoteIpValve.getInternalProxies()).isEqualTo("192.168.0.1");
+	}
+
+	@Test
+	public void customTomcatDisableMaxHttpPostSize() {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.max-http-post-size", "-1");
+		bindProperties(map);
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(0);
+		this.properties.customize(container);
+		TomcatEmbeddedServletContainer embeddedContainer =
+			(TomcatEmbeddedServletContainer) container.getEmbeddedServletContainer();
+		embeddedContainer.start();
+		try {
+			assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize())
+				.isEqualTo(-1);
+		}
+		finally {
+			embeddedContainer.stop();
+		}
 	}
 
 	@Test
