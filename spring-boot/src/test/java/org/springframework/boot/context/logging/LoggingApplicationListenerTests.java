@@ -34,12 +34,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
+import org.springframework.boot.junit.runner.classpath.ClassPathExclusions;
+import org.springframework.boot.junit.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
@@ -61,7 +64,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 
 /**
- * Tests for {@link LoggingApplicationListener}.
+ * Tests for {@link LoggingApplicationListener} with Logback.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -69,6 +72,9 @@ import static org.hamcrest.Matchers.not;
  * @author Stephane Nicoll
  * @author Ben Hale
  */
+
+@RunWith(ModifiedClassPathRunner.class)
+@ClassPathExclusions("log4j*.jar")
 public class LoggingApplicationListenerTests {
 
 	private static final String[] NO_ARGS = {};

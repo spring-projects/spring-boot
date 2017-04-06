@@ -16,20 +16,14 @@
 
 package org.springframework.boot.autoconfigure.logging;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogConfigurationException;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.LogFactoryImpl;
-import org.apache.commons.logging.impl.NoOpLog;
-import org.junit.After;
-import org.junit.Before;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.slf4j.impl.StaticLoggerBinder;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
@@ -37,6 +31,7 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,10 +42,6 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link AutoConfigurationReportLoggingInitializer}.
@@ -60,57 +51,10 @@ import static org.mockito.Mockito.mock;
  */
 public class AutoConfigurationReportLoggingInitializerTests {
 
-	private static ThreadLocal<Log> logThreadLocal = new ThreadLocal<>();
+	@Rule
+	public InternalOutputCapture outputCapture = new InternalOutputCapture();
 
-	private Log log;
-
-	private AutoConfigurationReportLoggingInitializer initializer;
-
-	protected List<String> debugLog = new ArrayList<>();
-
-	protected List<String> infoLog = new ArrayList<>();
-
-	@Before
-	public void setup() {
-		setupLogging(true, true);
-	}
-
-	private void setupLogging(boolean debug, boolean info) {
-		this.log = mock(Log.class);
-		logThreadLocal.set(this.log);
-
-		given(this.log.isDebugEnabled()).willReturn(debug);
-		willAnswer(new Answer<Object>() {
-
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				return AutoConfigurationReportLoggingInitializerTests.this.debugLog
-						.add(String.valueOf(invocation.getArguments()[0]));
-			}
-
-		}).given(this.log).debug(any());
-
-		given(this.log.isInfoEnabled()).willReturn(info);
-		willAnswer(new Answer<Object>() {
-
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				return AutoConfigurationReportLoggingInitializerTests.this.infoLog
-						.add(String.valueOf(invocation.getArguments()[0]));
-			}
-
-		}).given(this.log).info(any());
-
-		LogFactory.releaseAll();
-		System.setProperty(LogFactory.FACTORY_PROPERTY, MockLogFactory.class.getName());
-		this.initializer = new AutoConfigurationReportLoggingInitializer();
-	}
-
-	@After
-	public void cleanup() {
-		System.clearProperty(LogFactory.FACTORY_PROPERTY);
-		LogFactory.releaseAll();
-	}
+	private AutoConfigurationReportLoggingInitializer initializer = new AutoConfigurationReportLoggingInitializer();
 
 	@Test
 	public void logsDebugOnContextRefresh() {
@@ -118,8 +62,10 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		this.initializer.initialize(context);
 		context.register(Config.class);
 		context.refresh();
-		this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
-		assertThat(this.debugLog.size()).isNotEqualTo(0);
+		withDebugLogging(() -> {
+			this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
+		});
+		assertThat(this.outputCapture.toString()).contains("AUTO-CONFIGURATION REPORT");
 	}
 
 	@Test
@@ -132,16 +78,16 @@ public class AutoConfigurationReportLoggingInitializerTests {
 			fail("Did not error");
 		}
 		catch (Exception ex) {
-			this.initializer.onApplicationEvent(new ApplicationFailedEvent(
-					new SpringApplication(), new String[0], context, ex));
+			withDebugLogging(() -> {
+				this.initializer.onApplicationEvent(new ApplicationFailedEvent(
+						new SpringApplication(), new String[0], context, ex));
+			});
 		}
-		assertThat(this.debugLog.size()).isNotEqualTo(0);
-		assertThat(this.infoLog.size()).isEqualTo(0);
+		assertThat(this.outputCapture.toString()).contains("AUTO-CONFIGURATION REPORT");
 	}
 
 	@Test
 	public void logsInfoOnErrorIfDebugDisabled() {
-		setupLogging(false, true);
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(ErrorConfig.class);
@@ -153,8 +99,9 @@ public class AutoConfigurationReportLoggingInitializerTests {
 			this.initializer.onApplicationEvent(new ApplicationFailedEvent(
 					new SpringApplication(), new String[0], context, ex));
 		}
-		assertThat(this.debugLog.size()).isEqualTo(0);
-		assertThat(this.infoLog.size()).isNotEqualTo(0);
+		assertThat(this.outputCapture.toString()).contains("Error starting"
+				+ " ApplicationContext. To display the auto-configuration report re-run"
+				+ " your application with 'debug' enabled.");
 	}
 
 	@Test
@@ -165,13 +112,10 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		ConditionEvaluationReport.get(context.getBeanFactory())
 				.recordExclusions(Arrays.asList("com.foo.Bar"));
 		context.refresh();
-		this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
-		for (String message : this.debugLog) {
-			System.out.println(message);
-		}
-		// Just basic sanity check, test is for visual inspection
-		String l = this.debugLog.get(0);
-		assertThat(l)
+		withDebugLogging(() -> {
+			this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
+		});
+		assertThat(this.outputCapture.toString())
 				.contains("not a servlet web application (OnWebApplicationCondition)");
 	}
 
@@ -199,20 +143,23 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		this.initializer
 				.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(),
 						new String[0], null, new RuntimeException("Planned")));
-		assertThat(this.infoLog.get(0))
+		assertThat(this.outputCapture.toString())
 				.contains("Unable to provide auto-configuration report");
 	}
 
-	public static class MockLogFactory extends LogFactoryImpl {
-
-		@Override
-		public Log getInstance(String name) throws LogConfigurationException {
-			if (AutoConfigurationReportLoggingInitializer.class.getName().equals(name)) {
-				return logThreadLocal.get();
-			}
-			return new NoOpLog();
+	private void withDebugLogging(Runnable runnable) {
+		LoggerContext context = (LoggerContext) StaticLoggerBinder.getSingleton()
+				.getLoggerFactory();
+		Logger logger = context
+				.getLogger(AutoConfigurationReportLoggingInitializer.class);
+		Level currentLevel = logger.getLevel();
+		logger.setLevel(Level.DEBUG);
+		try {
+			runnable.run();
 		}
-
+		finally {
+			logger.setLevel(currentLevel);
+		}
 	}
 
 	@Configuration
