@@ -55,6 +55,8 @@ public class GradleBuild implements TestRule {
 
 	private String script;
 
+	private String gradleVersion;
+
 	@Override
 	public Statement apply(Statement base, Description description) {
 		URL scriptUrl = findDefaultScript(description);
@@ -149,6 +151,9 @@ public class GradleBuild implements TestRule {
 				new FileWriter(new File(this.projectDir, "build.gradle")));
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
 				.forwardOutput();
+		if (this.gradleVersion != null) {
+			gradleRunner.withGradleVersion(this.gradleVersion);
+		}
 		List<String> allArguments = new ArrayList<String>();
 		allArguments.add("-PpluginClasspath=" + pluginClasspath());
 		allArguments.add("-PbootVersion=" + getBootVersion());
@@ -162,6 +167,11 @@ public class GradleBuild implements TestRule {
 
 	public void setProjectDir(File projectDir) {
 		this.projectDir = projectDir;
+	}
+
+	public GradleBuild gradleVersion(String version) {
+		this.gradleVersion = version;
+		return this;
 	}
 
 	private static String getBootVersion() {

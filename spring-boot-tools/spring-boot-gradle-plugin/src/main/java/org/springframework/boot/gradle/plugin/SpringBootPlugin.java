@@ -19,10 +19,12 @@ package org.springframework.boot.gradle.plugin;
 import java.util.Arrays;
 import java.util.List;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.component.SoftwareComponent;
+import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.dsl.SpringBootExtension;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
@@ -74,9 +76,31 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
+		verifyGradleVersion();
+		createExtension(project);
+		Configuration bootArchives = createBootArchivesConfiguration(project);
+		registerPluginActions(project, bootArchives);
+		unregisterUnresolvedDependenciesAnalyzer(project);
+	}
+
+	private void verifyGradleVersion() {
+		if (GradleVersion.current().compareTo(GradleVersion.version("3.4")) < 0) {
+			throw new GradleException("Spring Boot plugin requires Gradle 3.4 or later."
+					+ " The current version is " + GradleVersion.current());
+		}
+	}
+
+	private void createExtension(Project project) {
 		project.getExtensions().create("springBoot", SpringBootExtension.class, project);
+	}
+
+	private Configuration createBootArchivesConfiguration(Project project) {
 		Configuration bootArchives = project.getConfigurations()
 				.create(BOOT_ARCHIVES_CONFIGURATION_NAME);
+		return bootArchives;
+	}
+
+	private void registerPluginActions(Project project, Configuration bootArchives) {
 		SinglePublishedArtifact singlePublishedArtifact = new SinglePublishedArtifact(
 				bootArchives.getArtifacts());
 		List<PluginApplicationAction> actions = Arrays.asList(
@@ -88,6 +112,9 @@ public class SpringBootPlugin implements Plugin<Project> {
 			project.getPlugins().withType(action.getPluginClass(),
 					plugin -> action.execute(project));
 		}
+	}
+
+	private void unregisterUnresolvedDependenciesAnalyzer(Project project) {
 		UnresolvedDependenciesAnalyzer unresolvedDependenciesAnalyzer = new UnresolvedDependenciesAnalyzer();
 		project.getConfigurations().all(configuration -> configuration.getIncoming()
 				.afterResolve(resolvableDependencies -> unresolvedDependenciesAnalyzer
