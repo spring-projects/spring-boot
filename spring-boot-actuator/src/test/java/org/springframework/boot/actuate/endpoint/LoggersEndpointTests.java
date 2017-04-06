@@ -78,6 +78,12 @@ public class LoggersEndpointTests extends AbstractEndpointTests<LoggersEndpoint>
 		verify(getLoggingSystem()).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
+	@Test
+	public void deleteLoggerConfigurationShouldDeleteLoggerConfigurationOnLoggingSystem() throws Exception {
+		getEndpointBean().deleteLoggerConfiguration("ROOT");
+		verify(getLoggingSystem()).deleteLoggerConfiguration("ROOT");
+	}
+
 	private LoggingSystem getLoggingSystem() {
 		return this.context.getBean(LoggingSystem.class);
 	}

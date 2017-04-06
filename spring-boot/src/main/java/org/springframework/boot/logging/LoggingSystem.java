@@ -143,6 +143,15 @@ public abstract class LoggingSystem {
 	}
 
 	/**
+	 * Delete configuration for a {@link LoggingSystem}'s logger.
+	 * @param loggerName the name of the logger
+	 * @since 1.5.0
+	 */
+	public void deleteLoggerConfiguration(String loggerName) {
+		throw new UnsupportedOperationException("Unable to delete logger configuration");
+	}
+
+	/**
 	 * Detect and return the logging system in use. Supports Logback and Java Logging.
 	 * @param classLoader the classloader
 	 * @return The logging system

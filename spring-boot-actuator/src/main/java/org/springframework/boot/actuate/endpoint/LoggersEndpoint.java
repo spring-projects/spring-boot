@@ -91,6 +91,11 @@ public class LoggersEndpoint extends AbstractEndpoint<Map<String, Object>> {
 		this.loggingSystem.setLogLevel(name, level);
 	}
 
+	public void deleteLoggerConfiguration(String name) {
+		Assert.notNull(name, "Name must not be empty");
+		this.loggingSystem.deleteLoggerConfiguration(name);
+	}
+
 	/**
 	 * Levels configured for a given logger exposed in a JSON friendly way.
 	 */

@@ -74,4 +74,18 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 		return HttpEntity.EMPTY;
 	}
 
+	@ActuatorDeleteMapping("/{name:.*}")
+	@ResponseBody
+	@HypermediaDisabled
+	public Object delete(@PathVariable String name) {
+		if (!this.delegate.isEnabled()) {
+			// Shouldn't happen - MVC endpoint shouldn't be registered when delegate's
+			// disabled
+			return getDisabledResponse();
+		}
+
+		this.delegate.deleteLoggerConfiguration(name);
+		return HttpEntity.EMPTY;
+	}
+
 }
