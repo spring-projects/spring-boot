@@ -3513,6 +3513,13 @@ persistence for the embedded mode:
 	spring.data.neo4j.uri=file://var/tmp/graph.db
 ----
 
+[NOTE]
+====
+The Neo4j OGM embedded driver does not provide the Neo4j kernel. Users are expected to
+provide this dependency manually, see
+http://neo4j.com/docs/ogm-manual/current/reference/#reference:getting-started[the documentation]
+for more details.
+====
 
 
 [[boot-features-neo4j-ogm-session]]
