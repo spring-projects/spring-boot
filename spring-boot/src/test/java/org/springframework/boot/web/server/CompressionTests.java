@@ -36,7 +36,7 @@ public class CompressionTests {
 
 	private String[] getTomcatDefaultCompressableMimeTypes() {
 		Http11NioProtocol protocol = new Http11NioProtocol();
-		return protocol.getCompressableMimeTypes();
+		return protocol.getCompressibleMimeTypes();
 	}
 
 }
