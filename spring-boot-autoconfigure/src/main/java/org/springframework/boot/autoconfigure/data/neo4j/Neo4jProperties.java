@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
+import org.neo4j.ogm.config.AutoIndexMode;
 import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.config.Configuration.Builder;
 
@@ -31,6 +32,7 @@ import org.springframework.util.ClassUtils;
  * @author Stephane Nicoll
  * @author Michael Hunger
  * @author Vince Bickers
+ * @author Aurélien Leboulanger
  * @since 1.4.0
  */
 @ConfigurationProperties(prefix = "spring.data.neo4j")
@@ -43,23 +45,20 @@ public class Neo4jProperties implements ApplicationContextAware {
 	static final String DEFAULT_BOLT_URI = "bolt://localhost:7687";
 
 	static final String BOLT_DRIVER = "org.neo4j.ogm.drivers.bolt.driver.BoltDriver";
-
+	private final Embedded embedded = new Embedded();
 	/**
 	 * URI used by the driver. Auto-detected by default.
 	 */
 	private String uri;
-
 	/**
 	 * Login user of the server.
 	 */
 	private String username;
-
 	/**
 	 * Login password of the server.
 	 */
 	private String password;
-
-	private final Embedded embedded = new Embedded();
+	private Indexes indexes = new Indexes();
 
 	private ClassLoader classLoader = Neo4jProperties.class.getClassLoader();
 
@@ -91,6 +90,14 @@ public class Neo4jProperties implements ApplicationContextAware {
 		return this.embedded;
 	}
 
+	public Indexes getIndexes() {
+		return this.indexes;
+	}
+
+	public void setIndexes(Indexes indexes) {
+		this.indexes = indexes;
+	}
+
 	@Override
 	public void setApplicationContext(ApplicationContext ctx) throws BeansException {
 		this.classLoader = ctx.getClassLoader();
@@ -115,6 +122,13 @@ public class Neo4jProperties implements ApplicationContextAware {
 		}
 		if (this.username != null && this.password != null) {
 			builder.credentials(this.username, this.password);
+		}
+
+		builder.autoIndex(this.indexes.getAuto().name());
+
+		if (AutoIndexMode.DUMP == this.indexes.getAuto()) {
+			builder.generatedIndexesOutputDir(this.indexes.getDump().getDir());
+			builder.generatedIndexesOutputFilename(this.indexes.getDump().getFilename());
 		}
 	}
 
@@ -142,4 +156,55 @@ public class Neo4jProperties implements ApplicationContextAware {
 
 	}
 
+	public static class Indexes {
+
+		private AutoIndexMode auto = AutoIndexMode.NONE;
+
+		private Dump dump = new Dump();
+
+		public AutoIndexMode getAuto() {
+			return this.auto;
+		}
+
+		public void setAuto(AutoIndexMode auto) {
+			this.auto = auto;
+		}
+
+		public Dump getDump() {
+			return this.dump;
+		}
+
+		public void setDump(Dump dump) {
+			this.dump = dump;
+		}
+
+		public static class Dump {
+
+			/**
+			 * Generated Indexes Output Dir.
+			 */
+			private String dir = ".";
+
+			/**
+			 * Generated Indexes Output Filename.
+			 */
+			private String filename = "generated_indexes.cql";
+
+			public String getDir() {
+				return this.dir;
+			}
+
+			public void setDir(String dir) {
+				this.dir = dir;
+			}
+
+			public String getFilename() {
+				return this.filename;
+			}
+
+			public void setFilename(String filename) {
+				this.filename = filename;
+			}
+		}
+	}
 }
