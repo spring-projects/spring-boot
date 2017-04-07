@@ -87,7 +87,8 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Environment must not be null");
 		Capabilities capabilities = mock(Capabilities.class);
-		given(capabilities.getBrowserName()).willReturn("chrome");
+		given(capabilities.getBrowserName()).willReturn("htmlunit");
+		given(capabilities.getVersion()).willReturn("chrome");
 		new LocalHostWebConnectionHtmlUnitDriver(null, capabilities);
 	}
 
