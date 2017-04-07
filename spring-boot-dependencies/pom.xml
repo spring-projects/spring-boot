@@ -98,7 +98,7 @@
 		<javassist.version>3.21.0-GA</javassist.version> <!-- Same as Hibernate -->
 		<javax-cache.version>1.0.0</javax-cache.version>
 		<javax-jms.version>2.0.1</javax-jms.version>
-		<javax-mail.version>1.5.6</javax-mail.version>
+		<javax-mail.version>1.6.0-rc1</javax-mail.version>
 		<javax-transaction.version>1.2</javax-transaction.version>
 		<javax-validation.version>1.1.0.Final</javax-validation.version>
 		<jaxen.version>1.1.6</jaxen.version>
