@@ -126,7 +126,7 @@
 		<lettuce.version>5.0.0.Beta1</lettuce.version>
 		<liquibase.version>3.5.3</liquibase.version>
 		<log4j2.version>2.7</log4j2.version>
-		<logback.version>1.2.2</logback.version>
+		<logback.version>1.2.3</logback.version>
 		<lombok.version>1.16.16</lombok.version>
 		<mariadb.version>1.5.9</mariadb.version>
 		<mssql-jdbc.version>6.1.0.jre8</mssql-jdbc.version>
