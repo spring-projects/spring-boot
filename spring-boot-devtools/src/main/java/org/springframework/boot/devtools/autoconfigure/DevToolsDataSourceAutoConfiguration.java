@@ -110,7 +110,7 @@ public class DevToolsDataSourceAutoConfiguration {
 			return false;
 		}
 
-		private static enum InMemoryDatabase {
+		private enum InMemoryDatabase {
 
 			DERBY(null, "org.apache.derby.jdbc.EmbeddedDriver"),
 
