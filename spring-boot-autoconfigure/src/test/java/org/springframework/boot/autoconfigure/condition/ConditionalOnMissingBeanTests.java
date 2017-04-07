@@ -646,7 +646,7 @@ public class ConditionalOnMissingBeanTests {
 	public static class ExampleFactoryBean implements FactoryBean<ExampleBean> {
 
 		public ExampleFactoryBean(String value) {
-			Assert.state(!value.contains("$"));
+			Assert.state(!value.contains("$"), "value must not contain $");
 		}
 
 		@Override
@@ -669,7 +669,7 @@ public class ConditionalOnMissingBeanTests {
 	public static class NonspecificFactoryBean implements FactoryBean<Object> {
 
 		public NonspecificFactoryBean(String value) {
-			Assert.state(!value.contains("$"));
+			Assert.state(!value.contains("$"), "value must not contain $");
 		}
 
 		@Override

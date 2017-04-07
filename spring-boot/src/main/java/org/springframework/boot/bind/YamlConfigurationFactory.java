@@ -76,7 +76,7 @@ public class YamlConfigurationFactory<T>
 	 * @param type the root type
 	 */
 	public YamlConfigurationFactory(Class<?> type) {
-		Assert.notNull(type);
+		Assert.notNull(type, "type must not be null");
 		this.type = type;
 	}
 

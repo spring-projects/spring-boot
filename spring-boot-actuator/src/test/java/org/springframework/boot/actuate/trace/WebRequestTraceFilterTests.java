@@ -244,7 +244,6 @@ public class WebRequestTraceFilterTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void filterAddsTimeTaken() throws Exception {
 		MockHttpServletRequest request = spy(new MockHttpServletRequest("GET", "/foo"));
 		MockHttpServletResponse response = new MockHttpServletResponse();

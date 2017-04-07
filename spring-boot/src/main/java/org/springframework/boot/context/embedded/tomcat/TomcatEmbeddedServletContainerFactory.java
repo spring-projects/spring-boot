@@ -354,14 +354,20 @@ public class TomcatEmbeddedServletContainerFactory
 			Compression compression = getCompression();
 			protocol.setCompression("on");
 			protocol.setCompressionMinSize(compression.getMinResponseSize());
-			protocol.setCompressableMimeType(
-					StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes()));
+			configureCompressibleMimeTypes(protocol, compression);
 			if (getCompression().getExcludedUserAgents() != null) {
 				protocol.setNoCompressionUserAgents(
 						StringUtils.arrayToCommaDelimitedString(
 								getCompression().getExcludedUserAgents()));
 			}
 		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private void configureCompressibleMimeTypes(AbstractHttp11Protocol<?> protocol,
+			Compression compression) {
+		protocol.setCompressableMimeType(
+				StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes()));
 	}
 
 	/**

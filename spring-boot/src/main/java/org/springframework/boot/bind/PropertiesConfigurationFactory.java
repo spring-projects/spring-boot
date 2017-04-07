@@ -91,7 +91,7 @@ public class PropertiesConfigurationFactory<T>
 	 * @see #PropertiesConfigurationFactory(Class)
 	 */
 	public PropertiesConfigurationFactory(T target) {
-		Assert.notNull(target);
+		Assert.notNull(target, "target must not be null");
 		this.target = target;
 	}
 
@@ -102,7 +102,7 @@ public class PropertiesConfigurationFactory<T>
 	 */
 	@SuppressWarnings("unchecked")
 	public PropertiesConfigurationFactory(Class<?> type) {
-		Assert.notNull(type);
+		Assert.notNull(type, "type must not be null");
 		this.target = (T) BeanUtils.instantiate(type);
 	}
 

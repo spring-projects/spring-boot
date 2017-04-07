@@ -56,6 +56,7 @@ abstract class HazelcastInstanceConfiguration {
 		@Bean
 		public HazelcastCacheManager cacheManager(
 				HazelcastInstance existingHazelcastInstance) throws IOException {
+			@SuppressWarnings("deprecation")
 			Resource config = this.cacheProperties.getHazelcast().getConfig();
 			Resource location = this.cacheProperties.resolveConfigLocation(config);
 			if (location != null) {
@@ -86,6 +87,7 @@ abstract class HazelcastInstanceConfiguration {
 
 		@Bean
 		public HazelcastInstance hazelcastInstance() throws IOException {
+			@SuppressWarnings("deprecation")
 			Resource config = this.cacheProperties.getHazelcast().getConfig();
 			Resource location = this.cacheProperties.resolveConfigLocation(config);
 			if (location != null) {
