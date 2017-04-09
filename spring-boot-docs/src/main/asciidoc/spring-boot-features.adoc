@@ -5113,10 +5113,19 @@ Spring Boot offers several conveniences for working with Spring Integration, inc
 the `spring-boot-starter-integration` '`Starter`'. Spring Integration provides
 abstractions over messaging and also other transports such as HTTP, TCP etc. If Spring
 Integration is available on your classpath it will be initialized through the
-`@EnableIntegration` annotation. Message processing statistics will be published over JMX
-if `'spring-integration-jmx'` is also on the classpath. See the
+`@EnableIntegration` annotation.
+
+Spring Boot will also configure some features that are triggered by the presence of
+additional Spring Integration modules. Message processing statistics will be published
+over JMX if `'spring-integration-jmx'` is also on the classpath. If
+`'spring-integration-jdbc'` is available on the classpath default database schema will be
+initialized using `'IntegrationDatabaseInitializer'`, which can be further customized
+using configuration properties.
+
+See the
 {sc-spring-boot-autoconfigure}/integration/IntegrationAutoConfiguration.{sc-ext}[`IntegrationAutoConfiguration`]
-class for more details.
+and {sc-spring-boot-autoconfigure}/integration/IntegrationProperties.{sc-ext}[`IntegrationProperties`]
+classes for more details.
 
 
 
