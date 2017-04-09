@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,25 +17,35 @@
 package org.springframework.boot.autoconfigure.integration;
 
 import javax.management.MBeanServer;
+import javax.sql.DataSource;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.gateway.GatewayProxyFactoryBean;
+import org.springframework.integration.jdbc.lock.DefaultLockRepository;
+import org.springframework.integration.jdbc.store.JdbcChannelMessageStore;
+import org.springframework.integration.jdbc.store.JdbcMessageStore;
 import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
 import org.springframework.integration.monitor.IntegrationMBeanExporter;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
@@ -48,10 +58,12 @@ import org.springframework.util.StringUtils;
  * @author Artem Bilan
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass(EnableIntegration.class)
+@EnableConfigurationProperties(IntegrationProperties.class)
 @AutoConfigureAfter(JmxAutoConfiguration.class)
 public class IntegrationAutoConfiguration {
 
@@ -128,6 +140,49 @@ public class IntegrationAutoConfiguration {
 	@ConditionalOnMissingBean(GatewayProxyFactoryBean.class)
 	@Import(IntegrationAutoConfigurationScanRegistrar.class)
 	protected static class IntegrationComponentScanAutoConfiguration {
+
+	}
+
+	/**
+	 * Integration JDBC configuration.
+	 */
+	@Configuration
+	@ConditionalOnClass(JdbcMessageStore.class)
+	@ConditionalOnSingleCandidate(DataSource.class)
+	protected static class IntegrationJdbcConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@Conditional(IntegrationSchemaCondition.class)
+		public IntegrationDatabaseInitializer integrationDatabaseInitializer(
+			DataSource dataSource, ResourceLoader resourceLoader,
+			IntegrationProperties properties) {
+			return new IntegrationDatabaseInitializer(dataSource, resourceLoader,
+				properties);
+		}
+
+	}
+
+	static class IntegrationSchemaCondition extends AnyNestedCondition {
+
+		IntegrationSchemaCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnBean(JdbcMessageStore.class)
+		static class JdbcMessageStoreUsed {
+
+		}
+
+		@ConditionalOnBean(JdbcChannelMessageStore.class)
+		static class JdbcChannelMessageStoreUsed {
+
+		}
+
+		@ConditionalOnBean(DefaultLockRepository.class)
+		static class DefaultLockRepositoryUsed {
+
+		}
 
 	}
 
