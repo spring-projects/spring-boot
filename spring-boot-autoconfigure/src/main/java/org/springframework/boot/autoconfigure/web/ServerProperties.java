@@ -834,7 +834,7 @@ public class ServerProperties
 			if (maxHttpHeaderSize > 0) {
 				customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize);
 			}
-			if (this.maxHttpPostSize > 0) {
+			if (this.maxHttpPostSize != 0) {
 				customizeMaxHttpPostSize(factory, this.maxHttpPostSize);
 			}
 			if (this.accesslog.enabled) {
