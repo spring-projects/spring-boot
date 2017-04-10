@@ -382,9 +382,15 @@ to your application properties:
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP
 ----
 
-You might also want to register custom status mappings with the `HealthMvcEndpoint`
-if you access the health endpoint over HTTP. For example you could map `FATAL` to
-`HttpStatus.SERVICE_UNAVAILABLE`.
+The HTTP status code in the response reflects the overall health status (e.g. `UP`
+maps to 200, `OUT_OF_SERVICE` or `DOWN` to 503). You might also want to register custom
+status mappings with the `HealthMvcEndpoint` if you access the health endpoint over HTTP.
+For example, the following maps `FATAL` to `HttpStatus.SERVICE_UNAVAILABLE`:
+
+[source,properties,indent=0]
+----
+	endpoints.health.mappings.FATAL=503
+----
 
 
 
@@ -687,10 +693,6 @@ is up or down. Furthermore the response is cached for a configurable period to p
 endpoint being used in a denial of service attack. The `endpoints.health.time-to-live`
 property is used to configure the caching period in milliseconds. It defaults to 1000,
 i.e. one second.
-
-The HTTP status code in the response reflects the overall health status (e.g. “UP”=200, 
-“OUT_OF_SERVICE”=503, “DOWN”=503). The mappings can be changed by configuring 
-`endpoints.health.mapping.<STATUS>=XXX`.
 
 Sample summarized HTTP response (default for anonymous request):
 
