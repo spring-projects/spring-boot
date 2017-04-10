@@ -5733,7 +5733,7 @@ A list of the auto-configuration that is enabled by `@DataMongoTest` can be
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-neo4j-test]]
 ==== Auto-configured Data Neo4j tests
 `@DataNeo4jTest` can be used if you want to test Neo4j applications. By default, it will
-use an in-memory embedded Neo4j (if the embedded driver is  available), scan for
+use an in-memory embedded Neo4j (if the embedded driver is available), scan for
 `@NodeEntity` classes and configure Spring Data Neo4j repositories. Regular `@Component`
 beans will not be loaded into the `ApplicationContext`:
 
