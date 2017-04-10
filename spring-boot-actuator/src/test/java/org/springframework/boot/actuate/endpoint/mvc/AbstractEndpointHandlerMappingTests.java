@@ -60,7 +60,8 @@ public abstract class AbstractEndpointHandlerMappingTests {
 				Collections.singletonList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
-		assertThat(mapping.getHandler(request("POST", "/a")).getInterceptors()).isNull();
+		assertThat(mapping.getHandler(request("POST", "/a")).getInterceptors())
+				.hasSize(1);
 	}
 
 	@Test
@@ -75,8 +76,8 @@ public abstract class AbstractEndpointHandlerMappingTests {
 		mapping.afterPropertiesSet();
 		MockHttpServletRequest request = request("POST", "/a");
 		request.addHeader("Origin", "http://example.com");
-		assertThat(mapping.getHandler(request).getInterceptors().length).isEqualTo(2);
-		assertThat(mapping.getHandler(request).getInterceptors()[1])
+		assertThat(mapping.getHandler(request).getInterceptors().length).isEqualTo(3);
+		assertThat(mapping.getHandler(request).getInterceptors()[2])
 				.isEqualTo(securityInterceptor);
 	}
 

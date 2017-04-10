@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,17 +26,21 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.accept.PathExtensionContentNegotiationStrategy;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -204,6 +208,11 @@ public abstract class AbstractEndpointHandlerMapping<E extends MvcEndpoint>
 		return addSecurityInterceptor(chain);
 	}
 
+	@Override
+	protected void extendInterceptors(List<Object> interceptors) {
+		interceptors.add(new SkipPathExtensionContentNegotiation());
+	}
+
 	private HandlerExecutionChain addSecurityInterceptor(HandlerExecutionChain chain) {
 		List<HandlerInterceptor> interceptors = new ArrayList<HandlerInterceptor>();
 		if (chain.getInterceptors() != null) {
@@ -277,6 +286,24 @@ public abstract class AbstractEndpointHandlerMapping<E extends MvcEndpoint>
 	protected CorsConfiguration initCorsConfiguration(Object handler, Method method,
 			RequestMappingInfo mappingInfo) {
 		return this.corsConfiguration;
+	}
+
+	/**
+	 * {@link HandlerInterceptorAdapter} to ensure that
+	 * {@link PathExtensionContentNegotiationStrategy} is skipped for actuator endpoints.
+	 */
+	private static final class SkipPathExtensionContentNegotiation
+			extends HandlerInterceptorAdapter {
+
+		@Override
+		public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+				Object handler) throws Exception {
+			request.setAttribute(
+					WebMvcAutoConfiguration.SKIP_PATH_EXTENSION_CONTENT_NEGOTIATION_ATTRIBUTE,
+					Boolean.TRUE);
+			return true;
+		}
+
 	}
 
 }

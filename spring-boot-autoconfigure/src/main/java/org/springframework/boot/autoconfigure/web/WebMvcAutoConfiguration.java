@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -67,8 +68,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.validation.Validator;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.accept.ContentNegotiationStrategy;
+import org.springframework.web.accept.PathExtensionContentNegotiationStrategy;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.HttpPutFormContentFilter;
@@ -125,9 +131,16 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 		ValidationAutoConfiguration.class })
 public class WebMvcAutoConfiguration {
 
-	public static String DEFAULT_PREFIX = "";
+	public static final String DEFAULT_PREFIX = "";
 
-	public static String DEFAULT_SUFFIX = "";
+	public static final String DEFAULT_SUFFIX = "";
+
+	/**
+	 * Attribute that can be added to the web request when the
+	 * {@link PathExtensionContentNegotiationStrategy} should be be skipped.
+	 */
+	public static final String SKIP_PATH_EXTENSION_CONTENT_NEGOTIATION_ATTRIBUTE = PathExtensionContentNegotiationStrategy.class
+			.getName() + ".SKIP";
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
@@ -404,8 +417,7 @@ public class WebMvcAutoConfiguration {
 					getClass().getClassLoader())) {
 				return super.mvcValidator();
 			}
-			return WebMvcValidator.get(getApplicationContext(),
-					getValidator());
+			return WebMvcValidator.get(getApplicationContext(), getValidator());
 		}
 
 		@Override
@@ -451,6 +463,22 @@ public class WebMvcAutoConfiguration {
 					}
 				}
 			}
+		}
+
+		@Bean
+		@Override
+		public ContentNegotiationManager mvcContentNegotiationManager() {
+			ContentNegotiationManager manager = super.mvcContentNegotiationManager();
+			List<ContentNegotiationStrategy> strategies = manager.getStrategies();
+			ListIterator<ContentNegotiationStrategy> iterator = strategies.listIterator();
+			while (iterator.hasNext()) {
+				ContentNegotiationStrategy strategy = iterator.next();
+				if (strategy instanceof PathExtensionContentNegotiationStrategy) {
+					iterator.set(new OptionalPathExtensionContentNegotiationStrategy(
+							strategy));
+				}
+			}
+			return manager;
 		}
 
 	}
@@ -546,6 +574,34 @@ public class WebMvcAutoConfiguration {
 			String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
 			return MediaType.parseMediaTypes(
 					StringUtils.hasText(acceptHeader) ? acceptHeader : "*/*");
+		}
+
+	}
+
+	/**
+	 * Decorator to make {@link PathExtensionContentNegotiationStrategy} optional
+	 * depending on a request attribute.
+	 */
+	static class OptionalPathExtensionContentNegotiationStrategy
+			implements ContentNegotiationStrategy {
+
+		private final ContentNegotiationStrategy delegate;
+
+		OptionalPathExtensionContentNegotiationStrategy(
+				ContentNegotiationStrategy delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest)
+				throws HttpMediaTypeNotAcceptableException {
+			Object skip = webRequest.getAttribute(
+					SKIP_PATH_EXTENSION_CONTENT_NEGOTIATION_ATTRIBUTE,
+					RequestAttributes.SCOPE_REQUEST);
+			if (skip != null && Boolean.parseBoolean(skip.toString())) {
+				return Collections.emptyList();
+			}
+			return this.delegate.resolveMediaTypes(webRequest);
 		}
 
 	}

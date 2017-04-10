@@ -178,6 +178,16 @@ public class LoggersMvcEndpointTests {
 		verifyZeroInteractions(this.loggingSystem);
 	}
 
+	@Test
+	public void logLevelForLoggerWithNameThatCouldBeMistakenForAPathExtension()
+			throws Exception {
+		given(this.loggingSystem.getLoggerConfiguration("com.png"))
+				.willReturn(new LoggerConfiguration("com.png", null, LogLevel.DEBUG));
+		this.mvc.perform(get("/loggers/com.png")).andExpect(status().isOk())
+				.andExpect(content().string(equalTo(
+						"{\"configuredLevel\":null," + "\"effectiveLevel\":\"DEBUG\"}")));
+	}
+
 	@Configuration
 	@Import({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,

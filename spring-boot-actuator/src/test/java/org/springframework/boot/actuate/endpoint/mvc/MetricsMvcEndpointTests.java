@@ -126,6 +126,13 @@ public class MetricsMvcEndpointTests {
 	}
 
 	@Test
+	public void specificMetricWithNameThatCouldBeMistakenForAPathExtension()
+			throws Exception {
+		this.mvc.perform(get("/metrics/bar.png")).andExpect(status().isOk())
+				.andExpect(content().string(equalTo("{\"bar.png\":1}")));
+	}
+
+	@Test
 	public void specificMetricWhenDisabled() throws Exception {
 		this.context.getBean(MetricsEndpoint.class).setEnabled(false);
 		this.mvc.perform(get("/metrics/foo")).andExpect(status().isNotFound());
@@ -138,7 +145,8 @@ public class MetricsMvcEndpointTests {
 
 	@Test
 	public void regexAll() throws Exception {
-		String expected = "\"foo\":1,\"group1.a\":1,\"group1.b\":1,\"group2.a\":1,\"group2_a\":1";
+		String expected = "\"foo\":1,\"bar.png\":1,\"group1.a\":1,\"group1.b\":1"
+				+ ",\"group2.a\":1,\"group2_a\":1";
 		this.mvc.perform(get("/metrics/.*")).andExpect(status().isOk())
 				.andExpect(content().string(containsString(expected)));
 	}
@@ -178,6 +186,7 @@ public class MetricsMvcEndpointTests {
 				public Collection<Metric<?>> metrics() {
 					ArrayList<Metric<?>> metrics = new ArrayList<Metric<?>>();
 					metrics.add(new Metric<Integer>("foo", 1));
+					metrics.add(new Metric<Integer>("bar.png", 1));
 					metrics.add(new Metric<Integer>("group1.a", 1));
 					metrics.add(new Metric<Integer>("group1.b", 1));
 					metrics.add(new Metric<Integer>("group2.a", 1));
