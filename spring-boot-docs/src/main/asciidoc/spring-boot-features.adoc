@@ -5264,16 +5264,29 @@ potentially time consuming process of loading the context will only happen once.
 [[boot-features-testing-spring-boot-applications-excluding-config]]
 ==== Excluding test configuration
 If your application uses component scanning, for example if you use
-`@SpringBootApplication` or `@ComponentScan`, you may find components or configurations
+`@SpringBootApplication` or `@ComponentScan`, you may find top-level configuration classes
 created only for specific tests accidentally get picked up everywhere.
 
-To help prevent this, Spring Boot provides `@TestComponent` and `@TestConfiguration`
-annotations that can be used on classes in `src/test/java` to indicate that they should
-not be picked up by scanning.
+As we <<boot-features-testing-spring-boot-applications-detecting-config,have seen above>>,
+`@TestConfiguration` can be used on an inner class of a test to customize the primary
+configuration. When placed on a top-level class, `@TestConfiguration` indicates that
+classes in `src/test/java` should not be picked up by scanning. You can then import that
+class explicitly where it is required:
 
-NOTE: `@TestComponent` and `@TestConfiguration` are only needed on top level classes. If
-you define `@Configuration` or `@Component` as inner-classes within a test (any class
-that has `@Test` methods or `@RunWith`), they will be automatically filtered.
+[source,java,indent=0]
+----
+	@RunWith(SpringRunner.class)
+	@SpringBootTest
+	@Import(MyTestsConfiguration.class)
+	public class MyTests {
+
+		@Test
+		public void exampleTest() {
+			...
+		}
+
+	}
+----
 
 NOTE: If you directly use `@ComponentScan` (i.e. not via `@SpringBootApplication`) you
 will need to register the `TypeExcludeFilter` with it. See
