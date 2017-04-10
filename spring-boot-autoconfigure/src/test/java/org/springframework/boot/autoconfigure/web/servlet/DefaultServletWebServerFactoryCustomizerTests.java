@@ -397,6 +397,24 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	public void customTomcatDisableMaxHttpPostSize() {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.max-http-post-size", "-1");
+		bindProperties(map);
+		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
+		this.customizer.customize(factory);
+		TomcatWebServer embeddedFactory = (TomcatWebServer) factory.getWebServer();
+		embeddedFactory.start();
+		try {
+			assertThat(embeddedFactory.getTomcat().getConnector().getMaxPostSize())
+				.isEqualTo(-1);
+		}
+		finally {
+			embeddedFactory.stop();
+		}
+	}
+
+	@Test
 	public void customizeUndertowAccessLog() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.undertow.accesslog.enabled", "true");
