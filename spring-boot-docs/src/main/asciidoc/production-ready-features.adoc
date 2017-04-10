@@ -390,9 +390,15 @@ to your application properties:
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP
 ----
 
-You might also want to register custom status mappings with the `HealthMvcEndpoint`
-if you access the health endpoint over HTTP. For example you could map `FATAL` to
-`HttpStatus.SERVICE_UNAVAILABLE`.
+The HTTP status code in the response reflects the overall health status (e.g. `UP`
+maps to 200, `OUT_OF_SERVICE` or `DOWN` to 503). You might also want to register custom
+status mappings with the `HealthMvcEndpoint` if you access the health endpoint over HTTP.
+For example, the following maps `FATAL` to `HttpStatus.SERVICE_UNAVAILABLE`:
+
+[source,properties,indent=0]
+----
+	endpoints.health.mappings.FATAL=503
+----
 
 
 
@@ -705,9 +711,8 @@ If you don't want to expose endpoints over HTTP you can set the management port 
 ----
 
 
-
 [[production-ready-health-access-restrictions]]
-=== HTTP health endpoint access restrictions
+=== HTTP health endpoint format and access restrictions
 The information exposed by the health endpoint varies depending on whether or not it's
 accessed anonymously, and whether or not the enclosing application is secure.
 By default, when accessed anonymously in a secure application, any details about the
@@ -716,6 +721,58 @@ is up or down. Furthermore the response is cached for a configurable period to p
 endpoint being used in a denial of service attack. The `endpoints.health.time-to-live`
 property is used to configure the caching period in milliseconds. It defaults to 1000,
 i.e. one second.
+
+Sample summarized HTTP response (default for anonymous request):
+
+[source,indent=0]
+----
+$ curl -i localhost:8080/health
+HTTP/1.1 200
+X-Application-Context: application
+Content-Type: application/vnd.spring-boot.actuator.v1+json;charset=UTF-8
+Content-Length: 15
+
+{"status":"UP"}
+----
+
+Sample summarized HTTP response for status "DOWN" (notice the 503 status code):
+
+[source,indent=0]
+----
+$ curl -i localhost:8080/health
+HTTP/1.1 503
+X-Application-Context: application
+Content-Type: application/vnd.spring-boot.actuator.v1+json;charset=UTF-8
+Content-Length: 17
+
+{"status":"DOWN"}
+----
+
+Sample detailed  HTTP response:
+
+[source,indent=0]
+----
+$ curl -i localhost:8080/health
+HTTP/1.1 200 OK
+X-Application-Context: application
+Content-Type: application/vnd.spring-boot.actuator.v1+json;charset=UTF-8
+Content-Length: 221
+
+{
+  "status" : "UP",
+  "diskSpace" : {
+    "status" : "UP",
+    "total" : 63251804160,
+    "free" : 31316164608,
+    "threshold" : 10485760
+  },
+  "db" : {
+    "status" : "UP",
+    "database" : "H2",
+    "hello" : 1
+  }
+}
+----
 
 The above-described restrictions can be enhanced, thereby allowing only authenticated
 users full access to the health endpoint in a secure application. To do so, set
