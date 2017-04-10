@@ -116,7 +116,7 @@ public class DevToolsDataSourceAutoConfiguration {
 
 			H2("jdbc:h2:mem:", "org.h2.Driver", "org.h2.jdbcx.JdbcDataSource"),
 
-			HQSQLDB("jdbc:hsqldb:mem:", "org.hsqldb.jdbcDriver",
+			HSQLDB("jdbc:hsqldb:mem:", "org.hsqldb.jdbcDriver",
 					"org.hsqldb.jdbc.JDBCDriver",
 					"org.hsqldb.jdbc.pool.JDBCXADataSource");
 

@@ -33,7 +33,7 @@ class DataNeo4jTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter
 
 	private final DataNeo4jTest annotation;
 
-	DataNeo4jTypeExcludeFilter(final Class<?> testClass) {
+	DataNeo4jTypeExcludeFilter(Class<?> testClass) {
 		this.annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
 				DataNeo4jTest.class);
 	}
