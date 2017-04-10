@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,15 @@
 
 package org.springframework.boot.autoconfigure.velocity;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.bind.PropertySourcesPropertyValues;
+import org.springframework.boot.bind.RelaxedDataBinder;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
 
@@ -40,18 +45,55 @@ public class VelocityTemplateAvailabilityProvider
 	public boolean isTemplateAvailable(String view, Environment environment,
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("org.apache.velocity.app.VelocityEngine", classLoader)) {
-			PropertyResolver resolver = new RelaxedPropertyResolver(environment,
-					"spring.velocity.");
-			String loaderPath = resolver.getProperty("resource-loader-path",
-					VelocityProperties.DEFAULT_RESOURCE_LOADER_PATH);
-			String prefix = resolver.getProperty("prefix",
-					VelocityProperties.DEFAULT_PREFIX);
-			String suffix = resolver.getProperty("suffix",
-					VelocityProperties.DEFAULT_SUFFIX);
-			return resourceLoader.getResource(loaderPath + prefix + view + suffix)
-					.exists();
+			VelocityTemplateAvailabilityProperties properties = new VelocityTemplateAvailabilityProperties();
+			RelaxedDataBinder binder = new RelaxedDataBinder(properties,
+					"spring.velocity");
+			binder.bind(new PropertySourcesPropertyValues(
+					((ConfigurableEnvironment) environment).getPropertySources()));
+			for (String path : properties.getResourceLoaderPath()) {
+				if (resourceLoader.getResource(
+						path + properties.getPrefix() + view + properties.getSuffix())
+						.exists()) {
+					return true;
+				}
+			}
 		}
 		return false;
+	}
+
+	static class VelocityTemplateAvailabilityProperties {
+
+		private List<String> resourceLoaderPath = new ArrayList<String>(
+				Arrays.asList(VelocityProperties.DEFAULT_RESOURCE_LOADER_PATH));
+
+		private String prefix = VelocityProperties.DEFAULT_PREFIX;
+
+		private String suffix = VelocityProperties.DEFAULT_SUFFIX;
+
+		public List<String> getResourceLoaderPath() {
+			return this.resourceLoaderPath;
+		}
+
+		public void setResourceLoaderPath(List<String> resourceLoaderPath) {
+			this.resourceLoaderPath = resourceLoaderPath;
+		}
+
+		public String getPrefix() {
+			return this.prefix;
+		}
+
+		public void setPrefix(String prefix) {
+			this.prefix = prefix;
+		}
+
+		public String getSuffix() {
+			return this.suffix;
+		}
+
+		public void setSuffix(String suffix) {
+			this.suffix = suffix;
+		}
+
 	}
 
 }

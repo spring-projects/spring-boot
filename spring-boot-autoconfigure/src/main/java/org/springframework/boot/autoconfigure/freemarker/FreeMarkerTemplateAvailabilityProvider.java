@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,14 @@
 
 package org.springframework.boot.autoconfigure.freemarker;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.bind.PropertySourcesPropertyValues;
+import org.springframework.boot.bind.RelaxedDataBinder;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
@@ -36,18 +42,54 @@ public class FreeMarkerTemplateAvailabilityProvider
 	public boolean isTemplateAvailable(String view, Environment environment,
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("freemarker.template.Configuration", classLoader)) {
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
-					"spring.freemarker.");
-			String loaderPath = resolver.getProperty("template-loader-path",
-					FreeMarkerProperties.DEFAULT_TEMPLATE_LOADER_PATH);
-			String prefix = resolver.getProperty("prefix",
-					FreeMarkerProperties.DEFAULT_PREFIX);
-			String suffix = resolver.getProperty("suffix",
-					FreeMarkerProperties.DEFAULT_SUFFIX);
-			return resourceLoader.getResource(loaderPath + prefix + view + suffix)
-					.exists();
+			FreeMarkerTemplateAvailabilityProperties properties = new FreeMarkerTemplateAvailabilityProperties();
+			RelaxedDataBinder binder = new RelaxedDataBinder(properties,
+					"spring.freemarker");
+			binder.bind(new PropertySourcesPropertyValues(
+					((ConfigurableEnvironment) environment).getPropertySources()));
+			for (String loaderPath : properties.getTemplateLoaderPath()) {
+				if (resourceLoader.getResource(loaderPath + properties.getPrefix() + view
+						+ properties.getSuffix()).exists()) {
+					return true;
+				}
+			}
 		}
 		return false;
+	}
+
+	static final class FreeMarkerTemplateAvailabilityProperties {
+
+		private List<String> templateLoaderPath = new ArrayList<String>(
+				Arrays.asList(FreeMarkerProperties.DEFAULT_TEMPLATE_LOADER_PATH));
+
+		private String prefix = FreeMarkerProperties.DEFAULT_PREFIX;
+
+		private String suffix = FreeMarkerProperties.DEFAULT_SUFFIX;
+
+		public List<String> getTemplateLoaderPath() {
+			return this.templateLoaderPath;
+		}
+
+		public void setTemplateLoaderPath(List<String> templateLoaderPath) {
+			this.templateLoaderPath = templateLoaderPath;
+		}
+
+		public String getPrefix() {
+			return this.prefix;
+		}
+
+		public void setPrefix(String prefix) {
+			this.prefix = prefix;
+		}
+
+		public String getSuffix() {
+			return this.suffix;
+		}
+
+		public void setSuffix(String suffix) {
+			this.suffix = suffix;
+		}
+
 	}
 
 }
