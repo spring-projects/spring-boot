@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -90,53 +91,30 @@ class OnClassCondition extends SpringBootCondition
 		// additional thread seems to offer the best performance. More threads make
 		// things worse
 		int split = autoConfigurationClasses.length / 2;
-		GetOutcomesThread thread = new GetOutcomesThread(autoConfigurationClasses, 0,
-				split, autoConfigurationMetadata);
-		thread.start();
-		ConditionOutcome[] secondHalf = getOutcomes(autoConfigurationClasses, split,
-				autoConfigurationClasses.length, autoConfigurationMetadata);
-		try {
-			thread.join();
-		}
-		catch (InterruptedException ex) {
-			Thread.currentThread().interrupt();
-		}
-		ConditionOutcome[] firstHalf = thread.getResult();
+		OutcomesResolver firstHalfResolver = createOutcomesResolver(
+				autoConfigurationClasses, 0, split, autoConfigurationMetadata);
+		OutcomesResolver secondHalfResolver = new StandardOutcomesResolver(
+				autoConfigurationClasses, split, autoConfigurationClasses.length,
+				autoConfigurationMetadata, this.beanClassLoader);
+		ConditionOutcome[] secondHalf = secondHalfResolver.resolveOutcomes();
+		ConditionOutcome[] firstHalf = firstHalfResolver.resolveOutcomes();
 		ConditionOutcome[] outcomes = new ConditionOutcome[autoConfigurationClasses.length];
 		System.arraycopy(firstHalf, 0, outcomes, 0, firstHalf.length);
 		System.arraycopy(secondHalf, 0, outcomes, split, secondHalf.length);
 		return outcomes;
 	}
 
-	private ConditionOutcome[] getOutcomes(final String[] autoConfigurationClasses,
+	private OutcomesResolver createOutcomesResolver(String[] autoConfigurationClasses,
 			int start, int end, AutoConfigurationMetadata autoConfigurationMetadata) {
-		ConditionOutcome[] outcomes = new ConditionOutcome[end - start];
-		for (int i = start; i < end; i++) {
-			String autoConfigurationClass = autoConfigurationClasses[i];
-			Set<String> candidates = autoConfigurationMetadata
-					.getSet(autoConfigurationClass, "ConditionalOnClass");
-			if (candidates != null) {
-				outcomes[i - start] = getOutcome(candidates);
-			}
-		}
-		return outcomes;
-	}
-
-	private ConditionOutcome getOutcome(Set<String> candidates) {
+		OutcomesResolver outcomesResolver = new StandardOutcomesResolver(
+				autoConfigurationClasses, start, end, autoConfigurationMetadata,
+				this.beanClassLoader);
 		try {
-			List<String> missing = getMatches(candidates, MatchType.MISSING,
-					this.beanClassLoader);
-			if (!missing.isEmpty()) {
-				return ConditionOutcome
-						.noMatch(ConditionMessage.forCondition(ConditionalOnClass.class)
-								.didNotFind("required class", "required classes")
-								.items(Style.QUOTE, missing));
-			}
+			return new ThreadedOutcomesResolver(outcomesResolver);
 		}
-		catch (Exception ex) {
-			// We'll get another chance later
+		catch (AccessControlException ex) {
+			return outcomesResolver;
 		}
-		return null;
 	}
 
 	@Override
@@ -262,7 +240,45 @@ class OnClassCondition extends SpringBootCondition
 
 	}
 
-	private class GetOutcomesThread extends Thread {
+	private interface OutcomesResolver {
+
+		ConditionOutcome[] resolveOutcomes();
+
+	}
+
+	private static final class ThreadedOutcomesResolver implements OutcomesResolver {
+
+		private final Thread thread;
+
+		private volatile ConditionOutcome[] outcomes;
+
+		private ThreadedOutcomesResolver(final OutcomesResolver outcomesResolver) {
+			this.thread = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					ThreadedOutcomesResolver.this.outcomes = outcomesResolver
+							.resolveOutcomes();
+				}
+
+			});
+			this.thread.start();
+		}
+
+		@Override
+		public ConditionOutcome[] resolveOutcomes() {
+			try {
+				this.thread.join();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			return this.outcomes;
+		}
+
+	}
+
+	private final class StandardOutcomesResolver implements OutcomesResolver {
 
 		private final String[] autoConfigurationClasses;
 
@@ -272,25 +288,55 @@ class OnClassCondition extends SpringBootCondition
 
 		private final AutoConfigurationMetadata autoConfigurationMetadata;
 
-		private ConditionOutcome[] outcomes;
+		private final ClassLoader beanClassLoader;
 
-		GetOutcomesThread(String[] autoConfigurationClasses, int start, int end,
-				AutoConfigurationMetadata autoConfigurationMetadata) {
+		private StandardOutcomesResolver(String[] autoConfigurationClasses, int start,
+				int end, AutoConfigurationMetadata autoConfigurationMetadata,
+				ClassLoader beanClassLoader) {
 			this.autoConfigurationClasses = autoConfigurationClasses;
 			this.start = start;
 			this.end = end;
 			this.autoConfigurationMetadata = autoConfigurationMetadata;
+			this.beanClassLoader = beanClassLoader;
 		}
 
 		@Override
-		public void run() {
-			this.outcomes = getOutcomes(this.autoConfigurationClasses, this.start,
-					this.end, this.autoConfigurationMetadata);
+		public ConditionOutcome[] resolveOutcomes() {
+			return getOutcomes(this.autoConfigurationClasses, this.start, this.end,
+					this.autoConfigurationMetadata);
 		}
 
-		public ConditionOutcome[] getResult() {
-			return this.outcomes;
+		private ConditionOutcome[] getOutcomes(final String[] autoConfigurationClasses,
+				int start, int end, AutoConfigurationMetadata autoConfigurationMetadata) {
+			ConditionOutcome[] outcomes = new ConditionOutcome[end - start];
+			for (int i = start; i < end; i++) {
+				String autoConfigurationClass = autoConfigurationClasses[i];
+				Set<String> candidates = autoConfigurationMetadata
+						.getSet(autoConfigurationClass, "ConditionalOnClass");
+				if (candidates != null) {
+					outcomes[i - start] = getOutcome(candidates);
+				}
+			}
+			return outcomes;
+		}
+
+		private ConditionOutcome getOutcome(Set<String> candidates) {
+			try {
+				List<String> missing = getMatches(candidates, MatchType.MISSING,
+						this.beanClassLoader);
+				if (!missing.isEmpty()) {
+					return ConditionOutcome.noMatch(
+							ConditionMessage.forCondition(ConditionalOnClass.class)
+									.didNotFind("required class", "required classes")
+									.items(Style.QUOTE, missing));
+				}
+			}
+			catch (Exception ex) {
+				// We'll get another chance later
+			}
+			return null;
 		}
 
 	}
+
 }
