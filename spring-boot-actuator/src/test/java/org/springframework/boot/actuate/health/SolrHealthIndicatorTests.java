@@ -67,7 +67,7 @@ public class SolrHealthIndicatorTests {
 	@Test
 	public void solrIsUp() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
-		given(solrClient.request(any(CoreAdminRequest.class),isNull()))
+		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
 			.willReturn(mockResponse(0));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
