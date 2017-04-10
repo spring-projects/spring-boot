@@ -5845,6 +5845,13 @@ actually use the `value` attribute to refer to the real class, even though that 
 might not actually appear on the running application classpath. You can also use the
 `name` attribute if you prefer to specify the class name using a `String` value.
 
+[TIP]
+====
+If you are using `@ConditionalOnClass` or `@ConditionalOnMissingClass` as apart of a
+meta-annotation to compose your own composed annotations you must use `name` as referring
+to the class in such a case is not handled.
+====
+
 
 
 [[boot-features-bean-conditions]]
