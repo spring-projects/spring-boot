@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.health;
 import java.io.IOException;
 
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.response.SolrPingResponse;
+import org.apache.solr.client.solrj.request.CoreAdminRequest;
 import org.apache.solr.common.util.NamedList;
 import org.junit.After;
 import org.junit.Test;
@@ -32,6 +32,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -65,11 +67,8 @@ public class SolrHealthIndicatorTests {
 	@Test
 	public void solrIsUp() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
-		SolrPingResponse pingResponse = new SolrPingResponse();
-		NamedList<Object> response = new NamedList<Object>();
-		response.add("status", "OK");
-		pingResponse.setResponse(response);
-		given(solrClient.ping()).willReturn(pingResponse);
+		given(solrClient.request(any(CoreAdminRequest.class), (String) isNull()))
+			.willReturn(mockResponse(0));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -77,14 +76,34 @@ public class SolrHealthIndicatorTests {
 	}
 
 	@Test
+	public void solrIsUpAndRequestFailed() throws Exception {
+		SolrClient solrClient = mock(SolrClient.class);
+		given(solrClient.request(any(CoreAdminRequest.class), (String) isNull()))
+			.willReturn(mockResponse(400));
+		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails().get("solrStatus")).isEqualTo(400);
+	}
+
+	@Test
 	public void solrIsDown() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
-		given(solrClient.ping()).willThrow(new IOException("Connection failed"));
+		given(solrClient.request(any(CoreAdminRequest.class), (String) isNull()))
+			.willThrow(new IOException("Connection failed"));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(((String) health.getDetails().get("error"))
 				.contains("Connection failed"));
+	}
+
+	private NamedList<Object> mockResponse(int status) {
+		NamedList<Object> response = new NamedList<Object>();
+		NamedList<Object> headers = new NamedList<Object>();
+		headers.add("status", status);
+		response.add("responseHeader", headers);
+		return response;
 	}
 
 }
