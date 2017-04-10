@@ -457,7 +457,7 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	private void withDebugLogging(Runnable runnable) {
-		LoggerContext loggingContext = (LoggerContext) LogManager.getContext(true);
+		LoggerContext loggingContext = (LoggerContext) LogManager.getContext(false);
 		org.apache.logging.log4j.core.config.Configuration configuration = loggingContext
 				.getConfiguration();
 		configuration.addLogger(ConfigFileApplicationListener.class.getName(),
