@@ -598,7 +598,7 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>enforce-java-6</id>
+						<id>enforce-java-8</id>
 						<phase>test</phase>
 						<goals>
 							<goal>check</goal>
