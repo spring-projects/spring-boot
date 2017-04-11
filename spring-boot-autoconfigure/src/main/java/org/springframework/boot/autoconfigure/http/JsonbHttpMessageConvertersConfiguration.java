@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.http;
 
-import com.google.gson.Gson;
+import javax.json.bind.Jsonb;
 
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -27,56 +27,55 @@ import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
+import org.springframework.http.converter.json.JsonbHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 /**
- * Configuration for HTTP Message converters that use Gson.
+ * Configuration for HTTP Message converters that use JSON-B.
  *
- * @author Andy Wilkinson
  * @author Eddú Meléndez
- * @since 1.2.2
+ * @author 2.0.0
  */
 @Configuration
-@ConditionalOnClass(Gson.class)
-class GsonHttpMessageConvertersConfiguration {
+@ConditionalOnClass(Jsonb.class)
+class JsonbHttpMessageConvertersConfiguration {
 
 	@Configuration
-	@ConditionalOnBean(Gson.class)
-	@Conditional(PreferGsonOrMissingJacksonAndJsonbCondition.class)
-	protected static class GsonHttpMessageConverterConfiguration {
+	@ConditionalOnBean(Jsonb.class)
+	@Conditional(PreferJsonbOrMissingJacksonAndGsonCondition.class)
+	protected static class JsonbHttpMessageConverterConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public GsonHttpMessageConverter gsonHttpMessageConverter(Gson gson) {
-			GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
-			converter.setGson(gson);
+		public JsonbHttpMessageConverter jsonbHttpMessageConverter(Jsonb jsonb) {
+			JsonbHttpMessageConverter converter = new JsonbHttpMessageConverter();
+			converter.setJsonb(jsonb);
 			return converter;
 		}
 
 	}
 
-	private static class PreferGsonOrMissingJacksonAndJsonbCondition extends AnyNestedCondition {
+	private static class PreferJsonbOrMissingJacksonAndGsonCondition extends AnyNestedCondition {
 
-		PreferGsonOrMissingJacksonAndJsonbCondition() {
+		PreferJsonbOrMissingJacksonAndGsonCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY, havingValue = "gson", matchIfMissing = false)
-		static class GsonPreferred {
+		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY, havingValue = "jsonb", matchIfMissing = false)
+		static class JsonbPreferred {
 
 		}
 
-		@Conditional(JacksonAndJsonbMissing.class)
-		static class JacksonJsonbMissing {
+		@Conditional(JacksonAndGsonMissing.class)
+		static class JacksonGsonMissing {
 
 		}
 
 	}
 
-	private static class JacksonAndJsonbMissing extends NoneNestedConditions {
+	private static class JacksonAndGsonMissing extends NoneNestedConditions {
 
-		JacksonAndJsonbMissing() {
+		JacksonAndGsonMissing() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
@@ -85,8 +84,8 @@ class GsonHttpMessageConvertersConfiguration {
 
 		}
 
-		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY, havingValue = "jsonb")
-		static class JsonbMissing {
+		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY, havingValue = "gson")
+		static class GsonMissing {
 
 		}
 

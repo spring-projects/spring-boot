@@ -28,6 +28,7 @@ import org.springframework.boot.test.json.BasicJsonTester;
 import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
+import org.springframework.boot.test.json.JsonbTester;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -38,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Eddú Meléndez
  */
 @RunWith(SpringRunner.class)
 @JsonTest
@@ -58,6 +60,9 @@ public class JsonTestIntegrationTests {
 
 	@Autowired
 	private GsonTester<ExampleBasicObject> gsonJson;
+
+	@Autowired
+	private JsonbTester<ExampleBasicObject> jsonbJson;
 
 	@Test
 	public void basicJson() throws Exception {
@@ -82,6 +87,13 @@ public class JsonTestIntegrationTests {
 		ExampleBasicObject object = new ExampleBasicObject();
 		object.setValue("spring");
 		assertThat(this.gsonJson.write(object)).isEqualToJson("example.json");
+	}
+
+	@Test
+	public void jsonb() throws Exception {
+		ExampleBasicObject object = new ExampleBasicObject();
+		object.setValue("spring");
+		assertThat(this.jsonbJson.write(object)).isEqualToJson("example.json");
 	}
 
 	@Test

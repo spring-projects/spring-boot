@@ -67,13 +67,15 @@ org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 # AutoConfigureJson auto-configuration imports
 org.springframework.boot.test.autoconfigure.json.AutoConfigureJson=\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
-org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
+org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
+org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration
 
 # AutoConfigureJsonTesters auto-configuration imports
 org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters=\
 org.springframework.boot.test.autoconfigure.json.JsonTestersAutoConfiguration,\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
-org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
+org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
+org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration
 
 # AutoConfigureWebClient auto-configuration imports
 org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient=\
@@ -111,6 +113,7 @@ org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
 org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration,\
 org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration,\
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
+org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration
 
@@ -123,6 +126,7 @@ org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
 org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration,\
 org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration,\
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
+org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration.\
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
