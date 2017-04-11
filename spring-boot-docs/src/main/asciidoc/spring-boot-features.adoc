@@ -6161,7 +6161,7 @@ might not actually appear on the running application classpath. You can also use
 
 [TIP]
 ====
-If you are using `@ConditionalOnClass` or `@ConditionalOnMissingClass` as apart of a
+If you are using `@ConditionalOnClass` or `@ConditionalOnMissingClass` as a part of a
 meta-annotation to compose your own composed annotations you must use `name` as referring
 to the class in such a case is not handled.
 ====
