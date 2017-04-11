@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.data.mongo;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -34,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DataMongoTest
+@Ignore
 public class DataMongoTestReactiveIntegrationTests {
 
 	@Rule
