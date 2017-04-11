@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -76,6 +77,19 @@ public class ValidationAutoConfigurationTests {
 	}
 
 	@Test
+	public void validationCanBeConfiguredToUseJdkProxy() {
+		load(AnotherSampleServiceConfiguration.class, "spring.aop.proxy-target-class=false");
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(DefaultAnotherSampleService.class))
+			.isEmpty();
+		AnotherSampleService service = this.context
+			.getBean(AnotherSampleService.class);
+		service.doSomething(42);
+		this.thrown.expect(ConstraintViolationException.class);
+		service.doSomething(2);
+	}
+
+	@Test
 	public void userDefinedMethodValidationPostProcessorTakesPrecedence() {
 		load(SampleConfiguration.class);
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
@@ -90,14 +104,15 @@ public class ValidationAutoConfigurationTests {
 						.getPropertyValue("validator"));
 	}
 
-	public void load(Class<?> config) {
-		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+	public void load(Class<?> config, String... environment) {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(ctx, environment);
 		if (config != null) {
-			applicationContext.register(config);
+			ctx.register(config);
 		}
-		applicationContext.register(ValidationAutoConfiguration.class);
-		applicationContext.refresh();
-		this.context = applicationContext;
+		ctx.register(ValidationAutoConfiguration.class);
+		ctx.refresh();
+		this.context = ctx;
 	}
 
 	@Validated
@@ -121,6 +136,16 @@ public class ValidationAutoConfigurationTests {
 		public void doSomething(Integer counter) {
 
 		}
+	}
+
+	@Configuration
+	static class AnotherSampleServiceConfiguration {
+
+		@Bean
+		public AnotherSampleService anotherSampleService() {
+			return new DefaultAnotherSampleService();
+		}
+
 	}
 
 	@Configuration

@@ -24,10 +24,12 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
+import org.springframework.core.env.Environment;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
@@ -56,11 +58,18 @@ public class ValidationAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public static MethodValidationPostProcessor methodValidationPostProcessor(
-			Validator validator) {
+			Environment environment, Validator validator) {
 		MethodValidationPostProcessor processor = new MethodValidationPostProcessor();
-		processor.setProxyTargetClass(true);
+		processor.setProxyTargetClass(determineProxyTargetClass(environment));
 		processor.setValidator(validator);
 		return processor;
+	}
+
+	private static boolean determineProxyTargetClass(Environment environment) {
+		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
+			environment, "spring.aop.");
+		Boolean value = resolver.getProperty("proxyTargetClass", Boolean.class);
+		return (value != null ? value : true);
 	}
 
 }
