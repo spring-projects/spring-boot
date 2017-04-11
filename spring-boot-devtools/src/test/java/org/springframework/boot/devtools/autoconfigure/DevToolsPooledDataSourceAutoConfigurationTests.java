@@ -69,7 +69,7 @@ public class DevToolsPooledDataSourceAutoConfigurationTests
 	}
 
 	@Test
-	public void inMemoryh2IsShutdown() throws SQLException {
+	public void inMemoryH2IsShutdown() throws SQLException {
 		ConfigurableApplicationContext context = createContext("org.h2.Driver",
 				"jdbc:h2:mem:test", DataSourceAutoConfiguration.class,
 				DataSourceSpyConfiguration.class);
