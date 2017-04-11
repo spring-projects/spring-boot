@@ -1156,7 +1156,7 @@ content into your application; rather pick only the properties that you need.
 	management.shell.ssh.idle-timeout = # Number of milliseconds after which unused connections are closed.
 	management.shell.ssh.key-path= # Path to the SSH server key.
 	management.shell.ssh.port=2000 # SSH port.
-	management.shell.telnet.enabled=false # Enable CRaSH telnet support. Enabled by default if the TelnetPlugin is  available.
+	management.shell.telnet.enabled=false # Enable CRaSH telnet support. Enabled by default if the TelnetPlugin is available.
 	management.shell.telnet.port=5000 # Telnet port.
 
 	# TRACING ({sc-spring-boot-actuator}/trace/TraceProperties.{sc-ext}[TraceProperties])
