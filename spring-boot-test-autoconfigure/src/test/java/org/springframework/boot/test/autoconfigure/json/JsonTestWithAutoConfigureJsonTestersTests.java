@@ -25,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.json.app.ExampleJsonApplicati
 import org.springframework.boot.test.json.BasicJsonTester;
 import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.test.json.JsonbTester;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -50,6 +51,9 @@ public class JsonTestWithAutoConfigureJsonTestersTests {
 	@Autowired(required = false)
 	private GsonTester<ExampleBasicObject> gsonTester;
 
+	@Autowired(required = false)
+	private JsonbTester<ExampleBasicObject> jsonbTester;
+
 	@Test
 	public void basicJson() throws Exception {
 		assertThat(this.basicJson).isNull();
@@ -63,6 +67,11 @@ public class JsonTestWithAutoConfigureJsonTestersTests {
 	@Test
 	public void gson() throws Exception {
 		assertThat(this.gsonTester).isNull();
+	}
+
+	@Test
+	public void jsonb() throws Exception {
+		assertThat(this.jsonbTester).isNull();
 	}
 
 }

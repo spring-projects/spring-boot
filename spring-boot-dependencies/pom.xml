@@ -119,6 +119,8 @@
 		<jolokia.version>1.3.7</jolokia.version>
 		<jooq.version>3.9.4</jooq.version>
 		<jsonassert.version>1.5.0</jsonassert.version>
+		<javax.json-api.version>1.1</javax.json-api.version>
+		<javax-jsonb.version>1.0</javax-jsonb.version>
 		<json-path.version>2.4.0</json-path.version>
 		<jstl.version>1.2</jstl.version>
 		<jtds.version>1.3.1</jtds.version>
@@ -882,6 +884,16 @@
 				<groupId>javax.jms</groupId>
 				<artifactId>javax.jms-api</artifactId>
 				<version>${javax-jms.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish</groupId>
+				<artifactId>javax.json</artifactId>
+				<version>${javax.json-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.json.bind</groupId>
+				<artifactId>javax.json.bind-api</artifactId>
+				<version>${javax-jsonb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.mail</groupId>

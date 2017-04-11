@@ -31,6 +31,7 @@ import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.test.json.JsonbTester;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.BootstrapWith;
@@ -45,8 +46,9 @@ import org.springframework.test.context.BootstrapWith;
  * {@code Module})
  * <p>
  * By default, tests annotated with {@code JsonTest} will also initialize
- * {@link JacksonTester} and {@link GsonTester} fields. More fine-grained control can be
- * provided via the {@link AutoConfigureJsonTesters @AutoConfigureJsonTesters} annotation.
+ * {@link JacksonTester}, {@link JsonbTester} and {@link GsonTester} fields. More
+ * fine-grained control can be provided via the {@link AutoConfigureJsonTesters @AutoConfigureJsonTesters}
+ * annotation.
  *
  * @author Phillip Webb
  * @see AutoConfigureJson

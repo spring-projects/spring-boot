@@ -26,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.BasicJsonTester;
 import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.test.json.JsonbTester;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -50,6 +51,9 @@ public class SpringBootTestWithAutoConfigureJsonTestersTests {
 
 	@Autowired
 	private GsonTester<ExampleBasicObject> gsonTester;
+
+	@Autowired
+	JsonbTester<ExampleBasicObject> jsonbTester;
 
 	@Test
 	public void contextLoads() {
