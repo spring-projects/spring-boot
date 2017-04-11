@@ -1058,6 +1058,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.shutdown.path= # Endpoint path.
 	endpoints.shutdown.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.trace.enabled= # Enable the endpoint.
+	endpoints.trace.filter.enabled=true # Enable the trace servlet filter.
 	endpoints.trace.id= # Endpoint identifier.
 	endpoints.trace.path= # Endpoint path.
 	endpoints.trace.sensitive= # Mark if the endpoint exposes sensitive information.
