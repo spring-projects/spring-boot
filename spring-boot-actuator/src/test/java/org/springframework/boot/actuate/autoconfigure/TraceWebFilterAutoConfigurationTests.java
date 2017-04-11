@@ -24,6 +24,7 @@ import org.springframework.boot.actuate.trace.TraceProperties;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +56,19 @@ public class TraceWebFilterAutoConfigurationTests {
 				TraceWebFilterAutoConfiguration.class);
 		WebRequestTraceFilter filter = context.getBean(WebRequestTraceFilter.class);
 		assertThat(filter).isInstanceOf(TestWebRequestTraceFilter.class);
+		context.close();
+	}
+
+	@Test
+	public void skipsFilterIfPropertyDisabled() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context,
+				"endpoints.trace.filter.enabled:false");
+		context.register(PropertyPlaceholderAutoConfiguration.class,
+				TraceRepositoryAutoConfiguration.class,
+				TraceWebFilterAutoConfiguration.class);
+		context.refresh();
+		assertThat(context.getBeansOfType(WebRequestTraceFilter.class).size()).isEqualTo(0);
 		context.close();
 	}
 
