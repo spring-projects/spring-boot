@@ -188,6 +188,22 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
+	public void traceWithParameterMap() throws Exception {
+		this.restTemplate.getForEntity("/health?param1=value1", String.class);
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<List> entity = this.restTemplate
+				.withBasicAuth("user", getPassword()).getForEntity("/trace", List.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> list = entity.getBody();
+		Map<String, Object> trace = list.get(0);
+		@SuppressWarnings("unchecked")
+		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>)trace
+				.get("info")).get("parameters");
+		assertThat(map.get("param1")).isNotNull();
+	}
+
+	@Test
 	public void testErrorPageDirectAccess() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/error", Map.class);
