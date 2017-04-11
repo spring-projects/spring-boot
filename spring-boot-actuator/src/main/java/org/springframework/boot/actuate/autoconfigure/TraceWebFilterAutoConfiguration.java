@@ -41,11 +41,11 @@ import org.springframework.web.servlet.DispatcherServlet;
  *
  * @author Dave Syer
  */
+@Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class, ServletRegistration.class })
 @AutoConfigureAfter(TraceRepositoryAutoConfiguration.class)
-@ConditionalOnProperty(name = "endpoints.trace.filter.enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "endpoints.trace.filter", name = "enabled", matchIfMissing = true)
 @EnableConfigurationProperties(TraceProperties.class)
-@Configuration
 public class TraceWebFilterAutoConfiguration {
 
 	private final TraceRepository traceRepository;
