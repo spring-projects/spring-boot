@@ -726,52 +726,52 @@ Sample summarized HTTP response (default for anonymous request):
 
 [source,indent=0]
 ----
-$ curl -i localhost:8080/health
-HTTP/1.1 200
-X-Application-Context: application
-Content-Type: application/vnd.spring-boot.actuator.v2+json;charset=UTF-8
-Content-Length: 15
+	$ curl -i localhost:8080/health
+	HTTP/1.1 200
+	X-Application-Context: application
+	Content-Type: application/vnd.spring-boot.actuator.v2+json;charset=UTF-8
+	Content-Length: 15
 
-{"status":"UP"}
+	{"status":"UP"}
 ----
 
 Sample summarized HTTP response for status "DOWN" (notice the 503 status code):
 
 [source,indent=0]
 ----
-$ curl -i localhost:8080/health
-HTTP/1.1 503
-X-Application-Context: application
-Content-Type: application/vnd.spring-boot.actuator.v2+json;charset=UTF-8
-Content-Length: 17
+	$ curl -i localhost:8080/health
+	HTTP/1.1 503
+	X-Application-Context: application
+	Content-Type: application/vnd.spring-boot.actuator.v2+json;charset=UTF-8
+	Content-Length: 17
 
-{"status":"DOWN"}
+	{"status":"DOWN"}
 ----
 
 Sample detailed  HTTP response:
 
 [source,indent=0]
 ----
-$ curl -i localhost:8080/health
-HTTP/1.1 200 OK
-X-Application-Context: application
-Content-Type: application/vnd.spring-boot.actuator.v2+json;charset=UTF-8
-Content-Length: 221
+	$ curl -i localhost:8080/health
+	HTTP/1.1 200 OK
+	X-Application-Context: application
+	Content-Type: application/vnd.spring-boot.actuator.v2+json;charset=UTF-8
+	Content-Length: 221
 
-{
-  "status" : "UP",
-  "diskSpace" : {
-    "status" : "UP",
-    "total" : 63251804160,
-    "free" : 31316164608,
-    "threshold" : 10485760
-  },
-  "db" : {
-    "status" : "UP",
-    "database" : "H2",
-    "hello" : 1
-  }
-}
+	{
+	  "status" : "UP",
+	  "diskSpace" : {
+	    "status" : "UP",
+	    "total" : 63251804160,
+	    "free" : 31316164608,
+	    "threshold" : 10485760
+	  },
+	  "db" : {
+	    "status" : "UP",
+	    "database" : "H2",
+	    "hello" : 1
+	  }
+	}
 ----
 
 The above-described restrictions can be enhanced, thereby allowing only authenticated

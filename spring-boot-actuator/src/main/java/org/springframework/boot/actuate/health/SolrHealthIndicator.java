@@ -41,13 +41,10 @@ public class SolrHealthIndicator extends AbstractHealthIndicator {
 		CoreAdminRequest request = new CoreAdminRequest();
 		request.setAction(CoreAdminParams.CoreAdminAction.STATUS);
 		CoreAdminResponse response = request.process(this.solrClient);
-		int status = response.getStatus();
-		if (status == 0) {
-			builder.up().withDetail("solrStatus", "OK");
-		}
-		else {
-			builder.down().withDetail("solrStatus", status);
-		}
+		int statusCode = response.getStatus();
+		Status status = (statusCode == 0 ? Status.UP : Status.DOWN);
+		builder.status(status).withDetail("solrStatus",
+				(statusCode == 0 ? "OK" : statusCode));
 	}
 
 }

@@ -78,12 +78,12 @@ public class ValidationAutoConfigurationTests {
 
 	@Test
 	public void validationCanBeConfiguredToUseJdkProxy() {
-		load(AnotherSampleServiceConfiguration.class, "spring.aop.proxy-target-class=false");
+		load(AnotherSampleServiceConfiguration.class,
+				"spring.aop.proxy-target-class=false");
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(DefaultAnotherSampleService.class))
-			.isEmpty();
-		AnotherSampleService service = this.context
-			.getBean(AnotherSampleService.class);
+				.isEmpty();
+		AnotherSampleService service = this.context.getBean(AnotherSampleService.class);
 		service.doSomething(42);
 		this.thrown.expect(ConstraintViolationException.class);
 		service.doSomething(2);

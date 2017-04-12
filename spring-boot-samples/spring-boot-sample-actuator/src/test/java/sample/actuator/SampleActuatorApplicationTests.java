@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -198,7 +198,7 @@ public class SampleActuatorApplicationTests {
 		List<Map<String, Object>> list = entity.getBody();
 		Map<String, Object> trace = list.get(0);
 		@SuppressWarnings("unchecked")
-		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>)trace
+		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) trace
 				.get("info")).get("parameters");
 		assertThat(map.get("param1")).isNotNull();
 	}
