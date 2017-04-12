@@ -80,14 +80,6 @@ public class GsonProperties {
     private String dateFormat;
 
 
-    public List<String> getExcludeFieldsWithModifiers() {
-        return excludeFieldsWithModifiers;
-    }
-
-    public void setExcludeFieldsWithModifiers(List<String> excludeFieldsWithModifiers) {
-        this.excludeFieldsWithModifiers = excludeFieldsWithModifiers;
-    }
-
     public boolean isGenerateNonExecutableJson() {
         return generateNonExecutableJson;
     }
