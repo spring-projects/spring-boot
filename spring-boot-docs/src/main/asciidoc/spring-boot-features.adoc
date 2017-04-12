@@ -666,6 +666,22 @@ with a mutable value, e.g. this will bind to the properties above
 	}
 ----
 
+[NOTE]
+====
+Extra care is required when configuring lists that way as overriding will not work as you
+would expect. In the example above, when `my.servers` is redefined in several places, the
+individual elements are targeted for override, not the list. To make sure that a
+`PropertySource` with higher precedence can override the list, you need to define it as
+a single property:
+
+[source,yaml,indent=0]
+----
+	 my:
+		servers: dev.bar.com,foo.bar.com
+----
+
+====
+
 
 
 [[boot-features-external-config-exposing-yaml-to-spring]]
