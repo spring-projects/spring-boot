@@ -20,13 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.template.AbstractTemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
-import org.springframework.boot.bind.PropertySourcesPropertyValues;
-import org.springframework.boot.bind.RelaxedDataBinder;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link TemplateAvailabilityProvider} that provides availability information for
@@ -39,36 +34,27 @@ import org.springframework.util.ClassUtils;
  */
 @Deprecated
 public class VelocityTemplateAvailabilityProvider
-		implements TemplateAvailabilityProvider {
+		extends AbstractTemplateAvailabilityProvider {
 
-	@Override
-	public boolean isTemplateAvailable(String view, Environment environment,
-			ClassLoader classLoader, ResourceLoader resourceLoader) {
-		if (ClassUtils.isPresent("org.apache.velocity.app.VelocityEngine", classLoader)) {
-			VelocityTemplateAvailabilityProperties properties = new VelocityTemplateAvailabilityProperties();
-			RelaxedDataBinder binder = new RelaxedDataBinder(properties,
-					"spring.velocity");
-			binder.bind(new PropertySourcesPropertyValues(
-					((ConfigurableEnvironment) environment).getPropertySources()));
-			for (String path : properties.getResourceLoaderPath()) {
-				if (resourceLoader.getResource(
-						path + properties.getPrefix() + view + properties.getSuffix())
-						.exists()) {
-					return true;
-				}
-			}
-		}
-		return false;
+	public VelocityTemplateAvailabilityProvider() {
+		super("org.apache.velocity.app.VelocityEngine",
+				VelocityTemplateAvailabilityProperties.class, "spring.velocity");
 	}
 
-	static class VelocityTemplateAvailabilityProperties {
+	static class VelocityTemplateAvailabilityProperties
+			extends TemplateAvailabilityProperties {
 
 		private List<String> resourceLoaderPath = new ArrayList<String>(
 				Arrays.asList(VelocityProperties.DEFAULT_RESOURCE_LOADER_PATH));
 
-		private String prefix = VelocityProperties.DEFAULT_PREFIX;
+		VelocityTemplateAvailabilityProperties() {
+			super(VelocityProperties.DEFAULT_PREFIX, VelocityProperties.DEFAULT_SUFFIX);
+		}
 
-		private String suffix = VelocityProperties.DEFAULT_SUFFIX;
+		@Override
+		protected List<String> getLoaderPath() {
+			return this.resourceLoaderPath;
+		}
 
 		public List<String> getResourceLoaderPath() {
 			return this.resourceLoaderPath;
@@ -76,22 +62,6 @@ public class VelocityTemplateAvailabilityProvider
 
 		public void setResourceLoaderPath(List<String> resourceLoaderPath) {
 			this.resourceLoaderPath = resourceLoaderPath;
-		}
-
-		public String getPrefix() {
-			return this.prefix;
-		}
-
-		public void setPrefix(String prefix) {
-			this.prefix = prefix;
-		}
-
-		public String getSuffix() {
-			return this.suffix;
-		}
-
-		public void setSuffix(String suffix) {
-			this.suffix = suffix;
 		}
 
 	}

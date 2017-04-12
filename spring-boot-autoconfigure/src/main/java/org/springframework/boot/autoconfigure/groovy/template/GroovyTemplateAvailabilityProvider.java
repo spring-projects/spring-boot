@@ -20,13 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.template.AbstractTemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
-import org.springframework.boot.bind.PropertySourcesPropertyValues;
-import org.springframework.boot.bind.RelaxedDataBinder;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link TemplateAvailabilityProvider} that provides availability information for Groovy
@@ -35,35 +30,29 @@ import org.springframework.util.ClassUtils;
  * @author Dave Syer
  * @since 1.1.0
  */
-public class GroovyTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
+public class GroovyTemplateAvailabilityProvider
+		extends AbstractTemplateAvailabilityProvider {
 
-	@Override
-	public boolean isTemplateAvailable(String view, Environment environment,
-			ClassLoader classLoader, ResourceLoader resourceLoader) {
-		if (ClassUtils.isPresent("groovy.text.TemplateEngine", classLoader)) {
-			GroovyTemplateAvailabilityProperties properties = new GroovyTemplateAvailabilityProperties();
-			RelaxedDataBinder binder = new RelaxedDataBinder(properties,
-					"spring.groovy.template");
-			binder.bind(new PropertySourcesPropertyValues(
-					((ConfigurableEnvironment) environment).getPropertySources()));
-			for (String loaderPath : properties.getResourceLoaderPath()) {
-				if (resourceLoader.getResource(loaderPath + properties.getPrefix() + view
-						+ properties.getSuffix()).exists()) {
-					return true;
-				}
-			}
-		}
-		return false;
+	public GroovyTemplateAvailabilityProvider() {
+		super("groovy.text.TemplateEngine", GroovyTemplateAvailabilityProperties.class,
+				"spring.groovy.template");
 	}
 
-	static final class GroovyTemplateAvailabilityProperties {
+	static final class GroovyTemplateAvailabilityProperties
+			extends TemplateAvailabilityProperties {
 
 		private List<String> resourceLoaderPath = new ArrayList<String>(
 				Arrays.asList(GroovyTemplateProperties.DEFAULT_RESOURCE_LOADER_PATH));
 
-		private String prefix = GroovyTemplateProperties.DEFAULT_PREFIX;
+		GroovyTemplateAvailabilityProperties() {
+			super(GroovyTemplateProperties.DEFAULT_PREFIX,
+					GroovyTemplateProperties.DEFAULT_SUFFIX);
+		}
 
-		private String suffix = GroovyTemplateProperties.DEFAULT_SUFFIX;
+		@Override
+		protected List<String> getLoaderPath() {
+			return this.resourceLoaderPath;
+		}
 
 		public List<String> getResourceLoaderPath() {
 			return this.resourceLoaderPath;
@@ -71,22 +60,6 @@ public class GroovyTemplateAvailabilityProvider implements TemplateAvailabilityP
 
 		public void setResourceLoaderPath(List<String> resourceLoaderPath) {
 			this.resourceLoaderPath = resourceLoaderPath;
-		}
-
-		public String getPrefix() {
-			return this.prefix;
-		}
-
-		public void setPrefix(String prefix) {
-			this.prefix = prefix;
-		}
-
-		public String getSuffix() {
-			return this.suffix;
-		}
-
-		public void setSuffix(String suffix) {
-			this.suffix = suffix;
 		}
 
 	}

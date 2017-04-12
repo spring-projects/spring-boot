@@ -450,14 +450,15 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.max-http-post-size", "-1");
 		bindProperties(map);
-		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(0);
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory(
+				0);
 		this.properties.customize(container);
-		TomcatEmbeddedServletContainer embeddedContainer =
-			(TomcatEmbeddedServletContainer) container.getEmbeddedServletContainer();
+		TomcatEmbeddedServletContainer embeddedContainer = (TomcatEmbeddedServletContainer) container
+				.getEmbeddedServletContainer();
 		embeddedContainer.start();
 		try {
 			assertThat(embeddedContainer.getTomcat().getConnector().getMaxPostSize())
-				.isEqualTo(-1);
+					.isEqualTo(-1);
 		}
 		finally {
 			embeddedContainer.stop();
