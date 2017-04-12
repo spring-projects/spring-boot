@@ -66,7 +66,7 @@ public class TraceWebFilterAutoConfigurationTests {
 	public void skipsFilterIfPropertyDisabled() throws Exception {
 		load("endpoints.trace.filter.enabled:false");
 		assertThat(this.context.getBeansOfType(WebRequestTraceFilter.class).size())
-			.isEqualTo(0);
+				.isEqualTo(0);
 	}
 
 	private void load(String... environment) {
@@ -74,16 +74,16 @@ public class TraceWebFilterAutoConfigurationTests {
 	}
 
 	private void load(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, environment);
 		if (config != null) {
-			ctx.register(config);
+			context.register(config);
 		}
-		ctx.register(PropertyPlaceholderAutoConfiguration.class,
-			TraceRepositoryAutoConfiguration.class,
-			TraceWebFilterAutoConfiguration.class);
-		ctx.refresh();
-		this.context = ctx;
+		context.register(PropertyPlaceholderAutoConfiguration.class,
+				TraceRepositoryAutoConfiguration.class,
+				TraceWebFilterAutoConfiguration.class);
+		context.refresh();
+		this.context = context;
 	}
 
 	@Configuration

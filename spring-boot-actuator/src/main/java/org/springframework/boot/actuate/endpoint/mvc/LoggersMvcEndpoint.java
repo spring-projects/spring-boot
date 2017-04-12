@@ -68,17 +68,19 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 			// disabled
 			return getDisabledResponse();
 		}
-		LogLevel logLevel;
 		try {
-			String level = configuration.get("configuredLevel");
-			logLevel = level == null ? null : LogLevel.valueOf(level.toUpperCase());
+			LogLevel logLevel = getLogLevel(configuration);
+			this.delegate.setLogLevel(name, logLevel);
+			return ResponseEntity.ok().build();
 		}
 		catch (IllegalArgumentException ex) {
 			return ResponseEntity.badRequest().build();
 		}
+	}
 
-		this.delegate.setLogLevel(name, logLevel);
-		return ResponseEntity.ok().build();
+	private LogLevel getLogLevel(Map<String, String> configuration) {
+		String level = configuration.get("configuredLevel");
+		return (level == null ? null : LogLevel.valueOf(level.toUpperCase()));
 	}
 
 }
