@@ -1,0 +1,11 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+def property(String name, Object defaultValue) {
+	project.hasProperty(name) ? project.getProperty(name) : defaultValue
+}
+
+task buildInfo(type: org.springframework.boot.gradle.tasks.buildinfo.BuildInfo)

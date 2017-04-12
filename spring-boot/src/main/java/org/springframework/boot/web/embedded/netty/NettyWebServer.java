@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import reactor.core.Loopback;
 import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.http.server.HttpServer;
 
@@ -39,11 +38,11 @@ import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
  * @author Madhura Bhave
  * @since 2.0.0
  */
-public class NettyWebServer implements WebServer, Loopback {
+public class NettyWebServer implements WebServer {
 
 	private static final Log logger = LogFactory.getLog(NettyWebServer.class);
 
-	private static CountDownLatch latch = new CountDownLatch(1);
+	private CountDownLatch latch;
 
 	private final ReactorHttpHandlerAdapter handlerAdapter;
 
@@ -58,18 +57,9 @@ public class NettyWebServer implements WebServer, Loopback {
 	}
 
 	@Override
-	public Object connectedInput() {
-		return this.reactorServer;
-	}
-
-	@Override
-	public Object connectedOutput() {
-		return this.reactorServer;
-	}
-
-	@Override
 	public void start() throws WebServerException {
 		if (this.nettyContext.get() == null) {
+			this.latch = new CountDownLatch(1);
 			try {
 				this.nettyContext
 						.set(this.reactorServer.newHandler(this.handlerAdapter).block());
@@ -102,7 +92,7 @@ public class NettyWebServer implements WebServer, Loopback {
 			@Override
 			public void run() {
 				try {
-					NettyWebServer.latch.await();
+					NettyWebServer.this.latch.await();
 				}
 				catch (InterruptedException e) {
 				}
@@ -120,7 +110,7 @@ public class NettyWebServer implements WebServer, Loopback {
 		if (context != null) {
 			context.dispose();
 		}
-		latch.countDown();
+		this.latch.countDown();
 	}
 
 	@Override

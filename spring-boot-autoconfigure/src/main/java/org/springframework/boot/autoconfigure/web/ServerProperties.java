@@ -214,7 +214,7 @@ public class ServerProperties {
 	public class Servlet {
 
 		/**
-		 * ServletContext parameters.
+		 * Servlet context init parameters.
 		 */
 		private final Map<String, String> contextParameters = new HashMap<>();
 

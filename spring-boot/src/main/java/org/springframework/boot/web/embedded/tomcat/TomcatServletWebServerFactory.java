@@ -339,7 +339,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			Compression compression = getCompression();
 			protocol.setCompression("on");
 			protocol.setCompressionMinSize(compression.getMinResponseSize());
-			protocol.setCompressableMimeType(
+			protocol.setCompressibleMimeType(
 					StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes()));
 			if (getCompression().getExcludedUserAgents() != null) {
 				protocol.setNoCompressionUserAgents(

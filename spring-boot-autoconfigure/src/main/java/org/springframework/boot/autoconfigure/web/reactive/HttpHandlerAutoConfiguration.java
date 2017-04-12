@@ -115,10 +115,10 @@ public class HttpHandlerAutoConfiguration {
 					.reduce(RouterFunction::and).get();
 			HandlerStrategies.Builder strategiesBuilder = HandlerStrategies.builder();
 			if (this.messageReaders != null) {
-				this.messageReaders.forEach(strategiesBuilder::messageReader);
+				this.messageReaders.forEach(strategiesBuilder::customMessageReader);
 			}
 			if (this.messageWriters != null) {
-				this.messageWriters.forEach(strategiesBuilder::messageWriter);
+				this.messageWriters.forEach(strategiesBuilder::customMessageWriter);
 			}
 			if (this.viewResolvers != null) {
 				this.viewResolvers.forEach(strategiesBuilder::viewResolver);

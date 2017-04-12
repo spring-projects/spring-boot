@@ -244,14 +244,13 @@ public class WebRequestTraceFilterTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void filterAddsTimeTaken() throws Exception {
 		MockHttpServletRequest request = spy(new MockHttpServletRequest("GET", "/foo"));
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		MockFilterChain chain = new MockFilterChain();
 		this.filter.doFilter(request, response, chain);
-		String timeTaken = (String) this.repository.findAll()
-				.iterator().next().getInfo().get("timeTaken");
+		String timeTaken = (String) this.repository.findAll().iterator().next().getInfo()
+				.get("timeTaken");
 		assertThat(timeTaken).isNotNull();
 	}
 

@@ -60,7 +60,7 @@ public class AopAutoConfigurationTests {
 	@Test
 	public void aopWithDefaultSettings() {
 		load(TestConfiguration.class);
-		testProxyTargetClassDisabled();
+		testProxyTargetClassEnabled();
 	}
 
 	@Test

@@ -155,8 +155,10 @@ public class CliTester implements TestRule {
 		return sources;
 	}
 
-	public String getOutput() {
-		return this.outputCapture.toString();
+	private String getOutput() {
+		String output = this.outputCapture.toString();
+		this.outputCapture.reset();
+		return output;
 	}
 
 	@Override

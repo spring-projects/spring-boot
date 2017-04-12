@@ -56,9 +56,10 @@ public class SolrAutoConfiguration {
 
 	private SolrClient createSolrClient() {
 		if (StringUtils.hasText(this.properties.getZkHost())) {
-			return new CloudSolrClient(this.properties.getZkHost());
+			return new CloudSolrClient.Builder().withZkHost(this.properties.getZkHost())
+					.build();
 		}
-		return new HttpSolrClient(this.properties.getHost());
+		return new HttpSolrClient.Builder(this.properties.getHost()).build();
 	}
 
 }

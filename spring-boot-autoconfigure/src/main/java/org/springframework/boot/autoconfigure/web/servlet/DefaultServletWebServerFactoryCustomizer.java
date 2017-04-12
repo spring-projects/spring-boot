@@ -236,7 +236,7 @@ public class DefaultServletWebServerFactoryCustomizer
 			if (maxHttpHeaderSize > 0) {
 				customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize);
 			}
-			if (tomcatProperties.getMaxHttpPostSize() > 0) {
+			if (tomcatProperties.getMaxHttpPostSize() != 0) {
 				customizeMaxHttpPostSize(factory, tomcatProperties.getMaxHttpPostSize());
 			}
 			if (tomcatProperties.getAccesslog().isEnabled()) {

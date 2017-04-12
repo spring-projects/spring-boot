@@ -260,7 +260,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		return new ShutdownHandler();
 	}
 
-	ch.qos.logback.classic.Logger getLogger(String name) {
+	private ch.qos.logback.classic.Logger getLogger(String name) {
 		LoggerContext factory = getLoggerContext();
 		if (StringUtils.isEmpty(name) || ROOT_LOGGER_NAME.equals(name)) {
 			name = Logger.ROOT_LOGGER_NAME;

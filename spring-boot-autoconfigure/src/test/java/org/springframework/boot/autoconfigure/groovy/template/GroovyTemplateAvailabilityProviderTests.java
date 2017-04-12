@@ -59,6 +59,14 @@ public class GroovyTemplateAvailabilityProviderTests {
 	}
 
 	@Test
+	public void availabilityOfTemplateWithCustomLoaderPathConfiguredAsAList() {
+		this.environment.setProperty("spring.groovy.template.resource-loader-path[0]",
+				"classpath:/custom-templates/");
+		assertThat(this.provider.isTemplateAvailable("custom", this.environment,
+				getClass().getClassLoader(), this.resourceLoader)).isTrue();
+	}
+
+	@Test
 	public void availabilityOfTemplateWithCustomPrefix() {
 		this.environment.setProperty("spring.groovy.template.prefix", "prefix/");
 		assertThat(this.provider.isTemplateAvailable("prefixed", this.environment,

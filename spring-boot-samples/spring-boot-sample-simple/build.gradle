@@ -19,15 +19,10 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 
-jar {
-	baseName = 'spring-boot-sample-simple'
-	version =  '0.0.0'
-}
-
-bootRun {
-  systemProperties = System.properties
-}
+version = springBootVersion
+group = 'org.springframework.boot'
 
 repositories {
 	// NOTE: You should declare only repositories that you need here
@@ -40,9 +35,6 @@ repositories {
 
 dependencies {
 	compile("org.springframework.boot:spring-boot-starter")
+	compile("org.hibernate:hibernate-validator")
 	testCompile("org.springframework.boot:spring-boot-starter-test")
-}
-
-task wrapper(type: Wrapper) {
-	gradleVersion = '1.6'
 }

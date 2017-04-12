@@ -72,7 +72,7 @@
 			<dependency>
 				<groupId>io.spring.gradle</groupId>
 				<artifactId>dependency-management-plugin</artifactId>
-				<version>1.0.0.RELEASE</version>
+				<version>1.0.2.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>jline</groupId>
@@ -198,46 +198,6 @@
 				<groupId>org.eclipse.aether</groupId>
 				<artifactId>aether-util</artifactId>
 				<version>${aether.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-base-services</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-base-services-groovy</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-core</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-language-java</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-language-jvm</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-platform-jvm</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-plugins</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-process-services</artifactId>
-				<version>${gradle.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jetbrains.kotlin</groupId>
@@ -638,7 +598,7 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>enforce-java-6</id>
+						<id>enforce-java-8</id>
 						<phase>test</phase>
 						<goals>
 							<goal>check</goal>

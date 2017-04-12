@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.apache.commons.logging.impl.Jdk14Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,7 +64,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Rule
 	public InternalOutputCapture output = new InternalOutputCapture();
 
-	private Jdk14Logger logger;
+	private Logger logger;
 
 	private Locale defaultLocale;
 
@@ -72,7 +72,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	public void init() throws SecurityException, IOException {
 		this.defaultLocale = Locale.getDefault();
 		Locale.setDefault(Locale.ENGLISH);
-		this.logger = new Jdk14Logger(getClass().getName());
+		this.logger = Logger.getLogger(getClass().getName());
 	}
 
 	@After
@@ -82,7 +82,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@After
 	public void resetLogger() {
-		this.logger.getLogger().setLevel(Level.OFF);
+		this.logger.setLevel(Level.OFF);
 	}
 
 	@Test
@@ -161,9 +161,9 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	public void setLevel() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
-		this.logger.debug("Hello");
+		this.logger.fine("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
-		this.logger.debug("Hello");
+		this.logger.fine("Hello");
 		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"))
 				.isEqualTo(1);
 	}

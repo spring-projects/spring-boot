@@ -1,0 +1,33 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'org.springframework.boot'
+
+if (project.hasProperty('applyApplicationPlugin')) {
+	apply plugin: 'application'
+}
+
+task('taskExists') {
+	doFirst {
+		println "$taskName exists = ${tasks.findByName(taskName) != null}"
+	}
+}
+
+task('distributionExists') {
+	doFirst {
+		boolean found = project.hasProperty('distributions') &&
+				distributions.findByName(distributionName) != null
+		println "$distributionName exists = $found"
+	}
+}
+
+task('javaCompileEncoding') {
+	doFirst {
+		tasks.withType(JavaCompile) {
+			println "$name = ${options.encoding}"
+		}
+	}
+}

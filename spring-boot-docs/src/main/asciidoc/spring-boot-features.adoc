@@ -666,6 +666,22 @@ with a mutable value, e.g. this will bind to the properties above
 	}
 ----
 
+[NOTE]
+====
+Extra care is required when configuring lists that way as overriding will not work as you
+would expect. In the example above, when `my.servers` is redefined in several places, the
+individual elements are targeted for override, not the list. To make sure that a
+`PropertySource` with higher precedence can override the list, you need to define it as
+a single property:
+
+[source,yaml,indent=0]
+----
+	 my:
+		servers: dev.bar.com,foo.bar.com
+----
+
+====
+
 
 
 [[boot-features-external-config-exposing-yaml-to-spring]]
@@ -3503,6 +3519,13 @@ persistence for the embedded mode:
 	spring.data.neo4j.uri=file://var/tmp/graph.db
 ----
 
+[NOTE]
+====
+The Neo4j OGM embedded driver does not provide the Neo4j kernel. Users are expected to
+provide this dependency manually, see
+http://neo4j.com/docs/ogm-manual/current/reference/#reference:getting-started[the documentation]
+for more details.
+====
 
 
 [[boot-features-neo4j-ogm-session]]
@@ -5219,6 +5242,11 @@ how your tests will run:
 * `NONE` -- Loads an `ApplicationContext` using `SpringApplication` but does not provide
   _any_ servlet environment (mock or otherwise).
 
+NOTE: If your test is `@Transactional`, it will rollback the transaction at the end of
+each test method by default. If you're using this arrangement in combination with either
+`RANDOM_PORT` or `DEFINED_PORT`, any transaction initiated on the server won't rollback as
+the test is running in a different thread than the server processing.
+
 NOTE: In addition to `@SpringBootTest` a number of other annotations are also
 provided for testing more specific slices of an application. See below for details.
 
@@ -5257,16 +5285,29 @@ potentially time consuming process of loading the context will only happen once.
 [[boot-features-testing-spring-boot-applications-excluding-config]]
 ==== Excluding test configuration
 If your application uses component scanning, for example if you use
-`@SpringBootApplication` or `@ComponentScan`, you may find components or configurations
+`@SpringBootApplication` or `@ComponentScan`, you may find top-level configuration classes
 created only for specific tests accidentally get picked up everywhere.
 
-To help prevent this, Spring Boot provides `@TestComponent` and `@TestConfiguration`
-annotations that can be used on classes in `src/test/java` to indicate that they should
-not be picked up by scanning.
+As we <<boot-features-testing-spring-boot-applications-detecting-config,have seen above>>,
+`@TestConfiguration` can be used on an inner class of a test to customize the primary
+configuration. When placed on a top-level class, `@TestConfiguration` indicates that
+classes in `src/test/java` should not be picked up by scanning. You can then import that
+class explicitly where it is required:
 
-NOTE: `@TestComponent` and `@TestConfiguration` are only needed on top level classes. If
-you define `@Configuration` or `@Component` as inner-classes within a test (any class
-that has `@Test` methods or `@RunWith`), they will be automatically filtered.
+[source,java,indent=0]
+----
+	@RunWith(SpringRunner.class)
+	@SpringBootTest
+	@Import(MyTestsConfiguration.class)
+	public class MyTests {
+
+		@Test
+		public void exampleTest() {
+			...
+		}
+
+	}
+----
 
 NOTE: If you directly use `@ComponentScan` (i.e. not via `@SpringBootApplication`) you
 will need to register the `TypeExcludeFilter` with it. See
@@ -5710,6 +5751,59 @@ A list of the auto-configuration that is enabled by `@DataMongoTest` can be
 
 
 
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-neo4j-test]]
+==== Auto-configured Data Neo4j tests
+`@DataNeo4jTest` can be used if you want to test Neo4j applications. By default, it will
+use an in-memory embedded Neo4j (if the embedded driver is available), scan for
+`@NodeEntity` classes and configure Spring Data Neo4j repositories. Regular `@Component`
+beans will not be loaded into the `ApplicationContext`:
+
+[source,java,indent=0]
+----
+	import org.junit.runner.RunWith;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+
+	@RunWith(SpringRunner.class)
+	@DataNeo4jTest
+	public class ExampleDataNeo4jTests {
+
+		@Autowired
+		private YourRepository repository;
+
+		//
+	}
+----
+
+Data Neo4j tests are transactional and rollback at the end of each test by default,
+see the {spring-reference}#testcontext-tx-enabling-transactions[relevant section] in the
+Spring Reference Documentation for more details. If that's not what you want, you can
+disable transaction management for a test or for the whole class as follows:
+
+[source,java,indent=0]
+----
+	import org.junit.Test;
+	import org.junit.runner.RunWith;
+	import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+	import org.springframework.transaction.annotation.Propagation;
+	import org.springframework.transaction.annotation.Transactional;
+
+	@RunWith(SpringRunner.class)
+	@DataNeo4jTest
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public class ExampleNonTransactionalTests {
+
+	}
+----
+
+
+A list of the auto-configuration that is enabled by `@DataNeo4jTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+
+
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-client]]
 ==== Auto-configured REST clients
 The `@RestClientTest` annotation can be used if you want to test REST clients. By default
@@ -6094,6 +6188,13 @@ the fact that annotation metadata is parsed using http://asm.ow2.org/[ASM] you c
 actually use the `value` attribute to refer to the real class, even though that class
 might not actually appear on the running application classpath. You can also use the
 `name` attribute if you prefer to specify the class name using a `String` value.
+
+[TIP]
+====
+If you are using `@ConditionalOnClass` or `@ConditionalOnMissingClass` as a part of a
+meta-annotation to compose your own composed annotations you must use `name` as referring
+to the class in such a case is not handled.
+====
 
 
 

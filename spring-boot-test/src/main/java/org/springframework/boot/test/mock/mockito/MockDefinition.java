@@ -105,7 +105,7 @@ class MockDefinition extends Definition {
 		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.typeToMock);
 		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.extraInterfaces);
 		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.answer);
-		result = MULTIPLIER * result + (this.serializable ? 1231 : 1237);
+		result = MULTIPLIER * result + Boolean.hashCode(this.serializable);
 		return result;
 	}
 
