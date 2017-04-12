@@ -30,10 +30,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
-import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.List;
 
 /**
@@ -48,7 +45,6 @@ import java.util.List;
 public class GsonAutoConfiguration {
 
     @Configuration
-    @ConditionalOnClass({Gson.class})
     static class GsonConfiguration {
 
         @Bean
@@ -60,11 +56,9 @@ public class GsonAutoConfiguration {
     }
 
     @Configuration
-    @ConditionalOnClass({Gson.class})
     static class GsonBuilderConfiguration {
 
         @Bean
-        @ConditionalOnClass({Gson.class})
         public GsonBuilder gsonBuilder(
                 List<GsonBuilderCustomizer> customizers
         ) {
@@ -77,7 +71,6 @@ public class GsonAutoConfiguration {
 
 
     @Configuration
-    @ConditionalOnClass({Gson.class})
     @EnableConfigurationProperties(GsonProperties.class)
     static class GsonBuilderCustomizerConfiguration {
 
@@ -104,16 +97,6 @@ public class GsonAutoConfiguration {
 
             @Override
             public void customize(GsonBuilder gsonBuilder) {
-                Double version = this.properties.getVersion();
-                if (version != null) {
-                    gsonBuilder.setVersion(version.doubleValue());
-                }
-
-
-                List<String> modifiers = this.properties.getExcludeFieldsWithModifiers();
-                if (!CollectionUtils.isEmpty(modifiers)) {
-                    gsonBuilder.excludeFieldsWithModifiers(prepareModifiers(modifiers));
-                }
 
                 boolean generateNonExecutableJson = this.properties.isGenerateNonExecutableJson();
                 if (generateNonExecutableJson) {
@@ -169,21 +152,6 @@ public class GsonAutoConfiguration {
                 if (dateFormat != null) {
                     gsonBuilder.setDateFormat(dateFormat);
                 }
-
-            }
-
-            private int[] prepareModifiers(List<String> modifiers) {
-                return modifiers.stream()
-                        .mapToInt(m -> {
-                            try {
-                                //It's better to ignore case, because programmers are more likely
-                                // to use modifiers just like in code
-                                Field f = Modifier.class.getField(m.toUpperCase());
-                                return f.getInt(null);
-                            } catch (Exception ex) {
-                                throw new IllegalStateException(ex);
-                            }
-                        }).toArray();
             }
         }
     }

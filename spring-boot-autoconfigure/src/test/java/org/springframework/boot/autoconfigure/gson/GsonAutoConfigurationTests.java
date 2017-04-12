@@ -64,32 +64,6 @@ public class GsonAutoConfigurationTests {
         assertThat(gson.toJson(new DataObject())).isEqualTo("{\"data\":1}");
     }
 
-
-    @Test
-    public void customVersion() {
-        this.context.register(GsonAutoConfiguration.class);
-        EnvironmentTestUtils.addEnvironment(this.context,
-                "spring.gson.version:1.1");
-        this.context.refresh();
-
-        Gson gson = this.context.getBean(Gson.class);
-
-        assertThat(gson.excluder().excludeClass(DataObject.class, true)).isTrue();
-        assertThat(gson.excluder().excludeClass(DataObject.class, false)).isTrue();
-    }
-
-    @Test
-    public void excludeFieldsWithCustomModifiers() {
-        this.context.register(GsonAutoConfiguration.class);
-        EnvironmentTestUtils.addEnvironment(this.context,
-                "spring.gson.exclude-fields-with-modifiers:private,volatile");
-        this.context.refresh();
-
-        Gson gson = this.context.getBean(Gson.class);
-        assertThat(gson.toJson(new DataObject())).isEqualTo("{\"STATIC_DATA\":\"bye\"}");
-    }
-
-
     @Test
     public void generateNonExecutableJson() {
         this.context.register(GsonAutoConfiguration.class);
@@ -307,7 +281,7 @@ public class GsonAutoConfigurationTests {
 
     }
 
-    @Since(1.2)
+
     public class DataObject {
 
         @SuppressWarnings("unused")
@@ -315,9 +289,6 @@ public class GsonAutoConfigurationTests {
 
         @SuppressWarnings("unused")
         private Long data = 1L;
-
-        @SuppressWarnings("unused")
-        transient volatile String ignoredData = "ignores";
 
         public void setData(Long data) {
             this.data = data;

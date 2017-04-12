@@ -8,24 +8,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 
+
 /**
- * Configuration properties to configure Jackson.
+ * Configuration properties to configure {@link Gson}.
  *
  * @author Ivan Golovko
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.gson")
 public class GsonProperties {
-
-    /**
-     * Configures {@link Gson} to enable versioning support.
-     */
-    private Double version;
-
-    /**
-     * Configures {@link Gson} to excludes all class fields that have the specified modifiers.
-     */
-    private List<String> excludeFieldsWithModifiers;
 
     /**
      * Makes the output JSON non-executable in Javascript by prefixing the generated JSON with some special text.
@@ -88,14 +79,6 @@ public class GsonProperties {
      */
     private String dateFormat;
 
-
-    public Double getVersion() {
-        return version;
-    }
-
-    public void setVersion(Double version) {
-        this.version = version;
-    }
 
     public List<String> getExcludeFieldsWithModifiers() {
         return excludeFieldsWithModifiers;
