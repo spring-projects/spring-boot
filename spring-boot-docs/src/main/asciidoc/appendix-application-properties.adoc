@@ -229,7 +229,6 @@ content into your application; rather pick only the properties that you need.
 	server.undertow.accesslog.rotate=true # Enable access log rotation.
 	server.undertow.accesslog.suffix=log # Log file name suffix.
 	server.undertow.buffer-size= # Size of each buffer in bytes.
-	server.undertow.buffers-per-region= # Number of buffer per region.
 	server.undertow.direct-buffers= # Allocate buffers outside the Java heap.
 	server.undertow.io-threads= # Number of I/O threads to create for the worker.
 	server.undertow.max-http-post-size=0 # Maximum size in bytes of the HTTP post content.
