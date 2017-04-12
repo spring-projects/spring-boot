@@ -68,7 +68,7 @@ public class SolrHealthIndicatorTests {
 	public void solrIsUp() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), (String) isNull()))
-			.willReturn(mockResponse(0));
+				.willReturn(mockResponse(0));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -79,7 +79,7 @@ public class SolrHealthIndicatorTests {
 	public void solrIsUpAndRequestFailed() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), (String) isNull()))
-			.willReturn(mockResponse(400));
+				.willReturn(mockResponse(400));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
@@ -90,7 +90,7 @@ public class SolrHealthIndicatorTests {
 	public void solrIsDown() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), (String) isNull()))
-			.willThrow(new IOException("Connection failed"));
+				.willThrow(new IOException("Connection failed"));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);

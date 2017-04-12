@@ -138,7 +138,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		add(trace, Include.USER_PRINCIPAL, "userPrincipal",
 				(userPrincipal == null ? null : userPrincipal.getName()));
 		if (isIncluded(Include.PARAMETERS)) {
-			trace.put("parameters", getParameterMap(request));
+			trace.put("parameters", getParameterMapCopy(request));
 		}
 		add(trace, Include.QUERY_STRING, "query", request.getQueryString());
 		add(trace, Include.AUTH_TYPE, "authType", request.getAuthType());
@@ -190,10 +190,8 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		return value;
 	}
 
-	private Map<String, String[]> getParameterMap(HttpServletRequest request) {
-		Map<String, String[]> map = new LinkedHashMap<String, String[]>();
-		map.putAll(request.getParameterMap());
-		return map;
+	private Map<String, String[]> getParameterMapCopy(HttpServletRequest request) {
+		return new LinkedHashMap<String, String[]>(request.getParameterMap());
 	}
 
 	/**
