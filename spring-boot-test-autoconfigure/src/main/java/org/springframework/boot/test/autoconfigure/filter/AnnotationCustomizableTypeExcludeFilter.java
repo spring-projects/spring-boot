@@ -121,12 +121,12 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 	public int hashCode() {
 		final int prime = 31;
 		int result = 0;
-		result = prime * result + ObjectUtils.hashCode(hasAnnotation());
+		result = prime * result + Boolean.hashCode(hasAnnotation());
 		for (FilterType filterType : FilterType.values()) {
 			result = prime * result
 					+ ObjectUtils.nullSafeHashCode(getFilters(filterType));
 		}
-		result = prime * result + ObjectUtils.hashCode(isUseDefaultFilters());
+		result = prime * result + Boolean.hashCode(isUseDefaultFilters());
 		result = prime * result + ObjectUtils.nullSafeHashCode(getDefaultIncludes());
 		result = prime * result + ObjectUtils.nullSafeHashCode(getComponentIncludes());
 		return result;
