@@ -72,7 +72,7 @@ public class SolrHealthIndicatorTests {
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("solrStatus")).isEqualTo("OK");
+		assertThat(health.getDetails().get("status")).isEqualTo(0);
 	}
 
 	@Test
@@ -83,7 +83,7 @@ public class SolrHealthIndicatorTests {
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("solrStatus")).isEqualTo(400);
+		assertThat(health.getDetails().get("status")).isEqualTo(400);
 	}
 
 	@Test
