@@ -652,7 +652,9 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.tomcat.*= # Tomcat datasource specific settings
 	spring.datasource.type= # Fully qualified name of the connection pool implementation to use. By default, it is auto-detected from the classpath.
 	spring.datasource.url= # JDBC url of the database.
-	spring.datasource.username=
+	spring.datasource.username= # Login user of the database.
+	spring.datasource.xa.data-source-class-name= # XA datasource fully qualified name.
+    spring.datasource.xa.properties= # Properties to pass to the XA data source.
 
 	# JEST (Elasticsearch HTTP client) ({sc-spring-boot-autoconfigure}/jest/JestProperties.{sc-ext}[JestProperties])
 	spring.elasticsearch.jest.connection-timeout=3000 # Connection timeout in milliseconds.
