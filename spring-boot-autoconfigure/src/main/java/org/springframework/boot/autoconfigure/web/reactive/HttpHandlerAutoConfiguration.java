@@ -31,8 +31,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.http.codec.HttpMessageReader;
-import org.springframework.http.codec.HttpMessageWriter;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.reactive.function.server.HandlerStrategies;
@@ -72,8 +70,7 @@ public class HttpHandlerAutoConfiguration {
 
 		@Bean
 		public HttpHandler httpHandler() {
-			return WebHttpHandlerBuilder.applicationContext(this.applicationContext)
-					.build();
+			return WebHttpHandlerBuilder.applicationContext(this.applicationContext).build();
 		}
 
 	}
@@ -86,47 +83,38 @@ public class HttpHandlerAutoConfiguration {
 
 		private final WebSessionManager webSessionManager;
 
-		private final List<HttpMessageReader<?>> messageReaders;
-
-		private final List<HttpMessageWriter<?>> messageWriters;
+		private HandlerStrategies.Builder handlerStrategiesBuilder;
 
 		private final List<ViewResolver> viewResolvers;
 
 		public FunctionalConfig(ObjectProvider<List<WebFilter>> webFilters,
-				ObjectProvider<WebSessionManager> webSessionManager,
-				ObjectProvider<List<HttpMessageReader<?>>> messageReaders,
-				ObjectProvider<List<HttpMessageWriter<?>>> messageWriters,
-				ObjectProvider<List<ViewResolver>> viewResolvers) {
+			ObjectProvider<WebSessionManager> webSessionManager,
+			ObjectProvider<HandlerStrategies.Builder> handlerStrategiesBuilder,
+			ObjectProvider<List<ViewResolver>> viewResolvers) {
 			this.webFilters = webFilters.getIfAvailable();
 			if (this.webFilters != null) {
 				AnnotationAwareOrderComparator.sort(this.webFilters);
 			}
 			this.webSessionManager = webSessionManager.getIfAvailable();
-			this.messageReaders = messageReaders.getIfAvailable();
-			this.messageWriters = messageWriters.getIfAvailable();
+			this.handlerStrategiesBuilder = handlerStrategiesBuilder.getIfAvailable();
 			this.viewResolvers = viewResolvers.getIfAvailable();
 		}
 
 		@Bean
-		public <T extends ServerResponse> HttpHandler httpHandler(
-				List<RouterFunction<T>> routerFunctions) {
+		public <T extends ServerResponse> HttpHandler httpHandler(List<RouterFunction<T>> routerFunctions) {
 			routerFunctions.sort(new AnnotationAwareOrderComparator());
 			RouterFunction<T> routerFunction = routerFunctions.stream()
-					.reduce(RouterFunction::and).get();
-			HandlerStrategies.Builder strategiesBuilder = HandlerStrategies.builder();
-			if (this.messageReaders != null) {
-				this.messageReaders.forEach(strategiesBuilder::customMessageReader);
-			}
-			if (this.messageWriters != null) {
-				this.messageWriters.forEach(strategiesBuilder::customMessageWriter);
+				.reduce(RouterFunction::and).get();
+			if (this.handlerStrategiesBuilder == null) {
+				this.handlerStrategiesBuilder = HandlerStrategies.builder();
 			}
 			if (this.viewResolvers != null) {
-				this.viewResolvers.forEach(strategiesBuilder::viewResolver);
+				this.viewResolvers.forEach(this.handlerStrategiesBuilder::viewResolver);
 			}
 			WebHandler webHandler = RouterFunctions.toHttpHandler(routerFunction,
-					strategiesBuilder.build());
+				this.handlerStrategiesBuilder.build());
 			WebHttpHandlerBuilder builder = WebHttpHandlerBuilder.webHandler(webHandler)
-					.sessionManager(this.webSessionManager);
+				.sessionManager(this.webSessionManager);
 			builder.filters(this.webFilters);
 			return builder.build();
 		}
