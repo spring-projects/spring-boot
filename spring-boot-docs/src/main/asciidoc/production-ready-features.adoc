@@ -583,6 +583,20 @@ in your `application.properties`:
 	management.security.roles=SUPERUSER
 ----
 
+If your application has custom security configuration and you want all your actuator endpoints
+to be accessible without authentication, you need to explicitly configure that in your
+security configuration. Along with that, you need to change the `management.security.enabled`
+property to `false`.
+
+If your custom security configuration secures your actuator endpoints, you also need to ensure that
+the authenticated user has the roles specified under `management.security.roles`.
+
+TIP: If you don't have a use case for exposing basic health information to unauthenticated users,
+and you have secured the actuator endpoints with custom security, you can set `management.security.enabled`
+to `false`. This will inform Spring Boot to skip the additional role check.
+
+
+
 
 
 [[production-ready-customizing-management-server-context-path]]
