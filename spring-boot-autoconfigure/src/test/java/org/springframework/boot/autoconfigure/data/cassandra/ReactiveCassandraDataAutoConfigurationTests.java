@@ -20,21 +20,15 @@ import java.util.Set;
 
 import com.datastax.driver.core.Session;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.cassandra.core.session.ReactiveSession;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.data.cassandra.core.ReactiveCassandraTemplate;
 import org.springframework.data.cassandra.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.mapping.SimpleUserTypeResolver;
@@ -44,18 +38,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ReactiveCassandraDataAutoConfiguration} that require a Cassandra instance.
+ * Tests for {@link ReactiveCassandraDataAutoConfiguration}.
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
 public class ReactiveCassandraDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
-
-	@Before
-	public void setup() {
-		this.context = new AnnotationConfigApplicationContext();
-	}
 
 	@After
 	public void close() {
@@ -66,27 +56,15 @@ public class ReactiveCassandraDataAutoConfigurationTests {
 
 	@Test
 	public void templateExists() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.cassandra.keyspaceName:boot_test");
-		this.context.register(TestExcludeConfiguration.class, TestConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
-				ReactiveCassandraDataAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(ReactiveCassandraTemplate.class).length)
-				.isEqualTo(1);
+		load("spring.data.cassandra.keyspaceName:boot_test");
+		assertThat(this.context.getBeanNamesForType(ReactiveCassandraTemplate.class))
+				.hasSize(1);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void entityScanShouldSetInitialEntitySet() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.cassandra.keyspaceName:boot_test");
-		this.context.register(TestConfiguration.class, EntityScanConfig.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
-				ReactiveCassandraDataAutoConfiguration.class);
-		this.context.refresh();
+		load(EntityScanConfig.class, "spring.data.cassandra.keyspaceName:boot_test");
 		CassandraMappingContext mappingContext = this.context
 				.getBean(CassandraMappingContext.class);
 		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils
@@ -96,24 +74,28 @@ public class ReactiveCassandraDataAutoConfigurationTests {
 
 	@Test
 	public void userTypeResolverShouldBeSet() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.cassandra.keyspaceName:boot_test");
-		this.context.register(TestConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
-				ReactiveCassandraDataAutoConfiguration.class);
-		this.context.refresh();
+		load("spring.data.cassandra.keyspaceName:boot_test");
 		CassandraMappingContext mappingContext = this.context
 				.getBean(CassandraMappingContext.class);
 		assertThat(ReflectionTestUtils.getField(mappingContext, "userTypeResolver"))
 				.isInstanceOf(SimpleUserTypeResolver.class);
 	}
 
-	@Configuration
-	@ComponentScan(excludeFilters = @Filter(classes = {
-			ReactiveSession.class }, type = FilterType.ASSIGNABLE_TYPE))
-	static class TestExcludeConfiguration {
+	private void load(String... environment) {
+		load(null, environment);
+	}
 
+	private void load(Class<?> config, String... environment) {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(ctx, environment);
+		if (config != null) {
+			ctx.register(config);
+		}
+		ctx.register(TestConfiguration.class, CassandraAutoConfiguration.class,
+				CassandraDataAutoConfiguration.class,
+				ReactiveCassandraDataAutoConfiguration.class);
+		ctx.refresh();
+		this.context = ctx;
 	}
 
 	@Configuration

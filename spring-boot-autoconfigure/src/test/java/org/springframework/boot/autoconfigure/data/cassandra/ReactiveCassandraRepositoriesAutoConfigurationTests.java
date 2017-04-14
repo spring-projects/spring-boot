@@ -21,7 +21,6 @@ import java.util.Set;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -49,15 +48,11 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ReactiveCassandraRepositoriesAutoConfiguration}.
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  */
 public class ReactiveCassandraRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
-
-	@Before
-	public void setUp() {
-		this.context = new AnnotationConfigApplicationContext();
-	}
 
 	@After
 	public void close() {
@@ -68,7 +63,7 @@ public class ReactiveCassandraRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testDefaultRepositoryConfiguration() {
-		addConfigurations(TestConfiguration.class);
+		load(TestConfiguration.class);
 		assertThat(this.context.getBean(ReactiveCityRepository.class)).isNotNull();
 		assertThat(this.context.getBean(Cluster.class)).isNotNull();
 		assertThat(getInitialEntitySet()).hasSize(1);
@@ -76,14 +71,14 @@ public class ReactiveCassandraRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testNoRepositoryConfiguration() {
-		addConfigurations(TestExcludeConfiguration.class, EmptyConfiguration.class);
+		load(TestExcludeConfiguration.class, EmptyConfiguration.class);
 		assertThat(this.context.getBean(Cluster.class)).isNotNull();
 		assertThat(getInitialEntitySet()).hasSize(1).containsOnly(City.class);
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
-		addConfigurations(TestExcludeConfiguration.class, CustomizedConfiguration.class);
+		load(TestExcludeConfiguration.class, CustomizedConfiguration.class);
 		assertThat(this.context.getBean(ReactiveCityCassandraRepository.class)).isNotNull();
 		assertThat(getInitialEntitySet()).hasSize(1).containsOnly(City.class);
 	}
@@ -96,15 +91,17 @@ public class ReactiveCassandraRepositoriesAutoConfigurationTests {
 				"initialEntitySet");
 	}
 
-	private void addConfigurations(Class<?>... configurations) {
-		this.context.register(configurations);
-		this.context.register(CassandraAutoConfiguration.class,
+	private void load(Class<?>... configurations) {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		ctx.register(configurations);
+		ctx.register(CassandraAutoConfiguration.class,
 				CassandraRepositoriesAutoConfiguration.class,
 				CassandraDataAutoConfiguration.class,
 				ReactiveCassandraDataAutoConfiguration.class,
 				ReactiveCassandraRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		ctx.refresh();
+		this.context = ctx;
 	}
 
 	@Configuration

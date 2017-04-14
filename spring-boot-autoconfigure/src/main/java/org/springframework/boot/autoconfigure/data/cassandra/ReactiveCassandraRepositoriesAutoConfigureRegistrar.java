@@ -31,7 +31,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * @author Eddú Meléndez
  * @since 2.0.0
  */
-public class ReactiveCassandraRepositoriesAutoConfigureRegistrar
+class ReactiveCassandraRepositoriesAutoConfigureRegistrar
 		extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override

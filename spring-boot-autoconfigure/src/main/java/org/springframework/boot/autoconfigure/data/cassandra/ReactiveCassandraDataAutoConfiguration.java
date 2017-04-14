@@ -18,11 +18,11 @@ package org.springframework.boot.autoconfigure.data.cassandra;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
+import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -43,29 +43,29 @@ import org.springframework.data.cassandra.core.ReactiveCassandraTemplate;
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass({ Cluster.class, ReactiveCassandraTemplate.class })
+@ConditionalOnClass({ Cluster.class, ReactiveCassandraTemplate.class, Flux.class })
 @ConditionalOnBean(Session.class)
-@AutoConfigureAfter(CassandraAutoConfiguration.class)
+@AutoConfigureAfter(CassandraDataAutoConfiguration.class)
 public class ReactiveCassandraDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveSession.class)
-	public ReactiveSession rectiveSession(Session session)
-			throws Exception {
+	public ReactiveSession reactiveCassandraSession(Session session) {
 		return new DefaultBridgedReactiveSession(session, Schedulers.elastic());
 	}
 
 	@Bean
-	public ReactiveSessionFactory reactiveSessionFactory(ReactiveSession reactiveSession)
-			throws Exception {
-		return new DefaultReactiveSessionFactory(reactiveSession);
+	public ReactiveSessionFactory reactiveCassandraSessionFactory(
+			ReactiveSession reactiveCassandraSession) {
+		return new DefaultReactiveSessionFactory(reactiveCassandraSession);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ReactiveCassandraTemplate reactiveCassandraTemplate(ReactiveSession session,
-			CassandraConverter converter) throws Exception {
-		return new ReactiveCassandraTemplate(session, converter);
+	public ReactiveCassandraTemplate reactiveCassandraTemplate(
+			ReactiveSession reactiveCassandraSession,
+			CassandraConverter converter) {
+		return new ReactiveCassandraTemplate(reactiveCassandraSession, converter);
 	}
 
 }
