@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,8 +72,8 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register(this.context, cityPackage);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.cassandra.schemaAction:RECREATE_DROP_UNUSED",
-				"spring.data.cassandra.keyspaceName:boot_test");
+				"spring.data.cassandra.schemaAction=recreate_drop_unused",
+				"spring.data.cassandra.keyspaceName=boot_test");
 		this.context.register(CassandraAutoConfiguration.class,
 				CassandraDataAutoConfiguration.class);
 		this.context.refresh();
