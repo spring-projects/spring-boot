@@ -4181,6 +4181,13 @@ Infinispan has no default configuration file location so it must be specified ex
 Caches can be created on startup via the `spring.cache.cache-names` property. If a custom
 `ConfigurationBuilder` bean is defined, it is used to customize them.
 
+[NOTE]
+====
+The support of Infinispan in Spring Boot is restricted to the embedded mode and is quite
+basic. If you want more options you should use the official Infinispan Spring Boot starter
+instead, check
+https://github.com/infinispan/infinispan-spring-boot[the documentation] for more details.
+====
 
 
 [[boot-features-caching-provider-couchbase]]
