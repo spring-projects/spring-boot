@@ -5702,55 +5702,6 @@ A list of the auto-configuration that is enabled by `@JdbcTest` can be
 
 
 
-[[boot-features-testing-spring-boot-applications-testing-autoconfigured-ldap-test]]
-==== Auto-configured Data LDAP tests
-`@DataLdapTest` can be used if you want to test LDAP applications. By default, it will
-configure an in-memory embedded LDAP (if available), configure a `LdapTemplate`, scan
-for `@Entry` classes and configure Spring Data LDAP repositories. Regular
-`@Component` beans will not be loaded into the `ApplicationContext`:
-
-[source,java,indent=0]
-----
-	import org.junit.runner.RunWith;
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
-	import org.springframework.ldap.core.LdapTemplate;
-	import org.springframework.test.context.junit4.SpringRunner;
-
-	@RunWith(SpringRunner.class)
-	@DataLdapTest
-	public class ExampleDataLdapTests {
-
-		@Autowired
-		private LdapTemplate ldapTemplate;
-
-		//
-	}
-----
-
-In-memory embedded LDAP generally works well for tests since it is fast and doesn't
-require any developer installation. If, however, you prefer to run tests against a real
-LDAP server you should exclude the embedded LDAP auto-configuration:
-
-[source,java,indent=0]
-----
-	import org.junit.runner.RunWith;
-    import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfiguration;
-	import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
-	import org.springframework.test.context.junit4.SpringRunner;
-
-	@RunWith(SpringRunner.class)
-	@DataLdapTest(excludeAutoConfiguration = EmbeddedLdapAutoConfiguration.class)
-	public class ExampleDataLdapNonEmbeddedTests {
-
-	}
-----
-
-A list of the auto-configuration that is enabled by `@DataLdapTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
-
-
-
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-mongo-test]]
 ==== Auto-configured Data MongoDB tests
 `@DataMongoTest` can be used if you want to test MongoDB applications. By default, it will
@@ -5849,6 +5800,55 @@ disable transaction management for a test or for the whole class as follows:
 
 
 A list of the auto-configuration that is enabled by `@DataNeo4jTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+
+
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-ldap-test]]
+==== Auto-configured Data LDAP tests
+`@DataLdapTest` can be used if you want to test LDAP applications. By default, it will
+configure an in-memory embedded LDAP (if available), a `LdapTemplate`, scan for `@Entry`
+classes and configure Spring Data LDAP repositories. Regular `@Component` beans will not
+be loaded into the `ApplicationContext`:
+
+[source,java,indent=0]
+----
+	import org.junit.runner.RunWith;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
+	import org.springframework.ldap.core.LdapTemplate;
+	import org.springframework.test.context.junit4.SpringRunner;
+
+	@RunWith(SpringRunner.class)
+	@DataLdapTest
+	public class ExampleDataLdapTests {
+
+		@Autowired
+		private LdapTemplate ldapTemplate;
+
+		//
+	}
+----
+
+In-memory embedded LDAP generally works well for tests since it is fast and doesn't
+require any developer installation. If, however, you prefer to run tests against a real
+LDAP server you should exclude the embedded LDAP auto-configuration:
+
+[source,java,indent=0]
+----
+	import org.junit.runner.RunWith;
+    import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfiguration;
+	import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+
+	@RunWith(SpringRunner.class)
+	@DataLdapTest(excludeAutoConfiguration = EmbeddedLdapAutoConfiguration.class)
+	public class ExampleDataLdapNonEmbeddedTests {
+
+	}
+----
+
+A list of the auto-configuration that is enabled by `@DataLdapTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 

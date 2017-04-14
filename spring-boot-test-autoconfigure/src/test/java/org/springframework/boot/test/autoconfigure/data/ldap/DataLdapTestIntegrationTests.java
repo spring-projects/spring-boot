@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.data.ldap;
 
+import java.util.Optional;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -59,10 +61,11 @@ public class DataLdapTestIntegrationTests {
 	@Test
 	public void testRepository() {
 		LdapQuery ldapQuery = LdapQueryBuilder.query().where("cn").is("Bob Smith");
-		ExampleEntry entry = this.exampleRepository.findOne(ldapQuery);
-		assertThat(entry.getDn())
+		Optional<ExampleEntry> entry = this.exampleRepository.findOne(ldapQuery);
+		assertThat(entry.isPresent());
+		assertThat(entry.get().getDn())
 				.isEqualTo(LdapUtils.newLdapName("cn=Bob Smith,ou=company1,c=Sweden,dc=spring,dc=org"));
-		assertThat(this.ldapTemplate.findOne(ldapQuery, ExampleEntry.class).getDn())
+		assertThat(this.ldapTemplate.findOne(ldapQuery, ExampleEntry.class) .getDn())
 				.isEqualTo(LdapUtils.newLdapName("cn=Bob Smith,ou=company1,c=Sweden,dc=spring,dc=org"));
 	}
 
