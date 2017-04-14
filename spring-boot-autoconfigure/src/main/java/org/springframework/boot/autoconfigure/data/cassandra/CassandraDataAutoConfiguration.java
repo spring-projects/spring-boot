@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,8 +112,9 @@ public class CassandraDataAutoConfiguration {
 		session.setCluster(this.cluster);
 		session.setConverter(converter);
 		session.setKeyspaceName(this.properties.getKeyspaceName());
-		SchemaAction schemaAction = this.propertyResolver.getProperty("schemaAction",
-				SchemaAction.class, SchemaAction.NONE);
+		String name = this.propertyResolver.getProperty("schemaAction",
+				SchemaAction.NONE.name());
+		SchemaAction schemaAction = SchemaAction.valueOf(name.toUpperCase());
 		session.setSchemaAction(schemaAction);
 		return session;
 	}
