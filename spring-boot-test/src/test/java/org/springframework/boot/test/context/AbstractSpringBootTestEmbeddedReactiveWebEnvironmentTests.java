@@ -67,13 +67,13 @@ public abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests 
 	public void runAndTestHttpEndpoint() {
 		assertThat(this.port).isNotEqualTo(8080).isNotEqualTo(0);
 		WebTestClient.bindToServer().baseUrl("http://localhost:" + this.port).build()
-				.get().uri("/").exchange().expectBody(String.class).value()
+				.get().uri("/").exchange().expectBody(String.class)
 				.isEqualTo("Hello World");
 	}
 
 	@Test
 	public void injectWebTestClient() {
-		this.webClient.get().uri("/").exchange().expectBody(String.class).value()
+		this.webClient.get().uri("/").exchange().expectBody(String.class)
 				.isEqualTo("Hello World");
 	}
 

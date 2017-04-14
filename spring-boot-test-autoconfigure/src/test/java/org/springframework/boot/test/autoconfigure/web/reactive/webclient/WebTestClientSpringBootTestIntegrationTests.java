@@ -48,13 +48,13 @@ public class WebTestClientSpringBootTestIntegrationTests {
 	@Test
 	public void shouldFindController1() {
 		this.webClient.get().uri("/one").exchange().expectStatus().isOk()
-				.expectBody(String.class).value().isEqualTo("one");
+				.expectBody(String.class).isEqualTo("one");
 	}
 
 	@Test
 	public void shouldFindController2() {
 		this.webClient.get().uri("/two").exchange().expectStatus().isOk()
-				.expectBody(String.class).value().isEqualTo("two");
+				.expectBody(String.class).isEqualTo("two");
 	}
 
 	@Test
