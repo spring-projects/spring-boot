@@ -11,9 +11,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-actuator[spring-boot-sample-actuator]
 | REST service with production-ready features
 
-| link:spring-boot-sample-actuator-log4j2[spring-boot-sample-actuator-log4j2]
-| Production-ready features using log4j 2 for logging (instead of logback)
-
 | link:spring-boot-sample-actuator-noweb[spring-boot-sample-actuator-noweb]
 | Non-web application with production-ready features
 
@@ -158,9 +155,6 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-secure[spring-boot-sample-secure]
 | Non-web application that uses Spring Security
-
-| link:spring-boot-sample-secure-oauth2-actuator[spring-boot-sample-secure-oauth2-actuator]
-| RESTful service secured using OAuth2 and Actuator
 
 | link:spring-boot-sample-secure-oauth2[spring-boot-sample-secure-oauth2]
 | RESTful service secured using OAuth2

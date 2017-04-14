@@ -4,19 +4,19 @@
 	<parent>
 		<!-- Your own application should inherit from spring-boot-starter-parent -->
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-samples</artifactId>
+		<artifactId>spring-boot-actuator-tests</artifactId>
 		<version>2.0.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-sample-actuator-log4j2</artifactId>
-	<name>Spring Boot Actuator Log4j 2 Sample</name>
-	<description>Spring Boot Actuator Log4j 2 Sample</description>
+	<artifactId>spring-boot-actuator-test-log4j2</artifactId>
+	<name>Spring Boot Actuator Log4j2 Integration Test</name>
+	<description>Spring Boot Actuator Log4j2 Test</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
 		<url>http://www.spring.io</url>
 	</organization>
 	<properties>
-		<main.basedir>${basedir}/../..</main.basedir>
+		<main.basedir>${basedir}/../../..</main.basedir>
 	</properties>
 	<dependencies>
 		<!-- Compile -->
