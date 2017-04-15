@@ -580,8 +580,8 @@ public class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setUseMockLoader(true);
 		this.context = application.run();
-		Set<Object> initialSources = application.getSources();
-		assertThat(initialSources.toArray()).isEqualTo(sources);
+		Set<Object> allSources = application.getAllSources();
+		assertThat(allSources.toArray()).isEqualTo(sources);
 	}
 
 	@Test
