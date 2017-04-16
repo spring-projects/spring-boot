@@ -27,6 +27,7 @@ import java.util.Map;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Patrik Beno
  */
 public final class Layouts {
 
@@ -101,14 +102,24 @@ public final class Layouts {
 	/**
 	 * No layout.
 	 */
-	public static class None extends Jar {
+	public static class None implements Layout {
 
 		@Override
 		public String getLauncherClassName() {
 			return null;
 		}
 
-		@Override
+        @Override
+        public String getLibraryDestination(String libraryName, LibraryScope scope) {
+            return null;
+        }
+
+        @Override
+        public String getClassesLocation() {
+            return "";
+        }
+
+        @Override
 		public boolean isExecutable() {
 			return false;
 		}
