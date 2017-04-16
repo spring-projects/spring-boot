@@ -226,8 +226,8 @@ public class JobLauncherCommandLineRunner
 					logger.debug("Skipped job: " + job.getName());
 					continue;
 				}
+				execute(job, jobParameters);
 			}
-			execute(job, jobParameters);
 		}
 	}
 
