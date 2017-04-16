@@ -39,6 +39,7 @@ import org.springframework.util.StringUtils;
  * a gauge.
  *
  * @author Dave Syer
+ * @author Odín del Río
  * @since 1.3.0
  */
 public class StatsdMetricWriter implements MetricWriter, Closeable {
@@ -87,12 +88,12 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 
 	@Override
 	public void increment(Delta<?> delta) {
-		this.client.count(delta.getName(), delta.getValue().longValue());
+		this.client.count(sanitizeMetricName(delta.getName()), delta.getValue().longValue());
 	}
 
 	@Override
 	public void set(Metric<?> value) {
-		String name = value.getName();
+		String name = sanitizeMetricName(value.getName());
 		if (name.contains("timer.") && !name.contains("gauge.")
 				&& !name.contains("counter.")) {
 			this.client.recordExecutionTime(name, value.getValue().longValue());
@@ -115,6 +116,16 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 	@Override
 	public void close() {
 		this.client.stop();
+	}
+
+	/**
+	 * The statsd server does not allow ":" in metric names. Since the the statsd client
+	 * is not dealing with this, we have to sanitize the metric name.
+	 * @param name The metric name
+	 * @return The sanitized metric name
+	 */
+	private String sanitizeMetricName(String name) {
+		return name.replace(":", "");
 	}
 
 	private static final class LoggingStatsdErrorHandler
