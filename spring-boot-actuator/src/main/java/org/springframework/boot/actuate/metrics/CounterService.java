@@ -28,12 +28,26 @@ public interface CounterService {
 	 * @param metricName the name of the counter
 	 */
 	void increment(String metricName);
+	
+	/**
+	 * Increment the specified counter by the given value.
+	 * @param metricName the name of the counter
+	 * @param value the amount to increment by
+	 */
+	void increment(String metricName, Long value);
 
 	/**
 	 * Decrement the specified counter by 1.
 	 * @param metricName the name of the counter
 	 */
 	void decrement(String metricName);
+	
+	/**
+	 * Decrement the specified counter by the given value.
+	 * @param metricName the name of the counter
+	 * @param value the amount to decrement by
+	 */
+	void decrement(String metricName, Long value);
 
 	/**
 	 * Reset the specified counter.
