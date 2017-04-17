@@ -16,11 +16,15 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.security.Principal;
 import java.util.Arrays;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -100,6 +104,18 @@ public class HealthMvcEndpointAutoConfigurationTests {
 				.isEqualTo(Arrays.asList("super"));
 	}
 
+	@Test
+	public void endpointConditionalOnMissingBean() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(TestConfiguration.class, TestHealthMvcEndpointConfiguration.class);
+		this.context.refresh();
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class)
+				.invoke(request, null);
+		assertThat(health.getDetails()).isNotEmpty();
+	}
+
 	@Configuration
 	@ImportAutoConfiguration({ SecurityAutoConfiguration.class,
 			JacksonAutoConfiguration.class, WebMvcAutoConfiguration.class,
@@ -112,6 +128,31 @@ public class HealthMvcEndpointAutoConfigurationTests {
 			return new TestHealthIndicator();
 		}
 
+	}
+
+	@Configuration
+	@ImportAutoConfiguration({ SecurityAutoConfiguration.class,
+			JacksonAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, AuditAutoConfiguration.class,
+			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class })
+	static class TestHealthMvcEndpointConfiguration {
+
+		@Bean
+		public HealthMvcEndpoint endpoint(HealthEndpoint endpoint) {
+			return new TestHealthMvcEndpoint(endpoint);
+		}
+	}
+
+	static class TestHealthMvcEndpoint extends HealthMvcEndpoint {
+
+		TestHealthMvcEndpoint(HealthEndpoint delegate) {
+			super(delegate);
+		}
+
+		@Override
+		protected boolean exposeHealthDetails(HttpServletRequest request, Principal principal) {
+			return true;
+		}
 	}
 
 	static class TestHealthIndicator extends AbstractHealthIndicator {
