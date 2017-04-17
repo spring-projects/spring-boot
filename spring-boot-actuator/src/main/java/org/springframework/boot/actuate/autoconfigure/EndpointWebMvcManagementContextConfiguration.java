@@ -158,6 +158,7 @@ public class EndpointWebMvcManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnBean(HealthEndpoint.class)
+	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint("health")
 	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate,
 			ManagementServerProperties managementServerProperties) {
