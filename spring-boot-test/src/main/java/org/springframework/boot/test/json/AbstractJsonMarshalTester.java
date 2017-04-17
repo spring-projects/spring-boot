@@ -113,6 +113,10 @@ public abstract class AbstractJsonMarshalTester<T> {
 		return this.type;
 	}
 
+	protected final Class<?> getResourceLoadClass() {
+		return this.resourceLoadClass;
+	}
+
 	/**
 	 * Return {@link JsonContent} from writing the specific value.
 	 * @param value the value to write

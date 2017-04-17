@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.json.BasicJsonTester;
 import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.test.json.JsonContent;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,6 +42,9 @@ public class JsonTestIntegrationTests {
 
 	@Autowired
 	private JacksonTester<ExampleBasicObject> jacksonBasicJson;
+
+	@Autowired
+	private JacksonTester<ExampleJsonObjectWithView> jacksonWithViewJson;
 
 	@Autowired
 	private JacksonTester<ExampleCustomObject> jacksonCustomJson;
@@ -73,4 +77,14 @@ public class JsonTestIntegrationTests {
 		assertThat(this.gsonJson.write(object)).isEqualToJson("example.json");
 	}
 
+	@Test
+	public void customView() throws Exception {
+		ExampleJsonObjectWithView object = new ExampleJsonObjectWithView();
+		object.setValue("spring");
+		JsonContent<ExampleJsonObjectWithView> content = this.jacksonWithViewJson
+				.forView(ExampleJsonObjectWithView.TestView.class)
+				.write(object);
+		assertThat(content).doesNotHaveJsonPathValue("id");
+		assertThat(content).isEqualToJson("example.json");
+	}
 }

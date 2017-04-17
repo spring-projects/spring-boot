@@ -16,13 +16,18 @@
 
 package org.springframework.boot.test.json;
 
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
+
+import org.springframework.core.io.ByteArrayResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,18 +38,27 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JacksonTesterIntegrationTests {
 
+	private JacksonTester<ExampleObject> simpleJson;
+
+	private JacksonTester<ExampleObjectWithView> jsonWithView;
+
 	private JacksonTester<List<ExampleObject>> listJson;
 
 	private JacksonTester<Map<String, Integer>> mapJson;
 
+	private ObjectMapper objectMapper;
+
+	private static final String JSON = "{\"name\":\"Spring\",\"age\":123}";
+
 	@Before
 	public void setup() {
-		JacksonTester.initFields(this, new ObjectMapper());
+		this.objectMapper = new ObjectMapper();
+		JacksonTester.initFields(this, this.objectMapper);
 	}
 
 	@Test
 	public void typicalListTest() throws Exception {
-		String example = "[{\"name\":\"Spring\",\"age\":123}]";
+		String example = "[" + JSON + "]";
 		assertThat(this.listJson.parse(example)).asList().hasSize(1);
 		assertThat(this.listJson.parse(example).getObject().get(0).getName())
 				.isEqualTo("Spring");
@@ -57,6 +71,41 @@ public class JacksonTesterIntegrationTests {
 		map.put("b", 2);
 		assertThat(this.mapJson.write(map)).extractingJsonPathNumberValue("@.a")
 				.isEqualTo(1);
+	}
+
+	@Test
+	public void writeWithView() throws Exception {
+		this.objectMapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
+		ExampleObjectWithView object = new ExampleObjectWithView();
+		object.setName("Spring");
+		object.setAge(123);
+		JsonContent<ExampleObjectWithView> content = this.jsonWithView.forView(
+				ExampleObjectWithView.TestView.class).write(object);
+		assertThat(content).extractingJsonPathStringValue("@.name")
+				.isEqualTo("Spring");
+		assertThat(content).doesNotHaveJsonPathValue("age");
+	}
+
+	@Test
+	public void readWithResourceAndView() throws Exception {
+		this.objectMapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
+		ByteArrayResource resource = new ByteArrayResource(JSON.getBytes());
+		ObjectContent<ExampleObjectWithView> content = this.jsonWithView.forView(
+				ExampleObjectWithView.TestView.class).read(resource);
+		assertThat(content.getObject().getName())
+				.isEqualTo("Spring");
+		assertThat(content.getObject().getAge()).isEqualTo(0);
+	}
+
+	@Test
+	public void readWithReaderAndView() throws Exception {
+		this.objectMapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
+		Reader reader = new StringReader(JSON);
+		ObjectContent<ExampleObjectWithView> content = this.jsonWithView.forView(
+				ExampleObjectWithView.TestView.class).read(reader);
+		assertThat(content.getObject().getName())
+				.isEqualTo("Spring");
+		assertThat(content.getObject().getAge()).isEqualTo(0);
 	}
 
 }

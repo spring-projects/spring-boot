@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,18 @@
 
 package org.springframework.boot.test.json;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import org.springframework.util.ObjectUtils;
 
 /**
- * Example object used for serialization.
+ * Example object used for serialization/deserialization with view.
+ *
+ * @author Madhura Bhave
  */
-public class ExampleObject {
+public class ExampleObjectWithView {
 
+	@JsonView(TestView.class)
 	private String name;
 
 	private int age;
@@ -53,7 +58,7 @@ public class ExampleObject {
 		if (obj == null || obj.getClass() != getClass()) {
 			return false;
 		}
-		ExampleObject other = (ExampleObject) obj;
+		ExampleObjectWithView other = (ExampleObjectWithView) obj;
 		return ObjectUtils.nullSafeEquals(this.name, other.name)
 				&& ObjectUtils.nullSafeEquals(this.age, other.age);
 	}
@@ -63,5 +68,8 @@ public class ExampleObject {
 		return this.name + " " + this.age;
 	}
 
-}
+	static class TestView {
 
+	}
+
+}
