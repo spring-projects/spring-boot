@@ -14,47 +14,45 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot.origin;
 
 import org.junit.Test;
 
-import org.springframework.boot.env.TextResourcePropertyOrigin.Location;
+import org.springframework.boot.origin.TextResourceOrigin.Location;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link TextResourcePropertyOrigin}.
+ * Tests for {@link TextResourceOrigin}.
  *
  * @author Phillip Webb
  */
-public class TextResourcePropertyOriginTests {
+public class TextResourceOriginTests {
 
 	@Test
 	public void createWithNullResourceShouldSetNullResource() throws Exception {
-		TextResourcePropertyOrigin origin = new TextResourcePropertyOrigin(null, null);
+		TextResourceOrigin origin = new TextResourceOrigin(null, null);
 		assertThat(origin.getResource()).isNull();
 	}
 
 	@Test
 	public void createWithNullLocationShouldSetNullLocation() throws Exception {
-		TextResourcePropertyOrigin origin = new TextResourcePropertyOrigin(null, null);
+		TextResourceOrigin origin = new TextResourceOrigin(null, null);
 		assertThat(origin.getLocation()).isNull();
 	}
 
 	@Test
 	public void getResourceShouldReturnResource() throws Exception {
 		ClassPathResource resource = new ClassPathResource("foo.txt");
-		TextResourcePropertyOrigin origin = new TextResourcePropertyOrigin(resource,
-				null);
+		TextResourceOrigin origin = new TextResourceOrigin(resource, null);
 		assertThat(origin.getResource()).isEqualTo(resource);
 	}
 
 	@Test
 	public void getLocationShouldReturnLocation() throws Exception {
 		Location location = new Location(1, 2);
-		TextResourcePropertyOrigin origin = new TextResourcePropertyOrigin(null,
-				location);
+		TextResourceOrigin origin = new TextResourceOrigin(null, location);
 		assertThat(origin.getLocation()).isEqualTo(location);
 
 	}
@@ -81,24 +79,21 @@ public class TextResourcePropertyOriginTests {
 	public void toStringShouldReturnNiceString() throws Exception {
 		ClassPathResource resource = new ClassPathResource("foo.txt");
 		Location location = new Location(1, 2);
-		TextResourcePropertyOrigin origin = new TextResourcePropertyOrigin(resource,
-				location);
+		TextResourceOrigin origin = new TextResourceOrigin(resource, location);
 		assertThat(origin.toString()).isEqualTo("class path resource [foo.txt]:2:3");
 	}
 
 	@Test
 	public void toStringWhenResourceIsNullShouldReturnNiceString() throws Exception {
 		Location location = new Location(1, 2);
-		TextResourcePropertyOrigin origin = new TextResourcePropertyOrigin(null,
-				location);
+		TextResourceOrigin origin = new TextResourceOrigin(null, location);
 		assertThat(origin.toString()).isEqualTo("unknown resource [?]:2:3");
 	}
 
 	@Test
 	public void toStringWhenLocationIsNullShouldReturnNiceString() throws Exception {
 		ClassPathResource resource = new ClassPathResource("foo.txt");
-		TextResourcePropertyOrigin origin = new TextResourcePropertyOrigin(resource,
-				null);
+		TextResourceOrigin origin = new TextResourceOrigin(resource, null);
 		assertThat(origin.toString()).isEqualTo("class path resource [foo.txt]");
 	}
 
@@ -117,13 +112,13 @@ public class TextResourcePropertyOriginTests {
 
 	@Test
 	public void equalsAndHashCodeShouldResourceAndLocation() throws Exception {
-		TextResourcePropertyOrigin origin1 = new TextResourcePropertyOrigin(
+		TextResourceOrigin origin1 = new TextResourceOrigin(
 				new ClassPathResource("foo.txt"), new Location(1, 2));
-		TextResourcePropertyOrigin origin2 = new TextResourcePropertyOrigin(
+		TextResourceOrigin origin2 = new TextResourceOrigin(
 				new ClassPathResource("foo.txt"), new Location(1, 2));
-		TextResourcePropertyOrigin origin3 = new TextResourcePropertyOrigin(
+		TextResourceOrigin origin3 = new TextResourceOrigin(
 				new ClassPathResource("foo.txt"), new Location(2, 2));
-		TextResourcePropertyOrigin origin4 = new TextResourcePropertyOrigin(
+		TextResourceOrigin origin4 = new TextResourceOrigin(
 				new ClassPathResource("foo2.txt"), new Location(1, 2));
 		assertThat(origin1.hashCode()).isEqualTo(origin1.hashCode());
 		assertThat(origin1.hashCode()).isEqualTo(origin2.hashCode());

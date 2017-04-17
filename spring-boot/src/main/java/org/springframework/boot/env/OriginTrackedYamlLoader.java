@@ -37,7 +37,10 @@ import org.yaml.snakeyaml.representer.Representer;
 import org.yaml.snakeyaml.resolver.Resolver;
 
 import org.springframework.beans.factory.config.YamlProcessor;
-import org.springframework.boot.env.TextResourcePropertyOrigin.Location;
+import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginTrackedValue;
+import org.springframework.boot.origin.TextResourceOrigin;
+import org.springframework.boot.origin.TextResourceOrigin.Location;
 import org.springframework.boot.yaml.SpringProfileDocumentMatcher;
 import org.springframework.core.io.Resource;
 
@@ -106,14 +109,14 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		}
 
 		private Object constructTrackedObject(Node node, Object value) {
-			PropertyOrigin origin = getOrigin(node);
+			Origin origin = getOrigin(node);
 			return OriginTrackedValue.of(value, origin);
 		}
 
-		private PropertyOrigin getOrigin(Node node) {
+		private Origin getOrigin(Node node) {
 			Mark mark = node.getStartMark();
 			Location location = new Location(mark.getLine(), mark.getColumn());
-			return new TextResourcePropertyOrigin(OriginTrackedYamlLoader.this.resource,
+			return new TextResourceOrigin(OriginTrackedYamlLoader.this.resource,
 					location);
 		}
 

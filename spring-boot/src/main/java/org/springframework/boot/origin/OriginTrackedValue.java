@@ -14,41 +14,51 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot.origin;
+
+import org.springframework.util.ObjectUtils;
 
 /**
- * Wrapper class for an Object {@code value} and {@link PropertyOrigin origin}.
+ * An wrapper for a {@link Object} value and {@link Origin}.
  *
  * @author Madhura Bhave
- * @see OriginTrackedMapPropertySource
+ * @author Phillip Webb
+ * @since 2.0.0
+ * @see #of(Object)
+ * @see #of(Object, Origin)
  */
-class OriginTrackedValue {
+public class OriginTrackedValue implements OriginProvider {
 
 	private final Object value;
 
-	private final PropertyOrigin origin;
+	private final Origin origin;
 
-	OriginTrackedValue(Object value, PropertyOrigin origin) {
+	private OriginTrackedValue(Object value, Origin origin) {
 		this.value = value;
 		this.origin = origin;
 	}
 
+	/**
+	 * Return the tracked value.
+	 * @return the tracked value
+	 */
 	public Object getValue() {
 		return this.value;
 	}
 
-	public PropertyOrigin getOrigin() {
+	@Override
+	public Origin getOrigin() {
 		return this.origin;
 	}
 
 	@Override
 	public String toString() {
-		return this.value.toString();
+		return (this.value == null ? null : this.value.toString());
 	}
 
 	@Override
 	public int hashCode() {
-		return this.value.hashCode();
+		return ObjectUtils.nullSafeHashCode(this.value);
 	}
 
 	@Override
@@ -56,7 +66,11 @@ class OriginTrackedValue {
 		if (obj == null || obj.getClass() != getClass()) {
 			return false;
 		}
-		return this.value.equals(((OriginTrackedValue) obj).value);
+		return ObjectUtils.nullSafeEquals(this.value, ((OriginTrackedValue) obj).value);
+	}
+
+	public static OriginTrackedValue of(Object value) {
+		return of(value, null);
 	}
 
 	/**
@@ -65,10 +79,10 @@ class OriginTrackedValue {
 	 * the resulting {@link OriginTrackedValue}.
 	 * @param value the source value
 	 * @param origin the origin
-	 * @return an {@link OriginTrackedValue} or {@code null} if the source value was
+	 * @return a {@link OriginTrackedValue} or {@code null} if the source value was
 	 * {@code null}.
 	 */
-	public static OriginTrackedValue of(Object value, PropertyOrigin origin) {
+	public static OriginTrackedValue of(Object value, Origin origin) {
 		if (value == null) {
 			return null;
 		}
@@ -84,7 +98,7 @@ class OriginTrackedValue {
 	private static class OriginTrackedCharSequence extends OriginTrackedValue
 			implements CharSequence {
 
-		OriginTrackedCharSequence(CharSequence value, PropertyOrigin origin) {
+		OriginTrackedCharSequence(CharSequence value, Origin origin) {
 			super(value, origin);
 		}
 

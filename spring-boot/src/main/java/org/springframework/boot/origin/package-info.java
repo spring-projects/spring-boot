@@ -14,22 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
-
-import java.io.File;
-
 /**
- * Interface that uniquely represents the origin of a property. For example, a property
- * loaded from a {@link File} may have an origin made up of the file name along with
- * line/column numbers.
- * <p>
- * Implementations must provide sensible {@code hashCode()}, {@code equals(...)} and
- * {@code #toString()} implementations.
- *
- * @author Madhura Bhave
- * @author Phillip Webb
- * @since 2.0.0
+ * Support for item origin tracking.
+ * @see org.springframework.boot.origin.Origin
  */
-public interface PropertyOrigin {
-
-}
+package org.springframework.boot.origin;

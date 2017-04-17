@@ -21,6 +21,9 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginTrackedValue;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -37,7 +40,7 @@ public class OriginTrackedMapPropertySourceTests {
 	private OriginTrackedMapPropertySource source = new OriginTrackedMapPropertySource(
 			"test", this.map);
 
-	private PropertyOrigin origin = mock(PropertyOrigin.class);
+	private Origin origin = mock(Origin.class);
 
 	@Test
 	public void getPropertyWhenMissingShouldReturnNull() throws Exception {
@@ -52,25 +55,25 @@ public class OriginTrackedMapPropertySourceTests {
 
 	@Test
 	public void getPropertyWhenTrackedShouldReturnValue() throws Exception {
-		this.map.put("test", new OriginTrackedValue("foo", this.origin));
+		this.map.put("test", OriginTrackedValue.of("foo", this.origin));
 		assertThat(this.source.getProperty("test")).isEqualTo("foo");
 	}
 
 	@Test
 	public void getPropertyOriginWhenMissingShouldReturnNull() throws Exception {
-		assertThat(this.source.getPropertyOrigin("test")).isNull();
+		assertThat(this.source.getOrigin("test")).isNull();
 	}
 
 	@Test
 	public void getPropertyOriginWhenNonTrackedShouldReturnNull() throws Exception {
 		this.map.put("test", "foo");
-		assertThat(this.source.getPropertyOrigin("test")).isNull();
+		assertThat(this.source.getOrigin("test")).isNull();
 	}
 
 	@Test
 	public void getPropertyOriginWhenTrackedShouldReturnOrigin() throws Exception {
-		this.map.put("test", new OriginTrackedValue("foo", this.origin));
-		assertThat(this.source.getPropertyOrigin("test")).isEqualTo(this.origin);
+		this.map.put("test", OriginTrackedValue.of("foo", this.origin));
+		assertThat(this.source.getOrigin("test")).isEqualTo(this.origin);
 	}
 
 }

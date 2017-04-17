@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
-
-import org.springframework.core.env.PropertySource;
+package org.springframework.boot.origin;
 
 /**
- * An additional interface that may be implemented by a {@link PropertySource} that can
- * return origin information. For example a property source that's backed by a file may
- * return origin information for line and column numbers.
+ * Interface to provide access to the origin of an item.
  *
  * @author Phillip Webb
  * @since 2.0.0
+ * @see Origin
  */
-public interface OriginCapablePropertySource {
+public interface OriginProvider {
 
 	/**
-	 * Return the origin of the given property name or {@code null} if the origin cannot
-	 * be determined.
-	 * @param name the property name
-	 * @return the origin of the property or {@code null}
+	 * Return the source origin or {@code null} if the origin is not known.
+	 * @return the origin or {@code null}
 	 */
-	PropertyOrigin getPropertyOrigin(String name);
+	Origin getOrigin();
 
 }

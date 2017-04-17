@@ -23,7 +23,10 @@ import java.io.LineNumberReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.boot.env.TextResourcePropertyOrigin.Location;
+import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginTrackedValue;
+import org.springframework.boot.origin.TextResourceOrigin;
+import org.springframework.boot.origin.TextResourceOrigin.Location;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -129,7 +132,7 @@ class OriginTrackedPropertiesLoader {
 			buffer.append(reader.getCharacter());
 			reader.read();
 		}
-		PropertyOrigin origin = new TextResourcePropertyOrigin(this.resource, location);
+		Origin origin = new TextResourceOrigin(this.resource, location);
 		return OriginTrackedValue.of(buffer.toString().trim(), origin);
 	}
 
