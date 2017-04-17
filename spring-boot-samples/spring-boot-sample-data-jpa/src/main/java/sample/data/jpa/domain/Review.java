@@ -43,7 +43,7 @@ public class Review implements Serializable {
 	@ManyToOne(optional = false)
 	private Hotel hotel;
 
-	@Column(nullable = false, name = "idx")
+	@Column(nullable = false,name = "index_number")
 	private int index;
 
 	@Column(nullable = false)
