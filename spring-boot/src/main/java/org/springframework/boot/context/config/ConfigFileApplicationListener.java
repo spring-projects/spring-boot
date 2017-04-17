@@ -145,7 +145,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			onApplicationEnvironmentPreparedEvent(
 					(ApplicationEnvironmentPreparedEvent) event);
 		}
-		if (event instanceof ApplicationPreparedEvent) {
+		else if (event instanceof ApplicationPreparedEvent) {
 			onApplicationPreparedEvent(event);
 		}
 	}
