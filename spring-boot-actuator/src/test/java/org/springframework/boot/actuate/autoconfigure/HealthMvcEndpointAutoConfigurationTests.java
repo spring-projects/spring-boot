@@ -108,7 +108,8 @@ public class HealthMvcEndpointAutoConfigurationTests {
 	public void endpointConditionalOnMissingBean() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(TestConfiguration.class, TestHealthMvcEndpointConfiguration.class);
+		this.context.register(TestConfiguration.class,
+				TestHealthMvcEndpointConfiguration.class);
 		this.context.refresh();
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class)
@@ -141,6 +142,7 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		public HealthMvcEndpoint endpoint(HealthEndpoint endpoint) {
 			return new TestHealthMvcEndpoint(endpoint);
 		}
+
 	}
 
 	static class TestHealthMvcEndpoint extends HealthMvcEndpoint {
@@ -150,9 +152,11 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		}
 
 		@Override
-		protected boolean exposeHealthDetails(HttpServletRequest request, Principal principal) {
+		protected boolean exposeHealthDetails(HttpServletRequest request,
+				Principal principal) {
 			return true;
 		}
+
 	}
 
 	static class TestHealthIndicator extends AbstractHealthIndicator {

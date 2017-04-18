@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for {@link JacksonTester}. Shows typical usage.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class JacksonTesterIntegrationTests {
 
@@ -54,6 +55,13 @@ public class JacksonTesterIntegrationTests {
 	public void setup() {
 		this.objectMapper = new ObjectMapper();
 		JacksonTester.initFields(this, this.objectMapper);
+	}
+
+	@Test
+	public void typicalTest() throws Exception {
+		String example = JSON;
+		assertThat(this.simpleJson.parse(example).getObject().getName())
+				.isEqualTo("Spring");
 	}
 
 	@Test
@@ -79,10 +87,9 @@ public class JacksonTesterIntegrationTests {
 		ExampleObjectWithView object = new ExampleObjectWithView();
 		object.setName("Spring");
 		object.setAge(123);
-		JsonContent<ExampleObjectWithView> content = this.jsonWithView.forView(
-				ExampleObjectWithView.TestView.class).write(object);
-		assertThat(content).extractingJsonPathStringValue("@.name")
-				.isEqualTo("Spring");
+		JsonContent<ExampleObjectWithView> content = this.jsonWithView
+				.forView(ExampleObjectWithView.TestView.class).write(object);
+		assertThat(content).extractingJsonPathStringValue("@.name").isEqualTo("Spring");
 		assertThat(content).doesNotHaveJsonPathValue("age");
 	}
 
@@ -90,10 +97,9 @@ public class JacksonTesterIntegrationTests {
 	public void readWithResourceAndView() throws Exception {
 		this.objectMapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
 		ByteArrayResource resource = new ByteArrayResource(JSON.getBytes());
-		ObjectContent<ExampleObjectWithView> content = this.jsonWithView.forView(
-				ExampleObjectWithView.TestView.class).read(resource);
-		assertThat(content.getObject().getName())
-				.isEqualTo("Spring");
+		ObjectContent<ExampleObjectWithView> content = this.jsonWithView
+				.forView(ExampleObjectWithView.TestView.class).read(resource);
+		assertThat(content.getObject().getName()).isEqualTo("Spring");
 		assertThat(content.getObject().getAge()).isEqualTo(0);
 	}
 
@@ -101,10 +107,9 @@ public class JacksonTesterIntegrationTests {
 	public void readWithReaderAndView() throws Exception {
 		this.objectMapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
 		Reader reader = new StringReader(JSON);
-		ObjectContent<ExampleObjectWithView> content = this.jsonWithView.forView(
-				ExampleObjectWithView.TestView.class).read(reader);
-		assertThat(content.getObject().getName())
-				.isEqualTo("Spring");
+		ObjectContent<ExampleObjectWithView> content = this.jsonWithView
+				.forView(ExampleObjectWithView.TestView.class).read(reader);
+		assertThat(content.getObject().getName()).isEqualTo("Spring");
 		assertThat(content.getObject().getAge()).isEqualTo(0);
 	}
 

@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for {@link JsonTest}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
 @JsonTest
@@ -82,9 +83,9 @@ public class JsonTestIntegrationTests {
 		ExampleJsonObjectWithView object = new ExampleJsonObjectWithView();
 		object.setValue("spring");
 		JsonContent<ExampleJsonObjectWithView> content = this.jacksonWithViewJson
-				.forView(ExampleJsonObjectWithView.TestView.class)
-				.write(object);
+				.forView(ExampleJsonObjectWithView.TestView.class).write(object);
 		assertThat(content).doesNotHaveJsonPathValue("id");
 		assertThat(content).isEqualToJson("example.json");
 	}
+
 }
