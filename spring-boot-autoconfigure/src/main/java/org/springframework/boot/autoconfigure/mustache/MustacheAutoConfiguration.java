@@ -30,7 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.mustache.web.MustacheViewResolver;
+import org.springframework.boot.autoconfigure.mustache.servlet.MustacheViewResolver;
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -43,6 +43,7 @@ import org.springframework.core.env.Environment;
  * {@link EnableAutoConfiguration Auto-configuration} for Mustache.
  *
  * @author Dave Syer
+ * @author Brian Clozel
  * @since 1.2.2
  */
 @Configuration
@@ -117,6 +118,36 @@ public class MustacheAutoConfiguration {
 			this.mustache.applyToViewResolver(resolver);
 			resolver.setCharset(this.mustache.getCharsetName());
 			resolver.setCompiler(mustacheCompiler);
+			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
+			return resolver;
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnWebApplication(type = Type.REACTIVE)
+	protected static class MustacheReactiveWebConfiguration {
+
+		private final MustacheProperties mustache;
+
+		protected MustacheReactiveWebConfiguration(MustacheProperties mustache) {
+			this.mustache = mustache;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(org.springframework.boot.autoconfigure
+				.mustache.reactive.MustacheViewResolver.class)
+		public org.springframework.boot.autoconfigure
+				.mustache.reactive.MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler) {
+			org.springframework.boot.autoconfigure
+					.mustache.reactive.MustacheViewResolver resolver
+					= new org.springframework.boot.autoconfigure
+					.mustache.reactive.MustacheViewResolver(mustacheCompiler);
+			resolver.setPrefix(this.mustache.getPrefix());
+			resolver.setSuffix(this.mustache.getSuffix());
+			resolver.setViewNames(this.mustache.getViewNames());
+			resolver.setRequestContextAttribute(this.mustache.getRequestContextAttribute());
+			resolver.setCharset(this.mustache.getCharsetName());
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 			return resolver;
 		}
