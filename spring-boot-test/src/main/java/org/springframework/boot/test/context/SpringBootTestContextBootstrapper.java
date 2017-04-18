@@ -19,6 +19,7 @@ package org.springframework.boot.test.context;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,13 +32,16 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextConfigurationAttributes;
+import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
@@ -153,7 +157,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 				propertySourceProperties
 						.toArray(new String[propertySourceProperties.size()]));
 		WebEnvironment webEnvironment = getWebEnvironment(mergedConfig.getTestClass());
-		if (webEnvironment != null) {
+		if (webEnvironment != null && isWebEnvironmentSupported(mergedConfig)) {
 			WebApplicationType webApplicationType = getWebApplicationType(mergedConfig);
 			if (webApplicationType == WebApplicationType.SERVLET
 					&& (webEnvironment.isEmbedded()
@@ -196,6 +200,32 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			}
 		}
 		return WebApplicationType.SERVLET;
+	}
+
+	private boolean isWebEnvironmentSupported(MergedContextConfiguration mergedConfig) {
+		Class<?> testClass = mergedConfig.getTestClass();
+		ContextHierarchy hierarchy = AnnotationUtils.getAnnotation(testClass,
+				ContextHierarchy.class);
+		if (hierarchy == null || hierarchy.value().length == 0) {
+			return true;
+		}
+		ContextConfiguration[] configurations = hierarchy.value();
+		return isFromConfiguration(mergedConfig,
+				configurations[configurations.length - 1]);
+	}
+
+	private boolean isFromConfiguration(MergedContextConfiguration candidateConfig,
+			ContextConfiguration configuration) {
+		ContextConfigurationAttributes attributes = new ContextConfigurationAttributes(
+				candidateConfig.getTestClass(), configuration);
+		Set<Class<?>> configurationClasses = new HashSet<Class<?>>(
+				Arrays.asList(attributes.getClasses()));
+		for (Class<?> candidate : candidateConfig.getClasses()) {
+			if (configurationClasses.contains(candidate)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private WebApplicationType getConfiguredWebApplicationType(

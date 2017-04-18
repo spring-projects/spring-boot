@@ -46,9 +46,12 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
@@ -61,9 +64,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ResourceServerTokenServicesConfiguration}.
@@ -211,7 +212,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"security.oauth2.resource.jwk.key-set-uri=http://my-auth-server/token_keys");
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
-				.environment(this.environment).web(false).run();
+				.environment(this.environment).web(WebApplicationType.NONE).run();
 		DefaultTokenServices services = this.context.getBean(DefaultTokenServices.class);
 		assertThat(services).isNotNull();
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
@@ -251,21 +252,10 @@ public class ResourceServerTokenServicesConfigurationTests {
 	public void jwtAccessTokenConverterIsConfiguredWhenKeyUriIsProvided() {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"security.oauth2.resource.jwt.key-uri=http://localhost:12345/banana");
-		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
-				.environment(this.environment).web(WebApplicationType.NONE).run();
-		assertThat(this.context.getBeansOfType(JwtAccessTokenConverter.class)).hasSize(1);
-	}
-
-	@Test
-	public void jwtAccessTokenConverterRestTemplateCanBeCustomized() {
-		EnvironmentTestUtils.addEnvironment(this.environment,
-				"security.oauth2.resource.jwt.key-uri=http://localhost:12345/banana");
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class,
 				JwtAccessTokenConverterRestTemplateCustomizerConfiguration.class)
 						.environment(this.environment).web(WebApplicationType.NONE).run();
-		JwtAccessTokenConverterRestTemplateCustomizer customizer = this.context
-				.getBean(JwtAccessTokenConverterRestTemplateCustomizer.class);
-		verify(customizer).customize(any(RestTemplate.class));
+		assertThat(this.context.getBeansOfType(JwtAccessTokenConverter.class)).hasSize(1);
 	}
 
 	@Configuration
@@ -387,7 +377,29 @@ public class ResourceServerTokenServicesConfigurationTests {
 
 		@Bean
 		public JwtAccessTokenConverterRestTemplateCustomizer restTemplateCustomizer() {
-			return mock(JwtAccessTokenConverterRestTemplateCustomizer.class);
+			return new MockRestCallCustomizer();
+		}
+
+	}
+
+	private static class MockRestCallCustomizer
+			implements JwtAccessTokenConverterRestTemplateCustomizer {
+
+		@Override
+		public void customize(RestTemplate template) {
+			template.getInterceptors().add(new ClientHttpRequestInterceptor() {
+
+				@Override
+				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
+						ClientHttpRequestExecution execution) throws IOException {
+					String payload = "{\"value\":\"FOO\"}";
+					MockClientHttpResponse response = new MockClientHttpResponse(
+							payload.getBytes(), HttpStatus.OK);
+					response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+					return response;
+				}
+
+			});
 		}
 
 	}

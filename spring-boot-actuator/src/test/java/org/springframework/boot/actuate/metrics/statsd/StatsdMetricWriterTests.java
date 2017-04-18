@@ -102,7 +102,8 @@ public class StatsdMetricWriterTests {
 	public void incrementMetricWithInvalidCharsInName() throws Exception {
 		this.writer.increment(new Delta<Long>("counter.fo:o", 3L));
 		this.server.waitForMessage();
-		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.counter.fo-o:3|c");
+		assertThat(this.server.messagesReceived().get(0))
+				.isEqualTo("me.counter.fo-o:3|c");
 	}
 
 	@Test

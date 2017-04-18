@@ -181,7 +181,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				.getBean(ManagementContextResolver.class).getApplicationContext();
 		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(
 				managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
-		assertThat(interceptors).hasSize(1);
+		assertThat(interceptors).hasSize(2);
 	}
 
 	@Test
@@ -201,7 +201,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				.getBean(ManagementContextResolver.class).getApplicationContext();
 		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(
 				managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
-		assertThat(interceptors).hasSize(1);
+		assertThat(interceptors).hasSize(2);
 		ServletWebServerFactory parentFactory = this.applicationContext
 				.getBean(ServletWebServerFactory.class);
 		ServletWebServerFactory managementFactory = managementContext
@@ -535,7 +535,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				.getBean(ManagementContextResolver.class).getApplicationContext();
 		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(
 				managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
-		assertThat(interceptors).hasSize(1);
+		assertThat(interceptors).hasSize(2);
 		ManagementServerProperties managementServerProperties = this.applicationContext
 				.getBean(ManagementServerProperties.class);
 		assertThat(managementServerProperties.getSsl()).isNotNull();
@@ -577,7 +577,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				.getBean(ManagementContextResolver.class).getApplicationContext();
 		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(
 				managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
-		assertThat(interceptors).hasSize(1);
+		assertThat(interceptors).hasSize(2);
 		ManagementServerProperties managementServerProperties = this.applicationContext
 				.getBean(ManagementServerProperties.class);
 		assertThat(managementServerProperties.getSsl()).isNotNull();

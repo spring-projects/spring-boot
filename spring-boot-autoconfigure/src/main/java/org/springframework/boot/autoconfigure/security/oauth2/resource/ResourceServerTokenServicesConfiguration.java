@@ -21,9 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -68,7 +65,6 @@ import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -82,9 +78,6 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 @ConditionalOnMissingBean(AuthorizationServerEndpointsConfiguration.class)
 public class ResourceServerTokenServicesConfiguration {
-
-	private static final Log logger = LogFactory
-			.getLog(ResourceServerTokenServicesConfiguration.class);
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -278,13 +271,7 @@ public class ResourceServerTokenServicesConfiguration {
 			JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
 			String keyValue = this.resource.getJwt().getKeyValue();
 			if (!StringUtils.hasText(keyValue)) {
-				try {
-					keyValue = getKeyFromServer();
-				}
-				catch (ResourceAccessException ex) {
-					logger.warn("Failed to fetch token key (you may need to refresh "
-							+ "when the auth server is back)");
-				}
+				keyValue = getKeyFromServer();
 			}
 			if (StringUtils.hasText(keyValue) && !keyValue.startsWith("-----BEGIN")) {
 				converter.setSigningKey(keyValue);
