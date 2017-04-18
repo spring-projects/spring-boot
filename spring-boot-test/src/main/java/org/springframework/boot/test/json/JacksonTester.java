@@ -152,13 +152,14 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 	}
 
 	/**
-	 * Returns a new instance of {@link JacksonTester} with the view
-	 * that should be used for json serialization/deserialization.
+	 * Returns a new instance of {@link JacksonTester} with the view that should be used
+	 * for json serialization/deserialization.
 	 * @param view the view class
 	 * @return the new instance
 	 */
 	public JacksonTester<T> forView(Class<?> view) {
-		return new JacksonTester<T>(this.getResourceLoadClass(), this.getType(), this.objectMapper, view);
+		return new JacksonTester<T>(this.getResourceLoadClass(), this.getType(),
+				this.objectMapper, view);
 	}
 
 	/**

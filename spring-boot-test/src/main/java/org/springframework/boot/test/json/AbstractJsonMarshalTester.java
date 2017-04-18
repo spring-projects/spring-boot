@@ -113,6 +113,10 @@ public abstract class AbstractJsonMarshalTester<T> {
 		return this.type;
 	}
 
+	/**
+	 * Return class used to load relative resources.
+	 * @return the resource load class
+	 */
 	protected final Class<?> getResourceLoadClass() {
 		return this.resourceLoadClass;
 	}

@@ -33,9 +33,9 @@ public interface SpringApplicationAdminMXBean {
 	boolean isReady();
 
 	/**
-	 * Specify if the application runs in an embedded web container. Return
-	 * {@code false} on a web application that hasn't fully started yet, so it is
-	 * preferable to wait for the application to be {@link #isReady() ready}.
+	 * Specify if the application runs in an embedded web container. Return {@code false}
+	 * on a web application that hasn't fully started yet, so it is preferable to wait for
+	 * the application to be {@link #isReady() ready}.
 	 * @return {@code true} if the application runs in an embedded web container
 	 * @see #isReady()
 	 */
