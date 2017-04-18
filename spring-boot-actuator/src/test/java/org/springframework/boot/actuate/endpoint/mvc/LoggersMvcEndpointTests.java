@@ -148,7 +148,7 @@ public class LoggersMvcEndpointTests {
 	@Test
 	public void setLoggerUsingApplicationJsonShouldSetLogLevel() throws Exception {
 		this.mvc.perform(post("/application/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
-				.content("{\"configuredLevel\":\"debug\"}")).andExpect(status().isOk());
+				.content("{\"configuredLevel\":\"debug\"}")).andExpect(status().isNoContent());
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
@@ -156,7 +156,7 @@ public class LoggersMvcEndpointTests {
 	public void setLoggerUsingActuatorV2JsonShouldSetLogLevel() throws Exception {
 		this.mvc.perform(post("/application/loggers/ROOT")
 				.contentType(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON)
-				.content("{\"configuredLevel\":\"debug\"}")).andExpect(status().isOk());
+				.content("{\"configuredLevel\":\"debug\"}")).andExpect(status().isNoContent());
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
