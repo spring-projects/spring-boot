@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.template.AbstractTemplateAvailabilityProvider;
+import org.springframework.boot.autoconfigure.template.PathBasedTemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 
 /**
@@ -31,7 +31,7 @@ import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvi
  * @since 1.1.0
  */
 public class GroovyTemplateAvailabilityProvider
-		extends AbstractTemplateAvailabilityProvider {
+		extends PathBasedTemplateAvailabilityProvider {
 
 	public GroovyTemplateAvailabilityProvider() {
 		super("groovy.text.TemplateEngine", GroovyTemplateAvailabilityProperties.class,

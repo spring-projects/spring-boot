@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.template.AbstractTemplateAvailabilityProvider;
+import org.springframework.boot.autoconfigure.template.PathBasedTemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 
 /**
@@ -34,7 +34,7 @@ import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvi
  */
 @Deprecated
 public class VelocityTemplateAvailabilityProvider
-		extends AbstractTemplateAvailabilityProvider {
+		extends PathBasedTemplateAvailabilityProvider {
 
 	public VelocityTemplateAvailabilityProvider() {
 		super("org.apache.velocity.app.VelocityEngine",

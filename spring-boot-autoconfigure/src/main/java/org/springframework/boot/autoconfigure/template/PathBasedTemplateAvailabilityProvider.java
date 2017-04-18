@@ -27,13 +27,14 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
 
 /**
- * Abstract base class for {@link TemplateAvailabilityProvider} implementations.
+ * Abstract base class for {@link TemplateAvailabilityProvider} implementations that find
+ * templates from paths.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 1.4.6
  */
-public abstract class AbstractTemplateAvailabilityProvider
+public abstract class PathBasedTemplateAvailabilityProvider
 		implements TemplateAvailabilityProvider {
 
 	private final String className;
@@ -42,7 +43,7 @@ public abstract class AbstractTemplateAvailabilityProvider
 
 	private final String propertyPrefix;
 
-	public AbstractTemplateAvailabilityProvider(String className,
+	public PathBasedTemplateAvailabilityProvider(String className,
 			Class<? extends TemplateAvailabilityProperties> propertiesClass,
 			String propertyPrefix) {
 		this.className = className;
