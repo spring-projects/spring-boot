@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,16 +100,16 @@ public class StatsdMetricWriterTests {
 
 	@Test
 	public void incrementMetricWithInvalidCharsInName() throws Exception {
-		this.writer.increment(new Delta<>("counter.fo:o", 3L));
+		this.writer.increment(new Delta<Long>("counter.fo:o", 3L));
 		this.server.waitForMessage();
-		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.counter.foo:3|c");
+		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.counter.fo-o:3|c");
 	}
 
 	@Test
 	public void setMetricWithInvalidCharsInName() throws Exception {
-		this.writer.set(new Metric<>("gauge.f:o:o", 3L));
+		this.writer.set(new Metric<Long>("gauge.f:o:o", 3L));
 		this.server.waitForMessage();
-		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.gauge.foo:3|g");
+		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.gauge.f-o-o:3|g");
 	}
 
 	private static final class DummyStatsDServer implements Runnable {

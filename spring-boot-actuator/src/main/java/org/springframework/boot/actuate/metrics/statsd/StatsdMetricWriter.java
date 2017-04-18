@@ -88,7 +88,8 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 
 	@Override
 	public void increment(Delta<?> delta) {
-		this.client.count(sanitizeMetricName(delta.getName()), delta.getValue().longValue());
+		this.client.count(sanitizeMetricName(delta.getName()),
+				delta.getValue().longValue());
 	}
 
 	@Override
@@ -119,13 +120,12 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 	}
 
 	/**
-	 * The statsd server does not allow ":" in metric names. Since the the statsd client
-	 * is not dealing with this, we have to sanitize the metric name.
+	 * Sanitize the metric name if necessary.
 	 * @param name The metric name
 	 * @return The sanitized metric name
 	 */
 	private String sanitizeMetricName(String name) {
-		return name.replace(":", "");
+		return name.replace(":", "-");
 	}
 
 	private static final class LoggingStatsdErrorHandler
