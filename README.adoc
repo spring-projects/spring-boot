@@ -1,4 +1,4 @@
-= Spring Boot image:https://build.spring.io/plugins/servlet/buildStatusImage/BOOT-PUB["Build Status", link="https://build.spring.io/browse/BOOT-PUB"] image:https://badges.gitter.im/Join Chat.svg["Chat",link="https://gitter.im/spring-projects/spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
+= Spring Boot image:https://build.spring.io/plugins/servlet/buildStatusImage/BOOT-PUB["Build Status", link="https://build.spring.io/browse/BOOT-PUB"] image:https://maven-badges.herokuapp.com/maven-central/org.springframework.boot/spring-boot/badge.svg["Maven Central",link="https://maven-badges.herokuapp.com/maven-central/org.springframework.boot/spring-boot/"] image:https://badges.gitter.im/Join Chat.svg["Chat",link="https://gitter.im/spring-projects/spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
 :docs: http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference
 
 Spring Boot makes it easy to create Spring-powered, production-grade applications and
