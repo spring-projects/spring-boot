@@ -278,13 +278,7 @@ public class ResourceServerTokenServicesConfiguration {
 			JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
 			String keyValue = this.resource.getJwt().getKeyValue();
 			if (!StringUtils.hasText(keyValue)) {
-				try {
-					keyValue = getKeyFromServer();
-				}
-				catch (ResourceAccessException ex) {
-					logger.warn("Failed to fetch token key (you may need to refresh "
-							+ "when the auth server is back)");
-				}
+				keyValue = getKeyFromServer();
 			}
 			if (StringUtils.hasText(keyValue) && !keyValue.startsWith("-----BEGIN")) {
 				converter.setSigningKey(keyValue);
