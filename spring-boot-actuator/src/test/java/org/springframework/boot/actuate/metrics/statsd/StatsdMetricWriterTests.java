@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link StatsdMetricWriter}.
  *
  * @author Dave Syer
+ * @author Odín del Río
  */
 public class StatsdMetricWriterTests {
 
@@ -95,6 +96,20 @@ public class StatsdMetricWriterTests {
 		this.writer.set(new Metric<Long>("gauge.foo", 3L));
 		this.server.waitForMessage();
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("my.gauge.foo:3|g");
+	}
+
+	@Test
+	public void incrementMetricWithInvalidCharsInName() throws Exception {
+		this.writer.increment(new Delta<Long>("counter.fo:o", 3L));
+		this.server.waitForMessage();
+		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.counter.fo-o:3|c");
+	}
+
+	@Test
+	public void setMetricWithInvalidCharsInName() throws Exception {
+		this.writer.set(new Metric<Long>("gauge.f:o:o", 3L));
+		this.server.waitForMessage();
+		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.gauge.f-o-o:3|g");
 	}
 
 	private static final class DummyStatsDServer implements Runnable {
