@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.test.context;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,9 +29,12 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextConfigurationAttributes;
+import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
@@ -137,7 +141,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 				propertySourceProperties
 						.toArray(new String[propertySourceProperties.size()]));
 		WebEnvironment webEnvironment = getWebEnvironment(mergedConfig.getTestClass());
-		if (webEnvironment != null) {
+		if (webEnvironment != null && isWebEnvironmentSupported(mergedConfig)) {
 			if (webEnvironment.isEmbedded() || (webEnvironment == WebEnvironment.MOCK
 					&& hasWebEnvironmentClasses())) {
 				WebAppConfiguration webAppConfiguration = AnnotatedElementUtils
@@ -150,6 +154,32 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			}
 		}
 		return mergedConfig;
+	}
+
+	private boolean isWebEnvironmentSupported(MergedContextConfiguration mergedConfig) {
+		Class<?> testClass = mergedConfig.getTestClass();
+		ContextHierarchy hierarchy = AnnotationUtils.getAnnotation(testClass,
+				ContextHierarchy.class);
+		if (hierarchy == null || hierarchy.value().length == 0) {
+			return true;
+		}
+		ContextConfiguration[] configurations = hierarchy.value();
+		return isFromConfiguration(mergedConfig,
+				configurations[configurations.length - 1]);
+	}
+
+	private boolean isFromConfiguration(MergedContextConfiguration candidateConfig,
+			ContextConfiguration configuration) {
+		ContextConfigurationAttributes attributes = new ContextConfigurationAttributes(
+				candidateConfig.getTestClass(), configuration);
+		Set<Class<?>> configurationClasses = new HashSet<Class<?>>(
+				Arrays.asList(attributes.getClasses()));
+		for (Class<?> candidate : candidateConfig.getClasses()) {
+			if (configurationClasses.contains(candidate)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean hasWebEnvironmentClasses() {
