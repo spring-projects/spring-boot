@@ -68,7 +68,6 @@ import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 /**
