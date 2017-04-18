@@ -64,7 +64,7 @@ public class HikariDriverConfigurationFailureAnalyzerTests {
 		EnvironmentTestUtils.addEnvironment(context,
 				"spring.datasource.type=" + HikariDataSource.class.getName(),
 				"spring.datasource.hikari.data-source-class-name=com.example.Foo",
-				"spring.datasource.proxyTypes:");
+				"spring.datasource.decorator.enabled:false");
 		context.register(configuration);
 		try {
 			context.refresh();

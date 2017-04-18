@@ -71,7 +71,7 @@ public class DataSourceInitializerTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.initialize:false",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt(),
-				"spring.datasource.proxyTypes:");
+				"spring.datasource.decorator.enabled:false");
 	}
 
 	@After

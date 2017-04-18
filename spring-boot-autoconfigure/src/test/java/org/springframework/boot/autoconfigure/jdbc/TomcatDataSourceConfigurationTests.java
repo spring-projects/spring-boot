@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
 
 import javax.sql.DataSource;
 
@@ -146,9 +145,7 @@ public class TomcatDataSourceConfigurationTests {
 		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
 		public DataSource dataSource() {
 			return DataSourceBuilder.create()
-					.type(org.apache.tomcat.jdbc.pool.DataSource.class)
-					.proxyTypes(Collections.<Class<? extends DataSource>>emptyList())
-					.build();
+					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 
 	}

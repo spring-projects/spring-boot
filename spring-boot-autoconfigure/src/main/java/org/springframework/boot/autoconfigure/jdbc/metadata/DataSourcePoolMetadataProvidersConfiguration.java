@@ -21,11 +21,9 @@ import javax.sql.DataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration.ProxyDataSourceAvailableCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -37,6 +35,12 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class DataSourcePoolMetadataProvidersConfiguration {
+
+	@Bean
+	@ConditionalOnProperty(prefix = "spring.datasource.decorator", name = "enabled", havingValue = "true", matchIfMissing = true)
+	public DataSourcePoolMetadataProvider decoratedDataSourcePoolMetadataProvider() {
+		return new DecoratedDataSourcePoolMetadataProvider();
+	}
 
 	@Configuration
 	@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
@@ -123,14 +127,4 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	}
 
-	@Configuration
-	@ConditionalOnBean(DataSource.class)
-	@Conditional(ProxyDataSourceAvailableCondition.class)
-	static class ProxyPoolDataSourceMetadataProviderConfiguration {
-
-		@Bean
-		public DataSourcePoolMetadataProvider proxyPoolDataSourceMetadataProvider() {
-			return new ProxyDataSourcePoolMetadataProvider();
-		}
-	}
 }

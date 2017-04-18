@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jdbc.metadata;
 
-import java.util.Collections;
-
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.junit.Before;
 
@@ -54,7 +52,6 @@ public class TomcatDataSourcePoolMetadataTests
 
 	private DataSource createDataSource(int minSize, int maxSize) {
 		DataSource dataSource = (DataSource) initializeBuilder().type(DataSource.class)
-				.proxyTypes(Collections.<Class<? extends javax.sql.DataSource>>emptyList())
 				.build();
 		dataSource.setMinIdle(minSize);
 		dataSource.setMaxActive(maxSize);

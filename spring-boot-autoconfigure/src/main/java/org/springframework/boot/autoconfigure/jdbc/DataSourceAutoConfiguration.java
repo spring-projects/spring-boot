@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -39,6 +38,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor.Registrar;
+import org.springframework.boot.autoconfigure.jdbc.decorator.DataSourceDecoratorConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -60,12 +60,11 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
- * @author Arthur Gavlyukovskiy
  */
 @Configuration
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
 @EnableConfigurationProperties(DataSourceProperties.class)
-@Import({ Registrar.class, DataSourcePoolMetadataProvidersConfiguration.class })
+@Import({ Registrar.class, DataSourceDecoratorConfiguration.class, DataSourcePoolMetadataProvidersConfiguration.class })
 public class DataSourceAutoConfiguration {
 
 	private static final Log logger = LogFactory
@@ -106,14 +105,8 @@ public class DataSourceAutoConfiguration {
 	@Configuration
 	@Conditional(PooledDataSourceCondition.class)
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
-	@Import({ DataSourceConfiguration.ProxyOverTomcat.class,
-			DataSourceConfiguration.Tomcat.class,
-			DataSourceConfiguration.ProxyOverHikari.class,
-			DataSourceConfiguration.Hikari.class,
-			DataSourceConfiguration.ProxyOverDbcp.class,
-			DataSourceConfiguration.Dbcp.class,
-			DataSourceConfiguration.ProxyOverDbcp2.class,
-			DataSourceConfiguration.Dbcp2.class,
+	@Import({ DataSourceConfiguration.Tomcat.class, DataSourceConfiguration.Hikari.class,
+			DataSourceConfiguration.Dbcp.class, DataSourceConfiguration.Dbcp2.class,
 			DataSourceConfiguration.Generic.class })
 	@SuppressWarnings("deprecation")
 	protected static class PooledDataSourceConfiguration {
@@ -260,49 +253,6 @@ public class DataSourceAutoConfiguration {
 					context.getBeanFactory(), type, true, false).length > 0;
 		}
 
-	}
-
-	/**
-	 * {@link Condition} to detect if supported proxy {@link DataSource} provider
-	 * available or explicit proxy types were set to non empty list of
-	 * {@link DataSource} proxies.
-	 */
-	public static class ProxyDataSourceAvailableCondition extends SpringBootCondition {
-
-		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("ProxyDataSource");
-			String proxyTypes = context.getEnvironment()
-					.getProperty("spring.datasource.proxyTypes");
-			if (proxyTypes == null) {
-				if (hasProxyDataSource(context)) {
-					return ConditionOutcome
-							.match(message.foundExactly("supported proxy DataSource"));
-				}
-				return ConditionOutcome
-						.noMatch(message.didNotFind("supported proxy DataSource").atAll());
-			}
-			if (!proxyTypes.isEmpty()) {
-				String[] proxyTypesList = proxyTypes.split(",");
-				return ConditionOutcome.match(message.found("explicit data source proxy",
-						"explicit data source proxies").items(proxyTypesList));
-			}
-			return ConditionOutcome.noMatch(
-					message.didNotFind("explicit data source proxy").atAll());
-		}
-
-		/**
-		 * Returns the class loader for the {@link DataSource} class. Used to ensure that
-		 * the driver class can actually be loaded by the data source.
-		 * @param context the condition context
-		 * @return the class loader
-		 */
-		private boolean hasProxyDataSource(ConditionContext context) {
-			List<?> proxyDataSourceClasses = new DataSourceBuilder(context.getClassLoader())
-					.findProxyTypes();
-			return !proxyDataSourceClasses.isEmpty();
-		}
 	}
 
 }

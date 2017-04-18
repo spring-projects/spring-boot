@@ -16,10 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jdbc.metadata;
 
-import java.util.Collections;
-
-import javax.sql.DataSource;
-
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.Before;
 
@@ -56,9 +52,7 @@ public class HikariDataSourcePoolMetadataTests
 
 	private HikariDataSource createDataSource(int minSize, int maxSize) {
 		HikariDataSource dataSource = (HikariDataSource) initializeBuilder()
-				.type(HikariDataSource.class)
-				.proxyTypes(Collections.<Class<? extends DataSource>>emptyList())
-				.build();
+				.type(HikariDataSource.class).build();
 		dataSource.setMinimumIdle(minSize);
 		dataSource.setMaximumPoolSize(maxSize);
 		return dataSource;
