@@ -90,7 +90,7 @@ include::../gradle/packaging/boot-jar-manifest-main-class.gradle[tags=main-class
 By default, Spring Boot's Devtools module,
 `org.springframework.boot:spring-boot-devtools`, will be excluded from an executable jar
 or war. If you want to include Devtools in your archive set the `excludeDevtools`
-property to `true`:
+property to `false`:
 
 [source,groovy,indent=0,subs="verbatim"]
 ----
