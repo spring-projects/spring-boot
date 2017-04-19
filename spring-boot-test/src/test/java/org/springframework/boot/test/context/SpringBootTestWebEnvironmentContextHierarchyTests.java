@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.AbstractSpringBootTestEmbeddedWebEnvironmentTests.AbstractConfig;
+import org.springframework.boot.test.context.AbstractSpringBootTestWebServerWebEnvironmentTests.AbstractConfig;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.SpringBootTestWebEnvironmentContextHierarchyTests.ChildConfiguration;
 import org.springframework.boot.test.context.SpringBootTestWebEnvironmentContextHierarchyTests.ParentConfiguration;
