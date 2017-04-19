@@ -256,6 +256,12 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
+	public void deleteLoggerConfiguration(String loggerName) {
+		ch.qos.logback.classic.Logger logger = getLogger(loggerName);
+		logger.setLevel(null);
+	}
+
+	@Override
 	public Runnable getShutdownHandler() {
 		return new ShutdownHandler();
 	}
