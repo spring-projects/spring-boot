@@ -87,12 +87,12 @@ public class LoggersEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	}
 
 	public void setLogLevel(String name, LogLevel level) {
-		Assert.notNull(name, "Name must not be empty");
+		Assert.notNull(name, "Name must not be null");
 		this.loggingSystem.setLogLevel(name, level);
 	}
 
 	public void deleteLoggerConfiguration(String name) {
-		Assert.notNull(name, "Name must not be empty");
+		Assert.notNull(name, "Name must not be null");
 		this.loggingSystem.deleteLoggerConfiguration(name);
 	}
 
