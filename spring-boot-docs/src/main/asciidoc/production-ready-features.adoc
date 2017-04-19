@@ -59,8 +59,9 @@ includes a number of built-in endpoints and you can also add your own. For examp
 `health` endpoint provides basic application health information.
 
 The way that endpoints are exposed will depend on the type of technology that you choose.
-Most applications choose HTTP monitoring, where the ID of the endpoint is mapped
-to a URL. For example, by default, the `health` endpoint will be mapped to `/health`.
+Most applications choose HTTP monitoring, where the ID of the endpoint along with a prefix of
+`/application` is mapped to a URL. For example, by default, the `health` endpoint will be mapped
+to `/application/health`.
 
 The following technology agnostic endpoints are available:
 
@@ -216,13 +217,13 @@ http://projects.spring.io/spring-hateoas[Spring HATEOAS] is on the classpath (e.
 through the `spring-boot-starter-hateoas` or if you are using
 http://projects.spring.io/spring-data-rest[Spring Data REST]) then the HTTP endpoints
 from the Actuator are enhanced with hypermedia links, and a "`discovery page`" is added
-with links to all the endpoints. The "`discovery page`" is available on `/actuator` by
+with links to all the endpoints. The "`discovery page`" is available on `/application` by
 default. It is implemented as an endpoint, allowing properties to be used to configure
 its path (`endpoints.actuator.path`) and whether or not it is enabled
 (`endpoints.actuator.enabled`).
 
 When a custom management context path is configured, the "`discovery page`" will
-automatically move from `/actuator` to the root of the management context. For example,
+automatically move from `/application` to the root of the management context. For example,
 if the management context path is `/management` then the discovery page will be available
 from `/management`.
 
@@ -537,7 +538,8 @@ additional entry:
 == Monitoring and management over HTTP
 If you are developing a Spring MVC application, Spring Boot Actuator will auto-configure
 all enabled endpoints to be exposed over HTTP. The default convention is to use the
-`id` of the endpoint as the URL path. For example, `health` is exposed as `/health`.
+`id` of the endpoint with a prefix of `/application` as the URL path. For example, `health`
+is exposed as `/application/health`.
 
 
 
@@ -587,23 +589,20 @@ in your `application.properties`:
 
 [[production-ready-customizing-management-server-context-path]]
 === Customizing the management endpoint paths
-Sometimes it is useful to group all management endpoints under a single path. For example,
-your application might already use `/info` for another purpose. You can use the
-`management.context-path` property to set a prefix for your management endpoint:
+Sometimes it is useful to customize the prefix for the management endpoints.
+For example, your application might already use `/application` for another purpose.
+You can use the `management.context-path` property to change the prefix for your management endpoint:
 
 [source,properties,indent=0]
 ----
 	management.context-path=/manage
 ----
 
-The `application.properties` example above will change the endpoint from `/{id}` to
+The `application.properties` example above will change the endpoint from `/application/{id}` to
 `/manage/{id}` (e.g. `/manage/info`).
 
-You can also change the "`id`" of an endpoint (using `endpoints.{name}.id`) which then
-changes the default resource path for the MVC endpoint. Legal endpoint ids are composed
-only of alphanumeric characters (because they can be exposed in a number of places,
-including JMX object names, where special characters are forbidden). The MVC path can be
-changed separately by configuring `endpoints.{name}.path`, and there is no validation on
+You can also change the "`path`" of an endpoint (using `endpoints.{name}.path`) which then
+changes the default resource path for the MVC endpoint. There is no validation on
 those values (so you can use anything that is legal in a URL path). For example, to change
 the location of the `/health` endpoint to `/ping/me` you can set
 `endpoints.health.path=/ping/me`.
