@@ -121,7 +121,8 @@ public class LoggersMvcEndpointTests {
 	@Test
 	public void getLoggersRootWhenDisabledShouldReturnNotFound() throws Exception {
 		this.context.getBean(LoggersEndpoint.class).setEnabled(false);
-		this.mvc.perform(get("/application/loggers/ROOT")).andExpect(status().isNotFound());
+		this.mvc.perform(get("/application/loggers/ROOT"))
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -147,8 +148,10 @@ public class LoggersMvcEndpointTests {
 
 	@Test
 	public void setLoggerUsingApplicationJsonShouldSetLogLevel() throws Exception {
-		this.mvc.perform(post("/application/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
-				.content("{\"configuredLevel\":\"debug\"}")).andExpect(status().isOk());
+		this.mvc.perform(
+				post("/application/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
+						.content("{\"configuredLevel\":\"debug\"}"))
+				.andExpect(status().isOk());
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
@@ -163,16 +166,18 @@ public class LoggersMvcEndpointTests {
 	@Test
 	public void setLoggerWhenDisabledShouldReturnNotFound() throws Exception {
 		this.context.getBean(LoggersEndpoint.class).setEnabled(false);
-		this.mvc.perform(post("/application/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
-				.content("{\"configuredLevel\":\"DEBUG\"}"))
+		this.mvc.perform(
+				post("/application/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
+						.content("{\"configuredLevel\":\"DEBUG\"}"))
 				.andExpect(status().isNotFound());
 		verifyZeroInteractions(this.loggingSystem);
 	}
 
 	@Test
 	public void setLoggerWithWrongLogLevel() throws Exception {
-		this.mvc.perform(post("/application/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
-				.content("{\"configuredLevel\":\"other\"}"))
+		this.mvc.perform(
+				post("/application/loggers/ROOT").contentType(MediaType.APPLICATION_JSON)
+						.content("{\"configuredLevel\":\"other\"}"))
 				.andExpect(status().is4xxClientError());
 		verifyZeroInteractions(this.loggingSystem);
 	}
