@@ -127,7 +127,7 @@ public class MetricsMvcEndpointTests {
 	@Test
 	public void specificMetricWithNameThatCouldBeMistakenForAPathExtension()
 			throws Exception {
-		this.mvc.perform(get("/metrics/bar.png")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/metrics/bar.png")).andExpect(status().isOk())
 				.andExpect(content().string(equalTo("{\"bar.png\":1}")));
 	}
 
