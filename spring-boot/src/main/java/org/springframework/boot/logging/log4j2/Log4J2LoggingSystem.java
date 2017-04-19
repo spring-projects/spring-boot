@@ -229,6 +229,13 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		return convertLoggerConfiguration(getLoggerConfig(loggerName));
 	}
 
+
+	@Override
+	public void deleteLoggerConfiguration(String loggerName) {
+		getLoggerContext().getConfiguration().removeLogger(loggerName);
+		getLoggerContext().updateLoggers();
+	}
+
 	private LoggerConfiguration convertLoggerConfiguration(LoggerConfig loggerConfig) {
 		if (loggerConfig == null) {
 			return null;
