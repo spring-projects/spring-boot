@@ -114,10 +114,9 @@ public class MustacheAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(MustacheViewResolver.class)
 		public MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler) {
-			MustacheViewResolver resolver = new MustacheViewResolver();
+			MustacheViewResolver resolver = new MustacheViewResolver(mustacheCompiler);
 			this.mustache.applyToViewResolver(resolver);
 			resolver.setCharset(this.mustache.getCharsetName());
-			resolver.setCompiler(mustacheCompiler);
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 			return resolver;
 		}

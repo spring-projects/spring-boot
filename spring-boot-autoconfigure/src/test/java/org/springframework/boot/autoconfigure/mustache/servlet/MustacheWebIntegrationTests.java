@@ -120,12 +120,12 @@ public class MustacheWebIntegrationTests {
 
 		@Bean
 		public MustacheViewResolver viewResolver() {
-			MustacheViewResolver resolver = new MustacheViewResolver();
+			Mustache.Compiler compiler = Mustache.compiler()
+					.withLoader(new MustacheResourceTemplateLoader("classpath:/mustache-templates/",
+							".html"));
+			MustacheViewResolver resolver = new MustacheViewResolver(compiler);
 			resolver.setPrefix("classpath:/mustache-templates/");
 			resolver.setSuffix(".html");
-			resolver.setCompiler(
-					Mustache.compiler().withLoader(new MustacheResourceTemplateLoader(
-							"classpath:/mustache-templates/", ".html")));
 			return resolver;
 		}
 

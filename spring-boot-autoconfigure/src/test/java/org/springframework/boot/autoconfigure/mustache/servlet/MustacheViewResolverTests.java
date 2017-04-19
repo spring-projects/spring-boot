@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,14 @@
 
 package org.springframework.boot.autoconfigure.mustache.servlet;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Locale;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.core.io.Resource;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.servlet.View;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MustacheViewResolver}.
@@ -46,7 +37,9 @@ public class MustacheViewResolverTests {
 
 	@Before
 	public void init() {
-		this.resolver.setApplicationContext(new StaticWebApplicationContext());
+		GenericApplicationContext applicationContext = new GenericApplicationContext();
+		applicationContext.refresh();
+		this.resolver.setApplicationContext(applicationContext);
 		this.resolver.setServletContext(new MockServletContext());
 		this.resolver.setPrefix("classpath:/mustache-templates/");
 		this.resolver.setSuffix(".html");
@@ -58,30 +51,8 @@ public class MustacheViewResolverTests {
 	}
 
 	@Test
-	public void resolveNullLocale() throws Exception {
+	public void resolveExisting() throws Exception {
 		assertThat(this.resolver.resolveViewName("foo", null)).isNotNull();
-	}
-
-	@Test
-	public void resolveDefaultLocale() throws Exception {
-		assertThat(this.resolver.resolveViewName("foo", Locale.US)).isNotNull();
-	}
-
-	@Test
-	public void resolveDoubleLocale() throws Exception {
-		assertThat(this.resolver.resolveViewName("foo", Locale.CANADA_FRENCH))
-				.isNotNull();
-	}
-
-	@Test
-	public void resolveTripleLocale() throws Exception {
-		assertThat(this.resolver.resolveViewName("foo", new Locale("en", "GB", "cy")))
-				.isNotNull();
-	}
-
-	@Test
-	public void resolveSpecificLocale() throws Exception {
-		assertThat(this.resolver.resolveViewName("foo", new Locale("de"))).isNotNull();
 	}
 
 	@Test
@@ -90,26 +61,6 @@ public class MustacheViewResolverTests {
 		View view = this.resolver.resolveViewName("foo", null);
 		assertThat(view.getContentType()).isEqualTo("application/octet-stream");
 
-	}
-
-	@Test
-	public void templateResourceInputStreamIsClosed() throws Exception {
-		final Resource resource = mock(Resource.class);
-		given(resource.exists()).willReturn(true);
-		InputStream inputStream = new ByteArrayInputStream(new byte[0]);
-		InputStream spyInputStream = spy(inputStream);
-		given(resource.getInputStream()).willReturn(spyInputStream);
-		this.resolver = new MustacheViewResolver();
-		this.resolver.setApplicationContext(new StaticWebApplicationContext() {
-
-			@Override
-			public Resource getResource(String location) {
-				return resource;
-			}
-
-		});
-		this.resolver.loadView("foo", null);
-		verify(spyInputStream).close();
 	}
 
 }

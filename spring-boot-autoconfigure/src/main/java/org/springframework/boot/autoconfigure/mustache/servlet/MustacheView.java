@@ -16,58 +16,84 @@
 
 package org.springframework.boot.autoconfigure.mustache.servlet;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 
+import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 
 /**
  * Spring MVC {@link View} using the Mustache template engine.
  *
+ * @author Brian Clozel
  * @author Dave Syer
  * @author Phillip Webb
- * @since 1.2.2
+ * @since 2.0.0
  */
 public class MustacheView extends AbstractTemplateView {
 
-	private Template template;
+	private Mustache.Compiler compiler;
+
+	private String charset;
 
 	/**
-	 * Create a new {@link MustacheView} instance.
-	 * @since 1.2.5
-	 * @see #setTemplate(Template)
+	 * Set the Mustache compiler to be used by this view.
+	 * <p>Typically this property is not set directly. Instead a single
+	 * {@link Mustache.Compiler} is expected in the Spring application context
+	 * which is used to compile Mustache templates.
+	 * @param compiler the Mustache compiler
 	 */
-	public MustacheView() {
+	public void setCompiler(Mustache.Compiler compiler) {
+		this.compiler = compiler;
 	}
 
 	/**
-	 * Create a new {@link MustacheView} with the specified template.
-	 * @param template the source template
+	 * Set the charset used for reading Mustache template files.
+	 * @param charset the charset to use for reading template files
 	 */
-	public MustacheView(Template template) {
-		this.template = template;
-	}
-
-	/**
-	 * Set the Mustache template that should actually be rendered.
-	 * @param template the mustache template
-	 * @since 1.2.5
-	 */
-	public void setTemplate(Template template) {
-		this.template = template;
+	public void setCharset(String charset) {
+		this.charset = charset;
 	}
 
 	@Override
-	protected void renderMergedTemplateModel(Map<String, Object> model,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		if (this.template != null) {
-			this.template.execute(model, response.getWriter());
+	public boolean checkResource(Locale locale) throws Exception {
+		Resource resource = getApplicationContext().getResource(this.getUrl());
+		return (resource != null && resource.exists());
+	}
+
+	@Override
+	protected void renderMergedTemplateModel(Map<String, Object> model, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		Template template = createTemplate(getApplicationContext().getResource(this.getUrl()));
+		if (template != null) {
+			template.execute(model, response.getWriter());
 		}
 	}
 
+	private Template createTemplate(Resource resource) throws IOException {
+		Reader reader = getReader(resource);
+		try {
+			return this.compiler.compile(reader);
+		}
+		finally {
+			reader.close();
+		}
+	}
+
+	private Reader getReader(Resource resource) throws IOException {
+		if (this.charset != null) {
+			return new InputStreamReader(resource.getInputStream(), this.charset);
+		}
+		return new InputStreamReader(resource.getInputStream());
+	}
 }
