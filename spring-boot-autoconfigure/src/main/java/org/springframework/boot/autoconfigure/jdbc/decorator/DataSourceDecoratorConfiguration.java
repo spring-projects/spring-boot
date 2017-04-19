@@ -21,8 +21,6 @@ import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
 
 import com.p6spy.engine.spy.P6DataSource;
-import com.p6spy.engine.spy.P6SpyLoadableOptions;
-import com.p6spy.engine.spy.P6SpyOptions;
 import com.vladmihalcea.flexypool.FlexyPoolDataSource;
 import net.ttddyy.dsproxy.support.ProxyDataSource;
 import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
