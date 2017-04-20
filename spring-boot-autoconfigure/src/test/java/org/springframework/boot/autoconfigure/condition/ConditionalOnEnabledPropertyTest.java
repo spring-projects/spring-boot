@@ -133,9 +133,6 @@ public class ConditionalOnEnabledPropertyTest {
 		assertThat(exception == null).isEqualTo(shouldWork);
 	}
 
-	// Actual Test metadata
-	// --------------------
-
 	@Configuration
 	@ConditionalOnEnabledProperty
 	@ConfigurationProperties(PREFIX)
@@ -143,6 +140,9 @@ public class ConditionalOnEnabledPropertyTest {
 	@Target(TYPE)
 	public @interface ConfiguredCorrectly {
 	}
+
+	// Actual Test metadata
+	// --------------------
 
 	@ConfiguredCorrectly
 	public static class ConfiguredCorrectlyNoEnvironment {
