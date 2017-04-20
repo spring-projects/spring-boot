@@ -77,7 +77,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 			RepositorySystem repositorySystem,
 			DefaultRepositorySystemSession repositorySystemSession,
 			List<RemoteRepository> remoteRepositories,
-			DependencyResolutionContext resolutionContext) {
+			DependencyResolutionContext resolutionContext, boolean quiet) {
 		this.classLoader = classLoader;
 		this.repositorySystem = repositorySystem;
 		this.session = repositorySystemSession;
@@ -88,12 +88,14 @@ public class AetherGrapeEngine implements GrapeEngine {
 		for (RemoteRepository repository : remotes) {
 			addRepository(repository);
 		}
-		this.progressReporter = getProgressReporter(this.session);
+		this.progressReporter = getProgressReporter(this.session, quiet);
 	}
 
-	private ProgressReporter getProgressReporter(DefaultRepositorySystemSession session) {
-		String progressReporter = System.getProperty(
-				"org.springframework.boot.cli.compiler.grape.ProgressReporter");
+	private ProgressReporter getProgressReporter(DefaultRepositorySystemSession session,
+			boolean quiet) {
+		String progressReporter = (quiet ? "none"
+				: System.getProperty(
+						"org.springframework.boot.cli.compiler.grape.ProgressReporter"));
 		if ("detail".equals(progressReporter)
 				|| Boolean.getBoolean("groovy.grape.report.downloads")) {
 			return new DetailedProgressReporter(session, System.out);

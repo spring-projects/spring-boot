@@ -140,13 +140,18 @@ public class RunCommand extends OptionParsingCommand {
 
 			@Override
 			public Level getLogLevel() {
-				if (getOptions().has(RunOptionHandler.this.quietOption)) {
+				if (isQuiet()) {
 					return Level.OFF;
 				}
 				if (getOptions().has(RunOptionHandler.this.verboseOption)) {
 					return Level.FINEST;
 				}
 				return Level.INFO;
+			}
+
+			@Override
+			public boolean isQuiet() {
+				return getOptions().has(RunOptionHandler.this.quietOption);
 			}
 
 		}
