@@ -44,8 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Test for {@link ConditionalOnEnabledProperty} and {@link OnEnabledPropertyCondition}.<br>
  * This test is defined by test metadata rather then code
- * @author
- * 		<br>20 Apr 2017 idosu(Ido Sorozon)
+ * @author 20 Apr 2017 idosu(Ido Sorozon)
  */
 @RunWith(Parameterized.class)
 public class ConditionalOnEnabledPropertyTest {

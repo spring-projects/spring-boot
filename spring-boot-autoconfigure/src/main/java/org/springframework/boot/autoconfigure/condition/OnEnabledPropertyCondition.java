@@ -22,9 +22,10 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * TODO: desc
+ * The implementation for checking {@link ConditionalOnEnabledProperty}
  *
- * @author <br>20 Apr 2017 idosu(Ido Sorozon)
+ * @author 20 Apr 2017 idosu(Ido Sorozon)
+ * @see ConditionalOnEnabledProperty
  */
 public class OnEnabledPropertyCondition extends SpringBootCondition {
 	@Override
@@ -42,6 +43,7 @@ public class OnEnabledPropertyCondition extends SpringBootCondition {
 		AnnotationAttributes annotation = AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(ConfigurationProperties.class.getName()));
 		String prefix = annotation.getString("prefix");
 
+		// TODO(idosu): I do not know if I need to check this, but if so maybe I should change this to Assert?
 		// Validates that the prefix hes been set
 		if (prefix.isEmpty()) {
 			return ConditionOutcome.noMatch(ConditionMessage
