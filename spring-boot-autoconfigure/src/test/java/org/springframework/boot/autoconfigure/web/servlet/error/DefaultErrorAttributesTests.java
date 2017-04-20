@@ -41,10 +41,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link DefaultErrorAttributes}.
  *
  * @author Phillip Webb
+ * @author Vedran Pavic
  */
 public class DefaultErrorAttributesTests {
 
-	private DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes();
+	private DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes(false);
 
 	private MockHttpServletRequest request = new MockHttpServletRequest();
 
@@ -87,8 +88,7 @@ public class DefaultErrorAttributesTests {
 				.getErrorAttributes(this.requestAttributes, false);
 		assertThat(this.errorAttributes.getError(this.requestAttributes)).isSameAs(ex);
 		assertThat(modelAndView).isNull();
-		assertThat(attributes.get("exception"))
-				.isEqualTo(RuntimeException.class.getName());
+		assertThat(attributes.get("exception")).isNull();
 		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
@@ -99,8 +99,7 @@ public class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);
 		assertThat(this.errorAttributes.getError(this.requestAttributes)).isSameAs(ex);
-		assertThat(attributes.get("exception"))
-				.isEqualTo(RuntimeException.class.getName());
+		assertThat(attributes.get("exception")).isNull();
 		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
@@ -120,8 +119,7 @@ public class DefaultErrorAttributesTests {
 		this.request.setAttribute("javax.servlet.error.message", "Test");
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);
-		assertThat(attributes.get("exception"))
-				.isEqualTo(RuntimeException.class.getName());
+		assertThat(attributes.get("exception")).isNull();
 		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
@@ -134,8 +132,7 @@ public class DefaultErrorAttributesTests {
 				.getErrorAttributes(this.requestAttributes, false);
 		assertThat(this.errorAttributes.getError(this.requestAttributes))
 				.isSameAs(wrapped);
-		assertThat(attributes.get("exception"))
-				.isEqualTo(RuntimeException.class.getName());
+		assertThat(attributes.get("exception")).isNull();
 		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
@@ -146,8 +143,7 @@ public class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.requestAttributes, false);
 		assertThat(this.errorAttributes.getError(this.requestAttributes)).isSameAs(error);
-		assertThat(attributes.get("exception"))
-				.isEqualTo(OutOfMemoryError.class.getName());
+		assertThat(attributes.get("exception")).isNull();
 		assertThat(attributes.get("message")).isEqualTo("Test error");
 	}
 
@@ -177,6 +173,18 @@ public class DefaultErrorAttributesTests {
 		assertThat(attributes.get("message"))
 				.isEqualTo("Validation failed for object='objectName'. Error count: 1");
 		assertThat(attributes.get("errors")).isEqualTo(bindingResult.getAllErrors());
+	}
+
+	@Test
+	public void withExceptionAttribute() throws Exception {
+		DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes(true);
+		RuntimeException ex = new RuntimeException("Test");
+		this.request.setAttribute("javax.servlet.error.exception", ex);
+		Map<String, Object> attributes = errorAttributes
+				.getErrorAttributes(this.requestAttributes, false);
+		assertThat(attributes.get("exception"))
+				.isEqualTo(RuntimeException.class.getName());
+		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
 	@Test
