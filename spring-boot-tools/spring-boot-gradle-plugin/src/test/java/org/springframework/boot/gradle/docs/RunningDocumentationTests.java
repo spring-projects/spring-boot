@@ -55,9 +55,8 @@ public class RunningDocumentationTests {
 	public void bootRunSourceResources() throws IOException {
 		assertThat(this.gradleBuild
 				.script("src/main/gradle/running/boot-run-source-resources.gradle")
-				.build("configuredClasspath").getOutput()).contains(
-						new File(this.gradleBuild.getProjectDir(), "src/main/resources")
-								.getAbsolutePath());
+				.build("configuredClasspath").getOutput())
+						.contains(new File("src/main/resources").getPath());
 	}
 
 }
