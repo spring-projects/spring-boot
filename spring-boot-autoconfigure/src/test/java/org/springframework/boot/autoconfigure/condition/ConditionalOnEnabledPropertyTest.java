@@ -140,7 +140,7 @@ public class ConditionalOnEnabledPropertyTest {
 	public @interface ConfiguredCorrectly {
 	}
 
-	// Actual Test metadata
+	// Actual test cases and metadata
 	// --------------------
 
 	@ConfiguredCorrectly
