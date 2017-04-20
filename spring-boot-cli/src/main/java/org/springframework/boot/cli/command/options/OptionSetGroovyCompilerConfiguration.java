@@ -92,4 +92,9 @@ public class OptionSetGroovyCompilerConfiguration implements GroovyCompilerConfi
 		return this.repositoryConfiguration;
 	}
 
+	@Override
+	public boolean isQuiet() {
+		return false;
+	}
+
 }

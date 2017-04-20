@@ -44,27 +44,21 @@ public abstract class AetherGrapeEngineFactory {
 
 	public static AetherGrapeEngine create(GroovyClassLoader classLoader,
 			List<RepositoryConfiguration> repositoryConfigurations,
-			DependencyResolutionContext dependencyResolutionContext) {
-
+			DependencyResolutionContext dependencyResolutionContext, boolean quiet) {
 		RepositorySystem repositorySystem = createServiceLocator()
 				.getService(RepositorySystem.class);
-
 		DefaultRepositorySystemSession repositorySystemSession = MavenRepositorySystemUtils
 				.newSession();
-
 		ServiceLoader<RepositorySystemSessionAutoConfiguration> autoConfigurations = ServiceLoader
 				.load(RepositorySystemSessionAutoConfiguration.class);
-
 		for (RepositorySystemSessionAutoConfiguration autoConfiguration : autoConfigurations) {
 			autoConfiguration.apply(repositorySystemSession, repositorySystem);
 		}
-
 		new DefaultRepositorySystemSessionAutoConfiguration()
 				.apply(repositorySystemSession, repositorySystem);
-
 		return new AetherGrapeEngine(classLoader, repositorySystem,
 				repositorySystemSession, createRepositories(repositoryConfigurations),
-				dependencyResolutionContext);
+				dependencyResolutionContext, quiet);
 	}
 
 	private static ServiceLocator createServiceLocator() {

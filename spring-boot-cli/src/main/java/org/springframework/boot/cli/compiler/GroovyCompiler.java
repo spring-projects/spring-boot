@@ -95,7 +95,8 @@ public class GroovyCompiler {
 				new SpringBootDependenciesDependencyManagement());
 
 		AetherGrapeEngine grapeEngine = AetherGrapeEngineFactory.create(this.loader,
-				configuration.getRepositoryConfiguration(), resolutionContext);
+				configuration.getRepositoryConfiguration(), resolutionContext,
+				configuration.isQuiet());
 
 		GrapeEngineInstaller.install(grapeEngine);
 

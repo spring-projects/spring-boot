@@ -59,7 +59,7 @@ public class AetherGrapeEngineTests {
 		dependencyResolutionContext.addDependencyManagement(
 				new SpringBootDependenciesDependencyManagement());
 		return AetherGrapeEngineFactory.create(this.groovyClassLoader,
-				repositoryConfigurations, dependencyResolutionContext);
+				repositoryConfigurations, dependencyResolutionContext, false);
 	}
 
 	@Test
