@@ -44,7 +44,7 @@
 	</developers>
 	<properties>
 		<!-- Dependency versions -->
-		<activemq.version>5.14.4</activemq.version>
+		<activemq.version>5.14.5</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
 		<appengine-sdk.version>1.9.51</appengine-sdk.version>
 		<artemis.version>1.5.4</artemis.version>
