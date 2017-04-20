@@ -24,17 +24,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -54,13 +52,13 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Role;
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.CacheControl;
@@ -92,6 +90,7 @@ import org.springframework.web.reactive.result.view.ViewResolver;
  * @author Rob Winch
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 2.0.0
  */
 @Configuration
@@ -102,15 +101,9 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebFluxAnnotationAutoConfiguration {
 
-	@Bean
-	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	public static WebFluxValidatorPostProcessor mvcValidatorAliasPostProcessor() {
-		return new WebFluxValidatorPostProcessor();
-	}
-
 	@Configuration
 	@EnableConfigurationProperties({ ResourceProperties.class, WebFluxProperties.class })
-	@Import(EnableWebFluxConfiguration.class)
+	@Import({ EnableWebFluxConfiguration.class, WebFluxValidatorRegistrar.class })
 	public static class WebFluxConfig implements WebFluxConfigurer {
 
 		private static final Log logger = LogFactory.getLog(WebFluxConfig.class);
@@ -306,8 +299,8 @@ public class WebFluxAnnotationAutoConfiguration {
 
 	/**
 	 * Condition used to disable the default WebFlux validator registration. The
-	 * {@link WebFluxValidatorPostProcessor} is used to configure the
-	 * {@code webFluxValidator} bean.
+	 * {@link WebFluxValidatorRegistrar} is used to register the {@code webFluxValidator}
+	 * bean.
 	 */
 	static class DisableWebFluxValidatorCondition implements ConfigurationCondition {
 
@@ -324,53 +317,55 @@ public class WebFluxAnnotationAutoConfiguration {
 	}
 
 	/**
-	 * {@link BeanFactoryPostProcessor} to deal with the MVC validator bean registration.
-	 * Applies the following rules:
+	 * {@link ImportBeanDefinitionRegistrar} to deal with the WebFlux validator bean
+	 * registration. Applies the following rules:
 	 * <ul>
 	 * <li>With no validators - Uses standard
 	 * {@link WebFluxConfigurationSupport#webFluxValidator()} logic.</li>
 	 * <li>With a single validator - Uses an alias.</li>
-	 * <li>With multiple validators - Registers a mvcValidator bean if not already
+	 * <li>With multiple validators - Registers a webFluxValidator bean if not already
 	 * defined.</li>
 	 * </ul>
 	 */
-	@Order(Ordered.LOWEST_PRECEDENCE)
-	static class WebFluxValidatorPostProcessor
-			implements BeanDefinitionRegistryPostProcessor {
+	static class WebFluxValidatorRegistrar
+			implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 
 		private static final String JSR303_VALIDATOR_CLASS = "javax.validation.Validator";
 
+		private BeanFactory beanFactory;
+
 		@Override
-		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
-				throws BeansException {
-			if (registry instanceof ListableBeanFactory) {
-				postProcess(registry, (ListableBeanFactory) registry);
+		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+			this.beanFactory = beanFactory;
+		}
+
+		@Override
+		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+				BeanDefinitionRegistry registry) {
+			if (this.beanFactory instanceof ListableBeanFactory) {
+				registerOrAliasWebFluxValidator(registry,
+						(ListableBeanFactory) this.beanFactory);
 			}
 		}
 
-		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-				throws BeansException {
-		}
-
-		private void postProcess(BeanDefinitionRegistry registry,
+		private void registerOrAliasWebFluxValidator(BeanDefinitionRegistry registry,
 				ListableBeanFactory beanFactory) {
 			String[] validatorBeans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 					beanFactory, Validator.class, false, false);
 			if (validatorBeans.length == 0) {
-				registerMvcValidator(registry, beanFactory);
+				registerNewWebFluxValidator(registry, beanFactory);
 			}
 			else if (validatorBeans.length == 1) {
 				registry.registerAlias(validatorBeans[0], "webFluxValidator");
 			}
 			else {
 				if (!ObjectUtils.containsElement(validatorBeans, "webFluxValidator")) {
-					registerMvcValidator(registry, beanFactory);
+					registerNewWebFluxValidator(registry, beanFactory);
 				}
 			}
 		}
 
-		private void registerMvcValidator(BeanDefinitionRegistry registry,
+		private void registerNewWebFluxValidator(BeanDefinitionRegistry registry,
 				ListableBeanFactory beanFactory) {
 			RootBeanDefinition definition = new RootBeanDefinition();
 			definition.setBeanClass(getClass());

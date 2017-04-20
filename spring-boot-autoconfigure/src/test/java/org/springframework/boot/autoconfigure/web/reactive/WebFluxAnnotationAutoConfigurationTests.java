@@ -258,7 +258,7 @@ public class WebFluxAnnotationAutoConfigurationTests {
 	}
 
 	@Test
-	public void validatorWhenExcludingValidatorAutoConfigurationShouldUseMvc()
+	public void validatorWhenExcludingValidatorAutoConfigurationShouldUseWebFlux()
 			throws Exception {
 		load(null, new Class[] { ValidationAutoConfiguration.class });
 		Object webFluxValidator = this.context.getBean("webFluxValidator");
@@ -271,7 +271,7 @@ public class WebFluxAnnotationAutoConfigurationTests {
 	}
 
 	@Test
-	public void validatorWhenMultipleValidatorsAndNoWebFluxValidatorShouldAddMvc()
+	public void validatorWhenMultipleValidatorsAndNoWebFluxValidatorShouldAddWebFlux()
 			throws Exception {
 		load(MultipleValidatorsAndNoWebFluxValidator.class);
 		Object customValidator1 = this.context.getBean("customValidator1");
@@ -288,7 +288,7 @@ public class WebFluxAnnotationAutoConfigurationTests {
 	}
 
 	@Test
-	public void validatorWhenMultipleValidatorsAndWebFluxValidatorShouldUseMvc()
+	public void validatorWhenMultipleValidatorsAndWebFluxValidatorShouldUseWebFlux()
 			throws Exception {
 		load(MultipleValidatorsAndWebFluxValidator.class);
 		Object customValidator = this.context.getBean("customValidator");
