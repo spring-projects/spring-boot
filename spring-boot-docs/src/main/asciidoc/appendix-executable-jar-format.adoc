@@ -283,6 +283,8 @@ the `Main-Class` attribute and leave out `Start-Class`.
 * `loader.path` can contain directories (scanned recursively for jar and zip files),
   archive paths, a directory within an archive that is scanned for jar files (for
   example, `dependencies.jar!/lib`), or wildcard patterns (for the default JVM behavior).
+  Archive paths can be relative to `loader.home`, or anywhere in the file system with a
+  `jar:file:` prefix.
 * `loader.path` (if empty) defaults to `BOOT-INF/lib` (meaning a local directory or a
   nested one if running from an archive). Because of this `PropertiesLauncher` behaves the
   same as `JarLauncher` when no additional configuration is provided.

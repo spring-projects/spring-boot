@@ -16,15 +16,19 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.ValidatorFactory;
-
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
-import org.springframework.beans.DirectFieldAccessor;
-import org.springframework.boot.autoconfigure.validation.SpringValidator;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.boot.autoconfigure.validation.DelegatingValidator;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfigurationTests.Config;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
@@ -36,9 +40,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.accept.CompositeContentTypeResolver;
 import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
@@ -64,6 +68,9 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  */
 public class WebFluxAnnotationAutoConfigurationTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private GenericReactiveWebApplicationContext context;
 
@@ -165,64 +172,134 @@ public class WebFluxAnnotationAutoConfigurationTests {
 	}
 
 	@Test
-	public void validationNoJsr303ValidatorExposedByDefault() {
+	public void validatorWhenSuppliedByConfigurerShouldThrowException() throws Exception {
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("unexpected validator configuration");
+		load(ValidatorWebFluxConfigurer.class);
+	}
+
+	@Test
+	public void validatorWhenAutoConfiguredShouldUseAlias() throws Exception {
 		load();
-		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
-		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
-				.isEmpty();
-		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
+		Object defaultValidator = this.context.getBean("defaultValidator");
+		Object webFluxValidator = this.context.getBean("webFluxValidator");
+		String[] jsrValidatorBeans = this.context
+				.getBeanNamesForType(javax.validation.Validator.class);
+		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
+		assertThat(webFluxValidator).isSameAs(defaultValidator);
+		assertThat(springValidatorBeans).containsExactly("defaultValidator");
+		assertThat(jsrValidatorBeans).containsExactly("defaultValidator");
 	}
 
 	@Test
-	public void validationCustomConfigurerTakesPrecedence() {
-		load(WebFluxValidator.class);
-		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
-		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
-				.isEmpty();
-		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
-		Validator validator = this.context.getBean(Validator.class);
-		assertThat(validator)
-				.isSameAs(this.context.getBean(WebFluxValidator.class).validator);
+	public void validatorWhenUserDefinedSpringOnlyShouldUseDefined() throws Exception {
+		load(UserDefinedSpringOnlyValidator.class);
+		Object customValidator = this.context.getBean("customValidator");
+		Object webFluxValidator = this.context.getBean("webFluxValidator");
+		String[] jsrValidatorBeans = this.context
+				.getBeanNamesForType(javax.validation.Validator.class);
+		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
+		assertThat(webFluxValidator).isSameAs(customValidator);
+		assertThat(this.context.getBean(Validator.class)).isEqualTo(customValidator);
+		assertThat(springValidatorBeans).containsExactly("customValidator");
+		assertThat(jsrValidatorBeans).isEmpty();
 	}
 
 	@Test
-	public void validationCustomConfigurerTakesPrecedenceAndDoNotExposeJsr303() {
-		load(WebFluxJsr303Validator.class);
-		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
-		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
-				.isEmpty();
-		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
-		Validator validator = this.context.getBean(Validator.class);
-		assertThat(validator).isInstanceOf(SpringValidator.class);
-		assertThat(((SpringValidator) validator).getTarget())
-				.isSameAs(this.context.getBean(WebFluxJsr303Validator.class).validator);
+	public void validatorWhenUserDefinedJsr303ShouldAdapt() throws Exception {
+		load(UserDefinedJsr303Validator.class);
+		Object customValidator = this.context.getBean("customValidator");
+		Object webFluxValidator = this.context.getBean("webFluxValidator");
+		String[] jsrValidatorBeans = this.context
+				.getBeanNamesForType(javax.validation.Validator.class);
+		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
+		assertThat(webFluxValidator).isNotSameAs(customValidator);
+		assertThat(this.context.getBean(javax.validation.Validator.class))
+				.isEqualTo(customValidator);
+		assertThat(springValidatorBeans).containsExactly("jsr303ValidatorAdapter");
+		assertThat(jsrValidatorBeans).containsExactly("customValidator");
 	}
 
 	@Test
-	public void validationJsr303CustomValidatorReusedAsSpringValidator() {
-		load(CustomValidator.class);
-		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).hasSize(1);
-		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
-				.hasSize(1);
-		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(2);
-		Validator validator = this.context.getBean("webFluxValidator", Validator.class);
-		assertThat(validator).isInstanceOf(SpringValidator.class);
-		assertThat(((SpringValidator) validator).getTarget())
-				.isSameAs(this.context.getBean(javax.validation.Validator.class));
+	public void validatorWhenUserDefinedSingleJsr303AndSpringShouldUseDefined()
+			throws Exception {
+		load(UserDefinedSingleJsr303AndSpringValidator.class);
+		Object customValidator = this.context.getBean("customValidator");
+		Object webFluxValidator = this.context.getBean("webFluxValidator");
+		String[] jsrValidatorBeans = this.context
+				.getBeanNamesForType(javax.validation.Validator.class);
+		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
+		assertThat(webFluxValidator).isSameAs(customValidator);
+		assertThat(this.context.getBean(javax.validation.Validator.class))
+				.isEqualTo(customValidator);
+		assertThat(this.context.getBean(Validator.class)).isEqualTo(customValidator);
+		assertThat(springValidatorBeans).containsExactly("customValidator");
+		assertThat(jsrValidatorBeans).containsExactly("customValidator");
 	}
 
 	@Test
-	public void validationJsr303ValidatorExposedAsSpringValidator() {
-		load(Jsr303Validator.class);
-		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
-		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
-				.hasSize(1);
-		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
-		Validator validator = this.context.getBean(Validator.class);
-		assertThat(validator).isInstanceOf(SpringValidator.class);
-		SpringValidatorAdapter target = ((SpringValidator) validator).getTarget();
-		assertThat(new DirectFieldAccessor(target).getPropertyValue("targetValidator"))
-				.isSameAs(this.context.getBean(javax.validation.Validator.class));
+	public void validatorWhenUserDefinedJsr303AndSpringShouldUseDefined()
+			throws Exception {
+		load(UserDefinedJsr303AndSpringValidator.class);
+		Object customJsrValidator = this.context.getBean("customJsrValidator");
+		Object customSpringValidator = this.context.getBean("customSpringValidator");
+		Object webFluxValidator = this.context.getBean("webFluxValidator");
+		String[] jsrValidatorBeans = this.context
+				.getBeanNamesForType(javax.validation.Validator.class);
+		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
+		assertThat(customJsrValidator).isNotSameAs(customSpringValidator);
+		assertThat(webFluxValidator).isSameAs(customSpringValidator);
+		assertThat(this.context.getBean(javax.validation.Validator.class))
+				.isEqualTo(customJsrValidator);
+		assertThat(this.context.getBean(Validator.class))
+				.isEqualTo(customSpringValidator);
+		assertThat(springValidatorBeans).containsExactly("customSpringValidator");
+		assertThat(jsrValidatorBeans).containsExactly("customJsrValidator");
+	}
+
+	@Test
+	public void validatorWhenExcludingValidatorAutoConfigurationShouldUseMvc()
+			throws Exception {
+		load(null, new Class[] { ValidationAutoConfiguration.class });
+		Object webFluxValidator = this.context.getBean("webFluxValidator");
+		String[] jsrValidatorBeans = this.context
+				.getBeanNamesForType(javax.validation.Validator.class);
+		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
+		assertThat(webFluxValidator).isInstanceOf(DelegatingValidator.class);
+		assertThat(springValidatorBeans).containsExactly("webFluxValidator");
+		assertThat(jsrValidatorBeans).isEmpty();
+	}
+
+	@Test
+	public void validatorWhenMultipleValidatorsAndNoWebFluxValidatorShouldAddMvc()
+			throws Exception {
+		load(MultipleValidatorsAndNoWebFluxValidator.class);
+		Object customValidator1 = this.context.getBean("customValidator1");
+		Object customValidator2 = this.context.getBean("customValidator2");
+		Object webFluxValidator = this.context.getBean("webFluxValidator");
+		String[] jsrValidatorBeans = this.context
+				.getBeanNamesForType(javax.validation.Validator.class);
+		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
+		assertThat(webFluxValidator).isNotSameAs(customValidator1)
+				.isNotSameAs(customValidator2);
+		assertThat(springValidatorBeans).containsExactly("customValidator1",
+				"customValidator2", "webFluxValidator");
+		assertThat(jsrValidatorBeans).isEmpty();
+	}
+
+	@Test
+	public void validatorWhenMultipleValidatorsAndWebFluxValidatorShouldUseMvc()
+			throws Exception {
+		load(MultipleValidatorsAndWebFluxValidator.class);
+		Object customValidator = this.context.getBean("customValidator");
+		Object webFluxValidator = this.context.getBean("webFluxValidator");
+		String[] jsrValidatorBeans = this.context
+				.getBeanNamesForType(javax.validation.Validator.class);
+		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
+		assertThat(webFluxValidator).isNotSameAs(customValidator);
+		assertThat(springValidatorBeans).containsExactly("customValidator",
+				"webFluxValidator");
+		assertThat(jsrValidatorBeans).isEmpty();
 	}
 
 	private void load(String... environment) {
@@ -230,13 +307,24 @@ public class WebFluxAnnotationAutoConfigurationTests {
 	}
 
 	private void load(Class<?> config, String... environment) {
+		load(config, null, environment);
+	}
+
+	private void load(Class<?> config, Class<?>[] exclude, String... environment) {
 		this.context = new GenericReactiveWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
+		List<Class<?>> configClasses = new ArrayList<>();
 		if (config != null) {
-			this.context.register(config);
+			configClasses.add(config);
 		}
-		this.context.register(BaseConfiguration.class);
+		configClasses.addAll(Arrays.asList(Config.class,
+				ValidationAutoConfiguration.class, BaseConfiguration.class));
+		if (!ObjectUtils.isEmpty(exclude)) {
+			configClasses.removeAll(Arrays.asList(exclude));
+		}
+		this.context.register(configClasses.toArray(new Class<?>[configClasses.size()]));
 		this.context.refresh();
+
 	}
 
 	@Configuration
@@ -291,45 +379,86 @@ public class WebFluxAnnotationAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class WebFluxValidator implements WebFluxConfigurer {
-
-		private final Validator validator = mock(Validator.class);
+	protected static class ValidatorWebFluxConfigurer implements WebFluxConfigurer {
 
 		@Override
 		public Optional<Validator> getValidator() {
-			return Optional.of(this.validator);
+			return Optional.of(mock(Validator.class));
 		}
 
 	}
 
 	@Configuration
-	protected static class WebFluxJsr303Validator implements WebFluxConfigurer {
-
-		private final LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
-
-		@Override
-		public Optional<Validator> getValidator() {
-			return Optional.of(this.validator);
-		}
-
-	}
-
-	@Configuration
-	static class Jsr303Validator {
+	static class UserDefinedSpringOnlyValidator {
 
 		@Bean
-		public javax.validation.Validator jsr303Validator() {
+		public Validator customValidator() {
+			return mock(Validator.class);
+		}
+
+	}
+
+	@Configuration
+	static class UserDefinedJsr303Validator {
+
+		@Bean
+		public javax.validation.Validator customValidator() {
 			return mock(javax.validation.Validator.class);
 		}
 
 	}
 
 	@Configuration
-	static class CustomValidator {
+	static class UserDefinedSingleJsr303AndSpringValidator {
+
+		@Bean
+		public LocalValidatorFactoryBean customValidator() {
+			return new LocalValidatorFactoryBean();
+		}
+
+	}
+
+	@Configuration
+	static class UserDefinedJsr303AndSpringValidator {
+
+		@Bean
+		public javax.validation.Validator customJsrValidator() {
+			return mock(javax.validation.Validator.class);
+		}
+
+		@Bean
+		public Validator customSpringValidator() {
+			return mock(Validator.class);
+		}
+
+	}
+
+	@Configuration
+	static class MultipleValidatorsAndNoWebFluxValidator {
+
+		@Bean
+		public Validator customValidator1() {
+			return mock(Validator.class);
+		}
+
+		@Bean
+		public Validator customValidator2() {
+			return mock(Validator.class);
+		}
+
+	}
+
+	@Configuration
+	static class MultipleValidatorsAndWebFluxValidator {
 
 		@Bean
 		public Validator customValidator() {
-			return new LocalValidatorFactoryBean();
+			return mock(Validator.class);
+		}
+
+		@Bean
+		public Validator webFluxValidator() {
+			return mock(Validator.class);
 		}
 
 	}

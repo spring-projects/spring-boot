@@ -81,6 +81,11 @@ public class GroovyGrabDependencyResolverTests {
 				return new String[] { "." };
 			}
 
+			@Override
+			public boolean isQuiet() {
+				return false;
+			}
+
 		};
 		this.resolver = new GroovyGrabDependencyResolver(configuration);
 	}

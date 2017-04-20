@@ -25,8 +25,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -299,11 +301,9 @@ public class PropertiesLauncher extends Launcher {
 		List<String> paths = new ArrayList<>();
 		for (String path : commaSeparatedPaths.split(",")) {
 			path = cleanupPath(path);
-			// Empty path (i.e. the archive itself if running from a JAR) is always added
-			// to the classpath so no need for it to be explicitly listed
-			if (!path.equals("")) {
-				paths.add(path);
-			}
+			// "" means the user wants root of archive but not current directory
+			path = ("".equals(path) ? "/" : path);
+			paths.add(path);
 		}
 		if (paths.isEmpty()) {
 			paths.add("lib");
@@ -336,7 +336,13 @@ public class PropertiesLauncher extends Launcher {
 
 	@Override
 	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
-		ClassLoader loader = super.createClassLoader(archives);
+		Set<URL> urls = new LinkedHashSet<URL>(archives.size());
+		for (Archive archive : archives) {
+			urls.add(archive.getUrl());
+		}
+		ClassLoader loader = new LaunchedURLClassLoader(urls.toArray(new URL[0]),
+				getClass().getClassLoader());
+		debug("Classpath: " + urls);
 		String customLoaderClassName = getProperty("loader.classLoader");
 		if (customLoaderClassName != null) {
 			loader = wrapWithCustomClassLoader(loader, customLoaderClassName);
@@ -454,13 +460,15 @@ public class PropertiesLauncher extends Launcher {
 		String root = cleanupPath(stripFileUrlPrefix(path));
 		List<Archive> lib = new ArrayList<>();
 		File file = new File(root);
-		if (!isAbsolutePath(root)) {
-			file = new File(this.home, root);
-		}
-		if (file.isDirectory()) {
-			debug("Adding classpath entries from " + file);
-			Archive archive = new ExplodedArchive(file, false);
-			lib.add(archive);
+		if (!"/".equals(root)) {
+			if (!isAbsolutePath(root)) {
+				file = new File(this.home, root);
+			}
+			if (file.isDirectory()) {
+				debug("Adding classpath entries from " + file);
+				Archive archive = new ExplodedArchive(file, false);
+				lib.add(archive);
+			}
 		}
 		Archive archive = getArchive(file);
 		if (archive != null) {
@@ -488,24 +496,46 @@ public class PropertiesLauncher extends Launcher {
 		return null;
 	}
 
-	private List<Archive> getNestedArchives(String root) throws Exception {
-		if (root.startsWith("/")
-				|| this.parent.getUrl().equals(this.home.toURI().toURL())) {
+	private List<Archive> getNestedArchives(String path) throws Exception {
+		Archive parent = this.parent;
+		String root = path;
+		if (!root.equals("/") && root.startsWith("/")
+				|| parent.getUrl().equals(this.home.toURI().toURL())) {
 			// If home dir is same as parent archive, no need to add it twice.
 			return null;
 		}
-		Archive parent = this.parent;
-		if (root.startsWith("jar:file:") && root.contains("!")) {
+		if (root.contains("!")) {
 			int index = root.indexOf("!");
-			String file = root.substring("jar:file:".length(), index);
-			parent = new JarFileArchive(new File(file));
+			File file = new File(this.home, root.substring(0, index));
+			if (root.startsWith("jar:file:")) {
+				file = new File(root.substring("jar:file:".length(), index));
+			}
+			parent = new JarFileArchive(file);
 			root = root.substring(index + 1, root.length());
 			while (root.startsWith("/")) {
 				root = root.substring(1);
 			}
 		}
+		if (root.endsWith(".jar")) {
+			File file = new File(this.home, root);
+			if (file.exists()) {
+				parent = new JarFileArchive(file);
+				root = "";
+			}
+		}
+		if (root.equals("/") || root.equals("./") || root.equals(".")) {
+			// The prefix for nested jars is actually empty if it's at the root
+			root = "";
+		}
 		EntryFilter filter = new PrefixMatchingArchiveFilter(root);
-		return parent.getNestedArchives(filter);
+		List<Archive> archives = new ArrayList<Archive>(parent.getNestedArchives(filter));
+		if (("".equals(root) || ".".equals(root)) && !path.endsWith(".jar")
+				&& parent != this.parent) {
+			// You can't find the root with an entry filter so it has to be added
+			// explicitly. But don't add the root of the parent archive.
+			archives.add(parent);
+		}
+		return archives;
 	}
 
 	private void addNestedEntries(List<Archive> lib) {
@@ -518,7 +548,7 @@ public class PropertiesLauncher extends Launcher {
 				@Override
 				public boolean matches(Entry entry) {
 					if (entry.isDirectory()) {
-						return entry.getName().startsWith(JarLauncher.BOOT_INF_CLASSES);
+						return entry.getName().equals(JarLauncher.BOOT_INF_CLASSES);
 					}
 					return entry.getName().startsWith(JarLauncher.BOOT_INF_LIB);
 				}
@@ -607,6 +637,9 @@ public class PropertiesLauncher extends Launcher {
 
 		@Override
 		public boolean matches(Entry entry) {
+			if (entry.isDirectory()) {
+				return entry.getName().equals(this.prefix);
+			}
 			return entry.getName().startsWith(this.prefix) && this.filter.matches(entry);
 		}
 

@@ -71,4 +71,10 @@ public interface GroovyCompilerConfiguration {
 	 */
 	List<RepositoryConfiguration> getRepositoryConfiguration();
 
+	/**
+	 * Returns if running in quiet mode.
+	 * @return {@code true} if running in quiet mode
+	 */
+	boolean isQuiet();
+
 }
