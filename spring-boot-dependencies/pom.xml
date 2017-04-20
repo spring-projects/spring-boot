@@ -69,7 +69,7 @@
 		<derby.version>10.13.1.1</derby.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<dropwizard-metrics.version>3.1.4</dropwizard-metrics.version>
-		<ehcache.version>2.10.3</ehcache.version>
+		<ehcache.version>2.10.4</ehcache.version>
 		<ehcache3.version>3.2.2</ehcache3.version>
 		<embedded-mongo.version>1.50.5</embedded-mongo.version>
 		<flyway.version>3.2.1</flyway.version>
