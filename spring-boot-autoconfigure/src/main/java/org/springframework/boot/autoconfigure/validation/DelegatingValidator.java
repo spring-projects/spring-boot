@@ -71,6 +71,10 @@ public class DelegatingValidator implements SmartValidator {
 		}
 	}
 
+	/**
+	 * Return the delegate validator.
+	 * @return the delegate validator
+	 */
 	protected final Validator getDelegate() {
 		return this.delegate;
 	}

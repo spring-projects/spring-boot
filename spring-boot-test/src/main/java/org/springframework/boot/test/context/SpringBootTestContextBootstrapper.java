@@ -194,8 +194,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	protected Class<?>[] getOrFindConfigurationClasses(
 			MergedContextConfiguration mergedConfig) {
 		Class<?>[] classes = mergedConfig.getClasses();
-		if (containsNonTestComponent(classes) || mergedConfig.hasLocations()
-				|| !mergedConfig.getContextInitializerClasses().isEmpty()) {
+		if (containsNonTestComponent(classes) || mergedConfig.hasLocations()) {
 			return classes;
 		}
 		Class<?> found = new SpringBootConfigurationFinder()
