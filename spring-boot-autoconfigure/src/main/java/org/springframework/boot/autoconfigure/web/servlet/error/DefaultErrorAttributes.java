@@ -54,6 +54,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @since 1.1.0
  * @see ErrorAttributes
  */
@@ -63,6 +64,16 @@ public class DefaultErrorAttributes
 
 	private static final String ERROR_ATTRIBUTE = DefaultErrorAttributes.class.getName()
 			+ ".ERROR";
+
+	private boolean includeException;
+
+	/**
+	 * Create a new {@link DefaultErrorAttributes} instance.
+	 * @param includeException whether to include "exception" attribute
+	 */
+	public DefaultErrorAttributes(boolean includeException) {
+		this.includeException = includeException;
+	}
 
 	@Override
 	public int getOrder() {
@@ -117,7 +128,9 @@ public class DefaultErrorAttributes
 			while (error instanceof ServletException && error.getCause() != null) {
 				error = ((ServletException) error).getCause();
 			}
-			errorAttributes.put("exception", error.getClass().getName());
+			if (this.includeException) {
+				errorAttributes.put("exception", error.getClass().getName());
+			}
 			addErrorMessage(errorAttributes, error);
 			if (includeStackTrace) {
 				addStackTrace(errorAttributes, error);
