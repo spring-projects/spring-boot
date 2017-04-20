@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -295,12 +294,13 @@ public abstract class AbstractEndpointHandlerMapping<E extends MvcEndpoint>
 	private static final class SkipPathExtensionContentNegotiation
 			extends HandlerInterceptorAdapter {
 
+		private static final String SKIP_ATTRIBUTE = PathExtensionContentNegotiationStrategy.class
+				.getName() + ".SKIP";
+
 		@Override
 		public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
 				Object handler) throws Exception {
-			request.setAttribute(
-					WebMvcAutoConfiguration.SKIP_PATH_EXTENSION_CONTENT_NEGOTIATION_ATTRIBUTE,
-					Boolean.TRUE);
+			request.setAttribute(SKIP_ATTRIBUTE, Boolean.TRUE);
 			return true;
 		}
 

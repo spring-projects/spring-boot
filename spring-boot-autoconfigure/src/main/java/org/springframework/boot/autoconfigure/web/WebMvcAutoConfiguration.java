@@ -153,13 +153,6 @@ public class WebMvcAutoConfiguration {
 
 	public static final String DEFAULT_SUFFIX = "";
 
-	/**
-	 * Attribute that can be added to the web request when the
-	 * {@link PathExtensionContentNegotiationStrategy} should be be skipped.
-	 */
-	public static final String SKIP_PATH_EXTENSION_CONTENT_NEGOTIATION_ATTRIBUTE = PathExtensionContentNegotiationStrategy.class
-			.getName() + ".SKIP";
-
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
 	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
@@ -610,6 +603,9 @@ public class WebMvcAutoConfiguration {
 	static class OptionalPathExtensionContentNegotiationStrategy
 			implements ContentNegotiationStrategy {
 
+		private static final String SKIP_ATTRIBUTE = PathExtensionContentNegotiationStrategy.class
+				.getName() + ".SKIP";
+
 		private final ContentNegotiationStrategy delegate;
 
 		OptionalPathExtensionContentNegotiationStrategy(
@@ -620,8 +616,7 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest)
 				throws HttpMediaTypeNotAcceptableException {
-			Object skip = webRequest.getAttribute(
-					SKIP_PATH_EXTENSION_CONTENT_NEGOTIATION_ATTRIBUTE,
+			Object skip = webRequest.getAttribute(SKIP_ATTRIBUTE,
 					RequestAttributes.SCOPE_REQUEST);
 			if (skip != null && Boolean.parseBoolean(skip.toString())) {
 				return Collections.emptyList();
