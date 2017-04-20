@@ -64,7 +64,7 @@ public class HttpHandlerAutoConfigurationTests {
 
 	@Test
 	public void shouldConfigureHttpHandlerAnnotation() {
-		load(WebFluxAnnotationAutoConfiguration.class);
+		load(WebFluxAutoConfiguration.class);
 		assertThat(this.context.getBeansOfType(HttpHandler.class).size()).isEqualTo(1);
 	}
 
@@ -125,7 +125,7 @@ public class HttpHandlerAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import(WebFluxAnnotationAutoConfiguration.class)
+	@Import(WebFluxAutoConfiguration.class)
 	protected static class AnnotationConfigWithWebFilters {
 
 		@Bean

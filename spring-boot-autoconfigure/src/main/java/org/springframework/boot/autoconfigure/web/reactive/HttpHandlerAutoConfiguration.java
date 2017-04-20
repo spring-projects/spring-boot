@@ -54,7 +54,7 @@ import org.springframework.web.server.session.WebSessionManager;
 @ConditionalOnClass({ DispatcherHandler.class, HttpHandler.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnMissingBean(HttpHandler.class)
-@AutoConfigureAfter({ WebFluxAnnotationAutoConfiguration.class })
+@AutoConfigureAfter({ WebFluxAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class HttpHandlerAutoConfiguration {
 

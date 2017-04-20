@@ -99,7 +99,7 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 @ConditionalOnMissingBean({ WebFluxConfigurationSupport.class, RouterFunction.class })
 @AutoConfigureAfter(ReactiveWebServerAutoConfiguration.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-public class WebFluxAnnotationAutoConfiguration {
+public class WebFluxAutoConfiguration {
 
 	@Configuration
 	@EnableConfigurationProperties({ ResourceProperties.class, WebFluxProperties.class })

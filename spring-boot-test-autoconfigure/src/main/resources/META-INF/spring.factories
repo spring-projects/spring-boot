@@ -67,7 +67,7 @@ org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientAutoConfig
 org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebFlux=\
 org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.reactive.WebFluxAnnotationAutoConfiguration
+org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration
 
 # AutoConfigureMockMvc auto-configuration imports
 org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc=\

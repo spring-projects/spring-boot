@@ -62,12 +62,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link WebFluxAnnotationAutoConfiguration}.
+ * Tests for {@link WebFluxAutoConfiguration}.
  *
  * @author Brian Clozel
  * @author Andy Wilkinson
  */
-public class WebFluxAnnotationAutoConfigurationTests {
+public class WebFluxAutoConfigurationTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -358,7 +358,7 @@ public class WebFluxAnnotationAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ WebFluxAnnotationAutoConfiguration.class })
+	@Import({ WebFluxAutoConfiguration.class })
 	@EnableConfigurationProperties(WebFluxProperties.class)
 	protected static class BaseConfiguration {
 

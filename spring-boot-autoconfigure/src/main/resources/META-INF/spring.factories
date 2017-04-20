@@ -108,7 +108,7 @@ org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.reactive.WebFluxAnnotationAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration,\
