@@ -36,7 +36,7 @@ given the ability to merge pull requests.
 
 
 == Code Conventions and Housekeeping
-None of these is essential for a pull request, but they will all help.  They can also be
+None of these are essential for a pull request, but they will all help.  They can also be
 added after the original pull request but before a merge.
 
 * Use the Spring Framework code format conventions. If you use Eclipse and you follow
