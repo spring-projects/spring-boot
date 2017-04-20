@@ -16,6 +16,7 @@
 
 package org.springframework.boot.gradle.docs;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.junit.Rule;
@@ -26,7 +27,7 @@ import org.springframework.boot.gradle.testkit.GradleBuild;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for the integrating with Actuator documentation.
+ * Tests for the documentation about running a Spring Boot application.
  *
  * @author Andy Wilkinson
  */
@@ -54,7 +55,9 @@ public class RunningDocumentationTests {
 	public void bootRunSourceResources() throws IOException {
 		assertThat(this.gradleBuild
 				.script("src/main/gradle/running/boot-run-source-resources.gradle")
-				.build("configuredClasspath").getOutput()).contains("src/main/resources");
+				.build("configuredClasspath").getOutput()).contains(
+						new File(this.gradleBuild.getProjectDir(), "src/main/resources")
+								.getAbsolutePath());
 	}
 
 }
