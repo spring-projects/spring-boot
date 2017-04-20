@@ -1,0 +1,56 @@
+package org.springframework.boot.autoconfigure.condition;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.type.AnnotatedTypeMetadata;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * TODO: desc
+ *
+ * @author <br>20 Apr 2017 idosu
+ */
+public class OnEnabledPropertyCondition extends SpringBootCondition {
+	@Override
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		// Checks that the bean is ConfigurationProperties
+		if (!metadata.isAnnotated(ConfigurationProperties.class.getName())) {
+			return ConditionOutcome.noMatch(ConditionMessage
+				.forCondition(ConditionalOnEnabledProperty.class)
+				.didNotFind("annotation")
+				.items(ConfigurationProperties.class)
+			);
+		}
+
+		// Gets the prefix
+		AnnotationAttributes annotation = AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(ConfigurationProperties.class.getName()));
+		String prefix = annotation.getString("prefix");
+
+		// Validates that the prefix hes been set
+		if (prefix.isEmpty()) {
+			return ConditionOutcome.noMatch(ConditionMessage
+				.forCondition(ConditionalOnEnabledProperty.class)
+				.because("could not find property 'prefix' or 'value' inside @ConfigurationProperties")
+			);
+		}
+
+
+		// Check if the property is true
+		String property = prefix + "." + "enabled";
+		if (context.getEnvironment() == null || !"true".equalsIgnoreCase(context.getEnvironment().getProperty(property))) {
+			return ConditionOutcome.noMatch(ConditionMessage
+				.forCondition(ConditionalOnEnabledProperty.class)
+				.because("the property value is not 'true'")
+			);
+		}
+
+		// Matches
+		return ConditionOutcome.match(ConditionMessage
+			.forCondition(ConditionalOnEnabledProperty.class)
+			.because("matched")
+		);
+	}
+}
