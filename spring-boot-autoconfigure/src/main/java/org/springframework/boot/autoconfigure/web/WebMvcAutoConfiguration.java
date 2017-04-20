@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -39,11 +40,7 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -68,14 +65,14 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Role;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
@@ -164,12 +161,6 @@ public class WebMvcAutoConfiguration {
 			.getName() + ".SKIP";
 
 	@Bean
-	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	public static MvcValidatorPostProcessor mvcValidatorAliasPostProcessor() {
-		return new MvcValidatorPostProcessor();
-	}
-
-	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
 	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		return new OrderedHiddenHttpMethodFilter();
@@ -185,7 +176,7 @@ public class WebMvcAutoConfiguration {
 	// Defined as a nested config to ensure WebMvcConfigurerAdapter is not read when not
 	// on the classpath
 	@Configuration
-	@Import(EnableWebMvcConfiguration.class)
+	@Import({ EnableWebMvcConfiguration.class, MvcValidatorRegistrar.class })
 	@EnableConfigurationProperties({ WebMvcProperties.class, ResourceProperties.class })
 	public static class WebMvcAutoConfigurationAdapter extends WebMvcConfigurerAdapter {
 
@@ -642,7 +633,7 @@ public class WebMvcAutoConfiguration {
 
 	/**
 	 * Condition used to disable the default MVC validator registration. The
-	 * {@link MvcValidatorPostProcessor} is used to configure the {@code mvcValidator}
+	 * {@link MvcValidatorRegistrar} is actually used to register the {@code mvcValidator}
 	 * bean.
 	 */
 	static class DisableMvcValidatorCondition implements ConfigurationCondition {
@@ -660,8 +651,8 @@ public class WebMvcAutoConfiguration {
 	}
 
 	/**
-	 * {@link BeanFactoryPostProcessor} to deal with the MVC validator bean registration.
-	 * Applies the following rules:
+	 * {@link ImportBeanDefinitionRegistrar} to deal with the MVC validator bean
+	 * registration. Applies the following rules:
 	 * <ul>
 	 * <li>With no validators - Uses standard
 	 * {@link WebMvcConfigurationSupport#mvcValidator()} logic.</li>
@@ -670,43 +661,45 @@ public class WebMvcAutoConfiguration {
 	 * defined.</li>
 	 * </ul>
 	 */
-	@Order(Ordered.LOWEST_PRECEDENCE)
-	static class MvcValidatorPostProcessor
-			implements BeanDefinitionRegistryPostProcessor {
+	static class MvcValidatorRegistrar
+			implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 
 		private static final String JSR303_VALIDATOR_CLASS = "javax.validation.Validator";
 
+		private BeanFactory beanFactory;
+
 		@Override
-		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
-				throws BeansException {
-			if (registry instanceof ListableBeanFactory) {
-				postProcess(registry, (ListableBeanFactory) registry);
+		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+			this.beanFactory = beanFactory;
+		}
+
+		@Override
+		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+				BeanDefinitionRegistry registry) {
+			if (this.beanFactory instanceof ListableBeanFactory) {
+				registerOrAliasMvcValidator(registry,
+						(ListableBeanFactory) this.beanFactory);
 			}
 		}
 
-		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-				throws BeansException {
-		}
-
-		private void postProcess(BeanDefinitionRegistry registry,
+		private void registerOrAliasMvcValidator(BeanDefinitionRegistry registry,
 				ListableBeanFactory beanFactory) {
 			String[] validatorBeans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 					beanFactory, Validator.class, false, false);
 			if (validatorBeans.length == 0) {
-				registerMvcValidator(registry, beanFactory);
+				registerNewMvcValidator(registry, beanFactory);
 			}
 			else if (validatorBeans.length == 1) {
 				registry.registerAlias(validatorBeans[0], "mvcValidator");
 			}
 			else {
 				if (!ObjectUtils.containsElement(validatorBeans, "mvcValidator")) {
-					registerMvcValidator(registry, beanFactory);
+					registerNewMvcValidator(registry, beanFactory);
 				}
 			}
 		}
 
-		private void registerMvcValidator(BeanDefinitionRegistry registry,
+		private void registerNewMvcValidator(BeanDefinitionRegistry registry,
 				ListableBeanFactory beanFactory) {
 			RootBeanDefinition definition = new RootBeanDefinition();
 			definition.setBeanClass(getClass());
