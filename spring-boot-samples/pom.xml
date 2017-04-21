@@ -107,7 +107,8 @@
 		<module>spring-boot-sample-websocket-undertow</module>
 		<module>spring-boot-sample-webservices</module>
 		<module>spring-boot-sample-xml</module>
-	</modules>
+        <module>spring-boot-sample-web-secure-kaptcha</module>
+    </modules>
 	<!-- No dependencies - otherwise the samples won't work if you change the
 		parent -->
 	<build>

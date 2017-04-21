@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="../static/css/bootstrap.min.css"/>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="span4 offset4 well">
+            <legend>Please Sign In</legend>
+            <p th:if="${param.logout}" class="alert">You have been logged out!</p>
+            <p th:if="${param.error}" class="alert alert-error">Username and password not matched, please try again!</p>
+            <p th:if="${param.kaptcha}" class="alert alert-error">Captcha not matched, please try again!</p>
+
+            <form name="form" th:action="@{/login}" action="/login" method="POST">
+                <input type="text" id="username" class="span4" name="username" placeholder="Username"/>
+                <input type="password" id="password" class="span4" name="password" placeholder="Password"/>
+                <label for="kaptcha">
+                    <input type="text" name="kaptcha" id="kaptcha" maxlength="4" class="span4" style="width: 72%"
+                           placeholder="Captcha"/>
+                    <img th:src="@{/kaptcha.jpg}" id="kaptchaImage" src="/images/kaptcha.jpg"
+                         style="margin-left:-5px;margin-top:-8px;width: 74px; height: 29px;"/>
+                </label>
+                <button type="submit" name="submit" class="btn btn-info btn-block">Sign in</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/jquery.js}"></script>
+<script type="text/javascript">
+    $(function () {  //生成验证码
+        $('#kaptchaImage').click(function () {
+            $(this).hide().attr('src', '/kaptcha.jpg?' + Math.floor(Math.random() * 10000)).fadeIn();
+        });
+    });
+
+    function changeCode() {  //刷新
+        $('#kaptchaImage').hide().attr('src', '/kaptcha.jpg?' + Math.floor(Math.random() * 10000)).fadeIn();
+        event.cancelBubble = true;
+    }
+</script>
+</body>
+</html>
