@@ -111,7 +111,8 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		context.register(DevToolsDataSourceAutoConfiguration.class);
 		if (driverClassName != null) {
 			EnvironmentTestUtils.addEnvironment(context,
-					"spring.datasource.driver-class-name:" + driverClassName);
+					"spring.datasource.driver-class-name:" + driverClassName,
+					"spring.datasource.early-pool-creation=false");
 		}
 		if (url != null) {
 			EnvironmentTestUtils.addEnvironment(context, "spring.datasource.url:" + url);

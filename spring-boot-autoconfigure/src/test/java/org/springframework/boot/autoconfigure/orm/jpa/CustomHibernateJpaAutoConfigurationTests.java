@@ -66,7 +66,8 @@ public class CustomHibernateJpaAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.database:mysql",
 				"spring.datasource.url:jdbc:mysql://localhost/nonexistent",
-				"spring.datasource.initialize:false", "spring.jpa.database:MYSQL");
+				"spring.datasource.initialize:false", "spring.jpa.database:MYSQL",
+				"spring.datasource.early-pool-creation=false");
 		this.context.register(TestConfiguration.class, DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				HibernateJpaAutoConfiguration.class);
