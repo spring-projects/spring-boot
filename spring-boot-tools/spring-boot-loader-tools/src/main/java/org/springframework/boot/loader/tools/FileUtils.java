@@ -28,6 +28,7 @@ import java.security.NoSuchAlgorithmException;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Oscar Utbult
  */
 public abstract class FileUtils {
 
@@ -63,19 +64,14 @@ public abstract class FileUtils {
 	 * @throws IOException if the file cannot be read
 	 */
 	public static String sha1Hash(File file) throws IOException {
-		try {
-			DigestInputStream inputStream = new DigestInputStream(
-					new FileInputStream(file), MessageDigest.getInstance("SHA-1"));
-			try {
-				byte[] buffer = new byte[4098];
-				while (inputStream.read(buffer) != -1) {
-					// Read the entire stream
-				}
-				return bytesToHex(inputStream.getMessageDigest().digest());
-			}
-			finally {
-				inputStream.close();
-			}
+		try (FileInputStream fileInputStream = new FileInputStream(file);
+				DigestInputStream digestInputStream = new DigestInputStream(
+						fileInputStream, MessageDigest.getInstance("SHA-1"))) {
+
+			byte[] buffer = new byte[4098];
+			while (digestInputStream.read(buffer) != -1) // Read the entire stream
+				;
+			return bytesToHex(digestInputStream.getMessageDigest().digest());
 		}
 		catch (NoSuchAlgorithmException ex) {
 			throw new IllegalStateException(ex);
