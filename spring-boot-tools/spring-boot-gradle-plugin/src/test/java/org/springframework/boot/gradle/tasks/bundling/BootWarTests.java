@@ -16,6 +16,7 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.jar.JarFile;
 
@@ -73,6 +74,23 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 			assertThat(jarFile
 					.getEntry("WEB-INF/lib-provided/spring-boot-devtools-0.1.2.jar"))
 							.isNotNull();
+		}
+	}
+
+	@Test
+	public void webappResourcesInDirectoriesThatOverlapWithLoaderCanBePackaged()
+			throws IOException {
+		File webappFolder = this.temp.newFolder("src", "main", "webapp");
+		File orgFolder = new File(webappFolder, "org");
+		orgFolder.mkdir();
+		new File(orgFolder, "foo.txt").createNewFile();
+		getTask().from(webappFolder);
+		getTask().setMainClass("com.example.Main");
+		getTask().execute();
+		assertThat(getTask().getArchivePath().exists());
+		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
+			assertThat(jarFile.getEntry("org/")).isNotNull();
+			assertThat(jarFile.getEntry("org/foo.txt")).isNotNull();
 		}
 	}
 

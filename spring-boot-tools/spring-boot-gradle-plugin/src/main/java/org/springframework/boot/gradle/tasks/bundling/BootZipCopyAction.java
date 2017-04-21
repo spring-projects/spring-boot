@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
@@ -34,6 +36,7 @@ import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.internal.file.copy.CopyActionProcessingStream;
 import org.gradle.api.internal.file.copy.FileCopyDetailsInternal;
 import org.gradle.api.specs.Spec;
+import org.gradle.api.specs.Specs;
 import org.gradle.api.tasks.WorkResult;
 import org.gradle.util.GUtil;
 
@@ -78,19 +81,20 @@ class BootZipCopyAction implements CopyAction {
 	@Override
 	public WorkResult execute(CopyActionProcessingStream stream) {
 		ZipOutputStream zipStream;
+		Spec<FileTreeElement> loaderEntries;
 		try {
 			FileOutputStream fileStream = new FileOutputStream(this.output);
 			writeLaunchScriptIfNecessary(fileStream);
 			zipStream = new ZipOutputStream(fileStream);
-			writeLoaderClassesIfNecessary(zipStream);
+			loaderEntries = writeLoaderClassesIfNecessary(zipStream);
 		}
 		catch (IOException ex) {
 			throw new GradleException("Failed to create " + this.output, ex);
 		}
 		try {
 			stream.process(new ZipStreamAction(zipStream, this.output,
-					this.preserveFileTimestamps, this.requiresUnpack, this.exclusions,
-					this.compressionResolver));
+					this.preserveFileTimestamps, this.requiresUnpack,
+					createExclusionSpec(loaderEntries), this.compressionResolver));
 		}
 		finally {
 			try {
@@ -103,24 +107,40 @@ class BootZipCopyAction implements CopyAction {
 		return () -> true;
 	}
 
-	private void writeLoaderClassesIfNecessary(ZipOutputStream out) {
-		if (this.includeDefaultLoader) {
-			writeLoaderClasses(out);
-		}
+	@SuppressWarnings("unchecked")
+	private Spec<FileTreeElement> createExclusionSpec(
+			Spec<FileTreeElement> loaderEntries) {
+		return Specs.union(loaderEntries, this.exclusions);
 	}
 
-	private void writeLoaderClasses(ZipOutputStream out) {
-		ZipEntry entry;
+	private Spec<FileTreeElement> writeLoaderClassesIfNecessary(ZipOutputStream out) {
+		if (!this.includeDefaultLoader) {
+			return Specs.satisfyNone();
+		}
+		return writeLoaderClasses(out);
+	}
+
+	private Spec<FileTreeElement> writeLoaderClasses(ZipOutputStream out) {
 		try (ZipInputStream in = new ZipInputStream(getClass()
 				.getResourceAsStream("/META-INF/loader/spring-boot-loader.jar"))) {
+			Set<String> entries = new HashSet<String>();
+			ZipEntry entry;
 			while ((entry = in.getNextEntry()) != null) {
 				if (entry.isDirectory() && !entry.getName().startsWith("META-INF/")) {
 					writeDirectory(entry, out);
+					entries.add(entry.getName());
 				}
-				if (entry.getName().endsWith(".class")) {
+				else if (entry.getName().endsWith(".class")) {
 					writeClass(entry, in, out);
 				}
 			}
+			return (element) -> {
+				String path = element.getRelativePath().getPathString();
+				if (element.isDirectory() && !path.endsWith(("/"))) {
+					path += "/";
+				}
+				return entries.contains(path);
+			};
 		}
 		catch (IOException ex) {
 			throw new GradleException("Failed to write loader classes", ex);
