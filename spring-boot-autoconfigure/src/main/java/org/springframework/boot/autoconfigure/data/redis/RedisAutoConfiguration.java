@@ -214,6 +214,10 @@ public class RedisAutoConfiguration {
 			config.setMaxIdle(props.getMaxIdle());
 			config.setMinIdle(props.getMinIdle());
 			config.setMaxWaitMillis(props.getMaxWait());
+			config.setTestOnCreate(props.isTestOnCreate());
+			config.setTestOnBorrow(props.isTestOnBorrow());
+			config.setTestOnReturn(props.isTestOnReturn());
+			config.setTestWhileIdle(props.isTestWhileIdle());
 			return config;
 		}
 

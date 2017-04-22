@@ -131,6 +131,18 @@ public class RedisAutoConfigurationTests {
 		}
 	}
 
+	@Test
+	public void testRedisConfigurationWithPoolConnectionTesting() {
+		load("spring.redis.pool.test-on-create:true",
+			"spring.redis.pool.test-on-borrow:true",
+			"spring.redis.pool.test-on-return:true",
+			"spring.redis.pool.test-while-idle:true");
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getPoolConfig().getTestOnCreate());
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getPoolConfig().getTestOnBorrow());
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getPoolConfig().getTestOnReturn());
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getPoolConfig().getTestWhileIdle());
+	}
+
 	private boolean isAtLeastOneNodeAvailable(List<String> nodes) {
 		for (String node : nodes) {
 			if (isAvailable(node)) {

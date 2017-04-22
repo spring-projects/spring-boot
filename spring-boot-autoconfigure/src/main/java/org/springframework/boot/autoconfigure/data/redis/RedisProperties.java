@@ -182,6 +182,29 @@ public class RedisProperties {
 		 */
 		private int maxWait = -1;
 
+		/**
+		 * Whether a connection in the connection pool should be tested after creation.
+		 */
+		private boolean testOnCreate = false;
+
+		/**
+		 * Whether a connection in the connection pool should be tested when it is
+		 * borrowed from the pool.
+		 */
+		private boolean testOnBorrow = false;
+
+		/**
+		 * Whether a connection in the connection pool should be tested before it is
+		 * returned to the pool.
+		 */
+		private boolean testOnReturn = false;
+
+		/**
+		 * Whether a connection in the connection pool will be tested while it is
+		 * idle.
+		 */
+		private boolean testWhileIdle = false;
+
 		public int getMaxIdle() {
 			return this.maxIdle;
 		}
@@ -214,6 +237,37 @@ public class RedisProperties {
 			this.maxWait = maxWait;
 		}
 
+		public boolean isTestOnCreate() {
+			return this.testOnCreate;
+		}
+
+		public void setTestOnCreate(boolean testOnCreate) {
+			this.testOnCreate = testOnCreate;
+		}
+
+		public boolean isTestOnBorrow() {
+			return this.testOnBorrow;
+		}
+
+		public void setTestOnBorrow(boolean testOnBorrow) {
+			this.testOnBorrow = testOnBorrow;
+		}
+
+		public boolean isTestOnReturn() {
+			return this.testOnReturn;
+		}
+
+		public void setTestOnReturn(boolean testOnReturn) {
+			this.testOnReturn = testOnReturn;
+		}
+
+		public boolean isTestWhileIdle() {
+			return this.testWhileIdle;
+		}
+
+		public void setTestWhileIdle(boolean testWhileIdle) {
+			this.testWhileIdle = testWhileIdle;
+		}
 	}
 
 	/**
