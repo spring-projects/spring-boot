@@ -45,20 +45,28 @@ public class Neo4jProperties implements ApplicationContextAware {
 	static final String DEFAULT_BOLT_URI = "bolt://localhost:7687";
 
 	static final String BOLT_DRIVER = "org.neo4j.ogm.drivers.bolt.driver.BoltDriver";
-	private final Embedded embedded = new Embedded();
+
 	/**
 	 * URI used by the driver. Auto-detected by default.
 	 */
 	private String uri;
+
 	/**
 	 * Login user of the server.
 	 */
 	private String username;
+
 	/**
 	 * Login password of the server.
 	 */
 	private String password;
-	private Indexes indexes = new Indexes();
+
+	private final Embedded embedded = new Embedded();
+
+	/**
+	 * Index generation behaviour. {@link AutoIndexMode#NONE} by default.
+	 */
+	private AutoIndexMode autoIndex = AutoIndexMode.NONE;
 
 	private ClassLoader classLoader = Neo4jProperties.class.getClassLoader();
 
@@ -90,12 +98,12 @@ public class Neo4jProperties implements ApplicationContextAware {
 		return this.embedded;
 	}
 
-	public Indexes getIndexes() {
-		return this.indexes;
+	public AutoIndexMode getAutoIndex() {
+		return this.autoIndex;
 	}
 
-	public void setIndexes(Indexes indexes) {
-		this.indexes = indexes;
+	public void setAutoIndex(AutoIndexMode autoIndex) {
+		this.autoIndex = autoIndex;
 	}
 
 	@Override
@@ -124,12 +132,7 @@ public class Neo4jProperties implements ApplicationContextAware {
 			builder.credentials(this.username, this.password);
 		}
 
-		builder.autoIndex(this.indexes.getAuto().name());
-
-		if (AutoIndexMode.DUMP == this.indexes.getAuto()) {
-			builder.generatedIndexesOutputDir(this.indexes.getDump().getDir());
-			builder.generatedIndexesOutputFilename(this.indexes.getDump().getFilename());
-		}
+		builder.autoIndex(this.getAutoIndex().name());
 	}
 
 	private void configureUriWithDefaults(Builder builder) {
@@ -156,55 +159,4 @@ public class Neo4jProperties implements ApplicationContextAware {
 
 	}
 
-	public static class Indexes {
-
-		private AutoIndexMode auto = AutoIndexMode.NONE;
-
-		private Dump dump = new Dump();
-
-		public AutoIndexMode getAuto() {
-			return this.auto;
-		}
-
-		public void setAuto(AutoIndexMode auto) {
-			this.auto = auto;
-		}
-
-		public Dump getDump() {
-			return this.dump;
-		}
-
-		public void setDump(Dump dump) {
-			this.dump = dump;
-		}
-
-		public static class Dump {
-
-			/**
-			 * Generated Indexes Output Dir.
-			 */
-			private String dir = ".";
-
-			/**
-			 * Generated Indexes Output Filename.
-			 */
-			private String filename = "generated_indexes.cql";
-
-			public String getDir() {
-				return this.dir;
-			}
-
-			public void setDir(String dir) {
-				this.dir = dir;
-			}
-
-			public String getFilename() {
-				return this.filename;
-			}
-
-			public void setFilename(String filename) {
-				this.filename = filename;
-			}
-		}
-	}
 }

@@ -143,38 +143,22 @@ public class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoIndexConfigurationIsAssert() {
-		load(CustomConfigurationFactory.class, "spring.data.neo4j.indexes.auto=assert");
-		org.neo4j.ogm.config.Configuration configuration = this.context
-				.getBean(org.neo4j.ogm.config.Configuration.class);
-		assertThat(configuration.getAutoIndex()).isEqualTo(AutoIndexMode.ASSERT);
-	}
-
-	@Test
-	public void autoIndexConfigurationIsNone() {
+	public void autoIndexConfiguration() {
 		load(CustomConfigurationFactory.class);
-		org.neo4j.ogm.config.Configuration configuration = this.context
-				.getBean(org.neo4j.ogm.config.Configuration.class);
-		assertThat(configuration.getAutoIndex()).isEqualTo(AutoIndexMode.NONE);
-	}
+		assertThat(this.context.getBean(org.neo4j.ogm.config.Configuration.class)
+				.getAutoIndex()).isEqualTo(AutoIndexMode.NONE);
 
-	@Test
-	public void autoIndexConfigurationIsDump() {
-		load(CustomConfigurationFactory.class, "spring.data.neo4j.indexes.auto=dump",
-				"spring.data.neo4j.indexes.dump.dir=/tmp", "spring.data.neo4j.indexes.dump.filename=test_indexes.cql");
-		org.neo4j.ogm.config.Configuration configuration = this.context
-				.getBean(org.neo4j.ogm.config.Configuration.class);
-		assertThat(configuration.getAutoIndex()).isEqualTo(AutoIndexMode.DUMP);
-		assertThat(configuration.getDumpDir()).isEqualTo("/tmp");
-		assertThat(configuration.getDumpFilename()).isEqualTo("test_indexes.cql");
-	}
+		load(CustomConfigurationFactory.class, "spring.data.neo4j.auto-index=assert");
+		assertThat(this.context.getBean(org.neo4j.ogm.config.Configuration.class)
+				.getAutoIndex()).isEqualTo(AutoIndexMode.ASSERT);
 
-	@Test
-	public void autoIndexConfigurationIsValidate() {
-		load(CustomConfigurationFactory.class, "spring.data.neo4j.indexes.auto=validate");
-		org.neo4j.ogm.config.Configuration configuration = this.context
-				.getBean(org.neo4j.ogm.config.Configuration.class);
-		assertThat(configuration.getAutoIndex()).isEqualTo(AutoIndexMode.VALIDATE);
+		load(CustomConfigurationFactory.class, "spring.data.neo4j.auto-index=dump");
+		assertThat(this.context.getBean(org.neo4j.ogm.config.Configuration.class)
+				.getAutoIndex()).isEqualTo(AutoIndexMode.DUMP);
+
+		load(CustomConfigurationFactory.class, "spring.data.neo4j.auto-index=validate");
+		assertThat(this.context.getBean(org.neo4j.ogm.config.Configuration.class)
+				.getAutoIndex()).isEqualTo(AutoIndexMode.VALIDATE);
 	}
 
 	private void load(Class<?> config, String... environment) {

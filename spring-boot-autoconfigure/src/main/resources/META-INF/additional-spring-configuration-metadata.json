@@ -131,29 +131,6 @@
     "defaultValue": true
   },
   {
-    "name": "spring.data.neo4j.indexes.auto",
-    "type": "java.lang.String",
-    "description": "Define the index generation behaviour.",
-    "values": [
-      {
-        "value": "none",
-        "description": "Nothing is done with index and constraint annotations."
-      },
-      {
-        "value": "validate",
-        "description": "Make sure the connected database has all indexes and constraints in place before starting up."
-      },
-      {
-        "value": "assert",
-        "description": "Drops all constraints and indexes on startup then builds indexes based on whatever is represented in OGM by @Index."
-      },
-      {
-        "value": "dump",
-        "description": "Dumps the generated constraints and indexes to a file."
-      }
-    ]
-  },
-  {
     "name": "spring.data.neo4j.open-in-view",
     "type": "java.lang.Boolean",
     "description": "Register OpenSessionInViewInterceptor. Binds a Neo4j Session to the thread for the entire processing of the request.",
