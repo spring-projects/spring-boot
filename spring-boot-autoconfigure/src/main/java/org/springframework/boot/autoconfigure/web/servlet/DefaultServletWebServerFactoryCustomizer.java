@@ -542,7 +542,7 @@ public class DefaultServletWebServerFactoryCustomizer
 				customizeConnectionTimeout(factory,
 						serverProperties.getConnectionTimeout());
 			}
-			if (jettyProperties.getAccesslog() != null && jettyProperties.getAccesslog().isEnabled()) {
+			if (jettyProperties.getAccesslog().isEnabled()) {
 				customizeAccesslog(factory, jettyProperties.getAccesslog());
 			}
 		}

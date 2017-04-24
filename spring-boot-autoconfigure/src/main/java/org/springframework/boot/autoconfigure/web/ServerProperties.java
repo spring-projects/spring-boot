@@ -939,7 +939,7 @@ public class ServerProperties {
 		public Accesslog getAccesslog() {
 			return this.accesslog;
 		}
-		
+
 		public static class Accesslog {
 
 			/**
