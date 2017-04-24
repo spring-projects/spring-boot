@@ -35,11 +35,11 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 @EnableGlobalMethodSecurity(securedEnabled = true)
-public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
+public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 	@Controller
 	protected static class HomeController {

@@ -114,7 +114,7 @@ import org.springframework.web.servlet.config.annotation.ResourceChainRegistrati
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
@@ -146,7 +146,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class,
-		WebMvcConfigurerAdapter.class })
+		WebMvcConfigurer.class })
 @ConditionalOnMissingBean(WebMvcConfigurationSupport.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @AutoConfigureAfter({ DispatcherServletAutoConfiguration.class,
@@ -170,15 +170,15 @@ public class WebMvcAutoConfiguration {
 		return new OrderedHttpPutFormContentFilter();
 	}
 
-	// Defined as a nested config to ensure WebMvcConfigurerAdapter is not read when not
+	// Defined as a nested config to ensure WebMvcConfigurer is not read when not
 	// on the classpath
 	@Configuration
 	@Import({ EnableWebMvcConfiguration.class, MvcValidatorRegistrar.class })
 	@EnableConfigurationProperties({ WebMvcProperties.class, ResourceProperties.class })
-	public static class WebMvcAutoConfigurationAdapter extends WebMvcConfigurerAdapter {
+	public static class WebMvcAutoConfigurationAdapter implements WebMvcConfigurer {
 
 		private static final Log logger = LogFactory
-				.getLog(WebMvcConfigurerAdapter.class);
+				.getLog(WebMvcConfigurer.class);
 
 		private final ResourceProperties resourceProperties;
 

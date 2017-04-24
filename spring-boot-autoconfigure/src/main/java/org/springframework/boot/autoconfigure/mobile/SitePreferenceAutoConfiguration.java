@@ -33,7 +33,7 @@ import org.springframework.mobile.device.site.SitePreferenceHandlerInterceptor;
 import org.springframework.mobile.device.site.SitePreferenceHandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Mobile's
@@ -64,7 +64,7 @@ public class SitePreferenceAutoConfiguration {
 
 	@Configuration
 	protected static class SitePreferenceMvcConfiguration
-			extends WebMvcConfigurerAdapter {
+			implements WebMvcConfigurer {
 
 		private final SitePreferenceHandlerInterceptor sitePreferenceHandlerInterceptor;
 

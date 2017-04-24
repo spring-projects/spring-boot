@@ -52,7 +52,7 @@ import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Base {@link EnableAutoConfiguration Auto-configuration} for JPA.
@@ -197,7 +197,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	@Configuration
 	@ConditionalOnWebApplication(type = Type.SERVLET)
-	@ConditionalOnClass(WebMvcConfigurerAdapter.class)
+	@ConditionalOnClass(WebMvcConfigurer.class)
 	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class,
 			OpenEntityManagerInViewFilter.class })
 	@ConditionalOnProperty(prefix = "spring.jpa", name = "open-in-view", havingValue = "true", matchIfMissing = true)
@@ -206,7 +206,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 		// Defined as a nested config to ensure WebMvcConfigurerAdapter is not read when
 		// not on the classpath
 		@Configuration
-		protected static class JpaWebMvcConfiguration extends WebMvcConfigurerAdapter {
+		protected static class JpaWebMvcConfiguration implements WebMvcConfigurer {
 
 			@Bean
 			public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {

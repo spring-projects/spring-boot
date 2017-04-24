@@ -39,7 +39,7 @@ import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.data.neo4j.web.support.OpenSessionInViewInterceptor;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data Neo4j.
@@ -108,14 +108,14 @@ public class Neo4jDataAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnWebApplication(type = Type.SERVLET)
-	@ConditionalOnClass({ WebMvcConfigurerAdapter.class,
+	@ConditionalOnClass({ WebMvcConfigurer.class,
 			OpenSessionInViewInterceptor.class })
 	@ConditionalOnMissingBean(OpenSessionInViewInterceptor.class)
 	@ConditionalOnProperty(prefix = "spring.data.neo4j", name = "open-in-view", havingValue = "true", matchIfMissing = true)
 	protected static class Neo4jWebConfiguration {
 
 		@Configuration
-		protected static class Neo4jWebMvcConfiguration extends WebMvcConfigurerAdapter {
+		protected static class Neo4jWebMvcConfiguration implements WebMvcConfigurer {
 
 			@Bean
 			public OpenSessionInViewInterceptor neo4jOpenSessionInViewInterceptor() {
