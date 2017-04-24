@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,12 @@ import javax.management.MBeanServer;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -37,7 +39,10 @@ import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.gateway.GatewayProxyFactoryBean;
 import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
+import org.springframework.integration.leader.Candidate;
 import org.springframework.integration.monitor.IntegrationMBeanExporter;
+import org.springframework.integration.support.leader.LockRegistryLeaderInitiator;
+import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
 import org.springframework.util.StringUtils;
 
@@ -48,6 +53,7 @@ import org.springframework.util.StringUtils;
  * @author Artem Bilan
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @since 1.1.0
  */
 @Configuration
@@ -128,6 +134,32 @@ public class IntegrationAutoConfiguration {
 	@ConditionalOnMissingBean(GatewayProxyFactoryBean.class)
 	@Import(IntegrationAutoConfigurationScanRegistrar.class)
 	protected static class IntegrationComponentScanAutoConfiguration {
+
+	}
+
+	/**
+	 * Integration {@link LockRegistryLeaderInitiator} configuration.
+	 */
+	@Configuration
+	@ConditionalOnMissingBean(LockRegistryLeaderInitiator.class)
+	@ConditionalOnSingleCandidate(LockRegistry.class)
+	protected static class LockRegistryLeaderInitiatorConfiguration {
+
+		private final Candidate candidate;
+
+		public LockRegistryLeaderInitiatorConfiguration(
+				ObjectProvider<Candidate> candidate) {
+			this.candidate = candidate.getIfAvailable();
+		}
+
+		@Bean
+		public LockRegistryLeaderInitiator lockRegistryLeaderInitiator(
+				LockRegistry lockRegistry) {
+			if (this.candidate == null) {
+				return new LockRegistryLeaderInitiator(lockRegistry);
+			}
+			return new LockRegistryLeaderInitiator(lockRegistry, this.candidate);
+		}
 
 	}
 

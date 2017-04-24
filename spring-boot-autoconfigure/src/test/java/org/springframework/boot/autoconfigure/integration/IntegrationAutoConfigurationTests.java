@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.integration;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import javax.management.MBeanServer;
 
@@ -34,10 +35,16 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.gateway.RequestReplyExchanger;
+import org.springframework.integration.leader.Candidate;
+import org.springframework.integration.leader.DefaultCandidate;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
+import org.springframework.integration.support.leader.LockRegistryLeaderInitiator;
+import org.springframework.integration.support.locks.LockRegistry;
+import org.springframework.integration.support.locks.PassThruLockRegistry;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -47,6 +54,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Artem Bilan
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  */
 public class IntegrationAutoConfigurationTests {
 
@@ -140,6 +148,23 @@ public class IntegrationAutoConfigurationTests {
 		}
 	}
 
+	@Test
+	public void lockRegistryLeaderInitiator() {
+		load(IntegrationLockRegistryConfiguration.class);
+		assertThat(this.context.getBean(LockRegistryLeaderInitiator.class)).isNotNull();
+	}
+
+	@Test
+	public void lockRegistryLeaderInitiatorWithCustomCandidate() {
+		load(IntegrationLockRegistryWithCandidateConfiguration.class);
+		LockRegistryLeaderInitiator leaderInitiator = this.context.getBean(
+				LockRegistryLeaderInitiator.class);
+		assertThat(leaderInitiator).isNotNull();
+		Candidate candidate = (Candidate) ReflectionTestUtils.getField(
+				leaderInitiator, "candidate");
+		assertThat(candidate.getRole()).isEqualTo("boot");
+	}
+
 	public void load(String... environment) {
 		load(null, environment);
 	}
@@ -169,6 +194,27 @@ public class IntegrationAutoConfigurationTests {
 	@Configuration
 	@IntegrationComponentScan
 	static class IntegrationComponentScanConfiguration {
+
+	}
+
+	@Configuration
+	static class IntegrationLockRegistryConfiguration {
+
+		@Bean
+		public LockRegistry lockRegistry() {
+			return new PassThruLockRegistry();
+		}
+
+	}
+
+	@Configuration
+	static class IntegrationLockRegistryWithCandidateConfiguration
+			extends IntegrationLockRegistryConfiguration {
+
+		@Bean
+		public Candidate candidate() {
+			return new DefaultCandidate(UUID.randomUUID().toString(), "boot");
+		}
 
 	}
 
