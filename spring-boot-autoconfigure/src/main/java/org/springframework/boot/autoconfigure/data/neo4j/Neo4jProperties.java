@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
+import org.neo4j.ogm.config.AutoIndexMode;
 import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.config.Configuration.Builder;
 
@@ -31,6 +32,7 @@ import org.springframework.util.ClassUtils;
  * @author Stephane Nicoll
  * @author Michael Hunger
  * @author Vince Bickers
+ * @author Aurélien Leboulanger
  * @since 1.4.0
  */
 @ConfigurationProperties(prefix = "spring.data.neo4j")
@@ -60,6 +62,11 @@ public class Neo4jProperties implements ApplicationContextAware {
 	private String password;
 
 	private final Embedded embedded = new Embedded();
+
+	/**
+	 * Index generation behaviour. {@link AutoIndexMode#NONE} by default.
+	 */
+	private AutoIndexMode autoIndex = AutoIndexMode.NONE;
 
 	private ClassLoader classLoader = Neo4jProperties.class.getClassLoader();
 
@@ -91,6 +98,14 @@ public class Neo4jProperties implements ApplicationContextAware {
 		return this.embedded;
 	}
 
+	public AutoIndexMode getAutoIndex() {
+		return this.autoIndex;
+	}
+
+	public void setAutoIndex(AutoIndexMode autoIndex) {
+		this.autoIndex = autoIndex;
+	}
+
 	@Override
 	public void setApplicationContext(ApplicationContext ctx) throws BeansException {
 		this.classLoader = ctx.getClassLoader();
@@ -116,6 +131,8 @@ public class Neo4jProperties implements ApplicationContextAware {
 		if (this.username != null && this.password != null) {
 			builder.credentials(this.username, this.password);
 		}
+
+		builder.autoIndex(this.getAutoIndex().name());
 	}
 
 	private void configureUriWithDefaults(Builder builder) {

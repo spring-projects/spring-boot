@@ -619,6 +619,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.neo4j.repositories.enabled=true # Enable Neo4j repositories.
 	spring.data.neo4j.uri= # URI used by the driver. Auto-detected by default.
 	spring.data.neo4j.username= # Login user of the server.
+	spring.data.neo4j.indexes.auto=none # Configure auto indexing. Disable by default.
 
 	# DATA REST ({sc-spring-boot-autoconfigure}/data/rest/RepositoryRestProperties.{sc-ext}[RepositoryRestProperties])
 	spring.data.rest.base-path= # Base path to be used by Spring Data REST to expose repository resources.
