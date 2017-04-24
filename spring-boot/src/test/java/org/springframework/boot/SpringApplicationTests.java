@@ -377,8 +377,6 @@ public class SpringApplicationTests {
 		application.addListeners(new ApplicationRunningEventListener());
 		this.context = application.run();
 		assertThat(events).hasSize(5);
-		assertThat(events.get(0)).isInstanceOf(
-				org.springframework.boot.context.event.ApplicationStartedEvent.class);
 		assertThat(events.get(0)).isInstanceOf(ApplicationStartingEvent.class);
 		assertThat(events.get(1)).isInstanceOf(ApplicationEnvironmentPreparedEvent.class);
 		assertThat(events.get(2)).isInstanceOf(ApplicationPreparedEvent.class);

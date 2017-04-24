@@ -545,18 +545,6 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	/**
-	 * A comma-separated list of jars to ignore for TLD scanning. See Tomcat's
-	 * catalina.properties for typical values. Defaults to a list drawn from that source.
-	 * @param tldSkip the jars to skip when scanning for TLDs etc
-	 * @deprecated as of 1.5 in favor of {@link #setTldSkipPatterns(Collection)}
-	 */
-	@Deprecated
-	public void setTldSkip(String tldSkip) {
-		Assert.notNull(tldSkip, "TldSkip must not be null");
-		setTldSkipPatterns(StringUtils.commaDelimitedListToSet(tldSkip));
-	}
-
-	/**
 	 * Returns a mutable set of the patterns that match jars to ignore for TLD scanning.
 	 * @return the list of jars to ignore for TLD scanning
 	 */

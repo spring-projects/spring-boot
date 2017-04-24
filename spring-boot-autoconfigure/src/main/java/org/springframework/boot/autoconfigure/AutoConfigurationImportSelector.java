@@ -106,6 +106,11 @@ public class AutoConfigurationImportSelector
 	}
 
 	protected boolean isEnabled(AnnotationMetadata metadata) {
+		if (getClass().equals(AutoConfigurationImportSelector.class)) {
+			return getEnvironment().getProperty(
+					EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY, Boolean.class,
+					true);
+		}
 		return true;
 	}
 

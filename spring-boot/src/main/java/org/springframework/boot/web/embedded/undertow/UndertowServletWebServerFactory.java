@@ -580,11 +580,6 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		this.bufferSize = bufferSize;
 	}
 
-	@Deprecated
-	public void setBuffersPerRegion(Integer buffersPerRegion) {
-
-	}
-
 	public void setIoThreads(Integer ioThreads) {
 		this.ioThreads = ioThreads;
 	}
