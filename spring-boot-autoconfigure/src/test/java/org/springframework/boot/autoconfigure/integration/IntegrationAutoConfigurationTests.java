@@ -147,9 +147,8 @@ public class IntegrationAutoConfigurationTests {
 	@Test
 	public void integrationJdbcDatabaseInitializerEnabled() {
 		load(new Class[] { EmbeddedDataSourceConfiguration.class,
-						DataSourceTransactionManagerAutoConfiguration.class,
-						JdbcTemplateAutoConfiguration.class,
-						IntegrationAutoConfiguration.class},
+				DataSourceTransactionManagerAutoConfiguration.class,
+				JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class },
 				"spring.datasource.generate-unique-name=true",
 				"spring.integration.jdbc.initializer.enabled=true");
 		assertThat(this.context.getBean(IntegrationProperties.class).getJdbc()
@@ -168,9 +167,8 @@ public class IntegrationAutoConfigurationTests {
 	@Test
 	public void integrationJdbcDatabaseInitializerDisabled() {
 		load(new Class[] { EmbeddedDataSourceConfiguration.class,
-						DataSourceTransactionManagerAutoConfiguration.class,
-						JdbcTemplateAutoConfiguration.class,
-						IntegrationAutoConfiguration.class },
+				DataSourceTransactionManagerAutoConfiguration.class,
+				JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class },
 				"spring.datasource.generate-unique-name=true",
 				"spring.integration.jdbc.initializer.enabled=false");
 		assertThat(this.context.getBean(IntegrationProperties.class).getJdbc()
@@ -183,9 +181,8 @@ public class IntegrationAutoConfigurationTests {
 	@Test
 	public void integrationJdbcDatabaseInitializerDisabledByDefault() {
 		load(new Class[] { EmbeddedDataSourceConfiguration.class,
-						DataSourceTransactionManagerAutoConfiguration.class,
-						JdbcTemplateAutoConfiguration.class,
-						IntegrationAutoConfiguration.class },
+				DataSourceTransactionManagerAutoConfiguration.class,
+				JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class },
 				"spring.datasource.generate-unique-name=true");
 		assertThat(this.context.getBean(IntegrationProperties.class).getJdbc()
 				.getInitializer().isEnabled()).isFalse();
