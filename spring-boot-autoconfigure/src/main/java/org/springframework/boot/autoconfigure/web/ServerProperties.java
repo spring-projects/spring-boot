@@ -910,7 +910,7 @@ public class ServerProperties {
 		 */
 		private Integer selectors;
 
-		private Accesslog accesslog;
+		private final Accesslog accesslog = new Accesslog();
 
 		public int getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
@@ -939,11 +939,7 @@ public class ServerProperties {
 		public Accesslog getAccesslog() {
 			return this.accesslog;
 		}
-
-		public void setAccesslog(Accesslog accesslog) {
-			this.accesslog = accesslog;
-		}
-
+		
 		public static class Accesslog {
 
 			/**
