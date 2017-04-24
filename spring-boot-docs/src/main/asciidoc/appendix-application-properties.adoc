@@ -890,6 +890,10 @@ content into your application; rather pick only the properties that you need.
 	spring.batch.schema=classpath:org/springframework/batch/core/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.batch.table-prefix= # Table prefix for all the batch meta-data tables.
 
+	# SPRING INTEGRATION ({sc-spring-boot-autoconfigure}/integration/IntegrationProperties.{sc-ext}[IntegrationProperties])
+	spring.integration.jdbc.initializer.enabled=true # Create the required integration tables on startup if necessary.
+	spring.integration.jdbc.schema=classpath:org/springframework/integration/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
+
 	# JMS ({sc-spring-boot-autoconfigure}/jms/JmsProperties.{sc-ext}[JmsProperties])
 	spring.jms.jndi-name= # Connection factory JNDI name. When set, takes precedence to others connection factory auto-configurations.
 	spring.jms.listener.acknowledge-mode= # Acknowledge mode of the container. By default, the listener is transacted with automatic acknowledgment.
