@@ -61,12 +61,12 @@ public class Neo4jProperties implements ApplicationContextAware {
 	 */
 	private String password;
 
-	private final Embedded embedded = new Embedded();
-
 	/**
-	 * Index generation behaviour. {@link AutoIndexMode#NONE} by default.
+	 * Auto index mode.
 	 */
 	private AutoIndexMode autoIndex = AutoIndexMode.NONE;
+
+	private final Embedded embedded = new Embedded();
 
 	private ClassLoader classLoader = Neo4jProperties.class.getClassLoader();
 
@@ -94,16 +94,16 @@ public class Neo4jProperties implements ApplicationContextAware {
 		this.password = password;
 	}
 
-	public Embedded getEmbedded() {
-		return this.embedded;
-	}
-
 	public AutoIndexMode getAutoIndex() {
 		return this.autoIndex;
 	}
 
 	public void setAutoIndex(AutoIndexMode autoIndex) {
 		this.autoIndex = autoIndex;
+	}
+
+	public Embedded getEmbedded() {
+		return this.embedded;
 	}
 
 	@Override
@@ -131,8 +131,7 @@ public class Neo4jProperties implements ApplicationContextAware {
 		if (this.username != null && this.password != null) {
 			builder.credentials(this.username, this.password);
 		}
-
-		builder.autoIndex(this.getAutoIndex().name());
+		builder.autoIndex(this.getAutoIndex().getName());
 	}
 
 	private void configureUriWithDefaults(Builder builder) {

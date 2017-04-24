@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Test;
-import org.neo4j.ogm.config.AutoIndexMode;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 import org.neo4j.ogm.session.event.Event;
@@ -33,7 +32,6 @@ import org.springframework.boot.autoconfigure.data.neo4j.city.City;
 import org.springframework.boot.autoconfigure.data.neo4j.country.Country;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -58,7 +56,6 @@ import static org.mockito.Mockito.verify;
  * @author Vince Bickers
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
- * @author Aurélien Leboulanger
  */
 public class Neo4jDataAutoConfigurationTests {
 
@@ -142,25 +139,6 @@ public class Neo4jDataAutoConfigurationTests {
 				.onPreSave(any(Event.class));
 	}
 
-	@Test
-	public void autoIndexConfiguration() {
-		load(CustomConfigurationFactory.class);
-		assertThat(this.context.getBean(org.neo4j.ogm.config.Configuration.class)
-				.getAutoIndex()).isEqualTo(AutoIndexMode.NONE);
-
-		load(CustomConfigurationFactory.class, "spring.data.neo4j.auto-index=assert");
-		assertThat(this.context.getBean(org.neo4j.ogm.config.Configuration.class)
-				.getAutoIndex()).isEqualTo(AutoIndexMode.ASSERT);
-
-		load(CustomConfigurationFactory.class, "spring.data.neo4j.auto-index=dump");
-		assertThat(this.context.getBean(org.neo4j.ogm.config.Configuration.class)
-				.getAutoIndex()).isEqualTo(AutoIndexMode.DUMP);
-
-		load(CustomConfigurationFactory.class, "spring.data.neo4j.auto-index=validate");
-		assertThat(this.context.getBean(org.neo4j.ogm.config.Configuration.class)
-				.getAutoIndex()).isEqualTo(AutoIndexMode.VALIDATE);
-	}
-
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(ctx, environment);
@@ -194,21 +172,6 @@ public class Neo4jDataAutoConfigurationTests {
 			return mock(SessionFactory.class);
 		}
 
-	}
-
-	@Configuration
-	@EnableConfigurationProperties(Neo4jProperties.class)
-	static class CustomConfigurationFactory {
-
-		@Bean
-		public org.neo4j.ogm.config.Configuration configuration(Neo4jProperties properties) {
-			return properties.createConfiguration();
-		}
-
-		@Bean
-		public SessionFactory customSessionFactory() {
-			return mock(SessionFactory.class);
-		}
 	}
 
 	@Configuration
