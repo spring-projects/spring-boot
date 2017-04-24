@@ -891,7 +891,7 @@ content into your application; rather pick only the properties that you need.
 	spring.batch.table-prefix= # Table prefix for all the batch meta-data tables.
 
 	# SPRING INTEGRATION ({sc-spring-boot-autoconfigure}/integration/IntegrationProperties.{sc-ext}[IntegrationProperties])
-	spring.integration.jdbc.initializer.enabled=true # Create the required integration tables on startup if necessary.
+	spring.integration.jdbc.initializer.enabled=false # Create the required integration tables on startup.
 	spring.integration.jdbc.schema=classpath:org/springframework/integration/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 
 	# JMS ({sc-spring-boot-autoconfigure}/jms/JmsProperties.{sc-ext}[JmsProperties])

@@ -5118,9 +5118,13 @@ Integration is available on your classpath it will be initialized through the
 Spring Boot will also configure some features that are triggered by the presence of
 additional Spring Integration modules. Message processing statistics will be published
 over JMX if `'spring-integration-jmx'` is also on the classpath. If
-`'spring-integration-jdbc'` is available on the classpath default database schema will be
-initialized using `'IntegrationDatabaseInitializer'`, which can be further customized
-using configuration properties.
+`'spring-integration-jdbc'` is available, the default database schema can be created
+on startup:
+
+[source,properties,indent=0]
+----
+	spring.integration.jdbc.initializer.enabled=true
+----
 
 See the
 {sc-spring-boot-autoconfigure}/integration/IntegrationAutoConfiguration.{sc-ext}[`IntegrationAutoConfiguration`]

@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.management.MBeanServer;
-import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -41,7 +40,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.gateway.RequestReplyExchanger;
-import org.springframework.integration.jdbc.store.JdbcMessageStore;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
 import org.springframework.jdbc.BadSqlGrammarException;
@@ -147,11 +145,13 @@ public class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	public void integrationJdbcDatabaseInitializerEnabledWithRequiredBeans() {
+	public void integrationJdbcDatabaseInitializerEnabled() {
 		load(new Class[] { EmbeddedDataSourceConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class,
-				JdbcTemplateAutoConfiguration.class,
-				IntergrationJdbcConfiguration.class });
+						DataSourceTransactionManagerAutoConfiguration.class,
+						JdbcTemplateAutoConfiguration.class,
+						IntegrationAutoConfiguration.class},
+				"spring.datasource.generate-unique-name=true",
+				"spring.integration.jdbc.initializer.enabled=true");
 		assertThat(this.context.getBean(IntegrationProperties.class).getJdbc()
 				.getInitializer().isEnabled()).isTrue();
 		JdbcOperations jdbcOperations = this.context.getBean(JdbcOperations.class);
@@ -166,44 +166,32 @@ public class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	public void integrationJdbcDatabaseInitializerDisableWithoutRequiredBeans() {
+	public void integrationJdbcDatabaseInitializerDisabled() {
 		load(new Class[] { EmbeddedDataSourceConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class,
-				JdbcTemplateAutoConfiguration.class });
-		assertThat(this.context.getBean(IntegrationProperties.class).getJdbc()
-				.getInitializer().isEnabled()).isTrue();
-		JdbcOperations jdbcOperations = this.context.getBean(JdbcOperations.class);
-		this.thrown.expect(BadSqlGrammarException.class);
-		jdbcOperations.queryForList("select * from INT_MESSAGE");
-		this.thrown.expect(BadSqlGrammarException.class);
-		jdbcOperations.queryForList("select * from INT_GROUP_TO_MESSAGE");
-		this.thrown.expect(BadSqlGrammarException.class);
-		jdbcOperations.queryForList("select * from INT_MESSAGE_GROUP");
-		this.thrown.expect(BadSqlGrammarException.class);
-		jdbcOperations.queryForList("select * from INT_LOCK");
-		this.thrown.expect(BadSqlGrammarException.class);
-		jdbcOperations.queryForList("select * from INT_CHANNEL_MESSAGE");
-	}
-
-	@Test
-	public void integrationJdbcDisableDatabaseInitializer() {
-		load(new Class[] { EmbeddedDataSourceConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class,
-				JdbcTemplateAutoConfiguration.class },
+						DataSourceTransactionManagerAutoConfiguration.class,
+						JdbcTemplateAutoConfiguration.class,
+						IntegrationAutoConfiguration.class },
+				"spring.datasource.generate-unique-name=true",
 				"spring.integration.jdbc.initializer.enabled=false");
 		assertThat(this.context.getBean(IntegrationProperties.class).getJdbc()
 				.getInitializer().isEnabled()).isFalse();
 		JdbcOperations jdbcOperations = this.context.getBean(JdbcOperations.class);
 		this.thrown.expect(BadSqlGrammarException.class);
 		jdbcOperations.queryForList("select * from INT_MESSAGE");
+	}
+
+	@Test
+	public void integrationJdbcDatabaseInitializerDisabledByDefault() {
+		load(new Class[] { EmbeddedDataSourceConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class,
+						JdbcTemplateAutoConfiguration.class,
+						IntegrationAutoConfiguration.class },
+				"spring.datasource.generate-unique-name=true");
+		assertThat(this.context.getBean(IntegrationProperties.class).getJdbc()
+				.getInitializer().isEnabled()).isFalse();
+		JdbcOperations jdbcOperations = this.context.getBean(JdbcOperations.class);
 		this.thrown.expect(BadSqlGrammarException.class);
-		jdbcOperations.queryForList("select * from INT_GROUP_TO_MESSAGE");
-		this.thrown.expect(BadSqlGrammarException.class);
-		jdbcOperations.queryForList("select * from INT_MESSAGE_GROUP");
-		this.thrown.expect(BadSqlGrammarException.class);
-		jdbcOperations.queryForList("select * from INT_LOCK");
-		this.thrown.expect(BadSqlGrammarException.class);
-		jdbcOperations.queryForList("select * from INT_CHANNEL_MESSAGE");
+		jdbcOperations.queryForList("select * from INT_MESSAGE");
 	}
 
 	private static void assertDomains(MBeanServer mBeanServer, boolean expected,
@@ -243,16 +231,6 @@ public class IntegrationAutoConfigurationTests {
 	@Configuration
 	@IntegrationComponentScan
 	static class IntegrationComponentScanConfiguration {
-
-	}
-
-	@Configuration
-	static class IntergrationJdbcConfiguration {
-
-		@Bean
-		public JdbcMessageStore messageStore(DataSource dataSource) {
-			return new JdbcMessageStore(dataSource);
-		}
 
 	}
 

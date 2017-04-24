@@ -22,6 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for Spring Integration.
  *
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.integration")
@@ -36,7 +37,7 @@ public class IntegrationProperties {
 	public static class Jdbc {
 
 		private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
-			+ "integration/jdbc/schema-@@platform@@.sql";
+				+ "integration/jdbc/schema-@@platform@@.sql";
 
 		/**
 		 * Path to the SQL file to use to initialize the database schema.
@@ -60,9 +61,9 @@ public class IntegrationProperties {
 		public class Initializer {
 
 			/**
-			 * Create the required integration tables on startup if necessary.
+			 * Create the required integration tables on startup.
 			 */
-			private boolean enabled = true;
+			private boolean enabled = false;
 
 			public boolean isEnabled() {
 				return this.enabled;

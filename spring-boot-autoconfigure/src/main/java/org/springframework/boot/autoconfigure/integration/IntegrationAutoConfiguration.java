@@ -23,8 +23,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -35,7 +33,6 @@ import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
@@ -43,8 +40,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.gateway.GatewayProxyFactoryBean;
-import org.springframework.integration.jdbc.lock.DefaultLockRepository;
-import org.springframework.integration.jdbc.store.JdbcChannelMessageStore;
 import org.springframework.integration.jdbc.store.JdbcMessageStore;
 import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
 import org.springframework.integration.monitor.IntegrationMBeanExporter;
@@ -153,35 +148,12 @@ public class IntegrationAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@Conditional(IntegrationSchemaCondition.class)
+		@ConditionalOnProperty(prefix = "spring.integration.jdbc.initializer", name = "enabled")
 		public IntegrationDatabaseInitializer integrationDatabaseInitializer(
-			DataSource dataSource, ResourceLoader resourceLoader,
-			IntegrationProperties properties) {
+				DataSource dataSource, ResourceLoader resourceLoader,
+				IntegrationProperties properties) {
 			return new IntegrationDatabaseInitializer(dataSource, resourceLoader,
-				properties);
-		}
-
-	}
-
-	static class IntegrationSchemaCondition extends AnyNestedCondition {
-
-		IntegrationSchemaCondition() {
-			super(ConfigurationPhase.REGISTER_BEAN);
-		}
-
-		@ConditionalOnBean(JdbcMessageStore.class)
-		static class JdbcMessageStoreUsed {
-
-		}
-
-		@ConditionalOnBean(JdbcChannelMessageStore.class)
-		static class JdbcChannelMessageStoreUsed {
-
-		}
-
-		@ConditionalOnBean(DefaultLockRepository.class)
-		static class DefaultLockRepositoryUsed {
-
+					properties);
 		}
 
 	}
