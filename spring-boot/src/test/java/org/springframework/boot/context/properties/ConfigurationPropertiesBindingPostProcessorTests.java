@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +43,10 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -360,6 +366,39 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.refresh();
 		assertThat(this.context.getBean(PropertiesWithMap.class).getMap())
 				.containsEntry("foo", "bar");
+	}
+
+	@Test
+	public void overridingPropertiesInEnvShouldOverride() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		ConfigurableEnvironment env = this.context.getEnvironment();
+		MutablePropertySources propertySources = env.getPropertySources();
+		propertySources.addFirst(new SystemEnvironmentPropertySource("system",
+				Collections.singletonMap("COM_EXAMPLE_FOO", "10")));
+		propertySources.addLast(new MapPropertySource("test",
+				Collections.singletonMap("com.example.foo", 5)));
+		this.context.register(TestConfiguration.class);
+		this.context.refresh();
+		int foo = this.context.getBean(TestConfiguration.class).getFoo();
+		assertThat(foo).isEqualTo(10);
+	}
+
+	@Test
+	public void overridingPropertiesWithPlaceholderResolutionInEnvShouldOverride()
+			throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		ConfigurableEnvironment env = this.context.getEnvironment();
+		MutablePropertySources propertySources = env.getPropertySources();
+		propertySources.addFirst(new SystemEnvironmentPropertySource("system",
+				Collections.singletonMap("COM_EXAMPLE_BAR", "10")));
+		Map<String, Object> source = new HashMap<>();
+		source.put("com.example.bar", 5);
+		source.put("com.example.foo", "${com.example.bar}");
+		propertySources.addLast(new MapPropertySource("test", source));
+		this.context.register(TestConfiguration.class);
+		this.context.refresh();
+		int foo = this.context.getBean(TestConfiguration.class).getFoo();
+		assertThat(foo).isEqualTo(10);
 	}
 
 	private void assertBindingFailure(int errorCount) {
