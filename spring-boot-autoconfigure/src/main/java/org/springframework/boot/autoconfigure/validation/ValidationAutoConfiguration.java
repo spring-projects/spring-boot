@@ -28,6 +28,7 @@ import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.env.Environment;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -43,12 +44,13 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @Configuration
 @ConditionalOnClass(ExecutableValidator.class)
 @ConditionalOnResource(resources = "classpath:META-INF/services/javax.validation.spi.ValidationProvider")
+@Import(PrimaryDefaultValidatorPostProcessor.class)
 public class ValidationAutoConfiguration {
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	@ConditionalOnMissingBean
-	public static Validator jsr303Validator() {
+	@ConditionalOnMissingBean(Validator.class)
+	public static LocalValidatorFactoryBean defaultValidator() {
 		LocalValidatorFactoryBean factoryBean = new LocalValidatorFactoryBean();
 		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory();
 		factoryBean.setMessageInterpolator(interpolatorFactory.getObject());
