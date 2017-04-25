@@ -49,7 +49,6 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -89,6 +88,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Johannes Edmeier
  * @author Eddú Meléndez
  * @author Venil Noronha
+ * @author Madhura Bhave
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
@@ -133,9 +133,9 @@ public class EndpointWebMvcAutoConfiguration
 	@Override
 	public void afterSingletonsInstantiated() {
 		ManagementServerPort managementPort = ManagementServerPort.DIFFERENT;
+		Environment environment = this.applicationContext.getEnvironment();
 		if (this.applicationContext instanceof WebApplicationContext) {
-			managementPort = ManagementServerPort
-					.get(this.applicationContext.getEnvironment());
+			managementPort = ManagementServerPort.get(environment);
 		}
 		if (managementPort == ManagementServerPort.DIFFERENT) {
 			if (this.applicationContext instanceof ServletWebServerApplicationContext
@@ -150,17 +150,14 @@ public class EndpointWebMvcAutoConfiguration
 			}
 		}
 		if (managementPort == ManagementServerPort.SAME) {
-			if (new RelaxedPropertyResolver(this.applicationContext.getEnvironment(),
-					"management.ssl.").getProperty("enabled") != null) {
+			if (environment.getProperty("management.ssl.enabled") != null) {
 				throw new IllegalStateException(
 						"Management-specific SSL cannot be configured as the management "
 								+ "server is not listening on a separate port");
 			}
-			if (this.applicationContext
-					.getEnvironment() instanceof ConfigurableEnvironment) {
+			if (environment instanceof ConfigurableEnvironment) {
 				addLocalManagementPortPropertyAlias(
-						(ConfigurableEnvironment) this.applicationContext
-								.getEnvironment());
+						(ConfigurableEnvironment) environment);
 			}
 		}
 	}
@@ -356,9 +353,7 @@ public class EndpointWebMvcAutoConfiguration
 		}
 
 		private static Integer getPortProperty(Environment environment, String prefix) {
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
-					prefix);
-			return resolver.getProperty("port", Integer.class);
+			return environment.getProperty(prefix + "port", Integer.class);
 		}
 
 	}

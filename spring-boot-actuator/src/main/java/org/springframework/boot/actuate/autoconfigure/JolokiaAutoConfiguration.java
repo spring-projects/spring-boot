@@ -33,7 +33,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -60,6 +59,7 @@ import org.springframework.web.servlet.mvc.ServletWrappingController;
  * @author Christian Dupuis
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -108,9 +108,8 @@ public class JolokiaAutoConfiguration {
 
 		private boolean isEnabled(ConditionContext context, String prefix,
 				boolean defaultValue) {
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-					context.getEnvironment(), prefix);
-			return resolver.getProperty("enabled", Boolean.class, defaultValue);
+			return context.getEnvironment().getProperty(prefix + "enabled", Boolean.class,
+					defaultValue);
 		}
 
 	}
