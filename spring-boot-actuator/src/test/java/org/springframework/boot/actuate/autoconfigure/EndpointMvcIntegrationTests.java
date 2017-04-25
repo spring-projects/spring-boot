@@ -41,7 +41,6 @@ import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCusto
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
@@ -157,9 +156,9 @@ public class EndpointMvcIntegrationTests {
 	@Documented
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, ValidationAutoConfiguration.class,
-			WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
-			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			JacksonAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 
 	}

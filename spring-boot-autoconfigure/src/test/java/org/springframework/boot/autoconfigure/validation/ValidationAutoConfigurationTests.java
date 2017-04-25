@@ -32,12 +32,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
-import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ValidationAutoConfiguration}.
@@ -59,94 +56,45 @@ public class ValidationAutoConfigurationTests {
 	}
 
 	@Test
-	public void validationAutoConfigurationShouldConfigureJsrAndSpringValidator()
-			throws Exception {
-		load(Config.class);
-		Validator jsrValidator = this.context.getBean(Validator.class);
-		String[] jsrValidatorNames = this.context.getBeanNamesForType(Validator.class);
-		org.springframework.validation.Validator springValidator = this.context
-				.getBean(org.springframework.validation.Validator.class);
-		String[] springValidatorNames = this.context
-				.getBeanNamesForType(org.springframework.validation.Validator.class);
-		assertThat(jsrValidator).isInstanceOf(LocalValidatorFactoryBean.class);
-		assertThat(jsrValidator).isEqualTo(springValidator);
-		assertThat(jsrValidatorNames).containsExactly("defaultValidator");
-		assertThat(springValidatorNames).containsExactly("defaultValidator");
-	}
-
-	@Test
-	public void validationAutoConfigurationWhenUserProvidesValidatorShouldBackOff()
-			throws Exception {
-		load(UserDefinedValidatorConfig.class);
-		Validator jsrValidator = this.context.getBean(Validator.class);
-		String[] jsrValidatorNames = this.context.getBeanNamesForType(Validator.class);
-		org.springframework.validation.Validator springValidator = this.context
-				.getBean(org.springframework.validation.Validator.class);
-		String[] springValidatorNames = this.context
-				.getBeanNamesForType(org.springframework.validation.Validator.class);
-		assertThat(jsrValidator).isInstanceOf(OptionalValidatorFactoryBean.class);
-		assertThat(jsrValidator).isEqualTo(springValidator);
-		assertThat(jsrValidatorNames).containsExactly("customValidator");
-		assertThat(springValidatorNames).containsExactly("customValidator");
-	}
-
-	@Test
-	public void validationAutoConfigurationWhenUserProvidesJsrOnlyShouldAdaptIt()
-			throws Exception {
-		load(UserDefinedJsrValidatorConfig.class);
-		Validator jsrValidator = this.context.getBean(Validator.class);
-		String[] jsrValidatorNames = this.context.getBeanNamesForType(Validator.class);
-		org.springframework.validation.Validator springValidator = this.context
-				.getBean(org.springframework.validation.Validator.class);
-		String[] springValidatorNames = this.context
-				.getBeanNamesForType(org.springframework.validation.Validator.class);
-		assertThat(jsrValidator).isNotEqualTo(springValidator);
-		assertThat(springValidator).isInstanceOf(DelegatingValidator.class);
-		assertThat(jsrValidatorNames).containsExactly("customValidator");
-		assertThat(springValidatorNames).containsExactly("jsr303ValidatorAdapter");
-	}
-
-	@Test
-	public void validationAutoConfigurationShouldBeEnabled() {
-		load(ClassWithConstraint.class);
+	public void validationIsEnabled() {
+		load(SampleService.class);
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
-		ClassWithConstraint service = this.context.getBean(ClassWithConstraint.class);
-		service.call("Valid");
+		SampleService service = this.context.getBean(SampleService.class);
+		service.doSomething("Valid");
 		this.thrown.expect(ConstraintViolationException.class);
-		service.call("KO");
+		service.doSomething("KO");
 	}
 
 	@Test
-	public void validationAutoConfigurationShouldUseCglibProxy() {
-		load(ImplementationOfInterfaceWithConstraint.class);
+	public void validationUsesCglibProxy() {
+		load(DefaultAnotherSampleService.class);
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
-		ImplementationOfInterfaceWithConstraint service = this.context
-				.getBean(ImplementationOfInterfaceWithConstraint.class);
-		service.call(42);
+		DefaultAnotherSampleService service = this.context
+				.getBean(DefaultAnotherSampleService.class);
+		service.doSomething(42);
 		this.thrown.expect(ConstraintViolationException.class);
-		service.call(2);
+		service.doSomething(2);
 	}
 
 	@Test
-	public void validationAutoConfigurationWhenProxyTargetClassIsFalseShouldUseJdkProxy() {
+	public void validationCanBeConfiguredToUseJdkProxy() {
 		load(AnotherSampleServiceConfiguration.class,
 				"spring.aop.proxy-target-class=false");
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
-		assertThat(this.context
-				.getBeansOfType(ImplementationOfInterfaceWithConstraint.class)).isEmpty();
-		InterfaceWithConstraint service = this.context
-				.getBean(InterfaceWithConstraint.class);
-		service.call(42);
+		assertThat(this.context.getBeansOfType(DefaultAnotherSampleService.class))
+				.isEmpty();
+		AnotherSampleService service = this.context.getBean(AnotherSampleService.class);
+		service.doSomething(42);
 		this.thrown.expect(ConstraintViolationException.class);
-		service.call(2);
+		service.doSomething(2);
 	}
 
 	@Test
-	public void validationAutoConfigurationWhenUserDefinesMethodValidationPostProcessorShouldBackOff() {
-		load(UserDefinedMethodValidationConfig.class);
+	public void userDefinedMethodValidationPostProcessorTakesPrecedence() {
+		load(SampleConfiguration.class);
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		Object userMethodValidationPostProcessor = this.context
-				.getBean("customMethodValidationPostProcessor");
+				.getBean("testMethodValidationPostProcessor");
 		assertThat(this.context.getBean(MethodValidationPostProcessor.class))
 				.isSameAs(userMethodValidationPostProcessor);
 		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class))
@@ -167,73 +115,47 @@ public class ValidationAutoConfigurationTests {
 		this.context = ctx;
 	}
 
-	@Configuration
-	static class Config {
+	@Validated
+	static class SampleService {
 
-	}
+		public void doSomething(@Size(min = 3, max = 10) String name) {
 
-	@Configuration
-	static class UserDefinedValidatorConfig {
-
-		@Bean
-		public OptionalValidatorFactoryBean customValidator() {
-			return new OptionalValidatorFactoryBean();
 		}
 
 	}
 
-	@Configuration
-	static class UserDefinedJsrValidatorConfig {
+	interface AnotherSampleService {
 
-		@Bean
-		public Validator customValidator() {
-			return mock(Validator.class);
-		}
-
+		void doSomething(@Min(42) Integer counter);
 	}
 
-	@Configuration
-	static class UserDefinedMethodValidationConfig {
+	@Validated
+	static class DefaultAnotherSampleService implements AnotherSampleService {
 
-		@Bean
-		public MethodValidationPostProcessor customMethodValidationPostProcessor() {
-			return new MethodValidationPostProcessor();
+		@Override
+		public void doSomething(Integer counter) {
+
 		}
-
 	}
 
 	@Configuration
 	static class AnotherSampleServiceConfiguration {
 
 		@Bean
-		public InterfaceWithConstraint implementationOfInterfaceWithConstraint() {
-			return new ImplementationOfInterfaceWithConstraint();
+		public AnotherSampleService anotherSampleService() {
+			return new DefaultAnotherSampleService();
 		}
 
 	}
 
-	@Validated
-	static class ClassWithConstraint {
+	@Configuration
+	static class SampleConfiguration {
 
-		public void call(@Size(min = 3, max = 10) String name) {
-
+		@Bean
+		public MethodValidationPostProcessor testMethodValidationPostProcessor() {
+			return new MethodValidationPostProcessor();
 		}
 
-	}
-
-	interface InterfaceWithConstraint {
-
-		void call(@Min(42) Integer counter);
-	}
-
-	@Validated
-	static class ImplementationOfInterfaceWithConstraint
-			implements InterfaceWithConstraint {
-
-		@Override
-		public void call(Integer counter) {
-
-		}
 	}
 
 }
