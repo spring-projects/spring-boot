@@ -32,6 +32,7 @@ import org.springframework.util.StringUtils;
  * @see RelaxedDataBinder
  * @see RelaxedPropertyResolver
  */
+@Deprecated
 public final class RelaxedNames implements Iterable<String> {
 
 	private static final Pattern CAMEL_CASE_PATTERN = Pattern.compile("([^A-Z-])([A-Z])");

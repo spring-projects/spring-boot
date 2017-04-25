@@ -51,6 +51,7 @@ import org.springframework.validation.Validator;
  * @param <T> the target type
  * @author Dave Syer
  */
+@Deprecated
 public class PropertiesConfigurationFactory<T>
 		implements FactoryBean<T>, MessageSourceAware, InitializingBean {
 

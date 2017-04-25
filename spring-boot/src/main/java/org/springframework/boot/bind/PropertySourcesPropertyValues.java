@@ -41,6 +41,7 @@ import org.springframework.validation.DataBinder;
  * @author Dave Syer
  * @author Phillip Webb
  */
+@Deprecated
 public class PropertySourcesPropertyValues implements PropertyValues {
 
 	private static final Pattern COLLECTION_PROPERTY = Pattern

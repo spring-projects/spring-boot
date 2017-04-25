@@ -31,6 +31,7 @@ import org.yaml.snakeyaml.nodes.NodeId;
  *
  * @author Luke Taylor
  */
+@Deprecated
 public class YamlJavaBeanPropertyConstructor extends Constructor {
 
 	private final Map<Class<?>, Map<String, Property>> properties = new HashMap<>();

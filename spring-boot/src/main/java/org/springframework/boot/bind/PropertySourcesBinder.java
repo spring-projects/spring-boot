@@ -34,6 +34,7 @@ import org.springframework.validation.BindException;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
+@Deprecated
 public class PropertySourcesBinder {
 
 	private PropertySources propertySources;

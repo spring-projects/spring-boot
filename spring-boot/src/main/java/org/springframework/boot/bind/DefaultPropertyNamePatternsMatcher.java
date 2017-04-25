@@ -28,6 +28,7 @@ import java.util.Set;
  * @author Phillip Webb
  * @since 1.2.0
  */
+@Deprecated
 class DefaultPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher {
 
 	private final char[] delimiters;

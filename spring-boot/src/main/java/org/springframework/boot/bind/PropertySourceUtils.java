@@ -31,6 +31,7 @@ import org.springframework.core.env.PropertySources;
  * @see PropertySource
  * @see PropertySources
  */
+@Deprecated
 public abstract class PropertySourceUtils {
 
 	/**
