@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mustache.reactive;
+package org.springframework.boot.web.reactive.result.view;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -37,6 +37,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MustacheViewTests {
 
+	private final String templateUrl = "classpath:/"
+			+ getClass().getPackage().getName().replace(".", "/") + "/template.html";
+
 	private GenericApplicationContext context = new GenericApplicationContext();
 
 	private MockServerWebExchange exchange;
@@ -51,11 +54,13 @@ public class MustacheViewTests {
 		this.exchange = MockServerHttpRequest.get("/test").toExchange();
 		MustacheView view = new MustacheView();
 		view.setCompiler(Mustache.compiler());
-		view.setUrl("classpath:/mustache-templates/foo.html");
+		view.setUrl(this.templateUrl);
 		view.setCharset(StandardCharsets.UTF_8.displayName());
 		view.setApplicationContext(this.context);
-		view.render(Collections.singletonMap("World", "Spring"), MediaType.TEXT_HTML, this.exchange).block();
-		assertThat(this.exchange.getResponse().getBodyAsString().block()).isEqualTo("Hello Spring");
+		view.render(Collections.singletonMap("World", "Spring"), MediaType.TEXT_HTML,
+				this.exchange).block();
+		assertThat(this.exchange.getResponse().getBodyAsString().block())
+				.isEqualTo("Hello Spring");
 	}
 
 }

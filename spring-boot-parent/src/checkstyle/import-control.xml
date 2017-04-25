@@ -50,6 +50,9 @@
 				<allow pkg="org.springframework.boot.web.servlet" />
 				<allow pkg="org.springframework.boot.web.server" />
 			</subpackage>
+			<subpackage name="view">
+				<allow pkg="org.springframework.web.servlet" />
+			</subpackage>
 		</subpackage>
 
 		<!-- Reactive -->
@@ -62,6 +65,11 @@
 			<subpackage name="server">
 				<allow pkg="org.springframework.boot.web.server" />
 				<disallow pkg="org.springframework.context" />
+			</subpackage>
+			<subpackage name="result">
+				<subpackage name="view">
+					<allow pkg="org.springframework.boot.web.reactive.result.view" />
+				</subpackage>
 			</subpackage>
 		</subpackage>
 

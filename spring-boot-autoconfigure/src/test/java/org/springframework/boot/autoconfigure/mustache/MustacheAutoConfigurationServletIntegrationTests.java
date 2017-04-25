@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mustache.servlet;
+package org.springframework.boot.autoconfigure.mustache;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -34,14 +34,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
-import org.springframework.boot.autoconfigure.mustache.MustacheResourceTemplateLoader;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.boot.web.servlet.view.MustacheView;
+import org.springframework.boot.web.servlet.view.MustacheViewResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -61,7 +61,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DirtiesContext
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class MustacheWebIntegrationTests {
+public class MustacheAutoConfigurationServletIntegrationTests {
 
 	@Autowired
 	private ServletWebServerApplicationContext context;
@@ -79,8 +79,7 @@ public class MustacheWebIntegrationTests {
 		Template tmpl = Mustache.compiler().compile(source);
 		Map<String, String> context = new HashMap<>();
 		context.put("arg", "world");
-		assertThat(tmpl.execute(context)).isEqualTo("Hello world!"); // returns "Hello
-																		// world!"
+		assertThat(tmpl.execute(context)).isEqualTo("Hello world!");
 	}
 
 	@Test
@@ -120,8 +119,8 @@ public class MustacheWebIntegrationTests {
 
 		@Bean
 		public MustacheViewResolver viewResolver() {
-			Mustache.Compiler compiler = Mustache.compiler()
-					.withLoader(new MustacheResourceTemplateLoader("classpath:/mustache-templates/",
+			Mustache.Compiler compiler = Mustache.compiler().withLoader(
+					new MustacheResourceTemplateLoader("classpath:/mustache-templates/",
 							".html"));
 			MustacheViewResolver resolver = new MustacheViewResolver(compiler);
 			resolver.setPrefix("classpath:/mustache-templates/");

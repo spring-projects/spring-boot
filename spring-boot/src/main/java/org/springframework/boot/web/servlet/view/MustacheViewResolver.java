@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mustache.reactive;
+package org.springframework.boot.web.servlet.view;
 
 import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Mustache.Compiler;
 
-import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
-import org.springframework.web.reactive.result.view.UrlBasedViewResolver;
-import org.springframework.web.reactive.result.view.ViewResolver;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
+import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
 /**
- * Spring WebFlux {@link ViewResolver} for Mustache.
+ * Spring MVC {@link ViewResolver} for Mustache.
  *
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class MustacheViewResolver extends UrlBasedViewResolver {
+public class MustacheViewResolver extends AbstractTemplateViewResolver {
 
 	private final Mustache.Compiler compiler;
 
 	private String charset;
 
 	/**
-	 * Create a {@code MustacheViewResolver} backed by a default
-	 * instance of a {@link Mustache.Compiler}.
+	 * Create a {@code MustacheViewResolver} backed by a default instance of a
+	 * {@link Compiler}.
 	 */
 	public MustacheViewResolver() {
 		this.compiler = Mustache.compiler();
@@ -44,13 +45,18 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 	}
 
 	/**
-	 * Create a {@code MustacheViewResolver} backed by a custom
-	 * instance of a {@link Mustache.Compiler}.
+	 * Create a {@code MustacheViewResolver} backed by a custom instance of a
+	 * {@link Compiler}.
 	 * @param compiler the Mustache compiler used to compile templates
 	 */
-	public MustacheViewResolver(Mustache.Compiler compiler) {
+	public MustacheViewResolver(Compiler compiler) {
 		this.compiler = compiler;
 		setViewClass(requiredViewClass());
+	}
+
+	@Override
+	protected Class<?> requiredViewClass() {
+		return MustacheView.class;
 	}
 
 	/**
@@ -62,13 +68,8 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 	}
 
 	@Override
-	protected Class<?> requiredViewClass() {
-		return MustacheView.class;
-	}
-
-	@Override
-	protected AbstractUrlBasedView createUrlBasedView(String viewName) {
-		MustacheView view = (MustacheView) super.createUrlBasedView(viewName);
+	protected AbstractUrlBasedView buildView(String viewName) throws Exception {
+		MustacheView view = (MustacheView) super.buildView(viewName);
 		view.setCompiler(this.compiler);
 		view.setCharset(this.charset);
 		return view;

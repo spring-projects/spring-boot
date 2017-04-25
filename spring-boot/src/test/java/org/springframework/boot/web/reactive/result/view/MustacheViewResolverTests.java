@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mustache.servlet;
+package org.springframework.boot.web.reactive.result.view;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.mock.web.MockServletContext;
-import org.springframework.web.servlet.View;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MustacheViewResolver}.
  *
- * @author Dave Syer
- * @author Andy Wilkinson
+ * @author Brian Clozel
  */
 public class MustacheViewResolverTests {
+
+	private final String prefix = "classpath:/"
+			+ getClass().getPackage().getName().replace(".", "/") + "/";
 
 	private MustacheViewResolver resolver = new MustacheViewResolver();
 
@@ -40,27 +40,18 @@ public class MustacheViewResolverTests {
 		GenericApplicationContext applicationContext = new GenericApplicationContext();
 		applicationContext.refresh();
 		this.resolver.setApplicationContext(applicationContext);
-		this.resolver.setServletContext(new MockServletContext());
-		this.resolver.setPrefix("classpath:/mustache-templates/");
+		this.resolver.setPrefix(this.prefix);
 		this.resolver.setSuffix(".html");
 	}
 
 	@Test
 	public void resolveNonExistent() throws Exception {
-		assertThat(this.resolver.resolveViewName("bar", null)).isNull();
+		assertThat(this.resolver.resolveViewName("bar", null).block()).isNull();
 	}
 
 	@Test
 	public void resolveExisting() throws Exception {
-		assertThat(this.resolver.resolveViewName("foo", null)).isNotNull();
-	}
-
-	@Test
-	public void setsContentType() throws Exception {
-		this.resolver.setContentType("application/octet-stream");
-		View view = this.resolver.resolveViewName("foo", null);
-		assertThat(view.getContentType()).isEqualTo("application/octet-stream");
-
+		assertThat(this.resolver.resolveViewName("template", null).block()).isNotNull();
 	}
 
 }

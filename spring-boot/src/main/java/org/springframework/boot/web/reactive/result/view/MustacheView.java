@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mustache.reactive;
+package org.springframework.boot.web.reactive.result.view;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,7 +26,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Mustache.Compiler;
 import com.samskivert.mustache.Template;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -46,18 +46,17 @@ import org.springframework.web.server.ServerWebExchange;
  */
 public class MustacheView extends AbstractUrlBasedView {
 
-	private Mustache.Compiler compiler;
+	private Compiler compiler;
 
 	private String charset;
 
 	/**
-	 * Set the JMustache compiler to be used by this view.
-	 * <p>Typically this property is not set directly. Instead a single
-	 * {@link Mustache.Compiler} is expected in the Spring application context
-	 * which is used to compile Mustache templates.
+	 * Set the JMustache compiler to be used by this view. Typically this property is not
+	 * set directly. Instead a single {@link Compiler} is expected in the Spring
+	 * application context which is used to compile Mustache templates.
 	 * @param compiler the Mustache compiler
 	 */
-	public void setCompiler(Mustache.Compiler compiler) {
+	public void setCompiler(Compiler compiler) {
 		this.compiler = compiler;
 	}
 
@@ -74,27 +73,20 @@ public class MustacheView extends AbstractUrlBasedView {
 		return resolveResource() != null;
 	}
 
-	private Resource resolveResource() {
-		Resource resource = getApplicationContext().getResource(getUrl());
-		if (resource == null || !resource.exists()) {
-			return null;
-		}
-		return resource;
-	}
-
 	@Override
-	protected Mono<Void> renderInternal(Map<String, Object> model,
-			MediaType contentType, ServerWebExchange exchange) {
+	protected Mono<Void> renderInternal(Map<String, Object> model, MediaType contentType,
+			ServerWebExchange exchange) {
 		Resource resource = resolveResource();
 		if (resource == null) {
-			return Mono.error(new IllegalStateException("Could not find Mustache template with URL ["
-					+ getUrl() + "]"));
+			return Mono.error(new IllegalStateException(
+					"Could not find Mustache template with URL [" + getUrl() + "]"));
 		}
 		DataBuffer dataBuffer = exchange.getResponse().bufferFactory().allocateBuffer();
 		try (Reader reader = getReader(resource)) {
 			Template template = this.compiler.compile(reader);
 			Charset charset = getCharset(contentType).orElse(getDefaultCharset());
-			try (Writer writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset)) {
+			try (Writer writer = new OutputStreamWriter(dataBuffer.asOutputStream(),
+					charset)) {
 				template.execute(model, writer);
 				writer.flush();
 			}
@@ -105,6 +97,14 @@ public class MustacheView extends AbstractUrlBasedView {
 		return exchange.getResponse().writeWith(Flux.just(dataBuffer));
 	}
 
+	private Resource resolveResource() {
+		Resource resource = getApplicationContext().getResource(getUrl());
+		if (resource == null || !resource.exists()) {
+			return null;
+		}
+		return resource;
+	}
+
 	private Reader getReader(Resource resource) throws IOException {
 		if (this.charset != null) {
 			return new InputStreamReader(resource.getInputStream(), this.charset);
@@ -113,6 +113,7 @@ public class MustacheView extends AbstractUrlBasedView {
 	}
 
 	private Optional<Charset> getCharset(MediaType mediaType) {
-		return (mediaType != null ? Optional.ofNullable(mediaType.getCharset()) : Optional.empty());
+		return Optional.ofNullable(mediaType != null ? mediaType.getCharset() : null);
 	}
+
 }

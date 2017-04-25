@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mustache.servlet;
+package org.springframework.boot.web.servlet.view;
 
 import java.util.Collections;
 
@@ -37,6 +37,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MustacheViewTests {
 
+	private final String templateUrl = "classpath:/"
+			+ getClass().getPackage().getName().replace(".", "/") + "/template.html";
+
 	private MockHttpServletRequest request = new MockHttpServletRequest();
 
 	private MockHttpServletResponse response = new MockHttpServletResponse();
@@ -57,9 +60,10 @@ public class MustacheViewTests {
 	public void viewResolvesHandlebars() throws Exception {
 		MustacheView view = new MustacheView();
 		view.setCompiler(Mustache.compiler());
-		view.setUrl("classpath:/mustache-templates/foo.html");
+		view.setUrl(this.templateUrl);
 		view.setApplicationContext(this.context);
-		view.render(Collections.singletonMap("World", "Spring"), this.request, this.response);
+		view.render(Collections.singletonMap("World", "Spring"), this.request,
+				this.response);
 		assertThat(this.response.getContentAsString()).isEqualTo("Hello Spring");
 	}
 

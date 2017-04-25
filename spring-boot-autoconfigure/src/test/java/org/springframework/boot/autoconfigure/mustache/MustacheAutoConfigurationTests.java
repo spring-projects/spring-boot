@@ -19,9 +19,9 @@ package org.springframework.boot.autoconfigure.mustache;
 import com.samskivert.mustache.Mustache;
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.mustache.servlet.MustacheViewResolver;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
+import org.springframework.boot.web.servlet.view.MustacheViewResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -64,7 +64,7 @@ public class MustacheAutoConfigurationTests {
 		assertThat(this.reactiveWebContext.getBeansOfType(MustacheResourceTemplateLoader.class)).hasSize(1);
 		assertThat(this.reactiveWebContext.getBeansOfType(MustacheViewResolver.class)).isEmpty();
 		assertThat(this.reactiveWebContext
-				.getBeansOfType(org.springframework.boot.autoconfigure.mustache.reactive.MustacheViewResolver.class)
+				.getBeansOfType(org.springframework.boot.web.reactive.result.view.MustacheViewResolver.class)
 		).hasSize(1);
 	}
 
@@ -76,7 +76,7 @@ public class MustacheAutoConfigurationTests {
 		assertThat(this.reactiveWebContext.getBeansOfType(MustacheResourceTemplateLoader.class)).hasSize(1);
 		assertThat(this.reactiveWebContext.getBeansOfType(MustacheViewResolver.class)).isEmpty();
 		assertThat(this.reactiveWebContext
-				.getBeansOfType(org.springframework.boot.autoconfigure.mustache.reactive.MustacheViewResolver.class)
+				.getBeansOfType(org.springframework.boot.web.reactive.result.view.MustacheViewResolver.class)
 		).hasSize(1);
 		assertThat(this.reactiveWebContext.getBean(Mustache.Compiler.class).standardsMode).isTrue();
 	}
