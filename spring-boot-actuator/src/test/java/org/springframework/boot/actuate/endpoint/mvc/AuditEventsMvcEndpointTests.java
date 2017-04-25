@@ -74,15 +74,17 @@ public class AuditEventsMvcEndpointTests {
 
 	@Test
 	public void contentTypeDefaultsToActuatorV2Json() throws Exception {
-		this.mvc.perform(get("/application/auditevents")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/auditevents").param("after", "2016-11-01T10:00:00+0000"))
+				.andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
 						"application/vnd.spring-boot.actuator.v2+json;charset=UTF-8"));
 	}
 
 	@Test
 	public void contentTypeCanBeApplicationJson() throws Exception {
-		this.mvc.perform(get("/application/auditevents").header(HttpHeaders.ACCEPT,
-				MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
+		this.mvc.perform(get("/application/auditevents").param("after", "2016-11-01T10:00:00+0000")
+				.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
 						MediaType.APPLICATION_JSON_UTF8_VALUE));
 	}
@@ -119,6 +121,12 @@ public class AuditEventsMvcEndpointTests {
 				.andExpect(content().string(
 						containsString("\"principal\":\"admin\",\"type\":\"logout\"")))
 				.andExpect(content().string(not(containsString("login"))));
+	}
+
+	@Test
+	public void invokeFilterWithoutDateAfterReturnBadRequestStatus() throws Exception {
+		this.mvc.perform(get("/application/auditevents"))
+				.andExpect(status().isBadRequest());
 	}
 
 	@Import({ JacksonAutoConfiguration.class,
