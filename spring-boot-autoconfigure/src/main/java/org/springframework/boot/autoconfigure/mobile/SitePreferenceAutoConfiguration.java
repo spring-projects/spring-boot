@@ -63,8 +63,7 @@ public class SitePreferenceAutoConfiguration {
 	}
 
 	@Configuration
-	protected static class SitePreferenceMvcConfiguration
-			implements WebMvcConfigurer {
+	protected static class SitePreferenceMvcConfiguration implements WebMvcConfigurer {
 
 		private final SitePreferenceHandlerInterceptor sitePreferenceHandlerInterceptor;
 

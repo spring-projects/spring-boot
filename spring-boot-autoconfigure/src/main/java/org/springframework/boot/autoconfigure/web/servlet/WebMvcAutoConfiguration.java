@@ -145,8 +145,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  */
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@ConditionalOnClass({ Servlet.class, DispatcherServlet.class,
-		WebMvcConfigurer.class })
+@ConditionalOnClass({ Servlet.class, DispatcherServlet.class, WebMvcConfigurer.class })
 @ConditionalOnMissingBean(WebMvcConfigurationSupport.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @AutoConfigureAfter({ DispatcherServletAutoConfiguration.class,
@@ -177,8 +176,7 @@ public class WebMvcAutoConfiguration {
 	@EnableConfigurationProperties({ WebMvcProperties.class, ResourceProperties.class })
 	public static class WebMvcAutoConfigurationAdapter implements WebMvcConfigurer {
 
-		private static final Log logger = LogFactory
-				.getLog(WebMvcConfigurer.class);
+		private static final Log logger = LogFactory.getLog(WebMvcConfigurer.class);
 
 		private final ResourceProperties resourceProperties;
 

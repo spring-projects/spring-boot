@@ -61,8 +61,7 @@ public class DeviceResolverAutoConfiguration {
 
 	@Configuration
 	@Order(0)
-	protected static class DeviceResolverMvcConfiguration
-			implements WebMvcConfigurer {
+	protected static class DeviceResolverMvcConfiguration implements WebMvcConfigurer {
 
 		private DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor;
 
