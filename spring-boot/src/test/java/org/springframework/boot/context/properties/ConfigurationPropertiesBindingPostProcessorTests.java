@@ -369,6 +369,22 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
+	public void systemPropertiesShouldBindToMap() throws Exception {
+		MockEnvironment env = new MockEnvironment();
+		MutablePropertySources propertySources = env.getPropertySources();
+		propertySources.addLast(new SystemEnvironmentPropertySource("system",
+				Collections.singletonMap("TEST_MAP_FOO_BAR", "baz")));
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setEnvironment(env);
+		this.context.register(PropertiesWithComplexMap.class);
+		this.context.refresh();
+		Map<String, Map<String, String>> map = this.context
+				.getBean(PropertiesWithComplexMap.class).getMap();
+		Map<String, String> foo = map.get("foo");
+		assertThat(foo).containsEntry("bar", "baz");
+	}
+
+	@Test
 	public void overridingPropertiesInEnvShouldOverride() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		ConfigurableEnvironment env = this.context.getEnvironment();
@@ -760,6 +776,23 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		}
 
 		public void setMap(Map<String, String> map) {
+			this.map = map;
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	public static class PropertiesWithComplexMap {
+
+		private Map<String, Map<String, String>> map;
+
+		public Map<String, Map<String, String>> getMap() {
+			return this.map;
+		}
+
+		public void setMap(Map<String, Map<String, String>> map) {
 			this.map = map;
 		}
 
