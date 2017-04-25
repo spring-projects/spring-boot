@@ -16,9 +16,9 @@
 
 package org.springframework.boot.context.logging;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
@@ -26,11 +26,12 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingInitializationContext;
@@ -77,10 +78,14 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  * @since 2.0.0
  * @see LoggingSystem#get(ClassLoader)
  */
 public class LoggingApplicationListener implements GenericApplicationListener {
+
+	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable
+			.mapOf(String.class, String.class);
 
 	/**
 	 * The default order for the LoggingApplicationListener.
@@ -294,20 +299,18 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	protected void setLogLevels(LoggingSystem system, Environment environment) {
-		Map<String, Object> levels = new RelaxedPropertyResolver(environment)
-				.getSubProperties("logging.level.");
-		for (Entry<String, Object> entry : levels.entrySet()) {
-			setLogLevel(system, environment, entry.getKey(), entry.getValue().toString());
+		if (!(environment instanceof ConfigurableEnvironment)) {
+			return;
 		}
+		Binder binder = Binder.get(environment);
+		binder.bind("logging.level", STRING_STRING_MAP).orElseGet(Collections::emptyMap)
+				.forEach((name, level) -> setLogLevel(system, environment, name, level));
 	}
 
 	private void setLogLevel(LoggingSystem system, Environment environment, String name,
 			String level) {
 		try {
-			if (name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME)) {
-				name = null;
-			}
-			level = environment.resolvePlaceholders(level);
+			name = (name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name);
 			system.setLogLevel(name, coerceLogLevel(level));
 		}
 		catch (RuntimeException ex) {
@@ -324,7 +327,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private void registerShutdownHookIfNecessary(Environment environment,
 			LoggingSystem loggingSystem) {
-		boolean registerShutdownHook = new RelaxedPropertyResolver(environment)
+		boolean registerShutdownHook = environment
 				.getProperty(REGISTER_SHUTDOWN_HOOK_PROPERTY, Boolean.class, false);
 		if (registerShutdownHook) {
 			Runnable shutdownHandler = loggingSystem.getShutdownHandler();

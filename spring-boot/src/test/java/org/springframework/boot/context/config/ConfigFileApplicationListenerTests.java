@@ -40,7 +40,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.context.config.ConfigFileApplicationListener.ConfigurationPropertySources;
+import org.springframework.boot.context.config.ConfigFileApplicationListener.LoadedPropertySources;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnumerableCompositePropertySource;
@@ -512,7 +512,7 @@ public class ConfigFileApplicationListenerTests {
 		String property = this.environment.getProperty("my.property");
 		assertThat(this.environment.getActiveProfiles()).contains("dev");
 		assertThat(property).isEqualTo("fromdevprofile");
-		ConfigurationPropertySources propertySource = (ConfigurationPropertySources) this.environment
+		LoadedPropertySources propertySource = (LoadedPropertySources) this.environment
 				.getPropertySources()
 				.get(ConfigFileApplicationListener.APPLICATION_CONFIGURATION_PROPERTY_SOURCE_NAME);
 		Collection<org.springframework.core.env.PropertySource<?>> sources = propertySource
@@ -848,7 +848,7 @@ public class ConfigFileApplicationListenerTests {
 			public boolean matches(ConfigurableEnvironment value) {
 				MutablePropertySources sources = new MutablePropertySources(
 						value.getPropertySources());
-				ConfigurationPropertySources.finishAndRelocate(sources);
+				LoadedPropertySources.finishAndRelocate(sources);
 				return sources.contains(sourceName);
 			}
 

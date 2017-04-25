@@ -25,14 +25,12 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.config.YamlProcessor.DocumentMatcher;
 import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
-import org.springframework.boot.bind.PropertySourcesPropertyValues;
-import org.springframework.boot.bind.RelaxedDataBinder;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -47,6 +45,7 @@ import org.springframework.util.StringUtils;
  * @author Matt Benson
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
@@ -69,14 +68,9 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	}
 
 	protected List<String> extractSpringProfiles(Properties properties) {
-		SpringProperties springProperties = new SpringProperties();
-		MutablePropertySources propertySources = new MutablePropertySources();
-		propertySources.addFirst(new PropertiesPropertySource("profiles", properties));
-		PropertyValues propertyValues = new PropertySourcesPropertyValues(
-				propertySources);
-		new RelaxedDataBinder(springProperties, "spring").bind(propertyValues);
-		List<String> profiles = springProperties.getProfiles();
-		return profiles;
+		Binder binder = new Binder(new MapConfigurationPropertySource(properties));
+		return binder.bind("spring.profiles", Bindable.of(String[].class))
+				.map(Arrays::asList).orElse(Collections.emptyList());
 	}
 
 	private MatchStatus matches(List<String> profiles) {
