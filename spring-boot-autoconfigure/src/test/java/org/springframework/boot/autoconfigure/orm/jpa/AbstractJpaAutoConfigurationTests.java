@@ -37,6 +37,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -131,6 +132,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(context, "spring.jpa.open_in_view:false");
 		context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
+		ConfigurationPropertySources.attach(context.getEnvironment());
 		context.refresh();
 		assertThat(getInterceptorBeans(context).length).isEqualTo(0);
 		context.close();

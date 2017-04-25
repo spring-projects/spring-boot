@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Madhura Bhave
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.jpa")
@@ -169,11 +170,11 @@ public class JpaProperties {
 			this.ddlAuto = ddlAuto;
 		}
 
-		public boolean isUseNewIdGeneratorMappings() {
+		public Boolean isUseNewIdGeneratorMappings() {
 			return this.useNewIdGeneratorMappings;
 		}
 
-		public void setUseNewIdGeneratorMappings(boolean useNewIdGeneratorMappings) {
+		public void setUseNewIdGeneratorMappings(Boolean useNewIdGeneratorMappings) {
 			this.useNewIdGeneratorMappings = useNewIdGeneratorMappings;
 		}
 

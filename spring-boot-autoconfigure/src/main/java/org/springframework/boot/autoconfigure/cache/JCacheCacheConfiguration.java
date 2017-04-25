@@ -34,7 +34,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -53,6 +52,7 @@ import org.springframework.util.StringUtils;
  * Cache configuration for JSR-107 compliant providers.
  *
  * @author Stephane Nicoll
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 @Configuration
@@ -187,9 +187,8 @@ class JCacheCacheConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("JCache");
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-					context.getEnvironment(), "spring.cache.jcache.");
-			if (resolver.containsProperty("provider")) {
+			String providerProperty = "spring.cache.jcache.provider";
+			if (context.getEnvironment().containsProperty(providerProperty)) {
 				return ConditionOutcome
 						.match(message.because("JCache provider specified"));
 			}

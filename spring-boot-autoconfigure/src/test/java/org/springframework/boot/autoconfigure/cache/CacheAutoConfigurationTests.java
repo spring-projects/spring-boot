@@ -145,8 +145,7 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void notSupportedCachingMode() {
 		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("cache");
-		this.thrown.expectMessage("foobar");
+		this.thrown.expectMessage("Failed to bind properties under 'spring.cache.type'");
 		load(DefaultCacheConfiguration.class, "spring.cache.type=foobar");
 	}
 

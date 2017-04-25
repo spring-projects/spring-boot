@@ -17,9 +17,7 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
 
@@ -29,6 +27,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Madhura Bhave
  * @since 1.1.0
  */
 public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
@@ -44,11 +43,9 @@ public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProv
 	}
 
 	private String getResourceName(String view, Environment environment) {
-		PropertyResolver resolver = new RelaxedPropertyResolver(environment,
-				"spring.mvc.view.");
-		String prefix = resolver.getProperty("prefix",
+		String prefix = environment.getProperty("spring.mvc.view.prefix",
 				WebMvcAutoConfiguration.DEFAULT_PREFIX);
-		String suffix = resolver.getProperty("suffix",
+		String suffix = environment.getProperty("spring.mvc.view.suffix",
 				WebMvcAutoConfiguration.DEFAULT_SUFFIX);
 		return prefix + view + suffix;
 	}

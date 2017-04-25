@@ -38,6 +38,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2Res
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -244,6 +245,7 @@ public class OAuth2AutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"security.oauth2.client.clientId=client",
 				"security.oauth2.client.grantType=client_credentials");
+		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.refresh();
 		OAuth2ClientContext bean = this.context.getBean(OAuth2ClientContext.class);
 		assertThat(bean.getAccessTokenRequest()).isNotNull();
@@ -259,6 +261,7 @@ public class OAuth2AutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"security.oauth2.client.clientId=client",
 				"security.oauth2.client.grantType=client_credentials");
+		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.refresh();
 		// The primary context is fine (not session scoped):
 		OAuth2ClientContext bean = this.context.getBean(OAuth2ClientContext.class);
@@ -291,6 +294,7 @@ public class OAuth2AutoConfigurationTests {
 				MinimalSecureWebApplication.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"security.oauth2.resource.jwt.keyValue:DEADBEEF");
+		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.refresh();
 		assertThat(countBeans(RESOURCE_SERVER_CONFIG)).isEqualTo(1);
 		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG)).isEqualTo(0);

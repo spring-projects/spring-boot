@@ -81,7 +81,7 @@ public class H2ConsoleAutoConfigurationTests {
 	@Test
 	public void customPathMustBeginWithASlash() {
 		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("Path must start with /");
+		this.thrown.expectMessage("Failed to bind properties under 'spring.h2.console'");
 		this.context.register(H2ConsoleAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.h2.console.enabled:true", "spring.h2.console.path:custom");

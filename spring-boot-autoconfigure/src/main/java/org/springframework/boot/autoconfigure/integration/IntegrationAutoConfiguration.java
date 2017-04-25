@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -54,6 +53,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Vedran Pavic
+ * @author Madhura Bhave
  * @since 1.1.0
  */
 @Configuration
@@ -83,7 +83,7 @@ public class IntegrationAutoConfiguration {
 
 		private BeanFactory beanFactory;
 
-		private RelaxedPropertyResolver propertyResolver;
+		private Environment environment;
 
 		@Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -92,21 +92,20 @@ public class IntegrationAutoConfiguration {
 
 		@Override
 		public void setEnvironment(Environment environment) {
-			this.propertyResolver = new RelaxedPropertyResolver(environment,
-					"spring.jmx.");
+			this.environment = environment;
 		}
 
 		@Bean
 		public IntegrationMBeanExporter integrationMbeanExporter() {
 			IntegrationMBeanExporter exporter = new IntegrationMBeanExporter();
-			String defaultDomain = this.propertyResolver.getProperty("default-domain");
+			String defaultDomain = this.environment
+					.getProperty("spring.jmx.default-domain");
 			if (StringUtils.hasLength(defaultDomain)) {
 				exporter.setDefaultDomain(defaultDomain);
 			}
-			String server = this.propertyResolver.getProperty("server", "mbeanServer");
-			if (StringUtils.hasLength(server)) {
-				exporter.setServer(this.beanFactory.getBean(server, MBeanServer.class));
-			}
+			String serverBean = this.environment.getProperty("spring.jmx.server",
+					"mbeanServer");
+			exporter.setServer(this.beanFactory.getBean(serverBean, MBeanServer.class));
 			return exporter;
 		}
 
