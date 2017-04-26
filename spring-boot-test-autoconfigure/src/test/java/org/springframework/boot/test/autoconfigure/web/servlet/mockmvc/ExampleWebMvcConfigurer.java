@@ -26,7 +26,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
  * Example {@link WebMvcConfigurer} used in {@link WebMvcTest} tests.
@@ -34,7 +33,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Phillip Webb
  */
 @Component
-public class ExampleWebMvcConfigurer extends WebMvcConfigurerAdapter {
+public class ExampleWebMvcConfigurer implements WebMvcConfigurer {
 
 	@Override
 	public void addArgumentResolvers(

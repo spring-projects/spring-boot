@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security OAuth2.
@@ -40,7 +40,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnClass({ OAuth2AccessToken.class, WebMvcConfigurerAdapter.class })
+@ConditionalOnClass({ OAuth2AccessToken.class, WebMvcConfigurer.class })
 @Import({ OAuth2AuthorizationServerConfiguration.class,
 		OAuth2MethodSecurityConfiguration.class, OAuth2ResourceServerConfiguration.class,
 		OAuth2RestOperationsConfiguration.class })

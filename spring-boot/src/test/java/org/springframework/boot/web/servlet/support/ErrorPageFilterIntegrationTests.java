@@ -52,7 +52,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -128,7 +128,7 @@ public class ErrorPageFilterIntegrationTests {
 	}
 
 	@Controller
-	public static class HelloWorldController extends WebMvcConfigurerAdapter {
+	public static class HelloWorldController implements WebMvcConfigurer {
 
 		private int status;
 

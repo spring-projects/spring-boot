@@ -613,6 +613,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.redis.repositories.enabled=true # Enable Redis repositories.
 
 	# NEO4J ({sc-spring-boot-autoconfigure}/neo4j/Neo4jProperties.{sc-ext}[Neo4jProperties])
+	spring.data.neo4j.auto-index=none # Auto index mode.
 	spring.data.neo4j.embedded.enabled=true # Enable embedded mode if the embedded driver is available.
 	spring.data.neo4j.open-in-view=false # Register OpenSessionInViewInterceptor. Binds a Neo4j Session to the thread for the entire processing of the request.
 	spring.data.neo4j.password= # Login password of the server.
@@ -888,6 +889,10 @@ content into your application; rather pick only the properties that you need.
 	spring.batch.job.names= # Comma-separated list of job names to execute on startup (For instance `job1,job2`). By default, all Jobs found in the context are executed.
 	spring.batch.schema=classpath:org/springframework/batch/core/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.batch.table-prefix= # Table prefix for all the batch meta-data tables.
+
+	# SPRING INTEGRATION ({sc-spring-boot-autoconfigure}/integration/IntegrationProperties.{sc-ext}[IntegrationProperties])
+	spring.integration.jdbc.initializer.enabled=false # Create the required integration tables on startup.
+	spring.integration.jdbc.schema=classpath:org/springframework/integration/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 
 	# JMS ({sc-spring-boot-autoconfigure}/jms/JmsProperties.{sc-ext}[JmsProperties])
 	spring.jms.jndi-name= # Connection factory JNDI name. When set, takes precedence to others connection factory auto-configurations.

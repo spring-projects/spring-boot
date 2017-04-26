@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mustache.web;
+package org.springframework.boot.web.servlet.view;
 
 import java.util.Collections;
 
@@ -37,6 +37,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MustacheViewTests {
 
+	private final String templateUrl = "classpath:/"
+			+ getClass().getPackage().getName().replace(".", "/") + "/template.html";
+
 	private MockHttpServletRequest request = new MockHttpServletRequest();
 
 	private MockHttpServletResponse response = new MockHttpServletResponse();
@@ -55,12 +58,13 @@ public class MustacheViewTests {
 
 	@Test
 	public void viewResolvesHandlebars() throws Exception {
-		MustacheView view = new MustacheView(
-				Mustache.compiler().compile("Hello {{msg}}"));
+		MustacheView view = new MustacheView();
+		view.setCompiler(Mustache.compiler());
+		view.setUrl(this.templateUrl);
 		view.setApplicationContext(this.context);
-		view.render(Collections.singletonMap("msg", "World"), this.request,
+		view.render(Collections.singletonMap("World", "Spring"), this.request,
 				this.response);
-		assertThat(this.response.getContentAsString()).isEqualTo("Hello World");
+		assertThat(this.response.getContentAsString()).isEqualTo("Hello Spring");
 	}
 
 }

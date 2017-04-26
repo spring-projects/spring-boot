@@ -78,7 +78,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.HandlerExceptionResolverComposite;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
@@ -834,7 +834,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class WebJars extends WebMvcConfigurerAdapter {
+	protected static class WebJars implements WebMvcConfigurer {
 
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -845,7 +845,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class AllResources extends WebMvcConfigurerAdapter {
+	protected static class AllResources implements WebMvcConfigurer {
 
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -976,7 +976,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class ValidatorWebMvcConfigurer extends WebMvcConfigurerAdapter {
+	protected static class ValidatorWebMvcConfigurer implements WebMvcConfigurer {
 
 		@Override
 		public Validator getValidator() {

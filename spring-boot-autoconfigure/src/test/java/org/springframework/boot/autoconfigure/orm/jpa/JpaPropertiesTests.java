@@ -108,17 +108,17 @@ public class JpaPropertiesTests {
 		Map<String, String> hibernateProperties = properties
 				.getHibernateProperties(mockStandaloneDataSource());
 		assertThat(hibernateProperties)
-				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "false");
+				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
 	}
 
 	@Test
-	public void useNewIdGeneratorMappingsTrue() throws Exception {
+	public void useNewIdGeneratorMappingsFalse() throws Exception {
 		JpaProperties properties = load(
-				"spring.jpa.hibernate.use-new-id-generator-mappings:true");
+				"spring.jpa.hibernate.use-new-id-generator-mappings:false");
 		Map<String, String> hibernateProperties = properties
 				.getHibernateProperties(mockStandaloneDataSource());
 		assertThat(hibernateProperties)
-				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
+				.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "false");
 	}
 
 	@Test

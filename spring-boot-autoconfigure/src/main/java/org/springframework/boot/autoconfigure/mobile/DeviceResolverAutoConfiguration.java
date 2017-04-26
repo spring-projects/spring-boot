@@ -33,7 +33,7 @@ import org.springframework.mobile.device.DeviceResolver;
 import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Mobile's
@@ -61,8 +61,7 @@ public class DeviceResolverAutoConfiguration {
 
 	@Configuration
 	@Order(0)
-	protected static class DeviceResolverMvcConfiguration
-			extends WebMvcConfigurerAdapter {
+	protected static class DeviceResolverMvcConfiguration implements WebMvcConfigurer {
 
 		private DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor;
 
