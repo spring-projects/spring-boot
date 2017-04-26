@@ -852,11 +852,6 @@
 			</dependency>
 			<dependency>
 				<groupId>io.netty</groupId>
-				<artifactId>netty-codec-stomp</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
 				<artifactId>netty-common</artifactId>
 				<version>${netty.version}</version>
 			</dependency>
@@ -872,27 +867,17 @@
 			</dependency>
 			<dependency>
 				<groupId>io.netty</groupId>
+				<artifactId>netty-resolver</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
 				<artifactId>netty-transport</artifactId>
 				<version>${netty.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.netty</groupId>
-				<artifactId>netty-transport-udt</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-transport-sctp</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-transport-rxtx</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-resolver-dns</artifactId>
+				<artifactId>netty-transport-native-epoll</artifactId>
 				<version>${netty.version}</version>
 			</dependency>
 			<dependency>
