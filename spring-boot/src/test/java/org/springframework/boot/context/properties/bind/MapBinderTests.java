@@ -25,6 +25,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 import org.springframework.boot.context.properties.bind.BinderTests.ExampleEnum;
@@ -63,6 +64,9 @@ public class MapBinderTests {
 
 	private static final Bindable<Map<String, Object>> STRING_OBJECT_MAP = Bindable
 			.mapOf(String.class, Object.class);
+
+	private static final Bindable<Map<String, String[]>> STRING_ARRAY_MAP = Bindable
+			.mapOf(String.class, String[].class);
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
@@ -348,6 +352,23 @@ public class MapBinderTests {
 		InOrder inOrder = inOrder(handler);
 		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.bar")),
 				eq(Bindable.of(Integer.class)), any(), eq(1));
+		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")),
+				eq(target), any(), isA(Map.class));
+	}
+
+	@Test
+	public void bindToMapStringArrayShouldTriggerOnSuccess() throws Exception {
+		this.sources
+				.add(new MockConfigurationPropertySource("foo.bar", "a,b,c", "line1"));
+		BindHandler handler = mock(BindHandler.class,
+				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+		Bindable<Map<String, String[]>> target = STRING_ARRAY_MAP;
+		this.binder.bind("foo", target, handler);
+		InOrder inOrder = inOrder(handler);
+		ArgumentCaptor<String[]> array = ArgumentCaptor.forClass(String[].class);
+		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.bar")),
+				eq(Bindable.of(String[].class)), any(), array.capture());
+		assertThat(array.getValue()).containsExactly("a", "b", "c");
 		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")),
 				eq(target), any(), isA(Map.class));
 	}
