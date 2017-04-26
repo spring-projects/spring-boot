@@ -93,7 +93,7 @@
 		<httpclient.version>4.5.3</httpclient.version>
 		<httpcore.version>4.4.6</httpcore.version>
 		<infinispan.version>8.2.6.Final</infinispan.version>
-		<jackson.version>2.9.0.pr2</jackson.version>
+		<jackson.version>2.9.0.pr3</jackson.version>
 		<janino.version>3.0.7</janino.version>
 		<javassist.version>3.21.0-GA</javassist.version> <!-- Same as Hibernate -->
 		<javax-cache.version>1.0.0</javax-cache.version>
