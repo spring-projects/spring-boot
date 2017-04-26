@@ -48,6 +48,9 @@ public class CollectionBinderTests {
 	private static final Bindable<List<String>> STRING_LIST = Bindable
 			.listOf(String.class);
 
+	private static final Bindable<Set<String>> STRING_SET = Bindable
+			.setOf(String.class);
+
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private Binder binder;
@@ -66,6 +69,17 @@ public class CollectionBinderTests {
 		this.sources.add(source);
 		List<Integer> result = this.binder.bind("foo", INTEGER_LIST).get();
 		assertThat(result).containsExactly(1, 2, 3);
+	}
+
+	@Test
+	public void bindToSetShouldReturnPopulatedCollection() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo[0]", "a");
+		source.put("foo[1]", "b");
+		source.put("foo[2]", "c");
+		this.sources.add(source);
+		Set<String> result = this.binder.bind("foo", STRING_SET).get();
+		assertThat(result).containsExactly("a", "b", "c");
 	}
 
 	@Test
