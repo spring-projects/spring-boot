@@ -881,6 +881,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jms.listener.concurrency= # Minimum number of concurrent consumers.
 	spring.jms.listener.max-concurrency= # Maximum number of concurrent consumers.
 	spring.jms.pub-sub-domain=false # Specify if the default destination type is topic.
+	spring.jms.session-transacted= # Set the transaction mode that is used when creating a JMS Session. By default, sessions are transacted.
 
 	# RABBIT ({sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[RabbitProperties])
 	spring.rabbitmq.addresses= # Comma-separated list of addresses to which the client should connect.
