@@ -670,7 +670,7 @@ Finally, access logging for jetty can also be configured that way:
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	server.jetty.accesslog.enabled=true
-	server.jetty.accesslog.filename=access-log
+	server.jetty.accesslog.filename=/var/log/jetty-access.log
 ----
 
 By default, logs will be redirected to `System.err`. For more details, please refer to
