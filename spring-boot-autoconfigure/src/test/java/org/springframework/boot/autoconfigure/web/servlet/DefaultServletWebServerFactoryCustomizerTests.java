@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -554,11 +555,12 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void jettyAccessLogCanBeCustomized() {
+	public void jettyAccessLogCanBeCustomized() throws IOException {
+		File f = File.createTempFile("jetty_log", ".log");
 		JettyServletWebServerFactory factory = new JettyServletWebServerFactory(0);
 		Map<String, String> map = new HashMap<>();
 		map.put("server.jetty.accesslog.enabled", "true");
-		map.put("server.jetty.accesslog.filename", "foo");
+		map.put("server.jetty.accesslog.filename", f.getAbsolutePath());
 		map.put("server.jetty.accesslog.file-date-format", "yyyy-MM-dd");
 		map.put("server.jetty.accesslog.retention-period", "42");
 		map.put("server.jetty.accesslog.append", "true");
@@ -574,7 +576,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		JettyWebServer webServer = (JettyWebServer) factory.getWebServer();
 		NCSARequestLog requestLog = getNCSARequestLog(webServer);
 		try {
-			assertThat(requestLog.getFilename()).isEqualTo("foo");
+			assertThat(requestLog.getFilename()).isEqualTo(f.getAbsolutePath());
 			assertThat(requestLog.getFilenameDateFormat()).isEqualTo("yyyy-MM-dd");
 			assertThat(requestLog.getRetainDays()).isEqualTo(42);
 			assertThat(requestLog.isAppend()).isTrue();
