@@ -20,6 +20,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -33,6 +34,8 @@ import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.coyote.AbstractProtocol;
+import org.eclipse.jetty.server.NCSARequestLog;
+import org.eclipse.jetty.server.RequestLog;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -45,6 +48,7 @@ import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
+import org.springframework.boot.web.embedded.jetty.JettyWebServer;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
@@ -525,6 +529,72 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		JettyServletWebServerFactory factory = spy(new JettyServletWebServerFactory());
 		this.customizer.customize(factory);
 		verify(factory).setSessionStoreDir(new File("myfolder"));
+	}
+
+	@Test
+	public void jettyAccessLogCanBeEnabled() {
+		JettyServletWebServerFactory factory = new JettyServletWebServerFactory(0);
+		Map<String, String> map = new HashMap<>();
+		map.put("server.jetty.accesslog.enabled", "true");
+		bindProperties(map);
+		this.customizer.customize(factory);
+		JettyWebServer webServer = (JettyWebServer) factory.getWebServer();
+		try {
+			NCSARequestLog requestLog = getNCSARequestLog(webServer);
+			assertThat(requestLog.getFilename()).isNull();
+			assertThat(requestLog.isAppend()).isFalse();
+			assertThat(requestLog.isExtended()).isFalse();
+			assertThat(requestLog.getLogCookies()).isFalse();
+			assertThat(requestLog.getLogServer()).isFalse();
+			assertThat(requestLog.getLogLatency()).isFalse();
+		}
+		finally {
+			webServer.stop();
+		}
+	}
+
+	@Test
+	public void jettyAccessLogCanBeCustomized() {
+		JettyServletWebServerFactory factory = new JettyServletWebServerFactory(0);
+		Map<String, String> map = new HashMap<>();
+		map.put("server.jetty.accesslog.enabled", "true");
+		map.put("server.jetty.accesslog.filename", "foo");
+		map.put("server.jetty.accesslog.file-date-format", "yyyy-MM-dd");
+		map.put("server.jetty.accesslog.retention-period", "42");
+		map.put("server.jetty.accesslog.append", "true");
+		map.put("server.jetty.accesslog.extended-format", "true");
+		map.put("server.jetty.accesslog.date-format", "HH:mm:ss");
+		map.put("server.jetty.accesslog.locale", "en_BE");
+		map.put("server.jetty.accesslog.time-zone", "UTC");
+		map.put("server.jetty.accesslog.log-cookies", "true");
+		map.put("server.jetty.accesslog.log-server", "true");
+		map.put("server.jetty.accesslog.log-latency", "true");
+		bindProperties(map);
+		this.customizer.customize(factory);
+		JettyWebServer webServer = (JettyWebServer) factory.getWebServer();
+		NCSARequestLog requestLog = getNCSARequestLog(webServer);
+		try {
+			assertThat(requestLog.getFilename()).isEqualTo("foo");
+			assertThat(requestLog.getFilenameDateFormat()).isEqualTo("yyyy-MM-dd");
+			assertThat(requestLog.getRetainDays()).isEqualTo(42);
+			assertThat(requestLog.isAppend()).isTrue();
+			assertThat(requestLog.isExtended()).isTrue();
+			assertThat(requestLog.getLogDateFormat()).isEqualTo("HH:mm:ss");
+			assertThat(requestLog.getLogLocale()).isEqualTo(new Locale("en", "BE"));
+			assertThat(requestLog.getLogTimeZone()).isEqualTo("UTC");
+			assertThat(requestLog.getLogCookies()).isTrue();
+			assertThat(requestLog.getLogServer()).isTrue();
+			assertThat(requestLog.getLogLatency()).isTrue();
+		}
+		finally {
+			webServer.stop();
+		}
+	}
+
+	private NCSARequestLog getNCSARequestLog(JettyWebServer webServer) {
+		RequestLog requestLog = webServer.getServer().getRequestLog();
+		assertThat(requestLog).isInstanceOf(NCSARequestLog.class);
+		return (NCSARequestLog) requestLog;
 	}
 
 	@Test

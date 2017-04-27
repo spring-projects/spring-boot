@@ -23,18 +23,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
-import org.eclipse.jetty.server.AbstractConnector;
-import org.eclipse.jetty.server.ConnectionFactory;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.NCSARequestLog;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerWrapper;
+import java.util.TimeZone;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
@@ -58,6 +50,7 @@ import org.springframework.util.StringUtils;
  * @author Venil Noronha
  * @author Aurélien Leboulanger
  * @author Brian Clozel
+ * @author Olivier Lamy
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -896,6 +889,11 @@ public class ServerProperties {
 	public static class Jetty {
 
 		/**
+		 * Access log configuration.
+		 */
+		private final Accesslog accesslog = new Accesslog();
+
+		/**
 		 * Maximum size in bytes of the HTTP post or put content.
 		 */
 		private int maxHttpPostSize = 0; // bytes
@@ -910,7 +908,9 @@ public class ServerProperties {
 		 */
 		private Integer selectors;
 
-		private final Accesslog accesslog = new Accesslog();
+		public Accesslog getAccesslog() {
+			return this.accesslog;
+		}
 
 		public int getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
@@ -936,67 +936,70 @@ public class ServerProperties {
 			this.selectors = selectors;
 		}
 
-		public Accesslog getAccesslog() {
-			return this.accesslog;
-		}
-
+		/**
+		 * Jetty access log properties.
+		 */
 		public static class Accesslog {
 
 			/**
 			 * Enable access log.
 			 */
-			private boolean enabled;
+			private boolean enabled = false;
 
 			/**
-			 * accesslog filename. If no filename, logs will be redirected to System.err
+			 * Log filename. If not specified, logs will be redirected to "System.err".
 			 */
 			private String filename;
 
 			/**
-			 * number of days before rotated log files are deleted. Default 31
+			 * Date format to place in log file name.
 			 */
-			private int retainDays = 31;
+			private String fileDateFormat;
 
 			/**
-			 * append to log.
+			 * Number of days before rotated log files are deleted.
+			 */
+			private int retentionPeriod = 31;  // no days
+
+			/**
+			 * Append to log.
 			 */
 			private boolean append;
 
 			/**
-			 * the log file name date format.
+			 * Enable extended NCSA format.
 			 */
-			private String filenameDateFormat;
+			private boolean extendedFormat;
 
 			/**
-			 * extended NCSA format.
+			 * Timestamp format of the request log.
 			 */
-			private boolean extended;
+			private String dateFormat = "dd/MMM/yyyy:HH:mm:ss Z";
 
 			/**
-			 * Set the timezone of the request log.
+			 * Locale of the request log.
 			 */
-			private String logTimeZone;
+			private Locale locale;
 
 			/**
-			 * Controls logging of the request cookies.
+			 * Timezone of the request log.
+			 */
+			private TimeZone timeZone = TimeZone.getTimeZone("GMT");
+
+			/**
+			 * Enable logging of the request cookies.
 			 */
 			private boolean logCookies;
 
 			/**
-			 * Controls logging of the request hostname.
+			 * Enable logging of the request hostname.
 			 */
 			private boolean logServer;
 
 			/**
-			 * Controls logging of request processing time.
+			 * Enable logging of request processing time.
 			 */
 			private boolean logLatency;
-
-			/**
-			 * Set the timestamp format for request log entries in the file. If this is not set, the pre-formated request
-			 * timestamp is used.
-			 */
-			private String logDateFormat;
 
 			public boolean isEnabled() {
 				return this.enabled;
@@ -1014,12 +1017,20 @@ public class ServerProperties {
 				this.filename = filename;
 			}
 
-			public int getRetainDays() {
-				return this.retainDays;
+			public String getFileDateFormat() {
+				return this.fileDateFormat;
 			}
 
-			public void setRetainDays(int retainDays) {
-				this.retainDays = retainDays;
+			public void setFileDateFormat(String fileDateFormat) {
+				this.fileDateFormat = fileDateFormat;
+			}
+
+			public int getRetentionPeriod() {
+				return this.retentionPeriod;
+			}
+
+			public void setRetentionPeriod(int retentionPeriod) {
+				this.retentionPeriod = retentionPeriod;
 			}
 
 			public boolean isAppend() {
@@ -1030,28 +1041,36 @@ public class ServerProperties {
 				this.append = append;
 			}
 
-			public String getFilenameDateFormat() {
-				return this.filenameDateFormat;
+			public boolean isExtendedFormat() {
+				return this.extendedFormat;
 			}
 
-			public void setFilenameDateFormat(String filenameDateFormat) {
-				this.filenameDateFormat = filenameDateFormat;
+			public void setExtendedFormat(boolean extendedFormat) {
+				this.extendedFormat = extendedFormat;
 			}
 
-			public boolean isExtended() {
-				return this.extended;
+			public String getDateFormat() {
+				return this.dateFormat;
 			}
 
-			public void setExtended(boolean extended) {
-				this.extended = extended;
+			public void setDateFormat(String dateFormat) {
+				this.dateFormat = dateFormat;
 			}
 
-			public String getLogTimeZone() {
-				return this.logTimeZone;
+			public Locale getLocale() {
+				return this.locale;
 			}
 
-			public void setLogTimeZone(String logTimeZone) {
-				this.logTimeZone = logTimeZone;
+			public void setLocale(Locale locale) {
+				this.locale = locale;
+			}
+
+			public TimeZone getTimeZone() {
+				return this.timeZone;
+			}
+
+			public void setTimeZone(TimeZone timeZone) {
+				this.timeZone = timeZone;
 			}
 
 			public boolean isLogCookies() {
@@ -1063,27 +1082,19 @@ public class ServerProperties {
 			}
 
 			public boolean isLogServer() {
-				return logServer;
+				return this.logServer;
 			}
 
-			public void setLogServer( boolean logServer ) {
+			public void setLogServer(boolean logServer) {
 				this.logServer = logServer;
 			}
 
 			public boolean isLogLatency() {
-				return logLatency;
+				return this.logLatency;
 			}
 
-			public void setLogLatency( boolean logLatency ) {
+			public void setLogLatency(boolean logLatency) {
 				this.logLatency = logLatency;
-			}
-
-			public String getLogDateFormat() {
-				return logDateFormat;
-			}
-
-			public void setLogDateFormat( String logDateFormat ) {
-				this.logDateFormat = logDateFormat;
 			}
 		}
 

@@ -636,7 +636,8 @@ sample project for an example.
 
 [[howto-configure-accesslogs]]
 === Configure Access Logging
-Access logs can be configured for Tomcat, Undertow and Jetty via their respective namespaces.
+Access logs can be configured for Tomcat, Undertow and Jetty via their respective
+namespaces.
 
 For instance, the following logs access on Tomcat with a
 https://tomcat.apache.org/tomcat-8.0-doc/config/valve.html#Access_Logging[custom pattern].
@@ -664,16 +665,17 @@ Access logging for undertow can be configured in a similar fashion
 Logs are stored in a `logs` directory relative to the working directory of the
 application. This can be customized via `server.undertow.accesslog.directory`.
 
-Access logging for jetty can be configured in a similar fashion
+Finally, access logging for jetty can also be configured that way:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	server.jetty.accesslog.enabled=true
-	server.jetty.accesslog.filename=
+	server.jetty.accesslog.filename=access-log
 ----
 
-If no filename logs will go to System.err.
-For more details please refer to https://www.eclipse.org/jetty/documentation/9.3.x/configuring-jetty-request-logs.html.
+By default, logs will be redirected to `System.err`. For more details, please refer to
+https://www.eclipse.org/jetty/documentation/9.3.x/configuring-jetty-request-logs.html[the documentation].
+
 
 
 [[howto-use-behind-a-proxy-server]]

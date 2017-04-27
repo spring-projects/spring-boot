@@ -67,6 +67,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
+ * @author Olivier Lamy
  * @since 2.0.0
  */
 public class DefaultServletWebServerFactoryCustomizer
@@ -643,27 +644,30 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeAccesslog(JettyServletWebServerFactory factory,
-											   final ServerProperties.Jetty.Accesslog accesslog) {
-			factory.addServerCustomizers( server -> {
+				final ServerProperties.Jetty.Accesslog accesslog) {
+			factory.addServerCustomizers(server -> {
 				NCSARequestLog requestLog = new NCSARequestLog();
 				if (accesslog.getFilename() != null) {
 					requestLog.setFilename(accesslog.getFilename());
 				}
-				if (accesslog.getFilenameDateFormat() != null) {
-					requestLog.setFilenameDateFormat(accesslog.getFilenameDateFormat());
+				if (accesslog.getFileDateFormat() != null) {
+					requestLog.setFilenameDateFormat(accesslog.getFileDateFormat());
 				}
-				if (accesslog.getRetainDays() > 0) {
-					requestLog.setRetainDays(accesslog.getRetainDays());
-				}
-				requestLog.setLogTimeZone(accesslog.getLogTimeZone());
-				requestLog.setExtended(accesslog.isExtended());
+				requestLog.setRetainDays(accesslog.getRetentionPeriod());
 				requestLog.setAppend(accesslog.isAppend());
-				requestLog.setLogCookies(accesslog.isLogCookies());
-				requestLog.setLogServer( accesslog.isLogServer() );
-				requestLog.setLogLatency( accesslog.isLogLatency() );
-				if (!StringUtils.isEmpty( accesslog.getLogDateFormat() )) {
-					requestLog.setLogDateFormat( accesslog.getLogDateFormat() );
+				requestLog.setExtended(accesslog.isExtendedFormat());
+				if (accesslog.getDateFormat() != null) {
+					requestLog.setLogDateFormat(accesslog.getDateFormat());
 				}
+				if (accesslog.getLocale() != null) {
+					requestLog.setLogLocale(accesslog.getLocale());
+				}
+				if (accesslog.getTimeZone() != null) {
+					requestLog.setLogTimeZone(accesslog.getTimeZone().getID());
+				}
+				requestLog.setLogCookies(accesslog.isLogCookies());
+				requestLog.setLogServer(accesslog.isLogServer());
+				requestLog.setLogLatency(accesslog.isLogLatency());
 				server.setRequestLog(requestLog);
 			});
 		}

@@ -185,20 +185,20 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
-	public void testJettyBinding() throws Exception {
+	public void testCustomizeJettyAccessLog() throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.jetty.accesslog.enabled", "true");
 		map.put("server.jetty.accesslog.filename", "foo.txt");
-		map.put("server.jetty.accesslog.retainDays", "4");
+		map.put("server.jetty.accesslog.file-date-format", "yyyymmdd");
+		map.put("server.jetty.accesslog.retention-period", "4");
 		map.put("server.jetty.accesslog.append", "true");
-		map.put("server.jetty.accesslog.filenameDateFormat", "yyyymmdd");
 		bindProperties(map);
 		ServerProperties.Jetty jetty = this.properties.getJetty();
 		assertThat(jetty.getAccesslog().isEnabled()).isEqualTo(true);
 		assertThat(jetty.getAccesslog().getFilename()).isEqualTo("foo.txt");
-		assertThat(jetty.getAccesslog().getRetainDays()).isEqualTo(4);
+		assertThat(jetty.getAccesslog().getFileDateFormat()).isEqualTo("yyyymmdd");
+		assertThat(jetty.getAccesslog().getRetentionPeriod()).isEqualTo(4);
 		assertThat(jetty.getAccesslog().isAppend()).isEqualTo(true);
-		assertThat(jetty.getAccesslog().getFilenameDateFormat()).isEqualTo("yyyymmdd");
 	}
 
 	private void bindProperties(Map<String, String> map) {
