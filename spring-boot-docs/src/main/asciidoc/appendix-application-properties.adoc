@@ -153,6 +153,7 @@ content into your application; rather pick only the properties that you need.
 	server.connection-timeout= # Time in milliseconds that connectors will wait for another HTTP request before closing the connection. When not set, the connector's container-specific default will be used. Use a value of -1 to indicate no (i.e. infinite) timeout.
 	server.display-name=application # Display name of the application.
 	server.max-http-header-size=0 # Maximum size in bytes of the HTTP message header.
+	server.error.include-exception=false # Set whether to include the "exception" attribute.
 	server.error.include-stacktrace=never # When to include a "stacktrace" attribute.
 	server.error.path=/error # Path of the error controller.
 	server.error.whitelabel.enabled=true # Enable the default error page displayed in browsers in case of a server error.

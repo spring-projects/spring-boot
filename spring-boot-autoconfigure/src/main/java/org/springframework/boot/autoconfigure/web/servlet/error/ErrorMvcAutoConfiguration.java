@@ -98,7 +98,8 @@ public class ErrorMvcAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
 	public DefaultErrorAttributes errorAttributes() {
-		return new DefaultErrorAttributes();
+		return new DefaultErrorAttributes(
+				this.serverProperties.getError().isIncludeException());
 	}
 
 	@Bean
