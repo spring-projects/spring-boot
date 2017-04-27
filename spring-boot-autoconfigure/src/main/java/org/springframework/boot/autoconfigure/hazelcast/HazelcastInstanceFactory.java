@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@ package org.springframework.boot.autoconfigure.hazelcast;
 import java.io.IOException;
 import java.net.URL;
 
+import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.client.config.ClientConfig;
+import com.hazelcast.client.config.XmlClientConfigBuilder;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
@@ -34,32 +37,33 @@ import org.springframework.util.StringUtils;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Vedran Pavic
  * @since 1.3.0
  */
-public class HazelcastInstanceFactory {
-
-	private Config config;
+public abstract class HazelcastInstanceFactory {
 
 	/**
-	 * Create a {@link HazelcastInstanceFactory} for the specified configuration location.
+	 * Get the {@link HazelcastInstance}.
+	 * @param config the configuration
+	 * @return the {@link HazelcastInstance}
+	 */
+	public static HazelcastInstance createHazelcastInstance(Config config) {
+		Assert.notNull(config, "Config must not be null");
+		if (StringUtils.hasText(config.getInstanceName())) {
+			return Hazelcast.getOrCreateHazelcastInstance(config);
+		}
+		return Hazelcast.newHazelcastInstance(config);
+	}
+
+	/**
+	 * Get the {@link HazelcastInstance}.
 	 * @param configLocation the location of the configuration file
+	 * @return the {@link HazelcastInstance}
 	 * @throws IOException if the configuration location could not be read
 	 */
-	public HazelcastInstanceFactory(Resource configLocation) throws IOException {
+	public static HazelcastInstance createHazelcastInstance(Resource configLocation)
+			throws IOException {
 		Assert.notNull(configLocation, "ConfigLocation must not be null");
-		this.config = getConfig(configLocation);
-	}
-
-	/**
-	 * Create a {@link HazelcastInstanceFactory} for the specified configuration.
-	 * @param config the configuration
-	 */
-	public HazelcastInstanceFactory(Config config) {
-		Assert.notNull(config, "Config must not be null");
-		this.config = config;
-	}
-
-	private Config getConfig(Resource configLocation) throws IOException {
 		URL configUrl = configLocation.getURL();
 		Config config = new XmlConfigBuilder(configUrl).build();
 		if (ResourceUtils.isFileURL(configUrl)) {
@@ -68,18 +72,34 @@ public class HazelcastInstanceFactory {
 		else {
 			config.setConfigurationUrl(configUrl);
 		}
-		return config;
+		return createHazelcastInstance(config);
 	}
 
 	/**
-	 * Get the {@link HazelcastInstance}.
-	 * @return the {@link HazelcastInstance}
+	 * Get the client {@link HazelcastInstance}.
+	 * @param config the client configuration
+	 * @return the client {@link HazelcastInstance}
 	 */
-	public HazelcastInstance getHazelcastInstance() {
-		if (StringUtils.hasText(this.config.getInstanceName())) {
-			return Hazelcast.getOrCreateHazelcastInstance(this.config);
+	public static HazelcastInstance createHazelcastClient(ClientConfig config) {
+		Assert.notNull(config, "Config must not be null");
+		if (StringUtils.hasText(config.getInstanceName())) {
+			return HazelcastClient.getHazelcastClientByName(config.getInstanceName());
 		}
-		return Hazelcast.newHazelcastInstance(this.config);
+		return HazelcastClient.newHazelcastClient(config);
+	}
+
+	/**
+	 * Get the client {@link HazelcastInstance}.
+	 * @param configLocation the location of the client configuration file
+	 * @return the client {@link HazelcastInstance}
+	 * @throws IOException if the configuration location could not be read
+	 */
+	public static HazelcastInstance createHazelcastClient(Resource configLocation)
+			throws IOException {
+		Assert.notNull(configLocation, "ConfigLocation must not be null");
+		URL configUrl = configLocation.getURL();
+		ClientConfig config = new XmlClientConfigBuilder(configUrl).build();
+		return createHazelcastClient(config);
 	}
 
 }
