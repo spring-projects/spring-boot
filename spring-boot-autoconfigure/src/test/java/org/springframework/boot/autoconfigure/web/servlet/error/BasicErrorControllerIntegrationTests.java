@@ -100,8 +100,8 @@ public class BasicErrorControllerIntegrationTests {
 		load();
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity(createUrl("?trace=true"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
-				null, "Expected!", "/");
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", null,
+				"Expected!", "/");
 		assertThat(entity.getBody().containsKey("trace")).isFalse();
 	}
 
@@ -123,8 +123,8 @@ public class BasicErrorControllerIntegrationTests {
 		load("--server.error.include-stacktrace=never");
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity(createUrl("?trace=true"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
-				null, "Expected!", "/");
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", null,
+				"Expected!", "/");
 		assertThat(entity.getBody().containsKey("trace")).isFalse();
 	}
 
@@ -134,8 +134,8 @@ public class BasicErrorControllerIntegrationTests {
 		load("--server.error.include-stacktrace=always");
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity(createUrl("?trace=false"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
-				null, "Expected!", "/");
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", null,
+				"Expected!", "/");
 		assertThat(entity.getBody().containsKey("trace")).isTrue();
 	}
 
@@ -272,7 +272,7 @@ public class BasicErrorControllerIntegrationTests {
 				@Override
 				protected void renderMergedOutputModel(Map<String, Object> model,
 						HttpServletRequest request, HttpServletResponse response)
-						throws Exception {
+								throws Exception {
 					response.getWriter().write("ERROR_BEAN");
 				}
 			};

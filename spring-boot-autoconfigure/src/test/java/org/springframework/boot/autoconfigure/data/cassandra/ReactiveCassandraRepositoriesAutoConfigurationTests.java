@@ -79,7 +79,8 @@ public class ReactiveCassandraRepositoriesAutoConfigurationTests {
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		load(TestExcludeConfiguration.class, CustomizedConfiguration.class);
-		assertThat(this.context.getBean(ReactiveCityCassandraRepository.class)).isNotNull();
+		assertThat(this.context.getBean(ReactiveCityCassandraRepository.class))
+				.isNotNull();
 		assertThat(getInitialEntitySet()).hasSize(1).containsOnly(City.class);
 	}
 

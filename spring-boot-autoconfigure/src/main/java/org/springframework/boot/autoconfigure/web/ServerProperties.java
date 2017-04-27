@@ -959,7 +959,7 @@ public class ServerProperties {
 			/**
 			 * Number of days before rotated log files are deleted.
 			 */
-			private int retentionPeriod = 31;  // no days
+			private int retentionPeriod = 31; // no days
 
 			/**
 			 * Append to log.

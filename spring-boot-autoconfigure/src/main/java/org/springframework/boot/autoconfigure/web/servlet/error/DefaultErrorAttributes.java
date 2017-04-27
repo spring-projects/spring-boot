@@ -65,7 +65,15 @@ public class DefaultErrorAttributes
 	private static final String ERROR_ATTRIBUTE = DefaultErrorAttributes.class.getName()
 			+ ".ERROR";
 
-	private boolean includeException;
+	private final boolean includeException;
+
+	/**
+	 * Create a new {@link DefaultErrorAttributes} instance that does not include the
+	 * "exception" attribute.
+	 */
+	public DefaultErrorAttributes() {
+		this(false);
+	}
 
 	/**
 	 * Create a new {@link DefaultErrorAttributes} instance.
@@ -73,14 +81,6 @@ public class DefaultErrorAttributes
 	 */
 	public DefaultErrorAttributes(boolean includeException) {
 		this.includeException = includeException;
-	}
-
-	/**
-	 * Create a new {@link DefaultErrorAttributes} instance that does not
-	 * include the "exception" attribute.
-	 */
-	public DefaultErrorAttributes() {
-		this(false);
 	}
 
 	@Override

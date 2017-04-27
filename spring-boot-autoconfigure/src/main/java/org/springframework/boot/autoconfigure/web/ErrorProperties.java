@@ -35,7 +35,7 @@ public class ErrorProperties {
 	private String path = "/error";
 
 	/**
-	 * Set whether to include the "exception" attribute.
+	 * Include the "exception" attribute.
 	 */
 	private boolean includeException;
 

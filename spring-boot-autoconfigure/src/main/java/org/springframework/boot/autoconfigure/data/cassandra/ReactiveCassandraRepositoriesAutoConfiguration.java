@@ -29,8 +29,8 @@ import org.springframework.data.cassandra.repository.config.EnableReactiveCassan
 import org.springframework.data.cassandra.repository.support.ReactiveCassandraRepositoryFactoryBean;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Cassandra
- * Reactive Repositories.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Cassandra Reactive
+ * Repositories.
  *
  * @author Eddú Meléndez
  * @since 2.0.0

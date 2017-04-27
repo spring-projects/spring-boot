@@ -63,8 +63,7 @@ public class ReactiveCassandraDataAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public ReactiveCassandraTemplate reactiveCassandraTemplate(
-			ReactiveSession reactiveCassandraSession,
-			CassandraConverter converter) {
+			ReactiveSession reactiveCassandraSession, CassandraConverter converter) {
 		return new ReactiveCassandraTemplate(reactiveCassandraSession, converter);
 	}
 

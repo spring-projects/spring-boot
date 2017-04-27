@@ -640,7 +640,7 @@ Access logs can be configured for Tomcat, Undertow and Jetty via their respectiv
 namespaces.
 
 For instance, the following logs access on Tomcat with a
-https://tomcat.apache.org/tomcat-8.0-doc/config/valve.html#Access_Logging[custom pattern].
+{tomcat-documentation}/config/valve.html#Access_Logging[custom pattern].
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -674,7 +674,7 @@ Finally, access logging for jetty can also be configured that way:
 ----
 
 By default, logs will be redirected to `System.err`. For more details, please refer to
-https://www.eclipse.org/jetty/documentation/9.3.x/configuring-jetty-request-logs.html[the documentation].
+{jetty-documentation}/configuring-jetty-request-logs.html[the documentation].
 
 
 

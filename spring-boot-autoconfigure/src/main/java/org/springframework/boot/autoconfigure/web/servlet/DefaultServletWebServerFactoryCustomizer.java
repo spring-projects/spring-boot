@@ -544,7 +544,7 @@ public class DefaultServletWebServerFactoryCustomizer
 						serverProperties.getConnectionTimeout());
 			}
 			if (jettyProperties.getAccesslog().isEnabled()) {
-				customizeAccesslog(factory, jettyProperties.getAccesslog());
+				customizeAccessLog(factory, jettyProperties.getAccesslog());
 			}
 		}
 
@@ -643,32 +643,32 @@ public class DefaultServletWebServerFactoryCustomizer
 			});
 		}
 
-		private static void customizeAccesslog(JettyServletWebServerFactory factory,
-				final ServerProperties.Jetty.Accesslog accesslog) {
+		private static void customizeAccessLog(JettyServletWebServerFactory factory,
+				final ServerProperties.Jetty.Accesslog properties) {
 			factory.addServerCustomizers(server -> {
-				NCSARequestLog requestLog = new NCSARequestLog();
-				if (accesslog.getFilename() != null) {
-					requestLog.setFilename(accesslog.getFilename());
+				NCSARequestLog log = new NCSARequestLog();
+				if (properties.getFilename() != null) {
+					log.setFilename(properties.getFilename());
 				}
-				if (accesslog.getFileDateFormat() != null) {
-					requestLog.setFilenameDateFormat(accesslog.getFileDateFormat());
+				if (properties.getFileDateFormat() != null) {
+					log.setFilenameDateFormat(properties.getFileDateFormat());
 				}
-				requestLog.setRetainDays(accesslog.getRetentionPeriod());
-				requestLog.setAppend(accesslog.isAppend());
-				requestLog.setExtended(accesslog.isExtendedFormat());
-				if (accesslog.getDateFormat() != null) {
-					requestLog.setLogDateFormat(accesslog.getDateFormat());
+				log.setRetainDays(properties.getRetentionPeriod());
+				log.setAppend(properties.isAppend());
+				log.setExtended(properties.isExtendedFormat());
+				if (properties.getDateFormat() != null) {
+					log.setLogDateFormat(properties.getDateFormat());
 				}
-				if (accesslog.getLocale() != null) {
-					requestLog.setLogLocale(accesslog.getLocale());
+				if (properties.getLocale() != null) {
+					log.setLogLocale(properties.getLocale());
 				}
-				if (accesslog.getTimeZone() != null) {
-					requestLog.setLogTimeZone(accesslog.getTimeZone().getID());
+				if (properties.getTimeZone() != null) {
+					log.setLogTimeZone(properties.getTimeZone().getID());
 				}
-				requestLog.setLogCookies(accesslog.isLogCookies());
-				requestLog.setLogServer(accesslog.isLogServer());
-				requestLog.setLogLatency(accesslog.isLogLatency());
-				server.setRequestLog(requestLog);
+				log.setLogCookies(properties.isLogCookies());
+				log.setLogServer(properties.isLogServer());
+				log.setLogLatency(properties.isLogLatency());
+				server.setRequestLog(log);
 			});
 		}
 	}
