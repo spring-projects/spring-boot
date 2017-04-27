@@ -2278,17 +2278,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.social</groupId>
-				<artifactId>spring-social-web-thymeleaf3</artifactId>
-				<version>${spring-social.version}</version>
-				<exclusions>
-					<exclusion>
-						<artifactId>thymeleaf-spring4</artifactId>
-						<groupId>org.thymeleaf</groupId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.social</groupId>
 				<artifactId>spring-social-facebook</artifactId>
 				<version>${spring-social-facebook.version}</version>
 			</dependency>
