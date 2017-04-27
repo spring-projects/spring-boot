@@ -126,9 +126,10 @@ public class PublicMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoDataSource() {
+	public void autoDataSource() throws SQLException {
 		load(DataSourceAutoConfiguration.class);
 		PublicMetrics bean = this.context.getBean(DataSourcePublicMetrics.class);
+		this.context.getBean(DataSource.class).getConnection().close();
 		Collection<Metric<?>> metrics = bean.metrics();
 		assertMetrics(metrics, "datasource.primary.active", "datasource.primary.usage");
 	}

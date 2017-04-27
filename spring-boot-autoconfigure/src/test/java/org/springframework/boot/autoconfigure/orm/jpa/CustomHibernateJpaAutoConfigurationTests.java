@@ -64,6 +64,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 		// Set up environment so we get a MySQL database but don't require server to be
 		// running...
 		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.type:" + org.apache.tomcat.jdbc.pool.DataSource.class.getName(),
 				"spring.datasource.database:mysql",
 				"spring.datasource.url:jdbc:mysql://localhost/nonexistent",
 				"spring.datasource.initialize:false", "spring.jpa.database:MYSQL");

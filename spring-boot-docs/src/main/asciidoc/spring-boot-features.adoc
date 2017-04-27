@@ -2821,10 +2821,10 @@ ensuring that it happens once access to the database is no longer needed.
 Production database connections can also be auto-configured using a pooling `DataSource`.
 Here's the algorithm for choosing a specific implementation:
 
-* We prefer the Tomcat pooling `DataSource` for its performance and concurrency, so if
-  that is available we always choose it.
-* Otherwise, if HikariCP is available we will use it.
-* If neither the Tomcat pooling datasource nor HikariCP are available and if Commons
+* We prefer HikariCP for its performance and concurrency, so if that is available we
+  always choose it.
+* Otherwise, if the Tomcat pooling `DataSource` is available we will use it.
+* If neither HikariCP nor the Tomcat pooling datasource are available and if Commons
   DBCP2 is available we will use it.
 
 If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa`
@@ -2863,8 +2863,8 @@ loadable.
 See {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[`DataSourceProperties`]
 for more of the supported options. These are the standard options that work regardless of
 the actual implementation. It is also possible to fine-tune implementation-specific
-settings using their respective prefix (`+spring.datasource.tomcat.*+`,
-`+spring.datasource.hikari.*+`, and `+spring.datasource.dbcp2.*+`). Refer to the
+settings using their respective prefix (`+spring.datasource.hikari.*+`,
+`+spring.datasource.tomcat.*+`, and `+spring.datasource.dbcp2.*+`). Refer to the
 documentation of the connection pool implementation you are using for more details.
 
 For instance, if you are using the
