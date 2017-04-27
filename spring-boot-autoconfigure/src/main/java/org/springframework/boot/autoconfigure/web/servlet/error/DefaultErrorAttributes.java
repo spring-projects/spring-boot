@@ -44,7 +44,7 @@ import org.springframework.web.servlet.ModelAndView;
  * <li>timestamp - The time that the errors were extracted</li>
  * <li>status - The status code</li>
  * <li>error - The error reason</li>
- * <li>exception - The class name of the root exception</li>
+ * <li>exception - The class name of the root exception (if configured)</li>
  * <li>message - The exception message</li>
  * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} exception
  * <li>trace - The exception stack trace</li>
@@ -69,10 +69,18 @@ public class DefaultErrorAttributes
 
 	/**
 	 * Create a new {@link DefaultErrorAttributes} instance.
-	 * @param includeException whether to include "exception" attribute
+	 * @param includeException whether to include the "exception" attribute
 	 */
 	public DefaultErrorAttributes(boolean includeException) {
 		this.includeException = includeException;
+	}
+
+	/**
+	 * Create a new {@link DefaultErrorAttributes} instance that does not
+	 * include the "exception" attribute.
+	 */
+	public DefaultErrorAttributes() {
+		this(false);
 	}
 
 	@Override

@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DefaultErrorAttributesTests {
 
-	private DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes(false);
+	private DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes();
 
 	private MockHttpServletRequest request = new MockHttpServletRequest();
 

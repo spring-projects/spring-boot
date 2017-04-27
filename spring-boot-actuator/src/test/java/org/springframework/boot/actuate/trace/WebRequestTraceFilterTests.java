@@ -256,7 +256,7 @@ public class WebRequestTraceFilterTests {
 
 	@Test
 	public void filterHasError() {
-		this.filter.setErrorAttributes(new DefaultErrorAttributes(false));
+		this.filter.setErrorAttributes(new DefaultErrorAttributes());
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.setStatus(500);
