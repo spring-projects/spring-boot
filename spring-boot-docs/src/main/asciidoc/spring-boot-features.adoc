@@ -5138,7 +5138,6 @@ classes for more details.
 Spring Boot provides Spring Session auto-configuration for a wide range of stores:
 
 * JDBC
-* MongoDB
 * Redis
 * Hazelcast
 * HashMap
