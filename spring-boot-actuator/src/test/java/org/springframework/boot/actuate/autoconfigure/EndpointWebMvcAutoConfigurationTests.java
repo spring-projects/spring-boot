@@ -62,6 +62,7 @@ import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactor
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.testutil.Matched;
@@ -357,7 +358,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Test
 	public void contextPath() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"management.contextPath:/test", "management.security.enabled:false");
+				"management.context-path:/test", "management.security.enabled:false");
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				JacksonAutoConfiguration.class,
@@ -448,7 +449,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"ENDPOINTS_ENABLED:false");
+				"endpoints.enabled:false");
 		this.applicationContext.refresh();
 		assertThat(this.applicationContext.getBeansOfType(MvcEndpoint.class)).isEmpty();
 	}
@@ -646,9 +647,10 @@ public class EndpointWebMvcAutoConfigurationTests {
 			throws Exception {
 		this.applicationContext.register(LoggingConfig.class, RootConfig.class,
 				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class);
+		ConfigurationPropertySources.attach(this.applicationContext.getEnvironment());
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
 				"endpoints.enabled:false",
-				String.format("endpoints_%s_enabled:true", name));
+				String.format("endpoints.%s.enabled:true", name));
 		this.applicationContext.refresh();
 		assertThat(this.applicationContext.getBeansOfType(type)).hasSize(1);
 	}

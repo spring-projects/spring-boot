@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.IgnoredRequestCustomizer;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -84,11 +83,9 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 	private CloudFoundrySecurityService getCloudFoundrySecurityService(
 			RestTemplateBuilder restTemplateBuilder, Environment environment) {
-		RelaxedPropertyResolver cloudFoundryProperties = new RelaxedPropertyResolver(
-				environment, "management.cloudfoundry.");
 		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
-		boolean skipSslValidation = cloudFoundryProperties
-				.getProperty("skip-ssl-validation", Boolean.class, false);
+		boolean skipSslValidation = environment.getProperty(
+				"management.cloudfoundry.skip-ssl-validation", Boolean.class, false);
 		return cloudControllerUrl == null ? null
 				: new CloudFoundrySecurityService(restTemplateBuilder, cloudControllerUrl,
 						skipSslValidation);

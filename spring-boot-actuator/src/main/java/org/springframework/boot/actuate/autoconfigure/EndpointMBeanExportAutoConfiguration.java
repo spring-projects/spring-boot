@@ -35,7 +35,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -50,6 +49,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Christian Dupuis
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 @Configuration
 @Conditional(JmxEnabledCondition.class)
@@ -103,8 +103,10 @@ public class EndpointMBeanExportAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			boolean jmxEnabled = isEnabled(context, "spring.jmx.");
-			boolean jmxEndpointsEnabled = isEnabled(context, "endpoints.jmx.");
+			boolean jmxEnabled = context.getEnvironment()
+					.getProperty("spring.jmx.enabled", Boolean.class, true);
+			boolean jmxEndpointsEnabled = context.getEnvironment()
+					.getProperty("endpoints.jmx.enabled", Boolean.class, true);
 			if (jmxEnabled && jmxEndpointsEnabled) {
 				return ConditionOutcome.match(
 						ConditionMessage.forCondition("JMX Enabled").found("properties")
@@ -112,12 +114,6 @@ public class EndpointMBeanExportAutoConfiguration {
 			}
 			return ConditionOutcome.noMatch(ConditionMessage.forCondition("JMX Enabled")
 					.because("spring.jmx.enabled or endpoints.jmx.enabled is not set"));
-		}
-
-		private boolean isEnabled(ConditionContext context, String prefix) {
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-					context.getEnvironment(), prefix);
-			return resolver.getProperty("enabled", Boolean.class, true);
 		}
 
 	}

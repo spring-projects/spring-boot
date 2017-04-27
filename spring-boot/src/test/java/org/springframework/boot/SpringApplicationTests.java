@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -866,9 +868,12 @@ public class SpringApplicationTests {
 		assertThat(this.context.getEnvironment())
 				.isNotInstanceOf(StandardServletEnvironment.class);
 		assertThat(this.context.getEnvironment().getProperty("foo")).isEqualTo("bar");
-		assertThat(this.context.getEnvironment().getPropertySources().iterator().next()
-				.getName()).isEqualTo(
-						TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
+		Iterator<PropertySource<?>> iterator = this.context.getEnvironment()
+				.getPropertySources().iterator();
+		assertThat(iterator.next().getName())
+				.isEqualTo(ConfigurationPropertySources.PROPERTY_SOURCE_NAME);
+		assertThat(iterator.next().getName()).isEqualTo(
+				TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
 	}
 
 	@Test

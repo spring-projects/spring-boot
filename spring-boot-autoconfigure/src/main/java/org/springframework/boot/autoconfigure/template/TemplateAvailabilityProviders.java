@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
@@ -36,6 +35,7 @@ import org.springframework.util.Assert;
  * {@code spring.template.provider.cache} property is set to {@code false}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 1.4.0
  */
 public class TemplateAvailabilityProviders {
@@ -134,10 +134,9 @@ public class TemplateAvailabilityProviders {
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.notNull(classLoader, "ClassLoader must not be null");
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
-
-		RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(
-				environment, "spring.template.provider.");
-		if (!propertyResolver.getProperty("cache", Boolean.class, true)) {
+		Boolean useCache = environment.getProperty("spring.template.provider.cache",
+				Boolean.class, true);
+		if (!useCache) {
 			return findProvider(view, environment, classLoader, resourceLoader);
 		}
 		TemplateAvailabilityProvider provider = this.resolved.get(view);

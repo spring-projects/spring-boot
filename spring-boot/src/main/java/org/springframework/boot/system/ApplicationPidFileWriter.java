@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.ApplicationPid;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -57,6 +56,7 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Tomasz Przybyla
+ * @author Madhura Bhave
  * @since 1.4.0
  */
 public class ApplicationPidFileWriter
@@ -221,8 +221,7 @@ public class ApplicationPidFileWriter
 			if (environment == null) {
 				return null;
 			}
-			return new RelaxedPropertyResolver(environment, this.prefix)
-					.getProperty(this.key);
+			return environment.getProperty(this.prefix + this.key);
 		}
 
 		private Environment getEnvironment(SpringApplicationEvent event) {

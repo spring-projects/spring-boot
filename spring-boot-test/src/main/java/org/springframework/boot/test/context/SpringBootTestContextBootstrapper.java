@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -29,15 +28,14 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertySources;
-import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextConfigurationAttributes;
@@ -71,6 +69,7 @@ import org.springframework.util.ObjectUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Brian Clozel
+ * @author Madhura Bhave
  * @since 1.4.0
  * @see SpringBootTest
  * @see TestConfiguration
@@ -98,7 +97,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		verifyConfiguration(context.getTestClass());
 		WebEnvironment webEnvironment = getWebEnvironment(context.getTestClass());
 		if (webEnvironment == WebEnvironment.MOCK
-				&& deduceWebApplication() == WebApplicationType.SERVLET) {
+				&& deduceWebApplicationType() == WebApplicationType.SERVLET) {
 			context.setAttribute(ACTIVATE_SERVLET_LISTENER, true);
 		}
 		else if (webEnvironment != null && webEnvironment.isEmbedded()) {
@@ -181,15 +180,17 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 
 	private WebApplicationType getWebApplicationType(
 			MergedContextConfiguration configuration) {
-		WebApplicationType webApplicationType = getConfiguredWebApplicationType(
-				configuration);
-		if (webApplicationType != null) {
-			return webApplicationType;
-		}
-		return deduceWebApplication();
+		ConfigurationPropertySource source = new MapConfigurationPropertySource(
+				TestPropertySourceUtils.convertInlinedPropertiesToMap(
+						configuration.getPropertySourceProperties()));
+		Binder binder = new Binder(source);
+		return binder
+				.bind("spring.main.web-application-type",
+						Bindable.of(WebApplicationType.class))
+				.orElseGet(this::deduceWebApplicationType);
 	}
 
-	private WebApplicationType deduceWebApplication() {
+	private WebApplicationType deduceWebApplicationType() {
 		if (ClassUtils.isPresent(REACTIVE_WEB_ENVIRONMENT_CLASS, null)
 				&& !ClassUtils.isPresent(MVC_WEB_ENVIRONMENT_CLASS, null)) {
 			return WebApplicationType.REACTIVE;
@@ -226,25 +227,6 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			}
 		}
 		return false;
-	}
-
-	private WebApplicationType getConfiguredWebApplicationType(
-			MergedContextConfiguration configuration) {
-		PropertySources sources = convertToPropertySources(
-				configuration.getPropertySourceProperties());
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				new PropertySourcesPropertyResolver(sources), "spring.main.");
-		String property = resolver.getProperty("web-application-type");
-		return (property != null ? WebApplicationType.valueOf(property.toUpperCase())
-				: null);
-	}
-
-	private PropertySources convertToPropertySources(String[] properties) {
-		Map<String, Object> source = TestPropertySourceUtils
-				.convertInlinedPropertiesToMap(properties);
-		MutablePropertySources sources = new MutablePropertySources();
-		sources.addFirst(new MapPropertySource("inline", source));
-		return sources;
 	}
 
 	protected Class<?>[] getOrFindConfigurationClasses(

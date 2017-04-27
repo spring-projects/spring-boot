@@ -67,7 +67,7 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 	public void exceptionTranslationPostProcessorCanBeConfiguredToUseJdkProxy() {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.aop.proxyTargetClass=false");
+				"spring.aop.proxy-target-class=false");
 		this.context.register(PersistenceExceptionTranslationAutoConfiguration.class);
 		this.context.refresh();
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context

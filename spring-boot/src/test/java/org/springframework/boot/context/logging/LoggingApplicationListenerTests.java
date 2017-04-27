@@ -41,6 +41,7 @@ import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.junit.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.junit.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.boot.logging.AbstractLoggingSystem;
@@ -56,6 +57,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -72,7 +74,6 @@ import static org.hamcrest.Matchers.not;
  * @author Stephane Nicoll
  * @author Ben Hale
  */
-
 @RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("log4j*.jar")
 public class LoggingApplicationListenerTests {
@@ -103,6 +104,8 @@ public class LoggingApplicationListenerTests {
 		multicastEvent(new ApplicationStartingEvent(new SpringApplication(), NO_ARGS));
 		new File("target/foo.log").delete();
 		new File(tmpDir() + "/spring.log").delete();
+		ConfigurableEnvironment environment = this.context.getEnvironment();
+		ConfigurationPropertySources.attach(environment.getPropertySources());
 	}
 
 	@After

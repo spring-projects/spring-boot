@@ -22,6 +22,8 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.boot.origin.OriginTrackedValue;
+import org.springframework.boot.origin.TextResourceOrigin;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
@@ -234,7 +236,8 @@ public class OriginTrackedPropertiesLoaderTests {
 		if (value == null) {
 			return null;
 		}
-		return ((TextResourcePropertyOrigin) value.getOrigin()).getLocation().toString();
+		return ((TextResourceOrigin) value.getOrigin()).getLocation()
+				.toString();
 	}
 
 }

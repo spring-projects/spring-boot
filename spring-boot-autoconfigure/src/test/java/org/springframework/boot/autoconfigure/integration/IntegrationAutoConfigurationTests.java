@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -99,11 +100,12 @@ public class IntegrationAutoConfigurationTests {
 		load();
 		AnnotationConfigApplicationContext parent = this.context;
 		this.context = new AnnotationConfigApplicationContext();
+		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.setParent(parent);
 		this.context.register(JmxAutoConfiguration.class,
 				IntegrationAutoConfiguration.class);
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"SPRING_JMX_DEFAULT_DOMAIN=org.foo");
+				"spring.jmx.default_domain=org.foo");
 		this.context.refresh();
 		assertThat(this.context.getBean(HeaderChannelRegistry.class)).isNotNull();
 	}
@@ -129,7 +131,7 @@ public class IntegrationAutoConfigurationTests {
 
 	@Test
 	public void customizeJmxDomain() {
-		load("SPRING_JMX_DEFAULT_DOMAIN=org.foo");
+		load("spring.jmx.default_domain=org.foo");
 		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
 		assertDomains(mBeanServer, true, "org.foo");
 		assertDomains(mBeanServer, false, "org.springframework.integration",
@@ -209,6 +211,8 @@ public class IntegrationAutoConfigurationTests {
 		if (configs != null) {
 			ctx.register(configs);
 		}
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(ctx, environment);
+		ConfigurationPropertySources.attach(ctx.getEnvironment());
 		ctx.register(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;

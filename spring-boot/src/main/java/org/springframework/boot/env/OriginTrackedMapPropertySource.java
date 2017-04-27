@@ -18,18 +18,21 @@ package org.springframework.boot.env;
 
 import java.util.Map;
 
+import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginLookup;
+import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.core.env.MapPropertySource;
 
 /**
- * {@link OriginCapablePropertySource} backed by a {@link Map} containing
- * {@link OriginTrackedValue OriginTrackedValues}.
+ * {@link OriginLookup} backed by a {@link Map} containing {@link OriginTrackedValue
+ * OriginTrackedValues}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  * @see OriginTrackedValue
  */
 class OriginTrackedMapPropertySource extends MapPropertySource
-		implements OriginCapablePropertySource {
+		implements OriginLookup<String> {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	OriginTrackedMapPropertySource(String name, Map source) {
@@ -46,7 +49,7 @@ class OriginTrackedMapPropertySource extends MapPropertySource
 	}
 
 	@Override
-	public PropertyOrigin getPropertyOrigin(String name) {
+	public Origin getOrigin(String name) {
 		Object value = super.getProperty(name);
 		if (value instanceof OriginTrackedValue) {
 			return ((OriginTrackedValue) value).getOrigin();

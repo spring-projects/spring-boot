@@ -56,6 +56,7 @@ import org.springframework.validation.DataBinder;
  * @author Andy Wilkinson
  * @see RelaxedNames
  */
+@Deprecated
 public class RelaxedDataBinder extends DataBinder {
 
 	private static final Object BLANK = new Object();

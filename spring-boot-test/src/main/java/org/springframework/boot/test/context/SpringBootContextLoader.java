@@ -21,13 +21,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
@@ -40,10 +41,6 @@ import org.springframework.core.SpringVersion;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertySources;
-import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.test.context.ContextConfigurationAttributes;
@@ -76,6 +73,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Madhura Bhave
  * @see SpringBootTest
  */
 public class SpringBootContextLoader extends AbstractContextLoader {
@@ -171,19 +169,15 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	}
 
 	private boolean hasCustomServerPort(List<String> properties) {
-		PropertySources sources = convertToPropertySources(properties);
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				new PropertySourcesPropertyResolver(sources), "server.");
-		return resolver.containsProperty("port");
+		Binder binder = new Binder(convertToConfigurationPropertySource(properties));
+		return binder.bind("server.port", Bindable.of(String.class)).isBound();
 	}
 
-	private PropertySources convertToPropertySources(List<String> properties) {
-		Map<String, Object> source = TestPropertySourceUtils
-				.convertInlinedPropertiesToMap(
-						properties.toArray(new String[properties.size()]));
-		MutablePropertySources sources = new MutablePropertySources();
-		sources.addFirst(new MapPropertySource("inline", source));
-		return sources;
+	private MapConfigurationPropertySource convertToConfigurationPropertySource(
+			List<String> properties) {
+		String[] array = properties.toArray(new String[properties.size()]);
+		return new MapConfigurationPropertySource(
+				TestPropertySourceUtils.convertInlinedPropertiesToMap(array));
 	}
 
 	private List<ApplicationContextInitializer<?>> getInitializers(

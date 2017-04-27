@@ -17,8 +17,10 @@
 package org.springframework.boot.logging;
 
 import org.springframework.boot.ApplicationPid;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertyResolver;
+import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.util.Assert;
 
 /**
@@ -26,6 +28,7 @@ import org.springframework.util.Assert;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 public class LoggingSystemProperties {
@@ -81,22 +84,33 @@ public class LoggingSystemProperties {
 	}
 
 	public void apply(LogFile logFile) {
-		RelaxedPropertyResolver propertyResolver = RelaxedPropertyResolver
-				.ignoringUnresolvableNestedPlaceholders(this.environment, "logging.");
-		setSystemProperty(propertyResolver, EXCEPTION_CONVERSION_WORD,
+		PropertyResolver resolver = getPropertyResolver();
+		setSystemProperty(resolver, EXCEPTION_CONVERSION_WORD,
 				"exception-conversion-word");
-		setSystemProperty(propertyResolver, CONSOLE_LOG_PATTERN, "pattern.console");
-		setSystemProperty(propertyResolver, FILE_LOG_PATTERN, "pattern.file");
-		setSystemProperty(propertyResolver, LOG_LEVEL_PATTERN, "pattern.level");
+		setSystemProperty(resolver, CONSOLE_LOG_PATTERN, "pattern.console");
+		setSystemProperty(resolver, FILE_LOG_PATTERN, "pattern.file");
+		setSystemProperty(resolver, LOG_LEVEL_PATTERN, "pattern.level");
 		setSystemProperty(PID_KEY, new ApplicationPid().toString());
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
 		}
 	}
 
-	private void setSystemProperty(RelaxedPropertyResolver propertyResolver,
-			String systemPropertyName, String propertyName) {
-		setSystemProperty(systemPropertyName, propertyResolver.getProperty(propertyName));
+	private PropertyResolver getPropertyResolver() {
+		if (this.environment instanceof ConfigurableEnvironment) {
+			PropertyResolver resolver = new PropertySourcesPropertyResolver(
+					((ConfigurableEnvironment) this.environment).getPropertySources());
+			((PropertySourcesPropertyResolver) resolver)
+					.setIgnoreUnresolvableNestedPlaceholders(true);
+			return resolver;
+		}
+		return this.environment;
+	}
+
+	private void setSystemProperty(PropertyResolver resolver, String systemPropertyName,
+			String propertyName) {
+		setSystemProperty(systemPropertyName,
+				resolver.getProperty("logging." + propertyName));
 	}
 
 	private void setSystemProperty(String name, String value) {

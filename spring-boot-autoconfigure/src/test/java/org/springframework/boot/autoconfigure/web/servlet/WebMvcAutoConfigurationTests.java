@@ -332,7 +332,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void overrideDateFormat() throws Exception {
-		load(AllResources.class, "spring.mvc.dateFormat:dd*MM*yyyy");
+		load(AllResources.class, "spring.mvc.date-format:dd*MM*yyyy");
 		FormattingConversionService cs = this.context
 				.getBean(FormattingConversionService.class);
 		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();

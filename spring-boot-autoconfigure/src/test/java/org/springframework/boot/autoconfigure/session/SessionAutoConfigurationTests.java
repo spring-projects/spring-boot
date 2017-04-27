@@ -91,10 +91,9 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 
 	@Test
 	public void springSessionTimeoutIsNotAValidProperty() {
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("Could not bind");
 		load("spring.session.store-type=hash-map", "spring.session.timeout=3000");
-		MapSessionRepository repository = validateSessionRepository(
-				MapSessionRepository.class);
-		assertThat(getSessionTimeout(repository)).isNull();
 	}
 
 	@Test

@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
@@ -121,8 +120,6 @@ class OnPropertyCondition extends SpringBootCondition {
 
 		private final String[] names;
 
-		private final boolean relaxedNames;
-
 		private final boolean matchIfMissing;
 
 		Spec(AnnotationAttributes annotationAttributes) {
@@ -133,7 +130,6 @@ class OnPropertyCondition extends SpringBootCondition {
 			this.prefix = prefix;
 			this.havingValue = annotationAttributes.getString("havingValue");
 			this.names = getNames(annotationAttributes);
-			this.relaxedNames = annotationAttributes.getBoolean("relaxedNames");
 			this.matchIfMissing = annotationAttributes.getBoolean("matchIfMissing");
 		}
 
@@ -149,11 +145,8 @@ class OnPropertyCondition extends SpringBootCondition {
 
 		private void collectProperties(PropertyResolver resolver, List<String> missing,
 				List<String> nonMatching) {
-			if (this.relaxedNames) {
-				resolver = new RelaxedPropertyResolver(resolver, this.prefix);
-			}
 			for (String name : this.names) {
-				String key = (this.relaxedNames ? name : this.prefix + name);
+				String key = this.prefix + name;
 				if (resolver.containsProperty(key)) {
 					if (!isMatch(resolver.getProperty(key), this.havingValue)) {
 						nonMatching.add(name);

@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.Ordered;
@@ -37,6 +36,7 @@ import org.springframework.core.env.PropertySource;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
@@ -90,9 +90,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	}
 
 	private boolean isRemoteRestartEnabled(Environment environment) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
-				"spring.devtools.remote.");
-		return resolver.containsProperty("secret");
+		return environment.containsProperty("spring.devtools.remote.secret");
 	}
 
 }

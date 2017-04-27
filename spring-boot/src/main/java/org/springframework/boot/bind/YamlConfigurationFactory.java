@@ -48,6 +48,7 @@ import org.springframework.validation.Validator;
  * @author Luke Taylor
  * @author Dave Syer
  */
+@Deprecated
 public class YamlConfigurationFactory<T>
 		implements FactoryBean<T>, MessageSourceAware, InitializingBean {
 

@@ -20,10 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +35,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.DeferredImportSelector;
@@ -52,7 +50,6 @@ import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link DeferredImportSelector} to handle {@link EnableAutoConfiguration
@@ -211,28 +208,14 @@ public class AutoConfigurationImportSelector
 	}
 
 	private List<String> getExcludeAutoConfigurationsProperty() {
+		String name = "spring.autoconfigure.exclude";
 		if (getEnvironment() instanceof ConfigurableEnvironment) {
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-					this.environment, "spring.autoconfigure.");
-			Map<String, Object> properties = resolver.getSubProperties("exclude");
-			if (properties.isEmpty()) {
-				return Collections.emptyList();
-			}
-			List<String> excludes = new ArrayList<>();
-			for (Map.Entry<String, Object> entry : properties.entrySet()) {
-				String name = entry.getKey();
-				Object value = entry.getValue();
-				if (name.isEmpty() || name.startsWith("[") && value != null) {
-					excludes.addAll(new HashSet<>(Arrays.asList(StringUtils
-							.tokenizeToStringArray(String.valueOf(value), ","))));
-				}
-			}
-			return excludes;
+			Binder binder = Binder.get(getEnvironment());
+			return binder.bind(name, String[].class).map(Arrays::asList)
+					.orElse(Collections.emptyList());
 		}
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(getEnvironment(),
-				"spring.autoconfigure.");
-		String[] exclude = resolver.getProperty("exclude", String[].class);
-		return (Arrays.asList(exclude == null ? new String[0] : exclude));
+		String[] excludes = getEnvironment().getProperty(name, String[].class);
+		return (excludes == null ? Collections.emptyList() : Arrays.asList(excludes));
 	}
 
 	private List<String> sort(List<String> configurations,

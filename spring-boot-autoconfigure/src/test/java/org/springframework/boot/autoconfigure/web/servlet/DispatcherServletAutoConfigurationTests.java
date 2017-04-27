@@ -118,7 +118,7 @@ public class DispatcherServletAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(DispatcherServletAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "server.servlet_path:/spring");
+		EnvironmentTestUtils.addEnvironment(this.context, "server.servlet.path:/spring");
 		this.context.refresh();
 		assertThat(this.context.getBean(DispatcherServlet.class)).isNotNull();
 		ServletRegistrationBean<?> registration = this.context

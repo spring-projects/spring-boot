@@ -25,8 +25,10 @@ import java.util.regex.Pattern;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
@@ -41,6 +43,7 @@ import org.springframework.validation.DataBinder;
  * @author Dave Syer
  * @author Phillip Webb
  */
+@Deprecated
 public class PropertySourcesPropertyValues implements PropertyValues {
 
 	private static final Pattern COLLECTION_PROPERTY = Pattern
@@ -107,6 +110,10 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 			PropertyNamePatternsMatcher includes, boolean resolvePlaceholders) {
 		Assert.notNull(propertySources, "PropertySources must not be null");
 		Assert.notNull(includes, "Includes must not be null");
+		MutablePropertySources mutablePropertySources = new MutablePropertySources(
+				propertySources);
+		mutablePropertySources.remove(ConfigurationPropertySources.PROPERTY_SOURCE_NAME);
+		propertySources = mutablePropertySources;
 		this.propertySources = propertySources;
 		this.nonEnumerableFallbackNames = nonEnumerableFallbackNames;
 		this.includes = includes;
