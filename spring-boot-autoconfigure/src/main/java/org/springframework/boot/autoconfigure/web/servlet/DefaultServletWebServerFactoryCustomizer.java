@@ -36,6 +36,7 @@ import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
@@ -66,6 +67,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
+ * @author Olivier Lamy
  * @since 2.0.0
  */
 public class DefaultServletWebServerFactoryCustomizer
@@ -541,6 +543,9 @@ public class DefaultServletWebServerFactoryCustomizer
 				customizeConnectionTimeout(factory,
 						serverProperties.getConnectionTimeout());
 			}
+			if (jettyProperties.getAccesslog().isEnabled()) {
+				customizeAccesslog(factory, jettyProperties.getAccesslog());
+			}
 		}
 
 		private static void customizeConnectionTimeout(
@@ -635,6 +640,35 @@ public class DefaultServletWebServerFactoryCustomizer
 					}
 				}
 
+			});
+		}
+
+		private static void customizeAccesslog(JettyServletWebServerFactory factory,
+				final ServerProperties.Jetty.Accesslog accesslog) {
+			factory.addServerCustomizers(server -> {
+				NCSARequestLog requestLog = new NCSARequestLog();
+				if (accesslog.getFilename() != null) {
+					requestLog.setFilename(accesslog.getFilename());
+				}
+				if (accesslog.getFileDateFormat() != null) {
+					requestLog.setFilenameDateFormat(accesslog.getFileDateFormat());
+				}
+				requestLog.setRetainDays(accesslog.getRetentionPeriod());
+				requestLog.setAppend(accesslog.isAppend());
+				requestLog.setExtended(accesslog.isExtendedFormat());
+				if (accesslog.getDateFormat() != null) {
+					requestLog.setLogDateFormat(accesslog.getDateFormat());
+				}
+				if (accesslog.getLocale() != null) {
+					requestLog.setLogLocale(accesslog.getLocale());
+				}
+				if (accesslog.getTimeZone() != null) {
+					requestLog.setLogTimeZone(accesslog.getTimeZone().getID());
+				}
+				requestLog.setLogCookies(accesslog.isLogCookies());
+				requestLog.setLogServer(accesslog.isLogServer());
+				requestLog.setLogLatency(accesslog.isLogLatency());
+				server.setRequestLog(requestLog);
 			});
 		}
 	}

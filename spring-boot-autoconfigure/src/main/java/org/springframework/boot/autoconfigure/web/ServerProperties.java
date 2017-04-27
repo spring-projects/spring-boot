@@ -23,8 +23,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
@@ -48,6 +50,7 @@ import org.springframework.util.StringUtils;
  * @author Venil Noronha
  * @author Aurélien Leboulanger
  * @author Brian Clozel
+ * @author Olivier Lamy
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -886,6 +889,11 @@ public class ServerProperties {
 	public static class Jetty {
 
 		/**
+		 * Access log configuration.
+		 */
+		private final Accesslog accesslog = new Accesslog();
+
+		/**
 		 * Maximum size in bytes of the HTTP post or put content.
 		 */
 		private int maxHttpPostSize = 0; // bytes
@@ -899,6 +907,10 @@ public class ServerProperties {
 		 * Number of selector threads to use.
 		 */
 		private Integer selectors;
+
+		public Accesslog getAccesslog() {
+			return this.accesslog;
+		}
 
 		public int getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
@@ -922,6 +934,168 @@ public class ServerProperties {
 
 		public void setSelectors(Integer selectors) {
 			this.selectors = selectors;
+		}
+
+		/**
+		 * Jetty access log properties.
+		 */
+		public static class Accesslog {
+
+			/**
+			 * Enable access log.
+			 */
+			private boolean enabled = false;
+
+			/**
+			 * Log filename. If not specified, logs will be redirected to "System.err".
+			 */
+			private String filename;
+
+			/**
+			 * Date format to place in log file name.
+			 */
+			private String fileDateFormat;
+
+			/**
+			 * Number of days before rotated log files are deleted.
+			 */
+			private int retentionPeriod = 31;  // no days
+
+			/**
+			 * Append to log.
+			 */
+			private boolean append;
+
+			/**
+			 * Enable extended NCSA format.
+			 */
+			private boolean extendedFormat;
+
+			/**
+			 * Timestamp format of the request log.
+			 */
+			private String dateFormat = "dd/MMM/yyyy:HH:mm:ss Z";
+
+			/**
+			 * Locale of the request log.
+			 */
+			private Locale locale;
+
+			/**
+			 * Timezone of the request log.
+			 */
+			private TimeZone timeZone = TimeZone.getTimeZone("GMT");
+
+			/**
+			 * Enable logging of the request cookies.
+			 */
+			private boolean logCookies;
+
+			/**
+			 * Enable logging of the request hostname.
+			 */
+			private boolean logServer;
+
+			/**
+			 * Enable logging of request processing time.
+			 */
+			private boolean logLatency;
+
+			public boolean isEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
+			}
+
+			public String getFilename() {
+				return this.filename;
+			}
+
+			public void setFilename(String filename) {
+				this.filename = filename;
+			}
+
+			public String getFileDateFormat() {
+				return this.fileDateFormat;
+			}
+
+			public void setFileDateFormat(String fileDateFormat) {
+				this.fileDateFormat = fileDateFormat;
+			}
+
+			public int getRetentionPeriod() {
+				return this.retentionPeriod;
+			}
+
+			public void setRetentionPeriod(int retentionPeriod) {
+				this.retentionPeriod = retentionPeriod;
+			}
+
+			public boolean isAppend() {
+				return this.append;
+			}
+
+			public void setAppend(boolean append) {
+				this.append = append;
+			}
+
+			public boolean isExtendedFormat() {
+				return this.extendedFormat;
+			}
+
+			public void setExtendedFormat(boolean extendedFormat) {
+				this.extendedFormat = extendedFormat;
+			}
+
+			public String getDateFormat() {
+				return this.dateFormat;
+			}
+
+			public void setDateFormat(String dateFormat) {
+				this.dateFormat = dateFormat;
+			}
+
+			public Locale getLocale() {
+				return this.locale;
+			}
+
+			public void setLocale(Locale locale) {
+				this.locale = locale;
+			}
+
+			public TimeZone getTimeZone() {
+				return this.timeZone;
+			}
+
+			public void setTimeZone(TimeZone timeZone) {
+				this.timeZone = timeZone;
+			}
+
+			public boolean isLogCookies() {
+				return this.logCookies;
+			}
+
+			public void setLogCookies(boolean logCookies) {
+				this.logCookies = logCookies;
+			}
+
+			public boolean isLogServer() {
+				return this.logServer;
+			}
+
+			public void setLogServer(boolean logServer) {
+				this.logServer = logServer;
+			}
+
+			public boolean isLogLatency() {
+				return this.logLatency;
+			}
+
+			public void setLogLatency(boolean logLatency) {
+				this.logLatency = logLatency;
+			}
 		}
 
 	}
