@@ -121,8 +121,8 @@ public class ValidationAutoConfigurationTests {
 		String[] springValidatorNames = this.context
 				.getBeanNamesForType(org.springframework.validation.Validator.class);
 		assertThat(jsrValidatorNames).containsExactly("defaultValidator");
-		assertThat(springValidatorNames).containsExactly(
-				"customValidator", "anotherCustomValidator", "defaultValidator");
+		assertThat(springValidatorNames).containsExactly("customValidator",
+				"anotherCustomValidator", "defaultValidator");
 		Validator jsrValidator = this.context.getBean(Validator.class);
 		org.springframework.validation.Validator springValidator = this.context
 				.getBean(org.springframework.validation.Validator.class);
@@ -138,14 +138,14 @@ public class ValidationAutoConfigurationTests {
 		String[] springValidatorNames = this.context
 				.getBeanNamesForType(org.springframework.validation.Validator.class);
 		assertThat(jsrValidatorNames).containsExactly("defaultValidator");
-		assertThat(springValidatorNames).containsExactly(
-				"customValidator", "anotherCustomValidator", "defaultValidator");
+		assertThat(springValidatorNames).containsExactly("customValidator",
+				"anotherCustomValidator", "defaultValidator");
 		Validator jsrValidator = this.context.getBean(Validator.class);
 		org.springframework.validation.Validator springValidator = this.context
 				.getBean(org.springframework.validation.Validator.class);
 		assertThat(jsrValidator).isInstanceOf(LocalValidatorFactoryBean.class);
-		assertThat(springValidator).isEqualTo(
-				this.context.getBean("anotherCustomValidator"));
+		assertThat(springValidator)
+				.isEqualTo(this.context.getBean("anotherCustomValidator"));
 		assertThat(isPrimaryBean("defaultValidator")).isFalse();
 	}
 
