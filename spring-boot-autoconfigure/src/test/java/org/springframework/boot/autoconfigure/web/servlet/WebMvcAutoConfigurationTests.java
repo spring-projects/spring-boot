@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ValidatorFactory;
 
 import org.assertj.core.api.Condition;
 import org.joda.time.DateTime;
@@ -36,13 +37,12 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.validation.DelegatingValidator;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
+import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WelcomePageHandlerMapping;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
@@ -659,134 +659,105 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void validatorWhenSuppliedByConfigurerShouldThrowException() throws Exception {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("unexpected validator configuration");
-		load(ValidatorWebMvcConfigurer.class);
-	}
-
-	@Test
-	public void validatorWhenAutoConfiguredShouldUseAlias() throws Exception {
-		load();
-		Object defaultValidator = this.context.getBean("defaultValidator");
-		Object mvcValidator = this.context.getBean("mvcValidator");
-		String[] jsrValidatorBeans = this.context
-				.getBeanNamesForType(javax.validation.Validator.class);
+	public void validatorWhenNoValidatorShouldUseDefault() {
+		load(null, new Class<?>[] { ValidationAutoConfiguration.class });
+		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
+				.isEmpty();
 		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
-		assertThat(mvcValidator).isSameAs(defaultValidator);
-		assertThat(springValidatorBeans).containsExactly("defaultValidator");
-		assertThat(jsrValidatorBeans).containsExactly("defaultValidator");
-	}
-
-	@Test
-	public void validatorWhenUserDefinedSpringOnlyShouldUseDefined() throws Exception {
-		load(UserDefinedSpringOnlyValidator.class);
-		Object customValidator = this.context.getBean("customValidator");
-		Object mvcValidator = this.context.getBean("mvcValidator");
-		String[] jsrValidatorBeans = this.context
-				.getBeanNamesForType(javax.validation.Validator.class);
-		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
-		assertThat(mvcValidator).isSameAs(customValidator);
-		assertThat(this.context.getBean(Validator.class)).isEqualTo(customValidator);
-		assertThat(springValidatorBeans).containsExactly("customValidator");
-		assertThat(jsrValidatorBeans).isEmpty();
-	}
-
-	@Test
-	public void validatorWhenUserDefinedJsr303ShouldAdapt() throws Exception {
-		load(UserDefinedJsr303Validator.class);
-		Object customValidator = this.context.getBean("customValidator");
-		Object mvcValidator = this.context.getBean("mvcValidator");
-		String[] jsrValidatorBeans = this.context
-				.getBeanNamesForType(javax.validation.Validator.class);
-		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
-		assertThat(mvcValidator).isNotSameAs(customValidator);
-		assertThat(this.context.getBean(javax.validation.Validator.class))
-				.isEqualTo(customValidator);
-		assertThat(springValidatorBeans).containsExactly("jsr303ValidatorAdapter");
-		assertThat(jsrValidatorBeans).containsExactly("customValidator");
-	}
-
-	@Test
-	public void validatorWhenUserDefinedSingleJsr303AndSpringShouldUseDefined()
-			throws Exception {
-		load(UserDefinedSingleJsr303AndSpringValidator.class);
-		Object customValidator = this.context.getBean("customValidator");
-		Object mvcValidator = this.context.getBean("mvcValidator");
-		String[] jsrValidatorBeans = this.context
-				.getBeanNamesForType(javax.validation.Validator.class);
-		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
-		assertThat(mvcValidator).isSameAs(customValidator);
-		assertThat(this.context.getBean(javax.validation.Validator.class))
-				.isEqualTo(customValidator);
-		assertThat(this.context.getBean(Validator.class)).isEqualTo(customValidator);
-		assertThat(springValidatorBeans).containsExactly("customValidator");
-		assertThat(jsrValidatorBeans).containsExactly("customValidator");
-	}
-
-	@Test
-	public void validatorWhenUserDefinedJsr303AndSpringShouldUseDefined()
-			throws Exception {
-		load(UserDefinedJsr303AndSpringValidator.class);
-		Object customJsrValidator = this.context.getBean("customJsrValidator");
-		Object customSpringValidator = this.context.getBean("customSpringValidator");
-		Object mvcValidator = this.context.getBean("mvcValidator");
-		String[] jsrValidatorBeans = this.context
-				.getBeanNamesForType(javax.validation.Validator.class);
-		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
-		assertThat(customJsrValidator).isNotSameAs(customSpringValidator);
-		assertThat(mvcValidator).isSameAs(customSpringValidator);
-		assertThat(this.context.getBean(javax.validation.Validator.class))
-				.isEqualTo(customJsrValidator);
-		assertThat(this.context.getBean(Validator.class))
-				.isEqualTo(customSpringValidator);
-		assertThat(springValidatorBeans).containsExactly("customSpringValidator");
-		assertThat(jsrValidatorBeans).containsExactly("customJsrValidator");
-	}
-
-	@Test
-	public void validatorWhenExcludingValidatorAutoConfigurationShouldUseMvc()
-			throws Exception {
-		load(null, new Class[] { ValidationAutoConfiguration.class });
-		Object mvcValidator = this.context.getBean("mvcValidator");
-		String[] jsrValidatorBeans = this.context
-				.getBeanNamesForType(javax.validation.Validator.class);
-		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
-		assertThat(mvcValidator).isInstanceOf(DelegatingValidator.class);
 		assertThat(springValidatorBeans).containsExactly("mvcValidator");
-		assertThat(jsrValidatorBeans).isEmpty();
 	}
 
 	@Test
-	public void validatorWhenMultipleValidatorsAndNoMvcValidatorShouldAddMvc()
-			throws Exception {
-		load(MultipleValidatorsAndNoMvcValidator.class);
-		Object customValidator1 = this.context.getBean("customValidator1");
-		Object customValidator2 = this.context.getBean("customValidator2");
-		Object mvcValidator = this.context.getBean("mvcValidator");
+	public void validatorWhenNoCustomizationShouldUseAutoConfigured() {
+		load();
 		String[] jsrValidatorBeans = this.context
 				.getBeanNamesForType(javax.validation.Validator.class);
 		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
-		assertThat(mvcValidator).isNotSameAs(customValidator1)
-				.isNotSameAs(customValidator2);
-		assertThat(springValidatorBeans).containsExactly("customValidator1",
-				"customValidator2", "mvcValidator");
-		assertThat(jsrValidatorBeans).isEmpty();
+		assertThat(jsrValidatorBeans).containsExactly("defaultValidator");
+		assertThat(springValidatorBeans).containsExactly("defaultValidator", "mvcValidator");
+		Validator validator = this.context.getBean("mvcValidator", Validator.class);
+		assertThat(validator).isInstanceOf(ValidatorAdapter.class);
+		Object defaultValidator = this.context.getBean("defaultValidator");
+		assertThat(((ValidatorAdapter) validator).getTarget()).isSameAs(defaultValidator);
+		// Primary Spring validator is the one use by MVC behind the scenes
+		assertThat(this.context.getBean(Validator.class)).isEqualTo(defaultValidator);
 	}
 
 	@Test
-	public void validatorWhenMultipleValidatorsAndMvcValidatorShouldUseMvc()
-			throws Exception {
-		load(MultipleValidatorsAndMvcValidator.class);
-		Object customValidator = this.context.getBean("customValidator");
-		Object mvcValidator = this.context.getBean("mvcValidator");
+	public void validatorWithConfigurerShouldUseSpringValidator() {
+		load(MvcValidator.class, new Class<?>[] { ValidationAutoConfiguration.class });
+		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
+				.isEmpty();
+		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
+		assertThat(springValidatorBeans).containsExactly("mvcValidator");
+		assertThat(this.context.getBean("mvcValidator"))
+				.isSameAs(this.context.getBean(MvcValidator.class).validator);
+	}
+
+	@Test
+	public void validatorWithConfigurerDoesNotExposeJsr303() {
+		load(MvcJsr303Validator.class, new Class<?>[] { ValidationAutoConfiguration.class });
+		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
+				.isEmpty();
+		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
+		assertThat(springValidatorBeans).containsExactly("mvcValidator");
+		Validator validator = this.context.getBean("mvcValidator", Validator.class);
+		assertThat(validator).isInstanceOf(ValidatorAdapter.class);
+		assertThat(((ValidatorAdapter) validator).getTarget())
+				.isSameAs(this.context.getBean(MvcJsr303Validator.class).validator);
+	}
+
+	@Test
+	public void validatorWithConfigurerTakesPrecedence() {
+		load(MvcValidator.class);
+		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
+				.hasSize(1);
+		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
+		assertThat(springValidatorBeans).containsExactly("defaultValidator", "mvcValidator");
+		assertThat(this.context.getBean("mvcValidator"))
+				.isSameAs(this.context.getBean(MvcValidator.class).validator);
+		// Primary Spring validator is the auto-configured one as the MVC one has been
+		// customized via a WebMvcConfigurer
+		assertThat(this.context.getBean(Validator.class))
+				.isEqualTo(this.context.getBean("defaultValidator"));
+	}
+
+	@Test
+	public void validatorWithCustomSpringValidatorIgnored() {
+		load(CustomSpringValidator.class);
 		String[] jsrValidatorBeans = this.context
 				.getBeanNamesForType(javax.validation.Validator.class);
 		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
-		assertThat(mvcValidator).isNotSameAs(customValidator);
-		assertThat(springValidatorBeans).containsExactly("customValidator",
-				"mvcValidator");
-		assertThat(jsrValidatorBeans).isEmpty();
+		assertThat(jsrValidatorBeans).containsExactly("defaultValidator");
+		assertThat(springValidatorBeans).containsExactly(
+				"customSpringValidator", "defaultValidator", "mvcValidator");
+		Validator validator = this.context.getBean("mvcValidator", Validator.class);
+		assertThat(validator).isInstanceOf(ValidatorAdapter.class);
+		Object defaultValidator = this.context.getBean("defaultValidator");
+		assertThat(((ValidatorAdapter) validator).getTarget())
+				.isSameAs(defaultValidator);
+		// Primary Spring validator is the one use by MVC behind the scenes
+		assertThat(this.context.getBean(Validator.class)).isEqualTo(defaultValidator);
+	}
+
+	@Test
+	public void validatorWithCustomJsr303ValidatorExposedAsSpringValidator() {
+		load(CustomJsr303Validator.class);
+		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
+		String[] jsrValidatorBeans = this.context
+				.getBeanNamesForType(javax.validation.Validator.class);
+		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
+		assertThat(jsrValidatorBeans).containsExactly("customJsr303Validator");
+		assertThat(springValidatorBeans).containsExactly("mvcValidator");
+		Validator validator = this.context.getBean(Validator.class);
+		assertThat(validator).isInstanceOf(ValidatorAdapter.class);
+		Validator target = ((ValidatorAdapter) validator).getTarget();
+		assertThat(new DirectFieldAccessor(target).getPropertyValue("targetValidator"))
+				.isSameAs(this.context.getBean("customJsr303Validator"));
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -976,85 +947,44 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class ValidatorWebMvcConfigurer implements WebMvcConfigurer {
+	protected static class MvcValidator implements WebMvcConfigurer {
+
+		private final Validator validator = mock(Validator.class);
 
 		@Override
 		public Validator getValidator() {
-			return mock(Validator.class);
+			return this.validator;
 		}
 
 	}
 
 	@Configuration
-	static class UserDefinedSpringOnlyValidator {
+	protected static class MvcJsr303Validator implements WebMvcConfigurer {
 
-		@Bean
-		public Validator customValidator() {
-			return mock(Validator.class);
+		private final LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+
+		@Override
+		public Validator getValidator() {
+			return this.validator;
 		}
 
 	}
 
 	@Configuration
-	static class UserDefinedJsr303Validator {
+	static class CustomJsr303Validator {
 
 		@Bean
-		public javax.validation.Validator customValidator() {
+		public javax.validation.Validator customJsr303Validator() {
 			return mock(javax.validation.Validator.class);
 		}
 
 	}
 
 	@Configuration
-	static class UserDefinedSingleJsr303AndSpringValidator {
-
-		@Bean
-		public LocalValidatorFactoryBean customValidator() {
-			return new LocalValidatorFactoryBean();
-		}
-
-	}
-
-	@Configuration
-	static class UserDefinedJsr303AndSpringValidator {
-
-		@Bean
-		public javax.validation.Validator customJsrValidator() {
-			return mock(javax.validation.Validator.class);
-		}
+	static class CustomSpringValidator {
 
 		@Bean
 		public Validator customSpringValidator() {
-			return mock(Validator.class);
-		}
-
-	}
-
-	@Configuration
-	static class MultipleValidatorsAndNoMvcValidator {
-
-		@Bean
-		public Validator customValidator1() {
-			return mock(Validator.class);
-		}
-
-		@Bean
-		public Validator customValidator2() {
-			return mock(Validator.class);
-		}
-
-	}
-
-	@Configuration
-	static class MultipleValidatorsAndMvcValidator {
-
-		@Bean
-		public Validator customValidator() {
-			return mock(Validator.class);
-		}
-
-		@Bean
-		public Validator mvcValidator() {
 			return mock(Validator.class);
 		}
 

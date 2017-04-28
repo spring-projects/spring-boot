@@ -23,48 +23,30 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.validation.DelegatingValidator;
+import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
-import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.CacheControl;
-import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.reactive.config.DelegatingWebFluxConfiguration;
 import org.springframework.web.reactive.config.EnableWebFlux;
@@ -103,7 +85,7 @@ public class WebFluxAutoConfiguration {
 
 	@Configuration
 	@EnableConfigurationProperties({ ResourceProperties.class, WebFluxProperties.class })
-	@Import({ EnableWebFluxConfiguration.class, WebFluxValidatorRegistrar.class })
+	@Import({ EnableWebFluxConfiguration.class })
 	public static class WebFluxConfig implements WebFluxConfigurer {
 
 		private static final Log logger = LogFactory.getLog(WebFluxConfig.class);
@@ -209,29 +191,17 @@ public class WebFluxAutoConfiguration {
 	 * Configuration equivalent to {@code @EnableWebFlux}.
 	 */
 	@Configuration
-	public static class EnableWebFluxConfiguration extends DelegatingWebFluxConfiguration
-			implements InitializingBean {
+	public static class EnableWebFluxConfiguration
+			extends DelegatingWebFluxConfiguration {
 
-		private final ApplicationContext context;
-
-		public EnableWebFluxConfiguration(ApplicationContext context) {
-			this.context = context;
-		}
-
+		@Override
 		@Bean
-		@Override
-		@Conditional(DisableWebFluxValidatorCondition.class)
 		public Validator webFluxValidator() {
-			return this.context.getBean("webFluxValidator", Validator.class);
-		}
-
-		@Override
-		public void afterPropertiesSet() throws Exception {
-			Assert.state(getValidator() == null,
-					"Found unexpected validator configuration. A Spring Boot WebFlux "
-							+ "validator should be registered as bean named "
-							+ "'webFluxValidator' and not returned from "
-							+ "WebFluxConfigurer.getValidator()");
+			if (!ClassUtils.isPresent("javax.validation.Validator",
+					getClass().getClassLoader())) {
+				return super.webFluxValidator();
+			}
+			return ValidatorAdapter.get(getApplicationContext(), getValidator());
 		}
 
 	}
@@ -293,132 +263,6 @@ public class WebFluxAutoConfiguration {
 				resolver.addContentVersionStrategy(paths);
 			}
 			return resolver;
-		}
-
-	}
-
-	/**
-	 * Condition used to disable the default WebFlux validator registration. The
-	 * {@link WebFluxValidatorRegistrar} is used to register the {@code webFluxValidator}
-	 * bean.
-	 */
-	static class DisableWebFluxValidatorCondition implements ConfigurationCondition {
-
-		@Override
-		public ConfigurationPhase getConfigurationPhase() {
-			return ConfigurationPhase.REGISTER_BEAN;
-		}
-
-		@Override
-		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			return false;
-		}
-
-	}
-
-	/**
-	 * {@link ImportBeanDefinitionRegistrar} to deal with the WebFlux validator bean
-	 * registration. Applies the following rules:
-	 * <ul>
-	 * <li>With no validators - Uses standard
-	 * {@link WebFluxConfigurationSupport#webFluxValidator()} logic.</li>
-	 * <li>With a single validator - Uses an alias.</li>
-	 * <li>With multiple validators - Registers a webFluxValidator bean if not already
-	 * defined.</li>
-	 * </ul>
-	 */
-	static class WebFluxValidatorRegistrar
-			implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
-
-		private static final String JSR303_VALIDATOR_CLASS = "javax.validation.Validator";
-
-		private BeanFactory beanFactory;
-
-		@Override
-		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-			this.beanFactory = beanFactory;
-		}
-
-		@Override
-		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-				BeanDefinitionRegistry registry) {
-			if (this.beanFactory instanceof ListableBeanFactory) {
-				registerOrAliasWebFluxValidator(registry,
-						(ListableBeanFactory) this.beanFactory);
-			}
-		}
-
-		private void registerOrAliasWebFluxValidator(BeanDefinitionRegistry registry,
-				ListableBeanFactory beanFactory) {
-			String[] validatorBeans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-					beanFactory, Validator.class, false, false);
-			if (validatorBeans.length == 0) {
-				registerNewWebFluxValidator(registry, beanFactory);
-			}
-			else if (validatorBeans.length == 1) {
-				registry.registerAlias(validatorBeans[0], "webFluxValidator");
-			}
-			else {
-				if (!ObjectUtils.containsElement(validatorBeans, "webFluxValidator")) {
-					registerNewWebFluxValidator(registry, beanFactory);
-				}
-			}
-		}
-
-		private void registerNewWebFluxValidator(BeanDefinitionRegistry registry,
-				ListableBeanFactory beanFactory) {
-			RootBeanDefinition definition = new RootBeanDefinition();
-			definition.setBeanClass(getClass());
-			definition.setFactoryMethodName("webFluxValidator");
-			registry.registerBeanDefinition("webFluxValidator", definition);
-		}
-
-		static Validator webFluxValidator() {
-			Validator validator = new WebFluxConfigurationSupport().webFluxValidator();
-			try {
-				if (ClassUtils.forName(JSR303_VALIDATOR_CLASS, null)
-						.isInstance(validator)) {
-					return new DelegatingWebFluxValidator(validator);
-				}
-			}
-			catch (Exception ex) {
-			}
-			return validator;
-		}
-
-	}
-
-	/**
-	 * {@link DelegatingValidator} for the WebFlux validator.
-	 */
-	static class DelegatingWebFluxValidator extends DelegatingValidator
-			implements ApplicationContextAware, InitializingBean, DisposableBean {
-
-		DelegatingWebFluxValidator(Validator targetValidator) {
-			super(targetValidator);
-		}
-
-		@Override
-		public void setApplicationContext(ApplicationContext applicationContext)
-				throws BeansException {
-			if (getDelegate() instanceof ApplicationContextAware) {
-				((ApplicationContextAware) getDelegate())
-						.setApplicationContext(applicationContext);
-			}
-		}
-
-		@Override
-		public void afterPropertiesSet() throws Exception {
-			if (getDelegate() instanceof InitializingBean) {
-				((InitializingBean) getDelegate()).afterPropertiesSet();
-			}
-		}
-
-		@Override
-		public void destroy() throws Exception {
-			if (getDelegate() instanceof DisposableBean) {
-				((DisposableBean) getDelegate()).destroy();
-			}
 		}
 
 	}
