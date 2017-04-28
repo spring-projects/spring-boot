@@ -22,6 +22,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
 @Entity
 public class City implements Serializable {
@@ -29,7 +30,8 @@ public class City implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue
+	@SequenceGenerator(name="city_generator", sequenceName="city_sequence", initialValue = 23)
+	@GeneratedValue(generator = "city_generator")
 	private Long id;
 
 	@Column(nullable = false)

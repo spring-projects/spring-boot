@@ -20,15 +20,16 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
 
 @Entity
 public class Note {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@SequenceGenerator(name="note_generator", sequenceName="note_sequence", initialValue = 5)
+	@GeneratedValue(generator = "note_generator")
 	private long id;
 
 	private String title;

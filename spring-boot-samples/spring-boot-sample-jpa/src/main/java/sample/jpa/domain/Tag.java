@@ -23,12 +23,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
 
 @Entity
 public class Tag {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@SequenceGenerator(name="tag_generator", sequenceName="tag_sequence", initialValue = 4)
+	@GeneratedValue(generator = "tag_generator")
 	private long id;
 
 	private String name;
