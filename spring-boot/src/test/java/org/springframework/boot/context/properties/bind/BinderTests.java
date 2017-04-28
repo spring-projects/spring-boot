@@ -139,14 +139,15 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToValueWithMissingPlaceholdersShouldThrowException() throws Exception {
+	public void bindToValueWithMissingPlaceholdersShouldThrowException()
+			throws Exception {
 		StandardEnvironment environment = new StandardEnvironment();
 		this.sources.add(new MockConfigurationPropertySource("foo", "${bar}"));
 		this.binder = new Binder(this.sources,
 				new PropertySourcesPlaceholdersResolver(environment));
 		this.thrown.expect(BindException.class);
-		this.thrown.expectCause(ThrowableMessageMatcher.hasMessage(
-				containsString("Could not resolve placeholder 'bar' in value \"${bar}\"")));
+		this.thrown.expectCause(ThrowableMessageMatcher.hasMessage(containsString(
+				"Could not resolve placeholder 'bar' in value \"${bar}\"")));
 		this.binder.bind("foo", Bindable.of(Integer.class));
 	}
 
