@@ -106,7 +106,7 @@ class RelaxedConversionService implements ConversionService {
 			while (enumType != null && !enumType.isEnum()) {
 				enumType = enumType.getSuperclass();
 			}
-			Assert.notNull(enumType, "The target type " + targetType.getName()
+			Assert.notNull(enumType, () -> "The target type " + targetType.getName()
 					+ " does not refer to an enum");
 			return new StringToEnum(enumType);
 		}
