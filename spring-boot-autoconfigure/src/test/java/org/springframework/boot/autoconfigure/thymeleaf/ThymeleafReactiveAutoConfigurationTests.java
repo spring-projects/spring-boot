@@ -82,7 +82,8 @@ public class ThymeleafReactiveAutoConfigurationTests {
 		assertThat(resolver instanceof SpringResourceTemplateResolver).isTrue();
 		assertThat(((SpringResourceTemplateResolver) resolver).getCharacterEncoding())
 				.isEqualTo("UTF-16");
-		ThymeleafReactiveViewResolver views = this.context.getBean(ThymeleafReactiveViewResolver.class);
+		ThymeleafReactiveViewResolver views = this.context
+				.getBean(ThymeleafReactiveViewResolver.class);
 		assertThat(views.getDefaultCharset().name()).isEqualTo("UTF-16");
 	}
 
@@ -90,8 +91,10 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	public void overrideMediaTypes() throws Exception {
 		load(BaseConfiguration.class,
 				"spring.thymeleaf.reactive.media-types:text/html,text/plain");
-		ThymeleafReactiveViewResolver views = this.context.getBean(ThymeleafReactiveViewResolver.class);
-		assertThat(views.getSupportedMediaTypes()).contains(MediaType.TEXT_HTML, MediaType.TEXT_PLAIN);
+		ThymeleafReactiveViewResolver views = this.context
+				.getBean(ThymeleafReactiveViewResolver.class);
+		assertThat(views.getSupportedMediaTypes()).contains(MediaType.TEXT_HTML,
+				MediaType.TEXT_PLAIN);
 	}
 
 	@Test
@@ -104,27 +107,31 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	@Test
 	public void overrideViewNames() throws Exception {
 		load(BaseConfiguration.class, "spring.thymeleaf.viewNames:foo,bar");
-		ThymeleafReactiveViewResolver views = this.context.getBean(ThymeleafReactiveViewResolver.class);
-		assertThat(views.getViewNames()).isEqualTo(new String[] {"foo", "bar"});
+		ThymeleafReactiveViewResolver views = this.context
+				.getBean(ThymeleafReactiveViewResolver.class);
+		assertThat(views.getViewNames()).isEqualTo(new String[] { "foo", "bar" });
 	}
 
 	@Test
 	public void templateLocationDoesNotExist() throws Exception {
-		load(BaseConfiguration.class, "spring.thymeleaf.prefix:classpath:/no-such-directory/");
+		load(BaseConfiguration.class,
+				"spring.thymeleaf.prefix:classpath:/no-such-directory/");
 		this.output.expect(containsString("Cannot find template location"));
 	}
 
 	@Test
 	public void templateLocationEmpty() throws Exception {
 		new File("target/test-classes/templates/empty-directory").mkdir();
-		load(BaseConfiguration.class, "spring.thymeleaf.prefix:classpath:/templates/empty-directory/");
+		load(BaseConfiguration.class,
+				"spring.thymeleaf.prefix:classpath:/templates/empty-directory/");
 		this.output.expect(not(containsString("Cannot find template location")));
 	}
 
 	@Test
 	public void useDataDialect() throws Exception {
 		load(BaseConfiguration.class);
-		ISpringWebFluxTemplateEngine engine = this.context.getBean(ISpringWebFluxTemplateEngine.class);
+		ISpringWebFluxTemplateEngine engine = this.context
+				.getBean(ISpringWebFluxTemplateEngine.class);
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
 		String result = engine.process("data-dialect", attrs);
 		assertThat(result).isEqualTo("<html><body data-foo=\"bar\"></body></html>");
@@ -133,7 +140,8 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	@Test
 	public void useJava8TimeDialect() throws Exception {
 		load(BaseConfiguration.class);
-		ISpringWebFluxTemplateEngine engine = this.context.getBean(ISpringWebFluxTemplateEngine.class);
+		ISpringWebFluxTemplateEngine engine = this.context
+				.getBean(ISpringWebFluxTemplateEngine.class);
 		Context attrs = new Context(Locale.UK);
 		String result = engine.process("java8time-dialect", attrs);
 		assertThat(result).isEqualTo("<html><body>2015-11-24</body></html>");
@@ -142,7 +150,8 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	@Test
 	public void renderTemplate() throws Exception {
 		load(BaseConfiguration.class);
-		ISpringWebFluxTemplateEngine engine = this.context.getBean(ISpringWebFluxTemplateEngine.class);
+		ISpringWebFluxTemplateEngine engine = this.context
+				.getBean(ISpringWebFluxTemplateEngine.class);
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
 		String result = engine.process("home", attrs);
 		assertThat(result).isEqualTo("<html><body>bar</body></html>");
@@ -167,7 +176,8 @@ public class ThymeleafReactiveAutoConfigurationTests {
 	}
 
 	@Configuration
-	@ImportAutoConfiguration({ThymeleafAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class})
+	@ImportAutoConfiguration({ ThymeleafAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	protected static class BaseConfiguration {
 
 	}

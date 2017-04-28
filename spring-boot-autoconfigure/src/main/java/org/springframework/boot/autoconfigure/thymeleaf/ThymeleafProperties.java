@@ -227,8 +227,8 @@ public class ThymeleafProperties {
 		/**
 		 * Media types supported by the view technology.
 		 */
-		private List<MediaType> mediaTypes =
-				new ArrayList(Collections.singletonList(MediaType.TEXT_HTML));
+		private List<MediaType> mediaTypes = new ArrayList<>(
+				Collections.singletonList(MediaType.TEXT_HTML));
 
 		public List<MediaType> getMediaTypes() {
 			return this.mediaTypes;
@@ -245,5 +245,7 @@ public class ThymeleafProperties {
 		public void setMaxChunkSize(int maxChunkSize) {
 			this.maxChunkSize = maxChunkSize;
 		}
+
 	}
+
 }

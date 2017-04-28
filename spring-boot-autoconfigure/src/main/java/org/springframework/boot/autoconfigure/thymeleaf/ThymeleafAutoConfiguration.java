@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 
 import javax.annotation.PostConstruct;
@@ -54,7 +55,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.MimeType;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 
@@ -71,7 +71,7 @@ import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 @Configuration
 @EnableConfigurationProperties(ThymeleafProperties.class)
 @ConditionalOnClass(TemplateMode.class)
-@AutoConfigureAfter({WebMvcAutoConfiguration.class, WebFluxAutoConfiguration.class})
+@AutoConfigureAfter({ WebMvcAutoConfiguration.class, WebFluxAutoConfiguration.class })
 public class ThymeleafAutoConfiguration {
 
 	@Configuration
@@ -137,21 +137,16 @@ public class ThymeleafAutoConfiguration {
 				Collection<ITemplateResolver> templateResolvers,
 				ObjectProvider<Collection<IDialect>> dialectsProvider) {
 			this.templateResolvers = templateResolvers;
-			this.dialects = dialectsProvider.getIfAvailable();
+			this.dialects = dialectsProvider
+					.getIfAvailable(() -> Collections.emptyList());
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(SpringTemplateEngine.class)
 		public SpringTemplateEngine templateEngine() {
 			SpringTemplateEngine engine = new SpringTemplateEngine();
-			for (ITemplateResolver templateResolver : this.templateResolvers) {
-				engine.addTemplateResolver(templateResolver);
-			}
-			if (!CollectionUtils.isEmpty(this.dialects)) {
-				for (IDialect dialect : this.dialects) {
-					engine.addDialect(dialect);
-				}
-			}
+			this.templateResolvers.forEach(engine::addTemplateResolver);
+			this.dialects.forEach(engine::addDialect);
 			return engine;
 		}
 
@@ -188,8 +183,9 @@ public class ThymeleafAutoConfiguration {
 				ThymeleafViewResolver resolver = new ThymeleafViewResolver();
 				resolver.setTemplateEngine(this.templateEngine);
 				resolver.setCharacterEncoding(this.properties.getEncoding().name());
-				resolver.setContentType(appendCharset(this.properties.getServlet().getContentType(),
-						resolver.getCharacterEncoding()));
+				resolver.setContentType(
+						appendCharset(this.properties.getServlet().getContentType(),
+								resolver.getCharacterEncoding()));
 				resolver.setExcludedViewNames(this.properties.getExcludedViewNames());
 				resolver.setViewNames(this.properties.getViewNames());
 				// This resolver acts as a fallback resolver (e.g. like a
@@ -222,27 +218,22 @@ public class ThymeleafAutoConfiguration {
 
 		private final Collection<IDialect> dialects;
 
-
 		ThymeleafReactiveConfiguration(Collection<ITemplateResolver> templateResolvers,
 				ObjectProvider<Collection<IDialect>> dialectsProvider) {
 			this.templateResolvers = templateResolvers;
-			this.dialects = dialectsProvider.getIfAvailable();
+			this.dialects = dialectsProvider
+					.getIfAvailable(() -> Collections.emptyList());
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(ISpringWebFluxTemplateEngine.class)
 		public SpringWebFluxTemplateEngine templateEngine() {
 			SpringWebFluxTemplateEngine engine = new SpringWebFluxTemplateEngine();
-			for (ITemplateResolver templateResolver : this.templateResolvers) {
-				engine.addTemplateResolver(templateResolver);
-			}
-			if (!CollectionUtils.isEmpty(this.dialects)) {
-				for (IDialect dialect : this.dialects) {
-					engine.addDialect(dialect);
-				}
-			}
+			this.templateResolvers.forEach(engine::addTemplateResolver);
+			this.dialects.forEach(engine::addDialect);
 			return engine;
 		}
+
 	}
 
 	@Configuration
@@ -252,23 +243,24 @@ public class ThymeleafAutoConfiguration {
 
 		private final ThymeleafProperties properties;
 
-
 		ThymeleafWebFluxConfiguration(ThymeleafProperties properties) {
 			this.properties = properties;
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(name = "thymeleafReactiveViewResolver")
-		public ThymeleafReactiveViewResolver thymeleafViewResolver(ISpringWebFluxTemplateEngine templateEngine) {
-
+		public ThymeleafReactiveViewResolver thymeleafViewResolver(
+				ISpringWebFluxTemplateEngine templateEngine) {
 			ThymeleafReactiveViewResolver resolver = new ThymeleafReactiveViewResolver();
 			resolver.setTemplateEngine(templateEngine);
 			resolver.setDefaultCharset(this.properties.getEncoding());
-			resolver.setSupportedMediaTypes(this.properties.getReactive().getMediaTypes());
+			resolver.setSupportedMediaTypes(
+					this.properties.getReactive().getMediaTypes());
 			resolver.setExcludedViewNames(this.properties.getExcludedViewNames());
 			resolver.setViewNames(this.properties.getViewNames());
 			if (this.properties.getReactive().getMaxChunkSize() > 0) {
-				resolver.setResponseMaxChunkSizeBytes(this.properties.getReactive().getMaxChunkSize());
+				resolver.setResponseMaxChunkSizeBytes(
+						this.properties.getReactive().getMaxChunkSize());
 			}
 			// This resolver acts as a fallback resolver (e.g. like a
 			// InternalResourceViewResolver) so it needs to have low precedence
@@ -303,7 +295,7 @@ public class ThymeleafAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass({SpringSecurityDialect.class})
+	@ConditionalOnClass({ SpringSecurityDialect.class })
 	protected static class ThymeleafSecurityDialectConfiguration {
 
 		@Bean
