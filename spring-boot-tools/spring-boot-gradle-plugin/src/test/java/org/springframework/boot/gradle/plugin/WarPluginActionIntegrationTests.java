@@ -16,6 +16,10 @@
 
 package org.springframework.boot.gradle.plugin;
 
+import java.io.File;
+
+import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -57,6 +61,25 @@ public class WarPluginActionIntegrationTests {
 		assertThat(this.gradleBuild
 				.build("componentExists", "-PcomponentName=bootWeb", "-PapplyWarPlugin")
 				.getOutput()).contains("bootWeb exists = true");
+	}
+
+	@Test
+	public void assembleRunsBootWarAndWarIsSkipped() {
+		BuildResult result = this.gradleBuild.build("assemble");
+		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.task(":war").getOutcome()).isEqualTo(TaskOutcome.SKIPPED);
+	}
+
+	@Test
+	public void warAndBootWarCanBothBeBuilt() {
+		BuildResult result = this.gradleBuild.build("assemble");
+		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.task(":war").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
+		assertThat(buildLibs.listFiles()).containsExactlyInAnyOrder(
+				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"),
+				new File(buildLibs,
+						this.gradleBuild.getProjectDir().getName() + "-boot.war"));
 	}
 
 }

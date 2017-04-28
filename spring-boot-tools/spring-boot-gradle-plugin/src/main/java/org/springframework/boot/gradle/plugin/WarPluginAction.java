@@ -45,6 +45,7 @@ class WarPluginAction implements PluginApplicationAction {
 
 	@Override
 	public void execute(Project project) {
+		project.getTasks().getByName(WarPlugin.WAR_TASK_NAME).setEnabled(false);
 		BootWar bootWar = project.getTasks().create(SpringBootPlugin.BOOT_WAR_TASK_NAME,
 				BootWar.class);
 		bootWar.providedClasspath(providedRuntimeConfiguration(project));

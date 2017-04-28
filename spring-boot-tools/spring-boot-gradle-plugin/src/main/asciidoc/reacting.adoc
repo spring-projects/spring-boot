@@ -14,13 +14,15 @@ plugin:
    executable, fat jar for the project. The jar will contain everything on the runtime
    classpath of the main source set; classes are packaged in `BOOT-INF/classes` and jars
    are packaged in `BOOT-INF/lib`
-2. Creates a {software-component}[software component] named `bootJava` that contains the
+2. Configures the `assemble` task to depend on the `bootJar` task.
+3. Disables the `jar` task.
+4. Creates a {software-component}[software component] named `bootJava` that contains the
 	archive produced by the `bootJar` task.
-3. Creates a {boot-run-javadoc}[`BootRun`] task named `bootRun` that can be used to run
+5. Creates a {boot-run-javadoc}[`BootRun`] task named `bootRun` that can be used to run
    your application.
-4. Creates a configuration named `bootArchives` that contains the artifact produced by
+6. Creates a configuration named `bootArchives` that contains the artifact produced by
    the `bootJar` task.
-5. Configures any `JavaCompile` tasks with no configured encoding to use `UTF-8`.
+7. Configures any `JavaCompile` tasks with no configured encoding to use `UTF-8`.
 
 
 
@@ -32,9 +34,11 @@ When Gradle's {war-plugin}[`war` plugin] is applied to a project, the Spring Boo
 1. Creates a {boot-war-javadoc}[`BootWar`] task named `bootWar` that will create an
    executable, fat war for the project. In addition to the standard packaging, everything
    in the `providedRuntime` configuration will be packaged in `WEB-INF/lib-provided`.
-2. Creates a {software-component}[software component] named `bootWeb` that contains the
+2. Configures the `assemble` task to depend on the `bootWar` task.
+3. Disables the `war` task.
+4. Creates a {software-component}[software component] named `bootWeb` that contains the
    archive produced by the `bootWar` task.
-3. Configures the `bootArchives` configuration to contain the artifact produced by the
+5. Configures the `bootArchives` configuration to contain the artifact produced by the
    `bootWar` task.
 
 

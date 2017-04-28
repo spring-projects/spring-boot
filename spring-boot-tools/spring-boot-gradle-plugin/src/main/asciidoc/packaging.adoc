@@ -11,6 +11,8 @@ an application's dependencies and can then be run with `java -jar`.
 
 Executable jars can be built using the `bootJar` task. The task is automatically created
 when the `java` plugin is applied and is an instance of {boot-jar-javadoc}[`BootJar`].
+The `assemble` task is automatically configured to depend upon the `bootJar` task so
+running `assemble` (or `build`) will also run the `bootJar` task.
 
 
 
@@ -19,6 +21,8 @@ when the `java` plugin is applied and is an instance of {boot-jar-javadoc}[`Boot
 
 Executable wars can be built using the `bootWar` task. The task is automatically created
 when the `war` plugin is applied and is an instance of {boot-war-javadoc}[`BootWar`].
+The `assemble` task is automatically configured to depend upon the `bootWar` task so
+running `assemble` (or `build`) will also run the `bootWar` task.
 
 
 
@@ -42,6 +46,27 @@ other limitations, `compileOnly` dependencies are not on the test classpath so a
 web-based integration tests will fail.
 
 
+
+[[packaging-executable-and-normal]]
+=== Packaging executable and normal archives
+
+By default, when the `bootJar` or `bootWar` tasks are configured, the `jar` or `war`
+tasks are disabled. A project can be configured to build both an executable archive
+and a normal archive at the same time by enabling the `jar` or `war` task:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/packaging/boot-jar-and-jar.gradle[tags=enable-jar]
+----
+
+To avoid the executable archive and the normal archive from being written to the same
+location, one or the other should be configured to use a different location. One way to
+do so is by configuring a classifier:
+
+[source,groovy,indent=0,subs="verbatim"]
+----
+include::../gradle/packaging/boot-jar-and-jar.gradle[tags=classifier]
+----
 
 [[packaging-executable-configuring]]
 === Configuring executable archive packaging

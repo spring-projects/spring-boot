@@ -173,4 +173,17 @@ public class PackagingDocumentationTests {
 		}
 	}
 
+	@Test
+	public void bootJarAndJar() throws IOException {
+		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-and-jar.gradle")
+				.build("assemble");
+		File jar = new File(this.gradleBuild.getProjectDir(),
+				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
+		assertThat(jar).isFile();
+		File bootJar = new File(this.gradleBuild.getProjectDir(),
+				"build/libs/" + this.gradleBuild.getProjectDir().getName() + "-boot.jar");
+		assertThat(bootJar).isFile();
+
+	}
+
 }

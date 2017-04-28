@@ -16,8 +16,10 @@
 
 package org.springframework.boot.gradle.plugin;
 
+import org.gradle.api.Buildable;
 import org.gradle.api.artifacts.PublishArtifact;
 import org.gradle.api.artifacts.PublishArtifactSet;
+import org.gradle.api.tasks.TaskDependency;
 
 /**
  * A wrapper for a {@PublishArtifactSet} that ensures that only a single artifact is
@@ -25,7 +27,7 @@ import org.gradle.api.artifacts.PublishArtifactSet;
  *
  * @author Andy Wilkinson
  */
-final class SinglePublishedArtifact {
+final class SinglePublishedArtifact implements Buildable {
 
 	private final PublishArtifactSet artifacts;
 
@@ -41,6 +43,11 @@ final class SinglePublishedArtifact {
 			this.artifacts.add(candidate);
 			this.currentArtifact = candidate;
 		}
+	}
+
+	@Override
+	public TaskDependency getBuildDependencies() {
+		return this.currentArtifact.getBuildDependencies();
 	}
 
 }

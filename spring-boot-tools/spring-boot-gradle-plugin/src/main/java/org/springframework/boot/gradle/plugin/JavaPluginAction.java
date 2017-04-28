@@ -24,6 +24,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
+import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
@@ -52,10 +53,21 @@ final class JavaPluginAction implements PluginApplicationAction {
 
 	@Override
 	public void execute(Project project) {
+		disableJarTask(project);
+		configureBuildTask(project);
 		BootJar bootJar = configureBootJarTask(project);
 		configureArtifactPublication(project, bootJar);
 		configureBootRunTask(project);
 		configureUtf8Encoding(project);
+	}
+
+	private void disableJarTask(Project project) {
+		project.getTasks().getByName(JavaPlugin.JAR_TASK_NAME).setEnabled(false);
+	}
+
+	private void configureBuildTask(Project project) {
+		project.getTasks().getByName(BasePlugin.ASSEMBLE_TASK_NAME)
+				.dependsOn(this.singlePublishedArtifact);
 	}
 
 	private BootJar configureBootJarTask(Project project) {

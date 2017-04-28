@@ -16,6 +16,10 @@
 
 package org.springframework.boot.gradle.plugin;
 
+import java.io.File;
+
+import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -77,6 +81,25 @@ public class JavaPluginActionIntegrationTests {
 		assertThat(this.gradleBuild.build("javaCompileEncoding", "-PapplyJavaPlugin")
 				.getOutput()).contains("compileJava = UTF-8")
 						.contains("compileTestJava = UTF-8");
+	}
+
+	@Test
+	public void assembleRunsBootJarAndJarIsSkipped() {
+		BuildResult result = this.gradleBuild.build("assemble");
+		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.task(":jar").getOutcome()).isEqualTo(TaskOutcome.SKIPPED);
+	}
+
+	@Test
+	public void jarAndBootJarCanBothBeBuilt() {
+		BuildResult result = this.gradleBuild.build("assemble");
+		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.task(":jar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
+		assertThat(buildLibs.listFiles()).containsExactlyInAnyOrder(
+				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar"),
+				new File(buildLibs,
+						this.gradleBuild.getProjectDir().getName() + "-boot.jar"));
 	}
 
 }
