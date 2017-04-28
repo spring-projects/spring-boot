@@ -2327,17 +2327,17 @@ container's built-in discovery mechanisms will be used instead.
 
 
 [[boot-features-embedded-container-application-context]]
-==== The EmbeddedWebApplicationContext
+==== The ServletWebServerApplicationContext
 Under the hood Spring Boot uses a new type of `ApplicationContext` for embedded servlet
-container support.  The `EmbeddedWebApplicationContext` is a special type of
+container support.  The `ServletWebServerApplicationContext` is a special type of
 `WebApplicationContext` that bootstraps itself by searching for a single
-`EmbeddedServletContainerFactory` bean. Usually a `TomcatEmbeddedServletContainerFactory`,
-`JettyEmbeddedServletContainerFactory`, or `UndertowEmbeddedServletContainerFactory` will
+`ServletWebServerFactory` bean. Usually a `TomcatServletWebServerFactory`,
+`JettyServletWebServerFactory`, or `UndertowServletWebServerFactory` will
 have been auto-configured.
 
 NOTE: You usually won't need to be aware of these implementation classes. Most
 applications will be auto-configured and the appropriate `ApplicationContext` and
-`EmbeddedServletContainerFactory` will be created on your behalf.
+`ServletWebServerFactory` will be created on your behalf.
 
 
 
