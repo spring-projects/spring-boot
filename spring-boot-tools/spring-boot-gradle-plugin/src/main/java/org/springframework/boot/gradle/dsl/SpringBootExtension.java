@@ -21,6 +21,7 @@ import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
@@ -75,6 +76,8 @@ public class SpringBootExtension {
 	public void buildInfo(Action<BuildInfo> configurer) {
 		BuildInfo bootBuildInfo = this.project.getTasks().create("bootBuildInfo",
 				BuildInfo.class);
+		bootBuildInfo.setGroup(BasePlugin.BUILD_GROUP);
+		bootBuildInfo.setDescription("Generates a META-INF/build-info.properties file.");
 		this.project.getPlugins().withType(JavaPlugin.class, plugin -> {
 			this.project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME)
 					.dependsOn(bootBuildInfo);

@@ -21,6 +21,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
+import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.WarPlugin;
 
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
@@ -48,6 +49,9 @@ class WarPluginAction implements PluginApplicationAction {
 		project.getTasks().getByName(WarPlugin.WAR_TASK_NAME).setEnabled(false);
 		BootWar bootWar = project.getTasks().create(SpringBootPlugin.BOOT_WAR_TASK_NAME,
 				BootWar.class);
+		bootWar.setGroup(BasePlugin.BUILD_GROUP);
+		bootWar.setDescription("Assembles an executable war archive containing webapp"
+				+ " content, and the main classes and their dependencies.");
 		bootWar.providedClasspath(providedRuntimeConfiguration(project));
 		ArchivePublishArtifact artifact = new ArchivePublishArtifact(bootWar);
 		this.singlePublishedArtifact.addCandidate(artifact);
