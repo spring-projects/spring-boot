@@ -33,9 +33,9 @@ import org.springframework.util.SystemPropertyUtils;
  */
 public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver {
 
-	private PropertySources sources;
+	private final PropertySources sources;
 
-	private PropertyPlaceholderHelper helper;
+	private final PropertyPlaceholderHelper helper;
 
 	public PropertySourcesPlaceholdersResolver(Environment environment) {
 		this(getSources(environment), null);

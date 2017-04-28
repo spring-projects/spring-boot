@@ -37,9 +37,9 @@ class DefaultPropertyMapper implements PropertyMapper {
 
 	public static final PropertyMapper INSTANCE = new DefaultPropertyMapper();
 
-	private Cache<ConfigurationPropertyName> configurationPropertySourceCache = new Cache<>();
+	private final Cache<ConfigurationPropertyName> configurationPropertySourceCache = new Cache<>();
 
-	private Cache<String> propertySourceCache = new Cache<>();
+	private final Cache<String> propertySourceCache = new Cache<>();
 
 	private final ConfigurationPropertyNameBuilder nameBuilder = new ConfigurationPropertyNameBuilder();
 
@@ -59,12 +59,7 @@ class DefaultPropertyMapper implements PropertyMapper {
 	@Override
 	public List<PropertyMapping> map(PropertySource<?> propertySource,
 			String propertySourceName) {
-		List<PropertyMapping> mapping = this.propertySourceCache.get(propertySourceName);
-		if (mapping == null) {
-			mapping = tryMap(propertySourceName);
-			this.propertySourceCache.put(propertySourceName, mapping);
-		}
-		return mapping;
+		return this.propertySourceCache.computeIfAbsent(propertySourceName, this::tryMap);
 	}
 
 	private List<PropertyMapping> tryMap(String propertySourceName) {
@@ -94,10 +89,7 @@ class DefaultPropertyMapper implements PropertyMapper {
 
 		@Override
 		protected boolean removeEldestEntry(Map.Entry<K, List<PropertyMapping>> eldest) {
-			if (size() < this.capacity) {
-				return false;
-			}
-			return true;
+			return size() >= this.capacity;
 
 		}
 

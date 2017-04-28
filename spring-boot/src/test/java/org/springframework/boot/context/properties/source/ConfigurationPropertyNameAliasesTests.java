@@ -62,7 +62,7 @@ public class ConfigurationPropertyNameAliasesTests {
 	@Test
 	public void addAliasesFromStringShouldAddMapping() throws Exception {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
-		aliases.addAlaises("foo", "bar", "baz");
+		aliases.addAliases("foo", "bar", "baz");
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo")))
 				.containsExactly(ConfigurationPropertyName.of("bar"),
 						ConfigurationPropertyName.of("baz"));
@@ -71,7 +71,7 @@ public class ConfigurationPropertyNameAliasesTests {
 	@Test
 	public void addAlaisesFromNameShouldAddMapping() throws Exception {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
-		aliases.addAlaises(ConfigurationPropertyName.of("foo"),
+		aliases.addAliases(ConfigurationPropertyName.of("foo"),
 				ConfigurationPropertyName.of("bar"), ConfigurationPropertyName.of("baz"));
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo")))
 				.containsExactly(ConfigurationPropertyName.of("bar"),
@@ -81,8 +81,8 @@ public class ConfigurationPropertyNameAliasesTests {
 	@Test
 	public void addWhenHasExistingShouldAddAdditionalMappings() throws Exception {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
-		aliases.addAlaises("foo", "bar");
-		aliases.addAlaises("foo", "baz");
+		aliases.addAliases("foo", "bar");
+		aliases.addAliases("foo", "baz");
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo")))
 				.containsExactly(ConfigurationPropertyName.of("bar"),
 						ConfigurationPropertyName.of("baz"));
@@ -97,7 +97,7 @@ public class ConfigurationPropertyNameAliasesTests {
 	@Test
 	public void getAliasesWhenMappedShouldReturnMapping() throws Exception {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
-		aliases.addAlaises("foo", "bar");
+		aliases.addAliases("foo", "bar");
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo")))
 				.containsExactly(ConfigurationPropertyName.of("bar"));
 	}
@@ -105,8 +105,8 @@ public class ConfigurationPropertyNameAliasesTests {
 	@Test
 	public void getNameForAliasWhenHasMappingShouldReturnName() throws Exception {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
-		aliases.addAlaises("foo", "bar");
-		aliases.addAlaises("foo", "baz");
+		aliases.addAliases("foo", "bar");
+		aliases.addAliases("foo", "baz");
 		assertThat((Object) aliases.getNameForAlias(ConfigurationPropertyName.of("bar")))
 				.isEqualTo(ConfigurationPropertyName.of("foo"));
 		assertThat((Object) aliases.getNameForAlias(ConfigurationPropertyName.of("baz")))
@@ -116,7 +116,7 @@ public class ConfigurationPropertyNameAliasesTests {
 	@Test
 	public void getNameForAliasWhenNotMappedShouldReturnNull() throws Exception {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
-		aliases.addAlaises("foo", "bar");
+		aliases.addAliases("foo", "bar");
 		assertThat((Object) aliases.getNameForAlias(ConfigurationPropertyName.of("baz")))
 				.isNull();
 	}

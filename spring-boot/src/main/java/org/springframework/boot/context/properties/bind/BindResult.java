@@ -161,7 +161,7 @@ public final class BindResult<T> {
 		if (value == null) {
 			return (BindResult<T>) UNBOUND;
 		}
-		return new BindResult<T>(value);
+		return new BindResult<>(value);
 	}
 
 }

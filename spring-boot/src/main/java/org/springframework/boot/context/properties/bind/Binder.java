@@ -287,7 +287,7 @@ public class Binder {
 	}
 
 	private Object bindBean(ConfigurationPropertyName name, Bindable<?> target,
-			BindHandler handler, Context context) throws Exception {
+			BindHandler handler, Context context) {
 		boolean hasKnownBindableProperties = context.streamSources()
 				.flatMap((s) -> s.filter(name::isAncestorOf).stream()).findAny()
 				.isPresent();

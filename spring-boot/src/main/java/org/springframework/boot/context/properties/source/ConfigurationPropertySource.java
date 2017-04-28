@@ -77,7 +77,7 @@ public interface ConfigurationPropertySource extends Iterable<ConfigurationPrope
 	/**
 	 * Return a variant of this source that supports name aliases.
 	 * @param aliases a function that returns a stream of aliases for any given name
-	 * @return a {@link ConfigurationPropertySource} instance supporting name alaises
+	 * @return a {@link ConfigurationPropertySource} instance supporting name aliases
 	 */
 	default ConfigurationPropertySource withAliases(
 			ConfigurationPropertyNameAliases aliases) {

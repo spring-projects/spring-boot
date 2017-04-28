@@ -145,7 +145,7 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 			return names;
 		}
 		List<PropertyMapping> mappings = getPropertyMappings();
-		names = new ArrayList<ConfigurationPropertyName>(mappings.size());
+		names = new ArrayList<>(mappings.size());
 		for (PropertyMapping mapping : mappings) {
 			names.add(mapping.getConfigurationPropertyName());
 		}
@@ -167,7 +167,7 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 		}
 		String[] names = ((EnumerablePropertySource<?>) this.propertySource)
 				.getPropertyNames();
-		mappings = new ArrayList<PropertyMapping>(names.length);
+		mappings = new ArrayList<>(names.length);
 		for (String name : names) {
 			mappings.addAll(this.mapper.map(this.propertySource, name));
 		}
@@ -237,8 +237,6 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 	}
 
 	private static class Cache {
-
-		private ConfigurationPropertyName knownMissingName;
 
 		private List<ConfigurationPropertyName> names;
 

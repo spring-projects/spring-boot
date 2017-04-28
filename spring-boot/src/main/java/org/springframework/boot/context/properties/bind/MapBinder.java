@@ -84,7 +84,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		public void bindEntries(ConfigurationPropertySource source,
 				Map<Object, Object> map) {
 			for (ConfigurationPropertyName name : source) {
-				Bindable<?> valueBindable = getValueBindable(source, name);
+				Bindable<?> valueBindable = getValueBindable(name);
 				ConfigurationPropertyName entryName = getEntryName(source, name);
 				Object key = getContext().getConversionService()
 						.convert(getKeyName(entryName), this.keyType);
@@ -93,8 +93,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 			}
 		}
 
-		private Bindable<?> getValueBindable(ConfigurationPropertySource source,
-				ConfigurationPropertyName name) {
+		private Bindable<?> getValueBindable(ConfigurationPropertyName name) {
 			if (isMultiElementName(name) && isValueTreatedAsNestedMap()) {
 				return Bindable.of(this.mapType);
 			}

@@ -45,7 +45,7 @@ import org.springframework.util.StringUtils;
  */
 class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
-	public static PropertyMapper INSTANCE = new SystemEnvironmentPropertyMapper();
+	public static final PropertyMapper INSTANCE = new SystemEnvironmentPropertyMapper();
 
 	private final ConfigurationPropertyNameBuilder nameBuilder = new ConfigurationPropertyNameBuilder(
 			this::createElement);
@@ -104,10 +104,9 @@ class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	}
 
 	private String convertName(ConfigurationPropertyName configurationPropertyName) {
-		String propertyName = configurationPropertyName.stream()
+		return configurationPropertyName.stream()
 				.map(name -> name.getValue(Form.UNIFORM).toUpperCase())
 				.collect(Collectors.joining("_"));
-		return propertyName;
 	}
 
 	private boolean isListShortcutPossible(ConfigurationPropertyName name) {

@@ -465,7 +465,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	 */
 	private static class ChainingValidator implements Validator {
 
-		private Validator[] validators;
+		private final Validator[] validators;
 
 		ChainingValidator(Validator... validators) {
 			Assert.notNull(validators, "Validators must not be null");

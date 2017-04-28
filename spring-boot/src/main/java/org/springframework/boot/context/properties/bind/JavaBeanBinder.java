@@ -44,12 +44,12 @@ class JavaBeanBinder implements BeanBinder {
 			return null;
 		}
 		BeanSupplier<T> beanSupplier = bean.getSupplier(target);
-		boolean bound = bind(target, propertyBinder, bean, beanSupplier);
+		boolean bound = bind(propertyBinder, bean, beanSupplier);
 		return (bound ? beanSupplier.get() : null);
 	}
 
-	private <T> boolean bind(Bindable<T> target, BeanPropertyBinder propertyBinder,
-			Bean<T> bean, BeanSupplier<T> beanSupplier) {
+	private <T> boolean bind(BeanPropertyBinder propertyBinder, Bean<T> bean,
+			BeanSupplier<T> beanSupplier) {
 		boolean bound = false;
 		for (Map.Entry<String, BeanProperty> entry : bean.getProperties().entrySet()) {
 			bound |= bind(beanSupplier, propertyBinder, entry.getValue());
@@ -151,7 +151,7 @@ class JavaBeanBinder implements BeanBinder {
 
 		@SuppressWarnings("unchecked")
 		public BeanSupplier<T> getSupplier(Bindable<T> target) {
-			return new BeanSupplier<T>(() -> {
+			return new BeanSupplier<>(() -> {
 				T instance = null;
 				if (target.getValue() != null) {
 					instance = target.getValue().get();
@@ -168,7 +168,7 @@ class JavaBeanBinder implements BeanBinder {
 				boolean useExistingValueForType) {
 			Class<?> type = bindable.getType().resolve();
 			Supplier<T> value = bindable.getValue();
-			if (value == null && !isInstantiatable(type)) {
+			if (value == null && !isInstantiable(type)) {
 				return null;
 			}
 			if (useExistingValueForType && value != null) {
@@ -183,7 +183,7 @@ class JavaBeanBinder implements BeanBinder {
 			return (Bean<T>) bean;
 		}
 
-		private static boolean isInstantiatable(Class<?> type) {
+		private static boolean isInstantiable(Class<?> type) {
 			if (type.isInterface()) {
 				return false;
 			}

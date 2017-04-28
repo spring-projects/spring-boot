@@ -47,7 +47,7 @@ public class ConfigurationPropertySources
 	/**
 	 * The name of the {@link PropertySource} {@link #adapt adapter}.
 	 */
-	public static final String PROPERTY_SOURCE_NAME = "configurationPropertes";
+	public static final String PROPERTY_SOURCE_NAME = "configurationProperties";
 
 	private final PropertySources propertySources;
 

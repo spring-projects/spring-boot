@@ -124,7 +124,7 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 		source.put("url", this.properties.determineUrl());
 		source.putAll(dataSourceProperties.getXa().getProperties());
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
-		aliases.addAlaises("user", "username");
+		aliases.addAliases("user", "username");
 		return source.withAliases(aliases);
 	}
 

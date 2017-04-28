@@ -41,7 +41,7 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 
 	private ConfigurableListableBeanFactory beanFactory;
 
-	private Map<String, MetaData> beans = new HashMap<>();
+	private final Map<String, MetaData> beans = new HashMap<>();
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
@@ -96,9 +96,9 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 
 	private static class MetaData {
 
-		private String bean;
+		private final String bean;
 
-		private String method;
+		private final String method;
 
 		MetaData(String bean, String method) {
 			this.bean = bean;

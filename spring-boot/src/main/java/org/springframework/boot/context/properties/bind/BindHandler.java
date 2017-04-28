@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 public interface BindHandler {
 
 	/**
-	 * Default no-op bind hander.
+	 * Default no-op bind handler.
 	 */
 	BindHandler DEFAULT = new BindHandler() {
 

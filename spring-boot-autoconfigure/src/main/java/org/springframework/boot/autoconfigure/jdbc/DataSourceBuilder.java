@@ -90,8 +90,8 @@ public class DataSourceBuilder {
 		ConfigurationPropertySource source = new MapConfigurationPropertySource(
 				this.properties);
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
-		aliases.addAlaises("url", "jdbc-url");
-		aliases.addAlaises("username", "user");
+		aliases.addAliases("url", "jdbc-url");
+		aliases.addAliases("username", "user");
 		Binder binder = new Binder(source.withAliases(aliases));
 		binder.bind(ConfigurationPropertyName.EMPTY, Bindable.ofInstance(result));
 	}

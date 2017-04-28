@@ -29,7 +29,7 @@ interface BeanBinder {
 	/**
 	 * Return a bound bean instance or {@code null} if the {@link BeanBinder} does not
 	 * support the specified {@link Bindable}.
-	 * @param target the binable to bind
+	 * @param target the bindable to bind
 	 * @param hasKnownBindableProperties if this binder has known bindable elements. If
 	 * names from underlying {@link ConfigurationPropertySource} cannot be iterated this
 	 * method can be {@code false}, even though binding may ultimately succeed.

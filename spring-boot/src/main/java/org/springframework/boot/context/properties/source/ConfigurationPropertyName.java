@@ -141,7 +141,7 @@ public final class ConfigurationPropertyName
 	 * Returns {@code true} if this element is an ancestor (immediate or nested parent) or
 	 * the specified name.
 	 * @param name the name to check
-	 * @return {@code true} if this name is an ancessor
+	 * @return {@code true} if this name is an ancestor
 	 */
 	public boolean isAncestorOf(ConfigurationPropertyName name) {
 		ConfigurationPropertyName candidate = (name == null ? null : name.getParent());
@@ -231,8 +231,8 @@ public final class ConfigurationPropertyName
 	public static ConfigurationPropertyName of(String name)
 			throws IllegalArgumentException {
 		Assert.notNull(name, "Name must not be null");
-		Assert.isTrue(!name.toString().startsWith("."), "Name must not start with '.'");
-		Assert.isTrue(!name.toString().endsWith("."), "Name must not end with '.'");
+		Assert.isTrue(!name.startsWith("."), "Name must not start with '.'");
+		Assert.isTrue(!name.endsWith("."), "Name must not end with '.'");
 		if (StringUtils.isEmpty(name)) {
 			return EMPTY;
 		}
@@ -308,7 +308,7 @@ public final class ConfigurationPropertyName
 
 		@Override
 		public String toString() {
-			String string = getValue(Form.CONFIGURATION).toString();
+			String string = getValue(Form.CONFIGURATION);
 			return (this.indexed ? "[" + string + "]" : string);
 		}
 

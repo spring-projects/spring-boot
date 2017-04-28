@@ -129,7 +129,7 @@ public final class Bindable<T> {
 	 * @return an updated {@link Bindable}
 	 */
 	public Bindable<T> withAnnotations(Annotation... annotations) {
-		return new Bindable<T>(this.type, this.boxedType, this.value,
+		return new Bindable<>(this.type, this.boxedType, this.value,
 				(annotations == null ? NO_ANNOTATIONS : annotations));
 	}
 
@@ -226,7 +226,7 @@ public final class Bindable<T> {
 			Class<?> wrapperType = Array.get(array, 0).getClass();
 			return ResolvableType.forClass(wrapperType);
 		}
-		if (resolved.isArray()) {
+		if (resolved != null && resolved.isArray()) {
 			return ResolvableType.forArrayComponent(box(type.getComponentType()));
 		}
 		return type;

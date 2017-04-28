@@ -60,7 +60,7 @@ public class MapConfigurationPropertySource implements ConfigurationPropertySour
 	}
 
 	/**
-	 * Add all enties from the specified map.
+	 * Add all entries from the specified map.
 	 * @param map the source map
 	 */
 	public void putAll(Map<?, ?> map) {
