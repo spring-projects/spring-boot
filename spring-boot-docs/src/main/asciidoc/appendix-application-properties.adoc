@@ -437,12 +437,14 @@ content into your application; rather pick only the properties that you need.
 	spring.thymeleaf.cache=true # Enable template caching.
 	spring.thymeleaf.check-template=true # Check that the template exists before rendering it.
 	spring.thymeleaf.check-template-location=true # Check that the templates location exists.
-	spring.thymeleaf.content-type=text/html # Content-Type value.
-	spring.thymeleaf.enabled=true # Enable MVC Thymeleaf view resolution.
-	spring.thymeleaf.encoding=UTF-8 # Template encoding.
+	spring.thymeleaf.enabled=true # Enable Thymeleaf view resolution for Web frameworks.
+	spring.thymeleaf.encoding=UTF-8 # Template files encoding.
 	spring.thymeleaf.excluded-view-names= # Comma-separated list of view names that should be excluded from resolution.
 	spring.thymeleaf.mode=HTML5 # Template mode to be applied to templates. See also StandardTemplateModeHandlers.
 	spring.thymeleaf.prefix=classpath:/templates/ # Prefix that gets prepended to view names when building a URL.
+	spring.thymeleaf.reactive.max-chunk-size= # Maximum size of data buffers used for writing to the response, in bytes.
+	spring.thymeleaf.reactive.media-types=text/html # Media types supported by the view technology.
+	spring.thymeleaf.servlet.content-type=text/html # Content-Type value written to HTTP responses.
 	spring.thymeleaf.suffix=.html # Suffix that gets appended to view names when building a URL.
 	spring.thymeleaf.template-resolver-order= # Order of the template resolver in the chain.
 	spring.thymeleaf.view-names= # Comma-separated list of view names that can be resolved.
