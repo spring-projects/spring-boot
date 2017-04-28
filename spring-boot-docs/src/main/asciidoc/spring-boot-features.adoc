@@ -38,8 +38,8 @@ When your application starts you should see something similar to the following:
  :: Spring Boot ::   v{spring-boot-version}
 
 2013-07-31 00:08:16.117  INFO 56603 --- [           main] o.s.b.s.app.SampleApplication            : Starting SampleApplication v0.1.0 on mycomputer with PID 56603 (/apps/myapp.jar started by pwebb)
-2013-07-31 00:08:16.166  INFO 56603 --- [           main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@6e5a8246: startup date [Wed Jul 31 00:08:16 PDT 2013]; root of context hierarchy
-2014-03-04 13:09:54.912  INFO 41370 --- [           main] .t.TomcatEmbeddedServletContainerFactory : Server initialized with port: 8080
+2013-07-31 00:08:16.166  INFO 56603 --- [           main] ationConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@6e5a8246: startup date [Wed Jul 31 00:08:16 PDT 2013]; root of context hierarchy
+2014-03-04 13:09:54.912  INFO 41370 --- [           main] .t.TomcatServletWebServerFactory : Server initialized with port: 8080
 2014-03-04 13:09:56.501  INFO 41370 --- [           main] o.s.b.s.app.SampleApplication            : Started SampleApplication in 2.992 seconds (JVM running for 3.658)
 ----
 
@@ -248,7 +248,7 @@ exist. Internally, Spring Boot uses events to handle a variety of tasks.
 === Web environment
 A `SpringApplication` will attempt to create the right type of `ApplicationContext` on
 your behalf. By default, an `AnnotationConfigApplicationContext` or
-`AnnotationConfigEmbeddedWebApplicationContext` will be used, depending on whether you
+`AnnotationConfigServletWebServerApplicationContext` will be used, depending on whether you
 are developing a web application or not.
 
 The algorithm used to determine a '`web environment`' is fairly simplistic (based on the
@@ -2310,7 +2310,7 @@ inside a war will break Spring Boot applications.
 
 If you need to perform servlet context initialization in a Spring Boot application, you
 should register a bean that implements the
-`org.springframework.boot.context.embedded.ServletContextInitializer` interface. The
+`org.springframework.boot.web.servlet.ServletContextInitializer` interface. The
 single `onStartup` method provides access to the `ServletContext`, and can easily be used
 as an adapter to an existing `WebApplicationInitializer` if necessary.
 
@@ -2385,7 +2385,7 @@ methods. Dedicated variants exists for Tomcat, Jetty and Undertow.
 	
 	@Component
 	public class CustomizationBean implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
-	
+
 		@Override
 		public void customize(ConfigurableServletWebServerFactory server) {
 			server.setPort(9000);
@@ -5253,10 +5253,10 @@ how your tests will run:
   APIs are not on your classpath this mode will transparently fallback to creating a
   regular non-web `ApplicationContext`. Can be used in conjunction with
   `@AutoConfigureMockMvc` for `MockMvc`-based testing of your application.
-* `RANDOM_PORT` -- Loads an `EmbeddedWebApplicationContext` and provides a real
+* `RANDOM_PORT` -- Loads an `ServletWebServerApplicationContext` and provides a real
   servlet environment. Embedded servlet containers are started and listening on a random
   port.
-* `DEFINED_PORT` -- Loads an `EmbeddedWebApplicationContext` and provides a real
+* `DEFINED_PORT` -- Loads an `ServletWebServerApplicationContext` and provides a real
   servlet environment. Embedded servlet containers are started and listening on a defined
   port (i.e from your `application.properties` or on the default port `8080`).
 * `NONE` -- Loads an `ApplicationContext` using `SpringApplication` but does not provide

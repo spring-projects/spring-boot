@@ -571,9 +571,9 @@ To scan for a free port (using OS natives to prevent clashes) use `server.port=0
 [[howto-discover-the-http-port-at-runtime]]
 === Discover the HTTP port at runtime
 You can access the port the server is running on from log output or from the
-`EmbeddedWebApplicationContext` via its `EmbeddedWebServer`. The best way to get
+`ServletWebServerApplicationContext` via its `EmbeddedWebServer`. The best way to get
 that and be sure that it has initialized is to add a `@Bean` of type
-`ApplicationListener<EmbeddedServletContainerInitializedEvent>` and pull the container
+`ApplicationListener<ServletWebServerInitializedEvent>` and pull the container
 out of the event when it is published.
 
 Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can
@@ -587,7 +587,7 @@ example:
 	public class MyWebIntegrationTests {
 
 		@Autowired
-		EmbeddedWebApplicationContext server;
+		ServletWebServerApplicationContext server;
 
 		@LocalServerPort
 		int port;
@@ -727,7 +727,7 @@ this in production).
 
 You can take complete control of the configuration of Tomcat's `RemoteIpValve` by
 switching the automatic one off (i.e. set `server.use-forward-headers=false`) and adding
-a new  valve instance in a `TomcatEmbeddedServletContainerFactory` bean.
+a new  valve instance in a `TomcatServletWebServerFactory` bean.
 
 
 
@@ -736,24 +736,24 @@ a new  valve instance in a `TomcatEmbeddedServletContainerFactory` bean.
 Generally you can follow the advice from
 _<<howto-discover-build-in-options-for-external-properties>>_ about
 `@ConfigurationProperties` (`ServerProperties` is the main one here), but also look at
-`EmbeddedServletContainerCustomizer` and various Tomcat-specific `+*Customizers+` that you
+`ServletWebServerFactoryCustomizer` and various Tomcat-specific `+*Customizers+` that you
 can add in one of those. The Tomcat APIs are quite rich so once you have access to the
-`TomcatEmbeddedServletContainerFactory` you can modify it in a number of ways. Or the
-nuclear option is to add your own `TomcatEmbeddedServletContainerFactory`.
+`TomcatServletWebServerFactory` you can modify it in a number of ways. Or the
+nuclear option is to add your own `TomcatServletWebServerFactory`.
 
 
 
 [[howto-enable-multiple-connectors-in-tomcat]]
 === Enable Multiple Connectors with Tomcat
 Add a `org.apache.catalina.connector.Connector` to the
-`TomcatEmbeddedServletContainerFactory` which can allow multiple connectors, e.g. HTTP and
+`TomcatServletWebServerFactory` which can allow multiple connectors, e.g. HTTP and
 HTTPS connector:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
-	public EmbeddedServletContainerFactory servletContainer() {
-		TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
+	public ServletWebServerFactory servletContainer() {
+		TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
 		tomcat.addAdditionalTomcatConnectors(createSslConnector());
 		return tomcat;
 	}
@@ -798,7 +798,7 @@ If at all possible, you should consider updating your code to only store values
 compliant with later Cookie specifications. If, however, you're unable to change the
 way that cookies are written, you can instead configure Tomcat to use a
 `LegacyCookieProcessor`. To switch to the `LegacyCookieProcessor` use an
-`EmbeddedServletContainerCustomizer` bean that adds a `TomcatContextCustomizer`:
+`ServletWebServerFactoryCustomizer` bean that adds a `TomcatContextCustomizer`:
 
 [source,java,indent=0]
 ----
@@ -856,9 +856,9 @@ Example in Gradle:
 Generally you can follow the advice from
 _<<howto-discover-build-in-options-for-external-properties>>_ about
 `@ConfigurationProperties` (`ServerProperties` is the main one here), but also look at
-`EmbeddedServletContainerCustomizer`. The Jetty APIs are quite rich so once you have
-access to the `JettyEmbeddedServletContainerFactory` you can modify it in a number
-of ways. Or the nuclear option is to add your own `JettyEmbeddedServletContainerFactory`.
+`ServletWebServerFactoryCustomizer`. The Jetty APIs are quite rich so once you have
+access to the `JettyServletWebServerFactory` you can modify it in a number
+of ways. Or the nuclear option is to add your own `JettyServletWebServerFactory`.
 
 
 
@@ -911,23 +911,23 @@ Generally you can follow the advice from
 _<<howto-discover-build-in-options-for-external-properties>>_ about
 `@ConfigurationProperties` (`ServerProperties` and `ServerProperties.Undertow` are the
 main ones here), but also look at
-`EmbeddedServletContainerCustomizer`. Once you have access to the
-`UndertowEmbeddedServletContainerFactory` you can use an `UndertowBuilderCustomizer` to
+`ServletWebServerFactoryCustomizer`. Once you have access to the
+`UndertowServletWebServerFactory` you can use an `UndertowBuilderCustomizer` to
 modify Undertow's configuration to meet your needs. Or the nuclear option is to add your
-own `UndertowEmbeddedServletContainerFactory`.
+own `UndertowServletWebServerFactory`.
 
 
 
 [[howto-enable-multiple-listeners-in-undertow]]
 === Enable Multiple Listeners with Undertow
-Add an `UndertowBuilderCustomizer` to the `UndertowEmbeddedServletContainerFactory` and
+Add an `UndertowBuilderCustomizer` to the `UndertowServletWebServerFactory` and
 add a listener to the `Builder`:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
-	public UndertowEmbeddedServletContainerFactory embeddedServletContainerFactory() {
-		UndertowEmbeddedServletContainerFactory factory = new UndertowEmbeddedServletContainerFactory();
+	public UndertowServletWebServerFactory servletWebServerFactory() {
+		UndertowServletWebServerFactory factory = new UndertowServletWebServerFactory();
 		factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
 
 			@Override
@@ -2234,7 +2234,7 @@ by adding some entries to `application.properties`, e.g.
 ----
 
 (The presence of either of those properties will switch on the valve. Or you can add the
-`RemoteIpValve` yourself by adding a `TomcatEmbeddedServletContainerFactory` bean.)
+`RemoteIpValve` yourself by adding a `TomcatServletWebServerFactory` bean.)
 
 Spring Security can also be configured to require a secure channel for all (or some
 requests). To switch that on in a Spring Boot application you just need to set
