@@ -45,9 +45,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
-import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.bind.RelaxedDataBinder;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyWebServer;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
@@ -255,8 +256,8 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	@Test
 	public void disableTomcatRemoteIpValve() throws Exception {
 		Map<String, String> map = new HashMap<>();
-		map.put("server.tomcat.remote_ip_header", "");
-		map.put("server.tomcat.protocol_header", "");
+		map.put("server.tomcat.remote-ip-header", "");
+		map.put("server.tomcat.protocol-header", "");
 		bindProperties(map);
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 		this.customizer.customize(factory);
@@ -286,8 +287,8 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	public void defaultTomcatRemoteIpValve() throws Exception {
 		Map<String, String> map = new HashMap<>();
 		// Since 1.1.7 you need to specify at least the protocol
-		map.put("server.tomcat.protocol_header", "X-Forwarded-Proto");
-		map.put("server.tomcat.remote_ip_header", "X-Forwarded-For");
+		map.put("server.tomcat.protocol-header", "X-Forwarded-Proto");
+		map.put("server.tomcat.remote-ip-header", "X-Forwarded-For");
 		bindProperties(map);
 		testRemoteIpValveConfigured();
 	}
@@ -328,9 +329,9 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	@Test
 	public void customTomcatRemoteIpValve() throws Exception {
 		Map<String, String> map = new HashMap<>();
-		map.put("server.tomcat.remote_ip_header", "x-my-remote-ip-header");
-		map.put("server.tomcat.protocol_header", "x-my-protocol-header");
-		map.put("server.tomcat.internal_proxies", "192.168.0.1");
+		map.put("server.tomcat.remote-ip-header", "x-my-remote-ip-header");
+		map.put("server.tomcat.protocol-header", "x-my-protocol-header");
+		map.put("server.tomcat.internal-proxies", "192.168.0.1");
 		map.put("server.tomcat.port-header", "x-my-forward-port");
 		map.put("server.tomcat.protocol-header-https-value", "On");
 		bindProperties(map);
@@ -623,8 +624,9 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	private void bindProperties(Map<String, String> map) {
-		new RelaxedDataBinder(this.properties, "server")
-				.bind(new MutablePropertyValues(map));
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		map.forEach(source::put);
+		new Binder(source).bind("server", Bindable.ofInstance(this.properties));
 	}
 
 }
