@@ -16,9 +16,9 @@
 
 package org.springframework.boot.context.properties.source;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.junit.Rule;
@@ -27,7 +27,6 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Element;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyNameBuilder.ElementValueProcessor;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,13 +44,6 @@ public class ConfigurationPropertyNameBuilderTests {
 	private ConfigurationPropertyNameBuilder builder;
 
 	@Test
-	public void createWhenPatternIsNullShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Pattern must not be null");
-		this.builder = new ConfigurationPropertyNameBuilder((Pattern) null);
-	}
-
-	@Test
 	public void createWhenElementProcessorIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Processor must not be null");
@@ -62,39 +54,31 @@ public class ConfigurationPropertyNameBuilderTests {
 	public void buildShouldCreateName() throws Exception {
 		this.builder = new ConfigurationPropertyNameBuilder();
 		ConfigurationPropertyName expected = ConfigurationPropertyName.of("foo.bar.baz");
-		ConfigurationPropertyName name = this.builder.from("foo.bar.baz", '.').build();
+		ConfigurationPropertyName name = this.builder.from("foo.bar.baz", '.');
 		assertThat(name.toString()).isEqualTo(expected.toString());
 	}
 
 	@Test
-	public void buildShouldValidateUsingPattern() {
-		Pattern pattern = Pattern.compile("[a-z]([a-z0-9\\-])*");
-		this.builder = new ConfigurationPropertyNameBuilder(pattern);
+	public void buildShouldValidateProcessor() {
+		this.builder = new ConfigurationPropertyNameBuilder(
+				ElementValueProcessor.identity().withValidName());
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Element value 'foo@!' is not valid");
-		this.builder.from("foo@!.bar", '.').build();
-	}
-
-	@Test
-	public void buildWhenHasNoElementsShouldThrowException() throws Exception {
-		this.builder = new ConfigurationPropertyNameBuilder();
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("At least one element must be defined");
-		this.builder.build();
+		this.builder.from("foo@!.bar", '.');
 	}
 
 	@Test
 	public void buildShouldUseElementProcessor() throws Exception {
 		this.builder = new ConfigurationPropertyNameBuilder(
 				value -> value.replace("-", ""));
-		ConfigurationPropertyName name = this.builder.from("FOO_THE-BAR", '_').build();
+		ConfigurationPropertyName name = this.builder.from("FOO_THE-BAR", '_');
 		assertThat(name.toString()).isEqualTo("foo.thebar");
 	}
 
 	@Test
 	public void fromNameShouldSetElements() throws Exception {
 		this.builder = new ConfigurationPropertyNameBuilder();
-		ConfigurationPropertyName name = this.builder.from("foo.bar", '.').build();
+		ConfigurationPropertyName name = this.builder.from("foo.bar", '.');
 		assertThat(name.toString()).isEqualTo("foo.bar");
 	}
 
@@ -110,18 +94,10 @@ public class ConfigurationPropertyNameBuilderTests {
 	}
 
 	@Test
-	public void fromNameWhenHasExistingShouldSetNewElements() throws Exception {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Existing elements must not be present");
-		new ConfigurationPropertyNameBuilder().from("foo.bar", '.').from("baz", '.')
-				.build();
-	}
-
-	@Test
 	public void appendShouldAppendElement() throws Exception {
 		this.builder = new ConfigurationPropertyNameBuilder();
-		ConfigurationPropertyName name = this.builder.from("foo.bar", '.').append("baz")
-				.build();
+		ConfigurationPropertyName parent = this.builder.from("foo.bar", '.');
+		ConfigurationPropertyName name = this.builder.from(parent, "baz");
 		assertThat(name.toString()).isEqualTo("foo.bar.baz");
 	}
 
@@ -129,10 +105,12 @@ public class ConfigurationPropertyNameBuilderTests {
 		return Arrays.stream(elements).map(Element::new).collect(Collectors.toList());
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<Element> getElements(String name) {
-		ConfigurationPropertyNameBuilder builder = this.builder.from(name, '.');
-		return (List<Element>) ReflectionTestUtils.getField(builder, "elements");
+		List<Element> elements = new ArrayList<>();
+		for (Element element : this.builder.from(name, '.')) {
+			elements.add(element);
+		}
+		return elements;
 	}
 
 }

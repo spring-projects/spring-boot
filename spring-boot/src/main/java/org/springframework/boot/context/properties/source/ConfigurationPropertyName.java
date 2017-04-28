@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Element;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyNameBuilder.ElementValueProcessor;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -62,7 +63,7 @@ public final class ConfigurationPropertyName
 			null, new Element());
 
 	private static final ConfigurationPropertyNameBuilder BUILDER = new ConfigurationPropertyNameBuilder(
-			Pattern.compile("[a-z]([a-z0-9\\-])*"));
+			ElementValueProcessor.identity().withValidName());
 
 	private final ConfigurationPropertyName parent;
 
@@ -72,7 +73,7 @@ public final class ConfigurationPropertyName
 
 	ConfigurationPropertyName(ConfigurationPropertyName parent, Element element) {
 		Assert.notNull(element, "Element must not be null");
-		this.parent = parent;
+		this.parent = (parent == EMPTY ? null : parent);
 		this.element = element;
 	}
 
@@ -207,7 +208,7 @@ public final class ConfigurationPropertyName
 	 * @return a new {@link ConfigurationPropertyName}
 	 */
 	public ConfigurationPropertyName appendIndex(int index) {
-		return append("[" + index + "]");
+		return BUILDER.from(this, index);
 	}
 
 	/**
@@ -217,7 +218,7 @@ public final class ConfigurationPropertyName
 	 */
 	public ConfigurationPropertyName append(String element) {
 		if (StringUtils.hasLength(element)) {
-			return BUILDER.from(this).append(element).build();
+			return BUILDER.from(this, element);
 		}
 		return this;
 	}
@@ -236,7 +237,7 @@ public final class ConfigurationPropertyName
 		if (StringUtils.isEmpty(name)) {
 			return EMPTY;
 		}
-		return BUILDER.from(name, '.').build();
+		return BUILDER.from(name, '.');
 	}
 
 	/**
@@ -257,7 +258,7 @@ public final class ConfigurationPropertyName
 
 		Element(String value) {
 			Assert.notNull(value, "Value must not be null");
-			this.indexed = (value.startsWith("[") && value.endsWith("]"));
+			this.indexed = isIndexed(value);
 			value = (this.indexed ? value.substring(1, value.length() - 1) : value);
 			if (!this.indexed) {
 				validate(value);
@@ -329,6 +330,10 @@ public final class ConfigurationPropertyName
 		public String getValue(Form form) {
 			form = (form != null ? form : Form.ORIGINAL);
 			return this.value[form.ordinal()];
+		}
+
+		public static boolean isIndexed(String value) {
+			return value.startsWith("[") && value.endsWith("]");
 		}
 
 	}

@@ -66,7 +66,7 @@ class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
 	private ConfigurationPropertyName convertName(String propertySourceName) {
 		try {
-			return this.nameBuilder.from(propertySourceName, '_').build();
+			return this.nameBuilder.from(propertySourceName, '_');
 		}
 		catch (Exception ex) {
 			return null;

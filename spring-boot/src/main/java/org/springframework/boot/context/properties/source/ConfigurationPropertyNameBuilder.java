@@ -17,16 +17,15 @@
 package org.springframework.boot.context.properties.source;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Element;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
+import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
  * Builder class that can be used to create {@link ConfigurationPropertyName
@@ -39,64 +38,40 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
- * @since 2.0.0
  * @see ConfigurationPropertyName
  */
-public class ConfigurationPropertyNameBuilder {
+class ConfigurationPropertyNameBuilder {
+
+	private static final Element INDEX_ZERO_ELEMENT = new Element("[0]");
 
 	private final ElementValueProcessor processor;
 
-	private final List<Element> elements;
+	private final Map<String, ConfigurationPropertyName> nameCache = new ConcurrentReferenceHashMap<>();
 
-	/**
-	 * Create a new {@link ConfigurationPropertyNameBuilder} instance.
-	 */
-	public ConfigurationPropertyNameBuilder() {
-		this(ElementValueProcessor.empty());
+	ConfigurationPropertyNameBuilder() {
+		this(ElementValueProcessor.identity());
 	}
 
-	/**
-	 * Create a new {@link ConfigurationPropertyNameBuilder} instance that enforces a
-	 * {@link Pattern} on all element values.
-	 * @param elementValuePattern the element value pattern to enforce
-	 */
-	public ConfigurationPropertyNameBuilder(Pattern elementValuePattern) {
-		this(ElementValueProcessor.empty().withPatternCheck(elementValuePattern));
-	}
-
-	/**
-	 * Create a new {@link ConfigurationPropertyNameBuilder} with the specified
-	 * {@link ElementValueProcessor}.
-	 * @param processor the element value processor.
-	 */
-	public ConfigurationPropertyNameBuilder(ElementValueProcessor processor) {
+	ConfigurationPropertyNameBuilder(ElementValueProcessor processor) {
 		Assert.notNull(processor, "Processor must not be null");
 		this.processor = processor;
-		this.elements = Collections.emptyList();
 	}
 
 	/**
-	 * Internal constructor used to create new builders.
-	 * @param processor the element value processor.
-	 * @param elements the elements built so far
-	 */
-	private ConfigurationPropertyNameBuilder(ElementValueProcessor processor,
-			List<Element> elements) {
-		this.processor = processor;
-		this.elements = elements;
-	}
-
-	/**
-	 * Start building using the specified name split up into elements using a known
-	 * separator. For example {@code from("foo.bar", '.')} will return a new builder
-	 * containing the elements "{@code foo}" and "{@code bar}". Any element in square
-	 * brackets will be considered "indexed" and will not be considered for splitting.
+	 * Build using the specified name split up into elements using a known separator. For
+	 * example {@code from("foo.bar", '.')} will return a new builder containing the
+	 * elements "{@code foo}" and "{@code bar}". Any element in square brackets will be
+	 * considered "indexed" and will not be considered for splitting.
 	 * @param name the name build from
 	 * @param separator the separator
 	 * @return a builder with elements populated from the name
 	 */
-	public ConfigurationPropertyNameBuilder from(String name, char separator) {
+	public ConfigurationPropertyName from(String name, char separator) {
 		Assert.notNull(name, "Name must not be null");
+		ConfigurationPropertyName result = this.nameCache.get(name);
+		if (result != null) {
+			return result;
+		}
 		List<Element> elements = new ArrayList<>();
 		StringBuilder value = new StringBuilder(name.length());
 		boolean indexed = false;
@@ -124,8 +99,10 @@ public class ConfigurationPropertyNameBuilder {
 			}
 		}
 		addElement(elements, value);
-		return from(elements.stream().filter(Objects::nonNull)
+		result = from(elements.stream().filter(Objects::nonNull)
 				.filter((e) -> !e.getValue(Form.UNIFORM).isEmpty()).iterator());
+		this.nameCache.put(name, result);
+		return result;
 	}
 
 	private void addElement(List<Element> elements, StringBuilder value) {
@@ -135,72 +112,30 @@ public class ConfigurationPropertyNameBuilder {
 		}
 	}
 
-	/**
-	 * Return a new {@link ConfigurationPropertyNameBuilder} starting with the specified
-	 * elements.
-	 * @param elements the elements that the new builder should contain
-	 * @return a new initialized builder instance
-	 */
-	public ConfigurationPropertyNameBuilder from(Iterable<Element> elements) {
-		return from(elements.iterator());
-	}
-
-	/**
-	 * Return a new {@link ConfigurationPropertyNameBuilder} starting with the specified
-	 * elements.
-	 * @param elements the elements that the new builder should contain
-	 * @return a new initialized builder instance
-	 */
-	public ConfigurationPropertyNameBuilder from(Iterator<Element> elements) {
-		Assert.state(CollectionUtils.isEmpty(this.elements),
-				"Existing elements must not be present");
-		return new ConfigurationPropertyNameBuilder(this.processor, toList(elements));
-	}
-
-	private List<Element> toList(Iterator<Element> iterator) {
-		List<Element> list = new ArrayList<>();
-		while (iterator.hasNext()) {
-			list.add(iterator.next());
+	private ConfigurationPropertyName from(Iterator<Element> elements) {
+		ConfigurationPropertyName name = null;
+		while (elements.hasNext()) {
+			name = new ConfigurationPropertyName(name, elements.next());
 		}
-		if (isRoot(list)) {
-			return Collections.emptyList();
+		Assert.state(name != null, "At least one element must be defined");
+		return name;
+	}
+
+	public ConfigurationPropertyName from(ConfigurationPropertyName parent, int index) {
+		if (index == 0) {
+			return new ConfigurationPropertyName(parent, INDEX_ZERO_ELEMENT);
 		}
-		return list;
+		return from(parent, "[" + index + "]");
+
 	}
 
-	private boolean isRoot(List<Element> list) {
-		return (list.size() == 1 && list.get(0).getValue(Form.ORIGINAL).isEmpty());
-	}
-
-	/**
-	 * Return a new builder containing the elements built so far appended with the
-	 * specified element value.
-	 * @param elementValue the element value to append
-	 * @return a new builder instance
-	 */
-	public ConfigurationPropertyNameBuilder append(String elementValue) {
-		Assert.notNull(elementValue, "ElementValue must not be null");
-		List<Element> elements = new ArrayList<>(this.elements);
-		elements.add(buildElement(elementValue));
-		return new ConfigurationPropertyNameBuilder(this.processor, elements);
+	public ConfigurationPropertyName from(ConfigurationPropertyName parent,
+			String elementValue) {
+		return new ConfigurationPropertyName(parent, buildElement(elementValue));
 	}
 
 	private Element buildElement(String value) {
 		return new Element(this.processor.apply(value));
-	}
-
-	/**
-	 * Build a new {@link ConfigurationPropertyName} from the elements contained in this
-	 * builder.
-	 * @return a new {@link ConfigurationPropertyName}.
-	 */
-	public ConfigurationPropertyName build() {
-		ConfigurationPropertyName name = null;
-		for (Element element : this.elements) {
-			name = new ConfigurationPropertyName(name, element);
-		}
-		Assert.state(name != null, "At least one element must be defined");
-		return name;
 	}
 
 	/**
@@ -219,29 +154,34 @@ public class ConfigurationPropertyNameBuilder {
 		String apply(String value) throws RuntimeException;
 
 		/**
-		 * Extend this processor with a {@link Pattern} regular expression check.
-		 * @param pattern the patter to check
-		 * @return an element processor that additionally checks against the pattern
-		 */
-		default ElementValueProcessor withPatternCheck(Pattern pattern) {
-			Assert.notNull(pattern, "Pattern must not be null");
-			return (value) -> {
-				value = apply(value);
-				Element element = new Element(value);
-				Assert.isTrue(element.isIndexed() || pattern.matcher(value).matches(),
-						"Element value '" + value + "' is not valid (" + pattern
-								+ " does not match)");
-				return value;
-			};
-		}
-
-		/**
 		 * Return an empty {@link ElementValueProcessor} that simply returns the original
 		 * value unchanged.
 		 * @return an empty {@link ElementValueProcessor}.
 		 */
-		static ElementValueProcessor empty() {
+		static ElementValueProcessor identity() {
 			return (value) -> value;
+		}
+
+		/**
+		 * Extend this processor with a to enforce standard element name rules.
+		 * @return an element processor that additionally enforces a valid name
+		 */
+		default ElementValueProcessor withValidName() {
+			return (value) -> {
+				value = apply(value);
+				if (!Element.isIndexed(value)) {
+					for (int i = 0; i < value.length(); i++) {
+						char ch = value.charAt(i);
+						boolean isAlpha = ch >= 'a' && ch <= 'z';
+						boolean isNumeric = ch >= '0' && ch <= '9';
+						if (i == 0 && !isAlpha || !(isAlpha || isNumeric || ch == '-')) {
+							throw new IllegalArgumentException(
+									"Element value '" + value + "' is not valid");
+						}
+					}
+				}
+				return value;
+			};
 		}
 
 	}
