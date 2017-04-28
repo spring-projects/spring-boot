@@ -24,6 +24,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.internal.matchers.ThrowableMessageMatcher;
 import org.junit.rules.ExpectedException;
 import org.mockito.Answers;
 import org.mockito.InOrder;
@@ -38,6 +39,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -134,6 +136,18 @@ public class BinderTests {
 				new PropertySourcesPlaceholdersResolver(environment));
 		BindResult<Integer> result = this.binder.bind("foo", Bindable.of(Integer.class));
 		assertThat(result.get()).isEqualTo(123);
+	}
+
+	@Test
+	public void bindToValueWithMissingPlaceholdersShouldThrowException() throws Exception {
+		StandardEnvironment environment = new StandardEnvironment();
+		this.sources.add(new MockConfigurationPropertySource("foo", "${bar}"));
+		this.binder = new Binder(this.sources,
+				new PropertySourcesPlaceholdersResolver(environment));
+		this.thrown.expect(BindException.class);
+		this.thrown.expectCause(ThrowableMessageMatcher.hasMessage(
+				containsString("Could not resolve placeholder 'bar' in value \"${bar}\"")));
+		this.binder.bind("foo", Bindable.of(Integer.class));
 	}
 
 	@Test
