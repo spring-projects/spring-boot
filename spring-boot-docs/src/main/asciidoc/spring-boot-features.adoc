@@ -2372,40 +2372,41 @@ class for a complete list.
 [[boot-features-programmatic-embedded-container-customization]]
 ===== Programmatic customization
 If you need to configure your embedded servlet container programmatically you can
-register a Spring bean that implements the `EmbeddedServletContainerCustomizer` interface.
-`EmbeddedServletContainerCustomizer` provides access to the
-`ConfigurableEmbeddedServletContainer` which includes numerous customization setter
-methods.
+register a Spring bean that implements the `WebServerFactoryCustomizer` interface.
+`WebServerFactoryCustomizer` provides access to the
+`ConfigurableServletWebServerFactory` which includes numerous customization setter
+methods. Dedicated variants exists for Tomcat, Jetty and Undertow.
 
 [source,java,indent=0]
 ----
-	import org.springframework.boot.context.embedded.*;
+	import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+	import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 	import org.springframework.stereotype.Component;
-
+	
 	@Component
-	public class CustomizationBean implements EmbeddedServletContainerCustomizer {
-
+	public class CustomizationBean implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
+	
 		@Override
-		public void customize(ConfigurableEmbeddedServletContainer container) {
-			container.setPort(9000);
+		public void customize(ConfigurableServletWebServerFactory server) {
+			server.setPort(9000);
 		}
-
+	
 	}
 ----
 
 
 
-[[boot-features-customizing-configurableembeddedservletcontainerfactory-directly]]
-===== Customizing ConfigurableEmbeddedServletContainer directly
+[[boot-features-customizing-configurableservletwebserverfactory-directly]]
+===== Customizing ConfigurableServletWebServerFactory directly
 If the above customization techniques are too limited, you can register the
-`TomcatEmbeddedServletContainerFactory`, `JettyEmbeddedServletContainerFactory` or
-`UndertowEmbeddedServletContainerFactory` bean yourself.
+`TomcatServletWebServerFactory`, `JettyServletWebServerFactory` or
+`UndertowServletWebServerFactory` bean yourself.
 
 [source,java,indent=0]
 ----
 	@Bean
-	public EmbeddedServletContainerFactory servletContainer() {
-		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+	public ConfigurableServletWebServerFactory webServerFactory() {
+		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 		factory.setPort(9000);
 		factory.setSessionTimeout(10, TimeUnit.MINUTES);
 		factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notfound.html"));
