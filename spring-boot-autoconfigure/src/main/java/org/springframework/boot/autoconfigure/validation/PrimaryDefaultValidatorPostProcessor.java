@@ -58,26 +58,33 @@ class PrimaryDefaultValidatorPostProcessor
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			BeanDefinitionRegistry registry) {
-		if (this.beanFactory == null) {
-			return;
+		BeanDefinition definition = getAutoConfiguredValidator(registry);
+		if (definition != null) {
+			definition.setPrimary(!hasPrimarySpringValidator(registry));
 		}
-		if (!registry.containsBeanDefinition(VALIDATOR_BEAN_NAME)) {
-			return;
+	}
+
+	private BeanDefinition getAutoConfiguredValidator(BeanDefinitionRegistry registry) {
+		if (registry.containsBeanDefinition(VALIDATOR_BEAN_NAME)) {
+			BeanDefinition definition = registry.getBeanDefinition(VALIDATOR_BEAN_NAME);
+			if (definition.getRole() == BeanDefinition.ROLE_INFRASTRUCTURE && isTypeMatch(
+					VALIDATOR_BEAN_NAME, LocalValidatorFactoryBean.class)) {
+				return definition;
+			}
 		}
-		BeanDefinition def = registry.getBeanDefinition(VALIDATOR_BEAN_NAME);
-		if (def != null
-				&& this.beanFactory.isTypeMatch(VALIDATOR_BEAN_NAME, LocalValidatorFactoryBean.class)
-				&& def.getRole() == BeanDefinition.ROLE_INFRASTRUCTURE) {
-			def.setPrimary(!hasPrimarySpringValidator(registry));
-		}
+		return null;
+	}
+
+	private boolean isTypeMatch(String name, Class<?> type) {
+		return this.beanFactory != null && this.beanFactory.isTypeMatch(name, type);
 	}
 
 	private boolean hasPrimarySpringValidator(BeanDefinitionRegistry registry) {
 		String[] validatorBeans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 				this.beanFactory, Validator.class, false, false);
 		for (String validatorBean : validatorBeans) {
-			BeanDefinition def = registry.getBeanDefinition(validatorBean);
-			if (def != null && def.isPrimary()) {
+			BeanDefinition definition = registry.getBeanDefinition(validatorBean);
+			if (definition != null && definition.isPrimary()) {
 				return true;
 			}
 		}
@@ -85,4 +92,3 @@ class PrimaryDefaultValidatorPostProcessor
 	}
 
 }
-
