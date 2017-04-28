@@ -60,10 +60,11 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	private static final String CONFIGURATION_FILE_PROPERTY = "logback.configurationFile";
 
-	private static final LogLevels<Level> LEVELS = new LogLevels<Level>();
+	private static final LogLevels<Level> LEVELS = new LogLevels<>();
 
 	static {
 		LEVELS.map(LogLevel.TRACE, Level.TRACE);
+		LEVELS.map(LogLevel.TRACE, Level.ALL);
 		LEVELS.map(LogLevel.DEBUG, Level.DEBUG);
 		LEVELS.map(LogLevel.INFO, Level.INFO);
 		LEVELS.map(LogLevel.WARN, Level.WARN);
@@ -213,7 +214,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public List<LoggerConfiguration> getLoggerConfigurations() {
-		List<LoggerConfiguration> result = new ArrayList<LoggerConfiguration>();
+		List<LoggerConfiguration> result = new ArrayList<>();
 		for (ch.qos.logback.classic.Logger logger : getLoggerContext().getLoggerList()) {
 			result.add(getLoggerConfiguration(logger));
 		}

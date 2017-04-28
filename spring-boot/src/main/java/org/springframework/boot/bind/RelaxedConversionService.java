@@ -36,6 +36,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @since 1.1.0
  */
+@Deprecated
 class RelaxedConversionService implements ConversionService {
 
 	private final ConversionService conversionService;

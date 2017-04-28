@@ -35,6 +35,7 @@ import org.springframework.validation.Validator;
  * Configuration properties for OAuth2 Resources.
  *
  * @author Dave Syer
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "security.oauth2.resource")
@@ -77,6 +78,8 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 	private String tokenType = DefaultOAuth2AccessToken.BEARER_TYPE;
 
 	private Jwt jwt = new Jwt();
+
+	private Jwk jwk = new Jwk();
 
 	/**
 	 * The order of the filter chain used to authenticate tokens. Default puts it after
@@ -158,6 +161,14 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 		this.jwt = jwt;
 	}
 
+	public Jwk getJwk() {
+		return this.jwk;
+	}
+
+	public void setJwk(Jwk jwk) {
+		this.jwk = jwk;
+	}
+
 	public String getClientId() {
 		return this.clientId;
 	}
@@ -192,26 +203,37 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 			return;
 		}
 		ResourceServerProperties resource = (ResourceServerProperties) target;
-		if (StringUtils.hasText(this.clientId)) {
-			if (!StringUtils.hasText(this.clientSecret)) {
-				if (!StringUtils.hasText(resource.getUserInfoUri())) {
-					errors.rejectValue("userInfoUri", "missing.userInfoUri",
-							"Missing userInfoUri (no client secret available)");
-				}
+		validate(resource, errors);
+	}
+
+	private void validate(ResourceServerProperties target, Errors errors) {
+		if (!StringUtils.hasText(this.clientId)) {
+			return;
+		}
+		boolean jwtConfigPresent = StringUtils.hasText(this.jwt.getKeyUri())
+				|| StringUtils.hasText(this.jwt.getKeyValue());
+		boolean jwkConfigPresent = StringUtils.hasText(this.jwk.getKeySetUri());
+
+		if (jwtConfigPresent && jwkConfigPresent) {
+			errors.reject("ambiguous.keyUri",
+					"Only one of jwt.keyUri (or jwt.keyValue) and jwk.keySetUri should"
+							+ " be configured.");
+		}
+		else {
+			if (jwtConfigPresent || jwkConfigPresent) {
+				// It's a JWT decoder
+				return;
 			}
-			else {
-				if (isPreferTokenInfo()
-						&& !StringUtils.hasText(resource.getTokenInfoUri())) {
-					if (StringUtils.hasText(getJwt().getKeyUri())
-							|| StringUtils.hasText(getJwt().getKeyValue())) {
-						// It's a JWT decoder
-						return;
-					}
-					if (!StringUtils.hasText(resource.getUserInfoUri())) {
-						errors.rejectValue("tokenInfoUri", "missing.tokenInfoUri",
-								"Missing tokenInfoUri and userInfoUri and there is no "
-										+ "JWT verifier key");
-					}
+			if (!StringUtils.hasText(target.getUserInfoUri())
+					&& !StringUtils.hasText(target.getTokenInfoUri())) {
+				errors.rejectValue("tokenInfoUri", "missing.tokenInfoUri",
+						"Missing tokenInfoUri and userInfoUri and there is no "
+								+ "JWT verifier key");
+			}
+			if (StringUtils.hasText(target.getTokenInfoUri()) && isPreferTokenInfo()) {
+				if (!StringUtils.hasText(this.clientSecret)) {
+					errors.rejectValue("clientSecret", "missing.clientSecret",
+							"Missing client secret");
 				}
 			}
 		}
@@ -250,23 +272,26 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 		}
 
 		public String getKeyUri() {
-			if (this.keyUri != null) {
-				return this.keyUri;
-			}
-			if (ResourceServerProperties.this.userInfoUri != null
-					&& ResourceServerProperties.this.userInfoUri.endsWith("/userinfo")) {
-				return ResourceServerProperties.this.userInfoUri.replace("/userinfo",
-						"/token_key");
-			}
-			if (ResourceServerProperties.this.tokenInfoUri != null
-					&& ResourceServerProperties.this.tokenInfoUri
-							.endsWith("/check_token")) {
-				return ResourceServerProperties.this.tokenInfoUri.replace("/check_token",
-						"/token_key");
-			}
-			return null;
+			return this.keyUri;
 		}
 
+	}
+
+	public class Jwk {
+
+		/**
+		 * The URI to get verification keys to verify the JWT token. This can be set when
+		 * the authorization server returns a set of verification keys.
+		 */
+		private String keySetUri;
+
+		public String getKeySetUri() {
+			return this.keySetUri;
+		}
+
+		public void setKeySetUri(String keySetUri) {
+			this.keySetUri = keySetUri;
+		}
 	}
 
 }

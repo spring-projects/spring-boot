@@ -45,6 +45,7 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Stephane Nicoll
  */
+@Deprecated
 class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 
 	@Override
@@ -79,8 +80,8 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 				String prefix = extractPrefix(type);
 				String name = (StringUtils.hasText(prefix) ? prefix + "-" + type.getName()
 						: type.getName());
-				if (!containsBeanDefinition(
-						(ConfigurableListableBeanFactory) registry, name)) {
+				if (!containsBeanDefinition((ConfigurableListableBeanFactory) registry,
+						name)) {
 					registerBeanDefinition(registry, type, name);
 				}
 			}
@@ -96,7 +97,7 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 		}
 
 		private List<Class<?>> collectClasses(List<Object> list) {
-			ArrayList<Class<?>> result = new ArrayList<Class<?>>();
+			ArrayList<Class<?>> result = new ArrayList<>();
 			for (Object object : list) {
 				for (Object value : (Object[]) object) {
 					if (value instanceof Class && value != void.class) {

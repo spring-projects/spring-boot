@@ -192,7 +192,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 
 			private static class Printer implements ResultValuePrinter {
 
-				private final List<String> lines = new ArrayList<String>();
+				private final List<String> lines = new ArrayList<>();
 
 				@Override
 				public void printHeading(String heading) {
@@ -238,7 +238,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 
 		private final LinesWriter delegate;
 
-		private final List<String> lines = new ArrayList<String>();
+		private final List<String> lines = new ArrayList<>();
 
 		DeferredLinesWriter(WebApplicationContext context, LinesWriter delegate) {
 			Assert.state(context instanceof ConfigurableApplicationContext,

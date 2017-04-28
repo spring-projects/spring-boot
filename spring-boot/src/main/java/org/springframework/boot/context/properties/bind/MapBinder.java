@@ -1,0 +1,145 @@
+/*
+ * Copyright 2012-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.boot.context.properties.bind;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
+import org.springframework.boot.context.properties.source.ConfigurationProperty;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.core.CollectionFactory;
+import org.springframework.core.ResolvableType;
+
+/**
+ * {@link AggregateBinder} for Maps.
+ *
+ * @author Phillip Webb
+ * @author Madhura Bhave
+ */
+class MapBinder extends AggregateBinder<Map<Object, Object>> {
+
+	MapBinder(BindContext context) {
+		super(context);
+	}
+
+	@Override
+	protected Object bind(ConfigurationPropertyName name, Bindable<?> target,
+			AggregateElementBinder elementBinder, Class<?> type) {
+		Map<Object, Object> map = CollectionFactory.createMap(type, 0);
+		for (ConfigurationPropertySource source : getContext().getSources()) {
+			if (!ConfigurationPropertyName.EMPTY.equals(name)) {
+				source = source.filter(name::isAncestorOf);
+			}
+			new EntryBinder(name, target, elementBinder).bindEntries(source, map);
+		}
+		return (map.isEmpty() ? null : map);
+	}
+
+	@Override
+	protected Map<Object, Object> merge(Map<Object, Object> existing,
+			Map<Object, Object> additional) {
+		existing.putAll(additional);
+		return existing;
+	}
+
+	private class EntryBinder {
+
+		private final ConfigurationPropertyName root;
+
+		private final AggregateElementBinder elementBinder;
+
+		private final ResolvableType mapType;
+
+		private final ResolvableType keyType;
+
+		private final ResolvableType valueType;
+
+		EntryBinder(ConfigurationPropertyName root, Bindable<?> target,
+				AggregateElementBinder elementBinder) {
+			this.root = root;
+			this.elementBinder = elementBinder;
+			this.mapType = target.getType().asMap();
+			this.keyType = this.mapType.getGeneric(0);
+			this.valueType = this.mapType.getGeneric(1);
+		}
+
+		public void bindEntries(ConfigurationPropertySource source,
+				Map<Object, Object> map) {
+			for (ConfigurationPropertyName name : source) {
+				Bindable<?> valueBindable = getValueBindable(name);
+				ConfigurationPropertyName entryName = getEntryName(source, name);
+				Object key = getContext().getConversionService()
+						.convert(getKeyName(entryName), this.keyType);
+				Object value = this.elementBinder.bind(entryName, valueBindable);
+				map.putIfAbsent(key, value);
+			}
+		}
+
+		private Bindable<?> getValueBindable(ConfigurationPropertyName name) {
+			if (isMultiElementName(name) && isValueTreatedAsNestedMap()) {
+				return Bindable.of(this.mapType);
+			}
+			return Bindable.of(this.valueType);
+		}
+
+		private ConfigurationPropertyName getEntryName(ConfigurationPropertySource source,
+				ConfigurationPropertyName name) {
+			if (isMultiElementName(name)
+					&& (isValueTreatedAsNestedMap() || !isScalarValue(source, name))) {
+				return rollUp(name, this.root);
+			}
+			return name;
+		}
+
+		private boolean isMultiElementName(ConfigurationPropertyName name) {
+			return name.getParent() != null && !this.root.equals(name.getParent());
+		}
+
+		private boolean isValueTreatedAsNestedMap() {
+			return Object.class.equals(this.valueType.resolve(Object.class));
+		}
+
+		private boolean isScalarValue(ConfigurationPropertySource source,
+				ConfigurationPropertyName name) {
+			if (Map.class.isAssignableFrom(this.valueType.resolve())
+					|| Collection.class.isAssignableFrom(this.valueType.resolve())
+					|| this.valueType.isArray()) {
+				return false;
+			}
+			ConfigurationProperty property = source.getConfigurationProperty(name);
+			if (property == null) {
+				return false;
+			}
+			Object value = property.getValue();
+			value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
+			BinderConversionService conversionService = getContext()
+					.getConversionService();
+			return conversionService.canConvert(value, this.valueType);
+		}
+
+		private String getKeyName(ConfigurationPropertyName name) {
+			return name.stream(this.root).map((e) -> e.getValue(Form.ORIGINAL))
+					.collect(Collectors.joining("."));
+		}
+
+	}
+
+}

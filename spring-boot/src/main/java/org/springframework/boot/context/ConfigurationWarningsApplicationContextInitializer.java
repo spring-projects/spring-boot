@@ -134,7 +134,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 		private static final Set<String> PROBLEM_PACKAGES;
 
 		static {
-			Set<String> packages = new HashSet<String>();
+			Set<String> packages = new HashSet<>();
 			packages.add("org.springframework");
 			packages.add("org");
 			PROBLEM_PACKAGES = Collections.unmodifiableSet(packages);
@@ -155,7 +155,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 
 		protected Set<String> getComponentScanningPackages(
 				BeanDefinitionRegistry registry) {
-			Set<String> packages = new LinkedHashSet<String>();
+			Set<String> packages = new LinkedHashSet<>();
 			String[] names = registry.getBeanDefinitionNames();
 			for (String name : names) {
 				BeanDefinition definition = registry.getBeanDefinition(name);
@@ -197,7 +197,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 		}
 
 		private List<String> getProblematicPackages(Set<String> scannedPackages) {
-			List<String> problematicPackages = new ArrayList<String>();
+			List<String> problematicPackages = new ArrayList<>();
 			for (String scannedPackage : scannedPackages) {
 				if (isProblematicPackage(scannedPackage)) {
 					problematicPackages.add(getDisplayName(scannedPackage));

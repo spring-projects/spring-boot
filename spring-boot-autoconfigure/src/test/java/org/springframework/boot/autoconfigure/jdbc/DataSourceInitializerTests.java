@@ -24,6 +24,7 @@ import java.util.Random;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -112,7 +113,7 @@ public class DataSourceInitializerTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from BAR", Integer.class))
@@ -131,7 +132,7 @@ public class DataSourceInitializerTests {
 						.addResourcePathToPackagePath(getClass(), "data.sql"));
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from FOO", Integer.class))
@@ -154,7 +155,7 @@ public class DataSourceInitializerTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from FOO", Integer.class))
@@ -177,7 +178,7 @@ public class DataSourceInitializerTests {
 						.addResourcePathToPackagePath(getClass(), "encoding-data.sql"));
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from BAR", Integer.class))
@@ -197,7 +198,7 @@ public class DataSourceInitializerTests {
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
 		this.context.publishEvent(new DataSourceInitializedEvent(dataSource));
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		try {
@@ -270,7 +271,7 @@ public class DataSourceInitializerTests {
 		this.context.setResourceLoader(resourceLoader);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from FOO", Integer.class))

@@ -26,6 +26,7 @@ import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
 import com.unboundid.ldap.listener.InMemoryListenerConfig;
 import com.unboundid.ldap.sdk.LDAPException;
+import com.unboundid.ldap.sdk.schema.Schema;
 import com.unboundid.ldif.LDIFReader;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -55,6 +56,7 @@ import org.springframework.util.StringUtils;
  * {@link EnableAutoConfiguration Auto-configuration} for Embedded LDAP.
  *
  * @author Eddú Meléndez
+ * @author Mathieu Ouellet
  * @since 1.5.0
  */
 @Configuration
@@ -107,6 +109,7 @@ public class EmbeddedLdapAutoConfiguration {
 					this.embeddedProperties.getCredential().getUsername(),
 					this.embeddedProperties.getCredential().getPassword());
 		}
+		setSchema(config);
 		InMemoryListenerConfig listenerConfig = InMemoryListenerConfig
 				.createLDAPConfig("LDAP", this.embeddedProperties.getPort());
 		config.setListenerConfigs(listenerConfig);
@@ -115,6 +118,29 @@ public class EmbeddedLdapAutoConfiguration {
 		this.server.startListening();
 		setPortProperty(this.applicationContext, this.server.getListenPort());
 		return this.server;
+	}
+
+	private void setSchema(InMemoryDirectoryServerConfig config) {
+		if (!this.embeddedProperties.getValidation().isEnabled()) {
+			config.setSchema(null);
+			return;
+		}
+		Resource schema = this.embeddedProperties.getValidation().getSchema();
+		if (schema != null) {
+			setSchema(config, schema);
+		}
+	}
+
+	private void setSchema(InMemoryDirectoryServerConfig config, Resource resource) {
+		try {
+			Schema defaultSchema = Schema.getDefaultStandardSchema();
+			Schema schema = Schema.getSchema(resource.getInputStream());
+			config.setSchema(Schema.mergeSchemas(defaultSchema, schema));
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(
+					"Unable to load schema " + resource.getDescription(), ex);
+		}
 	}
 
 	private boolean hasCredentials(Credential credential) {

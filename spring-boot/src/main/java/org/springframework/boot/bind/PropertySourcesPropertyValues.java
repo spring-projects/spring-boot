@@ -25,8 +25,10 @@ import java.util.regex.Pattern;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
@@ -41,6 +43,7 @@ import org.springframework.validation.DataBinder;
  * @author Dave Syer
  * @author Phillip Webb
  */
+@Deprecated
 public class PropertySourcesPropertyValues implements PropertyValues {
 
 	private static final Pattern COLLECTION_PROPERTY = Pattern
@@ -52,9 +55,9 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 
 	private final PropertyNamePatternsMatcher includes;
 
-	private final Map<String, PropertyValue> propertyValues = new LinkedHashMap<String, PropertyValue>();
+	private final Map<String, PropertyValue> propertyValues = new LinkedHashMap<>();
 
-	private final ConcurrentHashMap<String, PropertySource<?>> collectionOwners = new ConcurrentHashMap<String, PropertySource<?>>();
+	private final ConcurrentHashMap<String, PropertySource<?>> collectionOwners = new ConcurrentHashMap<>();
 
 	private final boolean resolvePlaceholders;
 
@@ -70,8 +73,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	 * Create a new PropertyValues from the given PropertySources that will optionally
 	 * resolve placeholders.
 	 * @param propertySources a PropertySources instance
-	 * @param resolvePlaceholders {@code true} if placeholders should be resolved,
-	 * otherwise {@code false}
+	 * @param resolvePlaceholders {@code true} if placeholders should be resolved.
 	 * @since 1.5.2
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources,
@@ -108,6 +110,10 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 			PropertyNamePatternsMatcher includes, boolean resolvePlaceholders) {
 		Assert.notNull(propertySources, "PropertySources must not be null");
 		Assert.notNull(includes, "Includes must not be null");
+		MutablePropertySources mutablePropertySources = new MutablePropertySources(
+				propertySources);
+		mutablePropertySources.remove(ConfigurationPropertySources.PROPERTY_SOURCE_NAME);
+		propertySources = mutablePropertySources;
 		this.propertySources = propertySources;
 		this.nonEnumerableFallbackNames = nonEnumerableFallbackNames;
 		this.includes = includes;

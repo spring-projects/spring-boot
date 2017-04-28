@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.security;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -91,7 +92,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 	/**
 	 * Comma-separated list of paths to exclude from the default secured paths.
 	 */
-	private List<String> ignored = new ArrayList<String>();
+	private List<String> ignored = new ArrayList<>();
 
 	private final User user = new User();
 
@@ -103,7 +104,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 	/**
 	 * Security filter chain dispatcher types.
 	 */
-	private Set<String> filterDispatcherTypes = new HashSet<String>(
+	private Set<String> filterDispatcherTypes = new HashSet<>(
 			Arrays.asList("ASYNC", "ERROR", "REQUEST"));
 
 	public Headers getHeaders() {
@@ -147,7 +148,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 	}
 
 	public void setIgnored(List<String> ignored) {
-		this.ignored = new ArrayList<String>(ignored);
+		this.ignored = new ArrayList<>(ignored);
 	}
 
 	public List<String> getIgnored() {
@@ -357,7 +358,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 		/**
 		 * Granted roles for the default user name.
 		 */
-		private List<String> role = new ArrayList<String>(Arrays.asList("USER"));
+		private List<String> role = new ArrayList<>(Collections.singletonList("USER"));
 
 		private boolean defaultPassword = true;
 
@@ -387,7 +388,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 		}
 
 		public void setRole(List<String> role) {
-			this.role = new ArrayList<String>(role);
+			this.role = new ArrayList<>(role);
 		}
 
 		public boolean isDefaultPassword() {

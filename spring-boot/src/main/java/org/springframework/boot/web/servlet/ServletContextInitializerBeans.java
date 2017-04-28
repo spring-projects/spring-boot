@@ -68,17 +68,17 @@ public class ServletContextInitializerBeans
 	/**
 	 * Seen bean instances or bean names.
 	 */
-	private final Set<Object> seen = new HashSet<Object>();
+	private final Set<Object> seen = new HashSet<>();
 
 	private final MultiValueMap<Class<?>, ServletContextInitializer> initializers;
 
 	private List<ServletContextInitializer> sortedList;
 
 	public ServletContextInitializerBeans(ListableBeanFactory beanFactory) {
-		this.initializers = new LinkedMultiValueMap<Class<?>, ServletContextInitializer>();
+		this.initializers = new LinkedMultiValueMap<>();
 		addServletContextInitializerBeans(beanFactory);
 		addAdaptableBeans(beanFactory);
-		List<ServletContextInitializer> sortedInitializers = new ArrayList<ServletContextInitializer>();
+		List<ServletContextInitializer> sortedInitializers = new ArrayList<>();
 		for (Map.Entry<?, List<ServletContextInitializer>> entry : this.initializers
 				.entrySet()) {
 			AnnotationAwareOrderComparator.sort(entry.getValue());
@@ -217,7 +217,7 @@ public class ServletContextInitializerBeans
 
 	private <T> List<Entry<String, T>> getOrderedBeansOfType(
 			ListableBeanFactory beanFactory, Class<T> type, Set<?> excludes) {
-		List<Entry<String, T>> beans = new ArrayList<Entry<String, T>>();
+		List<Entry<String, T>> beans = new ArrayList<>();
 		Comparator<Entry<String, T>> comparator = new Comparator<Entry<String, T>>() {
 
 			@Override
@@ -228,7 +228,7 @@ public class ServletContextInitializerBeans
 
 		};
 		String[] names = beanFactory.getBeanNamesForType(type, true, false);
-		Map<String, T> map = new LinkedHashMap<String, T>();
+		Map<String, T> map = new LinkedHashMap<>();
 		for (String name : names) {
 			if (!excludes.contains(name) && !ScopedProxyUtils.isScopedTarget(name)) {
 				T bean = beanFactory.getBean(name, type);
@@ -282,8 +282,8 @@ public class ServletContextInitializerBeans
 			if (name.equals(DISPATCHER_SERVLET_NAME)) {
 				url = "/"; // always map the main dispatcherServlet to "/"
 			}
-			ServletRegistrationBean<Servlet> bean = new ServletRegistrationBean<Servlet>(
-					source, url);
+			ServletRegistrationBean<Servlet> bean = new ServletRegistrationBean<>(source,
+					url);
 			bean.setMultipartConfig(this.multipartConfig);
 			return bean;
 		}
@@ -299,7 +299,7 @@ public class ServletContextInitializerBeans
 		@Override
 		public RegistrationBean createRegistrationBean(String name, Filter source,
 				int totalNumberOfSourceBeans) {
-			return new FilterRegistrationBean<Filter>(source);
+			return new FilterRegistrationBean<>(source);
 		}
 
 	}
@@ -313,7 +313,7 @@ public class ServletContextInitializerBeans
 		@Override
 		public RegistrationBean createRegistrationBean(String name, EventListener source,
 				int totalNumberOfSourceBeans) {
-			return new ServletListenerRegistrationBean<EventListener>(source);
+			return new ServletListenerRegistrationBean<>(source);
 		}
 
 	}

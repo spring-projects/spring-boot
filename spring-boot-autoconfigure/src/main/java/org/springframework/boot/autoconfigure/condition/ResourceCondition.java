@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Builder;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -33,42 +32,38 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 public abstract class ResourceCondition extends SpringBootCondition {
 
 	private final String name;
 
-	private final String prefix;
-
-	private final String propertyName;
+	private final String property;
 
 	private final String[] resourceLocations;
 
 	/**
 	 * Create a new condition.
 	 * @param name the name of the component
-	 * @param prefix the prefix of the configuration key
-	 * @param propertyName the name of the configuration key
+	 * @param property the configuration property
 	 * @param resourceLocations default location(s) where the configuration file can be
 	 * found if the configuration key is not specified
+	 * @since 2.0.0
 	 */
-	protected ResourceCondition(String name, String prefix, String propertyName,
+	protected ResourceCondition(String name, String property,
 			String... resourceLocations) {
 		this.name = name;
-		this.prefix = (prefix.endsWith(".") ? prefix : prefix + ".");
-		this.propertyName = propertyName;
+		this.property = property;
 		this.resourceLocations = resourceLocations;
 	}
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), this.prefix);
-		if (resolver.containsProperty(this.propertyName)) {
-			return ConditionOutcome.match(startConditionMessage()
-					.foundExactly("property " + this.prefix + this.propertyName));
+		if (context.getEnvironment().containsProperty(this.property)) {
+			return ConditionOutcome.match(
+					startConditionMessage().foundExactly("property " + this.property));
 		}
 		return getResourceOutcome(context, metadata);
 	}
@@ -81,7 +76,7 @@ public abstract class ResourceCondition extends SpringBootCondition {
 	 */
 	protected ConditionOutcome getResourceOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		List<String> found = new ArrayList<String>();
+		List<String> found = new ArrayList<>();
 		for (String location : this.resourceLocations) {
 			Resource resource = context.getResourceLoader().getResource(location);
 			if (resource != null && resource.exists()) {

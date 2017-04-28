@@ -1,7 +1,19 @@
-<hazelcast xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-3.7.xsd"
+<hazelcast xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-3.8.xsd"
 		   xmlns="http://www.hazelcast.com/schema/config"
 		   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 	<queue name="foobar"/>
+
+	<map name="foobar">
+		<time-to-live-seconds>3600</time-to-live-seconds>
+		<max-idle-seconds>600</max-idle-seconds>
+	</map>
+
+	<network>
+		<join>
+			<tcp-ip enabled="false"/>
+			<multicast enabled="false"/>
+		</join>
+	</network>
 
 </hazelcast>

@@ -26,7 +26,6 @@ import java.util.Map;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
-import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 
 import org.junit.Before;
@@ -83,9 +82,9 @@ public abstract class AbstractFilterRegistrationBeanTests {
 		bean.setAsyncSupported(false);
 		bean.setInitParameters(Collections.singletonMap("a", "b"));
 		bean.addInitParameter("c", "d");
-		bean.setUrlPatterns(new LinkedHashSet<String>(Arrays.asList("/a", "/b")));
+		bean.setUrlPatterns(new LinkedHashSet<>(Arrays.asList("/a", "/b")));
 		bean.addUrlPatterns("/c");
-		bean.setServletNames(new LinkedHashSet<String>(Arrays.asList("s1", "s2")));
+		bean.setServletNames(new LinkedHashSet<>(Arrays.asList("s1", "s2")));
 		bean.addServletNames("s3");
 		bean.setServletRegistrationBeans(
 				Collections.singleton(mockServletRegistration("s4")));
@@ -94,7 +93,7 @@ public abstract class AbstractFilterRegistrationBeanTests {
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addFilter(eq("test"), getExpectedFilter());
 		verify(this.registration).setAsyncSupported(false);
-		Map<String, String> expectedInitParameters = new HashMap<String, String>();
+		Map<String, String> expectedInitParameters = new HashMap<>();
 		expectedInitParameters.put("a", "b");
 		expectedInitParameters.put("c", "d");
 		verify(this.registration).setInitParameters(expectedInitParameters);
@@ -221,7 +220,7 @@ public abstract class AbstractFilterRegistrationBeanTests {
 			ServletRegistrationBean<?>... servletRegistrationBeans);
 
 	protected final ServletRegistrationBean<?> mockServletRegistration(String name) {
-		ServletRegistrationBean<?> bean = new ServletRegistrationBean<Servlet>();
+		ServletRegistrationBean<?> bean = new ServletRegistrationBean<>();
 		bean.setName(name);
 		return bean;
 	}

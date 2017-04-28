@@ -17,7 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.net.InetAddress;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -25,9 +26,9 @@ import javax.servlet.http.HttpSession;
 import org.springframework.boot.autoconfigure.security.SecurityPrerequisite;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -78,12 +79,12 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	/**
 	 * Management endpoint context-path.
 	 */
-	private String contextPath = "";
+	private String contextPath = "/application";
 
 	/**
 	 * Add the "X-Application-Context" HTTP header in each response.
 	 */
-	private boolean addApplicationContextHeader = true;
+	private boolean addApplicationContextHeader = false;
 
 	private final Security security = new Security();
 
@@ -168,7 +169,8 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		/**
 		 * Comma-separated list of roles that can access the management endpoint.
 		 */
-		private List<String> roles = Arrays.asList("ACTUATOR");
+		private List<String> roles = new ArrayList<String>(
+				Collections.singletonList("ACTUATOR"));
 
 		/**
 		 * Session creating policy for security use (always, never, if_required,

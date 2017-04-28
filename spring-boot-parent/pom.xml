@@ -18,7 +18,7 @@
 		<url>http://www.spring.io</url>
 	</organization>
 	<properties>
-		<main.basedir>..</main.basedir>
+		<main.basedir>${basedir}/..</main.basedir>
 		<disable.checks>false</disable.checks>
 		<java.version>1.8</java.version>
 		<aether.version>1.0.2.v20150114</aether.version>
@@ -70,14 +70,9 @@
 				<version>0.0.20131108.vaadin1</version>
 			</dependency>
 			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-all</artifactId>
-				<version>4.0.38.Final</version>
-			</dependency>
-			<dependency>
 				<groupId>io.spring.gradle</groupId>
 				<artifactId>dependency-management-plugin</artifactId>
-				<version>1.0.0.RELEASE</version>
+				<version>1.0.2.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>jline</groupId>
@@ -205,41 +200,6 @@
 				<version>${aether.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-base-services</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-base-services-groovy</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-core</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-language-java</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-language-jvm</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-platform-jvm</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-plugins</artifactId>
-				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-runtime</artifactId>
 				<version>1.0.4</version>
@@ -301,7 +261,7 @@
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>7.1.1</version>
+							<version>7.6</version>
 						</dependency>
 					</dependencies>
 				</plugin>
@@ -502,10 +462,10 @@
 							<configLocation>src/checkstyle/checkstyle.xml</configLocation>
 							<suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
 							<headerLocation>src/checkstyle/checkstyle-header.txt</headerLocation>
-							<propertyExpansion>checkstyle.build.directory=${project.build.directory}</propertyExpansion>
+							<propertyExpansion>main.basedir=${main.basedir}</propertyExpansion>
 							<encoding>UTF-8</encoding>
 							<consoleOutput>true</consoleOutput>
-							<failsOnError>true</failsOnError>
+							<failOnViolation>true</failOnViolation>
 							<includeTestSourceDirectory>true</includeTestSourceDirectory>
 						</configuration>
 						<goals>
@@ -638,7 +598,7 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>enforce-java-6</id>
+						<id>enforce-java-8</id>
 						<phase>test</phase>
 						<goals>
 							<goal>check</goal>
@@ -687,6 +647,13 @@
 					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
 					<snapshots>
 						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>neo4j-snapshots</id>
+					<url>http://m2.neo4j.org/content/repositories/snapshots</url>
+					<snapshots>
+						<enabled>true</enabled>
 					</snapshots>
 				</repository>
 			</repositories>
@@ -752,6 +719,13 @@
 					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
 					<snapshots>
 						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>neo4j-snapshots</id>
+					<url>http://m2.neo4j.org/content/repositories/snapshots</url>
+					<snapshots>
+						<enabled>true</enabled>
 					</snapshots>
 				</repository>
 			</repositories>
@@ -836,6 +810,13 @@
 					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
 					<snapshots>
 						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>neo4j-snapshots</id>
+					<url>http://m2.neo4j.org/content/repositories/snapshots</url>
+					<snapshots>
+						<enabled>true</enabled>
 					</snapshots>
 				</repository>
 			</repositories>

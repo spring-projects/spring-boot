@@ -50,7 +50,7 @@ content into your application; rather pick only the properties that you need.
 
 	# AOP
 	spring.aop.auto=true # Add @EnableAspectJAutoProxy.
-	spring.aop.proxy-target-class=false # Whether subclass-based (CGLIB) proxies are to be created (true) as opposed to standard Java interface-based proxies (false).
+	spring.aop.proxy-target-class=true # Whether subclass-based (CGLIB) proxies are to be created (true) as opposed to standard Java interface-based proxies (false).
 
 	# IDENTITY ({sc-spring-boot}/context/ContextIdApplicationContextInitializer.{sc-ext}[ContextIdApplicationContextInitializer])
 	spring.application.index= # Application index.
@@ -71,7 +71,6 @@ content into your application; rather pick only the properties that you need.
 	spring.cache.caffeine.spec= # The spec to use to create caches. Check CaffeineSpec for more details on the spec format.
 	spring.cache.couchbase.expiration=0 # Entry expiration in milliseconds. By default the entries never expire.
 	spring.cache.ehcache.config= # The location of the configuration file to use to initialize EhCache.
-	spring.cache.hazelcast.config= # The location of the configuration file to use to initialize Hazelcast.
 	spring.cache.infinispan.config= # The location of the configuration file to use to initialize Infinispan.
 	spring.cache.jcache.config= # The location of the configuration file to use to initialize the cache manager.
 	spring.cache.jcache.provider= # Fully qualified name of the CachingProvider implementation to use to retrieve the JSR-107 compliant cache manager. Only needed if more than one JSR-107 implementation is available on the classpath.
@@ -119,9 +118,6 @@ content into your application; rather pick only the properties that you need.
 	spring.messages.encoding=UTF-8 # Message bundles encoding.
 	spring.messages.fallback-to-system-locale=true # Set whether to fall back to the system Locale if no files for a specific Locale have been found.
 
-	# REACTOR
-	spring.reactor.stacktrace-mode.enabled=true # Set whether Reactor should collect stacktrace information at runtime.
-
 	# OUTPUT
 	spring.output.ansi.enabled=detect # Configure the ANSI output.
 
@@ -132,6 +128,9 @@ content into your application; rather pick only the properties that you need.
 	# PROFILES
 	spring.profiles.active= # Comma-separated list (or list if using YAML) of <<howto-set-active-spring-profiles,active profiles>>.
 	spring.profiles.include= # Unconditionally activate the specified comma separated profiles (or list of profiles if using YAML).
+
+	# Reactor
+	spring.reactor.stacktrace-mode.enabled=false # Set whether Reactor should collect stacktrace information at runtime.
 
 	# SENDGRID ({sc-spring-boot-autoconfigure}/sendgrid/SendGridAutoConfiguration.{sc-ext}[SendGridAutoConfiguration])
 	spring.sendgrid.api-key= # SendGrid api key (alternative to username/password)
@@ -154,21 +153,34 @@ content into your application; rather pick only the properties that you need.
 	server.connection-timeout= # Time in milliseconds that connectors will wait for another HTTP request before closing the connection. When not set, the connector's container-specific default will be used. Use a value of -1 to indicate no (i.e. infinite) timeout.
 	server.display-name=application # Display name of the application.
 	server.max-http-header-size=0 # Maximum size in bytes of the HTTP message header.
+	server.error.include-exception=false # Include the "exception" attribute.
 	server.error.include-stacktrace=never # When to include a "stacktrace" attribute.
 	server.error.path=/error # Path of the error controller.
 	server.error.whitelabel.enabled=true # Enable the default error page displayed in browsers in case of a server error.
 	server.jetty.acceptors= # Number of acceptor threads to use.
+	server.jetty.accesslog.append=false # Append to log.
+	server.jetty.accesslog.date-format=dd/MMM/yyyy:HH:mm:ss Z # Timestamp format of the request log.
+	server.jetty.accesslog.enabled=false # Enable access log.
+	server.jetty.accesslog.extended-format=false # Enable extended NCSA format.
+	server.jetty.accesslog.file-date-format= # Date format to place in log file name.
+	server.jetty.accesslog.filename= # Log filename. If not specified, logs will be redirected to "System.err".
+	server.jetty.accesslog.locale= # Locale of the request log.
+	server.jetty.accesslog.log-cookies=false # Enable logging of the request cookies.
+	server.jetty.accesslog.log-latency=false # Enable logging of request processing time.
+	server.jetty.accesslog.log-server=false # Enable logging of the request hostname.
+	server.jetty.accesslog.retention-period=31 # Number of days before rotated log files are deleted.
+	server.jetty.accesslog.time-zone=GMT # Timezone of the request log.
 	server.jetty.max-http-post-size=0 # Maximum size in bytes of the HTTP post or put content.
 	server.jetty.selectors= # Number of selector threads to use.
 	server.port=8080 # Server HTTP port.
 	server.server-header= # Value to use for the Server response header (no header is sent if empty)
-	server.servlet.context-parameters.*= # Servlet context init parameters. For instance `server.servlet.context-parameters.a=alpha`
-	server.servlet.context-path= # Context path of the application.
-	server.servlet.jsp.class-name=org.apache.jasper.servlet.JspServlet # The class name of the JSP servlet.
+	server.use-forward-headers= # If X-Forwarded-* headers should be applied to the HttpRequest.
+	server.servlet.context-parameters.*= # Servlet context init parameters
+    server.servlet.context-path= # Context path of the application.
+    server.servlet.jsp.class-name=org.apache.jasper.servlet.JspServlet # The class name of the JSP servlet.
 	server.servlet.jsp.init-parameters.*= # Init parameters used to configure the JSP servlet
 	server.servlet.jsp.registered=true # Whether or not the JSP servlet is registered
-	server.servlet.path=/ # Path of the main dispatcher servlet.
-	server.use-forward-headers= # If X-Forwarded-* headers should be applied to the HttpRequest.
+    server.servlet.path=/ # Path of the main dispatcher servlet.
 	server.session.cookie.comment= # Comment for the session cookie.
 	server.session.cookie.domain= # Domain for the session cookie.
 	server.session.cookie.http-only= # "HttpOnly" flag for the session cookie.
@@ -199,6 +211,7 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.accesslog.buffered=true # Buffer output such that it is only flushed periodically.
 	server.tomcat.accesslog.directory=logs # Directory in which log files are created. Can be relative to the tomcat base dir or absolute.
 	server.tomcat.accesslog.enabled=false # Enable access log.
+	server.tomcat.accesslog.file-date-format=.yyyy-MM-dd # Date format to place in log file name.
 	server.tomcat.accesslog.pattern=common # Format pattern for access logs.
 	server.tomcat.accesslog.prefix=access_log # Log file name prefix.
 	server.tomcat.accesslog.rename-on-rotate=false # Defer inclusion of the date stamp in the file name until rotate time.
@@ -216,6 +229,7 @@ content into your application; rather pick only the properties that you need.
 			172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
 			172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3} # regular expression matching trusted IP addresses.
 	server.tomcat.max-connections= # Maximum number of connections that the server will accept and process at any given time.
+	server.tomcat.max-http-header-size=0 # Maximum size in bytes of the HTTP message header.
 	server.tomcat.max-http-post-size=0 # Maximum size in bytes of the HTTP post content.
 	server.tomcat.max-threads=0 # Maximum amount of worker threads.
 	server.tomcat.min-spare-threads=0 # Minimum amount of worker threads.
@@ -232,7 +246,6 @@ content into your application; rather pick only the properties that you need.
 	server.undertow.accesslog.rotate=true # Enable access log rotation.
 	server.undertow.accesslog.suffix=log # Log file name suffix.
 	server.undertow.buffer-size= # Size of each buffer in bytes.
-	server.undertow.buffers-per-region= # Number of buffer per region.
 	server.undertow.direct-buffers= # Allocate buffers outside the Java heap.
 	server.undertow.io-threads= # Number of I/O threads to create for the worker.
 	server.undertow.max-http-post-size=0 # Maximum size in bytes of the HTTP post content.
@@ -325,11 +338,13 @@ content into your application; rather pick only the properties that you need.
     spring.ldap.base-environment.*= # LDAP specification settings.
 
     # EMBEDDED LDAP ({sc-spring-boot-autoconfigure}/ldap/embedded/EmbeddedLdapProperties.{sc-ext}[EmbeddedLdapProperties])
-    spring.ldap.embedded.port= # Embedded LDAP port.
+    spring.ldap.embedded.base-dn= # The base DN
     spring.ldap.embedded.credential.username= # Embedded LDAP username.
     spring.ldap.embedded.credential.password= # Embedded LDAP password.
-    spring.ldap.embedded.base-dn= # The base DN
     spring.ldap.embedded.ldif=classpath:schema.ldif # Schema (LDIF) script resource reference.
+    spring.ldap.embedded.port= # Embedded LDAP port.
+    spring.ldap.embedded.validation.enabled=true # Enable LDAP schema validation.
+    spring.ldap.embedded.validation.schema= # Path to the custom schema.
 
 	# SPRING MOBILE DEVICE VIEWS ({sc-spring-boot-autoconfigure}/mobile/DeviceDelegatingViewResolverAutoConfiguration.{sc-ext}[DeviceDelegatingViewResolverAutoConfiguration])
 	spring.mobile.devicedelegatingviewresolver.enable-fallback=false # Enable support for fallback resolution.
@@ -399,7 +414,6 @@ content into your application; rather pick only the properties that you need.
 	spring.session.jdbc.initializer.enabled= # Create the required session tables on startup if necessary. Enabled automatically if the default table name is set or a custom schema is configured.
 	spring.session.jdbc.schema=classpath:org/springframework/session/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.session.jdbc.table-name=SPRING_SESSION # Name of database table used to store sessions.
-	spring.session.mongo.collection-name=sessions # Collection name used to store sessions.
 	spring.session.redis.flush-mode=on-save # Sessions flush mode.
 	spring.session.redis.namespace= # Namespace for keys used to store sessions.
 	spring.session.store-type= # Session store type.
@@ -427,11 +441,14 @@ content into your application; rather pick only the properties that you need.
 	spring.thymeleaf.enabled=true # Enable MVC Thymeleaf view resolution.
 	spring.thymeleaf.encoding=UTF-8 # Template encoding.
 	spring.thymeleaf.excluded-view-names= # Comma-separated list of view names that should be excluded from resolution.
-	spring.thymeleaf.mode=HTML # Template mode to be applied to templates. See also org.thymeleaf.templatemode.TemplateMode.
+	spring.thymeleaf.mode=HTML5 # Template mode to be applied to templates. See also StandardTemplateModeHandlers.
 	spring.thymeleaf.prefix=classpath:/templates/ # Prefix that gets prepended to view names when building a URL.
 	spring.thymeleaf.suffix=.html # Suffix that gets appended to view names when building a URL.
 	spring.thymeleaf.template-resolver-order= # Order of the template resolver in the chain.
 	spring.thymeleaf.view-names= # Comma-separated list of view names that can be resolved.
+
+	# SPRING WEB FLUX ({sc-spring-boot-autoconfigure}/web/reactive/WebFluxProperties.{sc-ext}[WebFluxProperties])
+	spring.webflux.static-path-pattern=/** # Path pattern used for static resources.
 
 	# SPRING WEB SERVICES ({sc-spring-boot-autoconfigure}/webservices/WebServicesProperties.{sc-ext}[WebServicesProperties])
 	spring.webservices.path=/services # Path that serves as the base URI for the services.
@@ -490,15 +507,20 @@ content into your application; rather pick only the properties that you need.
 	# ----------------------------------------
 
 	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])
+	flyway.allow-mixed-migrations= #
 	flyway.baseline-description= #
-	flyway.baseline-version=1 # version to start migration
 	flyway.baseline-on-migrate= #
+	flyway.baseline-version=1 # version to start migration
 	flyway.check-location=false # Check that migration scripts location exists.
+	flyway.clean-disabled= #
 	flyway.clean-on-validation-error= #
 	flyway.enabled=true # Enable flyway.
 	flyway.encoding= #
 	flyway.ignore-failed-future-migration= #
+	flyway.ignore-future-migrations= #
+	flyway.ignore-missing-migrations= #
 	flyway.init-sqls= # SQL statements to execute to initialize a connection immediately after obtaining it.
+	flyway.installed-by= #
 	flyway.locations=classpath:db/migration # locations of migrations scripts
 	flyway.out-of-order= #
 	flyway.password= # JDBC password if you want Flyway to create its own DataSource
@@ -506,11 +528,15 @@ content into your application; rather pick only the properties that you need.
 	flyway.placeholder-replacement= #
 	flyway.placeholder-suffix= #
 	flyway.placeholders.*= #
+	flyway.repeatable-sql-migration-prefix= #
 	flyway.schemas= # schemas to update
+	flyway.skip-default-callbacks= #
+	flyway.skip-default-resolvers= #
 	flyway.sql-migration-prefix=V #
 	flyway.sql-migration-separator= #
 	flyway.sql-migration-suffix=.sql #
 	flyway.table= #
+	flyway.target= #
 	flyway.url= # JDBC url of the database to migrate. If not set, the primary configured data source is used.
 	flyway.user= # Login user of the database to migrate.
 	flyway.validate-on-migrate= #
@@ -559,8 +585,10 @@ content into your application; rather pick only the properties that you need.
 	spring.data.cassandra.load-balancing-policy= # Class name of the load balancing policy.
 	spring.data.cassandra.port= # Port of the Cassandra server.
 	spring.data.cassandra.password= # Login password of the server.
+	spring.data.cassandra.reactive-repositories.enabled=true # Enable Cassandra reactive repositories.
 	spring.data.cassandra.read-timeout-millis= # Socket option: read time out.
 	spring.data.cassandra.reconnection-policy= # Reconnection policy class.
+	spring.data.cassandra.repositories.enabled= # Enable Cassandra repositories.
 	spring.data.cassandra.retry-policy= # Class name of the retry policy.
 	spring.data.cassandra.serial-consistency-level= # Queries serial consistency level.
 	spring.data.cassandra.schema-action=none # Schema action to take at startup.
@@ -598,7 +626,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.redis.repositories.enabled=true # Enable Redis repositories.
 
 	# NEO4J ({sc-spring-boot-autoconfigure}/neo4j/Neo4jProperties.{sc-ext}[Neo4jProperties])
-	spring.data.neo4j.compiler= # Compiler to use.
+	spring.data.neo4j.auto-index=none # Auto index mode.
 	spring.data.neo4j.embedded.enabled=true # Enable embedded mode if the embedded driver is available.
 	spring.data.neo4j.open-in-view=false # Register OpenSessionInViewInterceptor. Binds a Neo4j Session to the thread for the entire processing of the request.
 	spring.data.neo4j.password= # Login password of the server.
@@ -646,7 +674,9 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.tomcat.*= # Tomcat datasource specific settings
 	spring.datasource.type= # Fully qualified name of the connection pool implementation to use. By default, it is auto-detected from the classpath.
 	spring.datasource.url= # JDBC url of the database.
-	spring.datasource.username=
+	spring.datasource.username= # Login user of the database.
+	spring.datasource.xa.data-source-class-name= # XA datasource fully qualified name.
+    spring.datasource.xa.properties= # Properties to pass to the XA data source.
 
 	# JEST (Elasticsearch HTTP client) ({sc-spring-boot-autoconfigure}/jest/JestProperties.{sc-ext}[JestProperties])
 	spring.elasticsearch.jest.connection-timeout=3000 # Connection timeout in milliseconds.
@@ -673,8 +703,8 @@ content into your application; rather pick only the properties that you need.
 	spring.jpa.database-platform= # Name of the target database to operate on, auto-detected by default. Can be alternatively set using the "Database" enum.
 	spring.jpa.generate-ddl=false # Initialize the schema on startup.
 	spring.jpa.hibernate.ddl-auto= # DDL mode. This is actually a shortcut for the "hibernate.hbm2ddl.auto" property. Default to "create-drop" when using an embedded database, "none" otherwise.
-	spring.jpa.hibernate.naming.implicit-strategy= # Implicit naming strategy fully qualified name.
-	spring.jpa.hibernate.naming.physical-strategy= # Physical naming strategy fully qualified name.
+	spring.jpa.hibernate.naming.implicit-strategy= # Hibernate 5 implicit naming strategy fully qualified name.
+	spring.jpa.hibernate.naming.physical-strategy= # Hibernate 5 physical naming strategy fully qualified name.
 	spring.jpa.hibernate.use-new-id-generator-mappings= # Use Hibernate's newer IdentifierGenerator for AUTO, TABLE and SEQUENCE.
 	spring.jpa.open-in-view=true # Register OpenEntityManagerInViewInterceptor. Binds a JPA EntityManager to the thread for the entire processing of the request.
 	spring.jpa.properties.*= # Additional native properties to set on the JPA provider.
@@ -873,6 +903,10 @@ content into your application; rather pick only the properties that you need.
 	spring.batch.schema=classpath:org/springframework/batch/core/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.batch.table-prefix= # Table prefix for all the batch meta-data tables.
 
+	# SPRING INTEGRATION ({sc-spring-boot-autoconfigure}/integration/IntegrationProperties.{sc-ext}[IntegrationProperties])
+	spring.integration.jdbc.initializer.enabled=false # Create the required integration tables on startup.
+	spring.integration.jdbc.schema=classpath:org/springframework/integration/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
+
 	# JMS ({sc-spring-boot-autoconfigure}/jms/JmsProperties.{sc-ext}[JmsProperties])
 	spring.jms.jndi-name= # Connection factory JNDI name. When set, takes precedence to others connection factory auto-configurations.
 	spring.jms.listener.acknowledge-mode= # Acknowledge mode of the container. By default, the listener is transacted with automatic acknowledgment.
@@ -1057,6 +1091,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.shutdown.path= # Endpoint path.
 	endpoints.shutdown.sensitive= # Mark if the endpoint exposes sensitive information.
 	endpoints.trace.enabled= # Enable the endpoint.
+	endpoints.trace.filter.enabled=true # Enable the trace servlet filter.
 	endpoints.trace.id= # Endpoint identifier.
 	endpoints.trace.path= # Endpoint path.
 	endpoints.trace.sensitive= # Mark if the endpoint exposes sensitive information.
@@ -1079,7 +1114,7 @@ content into your application; rather pick only the properties that you need.
 	jolokia.config.*= # See Jolokia manual
 
 	# MANAGEMENT HTTP SERVER ({sc-spring-boot-actuator}/autoconfigure/ManagementServerProperties.{sc-ext}[ManagementServerProperties])
-	management.add-application-context-header=true # Add the "X-Application-Context" HTTP header in each response.
+	management.add-application-context-header=false # Add the "X-Application-Context" HTTP header in each response.
 	management.address= # Network address that the management endpoints should bind to.
 	management.context-path= # Management endpoint context-path. For instance `/actuator`
 	management.cloudfoundry.enabled= # Enable extended Cloud Foundry actuator endpoints

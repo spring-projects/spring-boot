@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class MockCachingProvider implements CachingProvider {
 		CacheManager cacheManager = mock(CacheManager.class);
 		given(cacheManager.getURI()).willReturn(uri);
 		given(cacheManager.getClassLoader()).willReturn(classLoader);
-		final Map<String, Cache> caches = new HashMap<String, Cache>();
+		final Map<String, Cache> caches = new HashMap<>();
 		given(cacheManager.getCacheNames()).willReturn(caches.keySet());
 		given(cacheManager.getCache(anyString())).willAnswer(new Answer<Cache>() {
 			@Override

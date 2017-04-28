@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class ConfigurationMetadata {
 
 	static {
 		List<Character> chars = Arrays.asList('-', '_');
-		SEPARATORS = Collections.unmodifiableSet(new HashSet<Character>(chars));
+		SEPARATORS = Collections.unmodifiableSet(new HashSet<>(chars));
 	}
 
 	private final Map<String, List<ItemMetadata>> items;
@@ -48,13 +48,13 @@ public class ConfigurationMetadata {
 	private final Map<String, List<ItemHint>> hints;
 
 	public ConfigurationMetadata() {
-		this.items = new LinkedHashMap<String, List<ItemMetadata>>();
-		this.hints = new LinkedHashMap<String, List<ItemHint>>();
+		this.items = new LinkedHashMap<>();
+		this.hints = new LinkedHashMap<>();
 	}
 
 	public ConfigurationMetadata(ConfigurationMetadata metadata) {
-		this.items = new LinkedHashMap<String, List<ItemMetadata>>(metadata.items);
-		this.hints = new LinkedHashMap<String, List<ItemHint>>(metadata.hints);
+		this.items = new LinkedHashMap<>(metadata.items);
+		this.hints = new LinkedHashMap<>(metadata.hints);
 	}
 
 	/**
@@ -135,7 +135,7 @@ public class ConfigurationMetadata {
 	private <K, V> void add(Map<K, List<V>> map, K key, V value) {
 		List<V> values = map.get(key);
 		if (values == null) {
-			values = new ArrayList<V>();
+			values = new ArrayList<>();
 			map.put(key, values);
 		}
 		values.add(value);
@@ -198,7 +198,7 @@ public class ConfigurationMetadata {
 	}
 
 	private static <T extends Comparable<T>> List<T> flattenValues(Map<?, List<T>> map) {
-		List<T> content = new ArrayList<T>();
+		List<T> content = new ArrayList<>();
 		for (List<T> values : map.values()) {
 			content.addAll(values);
 		}

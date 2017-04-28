@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.data.mongo;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
 
 import com.mongodb.Mongo;
@@ -44,8 +45,9 @@ import org.springframework.data.mapping.model.FieldNamingStrategy;
 import org.springframework.data.mapping.model.PropertyNameFieldNamingStrategy;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
+import org.springframework.data.mongodb.core.mapping.BasicMongoPersistentEntity;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
-import org.springframework.data.mongodb.core.mapping.MongoPersistentEntity;
+import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -165,8 +167,13 @@ public class MongoDataAutoConfigurationTests {
 				MongoDataAutoConfiguration.class);
 		this.context.refresh();
 		MongoMappingContext context = this.context.getBean(MongoMappingContext.class);
-		MongoPersistentEntity<?> entity = context.getPersistentEntity(Sample.class);
-		assertThat(entity.getPersistentProperty("date").isEntity()).isFalse();
+		Optional<BasicMongoPersistentEntity<?>> entity = context
+				.getPersistentEntity(Sample.class);
+		assertThat(entity).isPresent();
+		Optional<MongoPersistentProperty> dateProperty = entity.get()
+				.getPersistentProperty("date");
+		assertThat(dateProperty).isPresent();
+		assertThat(dateProperty.get().isEntity()).isFalse();
 	}
 
 	public void testFieldNamingStrategy(String strategy,

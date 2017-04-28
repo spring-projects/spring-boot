@@ -91,7 +91,9 @@ can set the `spring.cache.infinispan.config` property to use the provided
 TIP: Run sample cache application using Infinispan with
 `$mvn spring-boot:run -Pinfinispan`.
 
-
+NOTE: If you want to use the client/server mode or if you need more options, Infinispan
+provides an official Spring Boot starter, check
+https://github.com/infinispan/infinispan-spring-boot[the documentation] for more details.
 
 === Couchbase
 Add the `java-client` and `couchbase-spring-cache` dependencies and make sure that

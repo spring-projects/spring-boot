@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.social;
 
 import org.junit.Test;
 
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -38,6 +39,7 @@ public class TwitterAutoConfigurationTests extends AbstractSocialAutoConfigurati
 				"spring.social.twitter.appId:12345");
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.social.twitter.appSecret:secret");
+		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.register(TwitterAutoConfiguration.class);
 		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();

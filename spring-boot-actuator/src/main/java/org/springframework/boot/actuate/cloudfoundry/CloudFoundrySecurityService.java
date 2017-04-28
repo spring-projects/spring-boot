@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,11 +116,10 @@ class CloudFoundrySecurityService {
 	}
 
 	private Map<String, String> extractTokenKeys(Map<?, ?> response) {
-		Map<String, String> tokenKeys = new HashMap<String, String>();
-		List<?> keys = (List<?>) response.get("keys");
-		for (Object key : keys) {
+		Map<String, String> tokenKeys = new HashMap<>();
+		for (Object key : (List<?>) response.get("keys")) {
 			Map<?, ?> tokenKey = (Map<?, ?>) key;
-			tokenKeys.put((String) (tokenKey).get("kid"), (String) (tokenKey).get("value"));
+			tokenKeys.put((String) tokenKey.get("kid"), (String) tokenKey.get("value"));
 		}
 		return tokenKeys;
 	}

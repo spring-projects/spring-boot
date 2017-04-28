@@ -26,12 +26,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.config.AnsiOutputApplicationListener;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
+import org.springframework.boot.context.logging.ClasspathLoggingApplicationListener;
+import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.boot.devtools.remote.client.RemoteClientConfiguration;
 import org.springframework.boot.devtools.restart.RestartInitializer;
 import org.springframework.boot.devtools.restart.RestartScopeInitializer;
 import org.springframework.boot.devtools.restart.Restarter;
-import org.springframework.boot.logging.ClasspathLoggingApplicationListener;
-import org.springframework.boot.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.ClassPathResource;
@@ -65,13 +65,13 @@ public final class RemoteSpringApplication {
 	}
 
 	private Collection<ApplicationContextInitializer<?>> getInitializers() {
-		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
 		initializers.add(new RestartScopeInitializer());
 		return initializers;
 	}
 
 	private Collection<ApplicationListener<?>> getListeners() {
-		List<ApplicationListener<?>> listeners = new ArrayList<ApplicationListener<?>>();
+		List<ApplicationListener<?>> listeners = new ArrayList<>();
 		listeners.add(new AnsiOutputApplicationListener());
 		listeners.add(new ConfigFileApplicationListener());
 		listeners.add(new ClasspathLoggingApplicationListener());

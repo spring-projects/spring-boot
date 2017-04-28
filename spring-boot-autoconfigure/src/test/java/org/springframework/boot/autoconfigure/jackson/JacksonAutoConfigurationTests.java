@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -38,7 +40,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
@@ -49,7 +50,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.jackson.JsonObjectSerializer;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
@@ -59,6 +60,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -445,10 +447,12 @@ public class JacksonAutoConfigurationTests {
 			Class<?>... configClasses) {
 		this.context.register(configClasses);
 		this.context.refresh();
-		Annotated annotated = mock(Annotated.class);
-		Mode mode = this.context.getBean(ObjectMapper.class).getDeserializationConfig()
-				.getAnnotationIntrospector().findCreatorBinding(annotated);
-		assertThat(mode).isEqualTo(expectedMode);
+		DeserializationConfig deserializationConfig = this.context
+				.getBean(ObjectMapper.class).getDeserializationConfig();
+		AnnotationIntrospector annotationIntrospector = deserializationConfig
+				.getAnnotationIntrospector().allIntrospectors().iterator().next();
+		assertThat(ReflectionTestUtils.getField(annotationIntrospector, "creatorBinding"))
+				.isEqualTo(expectedMode);
 	}
 
 	public static class MyDateFormat extends SimpleDateFormat {
@@ -588,7 +592,7 @@ public class JacksonAutoConfigurationTests {
 
 	private static class CustomModule extends SimpleModule {
 
-		private Set<ObjectCodec> owners = new HashSet<ObjectCodec>();
+		private Set<ObjectCodec> owners = new HashSet<>();
 
 		@Override
 		public void setupModule(SetupContext context) {

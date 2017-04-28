@@ -565,8 +565,8 @@ specified by the `spring.profiles.active` property are added after those configu
 the `SpringApplication` API and therefore take precedence.
 
 NOTE: If you have specified any files in `spring.config.location`, profile-specific
-variants of those files will not be considered. Use directories in`spring.config.location`
-if you also want to also use profile-specific properties.
+variants of those files will not be considered. Use directories in
+`spring.config.location` if you also want to also use profile-specific properties.
 
 
 
@@ -665,6 +665,22 @@ with a mutable value, e.g. this will bind to the properties above
 		}
 	}
 ----
+
+[NOTE]
+====
+Extra care is required when configuring lists that way as overriding will not work as you
+would expect. In the example above, when `my.servers` is redefined in several places, the
+individual elements are targeted for override, not the list. To make sure that a
+`PropertySource` with higher precedence can override the list, you need to define it as
+a single property:
+
+[source,yaml,indent=0]
+----
+	 my:
+		servers: dev.bar.com,foo.bar.com
+----
+
+====
 
 
 
@@ -2704,20 +2720,7 @@ to the home page at "/" and keep the default for everything else:
 
 [source,java,indent=0]
 ----
-	@Configuration
-	public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-		@Override
-		public void init(WebSecurity web) {
-			web.ignore("/");
-		}
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
-		}
-
-	}
+include::{code-examples}/web/security/UnauthenticatedAccessExample.java[tag=configuration]
 ----
 
 
@@ -2727,7 +2730,8 @@ to the home page at "/" and keep the default for everything else:
 If the Actuator is also in use, you will find:
 
 * The management endpoints are secure even if the application endpoints are insecure.
-* Security events are transformed into `AuditEvents` and published to the `AuditService`.
+* Security events are transformed into `AuditEvent` instances and published to the
+`AuditEventRepository`.
 * The default user will have the `ACTUATOR` role as well as the `USER` role.
 
 The Actuator security features can be modified using external properties
@@ -2817,10 +2821,10 @@ ensuring that it happens once access to the database is no longer needed.
 Production database connections can also be auto-configured using a pooling `DataSource`.
 Here's the algorithm for choosing a specific implementation:
 
-* We prefer the Tomcat pooling `DataSource` for its performance and concurrency, so if
-  that is available we always choose it.
-* Otherwise, if HikariCP is available we will use it.
-* If neither the Tomcat pooling datasource nor HikariCP are available and if Commons
+* We prefer HikariCP for its performance and concurrency, so if that is available we
+  always choose it.
+* Otherwise, if the Tomcat pooling `DataSource` is available we will use it.
+* If neither HikariCP nor the Tomcat pooling datasource are available and if Commons
   DBCP2 is available we will use it.
 
 If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa`
@@ -2859,8 +2863,8 @@ loadable.
 See {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[`DataSourceProperties`]
 for more of the supported options. These are the standard options that work regardless of
 the actual implementation. It is also possible to fine-tune implementation-specific
-settings using their respective prefix (`+spring.datasource.tomcat.*+`,
-`+spring.datasource.hikari.*+`, and `+spring.datasource.dbcp2.*+`). Refer to the
+settings using their respective prefix (`+spring.datasource.hikari.*+`,
+`+spring.datasource.tomcat.*+`, and `+spring.datasource.dbcp2.*+`). Refer to the
 documentation of the connection pool implementation you are using for more details.
 
 For instance, if you are using the
@@ -3515,6 +3519,13 @@ persistence for the embedded mode:
 	spring.data.neo4j.uri=file://var/tmp/graph.db
 ----
 
+[NOTE]
+====
+The Neo4j OGM embedded driver does not provide the Neo4j kernel. Users are expected to
+provide this dependency manually, see
+http://neo4j.com/docs/ogm-manual/current/reference/#reference:getting-started[the documentation]
+for more details.
+====
 
 
 [[boot-features-neo4j-ogm-session]]
@@ -3980,6 +3991,10 @@ If there is a `schema.ldif` file on your classpath it will be used to initialize
 server. You can also use the `spring.ldap.embedded.ldif` property if you want to load
 the initialization script from a different resource.
 
+By default, a standard schema will be used to validate `LDIF` files, you can turn off
+validation altogether using the `spring.ldap.embedded.validation.enabled` property. If
+you have custom attributes, you can use `spring.ldap.embedded.validation.schema` to define
+your custom attribute types or object classes.
 
 
 [[boot-features-caching]]
@@ -4112,6 +4127,10 @@ NOTE: Since a cache library may offer both a native implementation and JSR-107 s
 Spring Boot will prefer the JSR-107 support so that the same features are available if
 you switch to a different JSR-107 implementation.
 
+TIP: Spring Boot has a <<boot-features-hazelcast,general support for Hazelcast>>. If
+a single `HazelcastInstance` is available, it is automatically reused for the
+`CacheManager` as well unless the `spring.cache.jcache.config` property is specified.
+
 There are several ways to customize the underlying `javax.cache.cacheManager`:
 
 * Caches can be created on startup via the `spring.cache.cache-names` property. If a
@@ -4147,18 +4166,6 @@ Spring Boot has a <<boot-features-hazelcast,general support for Hazelcast>>. If
 a `HazelcastInstance` has been auto-configured, it is automatically wrapped in a
 `CacheManager`.
 
-If for some reason you need a different `HazelcastInstance` for caching, you can
-request Spring Boot to create a separate one that will be only used by the
-`CacheManager`:
-
-[source,properties,indent=0]
-----
-	spring.cache.hazelcast.config=classpath:config/my-cache-hazelcast.xml
-----
-
-TIP: If a separate `HazelcastInstance` is created that way, it is not registered
-in the application context.
-
 
 
 [[boot-features-caching-provider-infinispan]]
@@ -4174,6 +4181,13 @@ Infinispan has no default configuration file location so it must be specified ex
 Caches can be created on startup via the `spring.cache.cache-names` property. If a custom
 `ConfigurationBuilder` bean is defined, it is used to customize them.
 
+[NOTE]
+====
+The support of Infinispan in Spring Boot is restricted to the embedded mode and is quite
+basic. If you want more options you should use the official Infinispan Spring Boot starter
+instead, check
+https://github.com/infinispan/infinispan-spring-boot[the documentation] for more details.
+====
 
 
 [[boot-features-caching-provider-couchbase]]
@@ -4335,6 +4349,16 @@ ActiveMQ configuration is controlled by external configuration properties in
 	spring.activemq.broker-url=tcp://192.168.1.210:9876
 	spring.activemq.user=admin
 	spring.activemq.password=secret
+----
+
+You can also pool JMS resources by adding a dependency to
+`org.apache.activemq:activemq-pool` and configure the `PooledConnectionFactory`
+accordingly:
+
+[source,properties,indent=0]
+----
+	spring.activemq.pool.enabled=true
+	spring.activemq.pool.max-connections=50
 ----
 
 See
@@ -5089,10 +5113,23 @@ Spring Boot offers several conveniences for working with Spring Integration, inc
 the `spring-boot-starter-integration` '`Starter`'. Spring Integration provides
 abstractions over messaging and also other transports such as HTTP, TCP etc. If Spring
 Integration is available on your classpath it will be initialized through the
-`@EnableIntegration` annotation. Message processing statistics will be published over JMX
-if `'spring-integration-jmx'` is also on the classpath. See the
+`@EnableIntegration` annotation.
+
+Spring Boot will also configure some features that are triggered by the presence of
+additional Spring Integration modules. Message processing statistics will be published
+over JMX if `'spring-integration-jmx'` is also on the classpath. If
+`'spring-integration-jdbc'` is available, the default database schema can be created
+on startup:
+
+[source,properties,indent=0]
+----
+	spring.integration.jdbc.initializer.enabled=true
+----
+
+See the
 {sc-spring-boot-autoconfigure}/integration/IntegrationAutoConfiguration.{sc-ext}[`IntegrationAutoConfiguration`]
-class for more details.
+and {sc-spring-boot-autoconfigure}/integration/IntegrationProperties.{sc-ext}[`IntegrationProperties`]
+classes for more details.
 
 
 
@@ -5101,7 +5138,6 @@ class for more details.
 Spring Boot provides Spring Session auto-configuration for a wide range of stores:
 
 * JDBC
-* MongoDB
 * Redis
 * Hazelcast
 * HashMap
@@ -5225,6 +5261,11 @@ how your tests will run:
 * `NONE` -- Loads an `ApplicationContext` using `SpringApplication` but does not provide
   _any_ servlet environment (mock or otherwise).
 
+NOTE: If your test is `@Transactional`, it will rollback the transaction at the end of
+each test method by default. If you're using this arrangement in combination with either
+`RANDOM_PORT` or `DEFINED_PORT`, any transaction initiated on the server won't rollback as
+the test is running in a different thread than the server processing.
+
 NOTE: In addition to `@SpringBootTest` a number of other annotations are also
 provided for testing more specific slices of an application. See below for details.
 
@@ -5263,16 +5304,29 @@ potentially time consuming process of loading the context will only happen once.
 [[boot-features-testing-spring-boot-applications-excluding-config]]
 ==== Excluding test configuration
 If your application uses component scanning, for example if you use
-`@SpringBootApplication` or `@ComponentScan`, you may find components or configurations
+`@SpringBootApplication` or `@ComponentScan`, you may find top-level configuration classes
 created only for specific tests accidentally get picked up everywhere.
 
-To help prevent this, Spring Boot provides `@TestComponent` and `@TestConfiguration`
-annotations that can be used on classes in `src/test/java` to indicate that they should
-not be picked up by scanning.
+As we <<boot-features-testing-spring-boot-applications-detecting-config,have seen above>>,
+`@TestConfiguration` can be used on an inner class of a test to customize the primary
+configuration. When placed on a top-level class, `@TestConfiguration` indicates that
+classes in `src/test/java` should not be picked up by scanning. You can then import that
+class explicitly where it is required:
 
-NOTE: `@TestComponent` and `@TestConfiguration` are only needed on top level classes. If
-you define `@Configuration` or `@Component` as inner-classes within a test (any class
-that has `@Test` methods or `@RunWith`), they will be automatically filtered.
+[source,java,indent=0]
+----
+	@RunWith(SpringRunner.class)
+	@SpringBootTest
+	@Import(MyTestsConfiguration.class)
+	public class MyTests {
+
+		@Test
+		public void exampleTest() {
+			...
+		}
+
+	}
+----
 
 NOTE: If you directly use `@ComponentScan` (i.e. not via `@SpringBootApplication`) you
 will need to register the `TypeExcludeFilter` with it. See
@@ -5716,6 +5770,108 @@ A list of the auto-configuration that is enabled by `@DataMongoTest` can be
 
 
 
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-neo4j-test]]
+==== Auto-configured Data Neo4j tests
+`@DataNeo4jTest` can be used if you want to test Neo4j applications. By default, it will
+use an in-memory embedded Neo4j (if the embedded driver is available), scan for
+`@NodeEntity` classes and configure Spring Data Neo4j repositories. Regular `@Component`
+beans will not be loaded into the `ApplicationContext`:
+
+[source,java,indent=0]
+----
+	import org.junit.runner.RunWith;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+
+	@RunWith(SpringRunner.class)
+	@DataNeo4jTest
+	public class ExampleDataNeo4jTests {
+
+		@Autowired
+		private YourRepository repository;
+
+		//
+	}
+----
+
+Data Neo4j tests are transactional and rollback at the end of each test by default,
+see the {spring-reference}#testcontext-tx-enabling-transactions[relevant section] in the
+Spring Reference Documentation for more details. If that's not what you want, you can
+disable transaction management for a test or for the whole class as follows:
+
+[source,java,indent=0]
+----
+	import org.junit.Test;
+	import org.junit.runner.RunWith;
+	import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+	import org.springframework.transaction.annotation.Propagation;
+	import org.springframework.transaction.annotation.Transactional;
+
+	@RunWith(SpringRunner.class)
+	@DataNeo4jTest
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public class ExampleNonTransactionalTests {
+
+	}
+----
+
+
+A list of the auto-configuration that is enabled by `@DataNeo4jTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+
+
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-ldap-test]]
+==== Auto-configured Data LDAP tests
+`@DataLdapTest` can be used if you want to test LDAP applications. By default, it will
+configure an in-memory embedded LDAP (if available), a `LdapTemplate`, scan for `@Entry`
+classes and configure Spring Data LDAP repositories. Regular `@Component` beans will not
+be loaded into the `ApplicationContext`:
+
+[source,java,indent=0]
+----
+	import org.junit.runner.RunWith;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
+	import org.springframework.ldap.core.LdapTemplate;
+	import org.springframework.test.context.junit4.SpringRunner;
+
+	@RunWith(SpringRunner.class)
+	@DataLdapTest
+	public class ExampleDataLdapTests {
+
+		@Autowired
+		private LdapTemplate ldapTemplate;
+
+		//
+	}
+----
+
+In-memory embedded LDAP generally works well for tests since it is fast and doesn't
+require any developer installation. If, however, you prefer to run tests against a real
+LDAP server you should exclude the embedded LDAP auto-configuration:
+
+[source,java,indent=0]
+----
+	import org.junit.runner.RunWith;
+    import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfiguration;
+	import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+
+	@RunWith(SpringRunner.class)
+	@DataLdapTest(excludeAutoConfiguration = EmbeddedLdapAutoConfiguration.class)
+	public class ExampleDataLdapNonEmbeddedTests {
+
+	}
+----
+
+A list of the auto-configuration that is enabled by `@DataLdapTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+
+
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-client]]
 ==== Auto-configured REST clients
 The `@RestClientTest` annotation can be used if you want to test REST clients. By default
@@ -5776,7 +5932,7 @@ remove the need for Spring REST Docs' JUnit rule.
 
 	@RunWith(SpringRunner.class)
 	@WebMvcTest(UserController.class)
-	@AutoConfigureRestDocs("target/generated-snippets")
+	@AutoConfigureRestDocs
 	public class UserDocumentationTests {
 
 		@Autowired
@@ -5792,10 +5948,11 @@ remove the need for Spring REST Docs' JUnit rule.
 	}
 ----
 
-In addition to configuring the output directory, `@AutoConfigureRestDocs` can also
-configure the host, scheme, and port that will appear in any documented URIs. If you
-require more control over Spring REST Docs' configuration a
-`RestDocsMockMvcConfigurationCustomizer` bean can be used:
+`@AutoConfigureRestDocs` can be used to override the default output directory
+(`target/generated-snippets` if you are using Maven or `build/generated-snippets` if you
+are using Gradle). It can also be used to configure the host, scheme, and port that will
+appear in any documented URIs. If you require more control over Spring REST Docs'
+configuration a `RestDocsMockMvcConfigurationCustomizer` bean can be used:
 
 [source,java,indent=0]
 ----
@@ -6099,6 +6256,13 @@ the fact that annotation metadata is parsed using http://asm.ow2.org/[ASM] you c
 actually use the `value` attribute to refer to the real class, even though that class
 might not actually appear on the running application classpath. You can also use the
 `name` attribute if you prefer to specify the class name using a `String` value.
+
+[TIP]
+====
+If you are using `@ConditionalOnClass` or `@ConditionalOnMissingClass` as a part of a
+meta-annotation to compose your own composed annotations you must use `name` as referring
+to the class in such a case is not handled.
+====
 
 
 

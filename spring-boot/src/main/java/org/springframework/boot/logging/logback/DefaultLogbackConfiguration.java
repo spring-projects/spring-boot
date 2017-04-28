@@ -30,9 +30,9 @@ import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import ch.qos.logback.core.util.FileSize;
 import ch.qos.logback.core.util.OptionHelper;
 
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
@@ -44,6 +44,7 @@ import org.springframework.util.ReflectionUtils;
  * and {@code file-appender.xml} files provided for classic {@code logback.xml} use.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 1.1.2
  */
 class DefaultLogbackConfiguration {
@@ -72,8 +73,13 @@ class DefaultLogbackConfiguration {
 		if (environment == null) {
 			return new PropertySourcesPropertyResolver(null);
 		}
-		return RelaxedPropertyResolver.ignoringUnresolvableNestedPlaceholders(environment,
-				"logging.pattern.");
+		if (environment instanceof ConfigurableEnvironment) {
+			PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
+					((ConfigurableEnvironment) environment).getPropertySources());
+			resolver.setIgnoreUnresolvableNestedPlaceholders(true);
+			return resolver;
+		}
+		return environment;
 	}
 
 	public void apply(LogbackConfigurator config) {
@@ -111,9 +117,10 @@ class DefaultLogbackConfiguration {
 	}
 
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
-		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<ILoggingEvent>();
+		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		String logPattern = this.patterns.getProperty("console", CONSOLE_LOG_PATTERN);
+		String logPattern = this.patterns.getProperty("logging.pattern.console",
+				CONSOLE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
 		encoder.setCharset(UTF8);
 		config.start(encoder);
@@ -124,9 +131,10 @@ class DefaultLogbackConfiguration {
 
 	private Appender<ILoggingEvent> fileAppender(LogbackConfigurator config,
 			String logFile) {
-		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<ILoggingEvent>();
+		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		String logPattern = this.patterns.getProperty("file", FILE_LOG_PATTERN);
+		String logPattern = this.patterns.getProperty("logging.pattern.file",
+				FILE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
 		appender.setEncoder(encoder);
 		config.start(encoder);
@@ -148,7 +156,7 @@ class DefaultLogbackConfiguration {
 
 	private void setMaxFileSize(RollingFileAppender<ILoggingEvent> appender,
 			LogbackConfigurator config) {
-		SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>();
+		SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<>();
 		try {
 			triggeringPolicy.setMaxFileSize(FileSize.valueOf("10MB"));
 		}

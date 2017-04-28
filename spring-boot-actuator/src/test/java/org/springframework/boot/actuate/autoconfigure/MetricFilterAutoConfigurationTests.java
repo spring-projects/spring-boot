@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -505,14 +505,14 @@ public class MetricFilterAutoConfigurationTests {
 
 		@RequestMapping("create")
 		public DeferredResult<ResponseEntity<String>> create() {
-			final DeferredResult<ResponseEntity<String>> result = new DeferredResult<ResponseEntity<String>>();
+			final DeferredResult<ResponseEntity<String>> result = new DeferredResult<>();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
 					try {
 						MetricFilterTestController.this.latch.await();
 						result.setResult(
-								new ResponseEntity<String>("Done", HttpStatus.CREATED));
+								new ResponseEntity<>("Done", HttpStatus.CREATED));
 					}
 					catch (InterruptedException ex) {
 					}
@@ -523,7 +523,7 @@ public class MetricFilterAutoConfigurationTests {
 
 		@RequestMapping("createFailure")
 		public DeferredResult<ResponseEntity<String>> createFailure() {
-			final DeferredResult<ResponseEntity<String>> result = new DeferredResult<ResponseEntity<String>>();
+			final DeferredResult<ResponseEntity<String>> result = new DeferredResult<>();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {

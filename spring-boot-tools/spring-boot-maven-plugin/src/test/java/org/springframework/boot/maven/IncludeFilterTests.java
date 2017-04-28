@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,7 +98,7 @@ public class IncludeFilterTests {
 		IncludeFilter filter = new IncludeFilter(Arrays.asList(
 				createInclude("com.foo", "bar"), createInclude("com.foo", "bar2"),
 				createInclude("org.acme", "app")));
-		Set<Artifact> artifacts = new HashSet<Artifact>();
+		Set<Artifact> artifacts = new HashSet<>();
 		artifacts.add(createArtifact("com.foo", "bar"));
 		artifacts.add(createArtifact("com.foo", "bar"));
 		Artifact anotherAcme = createArtifact("org.acme", "another-app");

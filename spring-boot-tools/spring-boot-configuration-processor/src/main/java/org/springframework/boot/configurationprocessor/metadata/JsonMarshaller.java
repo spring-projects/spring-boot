@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,14 +118,14 @@ public class JsonMarshaller {
 
 	private ItemHint toItemHint(JSONObject object) throws Exception {
 		String name = object.getString("name");
-		List<ItemHint.ValueHint> values = new ArrayList<ItemHint.ValueHint>();
+		List<ItemHint.ValueHint> values = new ArrayList<>();
 		if (object.has("values")) {
 			JSONArray valuesArray = object.getJSONArray("values");
 			for (int i = 0; i < valuesArray.length(); i++) {
 				values.add(toValueHint((JSONObject) valuesArray.get(i)));
 			}
 		}
-		List<ItemHint.ValueProvider> providers = new ArrayList<ItemHint.ValueProvider>();
+		List<ItemHint.ValueProvider> providers = new ArrayList<>();
 		if (object.has("providers")) {
 			JSONArray providersObject = object.getJSONArray("providers");
 			for (int i = 0; i < providersObject.length(); i++) {
@@ -143,7 +143,7 @@ public class JsonMarshaller {
 
 	private ItemHint.ValueProvider toValueProvider(JSONObject object) throws Exception {
 		String name = object.getString("name");
-		Map<String, Object> parameters = new HashMap<String, Object>();
+		Map<String, Object> parameters = new HashMap<>();
 		if (object.has("parameters")) {
 			JSONObject parametersObject = object.getJSONObject("parameters");
 			for (Iterator<?> iterator = parametersObject.keys(); iterator.hasNext();) {

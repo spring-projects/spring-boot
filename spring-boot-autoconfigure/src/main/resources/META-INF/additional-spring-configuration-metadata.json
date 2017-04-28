@@ -43,7 +43,7 @@
     "name": "spring.aop.proxy-target-class",
     "type": "java.lang.Boolean",
     "description": "Whether subclass-based (CGLIB) proxies are to be created (true) as opposed to standard Java interface-based proxies (false).",
-    "defaultValue": false
+    "defaultValue": true
   },
   {
     "name": "spring.application.admin.enabled",
@@ -85,8 +85,20 @@
     "defaultValue": "none"
   },
   {
+    "name": "spring.data.cassandra.reactive-repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Cassandra reactive repositories.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.data.couchbase.consistency",
     "defaultValue": "read-your-own-writes"
+  },
+  {
+    "name": "spring.data.cassandra.repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Cassandra repositories.",
+    "defaultValue": true
   },
   {
     "name": "spring.data.couchbase.repositories.enabled",

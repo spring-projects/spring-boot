@@ -269,7 +269,7 @@ public class TestRestTemplateTests {
 			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
 					URI relativeUri) {
 				testRestTemplate.exchange(relativeUri, HttpMethod.GET,
-						new HttpEntity<byte[]>(new byte[0]), String.class);
+						new HttpEntity<>(new byte[0]), String.class);
 			}
 
 		});
@@ -284,7 +284,7 @@ public class TestRestTemplateTests {
 			public void doWithTestRestTemplate(TestRestTemplate testRestTemplate,
 					URI relativeUri) {
 				testRestTemplate.exchange(relativeUri, HttpMethod.GET,
-						new HttpEntity<byte[]>(new byte[0]),
+						new HttpEntity<>(new byte[0]),
 						new ParameterizedTypeReference<String>() {
 				});
 			}

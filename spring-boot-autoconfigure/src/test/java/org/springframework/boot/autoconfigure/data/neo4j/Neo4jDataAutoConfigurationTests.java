@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Test;
-import org.neo4j.ogm.drivers.http.driver.HttpDriver;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 import org.neo4j.ogm.session.event.Event;
@@ -30,6 +29,8 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.neo4j.city.City;
+import org.springframework.boot.autoconfigure.data.neo4j.country.Country;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -37,7 +38,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
-import org.springframework.data.neo4j.template.Neo4jOperations;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.data.neo4j.web.support.OpenSessionInViewInterceptor;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -57,7 +57,6 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
  */
-@SuppressWarnings("deprecation")
 public class Neo4jDataAutoConfigurationTests {
 
 	private ConfigurableApplicationContext context;
@@ -75,7 +74,6 @@ public class Neo4jDataAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(org.neo4j.ogm.config.Configuration.class))
 				.hasSize(1);
 		assertThat(this.context.getBeansOfType(SessionFactory.class)).hasSize(1);
-		assertThat(this.context.getBeansOfType(Neo4jOperations.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(Neo4jTransactionManager.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(OpenSessionInViewInterceptor.class))
 				.hasSize(1);
@@ -107,13 +105,6 @@ public class Neo4jDataAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(SessionFactory.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(org.neo4j.ogm.config.Configuration.class))
 				.hasSize(1);
-	}
-
-	@Test
-	public void customNeo4jOperations() {
-		load(CustomNeo4jOperations.class);
-		assertThat(this.context.getBean(Neo4jOperations.class))
-				.isSameAs(this.context.getBean("myNeo4jOperations"));
 	}
 
 	@Test
@@ -154,8 +145,8 @@ public class Neo4jDataAutoConfigurationTests {
 		if (config != null) {
 			ctx.register(config);
 		}
-		ctx.register(PropertyPlaceholderAutoConfiguration.class,
-				TransactionAutoConfiguration.class, Neo4jDataAutoConfiguration.class);
+		ctx.register(TestConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				Neo4jDataAutoConfiguration.class, TransactionAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
 	}
@@ -165,6 +156,12 @@ public class Neo4jDataAutoConfigurationTests {
 		for (Class<?> type : types) {
 			Assertions.assertThat(mappingContext.getPersistentEntity(type)).isNotNull();
 		}
+	}
+
+	@Configuration
+	@EntityScan(basePackageClasses = Country.class)
+	static class TestConfiguration {
+
 	}
 
 	@Configuration
@@ -182,20 +179,8 @@ public class Neo4jDataAutoConfigurationTests {
 
 		@Bean
 		public org.neo4j.ogm.config.Configuration myConfiguration() {
-			org.neo4j.ogm.config.Configuration configuration = new org.neo4j.ogm.config.Configuration();
-			configuration.driverConfiguration()
-					.setDriverClassName(HttpDriver.class.getName());
-			return configuration;
-		}
-
-	}
-
-	@Configuration
-	static class CustomNeo4jOperations {
-
-		@Bean
-		public Neo4jOperations myNeo4jOperations() {
-			return mock(Neo4jOperations.class);
+			return new org.neo4j.ogm.config.Configuration.Builder()
+					.uri("http://localhost:12345").build();
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ import javax.servlet.Filter;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.testutil.MockFilter;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class FilterRegistrationIntegrationTests {
 
-	private AnnotationConfigEmbeddedWebApplicationContext context;
+	private AnnotationConfigServletWebServerApplicationContext context;
 
 	@After
 	public void cleanUp() {
@@ -58,7 +58,7 @@ public class FilterRegistrationIntegrationTests {
 	}
 
 	private void load(Class<?> configuration) {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
+		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				ContainerConfiguration.class, configuration);
 	}
 
@@ -66,8 +66,8 @@ public class FilterRegistrationIntegrationTests {
 	static class ContainerConfiguration {
 
 		@Bean
-		public TomcatEmbeddedServletContainerFactory servletContainerFactory() {
-			return new TomcatEmbeddedServletContainerFactory(0);
+		public TomcatServletWebServerFactory webServerFactory() {
+			return new TomcatServletWebServerFactory(0);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,6 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
@@ -43,6 +41,8 @@ import org.springframework.boot.devtools.restart.RestartScopeInitializer;
 import org.springframework.boot.devtools.tunnel.client.TunnelClient;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
@@ -71,7 +71,7 @@ public class RemoteClientConfigurationTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private AnnotationConfigEmbeddedWebApplicationContext context;
+	private AnnotationConfigServletWebServerApplicationContext context;
 
 	private static int remotePort = SocketUtils.findAvailableTcpPort();
 
@@ -112,7 +112,7 @@ public class RemoteClientConfigurationTests {
 	@Test
 	public void liveReloadOnClassPathChanged() throws Exception {
 		configure();
-		Set<ChangedFiles> changeSet = new HashSet<ChangedFiles>();
+		Set<ChangedFiles> changeSet = new HashSet<>();
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
 		this.context.publishEvent(event);
 		LiveReloadConfiguration configuration = this.context
@@ -149,7 +149,7 @@ public class RemoteClientConfigurationTests {
 	}
 
 	private void configure(String remoteUrl, boolean setSecret, String... pairs) {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		new RestartScopeInitializer().initialize(this.context);
 		this.context.register(Config.class, RemoteClientConfiguration.class);
 		String remoteUrlProperty = "remoteUrl:" + remoteUrl + ":"
@@ -167,8 +167,8 @@ public class RemoteClientConfigurationTests {
 	static class Config {
 
 		@Bean
-		public TomcatEmbeddedServletContainerFactory tomcat() {
-			return new TomcatEmbeddedServletContainerFactory(remotePort);
+		public TomcatServletWebServerFactory tomcat() {
+			return new TomcatServletWebServerFactory(remotePort);
 		}
 
 		@Bean

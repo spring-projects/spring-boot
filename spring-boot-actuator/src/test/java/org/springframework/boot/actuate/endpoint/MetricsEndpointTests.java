@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,11 +42,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint> {
 
-	private Metric<Number> metric1 = new Metric<Number>("a", 1);
+	private Metric<Number> metric1 = new Metric<>("a", 1);
 
-	private Metric<Number> metric2 = new Metric<Number>("b", 2);
+	private Metric<Number> metric2 = new Metric<>("b", 2);
 
-	private Metric<Number> metric3 = new Metric<Number>("c", 3);
+	private Metric<Number> metric3 = new Metric<>("c", 3);
 
 	public MetricsEndpointTests() {
 		super(Config.class, MetricsEndpoint.class, "metrics", true, "endpoints.metrics");
@@ -59,7 +59,7 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 
 	@Test
 	public void ordered() {
-		List<PublicMetrics> publicMetrics = new ArrayList<PublicMetrics>();
+		List<PublicMetrics> publicMetrics = new ArrayList<>();
 		publicMetrics
 				.add(new TestPublicMetrics(2, this.metric2, this.metric2, this.metric3));
 		publicMetrics.add(new TestPublicMetrics(1, this.metric1));
@@ -100,7 +100,7 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 
 		@Bean
 		public MetricsEndpoint endpoint() {
-			final Metric<Float> metric = new Metric<Float>("a", 0.5f);
+			final Metric<Float> metric = new Metric<>("a", 0.5f);
 			PublicMetrics metrics = new PublicMetrics() {
 				@Override
 				public Collection<Metric<?>> metrics() {

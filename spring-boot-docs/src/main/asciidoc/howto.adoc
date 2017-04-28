@@ -636,10 +636,11 @@ sample project for an example.
 
 [[howto-configure-accesslogs]]
 === Configure Access Logging
-Access logs can be configured for Tomcat and Undertow via their respective namespaces.
+Access logs can be configured for Tomcat, Undertow and Jetty via their respective
+namespaces.
 
 For instance, the following logs access on Tomcat with a
-https://tomcat.apache.org/tomcat-8.0-doc/config/valve.html#Access_Logging[custom pattern].
+{tomcat-documentation}/config/valve.html#Access_Logging[custom pattern].
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -663,6 +664,17 @@ Access logging for undertow can be configured in a similar fashion
 
 Logs are stored in a `logs` directory relative to the working directory of the
 application. This can be customized via `server.undertow.accesslog.directory`.
+
+Finally, access logging for jetty can also be configured that way:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	server.jetty.accesslog.enabled=true
+	server.jetty.accesslog.filename=/var/log/jetty-access.log
+----
+
+By default, logs will be redirected to `System.err`. For more details, please refer to
+{jetty-documentation}/configuring-jetty-request-logs.html[the documentation].
 
 
 
@@ -827,12 +839,12 @@ Example in Gradle:
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	configurations {
-		compile.exclude module: "spring-boot-starter-tomcat"
+		compile.exclude module: 'spring-boot-starter-tomcat'
 	}
 
 	dependencies {
-		compile("org.springframework.boot:spring-boot-starter-web:{spring-boot-version}")
-		compile("org.springframework.boot:spring-boot-starter-jetty:{spring-boot-version}")
+		compile 'org.springframework.boot:spring-boot-starter-web'
+		compile 'org.springframework.boot:spring-boot-starter-jetty'
 		// ...
 	}
 ----
@@ -881,12 +893,12 @@ Example in Gradle:
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	configurations {
-		compile.exclude module: "spring-boot-starter-tomcat"
+		compile.exclude module: 'spring-boot-starter-tomcat'
 	}
 
 	dependencies {
-		compile("org.springframework.boot:spring-boot-starter-web:{spring-boot-version}")
-		compile("org.springframework.boot:spring-boot-starter-undertow:{spring-boot-version}")
+		compile 'org.springframework.boot:spring-boot-starter-web'
+		compile 'org.springframework.boot:spring-boot-starter-undertow'
 		// ...
 	}
 ----
@@ -1114,7 +1126,7 @@ modules when you add new features to your application.
 If you want to replace the default `ObjectMapper` completely, either define a `@Bean` of
 that type and mark it as `@Primary`, or, if you prefer the builder-based
 approach, define a `Jackson2ObjectMapperBuilder` `@Bean`. Note that in either case this
-will disable all auto-configuration of the `ObjectMapper.
+will disable all auto-configuration of the `ObjectMapper`.
 
 If you provide any `@Beans` of type `MappingJackson2HttpMessageConverter` then
 they will replace the default value in the MVC configuration. Also, a convenience bean is
@@ -1564,7 +1576,7 @@ translation for you, you can configure it like this:
 
 NOTE: Because your custom configuration chooses to go with Hikari, `app.datasource.type`
 will have no effect. In practice the builder will be initialized with whatever value you
-might set there and then overridden by the call to `.type()``.
+might set there and then overridden by the call to `.type()`.
 
 See _<<spring-boot-features.adoc#boot-features-configure-datasource>>_ in the
 '`Spring Boot features`' section and the
@@ -2048,7 +2060,7 @@ your application defines, if any.
 NOTE: By default, batch applications require a `DataSource` to store job details. If you
 want to deviate from that, you'll need to implement `BatchConfigurer`, see
 {spring-batch-javadoc}/core/configuration/annotation/EnableBatchProcessing.html[The
-Javadoc of @EnableBatchProcessing] for more details.
+Javadoc of `@EnableBatchProcessing`] for more details.
 
 
 
@@ -2355,9 +2367,11 @@ To configure IntelliJ IDEA correctly you can use the `idea` Gradle plugin:
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 	buildscript {
-		repositories { jcenter() }
+		repositories {
+			jcenter()
+		}
 		dependencies {
-			classpath "org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}"
+			classpath 'org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}'
 			classpath 'org.springframework:springloaded:1.2.6.RELEASE'
 		}
 	}
@@ -2424,7 +2438,7 @@ And to do the same with Gradle:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
-	springBoot  {
+	springBoot {
 		buildInfo()
 	}
 ----
@@ -2471,7 +2485,7 @@ https://plugins.gradle.org/plugin/com.gorylenko.gradle-git-properties[`gradle-gi
 [source,groovy,indent=0]
 ----
 	plugins {
-		id "com.gorylenko.gradle-git-properties" version "1.4.6"
+		id "com.gorylenko.gradle-git-properties" version "1.4.17"
 	}
 ----
 
@@ -2502,16 +2516,7 @@ the artifact yourself instead of overriding the property.
 WARNING: Each Spring Boot release is designed and tested against a specific set of
 third-party dependencies. Overriding versions may cause compatibility issues.
 
-To override dependency versions in Gradle, you can specify a version as shown below:
 
-[source,groovy,indent=0]
-----
-	ext['slf4j.version'] = '1.7.5'
-----
-
-For additional information, please refer to the
-https://github.com/spring-gradle-plugins/dependency-management-plugin[Gradle Dependency
-Management Plugin documentation].
 
 [[howto-create-an-executable-jar-with-maven]]
 === Create an executable JAR with Maven
@@ -2593,15 +2598,6 @@ To configure a classifier of `exec` in Maven, the following configuration can be
 	</build>
 ----
 
-And when using Gradle, the following configuration can be used:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-	bootRepackage  {
-		classifier = 'exec'
-	}
-----
-
 
 
 [[howto-extract-specific-libraries-when-an-executable-jar-runs]]
@@ -2635,15 +2631,6 @@ you would add the following configuration:
 			</plugin>
 		</plugins>
 	</build>
-----
-
-And to do that same with Gradle:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-	springBoot  {
-		requiresUnpack = ['org.jruby:jruby-complete']
-	}
 ----
 
 
@@ -2689,29 +2676,6 @@ jar must be the main artifact and you can add a classified jar for the library:
 	</build>
 ----
 
-In Gradle you can create a new JAR archive with standard task DSL features, and then have
-the `bootRepackage` task depend on that one using its `withJarTask` property:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-	jar {
-		baseName = 'spring-boot-sample-profile'
-		version =  '0.0.0'
-		excludes = ['**/application.yml']
-	}
-
-	task('execJar', type:Jar, dependsOn: 'jar') {
-		baseName = 'spring-boot-sample-profile'
-		version =  '0.0.0'
-		classifier = 'exec'
-		from sourceSets.main.output
-	}
-
-	bootRepackage  {
-		withJarTask = tasks['execJar']
-	}
-----
-
 
 
 [[howto-remote-debug-maven-run]]
@@ -2720,34 +2684,6 @@ To attach a remote debugger to a Spring Boot application started with Maven you 
 the `jvmArguments` property of the {spring-boot-maven-plugin-site}/[maven plugin].
 
 Check {spring-boot-maven-plugin-site}/examples/run-debug.html[this example] for more details.
-
-
-
-[[howto-remote-debug-gradle-run]]
-=== Remote debug a Spring Boot application started with Gradle
-To attach a remote debugger to a Spring Boot application started with Gradle you can use
-the `jvmArgs` property of `bootRun` task or `--debug-jvm` command line option.
-
-`build.gradle`:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-	bootRun {
-		jvmArgs "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
-	}
-----
-
-
-Command line:
-
-[indent=0]
-----
-	$ gradle bootRun --debug-jvm
-----
-
-
-Check {gradle-userguide}/application_plugin.html[Gradle Application Plugin] for more
-details.
 
 
 
@@ -2894,10 +2830,9 @@ And if you're using Gradle:
 	}
 ----
 
-NOTE: If you are using a version of Gradle that supports compile only dependencies (2.12
-or later), you should continue to use `providedRuntime`. Among other limitations,
-`compileOnly` dependencies are not on the test classpath so any web-based integration
-tests will fail.
+NOTE: `providedRuntime` is preferred to Gradle's `compileOnly` configuration as, among other
+limitations, `compileOnly` dependencies are not on the test classpath so any web-based
+integration tests will fail.
 
 If you're using the <<build-tool-plugins.adoc#build-tool-plugins, Spring Boot build tools>>,
 marking the embedded servlet container dependency as provided will produce an executable war
@@ -2967,9 +2902,9 @@ replacing those elements from the `web.xml` as follows:
   container as if it was a `<servlet/>` and `<servlet-mapping/>` in `web.xml`.
 * A `@Bean` of type `Filter` or `FilterRegistrationBean` behaves similarly (like a
   `<filter/>` and `<filter-mapping/>`.
-* An `ApplicationContext` in an XML file can be added to an `@Import` in your
-  `Application`. Or simple cases where annotation configuration is heavily used already
-  can be recreated in a few lines as `@Bean` definitions.
+* An `ApplicationContext` in an XML file can be added through an `@ImportResource` in
+  your `Application`. Or simple cases where annotation configuration is heavily used
+  already can be recreated in a few lines as `@Bean` definitions.
 
 Once the war is working we make it executable by adding a `main` method to our
 `Application`, e.g.

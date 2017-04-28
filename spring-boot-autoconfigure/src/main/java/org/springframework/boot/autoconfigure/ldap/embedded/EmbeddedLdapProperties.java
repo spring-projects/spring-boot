@@ -17,11 +17,13 @@
 package org.springframework.boot.autoconfigure.ldap.embedded;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.io.Resource;
 
 /**
  * Configuration properties for Embedded LDAP.
  *
  * @author Eddú Meléndez
+ * @author Mathieu Ouellet
  * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "spring.ldap.embedded")
@@ -46,6 +48,11 @@ public class EmbeddedLdapProperties {
 	 * Schema (LDIF) script resource reference.
 	 */
 	private String ldif = "classpath:schema.ldif";
+
+	/**
+	 * Schema validation.
+	 */
+	private Validation validation = new Validation();
 
 	public int getPort() {
 		return this.port;
@@ -79,7 +86,11 @@ public class EmbeddedLdapProperties {
 		this.ldif = ldif;
 	}
 
-	static class Credential {
+	public Validation getValidation() {
+		return this.validation;
+	}
+
+	public static class Credential {
 
 		/**
 		 * Embedded LDAP username.
@@ -105,6 +116,36 @@ public class EmbeddedLdapProperties {
 
 		public void setPassword(String password) {
 			this.password = password;
+		}
+
+	}
+
+	public static class Validation {
+
+		/**
+		 * Enable LDAP schema validation.
+		 */
+		private boolean enabled = true;
+
+		/**
+		 * Path to the custom schema.
+		 */
+		private Resource schema;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public Resource getSchema() {
+			return this.schema;
+		}
+
+		public void setSchema(Resource schema) {
+			this.schema = schema;
 		}
 
 	}

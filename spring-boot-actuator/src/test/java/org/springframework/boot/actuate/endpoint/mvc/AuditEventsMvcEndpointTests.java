@@ -29,9 +29,9 @@ import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -73,38 +73,40 @@ public class AuditEventsMvcEndpointTests {
 	}
 
 	@Test
-	public void contentTypeDefaultsToActuatorV1Json() throws Exception {
-		this.mvc.perform(get("/auditevents")).andExpect(status().isOk())
+	public void contentTypeDefaultsToActuatorV2Json() throws Exception {
+		this.mvc.perform(get("/application/auditevents").param("after",
+				"2016-11-01T10:00:00+0000")).andExpect(status().isOk())
 				.andExpect(header().string("Content-Type",
-						"application/vnd.spring-boot.actuator.v1+json;charset=UTF-8"));
+						"application/vnd.spring-boot.actuator.v2+json;charset=UTF-8"));
 	}
 
 	@Test
 	public void contentTypeCanBeApplicationJson() throws Exception {
-		this.mvc.perform(get("/auditevents").header(HttpHeaders.ACCEPT,
-				MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
-				.andExpect(header().string("Content-Type",
+		this.mvc.perform(
+				get("/application/auditevents").param("after", "2016-11-01T10:00:00+0000")
+						.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk()).andExpect(header().string("Content-Type",
 						MediaType.APPLICATION_JSON_UTF8_VALUE));
 	}
 
 	@Test
 	public void invokeWhenDisabledShouldReturnNotFoundStatus() throws Exception {
 		this.context.getBean(AuditEventsMvcEndpoint.class).setEnabled(false);
-		this.mvc.perform(get("/auditevents").param("after", "2016-11-01T10:00:00+0000"))
-				.andExpect(status().isNotFound());
+		this.mvc.perform(get("/application/auditevents").param("after",
+				"2016-11-01T10:00:00+0000")).andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void invokeFilterByDateAfter() throws Exception {
-		this.mvc.perform(get("/auditevents").param("after", "2016-11-01T13:00:00+0000"))
-				.andExpect(status().isOk())
+		this.mvc.perform(get("/application/auditevents").param("after",
+				"2016-11-01T13:00:00+0000")).andExpect(status().isOk())
 				.andExpect(content().string("{\"events\":[]}"));
 	}
 
 	@Test
 	public void invokeFilterByPrincipalAndDateAfter() throws Exception {
-		this.mvc.perform(get("/auditevents").param("principal", "user").param("after",
-				"2016-11-01T10:00:00+0000"))
+		this.mvc.perform(get("/application/auditevents").param("principal", "user")
+				.param("after", "2016-11-01T10:00:00+0000"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(
 						containsString("\"principal\":\"user\",\"type\":\"login\"")))
@@ -113,12 +115,18 @@ public class AuditEventsMvcEndpointTests {
 
 	@Test
 	public void invokeFilterByPrincipalAndDateAfterAndType() throws Exception {
-		this.mvc.perform(get("/auditevents").param("principal", "admin")
+		this.mvc.perform(get("/application/auditevents").param("principal", "admin")
 				.param("after", "2016-11-01T10:00:00+0000").param("type", "logout"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(
 						containsString("\"principal\":\"admin\",\"type\":\"logout\"")))
 				.andExpect(content().string(not(containsString("login"))));
+	}
+
+	@Test
+	public void invokeFilterWithoutDateAfterReturnBadRequestStatus() throws Exception {
+		this.mvc.perform(get("/application/auditevents"))
+				.andExpect(status().isBadRequest());
 	}
 
 	@Import({ JacksonAutoConfiguration.class,

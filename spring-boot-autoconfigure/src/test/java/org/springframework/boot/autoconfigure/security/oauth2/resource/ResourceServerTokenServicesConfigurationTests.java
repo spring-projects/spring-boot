@@ -21,8 +21,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.WebApplicationType;
@@ -32,10 +35,10 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2RestO
 import org.springframework.boot.autoconfigure.social.FacebookAutoConfiguration;
 import org.springframework.boot.autoconfigure.social.SocialWebAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,17 +46,22 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -62,6 +70,8 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ResourceServerTokenServicesConfiguration}.
  *
  * @author Dave Syer
+ * @author Madhura Bhave
+ * @author Eddú Meléndez
  */
 public class ResourceServerTokenServicesConfigurationTests {
 
@@ -77,6 +87,9 @@ public class ResourceServerTokenServicesConfigurationTests {
 
 	private ConfigurableEnvironment environment = new StandardEnvironment();
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	@After
 	public void close() {
 		if (this.context != null) {
@@ -85,18 +98,9 @@ public class ResourceServerTokenServicesConfigurationTests {
 	}
 
 	@Test
-	public void defaultIsRemoteTokenServices() {
-		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
-				.web(WebApplicationType.NONE).run();
-		RemoteTokenServices services = this.context.getBean(RemoteTokenServices.class);
-		assertThat(services).isNotNull();
-	}
-
-	@Test
 	public void useRemoteTokenServices() {
 		EnvironmentTestUtils.addEnvironment(this.environment,
-				"security.oauth2.resource.tokenInfoUri:http://example.com",
-				"security.oauth2.resource.clientId=acme");
+				"security.oauth2.resource.tokenInfoUri:http://example.com");
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
 				.environment(this.environment).web(WebApplicationType.NONE).run();
 		RemoteTokenServices services = this.context.getBean(RemoteTokenServices.class);
@@ -173,8 +177,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 				"security.oauth2.resource.tokenInfoUri:http://example.com",
 				"security.oauth2.resource.preferTokenInfo:false");
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class,
-				Customizer.class).environment(this.environment).web(WebApplicationType.NONE)
-						.run();
+				Customizer.class).environment(this.environment)
+						.web(WebApplicationType.NONE).run();
 		UserInfoTokenServices services = this.context
 				.getBean(UserInfoTokenServices.class);
 		assertThat(services).isNotNull();
@@ -188,6 +192,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 				.environment(this.environment).web(WebApplicationType.NONE).run();
 		DefaultTokenServices services = this.context.getBean(DefaultTokenServices.class);
 		assertThat(services).isNotNull();
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(RemoteTokenServices.class);
 	}
 
 	@Test
@@ -198,6 +204,18 @@ public class ResourceServerTokenServicesConfigurationTests {
 				.environment(this.environment).web(WebApplicationType.NONE).run();
 		DefaultTokenServices services = this.context.getBean(DefaultTokenServices.class);
 		assertThat(services).isNotNull();
+	}
+
+	@Test
+	public void jwkConfiguration() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"security.oauth2.resource.jwk.key-set-uri=http://my-auth-server/token_keys");
+		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
+				.environment(this.environment).web(WebApplicationType.NONE).run();
+		DefaultTokenServices services = this.context.getBean(DefaultTokenServices.class);
+		assertThat(services).isNotNull();
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(RemoteTokenServices.class);
 	}
 
 	@Test
@@ -227,6 +245,16 @@ public class ResourceServerTokenServicesConfigurationTests {
 				.hasSize(1);
 		assertThat(this.context.getBean(UserInfoRestTemplateFactory.class))
 				.isInstanceOf(CustomUserInfoRestTemplateFactory.class);
+	}
+
+	@Test
+	public void jwtAccessTokenConverterIsConfiguredWhenKeyUriIsProvided() {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"security.oauth2.resource.jwt.key-uri=http://localhost:12345/banana");
+		this.context = new SpringApplicationBuilder(ResourceConfiguration.class,
+				JwtAccessTokenConverterRestTemplateCustomizerConfiguration.class)
+						.environment(this.environment).web(WebApplicationType.NONE).run();
+		assertThat(this.context.getBeansOfType(JwtAccessTokenConverter.class)).hasSize(1);
 	}
 
 	@Configuration
@@ -278,8 +306,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 	protected static class ResourceNoClientConfiguration extends ResourceConfiguration {
 
 		@Bean
-		public MockEmbeddedServletContainerFactory embeddedServletContainerFactory() {
-			return new MockEmbeddedServletContainerFactory();
+		public MockServletWebServerFactory webServerFactory() {
+			return new MockServletWebServerFactory();
 		}
 
 	}
@@ -305,8 +333,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 	protected static class SocialResourceConfiguration extends ResourceConfiguration {
 
 		@Bean
-		public EmbeddedServletContainerFactory embeddedServletContainerFactory() {
-			return mock(EmbeddedServletContainerFactory.class);
+		public ServletWebServerFactory webServerFactory() {
+			return mock(ServletWebServerFactory.class);
 		}
 
 	}
@@ -339,6 +367,38 @@ public class ResourceServerTokenServicesConfigurationTests {
 		@Override
 		public OAuth2RestTemplate getUserInfoRestTemplate() {
 			return this.restTemplate;
+		}
+
+	}
+
+	@Configuration
+	static class JwtAccessTokenConverterRestTemplateCustomizerConfiguration {
+
+		@Bean
+		public JwtAccessTokenConverterRestTemplateCustomizer restTemplateCustomizer() {
+			return new MockRestCallCustomizer();
+		}
+
+	}
+
+	private static class MockRestCallCustomizer
+			implements JwtAccessTokenConverterRestTemplateCustomizer {
+
+		@Override
+		public void customize(RestTemplate template) {
+			template.getInterceptors().add(new ClientHttpRequestInterceptor() {
+
+				@Override
+				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
+						ClientHttpRequestExecution execution) throws IOException {
+					String payload = "{\"value\":\"FOO\"}";
+					MockClientHttpResponse response = new MockClientHttpResponse(
+							payload.getBytes(), HttpStatus.OK);
+					response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+					return response;
+				}
+
+			});
 		}
 
 	}

@@ -48,7 +48,7 @@ import static org.mockito.ArgumentMatchers.isA;
 public class DelegatingFilterProxyRegistrationBeanTests
 		extends AbstractFilterRegistrationBeanTests {
 
-	private static ThreadLocal<Boolean> mockFilterInitialized = new ThreadLocal<Boolean>();
+	private static ThreadLocal<Boolean> mockFilterInitialized = new ThreadLocal<>();
 
 	private GenericWebApplicationContext applicationContext = new GenericWebApplicationContext(
 			new MockServletContext());

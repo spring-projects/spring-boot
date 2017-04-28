@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.EmbeddedWebServer;
+import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.boot.web.servlet.context.ServletWebServerInitializedEvent;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
@@ -117,19 +117,19 @@ public class EmbeddedServerPortFileWriterTests {
 		assertThat(collectFileNames(file.getParentFile())).contains(managementFile);
 	}
 
-	private EmbeddedServletContainerInitializedEvent mockEvent(String name, int port) {
-		EmbeddedWebApplicationContext applicationContext = mock(
-				EmbeddedWebApplicationContext.class);
-		EmbeddedWebServer source = mock(EmbeddedWebServer.class);
+	private ServletWebServerInitializedEvent mockEvent(String name, int port) {
+		ServletWebServerApplicationContext applicationContext = mock(
+				ServletWebServerApplicationContext.class);
+		WebServer source = mock(WebServer.class);
 		given(applicationContext.getNamespace()).willReturn(name);
 		given(source.getPort()).willReturn(port);
-		EmbeddedServletContainerInitializedEvent event = new EmbeddedServletContainerInitializedEvent(
+		ServletWebServerInitializedEvent event = new ServletWebServerInitializedEvent(
 				applicationContext, source);
 		return event;
 	}
 
 	private Set<String> collectFileNames(File directory) {
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		if (directory.isDirectory()) {
 			for (File file : directory.listFiles()) {
 				names.add(file.getName());

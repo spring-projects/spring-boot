@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,24 @@
 
 package org.springframework.boot.context.embedded;
 
+import java.net.URL;
+
 import org.apache.catalina.Context;
+import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.tomcat.util.http.LegacyCookieProcessor;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.embedded.TomcatLegacyCookieProcessorExample.LegacyCookieProcessorConfiguration;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
+import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,12 +44,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class TomcatLegacyCookieProcessorExampleTests {
 
+	@BeforeClass
+	@AfterClass
+	public static void uninstallUrlStreamHandlerFactory() {
+		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
+				null);
+		ReflectionTestUtils.setField(URL.class, "factory", null);
+	}
+
 	@Test
 	public void cookieProcessorIsCustomized() {
-		EmbeddedWebApplicationContext applicationContext = (EmbeddedWebApplicationContext) new SpringApplication(
+		ServletWebServerApplicationContext applicationContext = (ServletWebServerApplicationContext) new SpringApplication(
 				TestConfiguration.class, LegacyCookieProcessorConfiguration.class).run();
-		Context context = (Context) ((TomcatEmbeddedServletContainer) applicationContext
-				.getEmbeddedWebServer()).getTomcat().getHost().findChildren()[0];
+		Context context = (Context) ((TomcatWebServer) applicationContext.getWebServer())
+				.getTomcat().getHost().findChildren()[0];
 		assertThat(context.getCookieProcessor())
 				.isInstanceOf(LegacyCookieProcessor.class);
 	}
@@ -50,13 +66,13 @@ public class TomcatLegacyCookieProcessorExampleTests {
 	static class TestConfiguration {
 
 		@Bean
-		public TomcatEmbeddedServletContainerFactory tomcatFactory() {
-			return new TomcatEmbeddedServletContainerFactory(0);
+		public TomcatServletWebServerFactory tomcatFactory() {
+			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public EmbeddedServletContainerCustomizerBeanPostProcessor postProcessor() {
-			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
+		public WebServerFactoryCustomizerBeanPostProcessor postProcessor() {
+			return new WebServerFactoryCustomizerBeanPostProcessor();
 		}
 
 	}

@@ -62,7 +62,7 @@ public class AnsiOutputApplicationListenerTests {
 	public void enabled() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		Map<String, Object> props = new HashMap<String, Object>();
+		Map<String, Object> props = new HashMap<>();
 		props.put("spring.output.ansi.enabled", "ALWAYS");
 		application.setDefaultProperties(props);
 		this.context = application.run();
@@ -73,7 +73,7 @@ public class AnsiOutputApplicationListenerTests {
 	public void disabled() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		Map<String, Object> props = new HashMap<String, Object>();
+		Map<String, Object> props = new HashMap<>();
 		props.put("spring.output.ansi.enabled", "never");
 		application.setDefaultProperties(props);
 		this.context = application.run();

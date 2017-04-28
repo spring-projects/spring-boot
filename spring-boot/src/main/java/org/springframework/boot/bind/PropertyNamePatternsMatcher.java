@@ -22,6 +22,7 @@ package org.springframework.boot.bind;
  * @author Phillip Webb
  * @since 1.2.0
  */
+@Deprecated
 interface PropertyNamePatternsMatcher {
 
 	PropertyNamePatternsMatcher ALL = new PropertyNamePatternsMatcher() {

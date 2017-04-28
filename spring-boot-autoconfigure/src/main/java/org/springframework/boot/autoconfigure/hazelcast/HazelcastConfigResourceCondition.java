@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +28,15 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * property referring to the resource to use has been set.
  *
  * @author Stephane Nicoll
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 public abstract class HazelcastConfigResourceCondition extends ResourceCondition {
 
 	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.config";
 
-	protected HazelcastConfigResourceCondition(String prefix, String propertyName) {
-		super("Hazelcast", prefix, propertyName, "file:./hazelcast.xml",
-				"classpath:/hazelcast.xml");
+	protected HazelcastConfigResourceCondition(String property) {
+		super("Hazelcast", property, "file:./hazelcast.xml", "classpath:/hazelcast.xml");
 	}
 
 	@Override

@@ -16,14 +16,19 @@
 
 package org.springframework.boot.autoconfigure.jersey;
 
+import java.net.URL;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Wrapper;
+import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.tomcat.util.buf.UDecoder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,16 +37,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationServletContainerTests.Application;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,6 +65,14 @@ public class JerseyAutoConfigurationServletContainerTests {
 	@ClassRule
 	public static OutputCapture output = new OutputCapture();
 
+	@BeforeClass
+	@AfterClass
+	public static void uninstallUrlStreamHandlerFactory() {
+		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
+				null);
+		ReflectionTestUtils.setField(URL.class, "factory", null);
+	}
+
 	@Test
 	public void existingJerseyServletIsAmended() {
 		assertThat(output.toString())
@@ -67,7 +81,7 @@ public class JerseyAutoConfigurationServletContainerTests {
 				"Servlet " + Application.class.getName() + " was not registered");
 	}
 
-	@ImportAutoConfiguration({ EmbeddedServletContainerAutoConfiguration.class,
+	@ImportAutoConfiguration({ ServletWebServerFactoryAutoConfiguration.class,
 			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	@Import(ContainerConfiguration.class)
 	@Path("/hello")
@@ -91,8 +105,8 @@ public class JerseyAutoConfigurationServletContainerTests {
 	public static class ContainerConfiguration {
 
 		@Bean
-		public TomcatEmbeddedServletContainerFactory tomcat() {
-			return new TomcatEmbeddedServletContainerFactory() {
+		public TomcatServletWebServerFactory tomcat() {
+			return new TomcatServletWebServerFactory() {
 
 				@Override
 				protected void postProcessContext(Context context) {

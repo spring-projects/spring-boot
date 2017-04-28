@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,6 @@ class TokenValidator {
 		validateAudience(token);
 	}
 
-
-
 	private void validateAlgorithm(Token token) {
 		String algorithm = token.getSignatureAlgorithm();
 		if (algorithm == null) {
@@ -83,9 +81,9 @@ class TokenValidator {
 		}
 	}
 
-	private boolean hasValidKeyId(String tokenKeyId) {
-		for (String keyId: this.tokenKeys.keySet()) {
-			if (tokenKeyId.equals(keyId)) {
+	private boolean hasValidKeyId(String tokenKey) {
+		for (String candidate : this.tokenKeys.keySet()) {
+			if (tokenKey.equals(candidate)) {
 				return true;
 			}
 		}

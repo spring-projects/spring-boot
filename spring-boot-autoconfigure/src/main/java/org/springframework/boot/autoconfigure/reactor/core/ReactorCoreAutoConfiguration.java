@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Brian Clozel
  */
 @Configuration
-@ConditionalOnClass({Mono.class, Flux.class})
+@ConditionalOnClass({ Mono.class, Flux.class })
 @EnableConfigurationProperties(ReactorCoreProperties.class)
 public class ReactorCoreAutoConfiguration {
 

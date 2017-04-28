@@ -55,13 +55,42 @@ public class ReactiveMongoClientFactory {
 	}
 
 	/**
-	 * Creates a {@link MongoClient} using the given {@code options}. If the configured
-	 * port is zero, the value of the {@code local.mongo.port} property is used to
-	 * configure the client.
+	 * Creates a {@link MongoClient} using the given {@code settings}. If the environment
+	 * contains a {@code local.mongo.port} property, it is used to configure a client to
+	 * an embedded MongoDB instance.
 	 * @param settings the settings
 	 * @return the Mongo client
 	 */
 	public MongoClient createMongoClient(MongoClientSettings settings) {
+		Integer embeddedPort = getEmbeddedPort();
+		if (embeddedPort != null) {
+			return createEmbeddedMongoClient(settings, embeddedPort);
+		}
+		return createNetworkMongoClient(settings);
+	}
+
+	private Integer getEmbeddedPort() {
+		if (this.environment != null) {
+			String localPort = this.environment.getProperty("local.mongo.port");
+			if (localPort != null) {
+				return Integer.valueOf(localPort);
+			}
+		}
+		return null;
+	}
+
+	private MongoClient createEmbeddedMongoClient(MongoClientSettings settings,
+			int port) {
+		Builder builder = builder(settings);
+		String host = this.properties.getHost() == null ? "localhost"
+				: this.properties.getHost();
+		ClusterSettings clusterSettings = ClusterSettings.builder()
+				.hosts(Collections.singletonList(new ServerAddress(host, port))).build();
+		builder.clusterSettings(clusterSettings);
+		return MongoClients.create(builder.build());
+	}
+
+	private MongoClient createNetworkMongoClient(MongoClientSettings settings) {
 		if (hasCustomAddress() || hasCustomCredentials()) {
 			if (this.properties.getUri() != null) {
 				throw new IllegalStateException("Invalid mongo configuration, "
@@ -70,18 +99,19 @@ public class ReactiveMongoClientFactory {
 
 			Builder builder = builder(settings);
 			if (hasCustomCredentials()) {
-				List<MongoCredential> credentials = new ArrayList<MongoCredential>();
-				String database = this.properties.getAuthenticationDatabase() == null ? this.properties
-						.getMongoClientDatabase() : this.properties
-						.getAuthenticationDatabase();
-				credentials.add(MongoCredential.createCredential(
-						this.properties.getUsername(), database,
-						this.properties.getPassword()));
+				List<MongoCredential> credentials = new ArrayList<>();
+				String database = this.properties.getAuthenticationDatabase() == null
+						? this.properties.getMongoClientDatabase()
+						: this.properties.getAuthenticationDatabase();
+				credentials.add(
+						MongoCredential.createCredential(this.properties.getUsername(),
+								database, this.properties.getPassword()));
 				builder.credentialList(credentials);
 			}
 			String host = this.properties.getHost() == null ? "localhost"
 					: this.properties.getHost();
-			int port = determinePort();
+			int port = this.properties.getPort() != null ? this.properties.getPort()
+					: MongoProperties.DEFAULT_PORT;
 			ClusterSettings clusterSettings = ClusterSettings.builder()
 					.hosts(Collections.singletonList(new ServerAddress(host, port)))
 					.build();
@@ -96,22 +126,17 @@ public class ReactiveMongoClientFactory {
 	private Builder createBuilder(MongoClientSettings settings,
 			ConnectionString connectionString) {
 		Builder builder = builder(settings)
-				.clusterSettings(
-						ClusterSettings.builder().applyConnectionString(connectionString)
-								.build())
-				.connectionPoolSettings(
-						ConnectionPoolSettings.builder()
-								.applyConnectionString(connectionString).build())
-				.serverSettings(
-						ServerSettings.builder().applyConnectionString(connectionString)
-								.build())
+				.clusterSettings(ClusterSettings.builder()
+						.applyConnectionString(connectionString).build())
+				.connectionPoolSettings(ConnectionPoolSettings.builder()
+						.applyConnectionString(connectionString).build())
+				.serverSettings(ServerSettings.builder()
+						.applyConnectionString(connectionString).build())
 				.credentialList(connectionString.getCredentialList())
-				.sslSettings(
-						SslSettings.builder().applyConnectionString(connectionString)
-								.build())
-				.socketSettings(
-						SocketSettings.builder().applyConnectionString(connectionString)
-								.build());
+				.sslSettings(SslSettings.builder().applyConnectionString(connectionString)
+						.build())
+				.socketSettings(SocketSettings.builder()
+						.applyConnectionString(connectionString).build());
 		if (connectionString.getReadPreference() != null) {
 			builder.readPreference(connectionString.getReadPreference());
 		}
@@ -134,24 +159,6 @@ public class ReactiveMongoClientFactory {
 	private boolean hasCustomCredentials() {
 		return this.properties.getUsername() != null
 				&& this.properties.getPassword() != null;
-	}
-
-	private int determinePort() {
-		if (this.properties.getPort() == null) {
-			return MongoProperties.DEFAULT_PORT;
-		}
-		if (this.properties.getPort() == 0) {
-			if (this.environment != null) {
-				String localPort = this.environment.getProperty("local.mongo.port");
-				if (localPort != null) {
-					return Integer.valueOf(localPort);
-				}
-			}
-			throw new IllegalStateException(
-					"spring.data.mongodb.port=0 and no local mongo port configuration "
-							+ "is available");
-		}
-		return this.properties.getPort();
 	}
 
 	private Builder builder(MongoClientSettings settings) {

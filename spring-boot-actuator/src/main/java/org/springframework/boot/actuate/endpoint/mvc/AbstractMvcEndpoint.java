@@ -21,7 +21,7 @@ import org.springframework.boot.actuate.endpoint.EndpointProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Abstract base class for {@link MvcEndpoint} implementations without a backing
@@ -31,8 +31,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Lari Hotari
  * @since 1.4.0
  */
-public abstract class AbstractMvcEndpoint extends WebMvcConfigurerAdapter
-		implements MvcEndpoint, EnvironmentAware {
+public abstract class AbstractMvcEndpoint
+		implements MvcEndpoint, WebMvcConfigurer, EnvironmentAware {
 
 	private Environment environment;
 

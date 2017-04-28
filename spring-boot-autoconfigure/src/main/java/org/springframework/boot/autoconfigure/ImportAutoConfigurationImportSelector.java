@@ -51,7 +51,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	private static final Set<String> ANNOTATION_NAMES;
 
 	static {
-		Set<String> names = new LinkedHashSet<String>();
+		Set<String> names = new LinkedHashSet<>();
 		names.add(ImportAutoConfiguration.class.getName());
 		names.add("org.springframework.boot.autoconfigure.test.ImportAutoConfiguration");
 		ANNOTATION_NAMES = Collections.unmodifiableSet(names);
@@ -59,7 +59,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 
 	@Override
 	public Set<Object> determineImports(AnnotationMetadata metadata) {
-		Set<String> result = new LinkedHashSet<String>();
+		Set<String> result = new LinkedHashSet<>();
 		result.addAll(getCandidateConfigurations(metadata, null));
 		result.removeAll(getExclusions(metadata, null));
 		return Collections.<Object>unmodifiableSet(result);
@@ -73,7 +73,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	@Override
 	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata,
 			AnnotationAttributes attributes) {
-		List<String> candidates = new ArrayList<String>();
+		List<String> candidates = new ArrayList<>();
 		Map<Class<?>, List<Annotation>> annotations = getAnnotations(metadata);
 		for (Map.Entry<Class<?>, List<Annotation>> entry : annotations.entrySet()) {
 			collectCandidateConfigurations(entry.getKey(), entry.getValue(), candidates);
@@ -106,7 +106,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	@Override
 	protected Set<String> getExclusions(AnnotationMetadata metadata,
 			AnnotationAttributes attributes) {
-		Set<String> exclusions = new LinkedHashSet<String>();
+		Set<String> exclusions = new LinkedHashSet<>();
 		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), null);
 		for (String annotationName : ANNOTATION_NAMES) {
 			AnnotationAttributes merged = AnnotatedElementUtils
@@ -133,7 +133,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 
 	protected final Map<Class<?>, List<Annotation>> getAnnotations(
 			AnnotationMetadata metadata) {
-		MultiValueMap<Class<?>, Annotation> annotations = new LinkedMultiValueMap<Class<?>, Annotation>();
+		MultiValueMap<Class<?>, Annotation> annotations = new LinkedMultiValueMap<>();
 		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), null);
 		collectAnnotations(source, annotations, new HashSet<Class<?>>());
 		return Collections.unmodifiableMap(annotations);

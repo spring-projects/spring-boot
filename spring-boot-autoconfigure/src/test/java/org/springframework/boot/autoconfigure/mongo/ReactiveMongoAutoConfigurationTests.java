@@ -59,7 +59,8 @@ public class ReactiveMongoAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class,
 				ReactiveMongoAutoConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(MongoClient.class).length).isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(MongoClient.class).length)
+				.isEqualTo(1);
 	}
 
 	@Test
@@ -84,8 +85,9 @@ public class ReactiveMongoAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class,
 				ReactiveMongoAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(MongoClient.class).getSettings()
-				.getReadPreference()).isEqualTo(ReadPreference.nearest());
+		assertThat(
+				this.context.getBean(MongoClient.class).getSettings().getReadPreference())
+						.isEqualTo(ReadPreference.nearest());
 	}
 
 	@Test
@@ -109,12 +111,10 @@ public class ReactiveMongoAutoConfigurationTests {
 
 		@Bean
 		public MongoClientSettings mongoClientSettings() {
-			return MongoClientSettings
-					.builder()
-					.readPreference(ReadPreference.nearest())
-					.socketSettings(
-							SocketSettings.builder().readTimeout(300, TimeUnit.SECONDS)
-									.build()).build();
+			return MongoClientSettings.builder().readPreference(ReadPreference.nearest())
+					.socketSettings(SocketSettings.builder()
+							.readTimeout(300, TimeUnit.SECONDS).build())
+					.build();
 		}
 
 	}
@@ -131,7 +131,8 @@ public class ReactiveMongoAutoConfigurationTests {
 		@Bean
 		public StreamFactoryFactory myStreamFactoryFactory() {
 			StreamFactoryFactory streamFactoryFactory = mock(StreamFactoryFactory.class);
-			given(streamFactoryFactory.create(any(), any())).willReturn(mock(StreamFactory.class));
+			given(streamFactoryFactory.create(any(), any()))
+					.willReturn(mock(StreamFactory.class));
 			return streamFactoryFactory;
 		}
 

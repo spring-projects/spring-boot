@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,16 @@
 
 package org.springframework.boot.actuate.info;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.junit.Test;
 
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.env.SystemEnvironmentPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,6 +53,16 @@ public class EnvironmentInfoContributorTests {
 		EnvironmentTestUtils.addEnvironment(this.environment, "foo=bar");
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.getDetails().size()).isEqualTo(0);
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void propertiesFromEnvironmentShouldBindCorrectly() throws Exception {
+		MutablePropertySources propertySources = this.environment.getPropertySources();
+		propertySources.addFirst(new SystemEnvironmentPropertySource("system",
+				Collections.singletonMap("INFO_ENVIRONMENT_FOO", "green")));
+		Info actual = contributeFrom(this.environment);
+		assertThat(actual.get("environment", Map.class)).containsEntry("foo", "green");
 	}
 
 	private static Info contributeFrom(ConfigurableEnvironment environment) {

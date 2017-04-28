@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import java.util.jar.Manifest;
  */
 public class ExplodedArchive implements Archive {
 
-	private static final Set<String> SKIPPED_NAMES = new HashSet<String>(
+	private static final Set<String> SKIPPED_NAMES = new HashSet<>(
 			Arrays.asList(".", ".."));
 
 	private final File root;
@@ -104,7 +104,7 @@ public class ExplodedArchive implements Archive {
 
 	@Override
 	public List<Archive> getNestedArchives(EntryFilter filter) throws IOException {
-		List<Archive> nestedArchives = new ArrayList<Archive>();
+		List<Archive> nestedArchives = new ArrayList<>();
 		for (Entry entry : this) {
 			if (filter.matches(entry)) {
 				nestedArchives.add(getNestedArchive(entry));
@@ -145,7 +145,7 @@ public class ExplodedArchive implements Archive {
 
 		private final boolean recursive;
 
-		private final Deque<Iterator<File>> stack = new LinkedList<Iterator<File>>();
+		private final Deque<Iterator<File>> stack = new LinkedList<>();
 
 		private File current;
 

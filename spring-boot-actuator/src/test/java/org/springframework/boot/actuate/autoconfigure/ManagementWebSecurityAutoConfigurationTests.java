@@ -27,11 +27,11 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -97,10 +97,10 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		FilterChainProxy filterChainProxy = this.context.getBean(FilterChainProxy.class);
 		// 1 for static resources, one for management endpoints and one for the rest
 		assertThat(filterChainProxy.getFilterChains()).hasSize(3);
-		assertThat(filterChainProxy.getFilters("/beans")).isNotEmpty();
-		assertThat(filterChainProxy.getFilters("/beans/")).isNotEmpty();
-		assertThat(filterChainProxy.getFilters("/beans.foo")).isNotEmpty();
-		assertThat(filterChainProxy.getFilters("/beans/foo/bar")).isNotEmpty();
+		assertThat(filterChainProxy.getFilters("/application/beans")).isNotEmpty();
+		assertThat(filterChainProxy.getFilters("/application/beans/")).isNotEmpty();
+		assertThat(filterChainProxy.getFilters("/application/beans.foo")).isNotEmpty();
+		assertThat(filterChainProxy.getFilters("/application/beans/foo/bar")).isNotEmpty();
 	}
 
 	@Test
@@ -116,8 +116,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context.register(WebConfiguration.class);
 		this.context.refresh();
 		UserDetails user = getUser();
-		ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(
-				user.getAuthorities());
+		ArrayList<GrantedAuthority> authorities = new ArrayList<>(user.getAuthorities());
 		assertThat(authorities).containsAll(AuthorityUtils
 				.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ACTUATOR"));
 	}

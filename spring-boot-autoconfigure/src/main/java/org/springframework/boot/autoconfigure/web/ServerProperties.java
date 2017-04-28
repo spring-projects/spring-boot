@@ -20,17 +20,22 @@ import java.io.File;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
-import javax.servlet.SessionTrackingMode;
-
-import org.springframework.boot.context.embedded.Compression;
-import org.springframework.boot.context.embedded.Servlet;
-import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.web.server.Compression;
+import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.servlet.server.Jsp;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link ConfigurationProperties} for a web server (e.g. port and path settings).
@@ -45,6 +50,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  * @author Venil Noronha
  * @author Aurélien Leboulanger
  * @author Brian Clozel
+ * @author Olivier Lamy
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -84,8 +90,8 @@ public class ServerProperties {
 
 	/**
 	 * Time in milliseconds that connectors will wait for another HTTP request before
-	 * closing the connection. When not set, the connector's container-specific default
-	 * will be used. Use a value of -1 to indicate no (i.e. infinite) timeout.
+	 * closing the connection. When not set, the connector's server-specific default will
+	 * be used. Use a value of -1 to indicate no (i.e. infinite) timeout.
 	 */
 	private Integer connectionTimeout;
 
@@ -97,7 +103,6 @@ public class ServerProperties {
 	@NestedConfigurationProperty
 	private Compression compression = new Compression();
 
-	@NestedConfigurationProperty
 	private Servlet servlet = new Servlet();
 
 	private final Tomcat tomcat = new Tomcat();
@@ -206,6 +211,120 @@ public class ServerProperties {
 		return this.undertow;
 	}
 
+	/**
+	 * Servlet properties.
+	 */
+	public class Servlet {
+
+		/**
+		 * Servlet context init parameters.
+		 */
+		private final Map<String, String> contextParameters = new HashMap<>();
+
+		/**
+		 * Context path of the application.
+		 */
+		private String contextPath;
+
+		/**
+		 * Path of the main dispatcher servlet.
+		 */
+		private String path = "/";
+
+		@NestedConfigurationProperty
+		private Jsp jsp = new Jsp();
+
+		public String getContextPath() {
+			return this.contextPath;
+		}
+
+		public void setContextPath(String contextPath) {
+			this.contextPath = cleanContextPath(contextPath);
+		}
+
+		private String cleanContextPath(String contextPath) {
+			if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
+				return contextPath.substring(0, contextPath.length() - 1);
+			}
+			return contextPath;
+		}
+
+		public String getPath() {
+			return this.path;
+		}
+
+		public void setPath(String path) {
+			Assert.notNull(path, "Path must not be null");
+			this.path = path;
+		}
+
+		public Map<String, String> getContextParameters() {
+			return this.contextParameters;
+		}
+
+		public Jsp getJsp() {
+			return this.jsp;
+		}
+
+		public void setJsp(Jsp jsp) {
+			this.jsp = jsp;
+		}
+
+		public String getServletMapping() {
+			if (this.path.equals("") || this.path.equals("/")) {
+				return "/";
+			}
+			if (this.path.contains("*")) {
+				return this.path;
+			}
+			if (this.path.endsWith("/")) {
+				return this.path + "*";
+			}
+			return this.path + "/*";
+		}
+
+		public String getPath(String path) {
+			String prefix = getServletPrefix();
+			if (!path.startsWith("/")) {
+				path = "/" + path;
+			}
+			return prefix + path;
+		}
+
+		public String getServletPrefix() {
+			String result = this.path;
+			if (result.contains("*")) {
+				result = result.substring(0, result.indexOf("*"));
+			}
+			if (result.endsWith("/")) {
+				result = result.substring(0, result.length() - 1);
+			}
+			return result;
+		}
+
+		public String[] getPathsArray(Collection<String> paths) {
+			String[] result = new String[paths.size()];
+			int i = 0;
+			for (String path : paths) {
+				result[i++] = getPath(path);
+			}
+			return result;
+		}
+
+		public String[] getPathsArray(String[] paths) {
+			String[] result = new String[paths.length];
+			int i = 0;
+			for (String path : paths) {
+				result[i++] = getPath(path);
+			}
+			return result;
+		}
+
+	}
+
+	/**
+	 * Session properties.
+	 */
 	public static class Session {
 
 		/**
@@ -266,6 +385,9 @@ public class ServerProperties {
 			this.storeDir = storeDir;
 		}
 
+		/**
+		 * Cookie properties.
+		 */
 		public static class Cookie {
 
 			/**
@@ -361,8 +483,34 @@ public class ServerProperties {
 
 		}
 
+		/**
+		 * Available session tracking modes (mirrors
+		 * {@link javax.servlet.SessionTrackingMode}.
+		 */
+		public enum SessionTrackingMode {
+
+			/**
+			 * Send a cookie in response to the client's first request.
+			 */
+			COOKIE,
+
+			/**
+			 * Rewrite the URL to append a session ID.
+			 */
+			URL,
+
+			/**
+			 * Use SSL build-in mechanism to track the session.
+			 */
+			SSL
+
+		}
+
 	}
 
+	/**
+	 * Tomcat properties.
+	 */
 	public static class Tomcat {
 
 		/**
@@ -460,7 +608,7 @@ public class ServerProperties {
 		 * scanning. The special '?' and '*' characters can be used in the pattern to
 		 * match one and only one character and zero or more characters respectively.
 		 */
-		private List<String> additionalTldSkipPatterns = new ArrayList<String>();
+		private List<String> additionalTldSkipPatterns = new ArrayList<>();
 
 		public int getMaxThreads() {
 			return this.maxThreads;
@@ -594,6 +742,9 @@ public class ServerProperties {
 			this.additionalTldSkipPatterns = additionalTldSkipPatterns;
 		}
 
+		/**
+		 * Tomcat access log properties.
+		 */
 		public static class Accesslog {
 
 			/**
@@ -631,6 +782,11 @@ public class ServerProperties {
 			 * Defer inclusion of the date stamp in the file name until rotate time.
 			 */
 			private boolean renameOnRotate;
+
+			/**
+			 * Date format to place in log file name.
+			 */
+			private String fileDateFormat = ".yyyy-MM-dd";
 
 			/**
 			 * Set request attributes for IP address, Hostname, protocol and port used for
@@ -699,6 +855,14 @@ public class ServerProperties {
 				this.renameOnRotate = renameOnRotate;
 			}
 
+			public String getFileDateFormat() {
+				return this.fileDateFormat;
+			}
+
+			public void setFileDateFormat(String fileDateFormat) {
+				this.fileDateFormat = fileDateFormat;
+			}
+
 			public boolean isRequestAttributesEnabled() {
 				return this.requestAttributesEnabled;
 			}
@@ -719,7 +883,15 @@ public class ServerProperties {
 
 	}
 
+	/**
+	 * Jetty properties.
+	 */
 	public static class Jetty {
+
+		/**
+		 * Access log configuration.
+		 */
+		private final Accesslog accesslog = new Accesslog();
 
 		/**
 		 * Maximum size in bytes of the HTTP post or put content.
@@ -735,6 +907,10 @@ public class ServerProperties {
 		 * Number of selector threads to use.
 		 */
 		private Integer selectors;
+
+		public Accesslog getAccesslog() {
+			return this.accesslog;
+		}
 
 		public int getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
@@ -760,8 +936,173 @@ public class ServerProperties {
 			this.selectors = selectors;
 		}
 
+		/**
+		 * Jetty access log properties.
+		 */
+		public static class Accesslog {
+
+			/**
+			 * Enable access log.
+			 */
+			private boolean enabled = false;
+
+			/**
+			 * Log filename. If not specified, logs will be redirected to "System.err".
+			 */
+			private String filename;
+
+			/**
+			 * Date format to place in log file name.
+			 */
+			private String fileDateFormat;
+
+			/**
+			 * Number of days before rotated log files are deleted.
+			 */
+			private int retentionPeriod = 31; // no days
+
+			/**
+			 * Append to log.
+			 */
+			private boolean append;
+
+			/**
+			 * Enable extended NCSA format.
+			 */
+			private boolean extendedFormat;
+
+			/**
+			 * Timestamp format of the request log.
+			 */
+			private String dateFormat = "dd/MMM/yyyy:HH:mm:ss Z";
+
+			/**
+			 * Locale of the request log.
+			 */
+			private Locale locale;
+
+			/**
+			 * Timezone of the request log.
+			 */
+			private TimeZone timeZone = TimeZone.getTimeZone("GMT");
+
+			/**
+			 * Enable logging of the request cookies.
+			 */
+			private boolean logCookies;
+
+			/**
+			 * Enable logging of the request hostname.
+			 */
+			private boolean logServer;
+
+			/**
+			 * Enable logging of request processing time.
+			 */
+			private boolean logLatency;
+
+			public boolean isEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
+			}
+
+			public String getFilename() {
+				return this.filename;
+			}
+
+			public void setFilename(String filename) {
+				this.filename = filename;
+			}
+
+			public String getFileDateFormat() {
+				return this.fileDateFormat;
+			}
+
+			public void setFileDateFormat(String fileDateFormat) {
+				this.fileDateFormat = fileDateFormat;
+			}
+
+			public int getRetentionPeriod() {
+				return this.retentionPeriod;
+			}
+
+			public void setRetentionPeriod(int retentionPeriod) {
+				this.retentionPeriod = retentionPeriod;
+			}
+
+			public boolean isAppend() {
+				return this.append;
+			}
+
+			public void setAppend(boolean append) {
+				this.append = append;
+			}
+
+			public boolean isExtendedFormat() {
+				return this.extendedFormat;
+			}
+
+			public void setExtendedFormat(boolean extendedFormat) {
+				this.extendedFormat = extendedFormat;
+			}
+
+			public String getDateFormat() {
+				return this.dateFormat;
+			}
+
+			public void setDateFormat(String dateFormat) {
+				this.dateFormat = dateFormat;
+			}
+
+			public Locale getLocale() {
+				return this.locale;
+			}
+
+			public void setLocale(Locale locale) {
+				this.locale = locale;
+			}
+
+			public TimeZone getTimeZone() {
+				return this.timeZone;
+			}
+
+			public void setTimeZone(TimeZone timeZone) {
+				this.timeZone = timeZone;
+			}
+
+			public boolean isLogCookies() {
+				return this.logCookies;
+			}
+
+			public void setLogCookies(boolean logCookies) {
+				this.logCookies = logCookies;
+			}
+
+			public boolean isLogServer() {
+				return this.logServer;
+			}
+
+			public void setLogServer(boolean logServer) {
+				this.logServer = logServer;
+			}
+
+			public boolean isLogLatency() {
+				return this.logLatency;
+			}
+
+			public void setLogLatency(boolean logLatency) {
+				this.logLatency = logLatency;
+			}
+		}
+
 	}
 
+	/**
+	 * Undertow properties.
+	 */
 	public static class Undertow {
 
 		/**
@@ -850,7 +1191,9 @@ public class ServerProperties {
 			return this.accesslog;
 		}
 
-
+		/**
+		 * Undertow access log properties.
+		 */
 		public static class Accesslog {
 
 			/**

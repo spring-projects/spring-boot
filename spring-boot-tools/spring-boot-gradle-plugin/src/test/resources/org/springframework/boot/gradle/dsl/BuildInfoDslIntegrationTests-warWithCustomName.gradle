@@ -1,0 +1,19 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'war'
+
+group = 'com.example'
+version = '1.0'
+
+bootWar {
+	baseName = 'foo'
+}
+
+springBoot {
+	buildInfo()
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,9 +53,9 @@ import org.springframework.web.client.RestTemplate;
  */
 public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer {
 
-	private Map<RestTemplate, RequestExpectationManager> expectationManagers = new ConcurrentHashMap<RestTemplate, RequestExpectationManager>();
+	private Map<RestTemplate, RequestExpectationManager> expectationManagers = new ConcurrentHashMap<>();
 
-	private Map<RestTemplate, MockRestServiceServer> servers = new ConcurrentHashMap<RestTemplate, MockRestServiceServer>();
+	private Map<RestTemplate, MockRestServiceServer> servers = new ConcurrentHashMap<>();
 
 	private final Class<? extends RequestExpectationManager> expectationManager;
 

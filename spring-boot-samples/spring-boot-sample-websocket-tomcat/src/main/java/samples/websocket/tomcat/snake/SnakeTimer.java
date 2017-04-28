@@ -39,7 +39,7 @@ public class SnakeTimer {
 
 	private static final Log log = LogFactory.getLog(SnakeTimer.class);
 
-	private static final ConcurrentHashMap<Integer, Snake> snakes = new ConcurrentHashMap<Integer, Snake>();
+	private static final ConcurrentHashMap<Integer, Snake> snakes = new ConcurrentHashMap<>();
 
 	private static Timer gameTimer = null;
 

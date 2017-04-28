@@ -102,7 +102,8 @@ public final class LoggerConfiguration {
 			rtn = rtn && ObjectUtils.nullSafeEquals(this.name, other.name);
 			rtn = rtn && ObjectUtils.nullSafeEquals(this.configuredLevel,
 					other.configuredLevel);
-			rtn = rtn && ObjectUtils.nullSafeEquals(this.effectiveLevel, other.effectiveLevel);
+			rtn = rtn && ObjectUtils.nullSafeEquals(this.effectiveLevel,
+					other.effectiveLevel);
 			return rtn;
 		}
 		return super.equals(obj);

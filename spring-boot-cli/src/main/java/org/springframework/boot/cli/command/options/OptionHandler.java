@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,7 +126,7 @@ public class OptionHandler {
 
 	private static class OptionHelpFormatter implements HelpFormatter {
 
-		private final List<OptionHelp> help = new ArrayList<OptionHelp>();
+		private final List<OptionHelp> help = new ArrayList<>();
 
 		@Override
 		public String format(Map<String, ? extends OptionDescriptor> options) {
@@ -138,7 +138,7 @@ public class OptionHandler {
 				}
 			};
 
-			Set<OptionDescriptor> sorted = new TreeSet<OptionDescriptor>(comparator);
+			Set<OptionDescriptor> sorted = new TreeSet<>(comparator);
 			sorted.addAll(options.values());
 
 			for (OptionDescriptor descriptor : sorted) {
@@ -162,7 +162,7 @@ public class OptionHandler {
 		private final String description;
 
 		OptionHelpAdapter(OptionDescriptor descriptor) {
-			this.options = new LinkedHashSet<String>();
+			this.options = new LinkedHashSet<>();
 			for (String option : descriptor.options()) {
 				this.options.add((option.length() == 1 ? "-" : "--") + option);
 			}

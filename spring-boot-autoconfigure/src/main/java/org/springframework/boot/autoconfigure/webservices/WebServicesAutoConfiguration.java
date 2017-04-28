@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
@@ -46,7 +46,7 @@ import org.springframework.ws.transport.http.MessageDispatcherServlet;
 @ConditionalOnClass(MessageDispatcherServlet.class)
 @ConditionalOnMissingBean(WsConfigurationSupport.class)
 @EnableConfigurationProperties(WebServicesProperties.class)
-@AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
+@AutoConfigureAfter(ServletWebServerFactoryAutoConfiguration.class)
 public class WebServicesAutoConfiguration {
 
 	private final WebServicesProperties properties;
@@ -62,7 +62,7 @@ public class WebServicesAutoConfiguration {
 		servlet.setApplicationContext(applicationContext);
 		String path = this.properties.getPath();
 		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
-		ServletRegistrationBean<MessageDispatcherServlet> registration = new ServletRegistrationBean<MessageDispatcherServlet>(
+		ServletRegistrationBean<MessageDispatcherServlet> registration = new ServletRegistrationBean<>(
 				servlet, urlMapping);
 		WebServicesProperties.Servlet servletProperties = this.properties.getServlet();
 		registration.setLoadOnStartup(servletProperties.getLoadOnStartup());

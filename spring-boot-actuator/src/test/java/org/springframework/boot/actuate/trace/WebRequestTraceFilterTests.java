@@ -32,7 +32,8 @@ import javax.servlet.ServletResponse;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.trace.TraceProperties.Include;
-import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
+import org.springframework.boot.autoconfigure.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -240,6 +241,17 @@ public class WebRequestTraceFilterTests {
 		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) trace
 				.get("headers")).get("response");
 		assertThat(map.get("status").toString()).isEqualTo("404");
+	}
+
+	@Test
+	public void filterAddsTimeTaken() throws Exception {
+		MockHttpServletRequest request = spy(new MockHttpServletRequest("GET", "/foo"));
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		MockFilterChain chain = new MockFilterChain();
+		this.filter.doFilter(request, response, chain);
+		String timeTaken = (String) this.repository.findAll().iterator().next().getInfo()
+				.get("timeTaken");
+		assertThat(timeTaken).isNotNull();
 	}
 
 	@Test

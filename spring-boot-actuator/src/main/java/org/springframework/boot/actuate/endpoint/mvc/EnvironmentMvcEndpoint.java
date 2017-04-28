@@ -93,7 +93,7 @@ public class EnvironmentMvcEndpoint extends EndpointMvcAdapter
 
 		@Override
 		protected Object getOptionalValue(Environment source, String name) {
-			Object result = source.getProperty(name);
+			Object result = ((EnvironmentEndpoint) getDelegate()).getResolver().getProperty(name);
 			if (result != null) {
 				result = ((EnvironmentEndpoint) getDelegate()).sanitize(name, result);
 			}

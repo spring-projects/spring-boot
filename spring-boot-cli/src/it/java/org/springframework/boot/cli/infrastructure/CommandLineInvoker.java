@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public final class CommandLineInvoker {
 	}
 
 	private Process runCliProcess(String... args) throws IOException {
-		List<String> command = new ArrayList<String>();
+		List<String> command = new ArrayList<>();
 		command.add(findLaunchScript().getAbsolutePath());
 		command.addAll(Arrays.asList(args));
 		ProcessBuilder processBuilder = new ProcessBuilder(command)
@@ -97,7 +97,7 @@ public final class CommandLineInvoker {
 
 		private final Process process;
 
-		private final List<Thread> streamReaders = new ArrayList<Thread>();
+		private final List<Thread> streamReaders = new ArrayList<>();
 
 		public Invocation(Process process) {
 			this.process = process;
@@ -141,7 +141,7 @@ public final class CommandLineInvoker {
 			BufferedReader reader = new BufferedReader(
 					new StringReader(buffer.toString()));
 			String line;
-			List<String> lines = new ArrayList<String>();
+			List<String> lines = new ArrayList<>();
 			try {
 				while ((line = reader.readLine()) != null) {
 					if (!line.startsWith("Picked up ")) {

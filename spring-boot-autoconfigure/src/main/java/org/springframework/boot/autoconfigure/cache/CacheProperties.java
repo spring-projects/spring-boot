@@ -43,15 +43,13 @@ public class CacheProperties {
 	 * Comma-separated list of cache names to create if supported by the underlying cache
 	 * manager. Usually, this disables the ability to create additional caches on-the-fly.
 	 */
-	private List<String> cacheNames = new ArrayList<String>();
+	private List<String> cacheNames = new ArrayList<>();
 
 	private final Caffeine caffeine = new Caffeine();
 
 	private final Couchbase couchbase = new Couchbase();
 
 	private final EhCache ehcache = new EhCache();
-
-	private final Hazelcast hazelcast = new Hazelcast();
 
 	private final Infinispan infinispan = new Infinispan();
 
@@ -83,10 +81,6 @@ public class CacheProperties {
 
 	public EhCache getEhcache() {
 		return this.ehcache;
-	}
-
-	public Hazelcast getHazelcast() {
-		return this.hazelcast;
 	}
 
 	public Infinispan getInfinispan() {
@@ -170,26 +164,6 @@ public class CacheProperties {
 
 		/**
 		 * The location of the configuration file to use to initialize EhCache.
-		 */
-		private Resource config;
-
-		public Resource getConfig() {
-			return this.config;
-		}
-
-		public void setConfig(Resource config) {
-			this.config = config;
-		}
-
-	}
-
-	/**
-	 * Hazelcast specific cache properties.
-	 */
-	public static class Hazelcast {
-
-		/**
-		 * The location of the configuration file to use to initialize Hazelcast.
 		 */
 		private Resource config;
 

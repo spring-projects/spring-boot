@@ -46,7 +46,7 @@ abstract class NamePatternFilter<T> {
 	public Map<String, Object> getResults(String name) {
 		if (!isRegex(name)) {
 			Object value = getValue(this.source, name);
-			Map<String, Object> result = new HashMap<String, Object>();
+			Map<String, Object> result = new HashMap<>();
 			result.put(name, value);
 			return result;
 		}
@@ -89,7 +89,7 @@ abstract class NamePatternFilter<T> {
 
 		private final Pattern pattern;
 
-		private final Map<String, Object> results = new LinkedHashMap<String, Object>();
+		private final Map<String, Object> results = new LinkedHashMap<>();
 
 		ResultCollectingNameCallback(Pattern pattern) {
 			this.pattern = pattern;

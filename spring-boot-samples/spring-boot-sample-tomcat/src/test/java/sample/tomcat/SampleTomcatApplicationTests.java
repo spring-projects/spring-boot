@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -71,7 +71,7 @@ public class SampleTomcatApplicationTests {
 	public void testCompression() throws Exception {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Accept-Encoding", "gzip");
-		HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
+		HttpEntity<?> requestEntity = new HttpEntity<>(requestHeaders);
 		ResponseEntity<byte[]> entity = this.restTemplate.exchange("/", HttpMethod.GET,
 				requestEntity, byte[].class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -88,9 +88,9 @@ public class SampleTomcatApplicationTests {
 
 	@Test
 	public void testTimeout() throws Exception {
-		EmbeddedWebApplicationContext context = (EmbeddedWebApplicationContext) this.applicationContext;
-		TomcatEmbeddedServletContainer embeddedServletContainer = (TomcatEmbeddedServletContainer) context
-				.getEmbeddedWebServer();
+		ServletWebServerApplicationContext context = (ServletWebServerApplicationContext) this.applicationContext;
+		TomcatWebServer embeddedServletContainer = (TomcatWebServer) context
+				.getWebServer();
 		ProtocolHandler protocolHandler = embeddedServletContainer.getTomcat()
 				.getConnector().getProtocolHandler();
 		int timeout = ((AbstractProtocol<?>) protocolHandler).getConnectionTimeout();

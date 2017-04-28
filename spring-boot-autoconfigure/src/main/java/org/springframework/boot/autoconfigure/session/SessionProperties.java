@@ -44,8 +44,6 @@ public class SessionProperties {
 
 	private final Jdbc jdbc = new Jdbc();
 
-	private final Mongo mongo = new Mongo();
-
 	private final Redis redis = new Redis();
 
 	public SessionProperties(ObjectProvider<ServerProperties> serverProperties) {
@@ -76,10 +74,6 @@ public class SessionProperties {
 
 	public Jdbc getJdbc() {
 		return this.jdbc;
-	}
-
-	public Mongo getMongo() {
-		return this.mongo;
 	}
 
 	public Redis getRedis() {
@@ -179,23 +173,6 @@ public class SessionProperties {
 				this.enabled = enabled;
 			}
 
-		}
-
-	}
-
-	public static class Mongo {
-
-		/**
-		 * Collection name used to store sessions.
-		 */
-		private String collectionName = "sessions";
-
-		public String getCollectionName() {
-			return this.collectionName;
-		}
-
-		public void setCollectionName(String collectionName) {
-			this.collectionName = collectionName;
 		}
 
 	}

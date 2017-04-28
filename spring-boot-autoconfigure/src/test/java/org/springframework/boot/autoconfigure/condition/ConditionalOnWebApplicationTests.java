@@ -18,13 +18,17 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.After;
 import org.junit.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.context.embedded.ReactiveWebApplicationContext;
+import org.springframework.boot.autoconfigure.web.reactive.MockReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
+import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -56,23 +60,21 @@ public class ConditionalOnWebApplicationTests {
 				ReactiveWebApplicationConfiguration.class);
 		ctx.setServletContext(new MockServletContext());
 		ctx.refresh();
-
 		this.context = ctx;
-		assertThat(this.context.getBeansOfType(String.class)).containsExactly(
-				entry("any", "any"), entry("servlet", "servlet"));
+		assertThat(this.context.getBeansOfType(String.class))
+				.containsExactly(entry("any", "any"), entry("servlet", "servlet"));
 	}
 
 	@Test
 	public void testWebApplicationWithReactiveContext() {
-		ReactiveWebApplicationContext ctx = new ReactiveWebApplicationContext();
+		GenericReactiveWebApplicationContext ctx = new GenericReactiveWebApplicationContext();
 		ctx.register(AnyWebApplicationConfiguration.class,
 				ServletWebApplicationConfiguration.class,
 				ReactiveWebApplicationConfiguration.class);
 		ctx.refresh();
-
 		this.context = ctx;
-		assertThat(this.context.getBeansOfType(String.class)).containsExactly(
-				entry("any", "any"), entry("reactive", "reactive"));
+		assertThat(this.context.getBeansOfType(String.class))
+				.containsExactly(entry("any", "any"), entry("reactive", "reactive"));
 	}
 
 	@Test
@@ -82,7 +84,6 @@ public class ConditionalOnWebApplicationTests {
 				ServletWebApplicationConfiguration.class,
 				ReactiveWebApplicationConfiguration.class);
 		ctx.refresh();
-
 		this.context = ctx;
 		assertThat(this.context.getBeansOfType(String.class)).isEmpty();
 	}
@@ -116,6 +117,16 @@ public class ConditionalOnWebApplicationTests {
 		@Bean
 		public String reactive() {
 			return "reactive";
+		}
+
+		@Bean
+		public ReactiveWebServerFactory reactiveWebServerFactory() {
+			return new MockReactiveWebServerFactory();
+		}
+
+		@Bean
+		public HttpHandler httpHandler() {
+			return (request, response) -> Mono.empty();
 		}
 
 	}

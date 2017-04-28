@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,17 +26,20 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.accept.PathExtensionContentNegotiationStrategy;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -91,7 +94,7 @@ public abstract class AbstractEndpointHandlerMapping<E extends MvcEndpoint>
 	 */
 	public AbstractEndpointHandlerMapping(Collection<? extends E> endpoints,
 			CorsConfiguration corsConfiguration) {
-		this.endpoints = new HashSet<E>(endpoints);
+		this.endpoints = new HashSet<>(endpoints);
 		postProcessEndpoints(this.endpoints);
 		this.corsConfiguration = corsConfiguration;
 		// By default the static resource handler mapping is LOWEST_PRECEDENCE - 1
@@ -166,7 +169,7 @@ public abstract class AbstractEndpointHandlerMapping<E extends MvcEndpoint>
 		if (defaultPatterns.isEmpty()) {
 			return new String[] { patternPrefix, patternPrefix + ".json" };
 		}
-		List<String> patterns = new ArrayList<String>(defaultPatterns);
+		List<String> patterns = new ArrayList<>(defaultPatterns);
 		for (int i = 0; i < patterns.size(); i++) {
 			patterns.set(i, patternPrefix + patterns.get(i));
 		}
@@ -204,8 +207,13 @@ public abstract class AbstractEndpointHandlerMapping<E extends MvcEndpoint>
 		return addSecurityInterceptor(chain);
 	}
 
+	@Override
+	protected void extendInterceptors(List<Object> interceptors) {
+		interceptors.add(new SkipPathExtensionContentNegotiation());
+	}
+
 	private HandlerExecutionChain addSecurityInterceptor(HandlerExecutionChain chain) {
-		List<HandlerInterceptor> interceptors = new ArrayList<HandlerInterceptor>();
+		List<HandlerInterceptor> interceptors = new ArrayList<>();
 		if (chain.getInterceptors() != null) {
 			interceptors.addAll(Arrays.asList(chain.getInterceptors()));
 		}
@@ -277,6 +285,25 @@ public abstract class AbstractEndpointHandlerMapping<E extends MvcEndpoint>
 	protected CorsConfiguration initCorsConfiguration(Object handler, Method method,
 			RequestMappingInfo mappingInfo) {
 		return this.corsConfiguration;
+	}
+
+	/**
+	 * {@link HandlerInterceptorAdapter} to ensure that
+	 * {@link PathExtensionContentNegotiationStrategy} is skipped for actuator endpoints.
+	 */
+	private static final class SkipPathExtensionContentNegotiation
+			extends HandlerInterceptorAdapter {
+
+		private static final String SKIP_ATTRIBUTE = PathExtensionContentNegotiationStrategy.class
+				.getName() + ".SKIP";
+
+		@Override
+		public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+				Object handler) throws Exception {
+			request.setAttribute(SKIP_ATTRIBUTE, Boolean.TRUE);
+			return true;
+		}
+
 	}
 
 }

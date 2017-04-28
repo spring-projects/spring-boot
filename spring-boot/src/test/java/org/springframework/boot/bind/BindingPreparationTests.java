@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -186,7 +186,7 @@ public class BindingPreparationTests {
 		// what the user is trying to bind it to, e.g. if nested[foo][bar] then it's a map
 		wrapper.setPropertyValue("nested[foo]", new LinkedHashMap<String, Object>());
 		// But it might equally well be a collection, if nested[foo][0]
-		wrapper.setPropertyValue("nested[foo]", new ArrayList<Object>());
+		wrapper.setPropertyValue("nested[foo]", new ArrayList<>());
 		// Then it would have to be actually bound to get the list to auto-grow
 		wrapper.setPropertyValue("nested[foo][0]", "bar");
 		assertThat(wrapper.getPropertyValue("nested[foo][0]")).isNotNull();
@@ -222,7 +222,7 @@ public class BindingPreparationTests {
 	@Ignore("Work in progress")
 	public void testExpressionLists() throws Exception {
 		TargetWithNestedMapOfListOfString target = new TargetWithNestedMapOfListOfString();
-		LinkedHashMap<String, List<String>> map = new LinkedHashMap<String, List<String>>();
+		LinkedHashMap<String, List<String>> map = new LinkedHashMap<>();
 		// map.put("foo", Arrays.asList("bar"));
 		target.setNested(map);
 		SpelExpressionParser parser = new SpelExpressionParser();
