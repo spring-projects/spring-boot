@@ -372,7 +372,7 @@ content into your application; rather pick only the properties that you need.
 	spring.mustache.expose-spring-macro-helpers= # Set whether to expose a RequestContext for use by Spring's macro library, under the name "springMacroRequestContext".
 	spring.mustache.prefix=classpath:/templates/ # Prefix to apply to template names.
 	spring.mustache.request-context-attribute= # Name of the RequestContext attribute for all views.
-	spring.mustache.suffix=.html # Suffix to apply to template names.
+	spring.mustache.suffix=.mustache # Suffix to apply to template names.
 	spring.mustache.view-names= # White list of view names that can be resolved.
 
 	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/WebMvcProperties.{sc-ext}[WebMvcProperties])
