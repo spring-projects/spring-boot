@@ -337,8 +337,9 @@ public class ConfigurationPropertiesReportEndpoint
 			// that its a nested class used solely for binding to config props, so it
 			// should be kosher. This filter is not used if there is JSON metadata for
 			// the property, so it's mainly for user-defined beans.
-			return (setter != null) || ClassUtils.getPackageName(parentType)
-					.equals(ClassUtils.getPackageName(type));
+			return (setter != null)
+					|| ClassUtils.getPackageName(parentType).equals(ClassUtils.getPackageName(type))
+					|| ClassUtils.getPackageName(type).equals("java.util");
 		}
 
 		private AnnotatedMethod findSetter(BeanDescription beanDesc,
@@ -355,5 +356,4 @@ public class ConfigurationPropertiesReportEndpoint
 		}
 
 	}
-
 }
