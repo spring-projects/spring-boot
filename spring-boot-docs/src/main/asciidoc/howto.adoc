@@ -1135,7 +1135,7 @@ configuration) which has some useful methods to access the default and user-enha
 message converters.
 
 See also the _<<howto-customize-the-responsebody-rendering>>_ section and the
-{sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`]
+{sc-spring-boot-autoconfigure}/web/servlet/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`]
 source code for more details.
 
 
@@ -1159,7 +1159,7 @@ Spring Boot default MVC configuration by providing your own `@EnableWebMvc` conf
 then you can take control completely and do everything manually using
 `getMessageConverters` from `WebMvcConfigurationSupport`.
 
-See the {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`]
+See the {sc-spring-boot-autoconfigure}/web/servlet/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`]
 source code for more details.
 
 
@@ -1178,7 +1178,7 @@ The multipart support is helpful when you want to receive multipart encoded file
 a `@RequestParam`-annotated parameter of type `MultipartFile` in a Spring MVC controller
 handler method.
 
-See the {sc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{sc-ext}[`MultipartAutoConfiguration`]
+See the {sc-spring-boot-autoconfigure}/web/servlet/MultipartAutoConfiguration.{sc-ext}[`MultipartAutoConfiguration`]
 source for more details.
 
 
@@ -1253,7 +1253,7 @@ added.
   `spring.groovy.template.suffix`, defaults '`classpath:/templates/`' and '`.tpl`'
   respectively). It can be overridden by providing a bean of the same name.
 
-Check out {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`],
+Check out {sc-spring-boot-autoconfigure}/web/servlet/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`],
 {sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[`ThymeleafAutoConfiguration`],
 {sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[`FreeMarkerAutoConfiguration`] and
 {sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[`GroovyTemplateAutoConfiguration`]
@@ -2126,7 +2126,7 @@ need is a `View` that resolves with a name of `error`, and/or a `@Controller` th
 the `/error` path. Unless you replaced some of the default configuration you should find
 a `BeanNameViewResolver` in your `ApplicationContext` so a `@Bean` with id `error` would
 be a simple way of doing that. Look at
-{sc-spring-boot-autoconfigure}/web/ErrorMvcAutoConfiguration.{sc-ext}[`ErrorMvcAutoConfiguration`] for more options.
+{sc-spring-boot-autoconfigure}/web/servlet/error/ErrorMvcAutoConfiguration.{sc-ext}[`ErrorMvcAutoConfiguration`] for more options.
 
 See also the section on <<boot-features-error-handling, Error Handling>> for details of
 how to register handlers in the servlet container.

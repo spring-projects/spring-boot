@@ -294,7 +294,7 @@ content into your application; rather pick only the properties that you need.
 	# HTTP message conversion
 	spring.http.converters.preferred-json-mapper=jackson # Preferred JSON mapper to use for HTTP message conversion. Set to "gson" to force the use of Gson when both it and Jackson are on the classpath.
 
-	# HTTP encoding ({sc-spring-boot-autoconfigure}/web/HttpEncodingProperties.{sc-ext}[HttpEncodingProperties])
+	# HTTP encoding ({sc-spring-boot-autoconfigure}/http/HttpEncodingProperties.{sc-ext}[HttpEncodingProperties])
 	spring.http.encoding.charset=UTF-8 # Charset of HTTP requests and responses. Added to the "Content-Type" header if not set explicitly.
 	spring.http.encoding.enabled=true # Enable http encoding support.
 	spring.http.encoding.force= # Force the encoding to the configured charset on HTTP requests and responses.
@@ -302,7 +302,7 @@ content into your application; rather pick only the properties that you need.
 	spring.http.encoding.force-response= # Force the encoding to the configured charset on HTTP responses.
 	spring.http.encoding.mapping= # Locale to Encoding mapping.
 
-	# MULTIPART ({sc-spring-boot-autoconfigure}/web/MultipartProperties.{sc-ext}[MultipartProperties])
+	# MULTIPART ({sc-spring-boot-autoconfigure}/web/servlet/MultipartProperties.{sc-ext}[MultipartProperties])
 	spring.http.multipart.enabled=true # Enable support of multi-part uploads.
 	spring.http.multipart.file-size-threshold=0 # Threshold after which files will be written to disk. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
 	spring.http.multipart.location= # Intermediate location of uploaded files.
@@ -375,7 +375,7 @@ content into your application; rather pick only the properties that you need.
 	spring.mustache.suffix=.mustache # Suffix to apply to template names.
 	spring.mustache.view-names= # White list of view names that can be resolved.
 
-	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/WebMvcProperties.{sc-ext}[WebMvcProperties])
+	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/servlet/WebMvcProperties.{sc-ext}[WebMvcProperties])
 	spring.mvc.async.request-timeout= # Amount of time (in milliseconds) before asynchronous request handling times out.
 	spring.mvc.date-format= # Date format to use. For instance `dd/MM/yyyy`.
 	spring.mvc.dispatch-trace-request=false # Dispatch TRACE requests to the FrameworkServlet doService method.
