@@ -23,6 +23,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -560,6 +561,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		File logFile = File.createTempFile("jetty_log", ".log");
 		JettyServletWebServerFactory factory = new JettyServletWebServerFactory(0);
 		Map<String, String> map = new HashMap<>();
+		String timezone = TimeZone.getDefault().getID();
 		map.put("server.jetty.accesslog.enabled", "true");
 		map.put("server.jetty.accesslog.filename", logFile.getAbsolutePath());
 		map.put("server.jetty.accesslog.file-date-format", "yyyy-MM-dd");
@@ -568,7 +570,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		map.put("server.jetty.accesslog.extended-format", "true");
 		map.put("server.jetty.accesslog.date-format", "HH:mm:ss");
 		map.put("server.jetty.accesslog.locale", "en_BE");
-		map.put("server.jetty.accesslog.time-zone", "UTC");
+		map.put("server.jetty.accesslog.time-zone", timezone);
 		map.put("server.jetty.accesslog.log-cookies", "true");
 		map.put("server.jetty.accesslog.log-server", "true");
 		map.put("server.jetty.accesslog.log-latency", "true");
@@ -584,7 +586,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 			assertThat(requestLog.isExtended()).isTrue();
 			assertThat(requestLog.getLogDateFormat()).isEqualTo("HH:mm:ss");
 			assertThat(requestLog.getLogLocale()).isEqualTo(new Locale("en", "BE"));
-			assertThat(requestLog.getLogTimeZone()).isEqualTo("UTC");
+			assertThat(requestLog.getLogTimeZone()).isEqualTo(timezone);
 			assertThat(requestLog.getLogCookies()).isTrue();
 			assertThat(requestLog.getLogServer()).isTrue();
 			assertThat(requestLog.getLogLatency()).isTrue();
