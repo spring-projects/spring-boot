@@ -48,8 +48,7 @@ public class CollectionBinderTests {
 	private static final Bindable<List<String>> STRING_LIST = Bindable
 			.listOf(String.class);
 
-	private static final Bindable<Set<String>> STRING_SET = Bindable
-			.setOf(String.class);
+	private static final Bindable<Set<String>> STRING_SET = Bindable.setOf(String.class);
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
@@ -140,8 +139,7 @@ public class CollectionBinderTests {
 		source.put("foo[1]", "2");
 		source.put("foo[0]", "1");
 		source.put("foo[2]", "3");
-		source.setNonIterable(true);
-		this.sources.add(source);
+		this.sources.add(source.nonIterable());
 		List<Integer> result = this.binder.bind("foo", INTEGER_LIST).get();
 		assertThat(result).containsExactly(1, 2, 3);
 	}
@@ -267,7 +265,8 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionWhenEmptyStringShouldReturnEmptyCollection() throws Exception {
+	public void bindToCollectionWhenEmptyStringShouldReturnEmptyCollection()
+			throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "");
 		this.sources.add(source);

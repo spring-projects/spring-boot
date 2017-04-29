@@ -26,34 +26,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class AliasedConfigurationPropertySourceTests {
+public class AliasedIterableConfigurationPropertySourceTests
+		extends AliasedConfigurationPropertySourceTests {
 
 	@Test
-	public void getConfigurationPropertyShouldConsiderAliases() throws Exception {
+	public void streamShouldInclueAliases() throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "bing");
 		source.put("foo.baz", "biff");
-		ConfigurationPropertySource aliased = source.nonIterable()
+		IterableConfigurationPropertySource aliased = source
 				.withAliases(new ConfigurationPropertyNameAliases("foo.bar", "foo.bar1"));
-		assertThat(getValue(aliased, "foo.bar")).isEqualTo("bing");
-		assertThat(getValue(aliased, "foo.bar1")).isEqualTo("bing");
-	}
-
-	@Test
-	public void getConfigurationPropertyWhenNotAliasesShouldReturnValue()
-			throws Exception {
-		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
-		source.put("foo.bar", "bing");
-		source.put("foo.baz", "biff");
-		ConfigurationPropertySource aliased = source.nonIterable()
-				.withAliases(new ConfigurationPropertyNameAliases("foo.bar", "foo.bar1"));
-		assertThat(getValue(aliased, "foo.baz")).isEqualTo("biff");
-	}
-
-	private Object getValue(ConfigurationPropertySource source, String name) {
-		ConfigurationProperty property = source
-				.getConfigurationProperty(ConfigurationPropertyName.of(name));
-		return (property == null ? null : property.getValue());
+		assertThat(aliased.stream()).containsExactly(
+				ConfigurationPropertyName.of("foo.bar"),
+				ConfigurationPropertyName.of("foo.bar1"),
+				ConfigurationPropertyName.of("foo.baz"));
 	}
 
 }

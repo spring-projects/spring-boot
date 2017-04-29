@@ -25,6 +25,7 @@ import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.ResolvableType;
 
@@ -83,13 +84,15 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 
 		public void bindEntries(ConfigurationPropertySource source,
 				Map<Object, Object> map) {
-			for (ConfigurationPropertyName name : source) {
-				Bindable<?> valueBindable = getValueBindable(name);
-				ConfigurationPropertyName entryName = getEntryName(source, name);
-				Object key = getContext().getConversionService()
-						.convert(getKeyName(entryName), this.keyType);
-				Object value = this.elementBinder.bind(entryName, valueBindable);
-				map.putIfAbsent(key, value);
+			if (source instanceof IterableConfigurationPropertySource) {
+				for (ConfigurationPropertyName name : (IterableConfigurationPropertySource) source) {
+					Bindable<?> valueBindable = getValueBindable(name);
+					ConfigurationPropertyName entryName = getEntryName(source, name);
+					Object key = getContext().getConversionService()
+							.convert(getKeyName(entryName), this.keyType);
+					Object value = this.elementBinder.bind(entryName, valueBindable);
+					map.putIfAbsent(key, value);
+				}
 			}
 		}
 

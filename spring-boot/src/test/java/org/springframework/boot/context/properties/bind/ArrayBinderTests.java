@@ -167,8 +167,7 @@ public class ArrayBinderTests {
 		source.put("foo[1]", "2");
 		source.put("foo[0]", "1");
 		source.put("foo[2]", "3");
-		source.setNonIterable(true);
-		this.sources.add(source);
+		this.sources.add(source.nonIterable());
 		Integer[] result = this.binder.bind("foo", INTEGER_ARRAY).get();
 		assertThat(result).containsExactly(1, 2, 3);
 	}

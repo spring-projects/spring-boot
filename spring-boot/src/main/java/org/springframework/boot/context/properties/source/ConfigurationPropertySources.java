@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
@@ -82,10 +83,16 @@ public class ConfigurationPropertySources
 	}
 
 	private ConfigurationPropertySource adapt(PropertySource<?> source) {
-		return this.adapters.computeIfAbsent(source, (k) -> {
-			return new PropertySourceConfigurationPropertySource(source,
-					getPropertyMapper(source));
-		});
+		return this.adapters.computeIfAbsent(source, this::createAdapter);
+	}
+
+	private ConfigurationPropertySource createAdapter(PropertySource<?> source) {
+		PropertyMapper mapper = getPropertyMapper(source);
+		if (isFullEnumerable(source)) {
+			return new PropertySourceIterableConfigurationPropertySource(
+					(EnumerablePropertySource<?>) source, mapper);
+		}
+		return new PropertySourceConfigurationPropertySource(source, mapper);
 	}
 
 	private PropertyMapper getPropertyMapper(PropertySource<?> source) {
@@ -93,6 +100,28 @@ public class ConfigurationPropertySources
 			return SystemEnvironmentPropertyMapper.INSTANCE;
 		}
 		return DefaultPropertyMapper.INSTANCE;
+	}
+
+	private boolean isFullEnumerable(PropertySource<?> source) {
+		PropertySource<?> rootSource = getRootSource(source);
+		if (rootSource.getSource() instanceof Map) {
+			// Check we're not security restricted
+			try {
+				((Map<?, ?>) rootSource.getSource()).size();
+			}
+			catch (UnsupportedOperationException ex) {
+				return false;
+			}
+		}
+		return (source instanceof EnumerablePropertySource);
+	}
+
+	private PropertySource<?> getRootSource(PropertySource<?> source) {
+		while (source.getSource() != null
+				&& source.getSource() instanceof PropertySource) {
+			source = (PropertySource<?>) source.getSource();
+		}
+		return source;
 	}
 
 	/**

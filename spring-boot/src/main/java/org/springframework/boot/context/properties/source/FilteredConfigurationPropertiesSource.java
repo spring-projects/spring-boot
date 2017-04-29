@@ -17,8 +17,6 @@
 package org.springframework.boot.context.properties.source;
 
 import java.util.function.Predicate;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.springframework.util.Assert;
 
@@ -43,15 +41,18 @@ class FilteredConfigurationPropertiesSource implements ConfigurationPropertySour
 	}
 
 	@Override
-	public Stream<ConfigurationPropertyName> stream() {
-		return StreamSupport.stream(this.source.spliterator(), false).filter(this.filter);
-	}
-
-	@Override
 	public ConfigurationProperty getConfigurationProperty(
 			ConfigurationPropertyName name) {
-		return (this.filter.test(name) ? this.source.getConfigurationProperty(name)
-				: null);
+		boolean filtered = getFilter().test(name);
+		return (filtered ? getSource().getConfigurationProperty(name) : null);
+	}
+
+	protected ConfigurationPropertySource getSource() {
+		return this.source;
+	}
+
+	protected Predicate<ConfigurationPropertyName> getFilter() {
+		return this.filter;
 	}
 
 }

@@ -28,6 +28,7 @@ import org.springframework.boot.context.properties.bind.UnboundConfigurationProp
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 
 /**
  * {@link BindHandler} to enforce that all configuration properties under the root name
@@ -68,18 +69,28 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 			BindContext context) {
 		Set<ConfigurationProperty> unbound = new TreeSet<>();
 		for (ConfigurationPropertySource source : context.getSources()) {
-			ConfigurationPropertySource filtered = source
-					.filter((candidate) -> isUnbound(name, candidate));
-			for (ConfigurationPropertyName unboundName : filtered) {
-				try {
-					unbound.add(filtered.getConfigurationProperty(unboundName));
-				}
-				catch (Exception ex) {
-				}
+			if (source instanceof IterableConfigurationPropertySource) {
+				collectUnbound(name, unbound,
+						(IterableConfigurationPropertySource) source);
 			}
 		}
 		if (!unbound.isEmpty()) {
 			throw new UnboundConfigurationPropertiesException(unbound);
+		}
+	}
+
+	private void collectUnbound(ConfigurationPropertyName name,
+			Set<ConfigurationProperty> unbound,
+			IterableConfigurationPropertySource source) {
+		IterableConfigurationPropertySource filtered = source
+				.filter((candidate) -> isUnbound(name, candidate));
+		for (ConfigurationPropertyName unboundName : filtered) {
+			try {
+				unbound.add(source.filter((candidate) -> isUnbound(name, candidate))
+						.getConfigurationProperty(unboundName));
+			}
+			catch (Exception ex) {
+			}
 		}
 	}
 

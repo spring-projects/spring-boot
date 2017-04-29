@@ -36,6 +36,7 @@ import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -288,9 +289,7 @@ public class Binder {
 
 	private Object bindBean(ConfigurationPropertyName name, Bindable<?> target,
 			BindHandler handler, Context context) {
-		boolean hasKnownBindableProperties = context.streamSources()
-				.flatMap((s) -> s.filter(name::isAncestorOf).stream()).findAny()
-				.isPresent();
+		boolean hasKnownBindableProperties = hasKnownBindableProperties(name, context);
 		if (!hasKnownBindableProperties && isUnbindableBean(target)) {
 			return null;
 		}
@@ -305,6 +304,15 @@ public class Binder {
 					(b) -> b.bind(target, hasKnownBindableProperties, propertyBinder));
 			return boundBeans.filter(Objects::nonNull).findFirst().orElse(null);
 		});
+	}
+
+	private boolean hasKnownBindableProperties(ConfigurationPropertyName name,
+			Context context) {
+		Stream<IterableConfigurationPropertySource> sources = context.streamSources()
+				.filter(IterableConfigurationPropertySource.class::isInstance)
+				.map(IterableConfigurationPropertySource.class::cast);
+		return sources.flatMap((s) -> s.filter(name::isAncestorOf).stream()).findAny()
+				.isPresent();
 	}
 
 	private boolean isUnbindableBean(Bindable<?> target) {

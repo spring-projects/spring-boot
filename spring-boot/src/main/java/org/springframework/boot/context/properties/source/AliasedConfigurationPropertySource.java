@@ -16,12 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.List;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 /**
  * A {@link ConfigurationPropertySource} supporting name aliases.
@@ -44,30 +39,23 @@ class AliasedConfigurationPropertySource implements ConfigurationPropertySource 
 	}
 
 	@Override
-	public Stream<ConfigurationPropertyName> stream() {
-		return StreamSupport.stream(this.source.spliterator(), false)
-				.flatMap(this::addAliases);
-	}
-
-	private Stream<ConfigurationPropertyName> addAliases(ConfigurationPropertyName name) {
-		Stream<ConfigurationPropertyName> names = Stream.of(name);
-		List<ConfigurationPropertyName> aliases = this.aliases.getAliases(name);
-		if (CollectionUtils.isEmpty(aliases)) {
-			return names;
-		}
-		return Stream.concat(names, aliases.stream());
-	}
-
-	@Override
 	public ConfigurationProperty getConfigurationProperty(
 			ConfigurationPropertyName name) {
 		Assert.notNull(name, "Name must not be null");
-		ConfigurationProperty result = this.source.getConfigurationProperty(name);
+		ConfigurationProperty result = getSource().getConfigurationProperty(name);
 		if (result == null) {
-			ConfigurationPropertyName aliasedName = this.aliases.getNameForAlias(name);
-			result = this.source.getConfigurationProperty(aliasedName);
+			ConfigurationPropertyName aliasedName = getAliases().getNameForAlias(name);
+			result = getSource().getConfigurationProperty(aliasedName);
 		}
 		return result;
+	}
+
+	protected ConfigurationPropertySource getSource() {
+		return this.source;
+	}
+
+	protected ConfigurationPropertyNameAliases getAliases() {
+		return this.aliases;
 	}
 
 }

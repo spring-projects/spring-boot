@@ -25,7 +25,7 @@ import org.junit.rules.ExpectedException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link FilteredConfigurationPropertiesSource}.
+ * Test for {@link FilteredIterableConfigurationPropertiesSource}.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
@@ -51,16 +51,8 @@ public class FilteredConfigurationPropertiesSourceTests {
 	}
 
 	@Test
-	public void iteratorShouldFilterNames() throws Exception {
-		MockConfigurationPropertySource source = createTestSource();
-		ConfigurationPropertySource filtered = source.filter(this::noBrackets);
-		assertThat(filtered.iterator()).extracting(ConfigurationPropertyName::toString)
-				.containsExactly("a", "b", "c");
-	}
-
-	@Test
 	public void getValueShouldFilterNames() throws Exception {
-		MockConfigurationPropertySource source = createTestSource();
+		ConfigurationPropertySource source = createTestSource();
 		ConfigurationPropertySource filtered = source.filter(this::noBrackets);
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("a");
 		assertThat(source.getConfigurationProperty(name).getValue()).isEqualTo("1");
@@ -72,14 +64,19 @@ public class FilteredConfigurationPropertiesSourceTests {
 
 	}
 
-	private MockConfigurationPropertySource createTestSource() {
+	protected final ConfigurationPropertySource createTestSource() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("a", "1");
 		source.put("a[1]", "2");
 		source.put("b", "3");
 		source.put("b[1]", "4");
 		source.put("c", "5");
-		return source;
+		return convertSource(source);
+	}
+
+	protected ConfigurationPropertySource convertSource(
+			MockConfigurationPropertySource source) {
+		return source.nonIterable();
 	}
 
 	private boolean noBrackets(ConfigurationPropertyName name) {

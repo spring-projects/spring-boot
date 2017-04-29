@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -94,7 +95,11 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	private MultiValueMap<String, ConfigurationProperty> getKnownIndexedChildren(
 			ConfigurationPropertySource source, ConfigurationPropertyName root) {
 		MultiValueMap<String, ConfigurationProperty> children = new LinkedMultiValueMap<>();
-		for (ConfigurationPropertyName name : source.filter(root::isAncestorOf)) {
+		if (!(source instanceof IterableConfigurationPropertySource)) {
+			return children;
+		}
+		for (ConfigurationPropertyName name : (IterableConfigurationPropertySource) source
+				.filter(root::isAncestorOf)) {
 			name = rollUp(name, root);
 			if (name.getElement().isIndexed()) {
 				String key = name.getElement().getValue(Form.UNIFORM);

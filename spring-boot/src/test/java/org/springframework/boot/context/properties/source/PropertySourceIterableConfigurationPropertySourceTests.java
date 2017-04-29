@@ -25,6 +25,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
+import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 
@@ -32,12 +33,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link PropertySourceConfigurationPropertySource}.
+ * Tests for {@link PropertySourceIterableConfigurationPropertySource}.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class PropertySourceConfigurationPropertySourceTests {
+public class PropertySourceIterableConfigurationPropertySourceTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -46,14 +47,35 @@ public class PropertySourceConfigurationPropertySourceTests {
 	public void createWhenPropertySourceIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("PropertySource must not be null");
-		new PropertySourceConfigurationPropertySource(null, mock(PropertyMapper.class));
+		new PropertySourceIterableConfigurationPropertySource(null,
+				mock(PropertyMapper.class));
 	}
 
 	@Test
 	public void createWhenMapperIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Mapper must not be null");
-		new PropertySourceConfigurationPropertySource(mock(PropertySource.class), null);
+		new PropertySourceIterableConfigurationPropertySource(
+				mock(EnumerablePropertySource.class), null);
+	}
+
+	@Test
+	public void iteratorShouldAdaptNames() throws Exception {
+		Map<String, Object> source = new LinkedHashMap<>();
+		source.put("key1", "value1");
+		source.put("key2", "value2");
+		source.put("key3", "value3");
+		source.put("key4", "value4");
+		EnumerablePropertySource<?> propertySource = new MapPropertySource("test",
+				source);
+		TestPropertyMapper mapper = new TestPropertyMapper();
+		mapper.addFromProperySource("key1", "my.key1");
+		mapper.addFromProperySource("key2", "my.key2a", "my.key2b");
+		mapper.addFromProperySource("key4", "my.key4");
+		PropertySourceIterableConfigurationPropertySource adapter = new PropertySourceIterableConfigurationPropertySource(
+				propertySource, mapper);
+		assertThat(adapter.iterator()).extracting(Object::toString)
+				.containsExactly("my.key1", "my.key2a", "my.key2b", "my.key4");
 	}
 
 	@Test
@@ -62,12 +84,30 @@ public class PropertySourceConfigurationPropertySourceTests {
 		source.put("key1", "value1");
 		source.put("key2", "value2");
 		source.put("key3", "value3");
-		PropertySource<?> propertySource = new MapPropertySource("test", source);
+		EnumerablePropertySource<?> propertySource = new MapPropertySource("test",
+				source);
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key2");
-		PropertySourceConfigurationPropertySource adapter = new PropertySourceConfigurationPropertySource(
+		PropertySourceIterableConfigurationPropertySource adapter = new PropertySourceIterableConfigurationPropertySource(
 				propertySource, mapper);
+		assertThat(adapter.getConfigurationProperty(name).getValue()).isEqualTo("value2");
+	}
+
+	@Test
+	public void getValueShouldUseEnumerableMapping() throws Exception {
+		Map<String, Object> source = new LinkedHashMap<>();
+		source.put("key1", "value1");
+		source.put("key2", "value2");
+		source.put("key3", "value3");
+		EnumerablePropertySource<?> propertySource = new MapPropertySource("test",
+				source);
+		TestPropertyMapper mapper = new TestPropertyMapper();
+		mapper.addFromProperySource("key1", "my.missing");
+		mapper.addFromProperySource("key2", "my.k-e-y");
+		PropertySourceIterableConfigurationPropertySource adapter = new PropertySourceIterableConfigurationPropertySource(
+				propertySource, mapper);
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		assertThat(adapter.getConfigurationProperty(name).getValue()).isEqualTo("value2");
 	}
 
@@ -75,12 +115,13 @@ public class PropertySourceConfigurationPropertySourceTests {
 	public void getValueShouldUseExtractor() throws Exception {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");
-		PropertySource<?> propertySource = new MapPropertySource("test", source);
+		EnumerablePropertySource<?> propertySource = new MapPropertySource("test",
+				source);
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key",
 				(value) -> value.toString().replace("ue", "let"));
-		PropertySourceConfigurationPropertySource adapter = new PropertySourceConfigurationPropertySource(
+		PropertySourceIterableConfigurationPropertySource adapter = new PropertySourceIterableConfigurationPropertySource(
 				propertySource, mapper);
 		assertThat(adapter.getConfigurationProperty(name).getValue()).isEqualTo("vallet");
 	}
@@ -89,11 +130,12 @@ public class PropertySourceConfigurationPropertySourceTests {
 	public void getValueOrigin() throws Exception {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");
-		PropertySource<?> propertySource = new MapPropertySource("test", source);
+		EnumerablePropertySource<?> propertySource = new MapPropertySource("test",
+				source);
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key");
-		PropertySourceConfigurationPropertySource adapter = new PropertySourceConfigurationPropertySource(
+		PropertySourceIterableConfigurationPropertySource adapter = new PropertySourceIterableConfigurationPropertySource(
 				propertySource, mapper);
 		assertThat(adapter.getConfigurationProperty(name).getOrigin().toString())
 				.isEqualTo("\"key\" from property source \"test\"");
@@ -103,12 +145,12 @@ public class PropertySourceConfigurationPropertySourceTests {
 	public void getValueWhenOriginCapableShouldIncludeSourceOrigin() throws Exception {
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("key", "value");
-		PropertySource<?> propertySource = new OriginCapablePropertySource<>(
+		EnumerablePropertySource<?> propertySource = new OriginCapablePropertySource<>(
 				new MapPropertySource("test", source));
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key");
-		PropertySourceConfigurationPropertySource adapter = new PropertySourceConfigurationPropertySource(
+		PropertySourceIterableConfigurationPropertySource adapter = new PropertySourceIterableConfigurationPropertySource(
 				propertySource, mapper);
 		assertThat(adapter.getConfigurationProperty(name).getOrigin().toString())
 				.isEqualTo("TestOrigin key");
@@ -117,12 +159,12 @@ public class PropertySourceConfigurationPropertySourceTests {
 	/**
 	 * Test {@link PropertySource} that's also a {@link OriginLookup}.
 	 */
-	private static class OriginCapablePropertySource<T> extends PropertySource<T>
-			implements OriginLookup<String> {
+	private static class OriginCapablePropertySource<T>
+			extends EnumerablePropertySource<T> implements OriginLookup<String> {
 
-		private final PropertySource<T> propertySource;
+		private final EnumerablePropertySource<T> propertySource;
 
-		OriginCapablePropertySource(PropertySource<T> propertySource) {
+		OriginCapablePropertySource(EnumerablePropertySource<T> propertySource) {
 			super(propertySource.getName(), propertySource.getSource());
 			this.propertySource = propertySource;
 		}
@@ -130,6 +172,11 @@ public class PropertySourceConfigurationPropertySourceTests {
 		@Override
 		public Object getProperty(String name) {
 			return this.propertySource.getProperty(name);
+		}
+
+		@Override
+		public String[] getPropertyNames() {
+			return this.propertySource.getPropertyNames();
 		}
 
 		@Override

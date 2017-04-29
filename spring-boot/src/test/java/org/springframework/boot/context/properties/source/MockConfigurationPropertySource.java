@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,11 +30,10 @@ import org.springframework.boot.origin.OriginTrackedValue;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class MockConfigurationPropertySource implements ConfigurationPropertySource {
+public class MockConfigurationPropertySource
+		implements IterableConfigurationPropertySource {
 
 	private final Map<ConfigurationPropertyName, OriginTrackedValue> map = new LinkedHashMap<>();
-
-	private boolean nonIterable;
 
 	public MockConfigurationPropertySource() {
 	}
@@ -63,23 +61,17 @@ public class MockConfigurationPropertySource implements ConfigurationPropertySou
 		this.map.put(name, value);
 	}
 
-	public void setNonIterable(boolean nonIterable) {
-		this.nonIterable = nonIterable;
+	public ConfigurationPropertySource nonIterable() {
+		return new NonIterable();
 	}
 
 	@Override
 	public Iterator<ConfigurationPropertyName> iterator() {
-		if (this.nonIterable) {
-			return Collections.<ConfigurationPropertyName>emptyList().iterator();
-		}
 		return this.map.keySet().iterator();
 	}
 
 	@Override
 	public Stream<ConfigurationPropertyName> stream() {
-		if (this.nonIterable) {
-			return Collections.<ConfigurationPropertyName>emptyList().stream();
-		}
 		return this.map.keySet().stream();
 	}
 
@@ -95,6 +87,16 @@ public class MockConfigurationPropertySource implements ConfigurationPropertySou
 
 	private OriginTrackedValue findValue(ConfigurationPropertyName name) {
 		return this.map.get(name);
+	}
+
+	private class NonIterable implements ConfigurationPropertySource {
+
+		@Override
+		public ConfigurationProperty getConfigurationProperty(
+				ConfigurationPropertyName name) {
+			return MockConfigurationPropertySource.this.getConfigurationProperty(name);
+		}
+
 	}
 
 }

@@ -16,16 +16,12 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Iterator;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import org.springframework.boot.origin.OriginTrackedValue;
-import org.springframework.core.env.PropertySource;
 
 /**
- * A source of {@link ConfigurationProperty ConfigurationProperties}, usually backed by a
- * Spring {@link PropertySource}.
+ * A source of {@link ConfigurationProperty ConfigurationProperties}.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
@@ -34,7 +30,7 @@ import org.springframework.core.env.PropertySource;
  * @see OriginTrackedValue
  * @see #getConfigurationProperty(ConfigurationPropertyName)
  */
-public interface ConfigurationPropertySource extends Iterable<ConfigurationPropertyName> {
+public interface ConfigurationPropertySource {
 
 	/**
 	 * Return a single {@link ConfigurationProperty} from the source or {@code null} if no
@@ -45,28 +41,9 @@ public interface ConfigurationPropertySource extends Iterable<ConfigurationPrope
 	ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name);
 
 	/**
-	 * Return an iterator for the {@link ConfigurationPropertyName names} managed by this
-	 * source. If it is not possible to determine the names an empty iterator may be
-	 * returned.
-	 * @return an iterator (never {@code null})
-	 */
-	@Override
-	default Iterator<ConfigurationPropertyName> iterator() {
-		return stream().iterator();
-	}
-
-	/**
-	 * Returns a sequential {@code Stream} for the {@link ConfigurationPropertyName names}
-	 * managed by this source. If it is not possible to determine the names an
-	 * {@link Stream#empty() empty stream} may be returned.
-	 * @return a stream of names (never {@code null})
-	 */
-	Stream<ConfigurationPropertyName> stream();
-
-	/**
 	 * Return a filtered variant of this source, containing only names that match the
 	 * given {@link Predicate}.
-	 * @param filter the filter to apply
+	 * @param filter the filter to match
 	 * @return a filtered {@link ConfigurationPropertySource} instance
 	 */
 	default ConfigurationPropertySource filter(

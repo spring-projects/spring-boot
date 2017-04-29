@@ -16,57 +16,43 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Objects;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.core.env.EnumerablePropertySource;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 
 /**
- * {@link ConfigurationPropertySource} backed by a Spring {@link PropertySource}. Provides
- * support for {@link EnumerablePropertySource} when possible but can also be used to
- * non-enumerable property sources or restricted {@link EnumerablePropertySource}
- * implementation (such as a security restricted {@code systemEnvironment} source). A
+ * {@link ConfigurationPropertySource} backed by a non-enumerable Spring
+ * {@link PropertySource} or a restricted {@link EnumerablePropertySource} implementation
+ * (such as a security restricted {@code systemEnvironment} source). A
  * {@link PropertySource} is adapted with the help of a {@link PropertyMapper} which
  * provides the mapping rules for individual properties.
  * <p>
- * Each
- * {@link ConfigurationPropertySource#getConfigurationProperty(ConfigurationPropertyName)
- * getValue} call initially attempts to
+ * Each {@link ConfigurationPropertySource#getConfigurationProperty
+ * getConfigurationProperty} call attempts to
  * {@link PropertyMapper#map(PropertySource, ConfigurationPropertyName) map} the
  * {@link ConfigurationPropertyName} to one or more {@code String} based names. This
- * allows fast property resolution for well formed property sources and allows the adapter
- * to work with non {@link EnumerablePropertySource enumerable property sources}.
+ * allows fast property resolution for well formed property sources.
  * <p>
- * If direct {@link ConfigurationPropertyName} to {@code String} mapping is unsuccessful a
- * brute force approach is taken by {@link EnumerablePropertySource#getPropertyNames()
- * enumerating} known {@code String} {@link PropertySource} names, mapping them to one or
- * more {@link ConfigurationPropertyName} and checking for
- * {@link PropertyMapping#isApplicable(ConfigurationPropertyName) applicability}. The
- * enumeration approach supports property sources where it isn't practical to guess all
- * direct mapping combinations.
+ * If at all possible the {@link PropertySourceIterableConfigurationPropertySource} should
+ * be used in preference to this implementation since it supports "relaxed" style
+ * resolution.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
  * @see PropertyMapper
+ * @see PropertySourceIterableConfigurationPropertySource
  */
 class PropertySourceConfigurationPropertySource implements ConfigurationPropertySource {
 
 	private final PropertySource<?> propertySource;
 
 	private final PropertyMapper mapper;
-
-	private volatile Object cacheKey;
-
-	private volatile Cache cache;
 
 	/**
 	 * Create a new {@link PropertySourceConfigurationPropertySource} implementation.
@@ -84,40 +70,19 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 	@Override
 	public ConfigurationProperty getConfigurationProperty(
 			ConfigurationPropertyName name) {
-		ConfigurationProperty configurationProperty = findDirectly(name);
-		if (configurationProperty == null) {
-			configurationProperty = findByEnumeration(name);
-		}
-		return configurationProperty;
-	}
-
-	private ConfigurationProperty findDirectly(ConfigurationPropertyName name) {
-		List<PropertyMapping> mappings = this.mapper.map(this.propertySource, name);
+		List<PropertyMapping> mappings = getMapper().map(getPropertySource(), name);
 		return find(mappings, name);
 	}
 
-	private ConfigurationProperty findByEnumeration(ConfigurationPropertyName name) {
-		List<PropertyMapping> mappings = getPropertyMappings();
-		return find(mappings, name);
-	}
-
-	private ConfigurationProperty find(List<PropertyMapping> mappings,
+	protected final ConfigurationProperty find(List<PropertyMapping> mappings,
 			ConfigurationPropertyName name) {
-		// Use for-loops rather than streams since this method is called often
-		for (PropertyMapping mapping : mappings) {
-			if (mapping.isApplicable(name)) {
-				ConfigurationProperty property = find(mapping);
-				if (property != null) {
-					return property;
-				}
-			}
-		}
-		return null;
+		return mappings.stream().filter((m) -> m.isApplicable(name)).map(this::find)
+				.filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
 	private ConfigurationProperty find(PropertyMapping mapping) {
 		String propertySourceName = mapping.getPropertySourceName();
-		Object value = this.propertySource.getProperty(propertySourceName);
+		Object value = getPropertySource().getProperty(propertySourceName);
 		if (value == null) {
 			return null;
 		}
@@ -128,77 +93,12 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 		return ConfigurationProperty.of(configurationPropertyName, value, origin);
 	}
 
-	@Override
-	public Stream<ConfigurationPropertyName> stream() {
-		return getConfigurationPropertyNames().stream();
+	protected PropertySource<?> getPropertySource() {
+		return this.propertySource;
 	}
 
-	@Override
-	public Iterator<ConfigurationPropertyName> iterator() {
-		return getConfigurationPropertyNames().iterator();
-	}
-
-	private List<ConfigurationPropertyName> getConfigurationPropertyNames() {
-		Cache cache = getCache();
-		List<ConfigurationPropertyName> names = (cache != null ? cache.getNames() : null);
-		if (names != null) {
-			return names;
-		}
-		List<PropertyMapping> mappings = getPropertyMappings();
-		names = new ArrayList<>(mappings.size());
-		for (PropertyMapping mapping : mappings) {
-			names.add(mapping.getConfigurationPropertyName());
-		}
-		names = Collections.unmodifiableList(names);
-		if (cache != null) {
-			cache.setNames(names);
-		}
-		return names;
-	}
-
-	private List<PropertyMapping> getPropertyMappings() {
-		if (!(this.propertySource instanceof EnumerablePropertySource)) {
-			return Collections.emptyList();
-		}
-		Cache cache = getCache();
-		List<PropertyMapping> mappings = (cache != null ? cache.getMappings() : null);
-		if (mappings != null) {
-			return mappings;
-		}
-		String[] names = ((EnumerablePropertySource<?>) this.propertySource)
-				.getPropertyNames();
-		mappings = new ArrayList<>(names.length);
-		for (String name : names) {
-			mappings.addAll(this.mapper.map(this.propertySource, name));
-		}
-		mappings = Collections.unmodifiableList(mappings);
-		if (cache != null) {
-			cache.setMappings(mappings);
-		}
-		return mappings;
-	}
-
-	private Cache getCache() {
-		Object cacheKey = getCacheKey();
-		if (cacheKey == null) {
-			return null;
-		}
-		if (ObjectUtils.nullSafeEquals(cacheKey, this.cacheKey)) {
-			return this.cache;
-		}
-		this.cache = new Cache();
-		this.cacheKey = cacheKey;
-		return this.cache;
-	}
-
-	private Object getCacheKey() {
-		if (this.propertySource instanceof MapPropertySource) {
-			return ((MapPropertySource) this.propertySource).getSource().keySet();
-		}
-		if (this.propertySource instanceof EnumerablePropertySource) {
-			return ((EnumerablePropertySource<?>) this.propertySource).getPropertyNames();
-		}
-		return null;
+	protected final PropertyMapper getMapper() {
+		return this.mapper;
 	}
 
 	/**
@@ -232,30 +132,6 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 			catch (Exception ex) {
 				return Collections.emptyList();
 			}
-		}
-
-	}
-
-	private static class Cache {
-
-		private List<ConfigurationPropertyName> names;
-
-		private List<PropertyMapping> mappings;
-
-		public List<ConfigurationPropertyName> getNames() {
-			return this.names;
-		}
-
-		public void setNames(List<ConfigurationPropertyName> names) {
-			this.names = names;
-		}
-
-		public List<PropertyMapping> getMappings() {
-			return this.mappings;
-		}
-
-		public void setMappings(List<PropertyMapping> mappings) {
-			this.mappings = mappings;
 		}
 
 	}

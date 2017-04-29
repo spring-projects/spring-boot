@@ -294,8 +294,7 @@ public class JavaBeanBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value-bean.int-value", "123");
 		source.put("foo.value-bean.string-value", "foo");
-		source.setNonIterable(true);
-		this.sources.add(source);
+		this.sources.add(source.nonIterable());
 		BindResult<ExampleNestedBeanWithoutSetterOrType> bean = this.binder.bind("foo",
 				Bindable.of(ExampleNestedBeanWithoutSetterOrType.class));
 		assertThat(bean.isBound()).isFalse();
@@ -423,8 +422,7 @@ public class JavaBeanBinderTests {
 	public void bindToClassShouldNotInvokeExtraMethods() throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource(
 				"foo.value", "123");
-		source.setNonIterable(true);
-		this.sources.add(source);
+		this.sources.add(source.nonIterable());
 		ExampleWithThrowingGetters bean = this.binder
 				.bind("foo", Bindable.of(ExampleWithThrowingGetters.class)).get();
 		assertThat(bean.getValue()).isEqualTo(123);

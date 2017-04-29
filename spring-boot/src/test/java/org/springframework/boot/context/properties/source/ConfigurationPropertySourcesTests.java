@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.env.RandomValuePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -143,6 +144,64 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
+	public void getWhenNonEnumerableShouldNotBeIterable() throws Exception {
+		StandardEnvironment environment = new StandardEnvironment();
+		Map<String, Object> source = new LinkedHashMap<String, Object>() {
+
+			@Override
+			public int size() {
+				throw new UnsupportedOperationException("Same as security restricted");
+			}
+
+		};
+		PropertySource<?> propertySource = new MapPropertySource("test", source);
+		environment.getPropertySources().addFirst(propertySource);
+		ConfigurationPropertySources sources = ConfigurationPropertySources
+				.get(environment);
+		ConfigurationPropertySource configurationPropertySource = sources.iterator()
+				.next();
+		assertThat(configurationPropertySource)
+				.isNotInstanceOf(IterableConfigurationPropertySource.class);
+	}
+
+	@Test
+	public void getWhenEnumerableButRestrictedShouldNotBeIterable() throws Exception {
+		StandardEnvironment environment = new StandardEnvironment();
+		PropertySource<?> propertySource = new PropertySource<Object>("test",
+				new Object()) {
+
+			@Override
+			public Object getProperty(String name) {
+				return null;
+			}
+
+		};
+		environment.getPropertySources().addFirst(propertySource);
+		ConfigurationPropertySources sources = ConfigurationPropertySources
+				.get(environment);
+		ConfigurationPropertySource configurationPropertySource = sources.iterator()
+				.next();
+		assertThat(configurationPropertySource)
+				.isNotInstanceOf(IterableConfigurationPropertySource.class);
+	}
+
+	@Test
+	public void getWhenEnumerableShouldBeIterable() throws Exception {
+		StandardEnvironment environment = new StandardEnvironment();
+		Map<String, Object> source = new LinkedHashMap<>();
+		source.put("fooBar", "Spring ${barBaz} ${bar-baz}");
+		source.put("barBaz", "Boot");
+		PropertySource<?> propertySource = new MapPropertySource("test", source);
+		environment.getPropertySources().addFirst(propertySource);
+		ConfigurationPropertySources sources = ConfigurationPropertySources
+				.get(environment);
+		ConfigurationPropertySource configurationPropertySource = sources.iterator()
+				.next();
+		assertThat(configurationPropertySource)
+				.isInstanceOf(IterableConfigurationPropertySource.class);
+	}
+
+	@Test
 	public void environmentProperyExpansionShouldWorkWhenAttached() throws Exception {
 		StandardEnvironment environment = new StandardEnvironment();
 		Map<String, Object> source = new LinkedHashMap<>();
@@ -175,6 +234,24 @@ public class ConfigurationPropertySourcesTests {
 		ConfigurationPropertySources configurationSources = ConfigurationPropertySources
 				.get(sources);
 		assertThat(configurationSources.iterator()).hasSize(5);
+	}
+
+	@Test
+	public void containsDescendantOfForRandomSourceShouldDetectNamesStartingRandom()
+			throws Exception {
+		StandardEnvironment environment = new StandardEnvironment();
+		environment.getPropertySources().addFirst(new RandomValuePropertySource());
+		ConfigurationPropertySource source = ConfigurationPropertySources.get(environment)
+				.iterator().next();
+		assertThat(source.containsDescendantOf(ConfigurationPropertyName.of("")))
+				.contains(true);
+		assertThat(source.containsDescendantOf(ConfigurationPropertyName.of("random")))
+				.contains(true);
+		assertThat(source.containsDescendantOf(ConfigurationPropertyName.of("other")))
+				.contains(false);
+		assertThat(
+				source.containsDescendantOf(ConfigurationPropertyName.of("random.foo")))
+						.contains(false);
 	}
 
 }
