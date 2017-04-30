@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public class BufferMetricReader implements MetricReader, PrefixMetricReader {
 	}
 
 	private Iterable<Metric<?>> findAll(Predicate<String> predicate) {
-		final List<Metric<?>> metrics = new ArrayList<Metric<?>>();
+		final List<Metric<?>> metrics = new ArrayList<>();
 		collectMetrics(this.gaugeBuffers, predicate, metrics);
 		collectMetrics(this.counterBuffers, predicate, metrics);
 		return metrics;
@@ -92,7 +92,7 @@ public class BufferMetricReader implements MetricReader, PrefixMetricReader {
 	}
 
 	private <T extends Number> Metric<T> asMetric(final String name, Buffer<T> buffer) {
-		return new Metric<T>(name, buffer.getValue(), new Date(buffer.getTimestamp()));
+		return new Metric<>(name, buffer.getValue(), new Date(buffer.getTimestamp()));
 	}
 
 }

@@ -19,10 +19,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
-
-jar {
-	baseName = 'spring-boot-sample-actuator'
-}
+apply plugin: 'io.spring.dependency-management'
 
 group = 'org.springframework.boot'
 version = springBootVersion
@@ -37,29 +34,15 @@ repositories {
 }
 
 dependencies {
-	configurations {
-		insecure.exclude module: 'spring-boot-starter-security'
-	}
-
 	compile("org.springframework.boot:spring-boot-starter-actuator")
 	compile("org.springframework.boot:spring-boot-starter-jdbc")
 	compile("org.springframework.boot:spring-boot-starter-security")
 	compile("org.springframework.boot:spring-boot-starter-web")
-	compile("com.h2database:h2")
+	runtime("com.h2database:h2")
+
+	compileOnly('org.springframework.boot:spring-boot-configuration-processor')
 
 	testCompile("org.springframework.boot:spring-boot-starter-test")
-
-	insecure configurations.runtime
-}
-
-// Slightly odd requirement (package a jar file as an insecure app, exlcuding Spring Security)
-// just to demonstrate the "customConfiguration" feature of the Boot gradle plugin.
-springBoot {
-	customConfiguration = "insecure"
-}
-
-task wrapper(type: Wrapper) {
-	gradleVersion = '1.6'
 }
 
 springBoot {

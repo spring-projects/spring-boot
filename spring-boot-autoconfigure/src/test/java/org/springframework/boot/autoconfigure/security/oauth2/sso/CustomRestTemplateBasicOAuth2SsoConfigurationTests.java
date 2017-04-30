@@ -57,11 +57,11 @@ public class CustomRestTemplateBasicOAuth2SsoConfigurationTests {
 	private ApplicationContext applicationContext;
 
 	@Autowired
-	private ObjectProvider<RestTemplate> restTemplateProvider;
+	private ObjectProvider<RestTemplate> restTemplate;
 
 	@Test
 	public void customRestTemplateCanBePrimary() {
-		RestTemplate restTemplate = this.restTemplateProvider.getIfAvailable();
+		RestTemplate restTemplate = this.restTemplate.getIfAvailable();
 		verifyZeroInteractions(restTemplate);
 		assertThat(this.applicationContext.getBeansOfType(RestTemplate.class)).hasSize(1);
 	}

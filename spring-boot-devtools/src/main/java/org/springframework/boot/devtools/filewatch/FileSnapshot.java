@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,9 +59,9 @@ class FileSnapshot {
 		if (obj instanceof FileSnapshot) {
 			FileSnapshot other = (FileSnapshot) obj;
 			boolean equals = this.file.equals(other.file);
-			equals &= this.exists == other.exists;
-			equals &= this.length == other.length;
-			equals &= this.lastModified == other.lastModified;
+			equals = equals && this.exists == other.exists;
+			equals = equals && this.length == other.length;
+			equals = equals && this.lastModified == other.lastModified;
 			return equals;
 		}
 		return super.equals(obj);
@@ -70,9 +70,9 @@ class FileSnapshot {
 	@Override
 	public int hashCode() {
 		int hashCode = this.file.hashCode();
-		hashCode = 31 * hashCode + (this.exists ? 1231 : 1237);
-		hashCode = 31 * hashCode + (int) (this.length ^ (this.length >>> 32));
-		hashCode = 31 * hashCode + (int) (this.lastModified ^ (this.lastModified >>> 32));
+		hashCode = 31 * hashCode + Boolean.hashCode(this.exists);
+		hashCode = 31 * hashCode + Long.hashCode(this.length);
+		hashCode = 31 * hashCode + Long.hashCode(this.lastModified);
 		return hashCode;
 	}
 

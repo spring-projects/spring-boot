@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,11 +78,11 @@ public class RedisAutoConfiguration {
 		private final RedisClusterConfiguration clusterConfiguration;
 
 		public RedisConnectionConfiguration(RedisProperties properties,
-				ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
-				ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider) {
+				ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
+				ObjectProvider<RedisClusterConfiguration> clusterConfiguration) {
 			this.properties = properties;
-			this.sentinelConfiguration = sentinelConfigurationProvider.getIfAvailable();
-			this.clusterConfiguration = clusterConfigurationProvider.getIfAvailable();
+			this.sentinelConfiguration = sentinelConfiguration.getIfAvailable();
+			this.clusterConfiguration = clusterConfiguration.getIfAvailable();
 		}
 
 		@Bean
@@ -178,7 +178,7 @@ public class RedisAutoConfiguration {
 		}
 
 		private List<RedisNode> createSentinels(Sentinel sentinel) {
-			List<RedisNode> nodes = new ArrayList<RedisNode>();
+			List<RedisNode> nodes = new ArrayList<>();
 			for (String node : StringUtils
 					.commaDelimitedListToStringArray(sentinel.getNodes())) {
 				try {
@@ -230,7 +230,7 @@ public class RedisAutoConfiguration {
 		public RedisTemplate<Object, Object> redisTemplate(
 				RedisConnectionFactory redisConnectionFactory)
 						throws UnknownHostException {
-			RedisTemplate<Object, Object> template = new RedisTemplate<Object, Object>();
+			RedisTemplate<Object, Object> template = new RedisTemplate<>();
 			template.setConnectionFactory(redisConnectionFactory);
 			return template;
 		}

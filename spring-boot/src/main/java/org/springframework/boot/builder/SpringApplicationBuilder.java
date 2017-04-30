@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -71,13 +72,13 @@ public class SpringApplicationBuilder {
 
 	private final AtomicBoolean running = new AtomicBoolean(false);
 
-	private final Set<Object> sources = new LinkedHashSet<Object>();
+	private final Set<Object> sources = new LinkedHashSet<>();
 
-	private final Map<String, Object> defaultProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> defaultProperties = new LinkedHashMap<>();
 
 	private ConfigurableEnvironment environment;
 
-	private Set<String> additionalProfiles = new LinkedHashSet<String>();
+	private Set<String> additionalProfiles = new LinkedHashSet<>();
 
 	private boolean registerShutdownHookApplied;
 
@@ -183,7 +184,7 @@ public class SpringApplicationBuilder {
 				.additionalProfiles(this.additionalProfiles);
 		child.parent = this;
 
-		// It's not possible if embedded containers are enabled to support web contexts as
+		// It's not possible if embedded web server are enabled to support web contexts as
 		// parents because the servlets cannot be initialized at the right point in
 		// lifecycle.
 		web(false);
@@ -277,7 +278,7 @@ public class SpringApplicationBuilder {
 	 * @return the current builder
 	 */
 	public SpringApplicationBuilder sources(Object... sources) {
-		this.sources.addAll(new LinkedHashSet<Object>(Arrays.asList(sources)));
+		this.sources.addAll(new LinkedHashSet<>(Arrays.asList(sources)));
 		return this;
 	}
 
@@ -296,9 +297,23 @@ public class SpringApplicationBuilder {
 	 * classpath if not set).
 	 * @param webEnvironment the flag to set
 	 * @return the current builder
+	 * @deprecated since 2.0.0 in favour of {@link #web(WebApplicationType)}
 	 */
+	@Deprecated
 	public SpringApplicationBuilder web(boolean webEnvironment) {
 		this.application.setWebEnvironment(webEnvironment);
+		return this;
+	}
+
+	/**
+	 * Flag to explicitly request a specific type of web application. Auto-detected based
+	 * on the classpath if not set.
+	 * @param webApplication the type of web application
+	 * @return the current builder
+	 * @since 2.0.0
+	 */
+	public SpringApplicationBuilder web(WebApplicationType webApplication) {
+		this.application.setWebApplicationType(webApplication);
 		return this;
 	}
 
@@ -383,7 +398,7 @@ public class SpringApplicationBuilder {
 	}
 
 	private Map<String, Object> getMapFromKeyValuePairs(String[] properties) {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		for (String property : properties) {
 			int index = lowestIndexOf(property, ":", "=");
 			String key = property.substring(0, index > 0 ? index : property.length());
@@ -415,7 +430,7 @@ public class SpringApplicationBuilder {
 	}
 
 	private Map<String, Object> getMapFromProperties(Properties properties) {
-		HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<>();
 		for (Object key : Collections.list(properties.propertyNames())) {
 			map.put((String) key, properties.get(key));
 		}
@@ -453,7 +468,7 @@ public class SpringApplicationBuilder {
 
 	private SpringApplicationBuilder additionalProfiles(
 			Collection<String> additionalProfiles) {
-		this.additionalProfiles = new LinkedHashSet<String>(additionalProfiles);
+		this.additionalProfiles = new LinkedHashSet<>(additionalProfiles);
 		this.application.setAdditionalProfiles(this.additionalProfiles
 				.toArray(new String[this.additionalProfiles.size()]));
 		return this;

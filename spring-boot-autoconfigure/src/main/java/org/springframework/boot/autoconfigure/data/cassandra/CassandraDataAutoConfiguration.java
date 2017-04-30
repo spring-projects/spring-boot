@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,11 @@ import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertyResolver;
 import org.springframework.data.cassandra.config.CassandraEntityClassScanner;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;
@@ -54,6 +53,7 @@ import org.springframework.util.StringUtils;
  * @author Julien Dubois
  * @author Eddú Meléndez
  * @author Mark Paluch
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 @Configuration
@@ -68,15 +68,14 @@ public class CassandraDataAutoConfiguration {
 
 	private final Cluster cluster;
 
-	private final PropertyResolver propertyResolver;
+	private final Environment environment;
 
 	public CassandraDataAutoConfiguration(BeanFactory beanFactory,
 			CassandraProperties properties, Cluster cluster, Environment environment) {
 		this.beanFactory = beanFactory;
 		this.properties = properties;
 		this.cluster = cluster;
-		this.propertyResolver = new RelaxedPropertyResolver(environment,
-				"spring.data.cassandra.");
+		this.environment = environment;
 	}
 
 	@Bean
@@ -106,15 +105,15 @@ public class CassandraDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(Session.class)
-	public CassandraSessionFactoryBean session(CassandraConverter converter)
+	public CassandraSessionFactoryBean cassandraSession(CassandraConverter converter)
 			throws Exception {
 		CassandraSessionFactoryBean session = new CassandraSessionFactoryBean();
 		session.setCluster(this.cluster);
 		session.setConverter(converter);
 		session.setKeyspaceName(this.properties.getKeyspaceName());
-		SchemaAction schemaAction = this.propertyResolver.getProperty("schemaAction",
-				SchemaAction.class, SchemaAction.NONE);
-		session.setSchemaAction(schemaAction);
+		Binder binder = Binder.get(this.environment);
+		binder.bind("spring.data.cassandra.schema-action", SchemaAction.class)
+				.ifBound(session::setSchemaAction);
 		return session;
 	}
 

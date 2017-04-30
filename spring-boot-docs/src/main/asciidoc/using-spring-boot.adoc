@@ -41,8 +41,8 @@ feel that's necessary.
 The curated list contains all the spring modules that you can use with Spring Boot as
 well as a refined list of third party libraries. The list is available as a standard
 <<using-boot-maven-without-a-parent,Bills of Materials (`spring-boot-dependencies`)>>
-and additional dedicated support for <<using-boot-maven-parent-pom,Maven>> and
-<<build-tool-plugins-gradle-dependency-management,Gradle>> are available as well.
+that can be used with both <<using-boot-maven-parent-pom,Maven>> and
+{spring-boot-gradle-plugin}[Gradle].
 
 WARNING: Each release of Spring Boot is associated with a base version of the Spring
 Framework so we **highly** recommend you to not specify its version on your own.
@@ -54,7 +54,7 @@ Framework so we **highly** recommend you to not specify its version on your own.
 Maven users can inherit from the `spring-boot-starter-parent` project to obtain sensible
 defaults. The parent project provides the following features:
 
-* Java 1.6 as the default compiler level.
+* Java 1.8 as the default compiler level.
 * UTF-8 source encoding.
 * A <<using-boot-dependency-management,Dependency Management section>>, allowing you to
   omit `<version>` tags for common dependencies, inherited from the
@@ -168,21 +168,6 @@ that way.
 
 
 
-[[using-boot-maven-java-version]]
-==== Changing the Java version
-The `spring-boot-starter-parent` chooses fairly conservative Java compatibility. If you
-want to follow our recommendation and use a later Java version you can add a
-`java.version` property:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<properties>
-		<java.version>1.8</java.version>
-	</properties>
-----
-
-
-
 [[using-boot-maven-plugin]]
 ==== Using the Spring Boot Maven plugin
 Spring Boot includes a <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven plugin>>
@@ -209,70 +194,8 @@ the parent.
 
 [[using-boot-gradle]]
 === Gradle
-Gradle users can directly import '`starters`' in their `dependencies` section. Unlike
-Maven, there is no "`super parent`" to import to share some configuration.
-
-[source,groovy,indent=0,subs="attributes"]
-----
-	repositories {
-ifeval::["{spring-boot-repo}" != "release"]
-		maven { url "http://repo.spring.io/snapshot" }
-		maven { url "http://repo.spring.io/milestone" }
-endif::[]
-ifeval::["{spring-boot-repo}" == "release"]
-		jcenter()
-endif::[]
-	}
-
-	dependencies {
-		compile("org.springframework.boot:spring-boot-starter-web:{spring-boot-version}")
-	}
-----
-
-The <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin,
-`spring-boot-gradle-plugin`>> is also available and provides tasks to create executable
-jars and run projects from source. It also provides
-<<build-tool-plugins-gradle-dependency-management, dependency management>> that, among
-other capabilities, allows you to omit the version number for any dependencies that are
-managed by Spring Boot:
-
-[source,groovy,indent=0,subs="attributes"]
-----
-ifeval::["{spring-boot-repo}" == "release"]
-	plugins {
-		id 'org.springframework.boot' version '{spring-boot-version}'
-		id 'java'
-	}
-endif::[]
-ifeval::["{spring-boot-repo}" != "release"]
-	buildscript {
-		repositories {
-			jcenter()
-			maven { url 'http://repo.spring.io/snapshot' }
-			maven { url 'http://repo.spring.io/milestone' }
-		}
-		dependencies {
-			classpath 'org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}'
-		}
-	}
-
-	apply plugin: 'java'
-	apply plugin: 'org.springframework.boot'
-endif::[]
-
-	repositories {
-		jcenter()
-ifeval::["{spring-boot-repo}" != "release"]
-		maven { url 'http://repo.spring.io/snapshot' }
-		maven { url 'http://repo.spring.io/milestone' }
-endif::[]
-	}
-
-	dependencies {
-		compile("org.springframework.boot:spring-boot-starter-web")
-		testCompile("org.springframework.boot:spring-boot-starter-test")
-	}
-----
+To learn about using Spring Boot with Gradle, please refer to the
+{spring-boot-gradle-plugin}[documentation for Spring Boot's Gradle plugin].
 
 
 
@@ -482,7 +405,7 @@ is also a good candidate as the primary `@Configuration`.
 
 TIP: Many Spring configuration examples have been published on the Internet that use XML
 configuration. Always try to use the equivalent Java-based configuration if possible.
-Searching for `+enable*+` annotations can be a good starting point.
+Searching for `+Enable*+` annotations can be a good starting point.
 
 
 
@@ -581,6 +504,24 @@ required `RiskAssessor` bean.
 		private final RiskAssessor riskAssessor;
 
 		@Autowired
+		public DatabaseAccountService(RiskAssessor riskAssessor) {
+			this.riskAssessor = riskAssessor;
+		}
+
+		// ...
+
+	}
+----
+
+And if a bean has one constructor, you can omit the `@Autowired`.
+
+[source,java,indent=0]
+----
+	@Service
+	public class DatabaseAccountService implements AccountService {
+
+		private final RiskAssessor riskAssessor;
+
 		public DatabaseAccountService(RiskAssessor riskAssessor) {
 			this.riskAssessor = riskAssessor;
 		}
@@ -693,7 +634,7 @@ You might also want to use the useful operating system environment variable:
 
 [indent=0,subs="attributes"]
 ----
-	$ export MAVEN_OPTS=-Xmx1024m -XX:MaxPermSize=128M
+	$ export MAVEN_OPTS=-Xmx1024m
 ----
 
 
@@ -701,8 +642,8 @@ You might also want to use the useful operating system environment variable:
 [[using-boot-running-with-the-gradle-plugin]]
 === Using the Gradle plugin
 The Spring Boot Gradle plugin also includes a `bootRun` task which can be used to run
-your application in an exploded form. The `bootRun` task is added whenever you import
-the `spring-boot-gradle-plugin`:
+your application in an exploded form. The `bootRun` task is added whenever you apply the
+the `org.springframework.boot` and `java` plugins:
 
 [indent=0,subs="attributes"]
 ----
@@ -713,7 +654,7 @@ You might also want to use this useful operating system environment variable:
 
 [indent=0,subs="attributes"]
 ----
-	$ export JAVA_OPTS=-Xmx1024m -XX:MaxPermSize=128M
+	$ export JAVA_OPTS=-Xmx1024m
 ----
 
 
@@ -809,7 +750,7 @@ restart the application>>.
 As DevTools monitors classpath resources, the only way to trigger a restart is to update
 the classpath. The way in which you cause the classpath to be updated depends on the IDE
 that you are using. In Eclipse, saving a modified file will cause the classpath to be
-updated and trigger a restart. In IntelliJ IDEA, building the project (`Build -> Make
+updated and trigger a restart. In IntelliJ IDEA, building the project (`Build +->+ Make
 Project`) will have the same effect.
 ****
 
@@ -1043,7 +984,7 @@ is set. The client component must be launched manually.
 
 
 ==== Running the remote client application
-The remote client application is designed to be run from within you IDE. You need to run
+The remote client application is designed to be run from within your IDE. You need to run
 `org.springframework.boot.devtools.RemoteSpringApplication` using the same classpath as
 the remote project that you're connecting to. The _non-option_ argument passed to the
 application should be the remote URL that you are connecting to.
@@ -1123,8 +1064,8 @@ Cloud Foundry you can add the following to your `manifest.yml`:
 [source,yaml,indent=0]
 ----
 	---
-	  env:
-	    JAVA_OPTS: "-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n"
+		env:
+			JAVA_OPTS: "-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n"
 ----
 
 TIP: Notice that you don't need to pass an `address=NNNN` option to `-Xrunjdwp`. If
@@ -1134,6 +1075,15 @@ NOTE: Debugging a remote service over the Internet can be slow and you might nee
 increase timeouts in your IDE. For example, in Eclipse you can select `Java` -> `Debug`
 from `Preferences...` and change the `Debugger timeout (ms)` to a more suitable value
 (`60000` works well in most situations).
+
+WARNING: When using the remote debug tunnel with IntelliJ IDEA, all breakpoints must be
+configured to suspend the thread rather than the VM. By default, breakpoints in IntelliJ
+IDEA suspend the entire VM rather than only suspending the thread that hit the
+breakpoint. This has the unwanted side-effect of suspending the thread that manages the
+remote debug tunnel, causing your debugging session to freeze. When using the remote
+debug tunnel with IntelliJ IDEA, all breakpoints should be configured to suspend the
+thread rather than the VM. Please see
+https://youtrack.jetbrains.com/issue/IDEA-165769[IDEA-165769] for further details.
 
 
 

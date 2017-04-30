@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@ package org.springframework.boot.context.config;
 
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * An {@link ApplicationListener} that configures {@link AnsiOutput} depending on the
@@ -29,6 +30,7 @@ import org.springframework.core.Ordered;
  * values.
  *
  * @author Raphael von der Grün
+ * @author Madhura Bhave
  * @since 1.2.0
  */
 public class AnsiOutputApplicationListener
@@ -36,23 +38,17 @@ public class AnsiOutputApplicationListener
 
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				event.getEnvironment(), "spring.output.ansi.");
-		if (resolver.containsProperty("enabled")) {
-			String enabled = resolver.getProperty("enabled");
-			AnsiOutput.setEnabled(Enum.valueOf(Enabled.class, enabled.toUpperCase()));
-		}
-
-		if (resolver.containsProperty("console-available")) {
-			AnsiOutput.setConsoleAvailable(
-					resolver.getProperty("console-available", Boolean.class));
-		}
+		ConfigurableEnvironment environment = event.getEnvironment();
+		Binder.get(environment)
+				.bind("spring.output.ansi.enabled", AnsiOutput.Enabled.class)
+				.ifBound(AnsiOutput::setEnabled);
+		AnsiOutput.setConsoleAvailable(environment
+				.getProperty("spring.output.ansi.console-available", Boolean.class));
 	}
 
 	@Override
 	public int getOrder() {
-		// Apply after ConfigFileApplicationListener has called all
-		// EnvironmentPostProcessors
+		// Apply after ConfigFileApplicationListener has called EnvironmentPostProcessors
 		return ConfigFileApplicationListener.DEFAULT_ORDER + 1;
 	}
 

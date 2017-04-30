@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,9 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Common {@link Layout}s.
@@ -126,7 +123,7 @@ public final class Layouts {
 		private static final Map<LibraryScope, String> SCOPE_DESTINATIONS;
 
 		static {
-			Map<LibraryScope, String> map = new HashMap<LibraryScope, String>();
+			Map<LibraryScope, String> map = new HashMap<>();
 			map.put(LibraryScope.COMPILE, "WEB-INF/lib/");
 			map.put(LibraryScope.CUSTOM, "WEB-INF/lib/");
 			map.put(LibraryScope.RUNTIME, "WEB-INF/lib/");
@@ -152,40 +149,6 @@ public final class Layouts {
 		@Override
 		public boolean isExecutable() {
 			return true;
-		}
-
-	}
-
-	/**
-	 * Module layout (designed to be used as a "plug-in").
-	 */
-	public static class Module implements Layout {
-
-		private static final Set<LibraryScope> LIB_DESTINATION_SCOPES = new HashSet<LibraryScope>(
-				Arrays.asList(LibraryScope.COMPILE, LibraryScope.RUNTIME,
-						LibraryScope.CUSTOM));
-
-		@Override
-		public String getLauncherClassName() {
-			return null;
-		}
-
-		@Override
-		public String getLibraryDestination(String libraryName, LibraryScope scope) {
-			if (LIB_DESTINATION_SCOPES.contains(scope)) {
-				return "lib/";
-			}
-			return null;
-		}
-
-		@Override
-		public String getClassesLocation() {
-			return "";
-		}
-
-		@Override
-		public boolean isExecutable() {
-			return false;
 		}
 
 	}

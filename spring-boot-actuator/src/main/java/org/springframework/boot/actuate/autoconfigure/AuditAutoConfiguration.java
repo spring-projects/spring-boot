@@ -44,8 +44,8 @@ public class AuditAutoConfiguration {
 	private final AuditEventRepository auditEventRepository;
 
 	public AuditAutoConfiguration(
-			ObjectProvider<AuditEventRepository> auditEventRepositoryProvider) {
-		this.auditEventRepository = auditEventRepositoryProvider.getIfAvailable();
+			ObjectProvider<AuditEventRepository> auditEventRepository) {
+		this.auditEventRepository = auditEventRepository.getIfAvailable();
 	}
 
 	@Bean

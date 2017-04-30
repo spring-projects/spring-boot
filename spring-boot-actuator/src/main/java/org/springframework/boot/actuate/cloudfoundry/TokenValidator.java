@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.actuate.cloudfoundry.CloudFoundryAuthorizationException.Reason;
@@ -38,7 +38,7 @@ class TokenValidator {
 
 	private final CloudFoundrySecurityService securityService;
 
-	private List<String> tokenKeys;
+	private Map<String, String> tokenKeys;
 
 	TokenValidator(CloudFoundrySecurityService cloudFoundrySecurityService) {
 		this.securityService = cloudFoundrySecurityService;
@@ -46,7 +46,7 @@ class TokenValidator {
 
 	public void validate(Token token) {
 		validateAlgorithm(token);
-		validateSignature(token);
+		validateKeyIdAndSignature(token);
 		validateExpiry(token);
 		validateIssuer(token);
 		validateAudience(token);
@@ -65,19 +65,25 @@ class TokenValidator {
 		}
 	}
 
-	private void validateSignature(Token token) {
-		if (this.tokenKeys == null || !hasValidSignature(token)) {
+	private void validateKeyIdAndSignature(Token token) {
+		String keyId = token.getKeyId();
+		if (this.tokenKeys == null || !hasValidKeyId(keyId)) {
 			this.tokenKeys = this.securityService.fetchTokenKeys();
-			if (!hasValidSignature(token)) {
-				throw new CloudFoundryAuthorizationException(Reason.INVALID_SIGNATURE,
-						"RSA Signature did not match content");
+			if (!hasValidKeyId(keyId)) {
+				throw new CloudFoundryAuthorizationException(Reason.INVALID_KEY_ID,
+						"Key Id present in token header does not match");
 			}
+		}
+
+		if (!hasValidSignature(token, this.tokenKeys.get(keyId))) {
+			throw new CloudFoundryAuthorizationException(Reason.INVALID_SIGNATURE,
+					"RSA Signature did not match content");
 		}
 	}
 
-	private boolean hasValidSignature(Token token) {
-		for (String key : this.tokenKeys) {
-			if (hasValidSignature(token, key)) {
+	private boolean hasValidKeyId(String tokenKey) {
+		for (String candidate : this.tokenKeys.keySet()) {
+			if (tokenKey.equals(candidate)) {
 				return true;
 			}
 		}

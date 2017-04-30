@@ -20,6 +20,34 @@ include::{generated}/endpoints.adoc[]
 
 
 
+=== /auditevents
+This endpoint provides information about audit events registered by the application.
+Audit events can be filtered using the `after`, `principal` and `type` parameters as
+defined by `AuditEventRepository`.
+
+Example cURL request with `after` parameter:
+include::{generated}/auditevents/curl-request.adoc[]
+
+Example HTTP request with `after` parameter:
+include::{generated}/auditevents/http-request.adoc[]
+
+Example HTTP response:
+include::{generated}/auditevents/http-response.adoc[]
+
+Example cURL request with `principal` and `after` parameters:
+include::{generated}/auditevents/filter-by-principal/curl-request.adoc[]
+
+Example HTTP request with `principal` and `after` parameters:
+include::{generated}/auditevents/filter-by-principal/http-request.adoc[]
+
+Example cURL request with `principal`, `after` and `type` parameters:
+include::{generated}/auditevents/filter-by-principal-and-type/curl-request.adoc[]
+
+Example HTTP request with `principal`, `after` and `type` parameters:
+include::{generated}/auditevents/filter-by-principal-and-type/http-request.adoc[]
+
+
+
 === /logfile
 This endpoint (if available) contains the plain text logfile configured by the user
 using `logging.file` or `logging.path` (by default logs are only emitted on stdout

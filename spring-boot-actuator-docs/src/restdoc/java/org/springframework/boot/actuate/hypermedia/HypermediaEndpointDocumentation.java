@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.mvc.ActuatorMediaTypes;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootContextLoader;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -51,22 +51,28 @@ public class HypermediaEndpointDocumentation {
 
 	@Test
 	public void beans() throws Exception {
-		this.mockMvc.perform(get("/beans").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc
+				.perform(get("/application/beans")
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk()).andDo(document("beans/hypermedia"));
 	}
 
 	@Test
 	public void metrics() throws Exception {
-		this.mockMvc.perform(get("/metrics").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc
+				.perform(get("/application/metrics")
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$._links.self.href")
-						.value("http://localhost:8080/metrics"))
+						.value("http://localhost:8080/application/metrics"))
 				.andDo(document("metrics/hypermedia"));
 	}
 
 	@Test
 	public void home() throws Exception {
-		this.mockMvc.perform(get("/actuator").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc
+				.perform(get("/application")
+						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk()).andDo(document("admin"));
 	}
 

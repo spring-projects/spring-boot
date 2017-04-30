@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
@@ -28,6 +29,7 @@ import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.AuditEventsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
@@ -45,14 +47,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
@@ -62,6 +62,8 @@ import org.springframework.web.cors.CorsConfiguration;
  *
  * @author Dave Syer
  * @author Ben Hale
+ * @author Vedran Pavic
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 @ManagementContextConfiguration
@@ -81,11 +83,11 @@ public class EndpointWebMvcManagementContextConfiguration {
 			HealthMvcEndpointProperties healthMvcEndpointProperties,
 			ManagementServerProperties managementServerProperties,
 			EndpointCorsProperties corsProperties,
-			ObjectProvider<List<EndpointHandlerMappingCustomizer>> mappingCustomizersProvider) {
+			ObjectProvider<List<EndpointHandlerMappingCustomizer>> mappingCustomizers) {
 		this.healthMvcEndpointProperties = healthMvcEndpointProperties;
 		this.managementServerProperties = managementServerProperties;
 		this.corsProperties = corsProperties;
-		List<EndpointHandlerMappingCustomizer> providedCustomizers = mappingCustomizersProvider
+		List<EndpointHandlerMappingCustomizer> providedCustomizers = mappingCustomizers
 				.getIfAvailable();
 		this.mappingCustomizers = providedCustomizers == null
 				? Collections.<EndpointHandlerMappingCustomizer>emptyList()
@@ -156,10 +158,13 @@ public class EndpointWebMvcManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnBean(HealthEndpoint.class)
+	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint("health")
-	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
+	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate,
+			ManagementServerProperties managementServerProperties) {
 		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate,
-				isHealthSecure());
+				this.managementServerProperties.getSecurity().isEnabled(),
+				managementServerProperties.getSecurity().getRoles());
 		if (this.healthMvcEndpointProperties.getMapping() != null) {
 			healthMvcEndpoint
 					.addStatusMapping(this.healthMvcEndpointProperties.getMapping());
@@ -195,15 +200,12 @@ public class EndpointWebMvcManagementContextConfiguration {
 		return new ShutdownMvcEndpoint(delegate);
 	}
 
-	private boolean isHealthSecure() {
-		return isSpringSecurityAvailable()
-				&& this.managementServerProperties.getSecurity().isEnabled();
-	}
-
-	private boolean isSpringSecurityAvailable() {
-		return ClassUtils.isPresent(
-				"org.springframework.security.config.annotation.web.WebSecurityConfigurer",
-				getClass().getClassLoader());
+	@Bean
+	@ConditionalOnBean(AuditEventRepository.class)
+	@ConditionalOnEnabledEndpoint("auditevents")
+	public AuditEventsMvcEndpoint auditEventMvcEndpoint(
+			AuditEventRepository auditEventRepository) {
+		return new AuditEventsMvcEndpoint(auditEventRepository);
 	}
 
 	private static class LogFileCondition extends SpringBootCondition {
@@ -223,8 +225,7 @@ public class EndpointWebMvcManagementContextConfiguration {
 				return ConditionOutcome
 						.match(message.found("logging.path").items(config));
 			}
-			config = new RelaxedPropertyResolver(environment, "endpoints.logfile.")
-					.getProperty("external-file");
+			config = environment.getProperty("endpoints.logfile.external-file");
 			if (StringUtils.hasText(config)) {
 				return ConditionOutcome.match(
 						message.found("endpoints.logfile.external-file").items(config));

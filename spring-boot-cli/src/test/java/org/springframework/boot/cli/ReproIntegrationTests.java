@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,14 +47,12 @@ public class ReproIntegrationTests {
 	// this will fail
 	@Test
 	public void securityDependencies() throws Exception {
-		this.cli.run("secure.groovy");
-		assertThat(this.cli.getOutput()).contains("Hello World");
+		assertThat(this.cli.run("secure.groovy")).contains("Hello World");
 	}
 
 	@Test
 	public void dataJpaDependencies() throws Exception {
-		this.cli.run("data-jpa.groovy");
-		assertThat(this.cli.getOutput()).contains("Hello World");
+		assertThat(this.cli.run("data-jpa.groovy")).contains("Hello World");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -172,7 +172,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	protected final String getPackagedConfigFile(String fileName) {
 		String defaultPath = ClassUtils.getPackageName(getClass());
-		defaultPath = defaultPath.replace(".", "/");
+		defaultPath = defaultPath.replace('.', '/');
 		defaultPath = defaultPath + "/" + fileName;
 		defaultPath = "classpath:" + defaultPath;
 		return defaultPath;
@@ -194,12 +194,14 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 		private final Map<T, LogLevel> nativeToSystem;
 
 		public LogLevels() {
-			this.systemToNative = new HashMap<LogLevel, T>();
-			this.nativeToSystem = new HashMap<T, LogLevel>();
+			this.systemToNative = new HashMap<>();
+			this.nativeToSystem = new HashMap<>();
 		}
 
 		public void map(LogLevel system, T nativeLevel) {
-			this.systemToNative.put(system, nativeLevel);
+			if (!this.systemToNative.containsKey(system)) {
+				this.systemToNative.put(system, nativeLevel);
+			}
 			if (!this.nativeToSystem.containsKey(nativeLevel)) {
 				this.nativeToSystem.put(nativeLevel, system);
 			}
@@ -214,7 +216,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 		}
 
 		public Set<LogLevel> getSupported() {
-			return new LinkedHashSet<LogLevel>(this.nativeToSystem.values());
+			return new LinkedHashSet<>(this.nativeToSystem.values());
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,12 +85,11 @@ public class MockDefinitionTests {
 				new Class<?>[] { ExampleExtraInterface.class },
 				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE, null);
 		ExampleService mock = definition.createMock();
-		MockCreationSettings<?> settings = SpringBootMockUtil.getMockSettings(mock);
+		MockCreationSettings<?> settings = MockitoApi.get().getMockSettings(mock);
 		assertThat(mock).isInstanceOf(ExampleService.class);
 		assertThat(mock).isInstanceOf(ExampleExtraInterface.class);
 		assertThat(settings.getMockName().toString()).isEqualTo("name");
-		assertThat(settings.getDefaultAnswer())
-				.isEqualTo(Answers.RETURNS_SMART_NULLS.get());
+		assertThat(settings.getDefaultAnswer()).isEqualTo(Answers.RETURNS_SMART_NULLS);
 		assertThat(settings.isSerializable()).isTrue();
 		assertThat(MockReset.get(mock)).isEqualTo(MockReset.BEFORE);
 	}

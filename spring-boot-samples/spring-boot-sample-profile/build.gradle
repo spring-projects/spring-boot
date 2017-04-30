@@ -19,23 +19,10 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 
-jar {
-	baseName = 'spring-boot-sample-profile'
-	version =  '0.0.0'
-	excludes = ['**/application.yml']
-}
-
-task('execJar', type:Jar, dependsOn: 'jar') {
-	baseName = 'spring-boot-sample-profile'
-	version =  '0.0.0'
-	classifier = 'exec'
-	from sourceSets.main.output
-}
-
-bootRepackage  {
-	withJarTask = tasks['execJar']
-}
+version = springBootVersion
+group = 'org.springframework.boot'
 
 repositories {
 	// NOTE: You should declare only repositories that you need here
@@ -49,8 +36,4 @@ repositories {
 dependencies {
 	compile("org.springframework.boot:spring-boot-starter")
 	testCompile("org.springframework.boot:spring-boot-starter-test")
-}
-
-task wrapper(type: Wrapper) {
-	gradleVersion = '1.6'
 }

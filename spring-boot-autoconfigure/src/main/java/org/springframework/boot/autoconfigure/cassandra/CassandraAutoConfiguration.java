@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,15 +54,14 @@ public class CassandraAutoConfiguration {
 	private final List<ClusterBuilderCustomizer> builderCustomizers;
 
 	public CassandraAutoConfiguration(CassandraProperties properties,
-			ObjectProvider<List<ClusterBuilderCustomizer>> builderCustomizersProvider) {
+			ObjectProvider<List<ClusterBuilderCustomizer>> builderCustomizers) {
 		this.properties = properties;
-		this.builderCustomizers = builderCustomizersProvider
-				.getIfAvailable();
+		this.builderCustomizers = builderCustomizers.getIfAvailable();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Cluster cluster() {
+	public Cluster cassandraCluster() {
 		CassandraProperties properties = this.properties;
 		Cluster.Builder builder = Cluster.builder()
 				.withClusterName(properties.getClusterName())

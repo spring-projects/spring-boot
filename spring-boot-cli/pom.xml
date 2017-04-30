@@ -39,6 +39,10 @@
 			<artifactId>spring-boot-loader-tools</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.vaadin.external.google</groupId>
+			<artifactId>android-json</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>jline</groupId>
 			<artifactId>jline</artifactId>
 		</dependency>
@@ -53,10 +57,6 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>

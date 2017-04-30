@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ final class CacheConfigurations {
 	private static final Map<CacheType, Class<?>> MAPPINGS;
 
 	static {
-		Map<CacheType, Class<?>> mappings = new HashMap<CacheType, Class<?>>();
+		Map<CacheType, Class<?>> mappings = new HashMap<>();
 		mappings.put(CacheType.GENERIC, GenericCacheConfiguration.class);
 		mappings.put(CacheType.EHCACHE, EhCacheCacheConfiguration.class);
 		mappings.put(CacheType.HAZELCAST, HazelcastCacheConfiguration.class);

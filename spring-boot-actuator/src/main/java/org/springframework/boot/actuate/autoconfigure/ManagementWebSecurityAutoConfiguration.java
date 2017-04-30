@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.AuthenticationManagerConfiguration;
 import org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration;
@@ -85,11 +86,11 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ EnableWebSecurity.class })
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
 @AutoConfigureBefore(FallbackWebSecurityAutoConfiguration.class)
-@EnableConfigurationProperties
+@EnableConfigurationProperties(ManagementServerProperties.class)
 public class ManagementWebSecurityAutoConfiguration {
 
 	private static final String[] NO_PATHS = new String[0];
@@ -100,9 +101,9 @@ public class ManagementWebSecurityAutoConfiguration {
 	@Bean
 	public IgnoredRequestCustomizer managementIgnoredRequestCustomizer(
 			ManagementServerProperties management,
-			ObjectProvider<ManagementContextResolver> contextResolverProvider) {
+			ObjectProvider<ManagementContextResolver> contextResolver) {
 		return new ManagementIgnoredRequestCustomizer(management,
-				contextResolverProvider.getIfAvailable());
+				contextResolver.getIfAvailable());
 	}
 
 	private class ManagementIgnoredRequestCustomizer implements IgnoredRequestCustomizer {
@@ -133,22 +134,23 @@ public class ManagementWebSecurityAutoConfiguration {
 	protected static class ManagementSecurityPropertiesConfiguration
 			implements SecurityPrerequisite {
 
-		private final SecurityProperties security;
+		private final SecurityProperties securityProperties;
 
-		private final ManagementServerProperties management;
+		private final ManagementServerProperties managementServerProperties;
 
 		public ManagementSecurityPropertiesConfiguration(
-				ObjectProvider<SecurityProperties> securityProvider,
-				ObjectProvider<ManagementServerProperties> managementProvider) {
-			this.security = securityProvider.getIfAvailable();
-			this.management = managementProvider.getIfAvailable();
+				ObjectProvider<SecurityProperties> securityProperties,
+				ObjectProvider<ManagementServerProperties> managementServerProperties) {
+			this.securityProperties = securityProperties.getIfAvailable();
+			this.managementServerProperties = managementServerProperties.getIfAvailable();
 		}
 
 		@PostConstruct
 		public void init() {
-			if (this.management != null && this.security != null) {
-				this.security.getUser().getRole()
-						.addAll(this.management.getSecurity().getRoles());
+			if (this.managementServerProperties != null
+					&& this.securityProperties != null) {
+				this.securityProperties.getUser().getRole()
+						.addAll(this.managementServerProperties.getSecurity().getRoles());
 			}
 		}
 
@@ -188,6 +190,7 @@ public class ManagementWebSecurityAutoConfiguration {
 	@Configuration
 	@ConditionalOnMissingBean({ ManagementWebSecurityConfigurerAdapter.class })
 	@ConditionalOnProperty(prefix = "management.security", name = "enabled", matchIfMissing = true)
+	@EnableConfigurationProperties(SecurityProperties.class)
 	@Order(ManagementServerProperties.BASIC_AUTH_ORDER)
 	protected static class ManagementWebSecurityConfigurerAdapter
 			extends WebSecurityConfigurerAdapter {
@@ -200,10 +203,10 @@ public class ManagementWebSecurityAutoConfiguration {
 
 		public ManagementWebSecurityConfigurerAdapter(SecurityProperties security,
 				ManagementServerProperties management,
-				ObjectProvider<ManagementContextResolver> contextResolverProvider) {
+				ObjectProvider<ManagementContextResolver> contextResolver) {
 			this.security = security;
 			this.management = management;
-			this.contextResolver = contextResolverProvider.getIfAvailable();
+			this.contextResolver = contextResolver.getIfAvailable();
 		}
 
 		@Override
@@ -256,10 +259,11 @@ public class ManagementWebSecurityAutoConfiguration {
 
 		private void configurePermittedRequests(
 				ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry requests) {
+			requests.requestMatchers(new LazyEndpointPathRequestMatcher(
+					this.contextResolver, EndpointPaths.SENSITIVE)).authenticated();
 			// Permit access to the non-sensitive endpoints
 			requests.requestMatchers(new LazyEndpointPathRequestMatcher(
 					this.contextResolver, EndpointPaths.NON_SENSITIVE)).permitAll();
-			requests.anyRequest().authenticated();
 		}
 
 	}
@@ -275,6 +279,15 @@ public class ManagementWebSecurityAutoConfiguration {
 				return !endpoint.isSensitive();
 			}
 
+		},
+
+		SENSITIVE {
+
+			@Override
+			protected boolean isIncluded(MvcEndpoint endpoint) {
+				return endpoint.isSensitive();
+			}
+
 		};
 
 		public String[] getPaths(EndpointHandlerMapping endpointHandlerMapping) {
@@ -282,18 +295,15 @@ public class ManagementWebSecurityAutoConfiguration {
 				return NO_PATHS;
 			}
 			Set<? extends MvcEndpoint> endpoints = endpointHandlerMapping.getEndpoints();
-			Set<String> paths = new LinkedHashSet<String>(endpoints.size());
+			Set<String> paths = new LinkedHashSet<>(endpoints.size());
 			for (MvcEndpoint endpoint : endpoints) {
 				if (isIncluded(endpoint)) {
 					String path = endpointHandlerMapping.getPath(endpoint.getPath());
 					paths.add(path);
 					if (!path.equals("")) {
-						if (endpoint.isSensitive()) {
-							// Ensure that nested paths are secured
-							paths.add(path + "/**");
-							// Add Spring MVC-generated additional paths
-							paths.add(path + ".*");
-						}
+						paths.add(path + "/**");
+						// Add Spring MVC-generated additional paths
+						paths.add(path + ".*");
 					}
 					paths.add(path + "/");
 				}
@@ -327,7 +337,7 @@ public class ManagementWebSecurityAutoConfiguration {
 			String path = management.getContextPath();
 			if (StringUtils.hasText(path)) {
 				AntPathRequestMatcher matcher = new AntPathRequestMatcher(
-						server.getPath(path) + "/**");
+						server.getServlet().getPath(path) + "/**");
 				return matcher;
 			}
 			// Match everything, including the sensitive and non-sensitive paths
@@ -351,10 +361,11 @@ public class ManagementWebSecurityAutoConfiguration {
 		private RequestMatcher createDelegate() {
 			ServerProperties server = this.contextResolver.getApplicationContext()
 					.getBean(ServerProperties.class);
-			List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
+			List<RequestMatcher> matchers = new ArrayList<>();
 			EndpointHandlerMapping endpointHandlerMapping = getRequiredEndpointHandlerMapping();
 			for (String path : this.endpointPaths.getPaths(endpointHandlerMapping)) {
-				matchers.add(new AntPathRequestMatcher(server.getPath(path)));
+				matchers.add(
+						new AntPathRequestMatcher(server.getServlet().getPath(path)));
 			}
 			return (matchers.isEmpty() ? MATCH_NONE : new OrRequestMatcher(matchers));
 		}

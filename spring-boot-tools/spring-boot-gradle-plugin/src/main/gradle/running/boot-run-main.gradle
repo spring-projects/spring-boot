@@ -1,0 +1,20 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'java'
+
+// tag::main[]
+bootRun {
+	main = 'com.example.ExampleApplication'
+}
+// end::main[]
+
+task configuredMainClass {
+	doLast {
+		println bootRun.main
+	}
+}

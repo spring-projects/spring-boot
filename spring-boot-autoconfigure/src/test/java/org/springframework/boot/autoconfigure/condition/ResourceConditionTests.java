@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ public class ResourceConditionTests {
 	private static class DefaultLocationResourceCondition extends ResourceCondition {
 
 		DefaultLocationResourceCondition() {
-			super("test", "spring.foo.test.", "config", "classpath:/logging.properties");
+			super("test", "spring.foo.test.config", "classpath:/logging.properties");
 		}
 
 	}
@@ -105,7 +105,7 @@ public class ResourceConditionTests {
 			extends ResourceCondition {
 
 		UnknownDefaultLocationResourceCondition() {
-			super("test", "spring.foo.test", "config",
+			super("test", "spring.foo.test.config",
 					"classpath:/this-file-does-not-exist.xml");
 		}
 

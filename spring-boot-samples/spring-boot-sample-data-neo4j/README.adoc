@@ -11,13 +11,6 @@ spring.data.neo4j.password=secret
 
 You can also locally add the embedded driver to embed Neo4j instead. Note
 that Spring Boot does not provide dependency management for that GPL-licensed
-library:
-
-```
-<dependency>
-    <groupId>org.neo4j</groupId>
-    <artifactId>neo4j-ogm-embedded-driver</artifactId>
-    <version>${neo4j-ogm.version}</version>
-</dependency>
-```
-
+library, see
+http://docs.spring.io/spring-data/neo4j/docs/4.2.x/reference/html/#reference.getting_started.driver[the official documentation]
+for more details.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@TestPropertySource(properties = "spring.jpa.hibernate.use-new-id-generator-mappings=false")
 public class HotelRepositoryIntegrationTests {
 
 	@Autowired
@@ -51,12 +53,11 @@ public class HotelRepositoryIntegrationTests {
 	@Test
 	public void executesQueryMethodsCorrectly() {
 		City city = this.cityRepository
-				.findAll(new PageRequest(0, 1, Direction.ASC, "name")).getContent()
-				.get(0);
+				.findAll(PageRequest.of(0, 1, Direction.ASC, "name")).getContent().get(0);
 		assertThat(city.getName()).isEqualTo("Atlanta");
 
 		Page<HotelSummary> hotels = this.repository.findByCity(city,
-				new PageRequest(0, 10, Direction.ASC, "name"));
+				PageRequest.of(0, 10, Direction.ASC, "name"));
 		Hotel hotel = this.repository.findByCityAndName(city,
 				hotels.getContent().get(0).getName());
 		assertThat(hotel.getName()).isEqualTo("Doubletree");

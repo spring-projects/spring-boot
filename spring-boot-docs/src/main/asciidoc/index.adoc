@@ -1,5 +1,5 @@
 = Spring Boot Reference Guide
-Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson; Marcel Overdijk; Christian Dupuis; Sébastien Deleuze
+Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson; Marcel Overdijk; Christian Dupuis; Sébastien Deleuze; Michael Simons
 :doctype: book
 :toc:
 :toclevels: 4
@@ -30,17 +30,19 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :dc-spring-boot: {dc-root}/org/springframework/boot
 :dc-spring-boot-autoconfigure: {dc-root}/org/springframework/boot/autoconfigure
 :dc-spring-boot-actuator: {dc-root}/org/springframework/boot/actuate
-:dc-spring-boot-test: {dc-root}/spring-boot-test/src/main/java/org/springframework/boot/test
-:dc-spring-boot-test-autoconfigure: {dc-root}/spring-boot-test-autoconfigure/src/main/java/org/springframework/boot/test/autoconfigure
+:dc-spring-boot-test: {dc-root}/org/springframework/boot/test
+:dc-spring-boot-test-autoconfigure: {dc-root}/org/springframework/boot/test/autoconfigure
 :dependency-management-plugin: https://github.com/spring-gradle-plugins/dependency-management-plugin
 :dependency-management-plugin-documentation: {dependency-management-plugin}/blob/master/README.md
-:spring-boot-maven-plugin-site: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/maven-plugin
+:spring-boot-maven-plugin-site: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/maven-plugin/
+:spring-boot-gradle-plugin: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/gradle-plugin/
 :spring-reference: http://docs.spring.io/spring/docs/{spring-docs-version}/spring-framework-reference/htmlsingle
 :spring-security-reference: http://docs.spring.io/spring-security/site/docs/{spring-security-docs-version}/reference/htmlsingle
 :spring-security-oauth2-reference: http://projects.spring.io/spring-security-oauth/docs/oauth2.html
 :spring-webservices-reference: http://docs.spring.io/spring-ws/docs/{spring-webservices-docs-version}/reference/htmlsingle
 :spring-javadoc: http://docs.spring.io/spring/docs/{spring-docs-version}/javadoc-api/org/springframework
 :spring-amqp-javadoc: http://docs.spring.io/spring-amqp/docs/current/api/org/springframework/amqp
+:spring-batch-javadoc: http://docs.spring.io/spring-batch/apidocs/org/springframework/batch
 :spring-data-javadoc: http://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa
 :spring-data-commons-javadoc: http://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data
 :spring-data-mongo-javadoc: http://docs.spring.io/spring-data/mongodb/docs/current/api/org/springframework/data/mongodb
@@ -49,8 +51,9 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :propdeps-plugin: https://github.com/spring-projects/gradle-plugins/tree/master/propdeps-plugin
 :ant-manual: http://ant.apache.org/manual
 :code-examples: ../java/org/springframework/boot
-:gradle-user-guide: https://docs.gradle.org/2.14.1/userguide
-:gradle-dsl: https://docs.gradle.org/2.14.1/dsl
+:gradle-user-guide: https://docs.gradle.org/3.4.1/userguide
+:jetty-documentation: https://www.eclipse.org/jetty/documentation/9.3.x
+:tomcat-documentation: https://tomcat.apache.org/tomcat-8.0-doc
 // ======================================================================================
 
 include::documentation-overview.adoc[]

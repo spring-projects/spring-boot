@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,12 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -90,18 +90,17 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
 		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
 		FilterChainProxy filterChainProxy = this.context.getBean(FilterChainProxy.class);
 		// 1 for static resources, one for management endpoints and one for the rest
 		assertThat(filterChainProxy.getFilterChains()).hasSize(3);
-		assertThat(filterChainProxy.getFilters("/beans")).isNotEmpty();
-		assertThat(filterChainProxy.getFilters("/beans/")).isNotEmpty();
-		assertThat(filterChainProxy.getFilters("/beans.foo")).isNotEmpty();
-		assertThat(filterChainProxy.getFilters("/beans/foo/bar")).isNotEmpty();
+		assertThat(filterChainProxy.getFilters("/application/beans")).isNotEmpty();
+		assertThat(filterChainProxy.getFilters("/application/beans/")).isNotEmpty();
+		assertThat(filterChainProxy.getFilters("/application/beans.foo")).isNotEmpty();
+		assertThat(filterChainProxy.getFilters("/application/beans/foo/bar")).isNotEmpty();
 	}
 
 	@Test
@@ -117,8 +116,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context.register(WebConfiguration.class);
 		this.context.refresh();
 		UserDetails user = getUser();
-		ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(
-				user.getAuthorities());
+		ArrayList<GrantedAuthority> authorities = new ArrayList<>(user.getAuthorities());
 		assertThat(authorities).containsAll(AuthorityUtils
 				.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ACTUATOR"));
 	}
@@ -141,7 +139,6 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context.register(SecurityAutoConfiguration.class,
 				ManagementWebSecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.ignored:none");
 		this.context.refresh();
@@ -170,7 +167,6 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context.register(TestConfiguration.class, SecurityAutoConfiguration.class,
 				ManagementWebSecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(AuthenticationManager.class)).isEqualTo(
@@ -184,7 +180,6 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context.register(TestConfiguration.class, SecurityAutoConfiguration.class,
 				ManagementWebSecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(AuthenticationManager.class)).isEqualTo(
@@ -201,9 +196,8 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				WebMvcAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+				WebMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				AuditAutoConfiguration.class);
 		this.context.refresh();
 
 		Filter filter = this.context.getBean("springSecurityFilterChain", Filter.class);
@@ -264,8 +258,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 			WebMvcAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class,
 			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class,
 			FallbackWebSecurityAutoConfiguration.class })
 	static class WebConfiguration {
 

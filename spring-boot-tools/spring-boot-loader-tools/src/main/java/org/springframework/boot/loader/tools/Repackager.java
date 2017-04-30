@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ public class Repackager {
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
-	private List<MainClassTimeoutWarningListener> mainClassTimeoutListeners = new ArrayList<MainClassTimeoutWarningListener>();
+	private List<MainClassTimeoutWarningListener> mainClassTimeoutListeners = new ArrayList<>();
 
 	private String mainClass;
 
@@ -125,8 +125,8 @@ public class Repackager {
 
 	/**
 	 * Sets the layout factory for the jar. The factory can be used when no specific
-	 * layout is specific.
-	 * @param layoutFactory the layoutFactory to set
+	 * layout is specified.
+	 * @param layoutFactory the layout factory to set
 	 */
 	public void setLayoutFactory(LayoutFactory layoutFactory) {
 		this.layoutFactory = layoutFactory;
@@ -236,8 +236,8 @@ public class Repackager {
 			LaunchScript launchScript) throws IOException {
 		JarWriter writer = new JarWriter(destination, launchScript);
 		try {
-			final List<Library> unpackLibraries = new ArrayList<Library>();
-			final List<Library> standardLibraries = new ArrayList<Library>();
+			final List<Library> unpackLibraries = new ArrayList<>();
+			final List<Library> standardLibraries = new ArrayList<>();
 			libraries.doWithLibraries(new LibraryCallback() {
 
 				@Override
@@ -270,7 +270,7 @@ public class Repackager {
 			final List<Library> unpackLibraries, final List<Library> standardLibraries)
 					throws IOException {
 		writer.writeManifest(buildManifest(sourceJar));
-		Set<String> seen = new HashSet<String>();
+		Set<String> seen = new HashSet<>();
 		writeNestedLibraries(unpackLibraries, seen, writer);
 		if (this.layout instanceof RepackagingLayout) {
 			writer.writeEntries(sourceJar, new RenamingEntryTransformer(
@@ -404,6 +404,7 @@ public class Repackager {
 	 * Callback interface used to present a warning when finding the main class takes too
 	 * long.
 	 */
+	@FunctionalInterface
 	public interface MainClassTimeoutWarningListener {
 
 		/**
@@ -431,7 +432,8 @@ public class Repackager {
 			if (entry.getName().equals("META-INF/INDEX.LIST")) {
 				return null;
 			}
-			if (entry.getName().startsWith("META-INF/")
+			if ((entry.getName().startsWith("META-INF/")
+					&& !entry.getName().equals("META-INF/aop.xml"))
 					|| entry.getName().startsWith("BOOT-INF/")) {
 				return entry;
 			}

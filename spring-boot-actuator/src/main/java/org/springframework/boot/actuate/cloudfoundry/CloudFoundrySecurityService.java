@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.cloudfoundry;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -104,7 +104,7 @@ class CloudFoundrySecurityService {
 	 * Return all token keys known by the UAA.
 	 * @return a list of token keys
 	 */
-	public List<String> fetchTokenKeys() {
+	public Map<String, String> fetchTokenKeys() {
 		try {
 			return extractTokenKeys(this.restTemplate
 					.getForObject(getUaaUrl() + "/token_keys", Map.class));
@@ -115,11 +115,11 @@ class CloudFoundrySecurityService {
 		}
 	}
 
-	private List<String> extractTokenKeys(Map<?, ?> response) {
-		List<String> tokenKeys = new ArrayList<String>();
-		List<?> keys = (List<?>) response.get("keys");
-		for (Object key : keys) {
-			tokenKeys.add((String) ((Map<?, ?>) key).get("value"));
+	private Map<String, String> extractTokenKeys(Map<?, ?> response) {
+		Map<String, String> tokenKeys = new HashMap<>();
+		for (Object key : (List<?>) response.get("keys")) {
+			Map<?, ?> tokenKey = (Map<?, ?>) key;
+			tokenKeys.put((String) tokenKey.get("kid"), (String) tokenKey.get("value"));
 		}
 		return tokenKeys;
 	}

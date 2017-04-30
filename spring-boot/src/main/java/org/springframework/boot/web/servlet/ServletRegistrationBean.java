@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,20 +46,21 @@ import org.springframework.util.ObjectUtils;
  * {@link #ServletRegistrationBean(Servlet, boolean, String...) alwaysMapUrl} is set to
  * {@code false}). The servlet name will be deduced if not specified.
  *
+ * @param <T> the type of the {@link Servlet} to register
  * @author Phillip Webb
  * @since 1.4.0
  * @see ServletContextInitializer
  * @see ServletContext#addServlet(String, Servlet)
  */
-public class ServletRegistrationBean extends RegistrationBean {
+public class ServletRegistrationBean<T extends Servlet> extends RegistrationBean {
 
 	private static final Log logger = LogFactory.getLog(ServletRegistrationBean.class);
 
 	private static final String[] DEFAULT_MAPPINGS = { "/*" };
 
-	private Servlet servlet;
+	private T servlet;
 
-	private Set<String> urlMappings = new LinkedHashSet<String>();
+	private Set<String> urlMappings = new LinkedHashSet<>();
 
 	private boolean alwaysMapUrl = true;
 
@@ -79,7 +80,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 	 * @param servlet the servlet being mapped
 	 * @param urlMappings the URLs being mapped
 	 */
-	public ServletRegistrationBean(Servlet servlet, String... urlMappings) {
+	public ServletRegistrationBean(T servlet, String... urlMappings) {
 		this(servlet, true, urlMappings);
 	}
 
@@ -90,7 +91,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 	 * @param alwaysMapUrl if omitted URL mappings should be replaced with '/*'
 	 * @param urlMappings the URLs being mapped
 	 */
-	public ServletRegistrationBean(Servlet servlet, boolean alwaysMapUrl,
+	public ServletRegistrationBean(T servlet, boolean alwaysMapUrl,
 			String... urlMappings) {
 		Assert.notNull(servlet, "Servlet must not be null");
 		Assert.notNull(urlMappings, "UrlMappings must not be null");
@@ -103,7 +104,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 	 * Returns the servlet being registered.
 	 * @return the servlet
 	 */
-	protected Servlet getServlet() {
+	protected T getServlet() {
 		return this.servlet;
 	}
 
@@ -111,7 +112,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 	 * Sets the servlet to be registered.
 	 * @param servlet the servlet
 	 */
-	public void setServlet(Servlet servlet) {
+	public void setServlet(T servlet) {
 		Assert.notNull(servlet, "Servlet must not be null");
 		this.servlet = servlet;
 	}
@@ -124,7 +125,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 	 */
 	public void setUrlMappings(Collection<String> urlMappings) {
 		Assert.notNull(urlMappings, "UrlMappings must not be null");
-		this.urlMappings = new LinkedHashSet<String>(urlMappings);
+		this.urlMappings = new LinkedHashSet<>(urlMappings);
 	}
 
 	/**

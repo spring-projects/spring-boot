@@ -177,12 +177,12 @@ element):
 
 [source,xml,indent=0]
 ----
-    <resources>
-        <resource>
-            <directory>src/main/resources</directory>
-            <filtering>true</filtering>
-        </resource>
-    </resources>
+	<resources>
+		<resource>
+			<directory>src/main/resources</directory>
+			<filtering>true</filtering>
+		</resource>
+	</resources>
 ----
 
 and (inside `<plugins/>`):
@@ -571,9 +571,9 @@ To scan for a free port (using OS natives to prevent clashes) use `server.port=0
 [[howto-discover-the-http-port-at-runtime]]
 === Discover the HTTP port at runtime
 You can access the port the server is running on from log output or from the
-`EmbeddedWebApplicationContext` via its `EmbeddedServletContainer`. The best way to get
+`ServletWebServerApplicationContext` via its `EmbeddedWebServer`. The best way to get
 that and be sure that it has initialized is to add a `@Bean` of type
-`ApplicationListener<EmbeddedServletContainerInitializedEvent>` and pull the container
+`ApplicationListener<ServletWebServerInitializedEvent>` and pull the container
 out of the event when it is published.
 
 Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can
@@ -587,7 +587,7 @@ example:
 	public class MyWebIntegrationTests {
 
 		@Autowired
-		EmbeddedWebApplicationContext server;
+		ServletWebServerApplicationContext server;
 
 		@LocalServerPort
 		int port;
@@ -636,10 +636,11 @@ sample project for an example.
 
 [[howto-configure-accesslogs]]
 === Configure Access Logging
-Access logs can be configured for Tomcat and Undertow via their respective namespaces.
+Access logs can be configured for Tomcat, Undertow and Jetty via their respective
+namespaces.
 
 For instance, the following logs access on Tomcat with a
-https://tomcat.apache.org/tomcat-8.0-doc/config/valve.html#Access_Logging[custom pattern].
+{tomcat-documentation}/config/valve.html#Access_Logging[custom pattern].
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -663,6 +664,17 @@ Access logging for undertow can be configured in a similar fashion
 
 Logs are stored in a `logs` directory relative to the working directory of the
 application. This can be customized via `server.undertow.accesslog.directory`.
+
+Finally, access logging for jetty can also be configured that way:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	server.jetty.accesslog.enabled=true
+	server.jetty.accesslog.filename=/var/log/jetty-access.log
+----
+
+By default, logs will be redirected to `System.err`. For more details, please refer to
+{jetty-documentation}/configuring-jetty-request-logs.html[the documentation].
 
 
 
@@ -715,7 +727,7 @@ this in production).
 
 You can take complete control of the configuration of Tomcat's `RemoteIpValve` by
 switching the automatic one off (i.e. set `server.use-forward-headers=false`) and adding
-a new  valve instance in a `TomcatEmbeddedServletContainerFactory` bean.
+a new  valve instance in a `TomcatServletWebServerFactory` bean.
 
 
 
@@ -724,24 +736,24 @@ a new  valve instance in a `TomcatEmbeddedServletContainerFactory` bean.
 Generally you can follow the advice from
 _<<howto-discover-build-in-options-for-external-properties>>_ about
 `@ConfigurationProperties` (`ServerProperties` is the main one here), but also look at
-`EmbeddedServletContainerCustomizer` and various Tomcat-specific `+*Customizers+` that you
+`ServletWebServerFactoryCustomizer` and various Tomcat-specific `+*Customizers+` that you
 can add in one of those. The Tomcat APIs are quite rich so once you have access to the
-`TomcatEmbeddedServletContainerFactory` you can modify it in a number of ways. Or the
-nuclear option is to add your own `TomcatEmbeddedServletContainerFactory`.
+`TomcatServletWebServerFactory` you can modify it in a number of ways. Or the
+nuclear option is to add your own `TomcatServletWebServerFactory`.
 
 
 
 [[howto-enable-multiple-connectors-in-tomcat]]
 === Enable Multiple Connectors with Tomcat
 Add a `org.apache.catalina.connector.Connector` to the
-`TomcatEmbeddedServletContainerFactory` which can allow multiple connectors, e.g. HTTP and
+`TomcatServletWebServerFactory` which can allow multiple connectors, e.g. HTTP and
 HTTPS connector:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
-	public EmbeddedServletContainerFactory servletContainer() {
-		TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
+	public ServletWebServerFactory servletContainer() {
+		TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
 		tomcat.addAdditionalTomcatConnectors(createSslConnector());
 		return tomcat;
 	}
@@ -786,7 +798,7 @@ If at all possible, you should consider updating your code to only store values
 compliant with later Cookie specifications. If, however, you're unable to change the
 way that cookies are written, you can instead configure Tomcat to use a
 `LegacyCookieProcessor`. To switch to the `LegacyCookieProcessor` use an
-`EmbeddedServletContainerCustomizer` bean that adds a `TomcatContextCustomizer`:
+`ServletWebServerFactoryCustomizer` bean that adds a `TomcatContextCustomizer`:
 
 [source,java,indent=0]
 ----
@@ -827,12 +839,12 @@ Example in Gradle:
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	configurations {
-		compile.exclude module: "spring-boot-starter-tomcat"
+		compile.exclude module: 'spring-boot-starter-tomcat'
 	}
 
 	dependencies {
-		compile("org.springframework.boot:spring-boot-starter-web:{spring-boot-version}")
-		compile("org.springframework.boot:spring-boot-starter-jetty:{spring-boot-version}")
+		compile 'org.springframework.boot:spring-boot-starter-web'
+		compile 'org.springframework.boot:spring-boot-starter-jetty'
 		// ...
 	}
 ----
@@ -844,9 +856,9 @@ Example in Gradle:
 Generally you can follow the advice from
 _<<howto-discover-build-in-options-for-external-properties>>_ about
 `@ConfigurationProperties` (`ServerProperties` is the main one here), but also look at
-`EmbeddedServletContainerCustomizer`. The Jetty APIs are quite rich so once you have
-access to the `JettyEmbeddedServletContainerFactory` you can modify it in a number
-of ways. Or the nuclear option is to add your own `JettyEmbeddedServletContainerFactory`.
+`ServletWebServerFactoryCustomizer`. The Jetty APIs are quite rich so once you have
+access to the `JettyServletWebServerFactory` you can modify it in a number
+of ways. Or the nuclear option is to add your own `JettyServletWebServerFactory`.
 
 
 
@@ -881,12 +893,12 @@ Example in Gradle:
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	configurations {
-		compile.exclude module: "spring-boot-starter-tomcat"
+		compile.exclude module: 'spring-boot-starter-tomcat'
 	}
 
 	dependencies {
-		compile("org.springframework.boot:spring-boot-starter-web:{spring-boot-version}")
-		compile("org.springframework.boot:spring-boot-starter-undertow:{spring-boot-version}")
+		compile 'org.springframework.boot:spring-boot-starter-web'
+		compile 'org.springframework.boot:spring-boot-starter-undertow'
 		// ...
 	}
 ----
@@ -899,23 +911,23 @@ Generally you can follow the advice from
 _<<howto-discover-build-in-options-for-external-properties>>_ about
 `@ConfigurationProperties` (`ServerProperties` and `ServerProperties.Undertow` are the
 main ones here), but also look at
-`EmbeddedServletContainerCustomizer`. Once you have access to the
-`UndertowEmbeddedServletContainerFactory` you can use an `UndertowBuilderCustomizer` to
+`ServletWebServerFactoryCustomizer`. Once you have access to the
+`UndertowServletWebServerFactory` you can use an `UndertowBuilderCustomizer` to
 modify Undertow's configuration to meet your needs. Or the nuclear option is to add your
-own `UndertowEmbeddedServletContainerFactory`.
+own `UndertowServletWebServerFactory`.
 
 
 
 [[howto-enable-multiple-listeners-in-undertow]]
 === Enable Multiple Listeners with Undertow
-Add an `UndertowBuilderCustomizer` to the `UndertowEmbeddedServletContainerFactory` and
+Add an `UndertowBuilderCustomizer` to the `UndertowServletWebServerFactory` and
 add a listener to the `Builder`:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
-	public UndertowEmbeddedServletContainerFactory embeddedServletContainerFactory() {
-		UndertowEmbeddedServletContainerFactory factory = new UndertowEmbeddedServletContainerFactory();
+	public UndertowServletWebServerFactory servletWebServerFactory() {
+		UndertowServletWebServerFactory factory = new UndertowServletWebServerFactory();
 		factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
 
 			@Override
@@ -925,183 +937,6 @@ add a listener to the `Builder`:
 
 		});
 		return factory;
-	}
-----
-
-
-
-[[howto-use-tomcat-7]]
-=== Use Tomcat 7.x or 8.0
-Tomcat 7 & 8.0 work with Spring Boot, but the default is to use Tomcat 8.5. If you cannot
-use Tomcat 8.5 (for example, because you are using Java 1.6) you will need to change your
-classpath to reference a different version.
-
-
-
-[[howto-use-tomcat-7-maven]]
-==== Use Tomcat 7.x or 8.0 with Maven
-If you are using the starters and parent you can change the Tomcat version property
-and additionally import `tomcat-juli`. E.g. for a simple webapp or service:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<properties>
-		<tomcat.version>7.0.59</tomcat.version>
-	</properties>
-	<dependencies>
-		...
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>tomcat-juli</artifactId>
-			<version>${tomcat.version}</version>
-		</dependency>
-		...
-	</dependencies>
-----
-
-
-
-==== Use Tomcat 7.x or 8.0 with Gradle
-[[howto-use-tomcat-7-gradle]]
-With Gradle, you can change the Tomcat version by setting the `tomcat.version` property
-and then additionally include `tomcat-juli`:
-
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
-----
-	ext['tomcat.version'] = '7.0.59'
-	dependencies {
-		compile 'org.springframework.boot:spring-boot-starter-web'
-		compile group:'org.apache.tomcat', name:'tomcat-juli', version:property('tomcat.version')
-	}
-----
-
-
-
-[[howto-use-jetty-9.2]]
-=== Use Jetty 9.2
-Jetty 9.2 works with Spring Boot, but the default is to use Jetty 9.3. If you cannot use
-Jetty 9.3 (for example, because you are using Java 7) you will need to change your
-classpath to reference Jetty 9.2.
-
-
-
-[[howto-use-jetty-9.2-maven]]
-==== Use Jetty 9.2 with Maven
-
-If you are using the starters and parent you can just add the Jetty starter and override
-the `jetty.version` property:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<properties>
-		<jetty.version>9.2.17.v20160517</jetty.version>
-	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-tomcat</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jetty</artifactId>
-		</dependency>
-	</dependencies>
-----
-
-
-
-[[howto-use-jetty-9.2-gradle]]
-==== Use Jetty 9.2 with Gradle
-
-You can set the `jetty.version` property. For example, for a simple webapp or service:
-
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
-----
-	ext['jetty.version'] = '9.2.17.v20160517'
-	dependencies {
-		compile ('org.springframework.boot:spring-boot-starter-web') {
-			exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
-		}
-		compile ('org.springframework.boot:spring-boot-starter-jetty')
-	}
-----
-
-
-
-[[howto-use-jetty-8]]
-=== Use Jetty 8
-Jetty 8 works with Spring Boot, but the default is to use Jetty 9.3. If you cannot use
-Jetty 9.3 (for example, because you are using Java 1.6) you will need to change your
-classpath to reference Jetty 8. You will also need to exclude Jetty's WebSocket-related
-dependencies.
-
-
-
-[[howto-use-jetty-8-maven]]
-==== Use Jetty 8 with Maven
-
-If you are using the starters and parent you can just add the Jetty starter with
-the required WebSocket exclusion and change the version properties, e.g. for a simple
-webapp or service:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<properties>
-		<jetty.version>8.1.15.v20140411</jetty.version>
-		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
-	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-tomcat</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jetty</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.eclipse.jetty.websocket</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-	</dependencies>
-----
-
-
-
-[[howto-use-jetty-8-gradle]]
-==== Use Jetty 8 with Gradle
-
-You can set the `jetty.version` property and exclude the WebSocket dependency, e.g. for a
-simple webapp or service:
-
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
-----
-	ext['jetty.version'] = '8.1.15.v20140411'
-	dependencies {
-		compile ('org.springframework.boot:spring-boot-starter-web') {
-			exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
-		}
-		compile ('org.springframework.boot:spring-boot-starter-jetty') {
-			exclude group: 'org.eclipse.jetty.websocket'
-		}
 	}
 ----
 
@@ -1291,7 +1126,7 @@ modules when you add new features to your application.
 If you want to replace the default `ObjectMapper` completely, either define a `@Bean` of
 that type and mark it as `@Primary`, or, if you prefer the builder-based
 approach, define a `Jackson2ObjectMapperBuilder` `@Bean`. Note that in either case this
-will disable all auto-configuration of the `ObjectMapper.
+will disable all auto-configuration of the `ObjectMapper`.
 
 If you provide any `@Beans` of type `MappingJackson2HttpMessageConverter` then
 they will replace the default value in the MVC configuration. Also, a convenience bean is
@@ -1300,7 +1135,7 @@ configuration) which has some useful methods to access the default and user-enha
 message converters.
 
 See also the _<<howto-customize-the-responsebody-rendering>>_ section and the
-{sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`]
+{sc-spring-boot-autoconfigure}/web/servlet/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`]
 source code for more details.
 
 
@@ -1324,7 +1159,7 @@ Spring Boot default MVC configuration by providing your own `@EnableWebMvc` conf
 then you can take control completely and do everything manually using
 `getMessageConverters` from `WebMvcConfigurationSupport`.
 
-See the {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`]
+See the {sc-spring-boot-autoconfigure}/web/servlet/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`]
 source code for more details.
 
 
@@ -1343,7 +1178,7 @@ The multipart support is helpful when you want to receive multipart encoded file
 a `@RequestParam`-annotated parameter of type `MultipartFile` in a Spring MVC controller
 handler method.
 
-See the {sc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{sc-ext}[`MultipartAutoConfiguration`]
+See the {sc-spring-boot-autoconfigure}/web/servlet/MultipartAutoConfiguration.{sc-ext}[`MultipartAutoConfiguration`]
 source for more details.
 
 
@@ -1418,46 +1253,10 @@ added.
   `spring.groovy.template.suffix`, defaults '`classpath:/templates/`' and '`.tpl`'
   respectively). It can be overridden by providing a bean of the same name.
 
-Check out {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`],
+Check out {sc-spring-boot-autoconfigure}/web/servlet/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`],
 {sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[`ThymeleafAutoConfiguration`],
 {sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[`FreeMarkerAutoConfiguration`] and
 {sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[`GroovyTemplateAutoConfiguration`]
-
-
-
-[[howto-use-thymeleaf-3]]
-=== Use Thymeleaf 3
-By default, `spring-boot-starter-thymeleaf` uses Thymeleaf 2.1. If you are using the
-`spring-boot-starter-parent`, you can use Thymeleaf 3 by overriding the
-`thymeleaf.version` and `thymeleaf-layout-dialect.version` properties, for example:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<properties>
-		<thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
-		<thymeleaf-layout-dialect.version>2.1.1</thymeleaf-layout-dialect.version>
-	</properties>
-----
-
-NOTE: if you are managing dependencies yourself, look at `spring-boot-dependencies` for
-the list of artifacts that are related to those two versions.
-
-To avoid a warning message about the HTML 5 template mode being deprecated and the HTML
-template mode being used instead, you may also want to explicitly configure
-`spring.thymeleaf.mode` to be `HTML`, for example:
-
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
-----
-	spring.thymeleaf.mode: HTML
-----
-
-Please refer to the
-{github-code}/spring-boot-samples/spring-boot-sample-web-thymeleaf3[Thymeleaf 3 sample] to
-see this in action.
-
-If you are using any of the other auto-configured Thymeleaf Extras (Spring Security,
-Data Attribute, or Java 8 Time) you should also override each of their versions to one
-that is compatible with Thymeleaf 3.0.
 
 
 
@@ -1660,16 +1459,17 @@ a| `log4j2.json` +
 
 
 [[howto-configure-a-datasource]]
-=== Configure a DataSource
-To override the default settings just define a `@Bean` of your own of type `DataSource`.
-As explained in
-<<spring-boot-features.adoc#boot-features-external-config-3rd-party-configuration>> you
-can easily bind it to a set of `Environment` properties:
+=== Configure a custom DataSource
+To configure your own `DataSource` define a `@Bean` of that type in your configuration.
+Spring Boot will reuse your `DataSource` anywhere one is required, including database
+initialization. If you need to externalize some settings, you can easily bind your
+`DataSource` to the environment (see
+<<spring-boot-features.adoc#boot-features-external-config-3rd-party-configuration>>).
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
-	@ConfigurationProperties(prefix="datasource.fancy")
+	@ConfigurationProperties(prefix="app.datasource")
 	public DataSource dataSource() {
 		return new FancyDataSource();
 	}
@@ -1677,81 +1477,156 @@ can easily bind it to a set of `Environment` properties:
 
 [source,properties,indent=0]
 ----
-	datasource.fancy.jdbcUrl=jdbc:h2:mem:mydb
-	datasource.fancy.username=sa
-	datasource.fancy.poolSize=30
+	app.datasource.url=jdbc:h2:mem:mydb
+	app.datasource.username=sa
+	app.datasource.pool-size=30
 ----
 
-Spring Boot also provides a utility builder class `DataSourceBuilder` that can be used
-to create one of the standard data sources (if it is on the classpath), or you can just
-create your own. If you want to reuse the customizations of `DataSourceProperties`, you
-can easily initialize a `DataSourceBuilder` from it:
+Assuming that your `FancyDataSource` has regular JavaBean properties for the url, the
+username and the pool size, these settings will be bound automatically before the
+`DataSource` is made available to other components. The regular
+<<howto-initialize-a-database-using-spring-jdbc,database initialization>> will also happen
+(so the relevant sub-set of `spring.datasource.*` can still be used with your custom
+configuration).
+
+You can apply the same principle if you are configuring a custom JNDI `DataSource`:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Bean
-	@ConfigurationProperties(prefix="datasource.mine")
-	public DataSource dataSource(DataSourceProperties properties) {
-		return properties.initializeDataSourceBuilder()
-				// additional customizations
-				.build();
+	@Bean(destroyMethod="")
+	@ConfigurationProperties(prefix="app.datasource")
+	public DataSource dataSource() throws Exception {
+		JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
+		return dataSourceLookup.getDataSource("java:comp/env/jdbc/YourDS");
 	}
 ----
 
-[source,properties,indent=0]
+Spring Boot also provides a utility builder class `DataSourceBuilder` that can be used to
+create one of the standard data sources (if it is on the classpath). The builder can
+detect the one to use based on what's available on the classpath. It also auto detects the
+driver based on the JDBC url.
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.datasource.url=jdbc:h2:mem:mydb
-	spring.datasource.username=sa
-	datasource.mine.poolSize=30
+include::{code-examples}/jdbc/BasicDataSourceExample.java[tag=configuration]
 ----
 
-In this scenario, you keep the standard properties exposed by Spring Boot with your
-custom `DataSource` arrangement. By adding `@ConfigurationProperties`, you can also
-expose additional implementation-specific settings in a dedicated namespace.
+To run an app with that `DataSource`, all that is needed really is the connection
+information; pool-specific settings can also be provided, check the implementation that
+is going to be used at runtime for more details.
+
+[source,properties,indent=0]
+----
+	app.datasource.url=jdbc:mysql://localhost/test
+	app.datasource.username=dbuser
+	app.datasource.password=dbpass
+	app.datasource.pool-size=30
+----
+
+There is a catch however. Because the actual type of the connection pool is not exposed,
+no keys are generated in the metadata for your custom `DataSource` and no completion is
+available in your IDE (The `DataSource` interface doesn't expose any property). Also, if
+you happen to _only_ have Hikari on the classpath, this basic setup will not work because
+Hikari has no `url` parameter (but a `jdbcUrl` parameter). You will have to rewrite
+your configuration as follows:
+
+[source,properties,indent=0]
+----
+	app.datasource.jdbc-url=jdbc:mysql://localhost/test
+	app.datasource.username=dbuser
+	app.datasource.password=dbpass
+	app.datasource.maximum-pool-size=30
+----
+
+You can fix that by forcing the connection pool to use and return a dedicated
+implementation rather than `DataSource`. You won't be able to change the implementation
+at runtime but the list of options will be explicit.
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+include::{code-examples}/jdbc/SimpleDataSourceExample.java[tag=configuration]
+----
+
+You can even go further by leveraging what `DataSourceProperties` does for you, that is
+providing a default embedded database if no url is provided with a sensible username and
+password for it. You can easily initialize a `DataSourceBuilder` from the state of any
+`DataSourceProperties` so you could just as well inject the one Spring Boot creates
+automatically. However, that would split your configuration in two namespaces: url,
+username, password, type and driver on `spring.datasource` and the rest on your custom
+namespace (`app.datasource`). To avoid that, you can redefine a custom
+`DataSourceProperties` on your custom namespace:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+include::{code-examples}/jdbc/ConfigurableDataSourceExample.java[tag=configuration]
+----
+
+This setup puts you _in pair_ with what Spring Boot does for you by default, except that
+a dedicated connection pool is chosen (in code) and its settings are exposed in the same
+namespace. Because `DataSourceProperties` is taking care of the `url`/`jdbcUrl`
+translation for you, you can configure it like this:
+
+[source,properties,indent=0]
+----
+	app.datasource.url=jdbc:mysql://localhost/test
+	app.datasource.username=dbuser
+	app.datasource.password=dbpass
+	app.datasource.maximum-pool-size=30
+----
+
+NOTE: Because your custom configuration chooses to go with Hikari, `app.datasource.type`
+will have no effect. In practice the builder will be initialized with whatever value you
+might set there and then overridden by the call to `.type()`.
 
 See _<<spring-boot-features.adoc#boot-features-configure-datasource>>_ in the
 '`Spring Boot features`' section and the
 {sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[`DataSourceAutoConfiguration`]
 class for more details.
 
-[TIP]
-====
-You could also do that if you want to configure a JNDI data-source.
-
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
-----
-	@Bean(destroyMethod="")
-	@ConfigurationProperties(prefix="datasource.mine")
-	public DataSource dataSource() throws Exception {
-		JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
-		return dataSourceLookup.getDataSource("java:comp/env/jdbc/YourDS");
-	}
-----
-====
-
 
 
 [[howto-two-datasources]]
 === Configure Two DataSources
-Creating more than one data source works the same as creating the first one. You might
-want to mark one of them as `@Primary` if you are using the default auto-configuration for
-JDBC or JPA (then that one will be picked up by any `@Autowired` injections).
+If you need to configure multiple data sources, you can apply the same tricks that are
+described in the previous section. You must, however, mark one of the `DataSource`
+`@Primary` as various auto-configurations down the road expect to be able to get one by
+type.
+
+If you create your own `DataSource`, the auto-configuration will back off. In the example
+below, we provide the _exact_ same features set than what the auto-configuration provides
+on the primary data source:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Bean
-	@Primary
-	@ConfigurationProperties(prefix="datasource.primary")
-	public DataSource primaryDataSource() {
-		return DataSourceBuilder.create().build();
-	}
-
-	@Bean
-	@ConfigurationProperties(prefix="datasource.secondary")
-	public DataSource secondaryDataSource() {
-		return DataSourceBuilder.create().build();
-	}
+include::{code-examples}/jdbc/SimpleTwoDataSourcesExample.java[tag=configuration]
 ----
+
+TIP: `fooDataSourceProperties` has to be flagged `@Primary` so that the database
+initializer feature uses your copy (should you use that).
+
+Both data sources are also bound for advanced customizations. For instance you could
+configure them as follows:
+
+[source,properties,indent=0]
+----
+	app.datasource.foo.type=com.zaxxer.hikari.HikariDataSource
+	app.datasource.foo.maximum-pool-size=30
+
+	app.datasource.bar.url=jdbc:mysql://localhost/test
+	app.datasource.bar.username=dbuser
+	app.datasource.bar.password=dbpass
+	app.datasource.bar.max-total=30
+----
+
+Of course, you can apply the same concept to the secondary `DataSource` as well:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+include::{code-examples}/jdbc/CompleteTwoDataSourcesExample.java[tag=configuration]
+----
+
+This final example configures two data sources on custom namespaces with the same logic
+than what Spring Boot would do in auto-configuration.
 
 
 
@@ -1797,20 +1672,30 @@ annotation, e.g.
 === Configure JPA properties
 Spring Data JPA already provides some vendor-independent configuration options (e.g.
 for SQL logging) and Spring Boot exposes those, and a few more for hibernate as external
-configuration properties. The most common options to set are:
+configuration properties. Some of them are automatically detected according to the context
+so you shouldn't have to set them.
+
+The `spring.jpa.hibernate.ddl-auto` is a special case in that it has different defaults
+depending on whether you are using an embedded database (`create-drop`) or not (`none`).
+The dialect to use is also automatically detected based on the current `DataSource` but
+you can set `spring.jpa.database` yourself if you want to be explicit and bypass that
+check on startup.
+
+NOTE: Specifying a `database` leads to the configuration of a well-defined Hibernate
+dialect. Several databases have more than one `Dialect` and this may not suit your need.
+In that case, you can either set `spring.jpa.database` to `default` to let Hibernate figure
+things out or set the dialect using the `spring.jpa.database-platform` property.
+
+The most common options to set are:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.jpa.hibernate.ddl-auto=create-drop
 	spring.jpa.hibernate.naming.physical-strategy=com.example.MyPhysicalNamingStrategy
-	spring.jpa.database=H2
 	spring.jpa.show-sql=true
 ----
 
-The `ddl-auto` setting is a special case in that it has different defaults depending on
-whether you are using an embedded database (`create-drop`) or not (`none`). In addition
-all properties in `+spring.jpa.properties.*+` are passed through as normal JPA properties
-(with the prefix stripped) when the local `EntityManagerFactory` is created.
+In addition all properties in `+spring.jpa.properties.*+` are passed through as normal JPA
+properties (with the prefix stripped) when the local `EntityManagerFactory` is created.
 
 Hibernate defines `Physical` and `Implicit` naming strategies: Spring Boot configures
 `SpringPhysicalNamingStrategy` by default. This implementation provides the same
@@ -1945,6 +1830,10 @@ If you need to provide additional customization, you should use a
 {spring-data-rest-javadoc}/webmvc/config/RepositoryRestConfigurer.{dc-ext}[`RepositoryRestConfigurer`]
 bean.
 
+NOTE: If you don't specify any order on your custom `RepositoryRestConfigurer` it will run
+after the one Spring Boot uses internally. If you need to specify an order, make sure it
+is higher than 0.
+
 
 
 [[howto-configure-a-component-that-is-used-by-JPA]]
@@ -2069,7 +1958,7 @@ add a special `{vendor}` placeholder to use vendor-specific scripts. Assume the 
 ----
 
 Rather than using `db/migration`, this configuration will set the folder to use according
-to the type of the database (i.e. `db/migration/mysql` for MySql). The list of supported
+to the type of the database (i.e. `db/migration/mysql` for MySQL). The list of supported
 database are available in {sc-spring-boot}/jdbc/DatabaseDriver.{sc-ext}[`DatabaseDriver`].
 
 See also the Flyway class from flyway-core for details of available settings like schemas
@@ -2080,8 +1969,12 @@ Boot will call `Flyway.migrate()` to perform the database migration. If you woul
 more control, provide a `@Bean` that implements
 {sc-spring-boot-autoconfigure}/flyway/FlywayMigrationStrategy.{sc-ext}[`FlywayMigrationStrategy`].
 
-TIP: If you want to make use of http://flywaydb.org/documentation/callbacks.html[Flyway
-callbacks], those scripts should also live in the `classpath:db/migration` folder.
+Flyway supports SQL and Java http://flywaydb.org/documentation/callbacks.html[callbacks].
+To use SQL-based callbacks, place the callback scripts in the `classpath:db/migration`
+folder. To use Java-based callbacks, create one or more beans that implement
+`FlywayCallback` or, preferably, extend `BaseFlywayCallback`. Any such beans will be
+automatically registered with `Flyway`. They can be ordered using `@Order` or by
+implementing `Ordered`.
 
 By default Flyway will autowire the (`@Primary`) `DataSource` in your context and
 use that for migrations. If you like to use a different `DataSource` you can create
@@ -2093,6 +1986,15 @@ in external properties.
 There is a {github-code}/spring-boot-samples/spring-boot-sample-flyway[Flyway sample] so
 you can see how to set things up.
 
+You can also use Flyway to provide data for specific scenarios. For example, you can
+place test-specific migrations in `src/test/resources` and they will only be run when your
+application starts for testing. If you want to be more sophisticated you can use
+profile-specific configuration to customize `flyway.locations` so that certain migrations
+will only run when a particular profile is active. For example, in
+`application-dev.properties` you could set `flyway.locations` to
+`classpath:/db/migration, classpath:/dev/db/migration` and migrations in `dev/db/migration`
+will only run when the `dev` profile is active.
+
 
 
 [[howto-execute-liquibase-database-migrations-on-startup]]
@@ -2103,6 +2005,12 @@ To automatically run Liquibase database migrations on startup, add the
 The master change log is by default read from `db/changelog/db.changelog-master.yaml` but
 can be set using `liquibase.change-log`. In addition to YAML, Liquibase also supports
 JSON, XML, and SQL change log formats.
+
+By default Liquibase will autowire the (`@Primary`) `DataSource` in your context and use
+that for migrations. If you like to use a different `DataSource` you can create one and
+mark its `@Bean` as `@LiquibaseDataSource` - if you do that remember to create another one
+and mark it as `@Primary` if you want two data sources. Or you can use Liquibase's native
+`DataSource` by setting `liquibase.[url,user,password]` in external properties.
 
 See
 {sc-spring-boot-autoconfigure}/liquibase/LiquibaseProperties.{sc-ext}[`LiquibaseProperties`]
@@ -2148,6 +2056,11 @@ your application defines, if any.
 
 [[howto-batch-applications]]
 == Batch applications
+
+NOTE: By default, batch applications require a `DataSource` to store job details. If you
+want to deviate from that, you'll need to implement `BatchConfigurer`, see
+{spring-batch-javadoc}/core/configuration/annotation/EnableBatchProcessing.html[The
+Javadoc of `@EnableBatchProcessing`] for more details.
 
 
 
@@ -2213,7 +2126,7 @@ need is a `View` that resolves with a name of `error`, and/or a `@Controller` th
 the `/error` path. Unless you replaced some of the default configuration you should find
 a `BeanNameViewResolver` in your `ApplicationContext` so a `@Bean` with id `error` would
 be a simple way of doing that. Look at
-{sc-spring-boot-autoconfigure}/web/ErrorMvcAutoConfiguration.{sc-ext}[`ErrorMvcAutoConfiguration`] for more options.
+{sc-spring-boot-autoconfigure}/web/servlet/error/ErrorMvcAutoConfiguration.{sc-ext}[`ErrorMvcAutoConfiguration`] for more options.
 
 See also the section on <<boot-features-error-handling, Error Handling>> for details of
 how to register handlers in the servlet container.
@@ -2226,9 +2139,9 @@ Actuator HTTP endpoints are only available for Spring MVC-based applications. If
 to use Jersey and still use the actuator you will need to enable Spring MVC (by depending
 on `spring-boot-starter-web`, for example). By default, both Jersey and the Spring MVC
 dispatcher servlet are mapped to the same path (`/`). You will need to change the path for
-one of them (by configuring `server.servlet-path` for Spring MVC or
+one of them (by configuring `server.servlet.path` for Spring MVC or
 `spring.jersey.application-path` for Jersey). For example, if you add
-`server.servlet-path=/system` into `application.properties`, the actuator HTTP endpoints
+`server.servlet.path=/system` into `application.properties`, the actuator HTTP endpoints
 will be available under `/system`.
 
 
@@ -2321,7 +2234,7 @@ by adding some entries to `application.properties`, e.g.
 ----
 
 (The presence of either of those properties will switch on the valve. Or you can add the
-`RemoteIpValve` yourself by adding a `TomcatEmbeddedServletContainerFactory` bean.)
+`RemoteIpValve` yourself by adding a `TomcatServletWebServerFactory` bean.)
 
 Spring Security can also be configured to require a secure channel for all (or some
 requests). To switch that on in a Spring Boot application you just need to set
@@ -2340,6 +2253,13 @@ There are several options for hot reloading. The recommended approach is to use
 <<using-spring-boot.adoc#using-boot-devtools,`spring-boot-devtools`>> as it provides
 additional development-time features such as support for fast application restarts
 and LiveReload as well as sensible development-time configuration (e.g. template caching).
+Devtools works by monitoring the classpath for changes. This means that static resource
+changes must be "built" for the change to take affect. By default, this happens
+automatically in Eclipse when you save your changes. In IntelliJ IDEA, Make Project will
+trigger the necessary build. Due to the
+<<using-spring-boot.adoc#using-boot-devtools-restart-exclude, default restart
+exclusions>>, changes to static resources will not trigger a restart of your application.
+They will, however, trigger a live reload.
 
 Alternatively, running in an IDE (especially with debugging on) is a good way to do
 development (all modern IDEs allow reloading of static resources and usually also
@@ -2347,8 +2267,8 @@ hot-swapping of Java class changes).
 
 Finally, the <<build-tool-plugins.adoc#build-tool-plugins, Maven and Gradle plugins>> can
 be configured (see the `addResources` property) to support running from the command line
-with reloading of static files. You can use that with an external css/js compiler process
-if you are writing that code with higher level tools.
+with reloading of static files directly from source. You can use that with an external
+css/js compiler process if you are writing that code with higher level tools.
 
 
 
@@ -2424,7 +2344,7 @@ Spring Boot plugin declaration, e.g.
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>springloaded</artifactId>
-				<version>1.2.0.RELEASE</version>
+				<version>1.2.6.RELEASE</version>
 			</dependency>
 		</dependencies>
 	</plugin>
@@ -2447,10 +2367,12 @@ To configure IntelliJ IDEA correctly you can use the `idea` Gradle plugin:
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 	buildscript {
-		repositories { jcenter() }
+		repositories {
+			jcenter()
+		}
 		dependencies {
-			classpath "org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}"
-			classpath 'org.springframework:springloaded:1.2.0.RELEASE'
+			classpath 'org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}'
+			classpath 'org.springframework:springloaded:1.2.6.RELEASE'
 		}
 	}
 
@@ -2516,7 +2438,7 @@ And to do the same with Gradle:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
-	springBoot  {
+	springBoot {
 		buildInfo()
 	}
 ----
@@ -2563,7 +2485,7 @@ https://plugins.gradle.org/plugin/com.gorylenko.gradle-git-properties[`gradle-gi
 [source,groovy,indent=0]
 ----
 	plugins {
-		id "com.gorylenko.gradle-git-properties" version "1.4.6"
+		id "com.gorylenko.gradle-git-properties" version "1.4.17"
 	}
 ----
 
@@ -2594,16 +2516,7 @@ the artifact yourself instead of overriding the property.
 WARNING: Each Spring Boot release is designed and tested against a specific set of
 third-party dependencies. Overriding versions may cause compatibility issues.
 
-To override dependency versions in Gradle, you can specify a version as shown below:
 
-[source,groovy,indent=0]
-----
-	ext['slf4j.version'] = '1.7.5'
-----
-
-For additional information, please refer to the
-https://github.com/spring-gradle-plugins/dependency-management-plugin[Gradle Dependency
-Management Plugin documentation].
 
 [[howto-create-an-executable-jar-with-maven]]
 === Create an executable JAR with Maven
@@ -2685,15 +2598,6 @@ To configure a classifier of `exec` in Maven, the following configuration can be
 	</build>
 ----
 
-And when using Gradle, the following configuration can be used:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-	bootRepackage  {
-		classifier = 'exec'
-	}
-----
-
 
 
 [[howto-extract-specific-libraries-when-an-executable-jar-runs]]
@@ -2727,15 +2631,6 @@ you would add the following configuration:
 			</plugin>
 		</plugins>
 	</build>
-----
-
-And to do that same with Gradle:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-	springBoot  {
-		requiresUnpack = ['org.jruby:jruby-complete']
-	}
 ----
 
 
@@ -2781,29 +2676,6 @@ jar must be the main artifact and you can add a classified jar for the library:
 	</build>
 ----
 
-In Gradle you can create a new JAR archive with standard task DSL features, and then have
-the `bootRepackage` task depend on that one using its `withJarTask` property:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-	jar {
-		baseName = 'spring-boot-sample-profile'
-		version =  '0.0.0'
-		excludes = ['**/application.yml']
-	}
-
-	task('execJar', type:Jar, dependsOn: 'jar') {
-		baseName = 'spring-boot-sample-profile'
-		version =  '0.0.0'
-		classifier = 'exec'
-		from sourceSets.main.output
-	}
-
-	bootRepackage  {
-		withJarTask = tasks['execJar']
-	}
-----
-
 
 
 [[howto-remote-debug-maven-run]]
@@ -2812,34 +2684,6 @@ To attach a remote debugger to a Spring Boot application started with Maven you 
 the `jvmArguments` property of the {spring-boot-maven-plugin-site}/[maven plugin].
 
 Check {spring-boot-maven-plugin-site}/examples/run-debug.html[this example] for more details.
-
-
-
-[[howto-remote-debug-gradle-run]]
-=== Remote debug a Spring Boot application started with Gradle
-To attach a remote debugger to a Spring Boot application started with Gradle you can use
-the `jvmArgs` property of `bootRun` task or `--debug-jvm` command line option.
-
-`build.gradle`:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-	bootRun {
-		jvmArgs "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
-	}
-----
-
-
-Command line:
-
-[indent=0]
-----
-	$ gradle bootRun --debug-jvm
-----
-
-
-Check {gradle-userguide}/application_plugin.html[Gradle Application Plugin] for more
-details.
 
 
 
@@ -2907,40 +2751,6 @@ after which you can run the application with
 
 
 
-[[howto-use-java-6]]
-=== How to use Java 6
-If you want to use Spring Boot with Java 6 there are a small number of configuration
-changes that you will have to make. The exact changes depend on your application's
-functionality.
-
-
-
-[[howto-use-java-6-embedded-container]]
-==== Embedded servlet container compatibility
-If you are using one of Boot's embedded Servlet containers you will have to use a
-Java 6-compatible container. Both Tomcat 7 and Jetty 8 are Java 6 compatible. See
-<<howto-use-tomcat-7>> and <<howto-use-jetty-8>> for details.
-
-
-
-[[howto-use-java-6-jackson]]
-==== Jackson
-Jackson 2.7 and later requires Java 7. If you want to use Jackson with Java 6 you
-will have to downgrade to Jackson 2.6.
-
-
-
-[[how-to-use-java-6-jta-api]]
-==== JTA API compatibility
-While the Java Transaction API itself doesn't require Java 7 the official API jar
-contains classes that have been built to require Java 7. If you are using JTA then
-you will need to replace the official JTA 1.2 API jar with one that has been built
-to work on Java 6. To do so, exclude any transitive dependencies on
-`javax.transaction:javax.transaction-api` and replace them with a dependency on
-`org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec:1.0.0.Final`
-
-
-
 [[howto-traditional-deployment]]
 == Traditional deployment
 
@@ -2974,7 +2784,7 @@ application's main class to extend `SpringBootServletInitializer`:
 
 The next step is to update your build configuration so that your project produces a war file
 rather than a jar file. If you're using Maven and using `spring-boot-starter-parent` (which
-configures Maven's war plugin for you) all you need to do is modify `pom.xml` to change the
+configures Maven's war plugin for you) all you need to do is to modify `pom.xml` to change the
 packaging to war:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
@@ -3020,10 +2830,9 @@ And if you're using Gradle:
 	}
 ----
 
-NOTE: If you are using a version of Gradle that supports compile only dependencies (2.12
-or later), you should continue to use `providedRuntime`. Among other limitations,
-`compileOnly` dependencies are not on the test classpath so any web-based integration
-tests will fail.
+NOTE: `providedRuntime` is preferred to Gradle's `compileOnly` configuration as, among other
+limitations, `compileOnly` dependencies are not on the test classpath so any web-based
+integration tests will fail.
 
 If you're using the <<build-tool-plugins.adoc#build-tool-plugins, Spring Boot build tools>>,
 marking the embedded servlet container dependency as provided will produce an executable war
@@ -3093,9 +2902,9 @@ replacing those elements from the `web.xml` as follows:
   container as if it was a `<servlet/>` and `<servlet-mapping/>` in `web.xml`.
 * A `@Bean` of type `Filter` or `FilterRegistrationBean` behaves similarly (like a
   `<filter/>` and `<filter-mapping/>`.
-* An `ApplicationContext` in an XML file can be added to an `@Import` in your
-  `Application`. Or simple cases where annotation configuration is heavily used already
-  can be recreated in a few lines as `@Bean` definitions.
+* An `ApplicationContext` in an XML file can be added through an `@ImportResource` in
+  your `Application`. Or simple cases where annotation configuration is heavily used
+  already can be recreated in a few lines as `@Bean` definitions.
 
 Once the war is working we make it executable by adding a `main` method to our
 `Application`, e.g.

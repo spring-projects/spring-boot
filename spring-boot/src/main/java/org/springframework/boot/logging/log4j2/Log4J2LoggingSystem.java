@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	private static final String FILE_PROTOCOL = "file";
 
-	private static final LogLevels<Level> LEVELS = new LogLevels<Level>();
+	private static final LogLevels<Level> LEVELS = new LogLevels<>();
 
 	static {
 		LEVELS.map(LogLevel.TRACE, Level.TRACE);
@@ -111,7 +111,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	private String[] getCurrentlySupportedConfigLocations() {
-		List<String> supportedConfigLocations = new ArrayList<String>();
+		List<String> supportedConfigLocations = new ArrayList<>();
 		if (isClassAvailable("com.fasterxml.jackson.dataformat.yaml.YAMLParser")) {
 			Collections.addAll(supportedConfigLocations, "log4j2.yaml", "log4j2.yml");
 		}
@@ -215,7 +215,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public List<LoggerConfiguration> getLoggerConfigurations() {
-		List<LoggerConfiguration> result = new ArrayList<LoggerConfiguration>();
+		List<LoggerConfiguration> result = new ArrayList<>();
 		Configuration configuration = getLoggerContext().getConfiguration();
 		for (LoggerConfig loggerConfig : configuration.getLoggers().values()) {
 			result.add(convertLoggerConfiguration(loggerConfig));
@@ -251,6 +251,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		super.cleanUp();
 		LoggerContext loggerContext = getLoggerContext();
 		markAsUninitialized(loggerContext);
+		loggerContext.getConfiguration().removeFilter(FILTER);
 	}
 
 	private LoggerConfig getLoggerConfig(String name) {

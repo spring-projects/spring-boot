@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,6 +114,14 @@ public abstract class AbstractJsonMarshalTester<T> {
 	}
 
 	/**
+	 * Return class used to load relative resources.
+	 * @return the resource load class
+	 */
+	protected final Class<?> getResourceLoadClass() {
+		return this.resourceLoadClass;
+	}
+
+	/**
 	 * Return {@link JsonContent} from writing the specific value.
 	 * @param value the value to write
 	 * @return the {@link JsonContent}
@@ -123,7 +131,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 		verify();
 		Assert.notNull(value, "Value must not be null");
 		String json = writeObject(value, this.type);
-		return new JsonContent<T>(this.resourceLoadClass, this.type, json);
+		return new JsonContent<>(this.resourceLoadClass, this.type, json);
 	}
 
 	/**
@@ -266,7 +274,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 		InputStream inputStream = resource.getInputStream();
 		T object = readObject(inputStream, this.type);
 		closeQuietly(inputStream);
-		return new ObjectContent<T>(this.type, object);
+		return new ObjectContent<>(this.type, object);
 	}
 
 	/**
@@ -291,7 +299,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 		Assert.notNull(reader, "Reader must not be null");
 		T object = readObject(reader, this.type);
 		closeQuietly(reader);
-		return new ObjectContent<T>(this.type, object);
+		return new ObjectContent<>(this.type, object);
 	}
 
 	private void closeQuietly(Closeable closeable) {

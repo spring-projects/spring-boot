@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import org.springframework.util.Assert;
 class FolderSnapshot {
 
 	private static final Set<String> DOT_FOLDERS = Collections
-			.unmodifiableSet(new HashSet<String>(Arrays.asList(".", "..")));
+			.unmodifiableSet(new HashSet<>(Arrays.asList(".", "..")));
 
 	private final File folder;
 
@@ -55,7 +55,7 @@ class FolderSnapshot {
 		Assert.isTrue(folder.isDirectory(), "Folder must not be a file");
 		this.folder = folder;
 		this.time = new Date();
-		Set<FileSnapshot> files = new LinkedHashSet<FileSnapshot>();
+		Set<FileSnapshot> files = new LinkedHashSet<>();
 		collectFiles(folder, files);
 		this.files = Collections.unmodifiableSet(files);
 	}
@@ -80,7 +80,7 @@ class FolderSnapshot {
 		File folder = this.folder;
 		Assert.isTrue(snapshot.folder.equals(folder),
 				"Snapshot source folder must be '" + folder + "'");
-		Set<ChangedFile> changes = new LinkedHashSet<ChangedFile>();
+		Set<ChangedFile> changes = new LinkedHashSet<>();
 		Map<File, FileSnapshot> previousFiles = getFilesMap();
 		for (FileSnapshot currentFile : snapshot.files) {
 			if (acceptChangedFile(triggerFilter, currentFile)) {
@@ -107,7 +107,7 @@ class FolderSnapshot {
 	}
 
 	private Map<File, FileSnapshot> getFilesMap() {
-		Map<File, FileSnapshot> files = new LinkedHashMap<File, FileSnapshot>();
+		Map<File, FileSnapshot> files = new LinkedHashMap<>();
 		for (FileSnapshot file : this.files) {
 			files.put(file.getFile(), file);
 		}
@@ -141,7 +141,7 @@ class FolderSnapshot {
 		if (filter == null) {
 			return source;
 		}
-		Set<FileSnapshot> filtered = new LinkedHashSet<FileSnapshot>();
+		Set<FileSnapshot> filtered = new LinkedHashSet<>();
 		for (FileSnapshot file : source) {
 			if (filter.accept(file.getFile())) {
 				filtered.add(file);

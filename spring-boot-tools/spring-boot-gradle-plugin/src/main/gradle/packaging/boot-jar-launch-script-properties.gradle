@@ -1,0 +1,21 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'java'
+
+bootJar {
+	mainClass 'com.example.ExampleApplication'
+}
+
+// tag::launch-script-properties[]
+bootJar {
+	launchScript {
+		included = true
+		properties 'logFilename': 'example-app.log'
+	}
+}
+// end::launch-script-properties[]

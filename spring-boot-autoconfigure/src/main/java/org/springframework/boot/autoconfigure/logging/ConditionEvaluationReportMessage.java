@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,9 +94,9 @@ public class ConditionEvaluationReportMessage {
 
 	private Map<String, ConditionAndOutcomes> orderByName(
 			Map<String, ConditionAndOutcomes> outcomes) {
-		Map<String, ConditionAndOutcomes> result = new LinkedHashMap<String, ConditionAndOutcomes>();
-		List<String> names = new ArrayList<String>();
-		Map<String, String> classNames = new HashMap<String, String>();
+		Map<String, ConditionAndOutcomes> result = new LinkedHashMap<>();
+		List<String> names = new ArrayList<>();
+		Map<String, String> classNames = new HashMap<>();
 		for (String name : outcomes.keySet()) {
 			String shortName = ClassUtils.getShortName(name);
 			names.add(shortName);
@@ -120,8 +120,8 @@ public class ConditionEvaluationReportMessage {
 	private void addNonMatchLogMessage(StringBuilder message, String source,
 			ConditionAndOutcomes conditionAndOutcomes) {
 		message.append(String.format("%n   %s:%n", source));
-		List<ConditionAndOutcome> matches = new ArrayList<ConditionAndOutcome>();
-		List<ConditionAndOutcome> nonMatches = new ArrayList<ConditionAndOutcome>();
+		List<ConditionAndOutcome> matches = new ArrayList<>();
+		List<ConditionAndOutcome> nonMatches = new ArrayList<>();
 		for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
 			if (conditionAndOutcome.getOutcome().isMatch()) {
 				matches.add(conditionAndOutcome);

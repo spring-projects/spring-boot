@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
-import org.springframework.boot.context.embedded.ExampleServlet;
-import org.springframework.boot.context.embedded.Ssl;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.boot.web.servlet.server.ExampleServlet;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
@@ -63,13 +63,12 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 	}
 
 	private String getHttpsUrl() {
-		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory(
-				0);
+		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		factory.setSsl(getSsl("password", "classpath:test.jks"));
-		EmbeddedServletContainer container = factory.getEmbeddedServletContainer(
-				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
-		container.start();
-		return "https://localhost:" + container.getPort() + "/hello";
+		WebServer webServer = factory.getWebServer(
+				new ServletRegistrationBean<>(new ExampleServlet(), "/hello"));
+		webServer.start();
+		return "https://localhost:" + webServer.getPort() + "/hello";
 	}
 
 	private Ssl getSsl(String keyPassword, String keyStore) {

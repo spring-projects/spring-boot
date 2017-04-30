@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,11 @@ package org.springframework.boot.autoconfigure.cache;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.bind.BindException;
+import org.springframework.boot.context.properties.bind.BindResult;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.ClassMetadata;
@@ -30,6 +33,7 @@ import org.springframework.core.type.ClassMetadata;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 1.3.0
  */
 class CacheCondition extends SpringBootCondition {
@@ -43,18 +47,23 @@ class CacheCondition extends SpringBootCondition {
 		}
 		ConditionMessage.Builder message = ConditionMessage.forCondition("Cache",
 				sourceClass);
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), "spring.cache.");
-		if (!resolver.containsProperty("type")) {
-			return ConditionOutcome.match(message.because("automatic cache type"));
+		Environment environment = context.getEnvironment();
+		try {
+			BindResult<CacheType> specified = Binder.get(environment)
+					.bind("spring.cache.type", CacheType.class);
+			if (!specified.isBound()) {
+				return ConditionOutcome.match(message.because("automatic cache type"));
+			}
+			CacheType required = CacheConfigurations
+					.getType(((AnnotationMetadata) metadata).getClassName());
+			if (specified.get() == required) {
+				return ConditionOutcome
+						.match(message.because(specified.get() + " cache type"));
+			}
 		}
-		CacheType cacheType = CacheConfigurations
-				.getType(((AnnotationMetadata) metadata).getClassName());
-		String value = resolver.getProperty("type").replace("-", "_").toUpperCase();
-		if (value.equals(cacheType.name())) {
-			return ConditionOutcome.match(message.because(value + " cache type"));
+		catch (BindException ex) {
 		}
-		return ConditionOutcome.noMatch(message.because(value + " cache type"));
+		return ConditionOutcome.noMatch(message.because("unknown cache type"));
 	}
 
 }

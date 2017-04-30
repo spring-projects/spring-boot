@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public class KafkaProperties {
 	 * Comma-delimited list of host:port pairs to use for establishing the initial
 	 * connection to the Kafka cluster.
 	 */
-	private List<String> bootstrapServers = new ArrayList<String>(
+	private List<String> bootstrapServers = new ArrayList<>(
 			Collections.singletonList("localhost:9092"));
 
 	/**
@@ -64,7 +64,7 @@ public class KafkaProperties {
 	/**
 	 * Additional properties used to configure the client.
 	 */
-	private Map<String, String> properties = new HashMap<String, String>();
+	private Map<String, String> properties = new HashMap<>();
 
 	private final Consumer consumer = new Consumer();
 
@@ -121,7 +121,7 @@ public class KafkaProperties {
 	}
 
 	private Map<String, Object> buildCommonProperties() {
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		if (this.bootstrapServers != null) {
 			properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
 					this.bootstrapServers);
@@ -362,7 +362,7 @@ public class KafkaProperties {
 		}
 
 		public Map<String, Object> buildProperties() {
-			Map<String, Object> properties = new HashMap<String, Object>();
+			Map<String, Object> properties = new HashMap<>();
 			if (this.autoCommitInterval != null) {
 				properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG,
 						this.autoCommitInterval);
@@ -562,7 +562,7 @@ public class KafkaProperties {
 		}
 
 		public Map<String, Object> buildProperties() {
-			Map<String, Object> properties = new HashMap<String, Object>();
+			Map<String, Object> properties = new HashMap<>();
 			if (this.acks != null) {
 				properties.put(ProducerConfig.ACKS_CONFIG, this.acks);
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 
 package sample.data.neo4j;
 
-import java.net.ConnectException;
-
 import org.junit.Rule;
 import org.junit.Test;
+import org.neo4j.driver.v1.exceptions.ServiceUnavailableException;
 
 import org.springframework.boot.test.rule.OutputCapture;
 
@@ -51,8 +50,7 @@ public class SampleNeo4jApplicationTests {
 	}
 
 	private boolean neo4jServerRunning(Throwable ex) {
-		System.out.println(ex.getMessage());
-		if (ex instanceof ConnectException) {
+		if (ex instanceof ServiceUnavailableException) {
 			return false;
 		}
 		return (ex.getCause() == null || neo4jServerRunning(ex.getCause()));

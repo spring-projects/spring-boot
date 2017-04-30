@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration.HibernateEntityManagerCondition;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -47,7 +48,6 @@ import org.springframework.jndi.JndiLocatorDelegate;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.ClassUtils;
 
@@ -60,8 +60,7 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class,
-		EnableTransactionManagement.class, EntityManager.class })
+@ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class, EntityManager.class })
 @Conditional(HibernateEntityManagerCondition.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class })
 public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
@@ -88,8 +87,10 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 
 	public HibernateJpaAutoConfiguration(DataSource dataSource,
 			JpaProperties jpaProperties,
-			ObjectProvider<JtaTransactionManager> jtaTransactionManagerProvider) {
-		super(dataSource, jpaProperties, jtaTransactionManagerProvider);
+			ObjectProvider<JtaTransactionManager> jtaTransactionManager,
+			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+		super(dataSource, jpaProperties, jtaTransactionManager,
+				transactionManagerCustomizers);
 	}
 
 	@Override
@@ -99,7 +100,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 
 	@Override
 	protected Map<String, Object> getVendorProperties() {
-		Map<String, Object> vendorProperties = new LinkedHashMap<String, Object>();
+		Map<String, Object> vendorProperties = new LinkedHashMap<>();
 		vendorProperties.putAll(getProperties().getHibernateProperties(getDataSource()));
 		return vendorProperties;
 	}

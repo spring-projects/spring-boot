@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 package org.springframework.boot.actuate.health;
 
-import com.mongodb.CommandResult;
 import com.mongodb.MongoException;
+import org.bson.Document;
 import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -65,7 +65,7 @@ public class MongoHealthIndicatorTests {
 
 	@Test
 	public void mongoIsUp() throws Exception {
-		CommandResult commandResult = mock(CommandResult.class);
+		Document commandResult = mock(Document.class);
 		given(commandResult.getString("version")).willReturn("2.6.4");
 		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
 		given(mongoTemplate.executeCommand("{ buildInfo: 1 }")).willReturn(commandResult);
@@ -85,8 +85,8 @@ public class MongoHealthIndicatorTests {
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(((String) health.getDetails().get("error"))
-				.contains("Connection failed"));
+		assertThat((String) health.getDetails().get("error"))
+				.contains("Connection failed");
 		verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");
 	}
 

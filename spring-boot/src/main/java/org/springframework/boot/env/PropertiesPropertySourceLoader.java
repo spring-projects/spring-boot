@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,8 @@
 package org.springframework.boot.env;
 
 import java.io.IOException;
-import java.util.Properties;
+import java.util.Map;
 
-import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -29,8 +28,11 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class PropertiesPropertySourceLoader implements PropertySourceLoader {
+
+	private static final String XML_FILE_EXTENSION = ".xml";
 
 	@Override
 	public String[] getFileExtensions() {
@@ -41,12 +43,21 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 	public PropertySource<?> load(String name, Resource resource, String profile)
 			throws IOException {
 		if (profile == null) {
-			Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+			Map<String, ?> properties = loadProperties(resource);
 			if (!properties.isEmpty()) {
-				return new PropertiesPropertySource(name, properties);
+				return new OriginTrackedMapPropertySource(name, properties);
 			}
 		}
 		return null;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Map<String, ?> loadProperties(Resource resource) throws IOException {
+		String filename = resource.getFilename();
+		if (filename != null && filename.endsWith(XML_FILE_EXTENSION)) {
+			return (Map) PropertiesLoaderUtils.loadProperties(resource);
+		}
+		return new OriginTrackedPropertiesLoader(resource).load();
 	}
 
 }

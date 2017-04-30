@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import java.util.function.Predicate;
  */
 abstract class Buffers<B extends Buffer<?>> {
 
-	private final ConcurrentHashMap<String, B> buffers = new ConcurrentHashMap<String, B>();
+	private final ConcurrentHashMap<String, B> buffers = new ConcurrentHashMap<>();
 
 	public void forEach(final Predicate<String> predicate,
 			final BiConsumer<String, B> consumer) {

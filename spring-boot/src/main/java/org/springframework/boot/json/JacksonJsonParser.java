@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,12 +34,12 @@ public class JacksonJsonParser implements JsonParser {
 
 	private static final TypeReference<?> LIST_TYPE = new ListTypeReference();
 
-	private final ObjectMapper objectMapper = new ObjectMapper();
+	private ObjectMapper objectMapper; // Late binding
 
 	@Override
 	public Map<String, Object> parseMap(String json) {
 		try {
-			return this.objectMapper.readValue(json, MAP_TYPE);
+			return getObjectMapper().readValue(json, MAP_TYPE);
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException("Cannot parse JSON", ex);
@@ -49,11 +49,18 @@ public class JacksonJsonParser implements JsonParser {
 	@Override
 	public List<Object> parseList(String json) {
 		try {
-			return this.objectMapper.readValue(json, LIST_TYPE);
+			return getObjectMapper().readValue(json, LIST_TYPE);
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException("Cannot parse JSON", ex);
 		}
+	}
+
+	private ObjectMapper getObjectMapper() {
+		if (this.objectMapper == null) {
+			this.objectMapper = new ObjectMapper();
+		}
+		return this.objectMapper;
 	}
 
 	private static class MapTypeReference extends TypeReference<Map<String, Object>> {

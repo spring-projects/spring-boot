@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public class KafkaAutoConfiguration {
 	public KafkaTemplate<?, ?> kafkaTemplate(
 			ProducerFactory<Object, Object> kafkaProducerFactory,
 			ProducerListener<Object, Object> kafkaProducerListener) {
-		KafkaTemplate<Object, Object> kafkaTemplate = new KafkaTemplate<Object, Object>(
+		KafkaTemplate<Object, Object> kafkaTemplate = new KafkaTemplate<>(
 				kafkaProducerFactory);
 		kafkaTemplate.setProducerListener(kafkaProducerListener);
 		kafkaTemplate.setDefaultTopic(this.properties.getTemplate().getDefaultTopic());
@@ -64,20 +64,20 @@ public class KafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(ProducerListener.class)
 	public ProducerListener<Object, Object> kafkaProducerListener() {
-		return new LoggingProducerListener<Object, Object>();
+		return new LoggingProducerListener<>();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ConsumerFactory.class)
 	public ConsumerFactory<?, ?> kafkaConsumerFactory() {
-		return new DefaultKafkaConsumerFactory<Object, Object>(
+		return new DefaultKafkaConsumerFactory<>(
 				this.properties.buildConsumerProperties());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ProducerFactory.class)
 	public ProducerFactory<?, ?> kafkaProducerFactory() {
-		return new DefaultKafkaProducerFactory<Object, Object>(
+		return new DefaultKafkaProducerFactory<>(
 				this.properties.buildProducerProperties());
 	}
 

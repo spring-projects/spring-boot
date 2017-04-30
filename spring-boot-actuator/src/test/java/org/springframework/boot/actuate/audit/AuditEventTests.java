@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,12 @@ package org.springframework.boot.actuate.audit;
 
 import java.util.Collections;
 
+import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -72,6 +75,18 @@ public class AuditEventTests {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Type must not be null");
 		new AuditEvent("phil", null, Collections.singletonMap("a", (Object) "b"));
+	}
+
+	@Test
+	public void jsonFormat() throws Exception {
+		AuditEvent event = new AuditEvent("johannes", "UNKNOWN",
+				Collections.singletonMap("type", (Object) "BadCredentials"));
+		String json = Jackson2ObjectMapperBuilder.json().build()
+				.writeValueAsString(event);
+		JSONObject jsonObject = new JSONObject(json);
+		assertThat(jsonObject.getString("type")).isEqualTo("UNKNOWN");
+		assertThat(jsonObject.getJSONObject("data").getString("type"))
+				.isEqualTo("BadCredentials");
 	}
 
 }

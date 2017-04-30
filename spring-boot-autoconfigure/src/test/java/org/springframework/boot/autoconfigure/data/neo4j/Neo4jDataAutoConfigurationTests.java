@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Test;
-import org.neo4j.ogm.drivers.http.driver.HttpDriver;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 import org.neo4j.ogm.session.event.Event;
@@ -28,21 +27,23 @@ import org.neo4j.ogm.session.event.PersistenceEvent;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.neo4j.city.City;
+import org.springframework.boot.autoconfigure.data.neo4j.country.Country;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
-import org.springframework.data.neo4j.template.Neo4jOperations;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.data.neo4j.web.support.OpenSessionInViewInterceptor;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -56,7 +57,6 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
  */
-@SuppressWarnings("deprecation")
 public class Neo4jDataAutoConfigurationTests {
 
 	private ConfigurableApplicationContext context;
@@ -74,16 +74,15 @@ public class Neo4jDataAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(org.neo4j.ogm.config.Configuration.class))
 				.hasSize(1);
 		assertThat(this.context.getBeansOfType(SessionFactory.class)).hasSize(1);
-		assertThat(this.context.getBeansOfType(Neo4jOperations.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(Neo4jTransactionManager.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(OpenSessionInViewInterceptor.class))
-				.isEmpty();
+				.hasSize(1);
 	}
 
 	@Test
 	public void customNeo4jTransactionManagerUsingProperties() {
-		load(null, "spring.data.neo4j.transaction.default-timeout=30",
-				"spring.data.neo4j.transaction.rollback-on-commit-failure:true");
+		load(null, "spring.transaction.default-timeout=30",
+				"spring.transaction.rollback-on-commit-failure:true");
 		Neo4jTransactionManager transactionManager = this.context
 				.getBean(Neo4jTransactionManager.class);
 		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
@@ -109,13 +108,6 @@ public class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void customNeo4jOperations() {
-		load(CustomNeo4jOperations.class);
-		assertThat(this.context.getBean(Neo4jOperations.class))
-				.isSameAs(this.context.getBean("myNeo4jOperations"));
-	}
-
-	@Test
 	public void usesAutoConfigurationPackageToPickUpDomainTypes() {
 		this.context = new AnnotationConfigApplicationContext();
 		String cityPackage = City.class.getPackage().getName();
@@ -130,10 +122,10 @@ public class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void openSessionInViewInterceptorCanBeEnabled() {
-		load(null, "spring.data.neo4j.open-in-view=true");
+	public void openSessionInViewInterceptorCanBeDisabled() {
+		load(null, "spring.data.neo4j.open-in-view:false");
 		assertThat(this.context.getBeansOfType(OpenSessionInViewInterceptor.class))
-				.hasSize(1);
+				.isEmpty();
 	}
 
 	@Test
@@ -153,8 +145,8 @@ public class Neo4jDataAutoConfigurationTests {
 		if (config != null) {
 			ctx.register(config);
 		}
-		ctx.register(PropertyPlaceholderAutoConfiguration.class,
-				Neo4jDataAutoConfiguration.class);
+		ctx.register(TestConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				Neo4jDataAutoConfiguration.class, TransactionAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
 	}
@@ -164,6 +156,12 @@ public class Neo4jDataAutoConfigurationTests {
 		for (Class<?> type : types) {
 			Assertions.assertThat(mappingContext.getPersistentEntity(type)).isNotNull();
 		}
+	}
+
+	@Configuration
+	@EntityScan(basePackageClasses = Country.class)
+	static class TestConfiguration {
+
 	}
 
 	@Configuration
@@ -181,20 +179,8 @@ public class Neo4jDataAutoConfigurationTests {
 
 		@Bean
 		public org.neo4j.ogm.config.Configuration myConfiguration() {
-			org.neo4j.ogm.config.Configuration configuration = new org.neo4j.ogm.config.Configuration();
-			configuration.driverConfiguration()
-					.setDriverClassName(HttpDriver.class.getName());
-			return configuration;
-		}
-
-	}
-
-	@Configuration
-	static class CustomNeo4jOperations {
-
-		@Bean
-		public Neo4jOperations myNeo4jOperations() {
-			return mock(Neo4jOperations.class);
+			return new org.neo4j.ogm.config.Configuration.Builder()
+					.uri("http://localhost:12345").build();
 		}
 
 	}

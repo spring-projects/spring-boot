@@ -153,6 +153,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>com.unboundid</groupId>
+			<artifactId>unboundid-ldapsdk</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 			<optional>true</optional>
@@ -165,6 +170,11 @@
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor.ipc</groupId>
+			<artifactId>reactor-netty</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -430,7 +440,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
+			<artifactId>hibernate-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -466,6 +476,16 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver-async</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver-reactivestreams</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -521,6 +541,11 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webflux</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -620,6 +645,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-ldap</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -690,12 +720,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.thymeleaf</groupId>
-			<artifactId>thymeleaf-spring4</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.thymeleaf.extras</groupId>
-			<artifactId>thymeleaf-extras-conditionalcomments</artifactId>
+			<artifactId>thymeleaf-spring5</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -826,6 +851,15 @@
 											<outputDirectory>
 												${project.build.directory}/contents/maven-plugin
 											</outputDirectory>
+											<excludes>META-INF/**</excludes>
+										</artifactItem>
+										<artifactItem>
+											<groupId>org.springframework.boot</groupId>
+											<artifactId>spring-boot-gradle-plugin</artifactId>
+											<version>${project.version}</version>
+											<classifier>docs</classifier>
+											<type>zip</type>
+											<outputDirectory>${project.build.directory}/contents/gradle-plugin</outputDirectory>
 											<excludes>META-INF/**</excludes>
 										</artifactItem>
 									</artifactItems>

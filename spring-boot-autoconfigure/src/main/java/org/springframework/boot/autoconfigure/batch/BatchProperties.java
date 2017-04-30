@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,7 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
-import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * Configuration properties for Spring Batch.
@@ -28,7 +26,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  * @author Vedran Pavic
  * @since 1.2.0
  */
-@ConfigurationProperties("spring.batch")
+@ConfigurationProperties(prefix = "spring.batch")
 public class BatchProperties {
 
 	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
@@ -47,9 +45,6 @@ public class BatchProperties {
 	private final Initializer initializer = new Initializer();
 
 	private final Job job = new Job();
-
-	@NestedConfigurationProperty
-	private final TransactionProperties transaction = new TransactionProperties();
 
 	public String getSchema() {
 		return this.schema;
@@ -73,10 +68,6 @@ public class BatchProperties {
 
 	public Job getJob() {
 		return this.job;
-	}
-
-	public TransactionProperties getTransaction() {
-		return this.transaction;
 	}
 
 	public class Initializer {

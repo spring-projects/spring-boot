@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.security;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -48,8 +50,8 @@ public class SecurityProperties implements SecurityPrerequisite {
 	/**
 	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
 	 * authentication for application endpoints. If you want to add your own
-	 * authentication for all or some of those endpoints the best thing to do is to add your
-	 * own WebSecurityConfigurerAdapter with lower order.
+	 * authentication for all or some of those endpoints the best thing to do is to add
+	 * your own WebSecurityConfigurerAdapter with lower order.
 	 */
 	public static final int BASIC_AUTH_ORDER = Ordered.LOWEST_PRECEDENCE - 5;
 
@@ -90,7 +92,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 	/**
 	 * Comma-separated list of paths to exclude from the default secured paths.
 	 */
-	private List<String> ignored = new ArrayList<String>();
+	private List<String> ignored = new ArrayList<>();
 
 	private final User user = new User();
 
@@ -102,7 +104,8 @@ public class SecurityProperties implements SecurityPrerequisite {
 	/**
 	 * Security filter chain dispatcher types.
 	 */
-	private Set<String> filterDispatcherTypes;
+	private Set<String> filterDispatcherTypes = new HashSet<>(
+			Arrays.asList("ASYNC", "ERROR", "REQUEST"));
 
 	public Headers getHeaders() {
 		return this.headers;
@@ -145,7 +148,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 	}
 
 	public void setIgnored(List<String> ignored) {
-		this.ignored = new ArrayList<String>(ignored);
+		this.ignored = new ArrayList<>(ignored);
 	}
 
 	public List<String> getIgnored() {
@@ -355,7 +358,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 		/**
 		 * Granted roles for the default user name.
 		 */
-		private List<String> role = new ArrayList<String>(Arrays.asList("USER"));
+		private List<String> role = new ArrayList<>(Collections.singletonList("USER"));
 
 		private boolean defaultPassword = true;
 
@@ -385,7 +388,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 		}
 
 		public void setRole(List<String> role) {
-			this.role = new ArrayList<String>(role);
+			this.role = new ArrayList<>(role);
 		}
 
 		public boolean isDefaultPassword() {

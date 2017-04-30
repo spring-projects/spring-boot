@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,18 +28,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.neo4j.template.Neo4jOperations;
-import org.springframework.data.neo4j.template.Neo4jTemplate;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.data.neo4j.web.support.OpenSessionInViewInterceptor;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data Neo4j.
@@ -55,23 +55,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @ConditionalOnClass({ SessionFactory.class, PlatformTransactionManager.class })
 @ConditionalOnMissingBean(SessionFactory.class)
 @EnableConfigurationProperties(Neo4jProperties.class)
-@SuppressWarnings("deprecation")
 public class Neo4jDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	public org.neo4j.ogm.config.Configuration configuration(Neo4jProperties properties) {
-		return properties.createConfiguration();
+		org.neo4j.ogm.config.Configuration configuration = properties
+				.createConfiguration();
+		return configuration;
 	}
 
 	@Bean
 	public SessionFactory sessionFactory(org.neo4j.ogm.config.Configuration configuration,
 			ApplicationContext applicationContext,
-			ObjectProvider<List<EventListener>> eventListenersProvider) {
+			ObjectProvider<List<EventListener>> eventListeners) {
 		SessionFactory sessionFactory = new SessionFactory(configuration,
 				getPackagesToScan(applicationContext));
-		List<EventListener> providedEventListeners = eventListenersProvider
-				.getIfAvailable();
+		List<EventListener> providedEventListeners = eventListeners.getIfAvailable();
 		if (providedEventListeners != null) {
 			for (EventListener eventListener : providedEventListeners) {
 				sessionFactory.register(eventListener);
@@ -81,18 +81,19 @@ public class Neo4jDataAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(Neo4jOperations.class)
-	public Neo4jTemplate neo4jTemplate(SessionFactory sessionFactory) {
-		return new Neo4jTemplate(sessionFactory);
-	}
-
-	@Bean
 	@ConditionalOnMissingBean(PlatformTransactionManager.class)
 	public Neo4jTransactionManager transactionManager(SessionFactory sessionFactory,
-			Neo4jProperties properties) {
-		Neo4jTransactionManager transactionManager = new Neo4jTransactionManager(
-				sessionFactory);
-		properties.getTransaction().applyTo(transactionManager);
+			Neo4jProperties properties,
+			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+		return customize(new Neo4jTransactionManager(sessionFactory),
+				transactionManagerCustomizers.getIfAvailable());
+	}
+
+	private Neo4jTransactionManager customize(Neo4jTransactionManager transactionManager,
+			TransactionManagerCustomizers customizers) {
+		if (customizers != null) {
+			customizers.customize(transactionManager);
+		}
 		return transactionManager;
 	}
 
@@ -106,15 +107,14 @@ public class Neo4jDataAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnWebApplication
-	@ConditionalOnClass({ WebMvcConfigurerAdapter.class,
-			OpenSessionInViewInterceptor.class })
+	@ConditionalOnWebApplication(type = Type.SERVLET)
+	@ConditionalOnClass({ WebMvcConfigurer.class, OpenSessionInViewInterceptor.class })
 	@ConditionalOnMissingBean(OpenSessionInViewInterceptor.class)
-	@ConditionalOnProperty(prefix = "spring.data.neo4j", name = "open-in-view", havingValue = "true")
+	@ConditionalOnProperty(prefix = "spring.data.neo4j", name = "open-in-view", havingValue = "true", matchIfMissing = true)
 	protected static class Neo4jWebConfiguration {
 
 		@Configuration
-		protected static class Neo4jWebMvcConfiguration extends WebMvcConfigurerAdapter {
+		protected static class Neo4jWebMvcConfiguration implements WebMvcConfigurer {
 
 			@Bean
 			public OpenSessionInViewInterceptor neo4jOpenSessionInViewInterceptor() {

@@ -1,5 +1,5 @@
 ^\Q/*\E$
-^\Q * Copyright \E20\d\d\-20\d\d\Q the original author or authors.\E$
+^\Q * Copyright \E2012-20\d\d\Q the original author or authors.\E$
 ^\Q *\E$
 ^\Q * Licensed under the Apache License, Version 2.0 (the "License");\E$
 ^\Q * you may not use this file except in compliance with the License.\E$

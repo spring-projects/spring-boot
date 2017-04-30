@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.autoconfigure.transaction.TransactionProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.orm.jpa.vendor.Database;
@@ -34,6 +33,8 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
+ * @author Madhura Bhave
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.jpa")
@@ -42,7 +43,7 @@ public class JpaProperties {
 	/**
 	 * Additional native properties to set on the JPA provider.
 	 */
-	private Map<String, String> properties = new HashMap<String, String>();
+	private Map<String, String> properties = new HashMap<>();
 
 	/**
 	 * Name of the target database to operate on, auto-detected by default. Can be
@@ -54,7 +55,7 @@ public class JpaProperties {
 	 * Target database to operate on, auto-detected by default. Can be alternatively set
 	 * using the "databasePlatform" property.
 	 */
-	private Database database = Database.DEFAULT;
+	private Database database;
 
 	/**
 	 * Initialize the schema on startup.
@@ -67,9 +68,6 @@ public class JpaProperties {
 	private boolean showSql = false;
 
 	private Hibernate hibernate = new Hibernate();
-
-	@NestedConfigurationProperty
-	private final TransactionProperties transaction = new TransactionProperties();
 
 	public Map<String, String> getProperties() {
 		return this.properties;
@@ -129,8 +127,17 @@ public class JpaProperties {
 		return this.hibernate.getAdditionalProperties(this.properties, dataSource);
 	}
 
-	public TransactionProperties getTransaction() {
-		return this.transaction;
+	/**
+	 * Determine the {@link Database} to use based on this configuration and the primary
+	 * {@link DataSource}.
+	 * @param dataSource the auto-configured data source
+	 * @return {@code Database}
+	 */
+	public Database determineDatabase(DataSource dataSource) {
+		if (this.database != null) {
+			return this.database;
+		}
+		return DatabaseLookup.getDatabase(dataSource);
 	}
 
 	public static class Hibernate {
@@ -163,11 +170,11 @@ public class JpaProperties {
 			this.ddlAuto = ddlAuto;
 		}
 
-		public boolean isUseNewIdGeneratorMappings() {
+		public Boolean isUseNewIdGeneratorMappings() {
 			return this.useNewIdGeneratorMappings;
 		}
 
-		public void setUseNewIdGeneratorMappings(boolean useNewIdGeneratorMappings) {
+		public void setUseNewIdGeneratorMappings(Boolean useNewIdGeneratorMappings) {
 			this.useNewIdGeneratorMappings = useNewIdGeneratorMappings;
 		}
 
@@ -177,7 +184,7 @@ public class JpaProperties {
 
 		private Map<String, String> getAdditionalProperties(Map<String, String> existing,
 				DataSource dataSource) {
-			Map<String, String> result = new HashMap<String, String>(existing);
+			Map<String, String> result = new HashMap<>(existing);
 			applyNewIdGeneratorMappings(result);
 			getNaming().applyNamingStrategies(result);
 			String ddlAuto = getOrDeduceDdlAuto(existing, dataSource);
@@ -196,7 +203,7 @@ public class JpaProperties {
 						this.useNewIdGeneratorMappings.toString());
 			}
 			else if (!result.containsKey(USE_NEW_ID_GENERATOR_MAPPINGS)) {
-				result.put(USE_NEW_ID_GENERATOR_MAPPINGS, "false");
+				result.put(USE_NEW_ID_GENERATOR_MAPPINGS, "true");
 			}
 		}
 

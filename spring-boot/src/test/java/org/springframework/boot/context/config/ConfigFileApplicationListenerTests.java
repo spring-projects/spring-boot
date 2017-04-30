@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,29 +19,28 @@ package org.springframework.boot.context.config;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
-import ch.qos.logback.classic.BasicConfigurator;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.assertj.core.api.Condition;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.CachedIntrospectionResults;
-import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.config.ConfigFileApplicationListener.ConfigurationPropertySources;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.context.config.ConfigFileApplicationListener.LoadedPropertySources;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnumerableCompositePropertySource;
@@ -63,7 +62,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.support.TestPropertySourceUtils;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -91,23 +89,13 @@ public class ConfigFileApplicationListenerTests {
 
 	private ConfigurableApplicationContext context;
 
-	@Before
-	public void resetLogging() {
-		LoggerContext loggerContext = ((Logger) LoggerFactory.getLogger(getClass()))
-				.getLoggerContext();
-		loggerContext.reset();
-		new BasicConfigurator().configure(loggerContext);
-	}
-
 	@After
-	public void cleanup() {
+	public void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
 		}
 		System.clearProperty("the.property");
 		System.clearProperty("spring.config.location");
-		System.clearProperty("spring.main.banner-mode");
-		System.clearProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME);
 	}
 
 	@Test
@@ -445,7 +433,9 @@ public class ConfigFileApplicationListenerTests {
 		ApplicationPreparedEvent event = new ApplicationPreparedEvent(
 				new SpringApplication(), new String[0],
 				new AnnotationConfigApplicationContext());
-		this.initializer.onApplicationEvent(event);
+		withDebugLogging(() -> {
+			this.initializer.onApplicationEvent(event);
+		});
 		String log = this.out.toString();
 
 		// First make sure that each profile got processed only once
@@ -463,6 +453,23 @@ public class ConfigFileApplicationListenerTests {
 					.as("Loading profile '" + profile + "' not found in '" + log + "'")
 					.isNotEqualTo(-1);
 			log = log.substring(index + line.length());
+		}
+	}
+
+	private void withDebugLogging(Runnable runnable) {
+		LoggerContext loggingContext = (LoggerContext) LogManager.getContext(false);
+		org.apache.logging.log4j.core.config.Configuration configuration = loggingContext
+				.getConfiguration();
+		configuration.addLogger(ConfigFileApplicationListener.class.getName(),
+				new LoggerConfig(ConfigFileApplicationListener.class.getName(),
+						Level.DEBUG, true));
+		loggingContext.updateLoggers();
+		try {
+			runnable.run();
+		}
+		finally {
+			configuration.removeLogger(ConfigFileApplicationListener.class.getName());
+			loggingContext.updateLoggers();
 		}
 	}
 
@@ -505,13 +512,13 @@ public class ConfigFileApplicationListenerTests {
 		String property = this.environment.getProperty("my.property");
 		assertThat(this.environment.getActiveProfiles()).contains("dev");
 		assertThat(property).isEqualTo("fromdevprofile");
-		ConfigurationPropertySources propertySource = (ConfigurationPropertySources) this.environment
+		LoadedPropertySources propertySource = (LoadedPropertySources) this.environment
 				.getPropertySources()
 				.get(ConfigFileApplicationListener.APPLICATION_CONFIGURATION_PROPERTY_SOURCE_NAME);
 		Collection<org.springframework.core.env.PropertySource<?>> sources = propertySource
 				.getSource();
 		assertThat(sources).hasSize(2);
-		List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<>();
 		for (org.springframework.core.env.PropertySource<?> source : sources) {
 			if (source instanceof EnumerableCompositePropertySource) {
 				for (org.springframework.core.env.PropertySource<?> nested : ((EnumerableCompositePropertySource) source)
@@ -622,7 +629,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void propertySourceAnnotation() throws Exception {
 		SpringApplication application = new SpringApplication(WithPropertySource.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("the.property");
 		assertThat(property).isEqualTo("fromspecificlocation");
@@ -640,7 +647,7 @@ public class ConfigFileApplicationListenerTests {
 		SpringApplication application = new SpringApplication(
 				WithPropertySourcePlaceholders.class);
 		application.setEnvironment(this.environment);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("the.property");
 		assertThat(property).isEqualTo("fromspecificlocation");
@@ -653,7 +660,7 @@ public class ConfigFileApplicationListenerTests {
 	public void propertySourceAnnotationWithName() throws Exception {
 		SpringApplication application = new SpringApplication(
 				WithPropertySourceAndName.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("the.property");
 		assertThat(property).isEqualTo("fromspecificlocation");
@@ -665,7 +672,7 @@ public class ConfigFileApplicationListenerTests {
 	public void propertySourceAnnotationInProfile() throws Exception {
 		SpringApplication application = new SpringApplication(
 				WithPropertySourceInProfile.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext context = application
 				.run("--spring.profiles.active=myprofile");
 		String property = context.getEnvironment().getProperty("the.property");
@@ -681,7 +688,7 @@ public class ConfigFileApplicationListenerTests {
 	public void propertySourceAnnotationAndNonActiveProfile() throws Exception {
 		SpringApplication application = new SpringApplication(
 				WithPropertySourceAndProfile.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property).isEqualTo("fromapplicationproperties");
@@ -694,7 +701,7 @@ public class ConfigFileApplicationListenerTests {
 	public void propertySourceAnnotationMultipleLocations() throws Exception {
 		SpringApplication application = new SpringApplication(
 				WithPropertySourceMultipleLocations.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("the.property");
 		assertThat(property).isEqualTo("frommorepropertiesfile");
@@ -707,7 +714,7 @@ public class ConfigFileApplicationListenerTests {
 	public void propertySourceAnnotationMultipleLocationsAndName() throws Exception {
 		SpringApplication application = new SpringApplication(
 				WithPropertySourceMultipleLocationsAndName.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("the.property");
 		assertThat(property).isEqualTo("frommorepropertiesfile");
@@ -718,7 +725,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void activateProfileFromProfileSpecificProperties() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.profiles.active=includeprofile");
 		ConfigurableEnvironment environment = this.context.getEnvironment();
 		assertThat(environment).has(matchingProfile("includeprofile"));
@@ -732,7 +739,7 @@ public class ConfigFileApplicationListenerTests {
 	public void profileSubDocumentInSameProfileSpecificFile() throws Exception {
 		// gh-340
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application
 				.run("--spring.profiles.active=activeprofilewithsubdoc");
 		String property = this.context.getEnvironment().getProperty("foobar");
@@ -740,54 +747,14 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
-	public void bindsToSpringApplication() throws Exception {
-		// gh-346
-		this.initializer.setSearchNames("bindtoapplication");
-		this.initializer.postProcessEnvironment(this.environment, this.application);
-		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
-		field.setAccessible(true);
-		assertThat((Banner.Mode) field.get(this.application)).isEqualTo(Banner.Mode.OFF);
-	}
-
-	@Test
-	public void bindsSystemPropertyToSpringApplication() throws Exception {
-		// gh-951
-		System.setProperty("spring.main.banner-mode", "off");
-		this.initializer.postProcessEnvironment(this.environment, this.application);
-		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
-		field.setAccessible(true);
-		assertThat((Banner.Mode) field.get(this.application)).isEqualTo(Banner.Mode.OFF);
-	}
-
-	@Test
 	public void profileSubDocumentInDifferentProfileSpecificFile() throws Exception {
 		// gh-4132
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run(
 				"--spring.profiles.active=activeprofilewithdifferentsubdoc,activeprofilewithdifferentsubdoc2");
 		String property = this.context.getEnvironment().getProperty("foobar");
 		assertThat(property).isEqualTo("baz");
-	}
-
-	@Test
-	public void setIgnoreBeanInfoPropertyByDefault() throws Exception {
-		this.initializer.setSearchNames("testproperties");
-		this.initializer.postProcessEnvironment(this.environment, this.application);
-		String property = System
-				.getProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME);
-		assertThat(property).isEqualTo("true");
-	}
-
-	@Test
-	public void disableIgnoreBeanInfoProperty() throws Exception {
-		this.initializer.setSearchNames("testproperties");
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				"spring.beaninfo.ignore=false");
-		this.initializer.postProcessEnvironment(this.environment, this.application);
-		String property = System
-				.getProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME);
-		assertThat(property).isEqualTo("false");
 	}
 
 	@Test
@@ -805,7 +772,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void customDefaultProfile() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.profiles.default=customdefault");
 		String property = this.context.getEnvironment().getProperty("customdefault");
 		assertThat(property).isEqualTo("true");
@@ -814,7 +781,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void customDefaultProfileAndActive() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.profiles.default=customdefault",
 				"--spring.profiles.active=dev");
 		String property = this.context.getEnvironment().getProperty("my.property");
@@ -827,7 +794,7 @@ public class ConfigFileApplicationListenerTests {
 	public void customDefaultProfileAndActiveFromFile() throws Exception {
 		// gh-5998
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.config.name=customprofile",
 				"--spring.profiles.default=customdefault");
 		ConfigurableEnvironment environment = this.context.getEnvironment();
@@ -835,6 +802,41 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(environment.containsProperty("customprofile-specific")).isTrue();
 		assertThat(environment.containsProperty("customprofile-customdefault")).isTrue();
 		assertThat(environment.acceptsProfiles("customdefault")).isTrue();
+	}
+
+	@Test
+	public void additionalProfilesCanBeIncludedFromAnyPropertySource() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		this.context = application.run("--spring.profiles.active=myprofile",
+				"--spring.profiles.include=dev");
+		String property = this.context.getEnvironment().getProperty("my.property");
+		assertThat(property).isEqualTo("fromdevpropertiesfile");
+		assertThat(this.context.getEnvironment().containsProperty("customdefault"))
+				.isFalse();
+	}
+
+	@Test
+	public void profileCanBeIncludedWithoutAnyBeingActive() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		this.context = application.run("--spring.profiles.include=dev");
+		String property = this.context.getEnvironment().getProperty("my.property");
+		assertThat(property).isEqualTo("fromdevpropertiesfile");
+	}
+
+	@Test
+	public void activeProfilesCanBeConfiguredUsingPlaceholdersResolvedAgainstTheEnvironment()
+			throws Exception {
+		Map<String, Object> source = new HashMap<>();
+		source.put("activeProfile", "testPropertySource");
+		org.springframework.core.env.PropertySource<?> propertySource = new MapPropertySource(
+				"test", source);
+		this.environment.getPropertySources().addLast(propertySource);
+		this.initializer.setSearchNames("testactiveprofiles");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getActiveProfiles())
+				.containsExactly("testPropertySource");
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(
@@ -846,7 +848,7 @@ public class ConfigFileApplicationListenerTests {
 			public boolean matches(ConfigurableEnvironment value) {
 				MutablePropertySources sources = new MutablePropertySources(
 						value.getPropertySources());
-				ConfigurationPropertySources.finishAndRelocate(sources);
+				LoadedPropertySources.finishAndRelocate(sources);
 				return sources.contains(sourceName);
 			}
 
@@ -919,7 +921,7 @@ public class ConfigFileApplicationListenerTests {
 
 		@Override
 		List<EnvironmentPostProcessor> loadPostProcessors() {
-			return new ArrayList<EnvironmentPostProcessor>(
+			return new ArrayList<>(
 					Arrays.asList(new LowestPrecedenceEnvironmentPostProcessor()));
 		}
 

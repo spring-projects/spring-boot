@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,6 +81,11 @@ public class GroovyGrabDependencyResolverTests {
 				return new String[] { "." };
 			}
 
+			@Override
+			public boolean isQuiet() {
+				return false;
+			}
+
 		};
 		this.resolver = new GroovyGrabDependencyResolver(configuration);
 	}
@@ -105,10 +110,10 @@ public class GroovyGrabDependencyResolverTests {
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void resolveShorthandArtifactWithDependencies() throws Exception {
-		List<File> resolved = this.resolver.resolve(Arrays.asList("spring-core"));
+		List<File> resolved = this.resolver.resolve(Arrays.asList("spring-beans"));
 		assertThat(resolved).hasSize(2);
-		assertThat(getNames(resolved)).has((Condition) Matched.by(
-				hasItems(startsWith("commons-logging-"), startsWith("spring-core-"))));
+		assertThat(getNames(resolved)).has((Condition) Matched
+				.by(hasItems(startsWith("spring-core-"), startsWith("spring-beans-"))));
 	}
 
 	@Test
@@ -121,7 +126,7 @@ public class GroovyGrabDependencyResolverTests {
 	}
 
 	public Set<String> getNames(Collection<File> files) {
-		Set<String> names = new HashSet<String>(files.size());
+		Set<String> names = new HashSet<>(files.size());
 		for (File file : files) {
 			names.add(file.getName());
 		}

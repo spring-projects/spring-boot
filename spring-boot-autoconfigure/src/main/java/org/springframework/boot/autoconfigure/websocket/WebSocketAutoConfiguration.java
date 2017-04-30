@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,16 +36,16 @@ import org.springframework.context.annotation.Configuration;
  * the appropriate WebSocket modules to be on the classpath.
  * <p>
  * If Tomcat's WebSocket support is detected on the classpath we add a customizer that
- * installs the Tomcat Websocket initializer. In a non-embedded container it should
- * already be there.
+ * installs the Tomcat Websocket initializer. In a non-embedded server it should already
+ * be there.
  * <p>
  * If Jetty's WebSocket support is detected on the classpath we add a configuration that
- * configures the context with WebSocket support. In a non-embedded container it should
+ * configures the context with WebSocket support. In a non-embedded server it should
  * already be there.
  * <p>
  * If Undertow's WebSocket support is detected on the classpath we add a customizer that
- * installs the Undertow Websocket DeploymentInfo Customizer. In a non-embedded container
- * it should already be there.
+ * installs the Undertow Websocket DeploymentInfo Customizer. In a non-embedded server it
+ * should already be there.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -52,8 +53,8 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, ServerContainer.class })
-@ConditionalOnWebApplication
-@AutoConfigureBefore(EmbeddedServletContainerAutoConfiguration.class)
+@ConditionalOnWebApplication(type = Type.SERVLET)
+@AutoConfigureBefore(ServletWebServerFactoryAutoConfiguration.class)
 public class WebSocketAutoConfiguration {
 
 	@Configuration

@@ -8,6 +8,26 @@
     }
   },
   {
+    "name": "security.basic.authorize-mode",
+    "defaultValue": "role"
+  },
+  {
+    "name": "security.headers.content-security-policy-mode",
+    "defaultValue": "default"
+  },
+  {
+    "name": "security.headers.hsts",
+    "defaultValue": "all"
+  },
+  {
+    "name": "security.sessions",
+    "defaultValue": "stateless"
+  },
+  {
+    "name": "server.error.include-stacktrace",
+    "defaultValue": "never"
+  },
+  {
     "name": "server.error.whitelabel.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable the default error page displayed in browsers in case of a server error.",
@@ -23,7 +43,7 @@
     "name": "spring.aop.proxy-target-class",
     "type": "java.lang.Boolean",
     "description": "Whether subclass-based (CGLIB) proxies are to be created (true) as opposed to standard Java interface-based proxies (false).",
-    "defaultValue": false
+    "defaultValue": true
   },
   {
     "name": "spring.application.admin.enabled",
@@ -61,6 +81,26 @@
     "defaultValue": false
   },
   {
+    "name": "spring.data.cassandra.compression",
+    "defaultValue": "none"
+  },
+  {
+    "name": "spring.data.cassandra.reactive-repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Cassandra reactive repositories.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.data.couchbase.consistency",
+    "defaultValue": "read-your-own-writes"
+  },
+  {
+    "name": "spring.data.cassandra.repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Cassandra repositories.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.data.couchbase.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Couchbase repositories.",
@@ -76,6 +116,18 @@
     "name": "spring.data.jpa.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable JPA repositories.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.data.ldap.repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable LDAP repositories.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.data.mongodb.reactive-repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Mongo reactive repositories.",
     "defaultValue": true
   },
   {
@@ -103,6 +155,10 @@
     "defaultValue": true
   },
   {
+    "name": "spring.data.rest.detection-strategy",
+    "defaultValue": "default"
+  },
+  {
     "name": "spring.data.solr.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Solr repositories.",
@@ -122,6 +178,10 @@
   	"name": "spring.http.converters.preferred-json-mapper",
   	"type": "java.lang.String",
   	"description": "Preferred JSON mapper to use for HTTP message conversion. Set to \"gson\" to force the use of Gson when both it and Jackson are on the classpath."
+  },
+  {
+    "name": "spring.jersey.type",
+    "defaultValue": "servlet"
   },
   {
     "name": "spring.jmx.default-domain",
@@ -290,10 +350,26 @@
     "defaultValue": true
   },
   {
+    "name": "spring.mvc.locale-resolver",
+    "defaultValue": "accept-header"
+  },
+  {
+    "name": "spring.rabbitmq.cache.connection.mode",
+    "defaultValue": "channel"
+  },
+  {
     "name": "spring.rabbitmq.dynamic",
     "type": "java.lang.Boolean",
     "description": "Create an AmqpAdmin bean.",
     "defaultValue": true
+  },
+  {
+    "name": "spring.session.hazelcast.flush-mode",
+    "defaultValue": "on-save"
+  },
+  {
+    "name": "spring.session.redis.flush-mode",
+    "defaultValue": "on-save"
   },
   {
     "name": "spring.social.auto-connection-views",
@@ -314,7 +390,7 @@
     ]
   },
   {
-    "name": "server.jsp-servlet.class-name",
+    "name": "server.servlet.jsp.class-name",
     "providers": [
       {
         "name": "class-reference",

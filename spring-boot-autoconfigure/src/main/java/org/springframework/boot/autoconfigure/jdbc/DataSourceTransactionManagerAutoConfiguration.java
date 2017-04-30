@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,13 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,8 +32,6 @@ import org.springframework.core.Ordered;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
@@ -54,8 +54,13 @@ public class DataSourceTransactionManagerAutoConfiguration {
 
 		private final DataSource dataSource;
 
-		DataSourceTransactionManagerConfiguration(DataSource dataSource) {
+		private final TransactionManagerCustomizers transactionManagerCustomizers;
+
+		DataSourceTransactionManagerConfiguration(DataSource dataSource,
+				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 			this.dataSource = dataSource;
+			this.transactionManagerCustomizers = transactionManagerCustomizers
+					.getIfAvailable();
 		}
 
 		@Bean
@@ -64,16 +69,11 @@ public class DataSourceTransactionManagerAutoConfiguration {
 				DataSourceProperties properties) {
 			DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(
 					this.dataSource);
-			properties.getTransaction().applyTo(transactionManager);
+			if (this.transactionManagerCustomizers != null) {
+				this.transactionManagerCustomizers.customize(transactionManager);
+			}
 			return transactionManager;
 		}
-
-	}
-
-	@ConditionalOnMissingBean(AbstractTransactionManagementConfiguration.class)
-	@Configuration
-	@EnableTransactionManagement(proxyTargetClass = true)
-	protected static class TransactionManagementConfiguration {
 
 	}
 

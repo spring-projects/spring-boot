@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ public class InMemoryMessageRepository implements MessageRepository {
 
 	private static AtomicLong counter = new AtomicLong();
 
-	private final ConcurrentMap<Long, Message> messages = new ConcurrentHashMap<Long, Message>();
+	private final ConcurrentMap<Long, Message> messages = new ConcurrentHashMap<>();
 
 	@Override
 	public Iterable<Message> findAll() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.springframework.session.hazelcast.HazelcastFlushMode;
  * @author Vedran Pavic
  * @since 1.4.0
  */
-@ConfigurationProperties("spring.session")
+@ConfigurationProperties(prefix = "spring.session")
 public class SessionProperties {
 
 	/**
@@ -43,8 +43,6 @@ public class SessionProperties {
 	private final Hazelcast hazelcast = new Hazelcast();
 
 	private final Jdbc jdbc = new Jdbc();
-
-	private final Mongo mongo = new Mongo();
 
 	private final Redis redis = new Redis();
 
@@ -76,10 +74,6 @@ public class SessionProperties {
 
 	public Jdbc getJdbc() {
 		return this.jdbc;
-	}
-
-	public Mongo getMongo() {
-		return this.mongo;
 	}
 
 	public Redis getRedis() {
@@ -179,23 +173,6 @@ public class SessionProperties {
 				this.enabled = enabled;
 			}
 
-		}
-
-	}
-
-	public static class Mongo {
-
-		/**
-		 * Collection name used to store sessions.
-		 */
-		private String collectionName = "sessions";
-
-		public String getCollectionName() {
-			return this.collectionName;
-		}
-
-		public void setCollectionName(String collectionName) {
-			this.collectionName = collectionName;
 		}
 
 	}

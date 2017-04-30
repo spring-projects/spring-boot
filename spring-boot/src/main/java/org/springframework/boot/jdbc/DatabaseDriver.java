@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,8 +72,8 @@ public enum DatabaseDriver {
 	/**
 	 * Maria DB.
 	 */
-	MARIADB("MySQL", "org.mariadb.jdbc.Driver",
-			"org.mariadb.jdbc.MariaDbDataSource", "SELECT 1") {
+	MARIADB("MySQL", "org.mariadb.jdbc.Driver", "org.mariadb.jdbc.MariaDbDataSource",
+			"SELECT 1") {
 
 		@Override
 		public String getId() {
@@ -107,8 +107,17 @@ public enum DatabaseDriver {
 	/**
 	 * SQL Server.
 	 */
-	SQLSERVER("SQL SERVER", "com.microsoft.sqlserver.jdbc.SQLServerDriver",
-			"com.microsoft.sqlserver.jdbc.SQLServerXADataSource", "SELECT 1"),
+	SQLSERVER("Microsoft SQL Server", "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+			"com.microsoft.sqlserver.jdbc.SQLServerXADataSource", "SELECT 1") {
+
+		@Override
+		protected boolean matchProductName(String productName) {
+			return super.matchProductName(productName)
+					|| "SQL SERVER".equalsIgnoreCase(productName);
+
+		}
+
+	},
 
 	/**
 	 * Firebird.
@@ -181,6 +190,7 @@ public enum DatabaseDriver {
 		protected Collection<String> getUrlPrefixes() {
 			return Arrays.asList("informix-sqli", "informix-direct");
 		}
+
 	};
 
 	private final String productName;
