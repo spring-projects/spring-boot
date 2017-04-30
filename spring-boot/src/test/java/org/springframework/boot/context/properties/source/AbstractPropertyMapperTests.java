@@ -27,6 +27,7 @@ import org.springframework.core.env.PropertySource;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Eddú Meléndez
  */
 public abstract class AbstractPropertyMapperTests {
 
@@ -52,7 +53,7 @@ public abstract class AbstractPropertyMapperTests {
 		PropertySource<?> propertySource = new MapPropertySource("test",
 				Collections.singletonMap(name, value));
 		return getMapper().map(propertySource, ConfigurationPropertyName.of(name))
-				.stream().map((mapping) -> mapping.getPropertySourceName()).iterator();
+				.stream().map(PropertyMapping::getPropertySourceName).iterator();
 	}
 
 }
