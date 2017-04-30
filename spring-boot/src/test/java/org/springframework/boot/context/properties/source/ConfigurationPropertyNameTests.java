@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.fail;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Eddú Meléndez
  */
 public class ConfigurationPropertyNameTests {
 
@@ -235,7 +236,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	private Iterator<String> streamElements(String name) {
-		return ConfigurationPropertyName.of(name).stream().map((e) -> e.toString())
+		return ConfigurationPropertyName.of(name).stream().map(Element::toString)
 				.iterator();
 	}
 

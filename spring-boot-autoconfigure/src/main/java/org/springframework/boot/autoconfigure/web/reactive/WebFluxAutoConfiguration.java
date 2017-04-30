@@ -73,6 +73,7 @@ import org.springframework.web.reactive.result.view.ViewResolver;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Eddú Meléndez
  * @since 2.0.0
  */
 @Configuration
@@ -157,7 +158,7 @@ public class WebFluxAutoConfiguration {
 		public void configureViewResolvers(ViewResolverRegistry registry) {
 			if (this.viewResolvers != null) {
 				AnnotationAwareOrderComparator.sort(this.viewResolvers);
-				this.viewResolvers.forEach(resolver -> registry.viewResolver(resolver));
+				this.viewResolvers.forEach(registry::viewResolver);
 			}
 		}
 
