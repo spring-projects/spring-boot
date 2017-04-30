@@ -18,9 +18,12 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -30,8 +33,10 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.CachePublicMetrics;
 import org.springframework.boot.actuate.endpoint.DataSourcePublicMetrics;
+import org.springframework.boot.actuate.endpoint.KafkaPublicMetrics;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RichGaugeReaderPublicMetrics;
@@ -43,6 +48,8 @@ import org.springframework.boot.actuate.metrics.rich.RichGaugeReader;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
@@ -57,6 +64,10 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaOperations;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -132,6 +143,22 @@ public class PublicMetricsAutoConfigurationTests {
 		this.context.getBean(DataSource.class).getConnection().close();
 		Collection<Metric<?>> metrics = bean.metrics();
 		assertMetrics(metrics, "datasource.primary.active", "datasource.primary.usage");
+	}
+
+	@Test
+	public void autoKafkaMetrics() {
+		load(KafkaAutoConfiguration.class);
+		List<String> metricsNames =
+				Arrays.asList("producer-metrics.io-wait-ratio", "producer-metrics.outgoing-byte-rate");
+		checkKafkaMetrics(metricsNames);
+	}
+
+	@Test
+	public void multipleKafkaMetrics() {
+		load(KafkaAutoConfiguration.class, MultipleKafkaOperationsConfig.class);
+		List<String> metricsNames =
+				Arrays.asList("producer-metrics.produce-throttle-time-max", "producer-metrics.connection-creation-rate");
+		checkKafkaMetrics(metricsNames);
 	}
 
 	@Test
@@ -249,6 +276,23 @@ public class PublicMetricsAutoConfigurationTests {
 		this.context = context;
 	}
 
+	private void checkKafkaMetrics(List<String> metricsNames) {
+
+		PublicMetrics bean = this.context.getBean(KafkaPublicMetrics.class);
+		String[] kafkaTemplateBeanNames = this.context.getBeanNamesForType(KafkaOperations.class);
+
+		Collection<String> metricNamesToTest = new ArrayList<>();
+		for (String prefix : kafkaTemplateBeanNames) {
+			for (String metricName: metricsNames) {
+				metricNamesToTest.add(prefix + "." + metricName);
+			}
+		}
+
+		Collection<Metric<?>> metrics = bean.metrics();
+		assertMetrics(metrics, metricNamesToTest.toArray(new String[metricNamesToTest.size()]));
+	}
+
+
 	private void load(Class<?>... config) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		if (config.length > 0) {
@@ -280,6 +324,24 @@ public class PublicMetricsAutoConfigurationTests {
 			return InitializedBuilder.create().type(BasicDataSource.class).build();
 		}
 
+	}
+
+	@Configuration
+	static class MultipleKafkaOperationsConfig {
+
+		@Autowired
+		private KafkaProperties properties;
+
+		@Bean
+		public KafkaTemplate<String, String> kafkaTemplate(ProducerFactory<String, String> secondKafkaProducerFactory) {
+			return new KafkaTemplate<>(secondKafkaProducerFactory);
+		}
+
+		@Bean
+		public ProducerFactory<String, String> secondKafkaProducerFactory() {
+			return new DefaultKafkaProducerFactory<>(
+					this.properties.buildProducerProperties());
+		}
 	}
 
 	@Configuration
