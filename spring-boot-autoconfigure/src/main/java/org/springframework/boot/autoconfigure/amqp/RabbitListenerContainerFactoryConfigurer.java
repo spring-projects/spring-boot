@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import org.springframework.amqp.rabbit.config.AbstractRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -33,7 +35,7 @@ import org.springframework.util.Assert;
  * @author Gary Russell
  * @since 1.3.3
  */
-public final class SimpleRabbitListenerContainerFactoryConfigurer {
+public final class RabbitListenerContainerFactoryConfigurer {
 
 	private MessageConverter messageConverter;
 
@@ -67,13 +69,50 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer {
 	}
 
 	/**
-	 * Configure the specified rabbit listener container factory. The factory can be
+	 * Configure the specified simple listener container factory. The factory can be
 	 * further tuned and default settings can be overridden.
 	 * @param factory the {@link SimpleRabbitListenerContainerFactory} instance to
 	 * configure
 	 * @param connectionFactory the {@link ConnectionFactory} to use
 	 */
 	public void configure(SimpleRabbitListenerContainerFactory factory,
+			ConnectionFactory connectionFactory) {
+		configureCommon(factory, connectionFactory);
+		RabbitProperties.Listener listenerConfig = this.rabbitProperties.getListener();
+		if (listenerConfig.getSimple().getConcurrency() != null) {
+			factory.setConcurrentConsumers(listenerConfig.getSimple().getConcurrency());
+		}
+		if (listenerConfig.getSimple().getMaxConcurrency() != null) {
+			factory.setMaxConcurrentConsumers(listenerConfig.getSimple().getMaxConcurrency());
+		}
+		if (listenerConfig.getSimple().getTransactionSize() != null) {
+			factory.setTxSize(listenerConfig.getSimple().getTransactionSize());
+		}
+	}
+
+	/**
+	 * Configure the specified direct listener container factory. The factory can be
+	 * further tuned and default settings can be overridden.
+	 * @param factory the {@link DirectRabbitListenerContainerFactory} instance to
+	 * configure
+	 * @param connectionFactory the {@link ConnectionFactory} to use
+	 */
+	public void configure(DirectRabbitListenerContainerFactory factory,
+			ConnectionFactory connectionFactory) {
+		configureCommon(factory, connectionFactory);
+		RabbitProperties.Listener listenerConfig = this.rabbitProperties.getListener();
+		if (listenerConfig.getDirect().getConsumersPerQueue() != null) {
+			factory.setConsumersPerQueue(listenerConfig.getDirect().getConsumersPerQueue());
+		}
+	}
+
+	/**
+	 * Configure the common properties on the specified rabbit listener container factory.
+	 * @param factory the {@link AbstractRabbitListenerContainerFactory} instance to
+	 * configure
+	 * @param connectionFactory the {@link ConnectionFactory} to use
+	 */
+	private void configureCommon(AbstractRabbitListenerContainerFactory<?> factory,
 			ConnectionFactory connectionFactory) {
 		Assert.notNull(factory, "Factory must not be null");
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
@@ -86,17 +125,8 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer {
 		if (listenerConfig.getAcknowledgeMode() != null) {
 			factory.setAcknowledgeMode(listenerConfig.getAcknowledgeMode());
 		}
-		if (listenerConfig.getConcurrency() != null) {
-			factory.setConcurrentConsumers(listenerConfig.getConcurrency());
-		}
-		if (listenerConfig.getMaxConcurrency() != null) {
-			factory.setMaxConcurrentConsumers(listenerConfig.getMaxConcurrency());
-		}
 		if (listenerConfig.getPrefetch() != null) {
 			factory.setPrefetchCount(listenerConfig.getPrefetch());
-		}
-		if (listenerConfig.getTransactionSize() != null) {
-			factory.setTxSize(listenerConfig.getTransactionSize());
 		}
 		if (listenerConfig.getDefaultRequeueRejected() != null) {
 			factory.setDefaultRequeueRejected(listenerConfig.getDefaultRequeueRejected());

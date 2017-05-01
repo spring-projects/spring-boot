@@ -20,6 +20,7 @@ import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 
 import com.rabbitmq.client.Address;
+
 import org.aopalliance.aop.Advice;
 import org.junit.After;
 import org.junit.Rule;
@@ -30,6 +31,7 @@ import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -293,7 +295,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void testRabbitListenerContainerFactoryWithCustomSettings() {
+	public void testSimpleRabbitListenerContainerFactoryWithCustomSettings() {
 		load(new Class<?>[] { MessageConvertersConfiguration.class,
 				MessageRecoverersConfiguration.class },
 				"spring.rabbitmq.listener.retry.enabled:true",
@@ -303,23 +305,51 @@ public class RabbitAutoConfigurationTests {
 				"spring.rabbitmq.listener.retry.maxInterval:5000",
 				"spring.rabbitmq.listener.autoStartup:false",
 				"spring.rabbitmq.listener.acknowledgeMode:manual",
-				"spring.rabbitmq.listener.concurrency:5",
-				"spring.rabbitmq.listener.maxConcurrency:10",
+				"spring.rabbitmq.listener.simple.concurrency:5",
+				"spring.rabbitmq.listener.simple.maxConcurrency:10",
 				"spring.rabbitmq.listener.prefetch:40",
 				"spring.rabbitmq.listener.defaultRequeueRejected:false",
 				"spring.rabbitmq.listener.idleEventInterval:5",
-				"spring.rabbitmq.listener.transactionSize:20");
+				"spring.rabbitmq.listener.simple.transactionSize:20");
 		SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
 				.getBean("rabbitListenerContainerFactory",
 						SimpleRabbitListenerContainerFactory.class);
 		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
+		assertThat(dfa.getPropertyValue("concurrentConsumers")).isEqualTo(5);
+		assertThat(dfa.getPropertyValue("maxConcurrentConsumers")).isEqualTo(10);
+		assertThat(dfa.getPropertyValue("txSize")).isEqualTo(20);
+		checkCommonProps(dfa);
+	}
+
+	@Test
+	public void testDirectRabbitListenerContainerFactoryWithCustomSettings() {
+		load(new Class<?>[] { MessageConvertersConfiguration.class,
+				MessageRecoverersConfiguration.class },
+				"spring.rabbitmq.listener.container-type:direct",
+				"spring.rabbitmq.listener.retry.enabled:true",
+				"spring.rabbitmq.listener.retry.maxAttempts:4",
+				"spring.rabbitmq.listener.retry.initialInterval:2000",
+				"spring.rabbitmq.listener.retry.multiplier:1.5",
+				"spring.rabbitmq.listener.retry.maxInterval:5000",
+				"spring.rabbitmq.listener.autoStartup:false",
+				"spring.rabbitmq.listener.acknowledgeMode:manual",
+				"spring.rabbitmq.listener.direct.consumers-per-queue:5",
+				"spring.rabbitmq.listener.prefetch:40",
+				"spring.rabbitmq.listener.defaultRequeueRejected:false",
+				"spring.rabbitmq.listener.idleEventInterval:5");
+		DirectRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
+				.getBean("rabbitListenerContainerFactory",
+						DirectRabbitListenerContainerFactory.class);
+		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
+		assertThat(dfa.getPropertyValue("consumersPerQueue")).isEqualTo(5);
+		checkCommonProps(dfa);
+	}
+
+	private void checkCommonProps(DirectFieldAccessor dfa) {
 		assertThat(dfa.getPropertyValue("autoStartup")).isEqualTo(Boolean.FALSE);
 		assertThat(dfa.getPropertyValue("acknowledgeMode"))
 				.isEqualTo(AcknowledgeMode.MANUAL);
-		assertThat(dfa.getPropertyValue("concurrentConsumers")).isEqualTo(5);
-		assertThat(dfa.getPropertyValue("maxConcurrentConsumers")).isEqualTo(10);
 		assertThat(dfa.getPropertyValue("prefetchCount")).isEqualTo(40);
-		assertThat(dfa.getPropertyValue("txSize")).isEqualTo(20);
 		assertThat(dfa.getPropertyValue("messageConverter"))
 				.isSameAs(this.context.getBean("myMessageConverter"));
 		assertThat(dfa.getPropertyValue("defaultRequeueRejected"))
