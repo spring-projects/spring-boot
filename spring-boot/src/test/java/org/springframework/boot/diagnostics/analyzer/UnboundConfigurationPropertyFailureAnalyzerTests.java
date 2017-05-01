@@ -18,10 +18,11 @@ package org.springframework.boot.diagnostics.analyzer;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-import javax.validation.constraints.Min;
-
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -29,42 +30,37 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
-import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link BindFailureAnalyzer}.
+ * Tests for {@link UnboundConfigurationPropertyFailureAnalyzer}.
  *
- * @author Andy Wilkinson
  * @author Madhura Bhave
  */
-public class BindFailureAnalyzerTests {
+public class UnboundConfigurationPropertyFailureAnalyzerTests {
+
+	@Before
+	public void setup() {
+		LocaleContextHolder.setLocale(Locale.US);
+	}
+
+	@After
+	public void cleanup() {
+		LocaleContextHolder.resetLocaleContext();
+	}
 
 	@Test
-	public void analysisForUnboundElementsIsNull() throws Exception {
+	public void bindExceptionDueToUnboundElements() throws Exception {
 		FailureAnalysis analysis = performAnalysis(
 				UnboundElementsFailureConfiguration.class, "test.foo.listValue[0]=hello",
 				"test.foo.listValue[2]=world");
-		assertThat(analysis).isNull();
-	}
-
-	@Test
-	public void analysisForValidationExceptionIsNull() throws Exception {
-		FailureAnalysis analysis = performAnalysis(
-				FieldValidationFailureConfiguration.class, "test.foo.value=1");
-		assertThat(analysis).isNull();
-	}
-
-	@Test
-	public void bindExceptionDueToOtherFailure() throws Exception {
-		FailureAnalysis analysis = performAnalysis(GenericFailureConfiguration.class,
-				"test.foo.value=${BAR}");
-		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "${BAR}",
-				"\"test.foo.value\" from property source \"test\"",
-				"Could not resolve placeholder 'BAR' in value \"${BAR}\""));
+		assertThat(analysis.getDescription()).contains(failure("test.foo.listvalue[2]",
+				"world", "\"test.foo.listValue[2]\" from property source \"test\"",
+				"The elements [test.foo.listvalue[2]] were left unbound."));
 	}
 
 	private static String failure(String property, String value, String origin,
@@ -78,7 +74,7 @@ public class BindFailureAnalyzerTests {
 			String... environment) {
 		BeanCreationException failure = createFailure(configuration, environment);
 		assertThat(failure).isNotNull();
-		return new BindFailureAnalyzer().analyze(failure);
+		return new UnboundConfigurationPropertyFailureAnalyzer().analyze(failure);
 	}
 
 	private BeanCreationException createFailure(Class<?> configuration,
@@ -109,35 +105,8 @@ public class BindFailureAnalyzerTests {
 		sources.addFirst(new MapPropertySource("test", map));
 	}
 
-	@EnableConfigurationProperties(BindValidationFailureAnalyzerTests.FieldValidationFailureProperties.class)
-	static class FieldValidationFailureConfiguration {
-
-	}
-
 	@EnableConfigurationProperties(UnboundElementsFailureProperties.class)
 	static class UnboundElementsFailureConfiguration {
-
-	}
-
-	@EnableConfigurationProperties(GenericFailureProperties.class)
-	static class GenericFailureConfiguration {
-
-	}
-
-	@ConfigurationProperties("test.foo")
-	@Validated
-	static class FieldValidationFailureProperties {
-
-		@Min(value = 5, message = "at least five")
-		private int value;
-
-		public int getValue() {
-			return this.value;
-		}
-
-		public void setValue(int value) {
-			this.value = value;
-		}
 
 	}
 
@@ -153,21 +122,6 @@ public class BindFailureAnalyzerTests {
 		public void setListValue(List<String> listValue) {
 			this.listValue = listValue;
 		}
-	}
-
-	@ConfigurationProperties("test.foo")
-	static class GenericFailureProperties {
-
-		private String value;
-
-		public String getValue() {
-			return this.value;
-		}
-
-		public void setValue(String value) {
-			this.value = value;
-		}
-
 	}
 
 }
