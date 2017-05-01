@@ -40,6 +40,22 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
 
+	public enum ContainerType {
+
+		/**
+		 * SimpleMessageListenerContainer - legacy container where the RabbitMQ consumer
+		 * dispatches messages to an invoker thread.
+		 */
+		SIMPLE,
+
+		/**
+		 * DirectMessageListenerContainer - container where the listener is invoked
+		 * directly on the RabbitMQ consumer thread.
+		 */
+		DIRECT
+
+	}
+
 	/**
 	 * RabbitMQ host.
 	 */
@@ -573,6 +589,11 @@ public class RabbitProperties {
 	public static class AmqpContainer {
 
 		/**
+		 * Container type.
+		 */
+		private ContainerType type = ContainerType.SIMPLE;
+
+		/**
 		 * Start the container automatically on startup.
 		 */
 		private boolean autoStartup = true;
@@ -583,14 +604,19 @@ public class RabbitProperties {
 		private AcknowledgeMode acknowledgeMode;
 
 		/**
-		 * Minimum number of consumers.
+		 * Minimum number of listener invoker threads - applies only to simple containers.
 		 */
 		private Integer concurrency;
 
 		/**
-		 * Maximum number of consumers.
+		 * Maximum number of listener invoker threads - applies only to simple containers.
 		 */
 		private Integer maxConcurrency;
+
+		/**
+		 * Number of RabbitMQ consumers per queue - applies only to direct containers.
+		 */
+		private Integer consumersPerQueue;
 
 		/**
 		 * Number of messages to be handled in a single request. It should be greater than
@@ -599,8 +625,9 @@ public class RabbitProperties {
 		private Integer prefetch;
 
 		/**
-		 * Number of messages to be processed in a transaction. For best results it should
-		 * be less than or equal to the prefetch count.
+		 * Number of messages to be processed in a transaction; number of messages between
+		 * acks. For best results it should be less than or equal to the prefetch count -
+		 * applies only to simple containers.
 		 */
 		private Integer transactionSize;
 
@@ -619,6 +646,14 @@ public class RabbitProperties {
 		 */
 		@NestedConfigurationProperty
 		private final ListenerRetry retry = new ListenerRetry();
+
+		public ContainerType getType() {
+			return this.type;
+		}
+
+		public void setType(ContainerType containerType) {
+			this.type = containerType;
+		}
 
 		public boolean isAutoStartup() {
 			return this.autoStartup;
@@ -650,6 +685,14 @@ public class RabbitProperties {
 
 		public void setMaxConcurrency(Integer maxConcurrency) {
 			this.maxConcurrency = maxConcurrency;
+		}
+
+		public Integer getConsumersPerQueue() {
+			return this.consumersPerQueue;
+		}
+
+		public void setConsumersPerQueue(Integer consumersPerQueue) {
+			this.consumersPerQueue = consumersPerQueue;
 		}
 
 		public Integer getPrefetch() {

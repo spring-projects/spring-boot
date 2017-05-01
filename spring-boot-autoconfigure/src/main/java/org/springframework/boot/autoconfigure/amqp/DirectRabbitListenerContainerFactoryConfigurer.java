@@ -16,30 +16,23 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
-import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 
 /**
  * Configure {@link RabbitListenerContainerFactory} with sensible defaults.
  *
- * @author Stephane Nicoll
  * @author Gary Russell
- * @since 1.3.3
+ * @since 2.0
  */
-public final class SimpleRabbitListenerContainerFactoryConfigurer
-		extends AbstractRabbitListenerContainerFactoryConfigurer<SimpleRabbitListenerContainerFactory> {
+public final class DirectRabbitListenerContainerFactoryConfigurer
+		extends AbstractRabbitListenerContainerFactoryConfigurer<DirectRabbitListenerContainerFactory> {
 
 	@Override
-	protected void configure(SimpleRabbitListenerContainerFactory factory, RabbitProperties rabbitProperties) {
+	protected void configure(DirectRabbitListenerContainerFactory factory, RabbitProperties rabbitProperties) {
 		RabbitProperties.Listener listenerConfig = rabbitProperties.getListener();
-		if (listenerConfig.getConcurrency() != null) {
-			factory.setConcurrentConsumers(listenerConfig.getConcurrency());
-		}
-		if (listenerConfig.getMaxConcurrency() != null) {
-			factory.setMaxConcurrentConsumers(listenerConfig.getMaxConcurrency());
-		}
-		if (listenerConfig.getTransactionSize() != null) {
-			factory.setTxSize(listenerConfig.getTransactionSize());
+		if (listenerConfig.getConsumersPerQueue() != null) {
+			factory.setConsumersPerQueue(listenerConfig.getConsumersPerQueue());
 		}
 	}
 
