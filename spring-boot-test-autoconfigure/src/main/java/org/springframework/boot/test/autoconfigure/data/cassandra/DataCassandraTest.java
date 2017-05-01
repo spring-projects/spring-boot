@@ -40,13 +40,8 @@ import org.springframework.test.context.BootstrapWith;
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to Cassandra tests.
- * <p>
- * By default, tests annotated with {@code @DataCassandraTest} will use an embedded in-memory
- * Cassandra process (if available). They will also be transactional with the usual
- * test-related semantics (i.e. rollback by default).
  *
  * @author Eddú Meléndez
- * @author Stephane Nicoll
  * @since 2.0.0
  */
 @Target(ElementType.TYPE)
