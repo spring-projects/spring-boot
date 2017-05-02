@@ -3871,14 +3871,13 @@ relevant annotation to its method:
 
 [source,java,indent=0]
 ----
-	import javax.cache.annotation.CacheResult;
-
+    import org.springframework.cache.annotation.Cacheable
 	import org.springframework.stereotype.Component;
 
 	@Component
 	public class MathService {
 
-		@CacheResult
+		@Cacheable("piDecimals")
 		public int computePiDecimal(int i) {
 			// ...
 		}
@@ -3886,9 +3885,14 @@ relevant annotation to its method:
 	}
 ----
 
-NOTE: You can either use the standard JSR-107 (JCache) annotations or Spring's own
-caching annotations transparently. We strongly advise you however to not mix and match
-them.
+This example demonstrates the use of caching on a potentially costly operation. Before
+invoking `computePiDecimal`, the abstraction will look for an entry in the `piDecimals`
+cache matching the `i` argument. If an entry is found, the content in the cache is
+immediately returned to the caller and the method is not invoked. Otherwise, the method is
+invoked and the cache is updated before returning the value.
+
+NOTE: You can also use the standard JSR-107 (JCache) annotations (e.g. `@CacheResult`)
+transparently. We strongly advise you however to not mix and match them.
 
 TIP: It is also possible to {spring-reference}/#cache-annotations-put[update] or
 {spring-reference}/#cache-annotations-evict[evict] data from the cache transparently.
@@ -3901,6 +3905,13 @@ materialized by the `org.springframework.cache.Cache` and
 `org.springframework.cache.CacheManager` interfaces. Spring Boot auto-configures a
 suitable `CacheManager` according to the implementation as long as the caching support is
 enabled via the `@EnableCaching` annotation.
+
+TIP: If you do not add any specific cache library, Spring Boot will auto-configure a
+<<boot-features-caching-provider-simple,Simple provider>> that uses simple maps in
+memory. When a cache is required for an operation (i.e. `piDecimals` in the example
+above), the provider will create it on-the-fly for you. When you have made up your mind
+about the cache provider to use, please make sure to read its documentation to figure out
+how to configure the caches that your application defines.
 
 NOTE: If you are using the cache infrastructure with beans that are not interface-based,
 make sure to enable the `proxyTargetClass` attribute of `@EnableCaching`.
@@ -4181,7 +4192,14 @@ auto-configuration.
 ==== Simple
 If none of these options worked out, a simple implementation using `ConcurrentHashMap`
 as cache store is configured. This is the default if no caching library is present in
-your application.
+your application. Caches are created on-the-fly by default but you can restrict the list
+of available caches using the `cache-names` property. For instance, you you want only a
+`foo` and `bar` caches:
+
+[source,properties,indent=0]
+----
+    spring.cache.cache-names=foo,bar
+----
 
 
 
