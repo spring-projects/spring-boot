@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  */
 public class InMemoryAuditEventRepository implements AuditEventRepository {
 
-	private static final int DEFAULT_CAPACITY = 4000;
+	private static final int DEFAULT_CAPACITY = 1000;
 
 	private final Object monitor = new Object();
 
