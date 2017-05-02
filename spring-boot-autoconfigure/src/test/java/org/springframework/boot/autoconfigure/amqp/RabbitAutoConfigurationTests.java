@@ -305,12 +305,12 @@ public class RabbitAutoConfigurationTests {
 				"spring.rabbitmq.listener.retry.maxInterval:5000",
 				"spring.rabbitmq.listener.autoStartup:false",
 				"spring.rabbitmq.listener.acknowledgeMode:manual",
-				"spring.rabbitmq.listener.simple.concurrency:5",
-				"spring.rabbitmq.listener.simple.maxConcurrency:10",
+				"spring.rabbitmq.listener.concurrency:5",
+				"spring.rabbitmq.listener.maxConcurrency:10",
 				"spring.rabbitmq.listener.prefetch:40",
 				"spring.rabbitmq.listener.defaultRequeueRejected:false",
 				"spring.rabbitmq.listener.idleEventInterval:5",
-				"spring.rabbitmq.listener.simple.transactionSize:20");
+				"spring.rabbitmq.listener.transactionSize:20");
 		SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
 				.getBean("rabbitListenerContainerFactory",
 						SimpleRabbitListenerContainerFactory.class);
@@ -325,7 +325,7 @@ public class RabbitAutoConfigurationTests {
 	public void testDirectRabbitListenerContainerFactoryWithCustomSettings() {
 		load(new Class<?>[] { MessageConvertersConfiguration.class,
 				MessageRecoverersConfiguration.class },
-				"spring.rabbitmq.listener.container-type:direct",
+				"spring.rabbitmq.listener.type:direct",
 				"spring.rabbitmq.listener.retry.enabled:true",
 				"spring.rabbitmq.listener.retry.maxAttempts:4",
 				"spring.rabbitmq.listener.retry.initialInterval:2000",
@@ -333,7 +333,7 @@ public class RabbitAutoConfigurationTests {
 				"spring.rabbitmq.listener.retry.maxInterval:5000",
 				"spring.rabbitmq.listener.autoStartup:false",
 				"spring.rabbitmq.listener.acknowledgeMode:manual",
-				"spring.rabbitmq.listener.direct.consumers-per-queue:5",
+				"spring.rabbitmq.listener.consumers-per-queue:5",
 				"spring.rabbitmq.listener.prefetch:40",
 				"spring.rabbitmq.listener.defaultRequeueRejected:false",
 				"spring.rabbitmq.listener.idleEventInterval:5");

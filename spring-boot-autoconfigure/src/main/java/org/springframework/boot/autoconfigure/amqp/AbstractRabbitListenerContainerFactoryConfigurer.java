@@ -17,9 +17,7 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import org.springframework.amqp.rabbit.config.AbstractRabbitListenerContainerFactory;
-import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
-import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.retry.MessageRecoverer;
@@ -31,11 +29,14 @@ import org.springframework.util.Assert;
 /**
  * Configure {@link RabbitListenerContainerFactory} with sensible defaults.
  *
- * @author Stephane Nicoll
+ * @param <T> the container factory type.
+ *
  * @author Gary Russell
- * @since 1.3.3
+ * @since 2.0
+ *
  */
-public final class RabbitListenerContainerFactoryConfigurer {
+public abstract class AbstractRabbitListenerContainerFactoryConfigurer<
+			T extends AbstractRabbitListenerContainerFactory<?>> {
 
 	private MessageConverter messageConverter;
 
@@ -48,7 +49,7 @@ public final class RabbitListenerContainerFactoryConfigurer {
 	 * converter should be used.
 	 * @param messageConverter the {@link MessageConverter}
 	 */
-	void setMessageConverter(MessageConverter messageConverter) {
+	protected void setMessageConverter(MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
 	}
 
@@ -56,7 +57,7 @@ public final class RabbitListenerContainerFactoryConfigurer {
 	 * Set the {@link MessageRecoverer} to use or {@code null} to rely on the default.
 	 * @param messageRecoverer the {@link MessageRecoverer}
 	 */
-	void setMessageRecoverer(MessageRecoverer messageRecoverer) {
+	protected void setMessageRecoverer(MessageRecoverer messageRecoverer) {
 		this.messageRecoverer = messageRecoverer;
 	}
 
@@ -64,56 +65,18 @@ public final class RabbitListenerContainerFactoryConfigurer {
 	 * Set the {@link RabbitProperties} to use.
 	 * @param rabbitProperties the {@link RabbitProperties}
 	 */
-	void setRabbitProperties(RabbitProperties rabbitProperties) {
+	protected void setRabbitProperties(RabbitProperties rabbitProperties) {
 		this.rabbitProperties = rabbitProperties;
 	}
 
 	/**
-	 * Configure the specified simple listener container factory. The factory can be
+	 * Configure the specified rabbit listener container factory. The factory can be
 	 * further tuned and default settings can be overridden.
-	 * @param factory the {@link SimpleRabbitListenerContainerFactory} instance to
-	 * configure
-	 * @param connectionFactory the {@link ConnectionFactory} to use
-	 */
-	public void configure(SimpleRabbitListenerContainerFactory factory,
-			ConnectionFactory connectionFactory) {
-		configureCommon(factory, connectionFactory);
-		RabbitProperties.Listener listenerConfig = this.rabbitProperties.getListener();
-		if (listenerConfig.getSimple().getConcurrency() != null) {
-			factory.setConcurrentConsumers(listenerConfig.getSimple().getConcurrency());
-		}
-		if (listenerConfig.getSimple().getMaxConcurrency() != null) {
-			factory.setMaxConcurrentConsumers(listenerConfig.getSimple().getMaxConcurrency());
-		}
-		if (listenerConfig.getSimple().getTransactionSize() != null) {
-			factory.setTxSize(listenerConfig.getSimple().getTransactionSize());
-		}
-	}
-
-	/**
-	 * Configure the specified direct listener container factory. The factory can be
-	 * further tuned and default settings can be overridden.
-	 * @param factory the {@link DirectRabbitListenerContainerFactory} instance to
-	 * configure
-	 * @param connectionFactory the {@link ConnectionFactory} to use
-	 */
-	public void configure(DirectRabbitListenerContainerFactory factory,
-			ConnectionFactory connectionFactory) {
-		configureCommon(factory, connectionFactory);
-		RabbitProperties.Listener listenerConfig = this.rabbitProperties.getListener();
-		if (listenerConfig.getDirect().getConsumersPerQueue() != null) {
-			factory.setConsumersPerQueue(listenerConfig.getDirect().getConsumersPerQueue());
-		}
-	}
-
-	/**
-	 * Configure the common properties on the specified rabbit listener container factory.
 	 * @param factory the {@link AbstractRabbitListenerContainerFactory} instance to
 	 * configure
 	 * @param connectionFactory the {@link ConnectionFactory} to use
 	 */
-	private void configureCommon(AbstractRabbitListenerContainerFactory<?> factory,
-			ConnectionFactory connectionFactory) {
+	public final void configure(T factory, ConnectionFactory connectionFactory) {
 		Assert.notNull(factory, "Factory must not be null");
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		factory.setConnectionFactory(connectionFactory);
@@ -147,7 +110,14 @@ public final class RabbitListenerContainerFactoryConfigurer {
 			builder.recoverer(recoverer);
 			factory.setAdviceChain(builder.build());
 		}
-
+		configure(factory, this.rabbitProperties);
 	}
+
+	/**
+	 * Perform factory-specific configuration.
+	 *
+	 * @param factory the factory
+	 */
+	protected abstract void configure(T factory, RabbitProperties rabbitProperties);
 
 }
