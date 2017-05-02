@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.data.redis;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties for Redis.
@@ -29,6 +28,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @author Eddú Meléndez
  * @author Marco Aust
  * @author Mark Paluch
+ * @author Stephane Nicoll
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
@@ -68,21 +68,13 @@ public class RedisProperties {
 	 */
 	private int timeout;
 
-	private Pool pool;
-
 	private Sentinel sentinel;
 
 	private Cluster cluster;
 
-	/**
-	 * Jedis client properties.
-	 */
-	private Jedis jedis;
+	private final Jedis jedis = new Jedis();
 
-	/**
-	 * Lettuce client properties.
-	 */
-	private Lettuce lettuce;
+	private final Lettuce lettuce = new Lettuce();
 
 	public int getDatabase() {
 		return this.database;
@@ -148,15 +140,6 @@ public class RedisProperties {
 		this.sentinel = sentinel;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "Moved to client-specific properties", replacement = "spring.redis.jedis.pool")
-	public Pool getPool() {
-		return this.pool;
-	}
-
-	public void setPool(Pool pool) {
-		this.pool = pool;
-	}
-
 	public Cluster getCluster() {
 		return this.cluster;
 	}
@@ -166,19 +149,11 @@ public class RedisProperties {
 	}
 
 	public Jedis getJedis() {
-		return jedis;
-	}
-
-	public void setJedis(Jedis jedis) {
-		this.jedis = jedis;
+		return this.jedis;
 	}
 
 	public Lettuce getLettuce() {
-		return lettuce;
-	}
-
-	public void setLettuce(Lettuce lettuce) {
-		this.lettuce = lettuce;
+		return this.lettuce;
 	}
 
 	/**
@@ -339,7 +314,7 @@ public class RedisProperties {
 	public static class Lettuce {
 
 		/**
-		 * Shutdown timeout in milliseconds for lettuce.
+		 * Shutdown timeout in milliseconds.
 		 */
 		private int shutdownTimeout = 2000;
 

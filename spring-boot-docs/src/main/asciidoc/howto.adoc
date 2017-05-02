@@ -3075,12 +3075,14 @@ In this example we are using a single application context (the one created by th
 listener) and attaching it to the `DispatcherServlet` using an init parameter. This is
 normal in a Spring Boot application (you normally only have one application context).
 
+
+
 [[howto-use-lettuce-instead-of-jedis]]
 === Use Lettuce instead of Jedis
-The Spring Boot Redis starter (`spring-boot-starter-data-redis` in particular) uses
+The Spring Boot starter (`spring-boot-starter-data-redis`) uses
 https://github.com/xetorthio/jedis/[Jedis] by default. You need to exclude that dependency
-and include the https://github.com/lettuce-io/lettuce-core/[Lettuce] one instead. Spring Boot provides a managed dependency
-to help make this process as easy as possible.
+and include the https://github.com/lettuce-io/lettuce-core/[Lettuce] one instead. Spring
+Boot manages that dependency to help make this process as easy as possible.
 
 Example in Maven:
 

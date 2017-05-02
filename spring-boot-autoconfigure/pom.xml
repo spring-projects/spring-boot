@@ -101,6 +101,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>io.projectreactor.ipc</groupId>
 			<artifactId>reactor-netty</artifactId>
 			<optional>true</optional>
@@ -479,11 +484,6 @@
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>io.lettuce</groupId>
-			<artifactId>lettuce-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
