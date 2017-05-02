@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.servlet.support;
 
+import java.util.Collections;
+
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
@@ -115,11 +117,11 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		builder.contextClass(AnnotationConfigServletWebServerApplicationContext.class);
 		builder = configure(builder);
 		SpringApplication application = builder.build();
-		if (application.getSources().isEmpty() && AnnotationUtils
+		if (application.getAllSources().isEmpty() && AnnotationUtils
 				.findAnnotation(getClass(), Configuration.class) != null) {
-			application.getSources().add(getClass());
+			application.addPrimarySources(Collections.singleton(getClass()));
 		}
-		Assert.state(!application.getSources().isEmpty(),
+		Assert.state(!application.getAllSources().isEmpty(),
 				"No SpringApplication sources have been defined. Either override the "
 						+ "configure method or add an @Configuration annotation");
 		// Ensure error pages are registered

@@ -70,6 +70,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
@@ -213,9 +214,9 @@ public class SpringApplication {
 
 	private static final Log logger = LogFactory.getLog(SpringApplication.class);
 
-	private final Object[] primarySources;
+	private Set<Object> primarySources;
 
-	private Set<Object> additionalSources = new LinkedHashSet<>();
+	private Set<Object> sources = new LinkedHashSet<>();
 
 	private Class<?> mainApplicationClass;
 
@@ -261,7 +262,6 @@ public class SpringApplication {
 	 */
 	public SpringApplication(Object... primarySources) {
 		initialize(primarySources);
-		this.primarySources = primarySources;
 	}
 
 	/**
@@ -277,12 +277,13 @@ public class SpringApplication {
 	 */
 	public SpringApplication(ResourceLoader resourceLoader, Object... primarySources) {
 		this.resourceLoader = resourceLoader;
-		this.primarySources = primarySources;
 		initialize(primarySources);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void initialize(Object[] sources) {
+	private void initialize(Object[] primarySources) {
+		Assert.notNull(primarySources, "PrimarySources must not be null");
+		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = deduceWebApplication();
 		setInitializers((Collection) getSpringFactoriesInstances(
 				ApplicationContextInitializer.class));
@@ -1123,17 +1124,34 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Add additional items to the primary sources that will be added to an
+	 * ApplicationContext when {@link #run(String...)} is called.
+	 * <p>
+	 * The sources here are added to those that were set in the constructor. Most users
+	 * should consider using {@link #getSources()}/{@link #setSources(Set)} rather than
+	 * this calling method.
+	 * @param additionalPrimarySources the additional primary sources to add
+	 * @see #SpringApplication(Object...)
+	 * @see #getSources()
+	 * @see #setSources(Set)
+	 * @see #getAllSources()
+	 */
+	public void addPrimarySources(Collection<Object> additionalPrimarySources) {
+		this.primarySources.addAll(additionalPrimarySources);
+	}
+
+	/**
 	 * Returns a mutable set of the sources that will be added to an ApplicationContext
 	 * when {@link #run(String...)} is called.
 	 * <p>
 	 * Sources set here will be used in addition to any primary sources set in the
 	 * constructor.
-	 * @return the sources the application sources.
+	 * @return the application sources.
 	 * @see #SpringApplication(Object...)
 	 * @see #getAllSources()
 	 */
 	public Set<Object> getSources() {
-		return this.additionalSources;
+		return this.sources;
 	}
 
 	/**
@@ -1142,13 +1160,13 @@ public class SpringApplication {
 	 * <p>
 	 * Sources set here will be used in addition to any primary sources set in the
 	 * constructor.
-	 * @param sources the sources to set
+	 * @param sources the application sources to set
 	 * @see #SpringApplication(Object...)
 	 * @see #getAllSources()
 	 */
 	public void setSources(Set<Object> sources) {
 		Assert.notNull(sources, "Sources must not be null");
-		this.additionalSources = new LinkedHashSet<>(sources);
+		this.sources = new LinkedHashSet<>(sources);
 	}
 
 	/**
@@ -1160,10 +1178,12 @@ public class SpringApplication {
 	 */
 	public Set<Object> getAllSources() {
 		Set<Object> allSources = new LinkedHashSet<>();
-		if (!ObjectUtils.isEmpty(this.primarySources)) {
-			allSources.addAll(Arrays.asList(this.primarySources));
+		if (!CollectionUtils.isEmpty(this.primarySources)) {
+			allSources.addAll(this.primarySources);
 		}
-		allSources.addAll(this.additionalSources);
+		if (!CollectionUtils.isEmpty(this.sources)) {
+			allSources.addAll(this.sources);
+		}
 		return Collections.unmodifiableSet(allSources);
 	}
 

@@ -61,6 +61,7 @@ import org.springframework.core.io.ResourceLoader;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @see SpringApplication
  */
 public class SpringApplicationBuilder {
 
@@ -165,7 +166,7 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplication build(String... args) {
 		configureAsChildIfNecessary(args);
-		this.application.setSources(this.sources);
+		this.application.addPrimarySources(this.sources);
 		return this.application;
 	}
 
@@ -193,7 +194,7 @@ public class SpringApplicationBuilder {
 		bannerMode(Banner.Mode.OFF);
 
 		// Make sure sources get copied over
-		this.application.setSources(this.sources);
+		this.application.addPrimarySources(this.sources);
 
 		return child;
 	}

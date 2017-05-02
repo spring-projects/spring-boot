@@ -304,6 +304,16 @@ public class SpringApplicationBuilderTests {
 		assertThat(application.application().getInitializers()).hasSize(5);
 	}
 
+	@Test
+	public void sourcesWithBoundSources() throws Exception {
+		SpringApplicationBuilder application = new SpringApplicationBuilder()
+				.web(WebApplicationType.NONE).sources(ExampleConfig.class)
+				.properties("spring.main.sources=" + ChildConfig.class.getName());
+		this.context = application.run();
+		this.context.getBean(ExampleConfig.class);
+		this.context.getBean(ChildConfig.class);
+	}
+
 	@Configuration
 	static class ExampleConfig {
 
