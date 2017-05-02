@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.core.ResolvableType;
 
 /**
@@ -37,8 +38,11 @@ import org.springframework.core.ResolvableType;
 class JavaBeanBinder implements BeanBinder {
 
 	@Override
-	public <T> T bind(Bindable<T> target, boolean hasKnownBindableProperties,
-			BeanPropertyBinder propertyBinder) {
+	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target,
+			BindContext context, BeanPropertyBinder propertyBinder) {
+		boolean hasKnownBindableProperties = context.streamSources()
+				.map((s) -> s.containsDescendantOf(name).orElse(false))
+				.anyMatch(Boolean.TRUE::equals);
 		Bean<T> bean = Bean.get(target, hasKnownBindableProperties);
 		if (bean == null) {
 			return null;
