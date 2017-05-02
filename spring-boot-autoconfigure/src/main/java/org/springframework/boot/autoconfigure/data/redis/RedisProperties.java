@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Christoph Strobl
  * @author Eddú Meléndez
  * @author Marco Aust
+ * @author Mark Paluch
+ * @author Stephane Nicoll
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
@@ -66,11 +68,13 @@ public class RedisProperties {
 	 */
 	private int timeout;
 
-	private Pool pool;
-
 	private Sentinel sentinel;
 
 	private Cluster cluster;
+
+	private final Jedis jedis = new Jedis();
+
+	private final Lettuce lettuce = new Lettuce();
 
 	public int getDatabase() {
 		return this.database;
@@ -136,20 +140,20 @@ public class RedisProperties {
 		this.sentinel = sentinel;
 	}
 
-	public Pool getPool() {
-		return this.pool;
-	}
-
-	public void setPool(Pool pool) {
-		this.pool = pool;
-	}
-
 	public Cluster getCluster() {
 		return this.cluster;
 	}
 
 	public void setCluster(Cluster cluster) {
 		this.cluster = cluster;
+	}
+
+	public Jedis getJedis() {
+		return this.jedis;
+	}
+
+	public Lettuce getLettuce() {
+		return this.lettuce;
 	}
 
 	/**
@@ -280,6 +284,59 @@ public class RedisProperties {
 
 		public void setNodes(String nodes) {
 			this.nodes = nodes;
+		}
+
+	}
+
+	/**
+	 * Jedis client properties.
+	 */
+	public static class Jedis {
+
+		/**
+		 * Jedis pool configuration.
+		 */
+		private Pool pool;
+
+		public Pool getPool() {
+			return this.pool;
+		}
+
+		public void setPool(Pool pool) {
+			this.pool = pool;
+		}
+
+	}
+
+	/**
+	 * Lettuce client properties.
+	 */
+	public static class Lettuce {
+
+		/**
+		 * Shutdown timeout in milliseconds.
+		 */
+		private int shutdownTimeout = 2000;
+
+		/**
+		 * Lettuce pool configuration.
+		 */
+		private Pool pool;
+
+		public int getShutdownTimeout() {
+			return this.shutdownTimeout;
+		}
+
+		public void setShutdownTimeout(int shutdownTimeout) {
+			this.shutdownTimeout = shutdownTimeout;
+		}
+
+		public Pool getPool() {
+			return this.pool;
+		}
+
+		public void setPool(Pool pool) {
+			this.pool = pool;
 		}
 
 	}

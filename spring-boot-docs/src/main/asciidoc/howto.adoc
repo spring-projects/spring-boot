@@ -3074,3 +3074,46 @@ but the rest of it is normal for a Spring application in Servlet 2.5. Example:
 In this example we are using a single application context (the one created by the context
 listener) and attaching it to the `DispatcherServlet` using an init parameter. This is
 normal in a Spring Boot application (you normally only have one application context).
+
+
+
+[[howto-use-lettuce-instead-of-jedis]]
+=== Use Lettuce instead of Jedis
+The Spring Boot starter (`spring-boot-starter-data-redis`) uses
+https://github.com/xetorthio/jedis/[Jedis] by default. You need to exclude that dependency
+and include the https://github.com/lettuce-io/lettuce-core/[Lettuce] one instead. Spring
+Boot manages that dependency to help make this process as easy as possible.
+
+Example in Maven:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-data-redis</artifactId>
+		<exclusions>
+			<exclusion>
+				<groupId>redis.clients</groupId>
+				<artifactId>jedis</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+	<dependency>
+		<groupId>io.lettuce</groupId>
+		<artifactId>lettuce-core</artifactId>
+	</dependency>
+----
+
+Example in Gradle:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	configurations {
+		compile.exclude module: "jedis"
+	}
+
+	dependencies {
+		compile("io.lettuce:lettuce-core:{lettuce.version}")
+		// ...
+	}
+----

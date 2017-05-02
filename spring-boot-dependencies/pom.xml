@@ -571,11 +571,6 @@
 				<version>${antlr2.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.lettuce</groupId>
-				<artifactId>lettuce-core</artifactId>
-				<version>${lettuce.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-access</artifactId>
 				<version>${logback.version}</version>
@@ -829,6 +824,11 @@
 				<groupId>io.dropwizard.metrics</groupId>
 				<artifactId>metrics-servlets</artifactId>
 				<version>${dropwizard-metrics.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.lettuce</groupId>
+				<artifactId>lettuce-core</artifactId>
+				<version>${lettuce.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.netty</groupId>
