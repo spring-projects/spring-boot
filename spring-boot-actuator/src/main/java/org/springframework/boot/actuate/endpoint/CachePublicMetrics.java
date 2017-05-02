@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,16 @@ public class CachePublicMetrics implements PublicMetrics {
 
 	@Autowired
 	private Collection<CacheStatisticsProvider<?>> statisticsProviders;
+
+	@Deprecated
+	public CachePublicMetrics() {
+	}
+
+	public CachePublicMetrics(Map<String, CacheManager> cacheManagers,
+			Collection<CacheStatisticsProvider<?>> statisticsProviders) {
+		this.cacheManagers = cacheManagers;
+		this.statisticsProviders = statisticsProviders;
+	}
 
 	@Override
 	public Collection<Metric<?>> metrics() {
