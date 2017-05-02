@@ -40,14 +40,28 @@ import org.springframework.boot.context.properties.source.IterableConfigurationP
  */
 public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 
+	private final boolean ignoreNested;
+
 	private final Set<ConfigurationPropertyName> boundNames = new HashSet<>();
 
 	public NoUnboundElementsBindHandler() {
 		super();
+		this.ignoreNested = false;
+	}
+
+	public NoUnboundElementsBindHandler(boolean ignoreNested) {
+		super();
+		this.ignoreNested = ignoreNested;
 	}
 
 	public NoUnboundElementsBindHandler(BindHandler parent) {
 		super(parent);
+		this.ignoreNested = false;
+	}
+
+	public NoUnboundElementsBindHandler(BindHandler parent, boolean ignoreNested) {
+		super(parent);
+		this.ignoreNested = ignoreNested;
 	}
 
 	@Override
@@ -96,7 +110,11 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 
 	private boolean isUnbound(ConfigurationPropertyName name,
 			ConfigurationPropertyName candidate) {
-		return name.isAncestorOf(candidate) && !this.boundNames.contains(candidate);
+		boolean isParent = candidate.getParent() != null
+				&& name.equals(candidate.getParent());
+		boolean isAncestor = name.isAncestorOf(candidate);
+		return ((this.ignoreNested ? isParent : isAncestor)
+				&& !this.boundNames.contains(candidate));
 	}
 
 }

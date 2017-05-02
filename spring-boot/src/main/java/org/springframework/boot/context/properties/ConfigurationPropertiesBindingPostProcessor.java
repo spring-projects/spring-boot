@@ -411,7 +411,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			handler = new IgnoreErrorsBindHandler(handler);
 		}
 		if (!annotation.ignoreUnknownFields()) {
-			handler = new NoUnboundElementsBindHandler(handler);
+			handler = new NoUnboundElementsBindHandler(handler,
+					annotation.ignoreNestedProperties());
 		}
 		if (annotation.ignoreNestedProperties()) {
 			handler = new IgnoreNestedPropertiesBindHandler(handler);

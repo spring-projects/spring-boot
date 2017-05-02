@@ -103,6 +103,37 @@ public class NoUnboundElementsBindHandlerTests {
 		assertThat(bound.getFoo()).isEqualTo("bar");
 	}
 
+	@Test
+	public void bindWhenUsingNoUnboundElementsHandlerIgnoreNestedAndUnboundChildShouldThrowException()
+			throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("example.foo", "bar");
+		source.put("example.baz", "bar");
+		this.sources.add(source);
+		this.binder = new Binder(this.sources);
+		try {
+			this.binder.bind("example", Bindable.of(Example.class),
+					new NoUnboundElementsBindHandler(true));
+			fail("did not throw");
+		}
+		catch (BindException ex) {
+			assertThat(ex.getCause().getMessage())
+					.contains("The elements [example.baz] were left unbound");
+		}
+	}
+
+	@Test
+	public void bindWhenUsingNoUnboundElementsHandlerIgnoreNestedAndUnboundGrandchildShouldBind()
+			throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("example.foo", "bar");
+		source.put("example.foo.baz", "bar");
+		this.sources.add(source);
+		this.binder = new Binder(this.sources);
+		this.binder.bind("example", Bindable.of(Example.class),
+				new NoUnboundElementsBindHandler(true));
+	}
+
 	public static class Example {
 
 		private String foo;
