@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.springframework.boot.origin.OriginTrackedValue;
@@ -39,6 +40,27 @@ public interface ConfigurationPropertySource {
 	 * @return the associated object or {@code null}.
 	 */
 	ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name);
+
+	/**
+	 * Optionally returns if the source contains any descendants of the specified name.
+	 * <ul>
+	 * <li>A result of {@code true} means that there is at least on property in the source
+	 * with a name that's an
+	 * {@link ConfigurationPropertyName#isAncestorOf(ConfigurationPropertyName) ancestor}
+	 * of {@code name}.</li>
+	 * <li>A result of {@code false} means that that there are no properties in the source
+	 * with a name that's an
+	 * {@link ConfigurationPropertyName#isAncestorOf(ConfigurationPropertyName) ancestor}
+	 * of {@code name}.</li>
+	 * <li>A result of {@code empty} means it is not possible to determine up determine if
+	 * there's a property in the source with a name that's an
+	 * {@link ConfigurationPropertyName#isAncestorOf(ConfigurationPropertyName) ancestor}
+	 * of {@code name}.
+	 * </ul>
+	 * @param name the name to check
+	 * @return an optional boolean determining if a descendant is contained in the source
+	 */
+	Optional<Boolean> containsDescendantOf(ConfigurationPropertyName name);
 
 	/**
 	 * Return a filtered variant of this source, containing only names that match the

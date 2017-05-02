@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.springframework.core.env.EnumerablePropertySource;
@@ -45,7 +46,7 @@ class PropertySourceIterableConfigurationPropertySource
 
 	PropertySourceIterableConfigurationPropertySource(
 			EnumerablePropertySource<?> propertySource, PropertyMapper mapper) {
-		super(propertySource, mapper);
+		super(propertySource, mapper, null);
 		assertEnumerablePropertySource(propertySource);
 	}
 
@@ -85,6 +86,11 @@ class PropertySourceIterableConfigurationPropertySource
 	@Override
 	public Iterator<ConfigurationPropertyName> iterator() {
 		return getConfigurationPropertyNames().iterator();
+	}
+
+	@Override
+	public Optional<Boolean> containsDescendantOf(ConfigurationPropertyName name) {
+		return Optional.of(stream().filter(name::isAncestorOf).findFirst().isPresent());
 	}
 
 	private List<ConfigurationPropertyName> getConfigurationPropertyNames() {

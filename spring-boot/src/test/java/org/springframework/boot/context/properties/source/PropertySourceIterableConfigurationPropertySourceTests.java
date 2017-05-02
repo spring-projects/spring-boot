@@ -156,6 +156,23 @@ public class PropertySourceIterableConfigurationPropertySourceTests {
 				.isEqualTo("TestOrigin key");
 	}
 
+	@Test
+	public void containsDescendantOfShouldCheckSourceNames() throws Exception {
+		Map<String, Object> source = new LinkedHashMap<>();
+		source.put("foo.bar", "value");
+		source.put("faf", "value");
+		EnumerablePropertySource<?> propertySource = new OriginCapablePropertySource<>(
+				new MapPropertySource("test", source));
+		PropertySourceIterableConfigurationPropertySource adapter = new PropertySourceIterableConfigurationPropertySource(
+				propertySource, new DefaultPropertyMapper());
+		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo")))
+				.contains(true);
+		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("faf")))
+				.contains(false);
+		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("fof")))
+				.contains(false);
+	}
+
 	/**
 	 * Test {@link PropertySource} that's also a {@link OriginLookup}.
 	 */

@@ -19,6 +19,8 @@ package org.springframework.boot.context.properties.source;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.PropertySourceOrigin;
@@ -54,17 +56,24 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 
 	private final PropertyMapper mapper;
 
+	private final Function<ConfigurationPropertyName, Optional<Boolean>> containsDescendantOfMethod;
+
 	/**
 	 * Create a new {@link PropertySourceConfigurationPropertySource} implementation.
 	 * @param propertySource the source property source
 	 * @param mapper the property mapper
+	 * @param containsDescendantOfMethod function used to implement
+	 * {@link #containsDescendantOf(ConfigurationPropertyName)} (may be {@code null})
 	 */
 	PropertySourceConfigurationPropertySource(PropertySource<?> propertySource,
-			PropertyMapper mapper) {
+			PropertyMapper mapper,
+			Function<ConfigurationPropertyName, Optional<Boolean>> containsDescendantOfMethod) {
 		Assert.notNull(propertySource, "PropertySource must not be null");
 		Assert.notNull(mapper, "Mapper must not be null");
 		this.propertySource = propertySource;
 		this.mapper = new ExceptionSwallowingPropertyMapper(mapper);
+		this.containsDescendantOfMethod = (containsDescendantOfMethod != null ? containsDescendantOfMethod
+				: (n) -> Optional.empty());
 	}
 
 	@Override
@@ -72,6 +81,11 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 			ConfigurationPropertyName name) {
 		List<PropertyMapping> mappings = getMapper().map(getPropertySource(), name);
 		return find(mappings, name);
+	}
+
+	@Override
+	public Optional<Boolean> containsDescendantOf(ConfigurationPropertyName name) {
+		return this.containsDescendantOfMethod.apply(name);
 	}
 
 	protected final ConfigurationProperty find(List<PropertyMapping> mappings,
@@ -99,6 +113,11 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 
 	protected final PropertyMapper getMapper() {
 		return this.mapper;
+	}
+
+	@Override
+	public String toString() {
+		return this.propertySource.toString();
 	}
 
 	/**

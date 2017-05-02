@@ -43,6 +43,19 @@ public class FilteredIterableConfigurationPropertiesSourceTests
 		return source;
 	}
 
+	@Test
+	public void containsDescendantOfShouldUseContents() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.bar.baz", "1");
+		source.put("foo.bar[0]", "1");
+		source.put("faf.bar[0]", "1");
+		IterableConfigurationPropertySource filtered = source.filter(this::noBrackets);
+		assertThat(filtered.containsDescendantOf(ConfigurationPropertyName.of("foo")))
+				.contains(true);
+		assertThat(filtered.containsDescendantOf(ConfigurationPropertyName.of("faf")))
+				.contains(false);
+	}
+
 	private boolean noBrackets(ConfigurationPropertyName name) {
 		return name.toString().indexOf("[") == -1;
 	}

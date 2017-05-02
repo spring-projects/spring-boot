@@ -46,14 +46,16 @@ public class PropertySourceConfigurationPropertySourceTests {
 	public void createWhenPropertySourceIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("PropertySource must not be null");
-		new PropertySourceConfigurationPropertySource(null, mock(PropertyMapper.class));
+		new PropertySourceConfigurationPropertySource(null, mock(PropertyMapper.class),
+				null);
 	}
 
 	@Test
 	public void createWhenMapperIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Mapper must not be null");
-		new PropertySourceConfigurationPropertySource(mock(PropertySource.class), null);
+		new PropertySourceConfigurationPropertySource(mock(PropertySource.class), null,
+				null);
 	}
 
 	@Test
@@ -67,7 +69,7 @@ public class PropertySourceConfigurationPropertySourceTests {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key2");
 		PropertySourceConfigurationPropertySource adapter = new PropertySourceConfigurationPropertySource(
-				propertySource, mapper);
+				propertySource, mapper, null);
 		assertThat(adapter.getConfigurationProperty(name).getValue()).isEqualTo("value2");
 	}
 
@@ -81,7 +83,7 @@ public class PropertySourceConfigurationPropertySourceTests {
 		mapper.addFromConfigurationProperty(name, "key",
 				(value) -> value.toString().replace("ue", "let"));
 		PropertySourceConfigurationPropertySource adapter = new PropertySourceConfigurationPropertySource(
-				propertySource, mapper);
+				propertySource, mapper, null);
 		assertThat(adapter.getConfigurationProperty(name).getValue()).isEqualTo("vallet");
 	}
 
@@ -94,7 +96,7 @@ public class PropertySourceConfigurationPropertySourceTests {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key");
 		PropertySourceConfigurationPropertySource adapter = new PropertySourceConfigurationPropertySource(
-				propertySource, mapper);
+				propertySource, mapper, null);
 		assertThat(adapter.getConfigurationProperty(name).getOrigin().toString())
 				.isEqualTo("\"key\" from property source \"test\"");
 	}
@@ -109,9 +111,20 @@ public class PropertySourceConfigurationPropertySourceTests {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key");
 		PropertySourceConfigurationPropertySource adapter = new PropertySourceConfigurationPropertySource(
-				propertySource, mapper);
+				propertySource, mapper, null);
 		assertThat(adapter.getConfigurationProperty(name).getOrigin().toString())
 				.isEqualTo("TestOrigin key");
+	}
+
+	@Test
+	public void containsDescendantOfShouldReturnEmpty() throws Exception {
+		Map<String, Object> source = new LinkedHashMap<>();
+		source.put("foo.bar", "value");
+		PropertySource<?> propertySource = new MapPropertySource("test", source);
+		PropertySourceConfigurationPropertySource adapter = new PropertySourceConfigurationPropertySource(
+				propertySource, new DefaultPropertyMapper(), null);
+		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo")))
+				.isEmpty();
 	}
 
 	/**

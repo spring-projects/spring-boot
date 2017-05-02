@@ -18,15 +18,19 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.WeakHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.springframework.boot.env.RandomValuePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.PropertySource.StubPropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
@@ -44,6 +48,9 @@ import org.springframework.util.Assert;
  */
 public class ConfigurationPropertySources
 		implements Iterable<ConfigurationPropertySource> {
+
+	private static final ConfigurationPropertyName RANDOM = ConfigurationPropertyName
+			.of("random");
 
 	/**
 	 * The name of the {@link PropertySource} {@link #adapt adapter}.
@@ -71,7 +78,8 @@ public class ConfigurationPropertySources
 	}
 
 	private Stream<PropertySource<?>> streamPropertySources(PropertySources sources) {
-		return StreamSupport.stream(sources.spliterator(), false).flatMap(this::flatten);
+		return StreamSupport.stream(sources.spliterator(), false).flatMap(this::flatten)
+				.filter(this::notStubSource);
 	}
 
 	private Stream<PropertySource<?>> flatten(PropertySource<?> source) {
@@ -80,6 +88,10 @@ public class ConfigurationPropertySources
 					((ConfigurableEnvironment) source.getSource()).getPropertySources());
 		}
 		return Stream.of(source);
+	}
+
+	private boolean notStubSource(PropertySource<?> source) {
+		return !(source instanceof StubPropertySource);
 	}
 
 	private ConfigurationPropertySource adapt(PropertySource<?> source) {
@@ -92,7 +104,8 @@ public class ConfigurationPropertySources
 			return new PropertySourceIterableConfigurationPropertySource(
 					(EnumerablePropertySource<?>) source, mapper);
 		}
-		return new PropertySourceConfigurationPropertySource(source, mapper);
+		return new PropertySourceConfigurationPropertySource(source, mapper,
+				getContainsDescendantOfMethod(source));
 	}
 
 	private PropertyMapper getPropertyMapper(PropertySource<?> source) {
@@ -122,6 +135,15 @@ public class ConfigurationPropertySources
 			source = (PropertySource<?>) source.getSource();
 		}
 		return source;
+	}
+
+	private Function<ConfigurationPropertyName, Optional<Boolean>> getContainsDescendantOfMethod(
+			PropertySource<?> source) {
+		if (source instanceof RandomValuePropertySource) {
+			return (name) -> Optional
+					.of(name.isAncestorOf(RANDOM) || name.equals(RANDOM));
+		}
+		return null;
 	}
 
 	/**

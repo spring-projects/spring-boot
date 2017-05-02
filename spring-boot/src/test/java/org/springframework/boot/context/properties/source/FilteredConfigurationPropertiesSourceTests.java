@@ -17,12 +17,17 @@
 package org.springframework.boot.context.properties.source;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Answers;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.withSettings;
 
 /**
  * Test for {@link FilteredIterableConfigurationPropertiesSource}.
@@ -61,7 +66,39 @@ public class FilteredConfigurationPropertiesSourceTests {
 		assertThat(source.getConfigurationProperty(bracketName).getValue())
 				.isEqualTo("2");
 		assertThat(filtered.getConfigurationProperty(bracketName)).isNull();
+	}
 
+	@Test
+	public void containsDescendantOfWhenSourceReturnsEmptyShouldReturnEmpty()
+			throws Exception {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
+		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
+				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+		given(source.containsDescendantOf(name)).willReturn(Optional.empty());
+		ConfigurationPropertySource filtered = source.filter((n) -> true);
+		assertThat(filtered.containsDescendantOf(name)).isEmpty();
+	}
+
+	@Test
+	public void containsDescendantOfWhenSourceReturnsFalseShouldReturnFalse()
+			throws Exception {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
+		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
+				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+		given(source.containsDescendantOf(name)).willReturn(Optional.of(false));
+		ConfigurationPropertySource filtered = source.filter((n) -> true);
+		assertThat(filtered.containsDescendantOf(name)).contains(false);
+	}
+
+	@Test
+	public void containsDescendantOfWhenSourceReturnsTrueShouldReturnEmpty()
+			throws Exception {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
+		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
+				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+		given(source.containsDescendantOf(name)).willReturn(Optional.of(true));
+		ConfigurationPropertySource filtered = source.filter((n) -> true);
+		assertThat(filtered.containsDescendantOf(name)).isEmpty();
 	}
 
 	protected final ConfigurationPropertySource createTestSource() {
