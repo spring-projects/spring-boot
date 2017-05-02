@@ -141,7 +141,7 @@
 		<postgresql.version>42.0.0</postgresql.version>
 		<querydsl.version>4.1.4</querydsl.version>
 		<reactor-bom.version>Bismuth-BUILD-SNAPSHOT</reactor-bom.version>
-		<rxjava.version>1.2.9</rxjava.version>
+		<rxjava.version>1.2.10</rxjava.version>
 		<rxjava-adapter.version>1.2.1</rxjava-adapter.version>
 		<rxjava2.version>2.0.9</rxjava2.version>
 		<selenium.version>3.3.1</selenium.version>
