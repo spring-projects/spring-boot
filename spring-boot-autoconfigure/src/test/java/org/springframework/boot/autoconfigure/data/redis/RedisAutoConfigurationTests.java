@@ -78,10 +78,21 @@ public class RedisAutoConfigurationTests {
 	}
 
 	@Test
+	public void testRedisUrlConfiguration() throws Exception {
+		load("spring.redis.host:foo",
+				"spring.redis.url:redis://user:password@example:33");
+		LettuceConnectionFactory cf = this.context.getBean(LettuceConnectionFactory.class);
+		assertThat(cf.getHostName()).isEqualTo("example");
+		assertThat(cf.getPort()).isEqualTo(33);
+		assertThat(cf.getPassword()).isEqualTo("password");
+		assertThat(cf.isUseSsl()).isFalse();
+	}
+
+	@Test
 	public void testOverrideUrlRedisConfiguration() {
 		load("spring.redis.host:foo", "spring.redis.password:xyz",
-				"spring.redis.port:1000", "spring.redis.ssl:true",
-				"spring.redis.url:redis://user:password@example:33");
+				"spring.redis.port:1000", "spring.redis.ssl:false",
+				"spring.redis.url:rediss://user:password@example:33");
 		LettuceConnectionFactory cf = this.context.getBean(LettuceConnectionFactory.class);
 		assertThat(cf.getHostName()).isEqualTo("example");
 		assertThat(cf.getPort()).isEqualTo(33);
@@ -91,11 +102,18 @@ public class RedisAutoConfigurationTests {
 
 	@Test
 	public void testRedisConfigurationWithPool() throws Exception {
-		load("spring.redis.host:foo", "spring.redis.lettuce.pool.max-idle:1");
+		load("spring.redis.host:foo", "spring.redis.lettuce.pool.min-idle:1",
+				"spring.redis.lettuce.pool.max-idle:4",
+				"spring.redis.lettuce.pool.max-active:16",
+				"spring.redis.lettuce.pool.max-wait:2000");
 		LettuceConnectionFactory cf = this.context.getBean(LettuceConnectionFactory.class);
 		assertThat(cf.getHostName()).isEqualTo("foo");
 		assertThat(getDefaultLettucePool(cf).getHostName()).isEqualTo("foo");
-		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMaxIdle()).isEqualTo(1);
+		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMinIdle()).isEqualTo(1);
+		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMaxIdle()).isEqualTo(4);
+		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMaxTotal()).isEqualTo(16);
+		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMaxWaitMillis())
+				.isEqualTo(2000);
 	}
 
 	@Test

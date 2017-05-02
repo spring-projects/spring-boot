@@ -63,10 +63,21 @@ public class RedisAutoConfigurationJedisTests {
 	}
 
 	@Test
+	public void testRedisUrlConfiguration() throws Exception {
+		load("spring.redis.host:foo",
+				"spring.redis.url:redis://user:password@example:33");
+		JedisConnectionFactory cf = this.context.getBean(JedisConnectionFactory.class);
+		assertThat(cf.getHostName()).isEqualTo("example");
+		assertThat(cf.getPort()).isEqualTo(33);
+		assertThat(cf.getPassword()).isEqualTo("password");
+		assertThat(cf.isUseSsl()).isFalse();
+	}
+
+	@Test
 	public void testOverrideUrlRedisConfiguration() throws Exception {
 		load("spring.redis.host:foo", "spring.redis.password:xyz",
-				"spring.redis.port:1000", "spring.redis.ssl:true",
-				"spring.redis.url:redis://user:password@example:33");
+				"spring.redis.port:1000", "spring.redis.ssl:false",
+				"spring.redis.url:rediss://user:password@example:33");
 		JedisConnectionFactory cf = this.context.getBean(JedisConnectionFactory.class);
 		assertThat(cf.getHostName()).isEqualTo("example");
 		assertThat(cf.getPort()).isEqualTo(33);
@@ -76,10 +87,17 @@ public class RedisAutoConfigurationJedisTests {
 
 	@Test
 	public void testRedisConfigurationWithPool() throws Exception {
-		load("spring.redis.host:foo", "spring.redis.jedis.pool.max-idle:1");
+		load("spring.redis.host:foo", "spring.redis.jedis.pool.min-idle:1",
+				"spring.redis.jedis.pool.max-idle:4",
+				"spring.redis.jedis.pool.max-active:16",
+				"spring.redis.jedis.pool.max-wait:2000");
 		JedisConnectionFactory cf = this.context.getBean(JedisConnectionFactory.class);
 		assertThat(cf.getHostName()).isEqualTo("foo");
-		assertThat(cf.getPoolConfig().getMaxIdle()).isEqualTo(1);
+		assertThat(cf.getPoolConfig().getMinIdle()).isEqualTo(1);
+		assertThat(cf.getPoolConfig().getMaxIdle()).isEqualTo(4);
+		assertThat(cf.getPoolConfig().getMaxTotal()).isEqualTo(16);
+		assertThat(cf.getPoolConfig().getMaxWaitMillis())
+				.isEqualTo(2000);
 	}
 
 	@Test
