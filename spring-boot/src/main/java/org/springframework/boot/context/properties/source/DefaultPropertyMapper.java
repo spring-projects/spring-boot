@@ -89,7 +89,7 @@ class DefaultPropertyMapper implements PropertyMapper {
 
 		@Override
 		protected boolean removeEldestEntry(Map.Entry<K, List<PropertyMapping>> eldest) {
-			return size() >= this.capacity;
+			return size() > this.capacity;
 
 		}
 
