@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.cache.CacheStatistics;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
 import org.springframework.boot.actuate.metrics.Metric;
@@ -39,11 +38,15 @@ import org.springframework.util.MultiValueMap;
  */
 public class CachePublicMetrics implements PublicMetrics {
 
-	@Autowired
-	private Map<String, CacheManager> cacheManagers;
+	private final Map<String, CacheManager> cacheManagers;
 
-	@Autowired
-	private Collection<CacheStatisticsProvider<?>> statisticsProviders;
+	private final Collection<CacheStatisticsProvider<?>> statisticsProviders;
+
+	public CachePublicMetrics(Map<String, CacheManager> cacheManagers,
+			Collection<CacheStatisticsProvider<?>> statisticsProviders) {
+		this.cacheManagers = cacheManagers;
+		this.statisticsProviders = statisticsProviders;
+	}
 
 	@Override
 	public Collection<Metric<?>> metrics() {

@@ -16,7 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.Servlet;
 import javax.sql.DataSource;
@@ -132,8 +134,10 @@ public class PublicMetricsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(CacheStatisticsProvider.class)
-		public CachePublicMetrics cachePublicMetrics() {
-			return new CachePublicMetrics();
+		public CachePublicMetrics cachePublicMetrics(
+				Map<String, CacheManager> cacheManagers,
+				Collection<CacheStatisticsProvider<?>> statisticsProviders) {
+			return new CachePublicMetrics(cacheManagers, statisticsProviders);
 		}
 
 	}
