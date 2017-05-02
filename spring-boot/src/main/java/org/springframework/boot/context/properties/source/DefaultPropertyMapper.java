@@ -52,6 +52,7 @@ class DefaultPropertyMapper implements PropertyMapper {
 			String convertedName = configurationPropertyName.toString();
 			mapping = Collections.singletonList(
 					new PropertyMapping(convertedName, configurationPropertyName));
+			this.configurationPropertySourceCache.put(configurationPropertyName, mapping);
 		}
 		return mapping;
 	}

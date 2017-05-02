@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -74,7 +73,7 @@ public class ConfigurationPropertySources
 	public Iterator<ConfigurationPropertySource> iterator() {
 		return streamPropertySources(this.propertySources)
 				.filter(s -> !(s instanceof ConfigurationPropertySourcesPropertySource))
-				.map(this::adapt).collect(Collectors.toList()).iterator();
+				.map(this::adapt).iterator();
 	}
 
 	private Stream<PropertySource<?>> streamPropertySources(PropertySources sources) {

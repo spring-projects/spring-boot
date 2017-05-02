@@ -235,11 +235,14 @@ public class Binder {
 
 	private <T> Object bindObject(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context) throws Exception {
+		ConfigurationProperty property = findProperty(name, context);
+		if (property == null && containsNoDescendantOf(context.streamSources(), name)) {
+			return null;
+		}
 		AggregateBinder<?> aggregateBinder = getAggregateBinder(target, context);
 		if (aggregateBinder != null) {
 			return bindAggregate(name, target, handler, context, aggregateBinder);
 		}
-		ConfigurationProperty property = findProperty(name, context);
 		if (property != null) {
 			return bindProperty(name, target, handler, context, property);
 		}
