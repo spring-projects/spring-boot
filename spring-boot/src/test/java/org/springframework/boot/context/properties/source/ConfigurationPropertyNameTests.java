@@ -275,6 +275,15 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
+	public void isAncestorOfWhenRootReturnTrue() throws Exception {
+		ConfigurationPropertyName parent = ConfigurationPropertyName.of("");
+		ConfigurationPropertyName grandchild = ConfigurationPropertyName
+				.of("foo.bar.baz");
+		assertThat(parent.isAncestorOf(grandchild)).isTrue();
+		assertThat(grandchild.isAncestorOf(parent)).isFalse();
+	}
+
+	@Test
 	public void appendWhenNotIndexedShouldAppendWithDot() throws Exception {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		assertThat(name.append("bar").toString()).isEqualTo("foo.bar");

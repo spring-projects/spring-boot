@@ -145,6 +145,9 @@ public final class ConfigurationPropertyName
 	 * @return {@code true} if this name is an ancestor
 	 */
 	public boolean isAncestorOf(ConfigurationPropertyName name) {
+		if (this.equals(EMPTY)) {
+			return true;
+		}
 		ConfigurationPropertyName candidate = (name == null ? null : name.getParent());
 		while (candidate != null) {
 			if (candidate.equals(this)) {
