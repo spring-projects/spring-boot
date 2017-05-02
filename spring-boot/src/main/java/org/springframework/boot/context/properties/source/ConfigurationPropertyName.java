@@ -227,6 +227,45 @@ public final class ConfigurationPropertyName
 	}
 
 	/**
+	 * Returns if the given name is valid. If this method returns {@code true} then the
+	 * name may be used with {@link #of(String)} without throwing an exception.
+	 * @param name the name to test
+	 * @return {@code true} if the name is valid
+	 */
+	public static boolean isValid(String name) {
+		if (name == null) {
+			return false;
+		}
+		boolean indexed = false;
+		int charIndex = 0;
+		for (int i = 0; i < name.length(); i++) {
+			char ch = name.charAt(i);
+			if (!indexed) {
+				if (ch == '[') {
+					indexed = true;
+					charIndex = 1;
+				}
+				else if (ch == '.') {
+					charIndex = 0;
+				}
+				else {
+					if (!Element.isValid(charIndex, ch)) {
+						return false;
+					}
+					charIndex++;
+				}
+			}
+			else {
+				if (ch == ']') {
+					indexed = false;
+					charIndex = 0;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Return a {@link ConfigurationPropertyName} for the specified string.
 	 * @param name the source name
 	 * @return a {@link ConfigurationPropertyName} instance
@@ -335,7 +374,27 @@ public final class ConfigurationPropertyName
 			return this.value[form.ordinal()];
 		}
 
-		public static boolean isIndexed(String value) {
+		static boolean isValid(String value) {
+			if (!isIndexed(value)) {
+				for (int i = 0; i < value.length(); i++) {
+					if (!isValid(i, value.charAt(i))) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+
+		static boolean isValid(int index, char ch) {
+			boolean isAlpha = ch >= 'a' && ch <= 'z';
+			boolean isNumeric = ch >= '0' && ch <= '9';
+			if (index == 0) {
+				return isAlpha;
+			}
+			return isAlpha || isNumeric || ch == '-';
+		}
+
+		private static boolean isIndexed(String value) {
 			return value.startsWith("[") && value.endsWith("]");
 		}
 

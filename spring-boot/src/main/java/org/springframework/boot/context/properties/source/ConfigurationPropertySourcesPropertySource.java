@@ -56,11 +56,13 @@ class ConfigurationPropertySourcesPropertySource
 
 	private ConfigurationProperty findConfigurationProperty(String name) {
 		try {
-			return findConfigurationProperty(ConfigurationPropertyName.of(name));
+			if (ConfigurationPropertyName.isValid(name)) {
+				return findConfigurationProperty(ConfigurationPropertyName.of(name));
+			}
 		}
 		catch (Exception ex) {
-			return null;
 		}
+		return null;
 	}
 
 	private ConfigurationProperty findConfigurationProperty(

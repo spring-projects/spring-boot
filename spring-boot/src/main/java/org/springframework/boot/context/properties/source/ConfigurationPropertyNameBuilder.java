@@ -142,7 +142,6 @@ class ConfigurationPropertyNameBuilder {
 	 * An processor that will be applied to element values. Can be used to manipulate or
 	 * restrict the values that are used.
 	 */
-	@FunctionalInterface
 	public interface ElementValueProcessor {
 
 		/**
@@ -169,16 +168,9 @@ class ConfigurationPropertyNameBuilder {
 		default ElementValueProcessor withValidName() {
 			return (value) -> {
 				value = apply(value);
-				if (!Element.isIndexed(value)) {
-					for (int i = 0; i < value.length(); i++) {
-						char ch = value.charAt(i);
-						boolean isAlpha = ch >= 'a' && ch <= 'z';
-						boolean isNumeric = ch >= '0' && ch <= '9';
-						if (i == 0 && !isAlpha || !(isAlpha || isNumeric || ch == '-')) {
-							throw new IllegalArgumentException(
-									"Element value '" + value + "' is not valid");
-						}
-					}
+				if (!Element.isValid(value)) {
+					throw new IllegalArgumentException(
+							"Element value '" + value + "' is not valid");
 				}
 				return value;
 			};

@@ -332,4 +332,24 @@ public class ConfigurationPropertyNameTests {
 		assertThat(name.append("foo").toString()).isEqualTo("foo");
 	}
 
+	@Test
+	public void isValidWhenValidShouldReturnTrue() throws Exception {
+		assertThat(ConfigurationPropertyName.isValid("")).isTrue();
+		assertThat(ConfigurationPropertyName.isValid("foo")).isTrue();
+		assertThat(ConfigurationPropertyName.isValid("foo.bar")).isTrue();
+		assertThat(ConfigurationPropertyName.isValid("foo[0]")).isTrue();
+		assertThat(ConfigurationPropertyName.isValid("foo[0].baz")).isTrue();
+		assertThat(ConfigurationPropertyName.isValid("foo.b1")).isTrue();
+		assertThat(ConfigurationPropertyName.isValid("foo.b-a-r")).isTrue();
+		assertThat(ConfigurationPropertyName.isValid("foo[FooBar].baz")).isTrue();
+	}
+
+	@Test
+	public void isValidWhenNotValidShouldReturnFalse() throws Exception {
+		assertThat(ConfigurationPropertyName.isValid(null)).isFalse();
+		assertThat(ConfigurationPropertyName.isValid("1foo")).isFalse();
+		assertThat(ConfigurationPropertyName.isValid("FooBar")).isFalse();
+		assertThat(ConfigurationPropertyName.isValid("foo!bar")).isFalse();
+	}
+
 }
