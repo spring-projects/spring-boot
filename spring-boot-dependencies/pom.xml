@@ -143,7 +143,7 @@
 		<reactor-bom.version>Bismuth-BUILD-SNAPSHOT</reactor-bom.version>
 		<rxjava.version>1.2.10</rxjava.version>
 		<rxjava-adapter.version>1.2.1</rxjava-adapter.version>
-		<rxjava2.version>2.0.9</rxjava2.version>
+		<rxjava2.version>2.1.0</rxjava2.version>
 		<selenium.version>3.3.1</selenium.version>
 		<selenium-htmlunit.version>2.26</selenium-htmlunit.version>
 		<sendgrid.version>2.2.2</sendgrid.version>
