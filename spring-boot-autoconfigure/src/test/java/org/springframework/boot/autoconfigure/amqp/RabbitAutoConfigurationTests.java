@@ -20,7 +20,6 @@ import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 
 import com.rabbitmq.client.Address;
-
 import org.aopalliance.aop.Advice;
 import org.junit.After;
 import org.junit.Rule;

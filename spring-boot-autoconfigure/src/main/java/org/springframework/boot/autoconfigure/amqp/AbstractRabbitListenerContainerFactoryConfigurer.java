@@ -116,7 +116,8 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<
 	/**
 	 * Perform factory-specific configuration.
 	 *
-	 * @param factory the factory
+	 * @param factory the factory.
+	 * @param rabbitProperties the properties.
 	 */
 	protected abstract void configure(T factory, RabbitProperties rabbitProperties);
 
