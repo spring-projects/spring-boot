@@ -651,6 +651,11 @@
 			<artifactId>narayana-jts-integration</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>org.influxdb</groupId>
+			<artifactId>influxdb-java</artifactId>
+			<optional>true</optional>
+		</dependency>
 		<!-- Annotation processing -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
