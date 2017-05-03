@@ -254,12 +254,6 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void jbossLoggingIsConfiguredToUseSlf4j() {
-		this.loggingSystem.beforeInitialize();
-		assertThat(System.getProperty("org.jboss.logging.provider")).isEqualTo("slf4j");
-	}
-
-	@Test
 	public void bridgeHandlerLifecycle() {
 		assertThat(bridgeHandlerInstalled()).isFalse();
 		this.loggingSystem.beforeInitialize();
