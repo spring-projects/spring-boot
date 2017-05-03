@@ -296,20 +296,36 @@ public class SpringBootPluginExtension {
 	 */
 	public enum LayoutType {
 
+		/**
+		 * Executable JAR layout.
+		 */
 		JAR(new Layouts.Jar()),
 
+		/**
+		 * Executable WAR layout.
+		 */
 		WAR(new Layouts.War()),
 
+		/**
+		 * Executable expanded archive layout.
+		 */
 		ZIP(new Layouts.Expanded()),
 
+		/**
+		 * Executable expanded archive layout.
+		 */
 		DIR(new Layouts.Expanded()),
 
 		/**
 		 * Module Layout.
 		 * @deprecated as of 1.5 in favor of a custom {@link LayoutFactory}
 		 */
-		@Deprecated MODULE(new Layouts.Module()),
+		@Deprecated
+		MODULE(new Layouts.Module()),
 
+		/**
+		 * No layout.
+		 */
 		NONE(new Layouts.None());
 
 		Layout layout;
