@@ -67,7 +67,7 @@ public class EmbeddedServerPortFileWriterTests {
 			WebServer source = mock(WebServer.class);
 			given(source.getPort()).willReturn(port);
 			ServletWebServerInitializedEvent event = new ServletWebServerInitializedEvent(
-					applicationContext, source);
+					source, applicationContext);
 			return event;
 		};
 		BiFunction<String, Integer, ? extends WebServerInitializedEvent> reactiveEvent = (

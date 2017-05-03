@@ -143,7 +143,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		super.finishRefresh();
 		WebServer webServer = startWebServer();
 		if (webServer != null) {
-			publishEvent(new ServletWebServerInitializedEvent(this, webServer));
+			publishEvent(new ServletWebServerInitializedEvent(webServer, this));
 		}
 	}
 
