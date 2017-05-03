@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.cloudfoundry;
 import javax.net.ssl.SSLHandshakeException;
 
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -44,6 +45,15 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
+	private WebServer webServer;
+
+	@After
+	public void shutdownContainer() {
+		if (this.webServer != null) {
+			this.webServer.stop();
+		}
+	}
+
 	@Test
 	public void restCallToSelfSignedServerShouldNotThrowSslException() throws Exception {
 		String httpsUrl = getHttpsUrl();
@@ -65,10 +75,10 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 	private String getHttpsUrl() {
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		factory.setSsl(getSsl("password", "classpath:test.jks"));
-		WebServer webServer = factory.getWebServer(
+		this.webServer = factory.getWebServer(
 				new ServletRegistrationBean<>(new ExampleServlet(), "/hello"));
-		webServer.start();
-		return "https://localhost:" + webServer.getPort() + "/hello";
+		this.webServer.start();
+		return "https://localhost:" + this.webServer.getPort() + "/hello";
 	}
 
 	private Ssl getSsl(String keyPassword, String keyStore) {

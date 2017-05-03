@@ -269,8 +269,10 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	public void defaultTomcatBackgroundProcessorDelay() throws Exception {
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 		this.customizer.customize(factory);
-		assertThat(((TomcatWebServer) factory.getWebServer()).getTomcat().getEngine()
-				.getBackgroundProcessorDelay()).isEqualTo(30);
+		TomcatWebServer webServer = (TomcatWebServer) factory.getWebServer();
+		assertThat(webServer.getTomcat().getEngine().getBackgroundProcessorDelay())
+				.isEqualTo(30);
+		webServer.stop();
 	}
 
 	@Test
@@ -280,8 +282,10 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 		this.customizer.customize(factory);
-		assertThat(((TomcatWebServer) factory.getWebServer()).getTomcat().getEngine()
-				.getBackgroundProcessorDelay()).isEqualTo(5);
+		TomcatWebServer webServer = (TomcatWebServer) factory.getWebServer();
+		assertThat(webServer.getTomcat().getEngine().getBackgroundProcessorDelay())
+				.isEqualTo(5);
+		webServer.stop();
 	}
 
 	@Test

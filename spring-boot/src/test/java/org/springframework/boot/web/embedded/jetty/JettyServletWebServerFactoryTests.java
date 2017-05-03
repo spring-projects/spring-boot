@@ -262,8 +262,9 @@ public class JettyServletWebServerFactoryTests
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setThreadPool(null);
 		assertThat(factory.getThreadPool()).isNull();
-		JettyWebServer jettyWebServer = (JettyWebServer) factory.getWebServer();
-		assertThat(jettyWebServer.getServer().getThreadPool()).isNotNull();
+		this.webServer = factory.getWebServer();
+		assertThat(((JettyWebServer) this.webServer).getServer().getThreadPool())
+				.isNotNull();
 	}
 
 	@Test
@@ -271,8 +272,9 @@ public class JettyServletWebServerFactoryTests
 		JettyServletWebServerFactory factory = getFactory();
 		ThreadPool threadPool = mock(ThreadPool.class);
 		factory.setThreadPool(threadPool);
-		JettyWebServer jettyWebServer = (JettyWebServer) factory.getWebServer();
-		assertThat(jettyWebServer.getServer().getThreadPool()).isSameAs(threadPool);
+		this.webServer = factory.getWebServer();
+		assertThat(((JettyWebServer) this.webServer).getServer().getThreadPool())
+				.isSameAs(threadPool);
 	}
 
 	@Override
