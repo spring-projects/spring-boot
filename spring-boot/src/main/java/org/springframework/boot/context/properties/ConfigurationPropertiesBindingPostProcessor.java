@@ -38,7 +38,6 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
 import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBindHandler;
-import org.springframework.boot.context.properties.bind.handler.IgnoreNestedPropertiesBindHandler;
 import org.springframework.boot.context.properties.bind.handler.NoUnboundElementsBindHandler;
 import org.springframework.boot.context.properties.bind.validation.ValidationBindHandler;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -368,8 +367,6 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		details.append("prefix=").append(annotation.prefix());
 		details.append(", ignoreInvalidFields=").append(annotation.ignoreInvalidFields());
 		details.append(", ignoreUnknownFields=").append(annotation.ignoreUnknownFields());
-		details.append(", ignoreNestedProperties=")
-				.append(annotation.ignoreNestedProperties());
 		return details.toString();
 	}
 
@@ -413,11 +410,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			handler = new IgnoreErrorsBindHandler(handler);
 		}
 		if (!annotation.ignoreUnknownFields()) {
-			handler = new NoUnboundElementsBindHandler(handler,
-					annotation.ignoreNestedProperties());
-		}
-		if (annotation.ignoreNestedProperties()) {
-			handler = new IgnoreNestedPropertiesBindHandler(handler);
+			handler = new NoUnboundElementsBindHandler(handler);
 		}
 		if (validator != null) {
 			handler = new ValidationBindHandler(handler, validator);

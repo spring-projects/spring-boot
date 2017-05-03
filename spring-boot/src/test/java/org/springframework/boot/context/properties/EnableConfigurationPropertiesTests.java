@@ -119,18 +119,6 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void testIgnoreNestedPropertiesBinding() {
-		removeSystemProperties();
-		this.context.register(IgnoreNestedTestConfiguration.class);
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"name=foo", "nested.name=bar");
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(IgnoreNestedTestProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
-	}
-
-	@Test
 	public void testExceptionOnValidation() {
 		this.context.register(ExceptionIfInvalidTestConfiguration.class);
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
@@ -381,12 +369,6 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Configuration
-	@EnableConfigurationProperties(IgnoreNestedTestProperties.class)
-	protected static class IgnoreNestedTestConfiguration {
-
-	}
-
-	@Configuration
 	@EnableConfigurationProperties(ExceptionIfInvalidTestProperties.class)
 	protected static class ExceptionIfInvalidTestConfiguration {
 
@@ -613,11 +595,6 @@ public class EnableConfigurationPropertiesTests {
 
 	@ConfigurationProperties(prefix = "spring.foo")
 	protected static class EmbeddedTestProperties extends TestProperties {
-
-	}
-
-	@ConfigurationProperties(ignoreUnknownFields = false, ignoreNestedProperties = true)
-	protected static class IgnoreNestedTestProperties extends TestProperties {
 
 	}
 
