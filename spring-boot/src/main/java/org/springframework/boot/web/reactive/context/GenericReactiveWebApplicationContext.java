@@ -28,12 +28,24 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public class GenericReactiveWebApplicationContext extends
 		AnnotationConfigApplicationContext implements ReactiveWebApplicationContext {
 
+	private String namespace;
+
 	public GenericReactiveWebApplicationContext() {
 		super();
 	}
 
 	public GenericReactiveWebApplicationContext(Class<?>[] annotatedClasses) {
 		super(annotatedClasses);
+	}
+
+	@Override
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
+	}
+
+	@Override
+	public String getNamespace() {
+		return this.namespace;
 	}
 
 }
