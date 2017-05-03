@@ -294,7 +294,7 @@ public class SpringBootPluginExtension {
 	/**
 	 * Layout Types.
 	 */
-	enum LayoutType {
+	public enum LayoutType {
 
 		JAR(new Layouts.Jar()),
 
