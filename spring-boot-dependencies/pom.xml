@@ -218,9 +218,6 @@
 		<maven-war-plugin.version>2.6</maven-war-plugin.version>
 		<versions-maven-plugin.version>2.3</versions-maven-plugin.version>
 	</properties>
-	<prerequisites>
-		<maven>3.2.1</maven>
-	</prerequisites>
 	<dependencyManagement>
 		<dependencies>
 			<!-- Spring Boot -->
