@@ -189,7 +189,7 @@ public class ResourceServerProperties implements BeanFactoryAware {
 	}
 
 	@PostConstruct
-	public void validate() throws Exception {
+	public void validate() {
 		if (countBeans(AuthorizationServerEndpointsConfiguration.class) > 0) {
 			// If we are an authorization server we don't need remote resource token
 			// services
@@ -203,9 +203,11 @@ public class ResourceServerProperties implements BeanFactoryAware {
 		if (!StringUtils.hasText(this.clientId)) {
 			return;
 		}
-		BindingResult result = getBindingResult();
-		if (result.hasErrors()) {
-			throw new BindException(result);
+		try {
+			doValidate();
+		}
+		catch (BindException ex) {
+			throw new IllegalStateException(ex);
 		}
 	}
 
@@ -214,7 +216,7 @@ public class ResourceServerProperties implements BeanFactoryAware {
 				true, false).length;
 	}
 
-	private BindingResult getBindingResult() {
+	private void doValidate() throws BindException {
 		BindingResult errors = new BeanPropertyBindingResult(this,
 				"resourceServerProperties");
 		boolean jwtConfigPresent = StringUtils.hasText(this.jwt.getKeyUri())
@@ -239,7 +241,9 @@ public class ResourceServerProperties implements BeanFactoryAware {
 				}
 			}
 		}
-		return errors;
+		if (errors.hasErrors()) {
+			throw new BindException(errors);
+		}
 	}
 
 	public class Jwt {

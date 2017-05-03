@@ -77,7 +77,7 @@ public class ResourceServerPropertiesTests {
 		this.properties.getJwk().setKeySetUri("http://my-auth-server/token_keys");
 		this.properties.getJwt().setKeyUri("http://my-auth-server/token_key");
 		setListableBeanFactory();
-		this.thrown.expect(BindException.class);
+		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expect(getMatcher("Only one of jwt.keyUri (or jwt.keyValue) "
 				+ "and jwk.keySetUri should be configured.", null));
 		this.properties.validate();
@@ -89,7 +89,7 @@ public class ResourceServerPropertiesTests {
 		this.properties.getJwk().setKeySetUri("http://my-auth-server/token_keys");
 		this.properties.getJwt().setKeyValue("my-key");
 		setListableBeanFactory();
-		this.thrown.expect(BindException.class);
+		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expect(getMatcher("Only one of jwt.keyUri (or jwt.keyValue) "
 				+ "and jwk.keySetUri should be configured.", null));
 		this.properties.validate();
@@ -125,7 +125,7 @@ public class ResourceServerPropertiesTests {
 	public void validateWhenKeyConfigAbsentAndInfoUrisNotConfiguredShouldFail()
 			throws Exception {
 		setListableBeanFactory();
-		this.thrown.expect(BindException.class);
+		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expect(getMatcher("Missing tokenInfoUri and userInfoUri and there"
 				+ " is no JWT verifier key", "tokenInfoUri"));
 		this.properties.validate();
@@ -154,7 +154,7 @@ public class ResourceServerPropertiesTests {
 		this.properties.setTokenInfoUri("http://my-auth-server/check_token");
 		this.properties.setUserInfoUri("http://my-auth-server/userinfo");
 		setListableBeanFactory();
-		this.thrown.expect(BindException.class);
+		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expect(getMatcher("Missing client secret", "clientSecret"));
 		this.properties.validate();
 	}
@@ -208,7 +208,7 @@ public class ResourceServerPropertiesTests {
 
 			@Override
 			public boolean matches(Object item) {
-				BindException ex = (BindException) item;
+				BindException ex = (BindException) ((Exception) item).getCause();
 				ObjectError error = ex.getAllErrors().get(0);
 				boolean messageMatches = message.equals(error.getDefaultMessage());
 				if (field == null) {
