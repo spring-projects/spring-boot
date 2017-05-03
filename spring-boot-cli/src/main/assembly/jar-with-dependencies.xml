@@ -21,7 +21,7 @@
 	<fileSets>
 		<fileSet>
 			<directory>${project.build.directory}/assembly</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory></outputDirectory>
 		</fileSet>
 	</fileSets>
 </assembly>
