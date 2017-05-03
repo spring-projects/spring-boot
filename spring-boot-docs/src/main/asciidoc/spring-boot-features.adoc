@@ -4004,7 +4004,9 @@ your custom attribute types or object classes.
 The Spring Framework provides support for transparently adding caching to an application.
 At its core, the abstraction applies caching to methods, reducing thus the number of
 executions based on the information available in the cache. The caching logic is applied
-transparently, without any interference to the invoker.
+transparently, without any interference to the invoker.  Spring Boot auto-configures the
+cache infrastructure as long as the caching support is enabled via the `@EnableCaching`
+annotation.
 
 NOTE: Check the {spring-reference}/#cache[relevant section] of the Spring Framework
 reference for more details.
@@ -4037,32 +4039,28 @@ invoked and the cache is updated before returning the value.
 NOTE: You can also use the standard JSR-107 (JCache) annotations (e.g. `@CacheResult`)
 transparently. We strongly advise you however to not mix and match them.
 
+If you do not add any specific cache library, Spring Boot will auto-configure a
+<<boot-features-caching-provider-simple,Simple provider>> that uses concurrent maps in
+memory. When a cache is required (i.e. `piDecimals` in the example above), this provider
+will create it on-the-fly for you. The simple provider is not really recommended for
+production usage, but it's great for getting started and making sure that you understand
+the features. When you have made up your mind about the cache provider to use, please make
+sure to read its documentation to figure out how to configure the caches that your
+application uses. Practically all providers require you to explicitly configure every
+cache that you use in the application. Some offers a way to build default caches that you
+need to specify with the `spring.cache.cache-names` property.
+
 TIP: It is also possible to {spring-reference}/#cache-annotations-put[update] or
 {spring-reference}/#cache-annotations-evict[evict] data from the cache transparently.
 
+NOTE: If you are using the cache infrastructure with beans that are not interface-based,
+make sure to enable the `proxyTargetClass` attribute of `@EnableCaching`.
 
 
 === Supported cache providers
 The cache abstraction does not provide an actual store and relies on abstraction
 materialized by the `org.springframework.cache.Cache` and
-`org.springframework.cache.CacheManager` interfaces. Spring Boot auto-configures a
-suitable `CacheManager` according to the implementation as long as the caching support is
-enabled via the `@EnableCaching` annotation.
-
-TIP: If you do not add any specific cache library, Spring Boot will auto-configure a
-<<boot-features-caching-provider-simple,Simple provider>> that uses simple maps in
-memory. When a cache is required for an operation (i.e. `piDecimals` in the example
-above), the provider will create it on-the-fly for you. When you have made up your mind
-about the cache provider to use, please make sure to read its documentation to figure out
-how to configure the caches that your application defines.
-
-NOTE: If you are using the cache infrastructure with beans that are not interface-based,
-make sure to enable the `proxyTargetClass` attribute of `@EnableCaching`.
-
-TIP: Use the `spring-boot-starter-cache` '`Starter`' to quickly add basic caching
-dependencies. The starter brings `spring-context-support`: if you are adding dependencies
-manually, you must include it if you intend to use the JCache, EhCache 2.x or Guava
-support.
+`org.springframework.cache.CacheManager` interfaces.
 
 If you haven't defined a bean of type `CacheManager` or a `CacheResolver` named
 `cacheResolver` (see `CachingConfigurer`), Spring Boot tries to detect the following
@@ -4083,9 +4081,15 @@ TIP: It is also possible to _force_ the cache provider to use via the `spring.ca
 property. Use this property if you need to <<boot-features-caching-provider-none,disable
 caching altogether>> in certain environment (e.g. tests).
 
+TIP: Use the `spring-boot-starter-cache` '`Starter`' to quickly add basic caching
+dependencies. The starter brings in `spring-context-support`: if you are adding
+dependencies manually, you must include `spring-context-support` in order to use the
+JCache, EhCache 2.x or Guava support.
+
 If the `CacheManager` is auto-configured by Spring Boot, you can further tune its
 configuration before it is fully initialized by exposing a bean implementing the
-`CacheManagerCustomizer` interface. The following sets the cache names to use.
+`CacheManagerCustomizer` interface. The following sets a flag to say that null
+values should be passed down to the underlying map.
 
 [source,java,indent=0]
 ----
@@ -4094,7 +4098,7 @@ configuration before it is fully initialized by exposing a bean implementing the
 		return new CacheManagerCustomizer<ConcurrentMapCacheManager>() {
 			@Override
 			public void customize(ConcurrentMapCacheManager cacheManager) {
-				cacheManager.setCacheNames(Arrays.asList("one", "two"));
+				cacheManager.setAllowNullValues(false);
 			}
 		};
 	}
@@ -4102,8 +4106,9 @@ configuration before it is fully initialized by exposing a bean implementing the
 
 [NOTE]
 ====
-In the example above, a `ConcurrentMapCacheManager` is expected to be configured. If that
-is not the case, the customizer won't be invoked at all. You can have as many customizers
+In the example above, an auto-configured `ConcurrentMapCacheManager` is expected. If that
+is not the case (either you provided your own config or a different cache provider was
+auto-configured), the customizer won't be invoked at all. You can have as many customizers
 as you want and you can also order them as usual using `@Order` or `Ordered`.
 ====
 
@@ -4112,7 +4117,8 @@ as you want and you can also order them as usual using `@Order` or `Ordered`.
 [[boot-features-caching-provider-generic]]
 ==== Generic
 Generic caching is used if the context defines _at least_ one
-`org.springframework.cache.Cache` bean, a `CacheManager` wrapping them is configured.
+`org.springframework.cache.Cache` bean. A `CacheManager` wrapping all beans of that type
+is created.
 
 
 
@@ -4300,17 +4306,20 @@ auto-configuration.
 
 [[boot-features-caching-provider-simple]]
 ==== Simple
-If none of these options worked out, a simple implementation using `ConcurrentHashMap`
-as cache store is configured. This is the default if no caching library is present in
-your application. Caches are created on-the-fly by default but you can restrict the list
-of available caches using the `cache-names` property. For instance, you you want only a
-`foo` and `bar` caches:
+If none of the other providers can be found, a simple implementation using a
+`ConcurrentHashMap` as cache store is configured. This is the default if no caching
+library is present in your application. Caches are created on-the-fly by default but you
+can restrict the list of available caches using the `cache-names` property. For instance,
+if you you want only a `foo` and `bar` caches:
 
 [source,properties,indent=0]
 ----
     spring.cache.cache-names=foo,bar
 ----
 
+If you do this and your application uses a cache not listed then it will fail at runtime
+when the cache is needed, but not on startup. This is similar to the way the "real" cache
+providers behave if you use an undeclared cache.
 
 
 [[boot-features-caching-provider-none]]
