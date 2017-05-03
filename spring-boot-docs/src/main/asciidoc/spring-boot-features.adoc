@@ -3861,8 +3861,8 @@ will replace the default.
 The Spring Framework provides support for transparently adding caching to an application.
 At its core, the abstraction applies caching to methods, reducing thus the number of
 executions based on the information available in the cache. The caching logic is applied
-transparently, without any interference to the invoker.  Spring Boot auto-configures a
-suitable `CacheManager` as long as the caching support is enabled via the `@EnableCaching`
+transparently, without any interference to the invoker.  Spring Boot auto-configures the
+cache infrastructure as long as the caching support is enabled via the `@EnableCaching`
 annotation.
 
 NOTE: Check the {spring-reference}/#cache[relevant section] of the Spring Framework
@@ -3904,9 +3904,8 @@ production usage, but it's great for getting started and making sure that you un
 the features. When you have made up your mind about the cache provider to use, please make
 sure to read its documentation to figure out how to configure the caches that your
 application uses. Practically all providers require you to explicitly configure every
-cache that you use in the application. In most cases Spring Boot allows you to eagerly
-instantiate all the caches on startup (with `spring.cache.cache-names`), or lazily as
-they are needed (without `spring.cache.cache-names`).
+cache that you use in the application. Some offers a way to build default caches that you
+need to specify with the `spring.cache.cache-names` property.
 
 TIP: It is also possible to {spring-reference}/#cache-annotations-put[update] or
 {spring-reference}/#cache-annotations-evict[evict] data from the cache transparently.
@@ -3965,10 +3964,10 @@ values should be passed down to the underlying map.
 
 [NOTE]
 ====
-In the example above, a `ConcurrentMapCacheManager` is expected to be configured (either
-explicitly or through autoconfiguration). If that is not the case, the customizer won't be
-invoked at all. You can have as many customizers as you want and you can also order them
-as usual using `@Order` or `Ordered`.
+In the example above, an auto-configured `ConcurrentMapCacheManager` is expected. If that
+is not the case (either you provided your own config or a different cache provider was
+auto-configured), the customizer won't be invoked at all. You can have as many customizers
+as you want and you can also order them as usual using `@Order` or `Ordered`.
 ====
 
 
