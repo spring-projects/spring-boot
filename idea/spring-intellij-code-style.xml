@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<code_scheme name="springsource">
+  <option name="JD_P_AT_EMPTY_LINES" value="false" />
+  <option name="XML_KEEP_BLANK_LINES" value="1" />
+  <option name="ELSE_ON_NEW_LINE" value="true" />
+  <option name="WHILE_ON_NEW_LINE" value="true" />
+  <option name="CATCH_ON_NEW_LINE" value="true" />
+  <option name="FINALLY_ON_NEW_LINE" value="true" />
+  <option name="INDENT_CASE_FROM_SWITCH" value="false" />
+  <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
+  <option name="ALIGN_MULTILINE_THROWS_LIST" value="true" />
+  <option name="ALIGN_MULTILINE_EXTENDS_LIST" value="true" />
+  <option name="ALIGN_MULTILINE_PARENTHESIZED_EXPRESSION" value="true" />
+  <option name="IF_BRACE_FORCE" value="3" />
+  <option name="DOWHILE_BRACE_FORCE" value="3" />
+  <option name="WHILE_BRACE_FORCE" value="3" />
+  <option name="FOR_BRACE_FORCE" value="3" />
+  <option name="PARAMETER_ANNOTATION_WRAP" value="2" />
+  <option name="VARIABLE_ANNOTATION_WRAP" value="2" />
+  <option name="SPACE_BEFORE_ANOTATION_PARAMETER_LIST" value="true" />
+  <option name="SPACE_WITHIN_ANNOTATION_PARENTHESES" value="true" />
+  <option name="ENUM_CONSTANTS_WRAP" value="2" />
+  <ADDITIONAL_INDENT_OPTIONS fileType="css">
+    <option name="INDENT_SIZE" value="4" />
+    <option name="CONTINUATION_INDENT_SIZE" value="8" />
+    <option name="TAB_SIZE" value="4" />
+    <option name="USE_TAB_CHARACTER" value="false" />
+    <option name="SMART_TABS" value="false" />
+    <option name="LABEL_INDENT_SIZE" value="0" />
+    <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+    <option name="USE_RELATIVE_INDENTS" value="false" />
+  </ADDITIONAL_INDENT_OPTIONS>
+  <ADDITIONAL_INDENT_OPTIONS fileType="feature">
+    <option name="INDENT_SIZE" value="2" />
+    <option name="CONTINUATION_INDENT_SIZE" value="8" />
+    <option name="TAB_SIZE" value="4" />
+    <option name="USE_TAB_CHARACTER" value="false" />
+    <option name="SMART_TABS" value="false" />
+    <option name="LABEL_INDENT_SIZE" value="0" />
+    <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+    <option name="USE_RELATIVE_INDENTS" value="false" />
+  </ADDITIONAL_INDENT_OPTIONS>
+  <ADDITIONAL_INDENT_OPTIONS fileType="haml">
+    <option name="INDENT_SIZE" value="2" />
+    <option name="CONTINUATION_INDENT_SIZE" value="8" />
+    <option name="TAB_SIZE" value="4" />
+    <option name="USE_TAB_CHARACTER" value="false" />
+    <option name="SMART_TABS" value="false" />
+    <option name="LABEL_INDENT_SIZE" value="0" />
+    <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+    <option name="USE_RELATIVE_INDENTS" value="false" />
+  </ADDITIONAL_INDENT_OPTIONS>
+  <ADDITIONAL_INDENT_OPTIONS fileType="java">
+    <option name="INDENT_SIZE" value="4" />
+    <option name="CONTINUATION_INDENT_SIZE" value="8" />
+    <option name="TAB_SIZE" value="4" />
+    <option name="USE_TAB_CHARACTER" value="true" />
+    <option name="SMART_TABS" value="false" />
+    <option name="LABEL_INDENT_SIZE" value="0" />
+    <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+    <option name="USE_RELATIVE_INDENTS" value="false" />
+  </ADDITIONAL_INDENT_OPTIONS>
+  <ADDITIONAL_INDENT_OPTIONS fileType="js">
+    <option name="INDENT_SIZE" value="4" />
+    <option name="CONTINUATION_INDENT_SIZE" value="4" />
+    <option name="TAB_SIZE" value="4" />
+    <option name="USE_TAB_CHARACTER" value="false" />
+    <option name="SMART_TABS" value="false" />
+    <option name="LABEL_INDENT_SIZE" value="0" />
+    <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+    <option name="USE_RELATIVE_INDENTS" value="false" />
+  </ADDITIONAL_INDENT_OPTIONS>
+  <ADDITIONAL_INDENT_OPTIONS fileType="jsp">
+    <option name="INDENT_SIZE" value="4" />
+    <option name="CONTINUATION_INDENT_SIZE" value="8" />
+    <option name="TAB_SIZE" value="4" />
+    <option name="USE_TAB_CHARACTER" value="false" />
+    <option name="SMART_TABS" value="false" />
+    <option name="LABEL_INDENT_SIZE" value="0" />
+    <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+    <option name="USE_RELATIVE_INDENTS" value="false" />
+  </ADDITIONAL_INDENT_OPTIONS>
+  <ADDITIONAL_INDENT_OPTIONS fileType="php">
+    <option name="INDENT_SIZE" value="4" />
+    <option name="CONTINUATION_INDENT_SIZE" value="8" />
+    <option name="TAB_SIZE" value="4" />
+    <option name="USE_TAB_CHARACTER" value="false" />
+    <option name="SMART_TABS" value="false" />
+    <option name="LABEL_INDENT_SIZE" value="0" />
+    <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+    <option name="USE_RELATIVE_INDENTS" value="false" />
+  </ADDITIONAL_INDENT_OPTIONS>
+  <ADDITIONAL_INDENT_OPTIONS fileType="py">
+    <option name="INDENT_SIZE" value="2" />
+    <option name="CONTINUATION_INDENT_SIZE" value="4" />
+    <option name="TAB_SIZE" value="2" />
+    <option name="USE_TAB_CHARACTER" value="false" />
+    <option name="SMART_TABS" value="false" />
+    <option name="LABEL_INDENT_SIZE" value="0" />
+    <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+    <option name="USE_RELATIVE_INDENTS" value="false" />
+  </ADDITIONAL_INDENT_OPTIONS>
+  <ADDITIONAL_INDENT_OPTIONS fileType="rb">
+    <option name="INDENT_SIZE" value="2" />
+    <option name="CONTINUATION_INDENT_SIZE" value="4" />
+    <option name="TAB_SIZE" value="2" />
+    <option name="USE_TAB_CHARACTER" value="false" />
+    <option name="SMART_TABS" value="false" />
+    <option name="LABEL_INDENT_SIZE" value="0" />
+    <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+    <option name="USE_RELATIVE_INDENTS" value="true" />
+  </ADDITIONAL_INDENT_OPTIONS>
+  <ADDITIONAL_INDENT_OPTIONS fileType="sass">
+    <option name="INDENT_SIZE" value="2" />
+    <option name="CONTINUATION_INDENT_SIZE" value="8" />
+    <option name="TAB_SIZE" value="4" />
+    <option name="USE_TAB_CHARACTER" value="false" />
+    <option name="SMART_TABS" value="false" />
+    <option name="LABEL_INDENT_SIZE" value="0" />
+    <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+    <option name="USE_RELATIVE_INDENTS" value="false" />
+  </ADDITIONAL_INDENT_OPTIONS>
+  <ADDITIONAL_INDENT_OPTIONS fileType="txt">
+    <option name="INDENT_SIZE" value="2" />
+    <option name="CONTINUATION_INDENT_SIZE" value="8" />
+    <option name="TAB_SIZE" value="4" />
+    <option name="USE_TAB_CHARACTER" value="false" />
+    <option name="SMART_TABS" value="false" />
+    <option name="LABEL_INDENT_SIZE" value="0" />
+    <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+    <option name="USE_RELATIVE_INDENTS" value="false" />
+  </ADDITIONAL_INDENT_OPTIONS>
+  <ADDITIONAL_INDENT_OPTIONS fileType="xml">
+    <option name="INDENT_SIZE" value="4" />
+    <option name="CONTINUATION_INDENT_SIZE" value="8" />
+    <option name="TAB_SIZE" value="4" />
+    <option name="USE_TAB_CHARACTER" value="false" />
+    <option name="SMART_TABS" value="false" />
+    <option name="LABEL_INDENT_SIZE" value="0" />
+    <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+    <option name="USE_RELATIVE_INDENTS" value="false" />
+  </ADDITIONAL_INDENT_OPTIONS>
+  <ADDITIONAL_INDENT_OPTIONS fileType="yml">
+    <option name="INDENT_SIZE" value="2" />
+    <option name="CONTINUATION_INDENT_SIZE" value="8" />
+    <option name="TAB_SIZE" value="4" />
+    <option name="USE_TAB_CHARACTER" value="false" />
+    <option name="SMART_TABS" value="false" />
+    <option name="LABEL_INDENT_SIZE" value="0" />
+    <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+    <option name="USE_RELATIVE_INDENTS" value="false" />
+  </ADDITIONAL_INDENT_OPTIONS>
+  <codeStyleSettings language="ECMA Script Level 4">
+    <option name="ELSE_ON_NEW_LINE" value="true" />
+    <option name="WHILE_ON_NEW_LINE" value="true" />
+    <option name="CATCH_ON_NEW_LINE" value="true" />
+    <option name="FINALLY_ON_NEW_LINE" value="true" />
+    <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
+    <option name="ALIGN_MULTILINE_THROWS_LIST" value="true" />
+    <option name="ALIGN_MULTILINE_EXTENDS_LIST" value="true" />
+    <option name="ALIGN_MULTILINE_PARENTHESIZED_EXPRESSION" value="true" />
+    <option name="IF_BRACE_FORCE" value="3" />
+    <option name="DOWHILE_BRACE_FORCE" value="3" />
+    <option name="WHILE_BRACE_FORCE" value="3" />
+    <option name="FOR_BRACE_FORCE" value="3" />
+    <option name="PARAMETER_ANNOTATION_WRAP" value="2" />
+    <option name="VARIABLE_ANNOTATION_WRAP" value="2" />
+    <option name="SPACE_BEFORE_ANOTATION_PARAMETER_LIST" value="true" />
+    <option name="SPACE_WITHIN_ANNOTATION_PARENTHESES" value="true" />
+    <option name="ENUM_CONSTANTS_WRAP" value="2" />
+    <option name="PARENT_SETTINGS_INSTALLED" value="true" />
+  </codeStyleSettings>
+  <codeStyleSettings language="JavaScript">
+    <option name="ELSE_ON_NEW_LINE" value="true" />
+    <option name="WHILE_ON_NEW_LINE" value="true" />
+    <option name="CATCH_ON_NEW_LINE" value="true" />
+    <option name="FINALLY_ON_NEW_LINE" value="true" />
+    <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
+    <option name="ALIGN_MULTILINE_THROWS_LIST" value="true" />
+    <option name="ALIGN_MULTILINE_EXTENDS_LIST" value="true" />
+    <option name="ALIGN_MULTILINE_PARENTHESIZED_EXPRESSION" value="true" />
+    <option name="IF_BRACE_FORCE" value="3" />
+    <option name="DOWHILE_BRACE_FORCE" value="3" />
+    <option name="WHILE_BRACE_FORCE" value="3" />
+    <option name="FOR_BRACE_FORCE" value="3" />
+    <option name="PARAMETER_ANNOTATION_WRAP" value="2" />
+    <option name="VARIABLE_ANNOTATION_WRAP" value="2" />
+    <option name="SPACE_BEFORE_ANOTATION_PARAMETER_LIST" value="true" />
+    <option name="SPACE_WITHIN_ANNOTATION_PARENTHESES" value="true" />
+    <option name="ENUM_CONSTANTS_WRAP" value="2" />
+    <option name="PARENT_SETTINGS_INSTALLED" value="true" />
+  </codeStyleSettings>
+</code_scheme>
+
