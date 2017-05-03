@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
+import javax.annotation.PostConstruct;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.springframework.beans.BeansException;
@@ -28,8 +30,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 
 /**
  * Configuration properties for OAuth2 Resources.
@@ -39,7 +42,7 @@ import org.springframework.validation.Validator;
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "security.oauth2.resource")
-public class ResourceServerProperties implements Validator, BeanFactoryAware {
+public class ResourceServerProperties implements BeanFactoryAware {
 
 	@JsonIgnore
 	private final String clientId;
@@ -185,13 +188,8 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 		this.filterOrder = filterOrder;
 	}
 
-	@Override
-	public boolean supports(Class<?> clazz) {
-		return ResourceServerProperties.class.isAssignableFrom(clazz);
-	}
-
-	@Override
-	public void validate(Object target, Errors errors) {
+	@PostConstruct
+	public void validate() throws Exception {
 		if (countBeans(AuthorizationServerEndpointsConfiguration.class) > 0) {
 			// If we are an authorization server we don't need remote resource token
 			// services
@@ -202,14 +200,25 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 			// resource token services
 			return;
 		}
-		ResourceServerProperties resource = (ResourceServerProperties) target;
-		validate(resource, errors);
-	}
 
-	private void validate(ResourceServerProperties target, Errors errors) {
 		if (!StringUtils.hasText(this.clientId)) {
 			return;
 		}
+
+		BindingResult result = getBindingResult();
+		if (result.hasErrors()) {
+			throw new BindException(result);
+		}
+	}
+
+	private int countBeans(Class<?> type) {
+		return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, type,
+				true, false).length;
+	}
+
+	private BindingResult getBindingResult() {
+		BindingResult errors = new BeanPropertyBindingResult(this, "resourceServerProperties");
+
 		boolean jwtConfigPresent = StringUtils.hasText(this.jwt.getKeyUri())
 				|| StringUtils.hasText(this.jwt.getKeyValue());
 		boolean jwkConfigPresent = StringUtils.hasText(this.jwk.getKeySetUri());
@@ -219,29 +228,21 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 					"Only one of jwt.keyUri (or jwt.keyValue) and jwk.keySetUri should"
 							+ " be configured.");
 		}
-		else {
-			if (jwtConfigPresent || jwkConfigPresent) {
-				// It's a JWT decoder
-				return;
-			}
-			if (!StringUtils.hasText(target.getUserInfoUri())
-					&& !StringUtils.hasText(target.getTokenInfoUri())) {
+		if (!jwtConfigPresent && !jwkConfigPresent) {
+			if (!StringUtils.hasText(this.userInfoUri)
+					&& !StringUtils.hasText(this.tokenInfoUri)) {
 				errors.rejectValue("tokenInfoUri", "missing.tokenInfoUri",
 						"Missing tokenInfoUri and userInfoUri and there is no "
 								+ "JWT verifier key");
 			}
-			if (StringUtils.hasText(target.getTokenInfoUri()) && isPreferTokenInfo()) {
+			if (StringUtils.hasText(this.tokenInfoUri) && this.isPreferTokenInfo()) {
 				if (!StringUtils.hasText(this.clientSecret)) {
 					errors.rejectValue("clientSecret", "missing.clientSecret",
 							"Missing client secret");
 				}
 			}
 		}
-	}
-
-	private int countBeans(Class<?> type) {
-		return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, type,
-				true, false).length;
+		return errors;
 	}
 
 	public class Jwt {
