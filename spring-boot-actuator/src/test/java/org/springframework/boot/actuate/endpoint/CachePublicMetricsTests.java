@@ -78,7 +78,6 @@ public class CachePublicMetricsTests {
 				entry("cache.anotherCacheManager_foo.size", 0L));
 	}
 
-
 	private Map<String, Number> metrics(CachePublicMetrics cpm) {
 		Collection<Metric<?>> metrics = cpm.metrics();
 		assertThat(metrics).isNotNull();
