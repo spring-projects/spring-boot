@@ -185,9 +185,6 @@
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
 	</properties>
-	<prerequisites>
-		<maven>3.2.1</maven>
-	</prerequisites>
 	<dependencyManagement>
 		<dependencies>
 			<!-- Spring Boot -->
