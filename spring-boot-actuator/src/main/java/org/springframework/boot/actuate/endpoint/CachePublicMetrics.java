@@ -45,9 +45,17 @@ public class CachePublicMetrics implements PublicMetrics {
 	@Autowired
 	private Collection<CacheStatisticsProvider<?>> statisticsProviders;
 
+	/**
+	 * Create a new {@link CachePublicMetrics} instance.
+	 */
 	public CachePublicMetrics() {
 	}
 
+	/**
+	 * Create a new {@link CachePublicMetrics} instance.
+	 * @param cacheManagers the cache managers
+	 * @param statisticsProviders the statistics providers
+	 */
 	public CachePublicMetrics(Map<String, CacheManager> cacheManagers,
 			Collection<CacheStatisticsProvider<?>> statisticsProviders) {
 		this.cacheManagers = cacheManagers;
