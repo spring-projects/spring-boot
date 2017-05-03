@@ -43,6 +43,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
+import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
@@ -438,12 +439,12 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void defaultTomcatBackgroundProcessorDelay() throws Exception {
-		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
-		this.properties.customize(container);
-		assertThat(
-				((TomcatEmbeddedServletContainer) container.getEmbeddedServletContainer())
-						.getTomcat().getEngine().getBackgroundProcessorDelay())
-								.isEqualTo(30);
+		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(factory);
+		EmbeddedServletContainer container = factory.getEmbeddedServletContainer();
+		assertThat(((TomcatEmbeddedServletContainer) container).getTomcat().getEngine()
+				.getBackgroundProcessorDelay()).isEqualTo(30);
+		container.stop();
 	}
 
 	@Test
@@ -451,12 +452,12 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.background-processor-delay", "5");
 		bindProperties(map);
-		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
-		this.properties.customize(container);
-		assertThat(
-				((TomcatEmbeddedServletContainer) container.getEmbeddedServletContainer())
-						.getTomcat().getEngine().getBackgroundProcessorDelay())
-								.isEqualTo(5);
+		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(factory);
+		EmbeddedServletContainer container = factory.getEmbeddedServletContainer();
+		assertThat(((TomcatEmbeddedServletContainer) container).getTomcat().getEngine()
+				.getBackgroundProcessorDelay()).isEqualTo(5);
+		container.stop();
 	}
 
 	@Test

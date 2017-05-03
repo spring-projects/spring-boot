@@ -267,9 +267,9 @@ public class JettyEmbeddedServletContainerFactoryTests
 		JettyEmbeddedServletContainerFactory factory = getFactory();
 		factory.setThreadPool(null);
 		assertThat(factory.getThreadPool()).isNull();
-		JettyEmbeddedServletContainer servletContainer = (JettyEmbeddedServletContainer) factory
-				.getEmbeddedServletContainer();
-		assertThat(servletContainer.getServer().getThreadPool()).isNotNull();
+		this.container = factory.getEmbeddedServletContainer();
+		assertThat(((JettyEmbeddedServletContainer) this.container).getServer()
+				.getThreadPool()).isNotNull();
 	}
 
 	@Test
@@ -277,9 +277,9 @@ public class JettyEmbeddedServletContainerFactoryTests
 		JettyEmbeddedServletContainerFactory factory = getFactory();
 		ThreadPool threadPool = mock(ThreadPool.class);
 		factory.setThreadPool(threadPool);
-		JettyEmbeddedServletContainer servletContainer = (JettyEmbeddedServletContainer) factory
-				.getEmbeddedServletContainer();
-		assertThat(servletContainer.getServer().getThreadPool()).isSameAs(threadPool);
+		this.container = factory.getEmbeddedServletContainer();
+		assertThat(((JettyEmbeddedServletContainer) this.container).getServer()
+				.getThreadPool()).isSameAs(threadPool);
 	}
 
 	@Override

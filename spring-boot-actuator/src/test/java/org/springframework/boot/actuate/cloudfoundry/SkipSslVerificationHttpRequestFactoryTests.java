@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.cloudfoundry;
 import javax.net.ssl.SSLHandshakeException;
 
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -44,6 +45,15 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
+	private EmbeddedServletContainer container;
+
+	@After
+	public void shutdownContainer() {
+		if (this.container != null) {
+			this.container.stop();
+		}
+	}
+
 	@Test
 	public void restCallToSelfSignedServershouldNotThrowSslException() throws Exception {
 		String httpsUrl = getHttpsUrl();
@@ -66,10 +76,10 @@ public class SkipSslVerificationHttpRequestFactoryTests {
 		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory(
 				0);
 		factory.setSsl(getSsl("password", "classpath:test.jks"));
-		EmbeddedServletContainer container = factory.getEmbeddedServletContainer(
+		this.container = factory.getEmbeddedServletContainer(
 				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
-		container.start();
-		return "https://localhost:" + container.getPort() + "/hello";
+		this.container.start();
+		return "https://localhost:" + this.container.getPort() + "/hello";
 	}
 
 	private Ssl getSsl(String keyPassword, String keyStore) {
