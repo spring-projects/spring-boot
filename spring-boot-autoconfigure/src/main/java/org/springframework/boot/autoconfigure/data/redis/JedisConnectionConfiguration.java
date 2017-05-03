@@ -96,8 +96,8 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private JedisConnectionFactory createJedisConnectionFactory() {
 		RedisProperties.Pool pool = this.properties.getJedis().getPool();
-		JedisPoolConfig poolConfig = pool != null
-				? jedisPoolConfig(pool) : new JedisPoolConfig();
+		JedisPoolConfig poolConfig = pool != null ? jedisPoolConfig(pool)
+				: new JedisPoolConfig();
 
 		if (getSentinelConfig() != null) {
 			return new JedisConnectionFactory(getSentinelConfig(), poolConfig);

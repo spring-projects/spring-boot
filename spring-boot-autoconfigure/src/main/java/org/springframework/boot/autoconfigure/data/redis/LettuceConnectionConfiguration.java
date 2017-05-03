@@ -43,7 +43,8 @@ import org.springframework.util.StringUtils;
  * @author Mark Paluch
  */
 @Configuration
-@ConditionalOnClass({ GenericObjectPool.class, RedisClient.class, RedisClusterClient.class })
+@ConditionalOnClass({ GenericObjectPool.class, RedisClient.class,
+		RedisClusterClient.class })
 class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private final RedisProperties properties;
@@ -149,8 +150,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 				return new LettuceConnectionFactory(applyProperties(
 						applyClientResources(lettucePool, clientResources)));
 			}
-			return applyClientResources(
-					new LettuceConnectionFactory(getSentinelConfig()),
+			return applyClientResources(new LettuceConnectionFactory(getSentinelConfig()),
 					clientResources);
 		}
 
@@ -166,8 +166,8 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 					this.properties.getLettuce().getPool());
 			DefaultLettucePool lettucePool = new DefaultLettucePool(
 					this.properties.getHost(), this.properties.getPort(), config);
-			return new LettuceConnectionFactory(applyProperties(
-					applyClientResources(lettucePool, clientResources)));
+			return new LettuceConnectionFactory(
+					applyProperties(applyClientResources(lettucePool, clientResources)));
 		}
 
 		return applyClientResources(new LettuceConnectionFactory(), clientResources);

@@ -26,7 +26,8 @@ import org.springframework.util.StringUtils;
 
 /**
  * An {@link AbstractFailureAnalyzer} that performs analysis of failures caused by a
- * {@link BindException} excluding {@link BindValidationException} and {@link UnboundConfigurationPropertiesException}.
+ * {@link BindException} excluding {@link BindValidationException} and
+ * {@link UnboundConfigurationPropertiesException}.
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
@@ -36,8 +37,8 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, BindException cause) {
 		Throwable rootCause = cause.getCause();
-		if (rootCause instanceof BindValidationException ||
-				rootCause instanceof UnboundConfigurationPropertiesException) {
+		if (rootCause instanceof BindValidationException
+				|| rootCause instanceof UnboundConfigurationPropertiesException) {
 			return null;
 		}
 		return analyzeGenericBindException(cause);

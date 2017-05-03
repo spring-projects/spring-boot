@@ -91,10 +91,13 @@ public class BindValidationFailureAnalyzerTests {
 
 	@Test
 	public void otherBindExceptionShouldReturnAnalysis() throws Exception {
-		BindException cause = new BindException(new FieldValidationFailureProperties(), "fieldValidationFailureProperties");
+		BindException cause = new BindException(new FieldValidationFailureProperties(),
+				"fieldValidationFailureProperties");
 		cause.addError(new FieldError("test", "value", "may not be null"));
-		BeanCreationException rootFailure = new BeanCreationException("bean creation failure", cause);
-		FailureAnalysis analysis = new BindValidationFailureAnalyzer().analyze(rootFailure, rootFailure);
+		BeanCreationException rootFailure = new BeanCreationException(
+				"bean creation failure", cause);
+		FailureAnalysis analysis = new BindValidationFailureAnalyzer()
+				.analyze(rootFailure, rootFailure);
 		assertThat(analysis.getDescription())
 				.contains(failure("test.value", "null", "may not be null"));
 	}

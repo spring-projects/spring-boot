@@ -122,6 +122,7 @@ public class UnboundConfigurationPropertyFailureAnalyzerTests {
 		public void setListValue(List<String> listValue) {
 			this.listValue = listValue;
 		}
+
 	}
 
 }

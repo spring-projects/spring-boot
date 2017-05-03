@@ -78,8 +78,8 @@ public class ResourceServerPropertiesTests {
 		this.properties.getJwt().setKeyUri("http://my-auth-server/token_key");
 		setListableBeanFactory();
 		this.thrown.expect(BindException.class);
-		this.thrown.expect(getMatcher("Only one of jwt.keyUri (or jwt.keyValue) " +
-				"and jwk.keySetUri should be configured.", null));
+		this.thrown.expect(getMatcher("Only one of jwt.keyUri (or jwt.keyValue) "
+				+ "and jwk.keySetUri should be configured.", null));
 		this.properties.validate();
 	}
 
@@ -89,10 +89,9 @@ public class ResourceServerPropertiesTests {
 		this.properties.getJwk().setKeySetUri("http://my-auth-server/token_keys");
 		this.properties.getJwt().setKeyValue("my-key");
 		setListableBeanFactory();
-
 		this.thrown.expect(BindException.class);
-		this.thrown.expect(getMatcher("Only one of jwt.keyUri (or jwt.keyValue) " +
-				"and jwk.keySetUri should be configured.", null));
+		this.thrown.expect(getMatcher("Only one of jwt.keyUri (or jwt.keyValue) "
+				+ "and jwk.keySetUri should be configured.", null));
 		this.properties.validate();
 	}
 
@@ -127,8 +126,8 @@ public class ResourceServerPropertiesTests {
 			throws Exception {
 		setListableBeanFactory();
 		this.thrown.expect(BindException.class);
-		this.thrown.expect(getMatcher("Missing tokenInfoUri and userInfoUri and there" +
-				" is no JWT verifier key", "tokenInfoUri"));
+		this.thrown.expect(getMatcher("Missing tokenInfoUri and userInfoUri and there"
+				+ " is no JWT verifier key", "tokenInfoUri"));
 		this.properties.validate();
 	}
 
@@ -201,6 +200,7 @@ public class ResourceServerPropertiesTests {
 
 	private BaseMatcher<BindException> getMatcher(String message, String field) {
 		return new BaseMatcher<BindException>() {
+
 			@Override
 			public void describeTo(Description description) {
 
@@ -217,6 +217,7 @@ public class ResourceServerPropertiesTests {
 				String fieldErrors = ((FieldError) error).getField();
 				return messageMatches && fieldErrors.equals(field);
 			}
+
 		};
 	}
 

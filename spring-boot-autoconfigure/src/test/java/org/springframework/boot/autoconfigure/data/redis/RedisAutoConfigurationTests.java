@@ -70,7 +70,8 @@ public class RedisAutoConfigurationTests {
 	@Test
 	public void testOverrideRedisConfiguration() {
 		load("spring.redis.host:foo", "spring.redis.database:1");
-		LettuceConnectionFactory cf = this.context.getBean(LettuceConnectionFactory.class);
+		LettuceConnectionFactory cf = this.context
+				.getBean(LettuceConnectionFactory.class);
 		assertThat(cf.getHostName()).isEqualTo("foo");
 		assertThat(cf.getDatabase()).isEqualTo(1);
 		assertThat(cf.getPassword()).isNull();
@@ -81,7 +82,8 @@ public class RedisAutoConfigurationTests {
 	public void testRedisUrlConfiguration() throws Exception {
 		load("spring.redis.host:foo",
 				"spring.redis.url:redis://user:password@example:33");
-		LettuceConnectionFactory cf = this.context.getBean(LettuceConnectionFactory.class);
+		LettuceConnectionFactory cf = this.context
+				.getBean(LettuceConnectionFactory.class);
 		assertThat(cf.getHostName()).isEqualTo("example");
 		assertThat(cf.getPort()).isEqualTo(33);
 		assertThat(cf.getPassword()).isEqualTo("password");
@@ -93,7 +95,8 @@ public class RedisAutoConfigurationTests {
 		load("spring.redis.host:foo", "spring.redis.password:xyz",
 				"spring.redis.port:1000", "spring.redis.ssl:false",
 				"spring.redis.url:rediss://user:password@example:33");
-		LettuceConnectionFactory cf = this.context.getBean(LettuceConnectionFactory.class);
+		LettuceConnectionFactory cf = this.context
+				.getBean(LettuceConnectionFactory.class);
 		assertThat(cf.getHostName()).isEqualTo("example");
 		assertThat(cf.getPort()).isEqualTo(33);
 		assertThat(cf.getPassword()).isEqualTo("password");
@@ -106,7 +109,8 @@ public class RedisAutoConfigurationTests {
 				"spring.redis.lettuce.pool.max-idle:4",
 				"spring.redis.lettuce.pool.max-active:16",
 				"spring.redis.lettuce.pool.max-wait:2000");
-		LettuceConnectionFactory cf = this.context.getBean(LettuceConnectionFactory.class);
+		LettuceConnectionFactory cf = this.context
+				.getBean(LettuceConnectionFactory.class);
 		assertThat(cf.getHostName()).isEqualTo("foo");
 		assertThat(getDefaultLettucePool(cf).getHostName()).isEqualTo("foo");
 		assertThat(getDefaultLettucePool(cf).getPoolConfig().getMinIdle()).isEqualTo(1);
@@ -119,7 +123,8 @@ public class RedisAutoConfigurationTests {
 	@Test
 	public void testRedisConfigurationWithTimeout() throws Exception {
 		load("spring.redis.host:foo", "spring.redis.timeout:100");
-		LettuceConnectionFactory cf = this.context.getBean(LettuceConnectionFactory.class);
+		LettuceConnectionFactory cf = this.context
+				.getBean(LettuceConnectionFactory.class);
 		assertThat(cf.getHostName()).isEqualTo("foo");
 		assertThat(cf.getTimeout()).isEqualTo(100);
 	}

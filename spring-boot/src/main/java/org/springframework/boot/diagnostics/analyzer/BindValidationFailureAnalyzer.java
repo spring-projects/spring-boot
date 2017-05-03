@@ -27,12 +27,13 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 /**
- * An {@link AbstractFailureAnalyzer} that performs analysis of any bind validation failures
- * caused by {@link BindValidationException} or {@link org.springframework.validation.BindException}.
+ * An {@link AbstractFailureAnalyzer} that performs analysis of any bind validation
+ * failures caused by {@link BindValidationException} or
+ * {@link org.springframework.validation.BindException}.
  *
  * @author Madhura Bhave
  */
-public class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
+class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, Throwable cause) {
@@ -44,13 +45,16 @@ public class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throw
 	}
 
 	private ExceptionDetails getBindValidationExceptionDetails(Throwable rootFailure) {
-		BindValidationException validationException = findCause(rootFailure, BindValidationException.class);
+		BindValidationException validationException = findCause(rootFailure,
+				BindValidationException.class);
 		if (validationException != null) {
 			BindException target = findCause(rootFailure, BindException.class);
-			List<ObjectError> errors = validationException.getValidationErrors().getAllErrors();
+			List<ObjectError> errors = validationException.getValidationErrors()
+					.getAllErrors();
 			return new ExceptionDetails(errors, target, validationException);
 		}
-		org.springframework.validation.BindException bindException = findCause(rootFailure, org.springframework.validation.BindException.class);
+		org.springframework.validation.BindException bindException = findCause(
+				rootFailure, org.springframework.validation.BindException.class);
 		if (bindException != null) {
 			List<ObjectError> errors = bindException.getAllErrors();
 			return new ExceptionDetails(errors, bindException.getTarget(), bindException);
@@ -111,6 +115,7 @@ public class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throw
 		public Throwable getCause() {
 			return this.cause;
 		}
+
 	}
 
 }

@@ -46,15 +46,13 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 @Configuration
 @ConditionalOnClass({ RedisOperations.class })
 @EnableConfigurationProperties(RedisProperties.class)
-@Import({ LettuceConnectionConfiguration.class,
-		JedisConnectionConfiguration.class })
+@Import({ LettuceConnectionConfiguration.class, JedisConnectionConfiguration.class })
 public class RedisAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "redisTemplate")
 	public RedisTemplate<Object, Object> redisTemplate(
-			RedisConnectionFactory redisConnectionFactory)
-			throws UnknownHostException {
+			RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
 		RedisTemplate<Object, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(redisConnectionFactory);
 		return template;
@@ -63,8 +61,7 @@ public class RedisAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(StringRedisTemplate.class)
 	public StringRedisTemplate stringRedisTemplate(
-			RedisConnectionFactory redisConnectionFactory)
-			throws UnknownHostException {
+			RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
 		StringRedisTemplate template = new StringRedisTemplate();
 		template.setConnectionFactory(redisConnectionFactory);
 		return template;

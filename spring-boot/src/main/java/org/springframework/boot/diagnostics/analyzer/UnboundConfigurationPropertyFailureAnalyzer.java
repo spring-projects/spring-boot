@@ -28,10 +28,12 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
  *
  * @author Madhura Bhave
  */
-public class UnboundConfigurationPropertyFailureAnalyzer extends AbstractFailureAnalyzer<UnboundConfigurationPropertiesException> {
+class UnboundConfigurationPropertyFailureAnalyzer
+		extends AbstractFailureAnalyzer<UnboundConfigurationPropertiesException> {
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, UnboundConfigurationPropertiesException cause) {
+	protected FailureAnalysis analyze(Throwable rootFailure,
+			UnboundConfigurationPropertiesException cause) {
 		BindException exception = findCause(rootFailure, BindException.class);
 		return analyzeUnboundConfigurationPropertiesException(exception, cause);
 	}

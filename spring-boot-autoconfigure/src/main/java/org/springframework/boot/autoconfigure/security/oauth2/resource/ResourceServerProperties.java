@@ -200,11 +200,9 @@ public class ResourceServerProperties implements BeanFactoryAware {
 			// resource token services
 			return;
 		}
-
 		if (!StringUtils.hasText(this.clientId)) {
 			return;
 		}
-
 		BindingResult result = getBindingResult();
 		if (result.hasErrors()) {
 			throw new BindException(result);
@@ -217,12 +215,11 @@ public class ResourceServerProperties implements BeanFactoryAware {
 	}
 
 	private BindingResult getBindingResult() {
-		BindingResult errors = new BeanPropertyBindingResult(this, "resourceServerProperties");
-
+		BindingResult errors = new BeanPropertyBindingResult(this,
+				"resourceServerProperties");
 		boolean jwtConfigPresent = StringUtils.hasText(this.jwt.getKeyUri())
 				|| StringUtils.hasText(this.jwt.getKeyValue());
 		boolean jwkConfigPresent = StringUtils.hasText(this.jwk.getKeySetUri());
-
 		if (jwtConfigPresent && jwkConfigPresent) {
 			errors.reject("ambiguous.keyUri",
 					"Only one of jwt.keyUri (or jwt.keyValue) and jwk.keySetUri should"
