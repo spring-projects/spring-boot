@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for Reactor Core.
  *
  * @author Brian Clozel
+ * @author Eddú Meléndez
  */
 @Configuration
 @ConditionalOnClass({ Mono.class, Flux.class })
@@ -39,7 +40,7 @@ public class ReactorCoreAutoConfiguration {
 	@Autowired
 	protected void initialize(ReactorCoreProperties properties) {
 		if (properties.getStacktraceMode().isEnabled()) {
-			Hooks.onOperator(h -> h.operatorStacktrace());
+			Hooks.onOperator(Hooks.OperatorHook::operatorStacktrace);
 		}
 	}
 

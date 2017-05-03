@@ -138,7 +138,7 @@ public class ThymeleafAutoConfiguration {
 				ObjectProvider<Collection<IDialect>> dialectsProvider) {
 			this.templateResolvers = templateResolvers;
 			this.dialects = dialectsProvider
-					.getIfAvailable(() -> Collections.emptyList());
+					.getIfAvailable(Collections::emptyList);
 		}
 
 		@Bean
@@ -222,7 +222,7 @@ public class ThymeleafAutoConfiguration {
 				ObjectProvider<Collection<IDialect>> dialectsProvider) {
 			this.templateResolvers = templateResolvers;
 			this.dialects = dialectsProvider
-					.getIfAvailable(() -> Collections.emptyList());
+					.getIfAvailable(Collections::emptyList);
 		}
 
 		@Bean
