@@ -19,6 +19,8 @@ package org.springframework.boot.cli.infrastructure;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -27,8 +29,11 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.springframework.util.Assert;
+import org.springframework.util.StreamUtils;
 
 /**
  * Utility to invoke the command line in the same way as a user would, i.e. via the shell
@@ -63,18 +68,35 @@ public final class CommandLineInvoker {
 		return processBuilder.start();
 	}
 
-	private File findLaunchScript() {
-		File dir = new File("target");
-		dir = dir.listFiles(new FileFilter() {
-			@Override
-			public boolean accept(File pathname) {
-				return pathname.isDirectory() && pathname.getName().contains("-bin");
+	private File findLaunchScript() throws IOException {
+		File unpacked = new File("target/unpacked-cli");
+		if (!unpacked.isDirectory()) {
+			File zip = new File("target").listFiles(new FileFilter() {
+
+				@Override
+				public boolean accept(File pathname) {
+					return pathname.getName().endsWith("-bin.zip");
+				}
+
+			})[0];
+			ZipInputStream input = new ZipInputStream(new FileInputStream(zip));
+			ZipEntry entry;
+			while ((entry = input.getNextEntry()) != null) {
+				File file = new File(unpacked, entry.getName());
+				if (entry.isDirectory()) {
+					file.mkdirs();
+				}
+				else {
+					file.getParentFile().mkdirs();
+					StreamUtils.copy(input, new FileOutputStream(file));
+					if (entry.getName().endsWith("/bin/spring")) {
+						file.setExecutable(true);
+					}
+				}
 			}
-		})[0];
-		dir = new File(dir,
-				dir.getName().replace("-bin", "").replace("spring-boot-cli", "spring"));
-		dir = new File(dir, "bin");
-		File launchScript = new File(dir, isWindows() ? "spring.bat" : "spring");
+		}
+		File bin = new File(unpacked.listFiles()[0], "bin");
+		File launchScript = new File(bin, isWindows() ? "spring.bat" : "spring");
 		Assert.state(launchScript.exists() && launchScript.isFile(),
 				"Could not find CLI launch script " + launchScript.getAbsolutePath());
 		return launchScript;
