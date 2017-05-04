@@ -33,7 +33,8 @@ class JpaNoteRepository implements NoteRepository {
 
 	@Override
 	public List<Note> findAll() {
-		return this.entityManager.createQuery("SELECT n FROM Note n", Note.class)
+		return this.entityManager.createQuery(
+				"SELECT DISTINCT n FROM Note n JOIN FETCH n.tags", Note.class)
 				.getResultList();
 	}
 
