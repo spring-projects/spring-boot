@@ -40,7 +40,6 @@ import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.archive.JarCommand;
 import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.boot.cli.command.run.RunCommand;
-import org.springframework.boot.cli.command.test.TestCommand;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.util.SocketUtils;
 
@@ -75,17 +74,6 @@ public class CliTester implements TestRule {
 		Future<RunCommand> future = submitCommand(new RunCommand(), args);
 		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
 		return getOutput();
-	}
-
-	public String test(String... args) throws Exception {
-		Future<TestCommand> future = submitCommand(new TestCommand(), args);
-		try {
-			this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
-			return getOutput();
-		}
-		catch (Exception ex) {
-			return getOutput();
-		}
 	}
 
 	public String grab(String... args) throws Exception {
