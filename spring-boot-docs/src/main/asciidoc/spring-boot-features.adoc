@@ -4980,7 +4980,7 @@ to avoid having a thread blocked by an unresponsive mail server:
 
 [source,properties,indent=0]
 ----
-	spring.mail.properties.mail.smtp.connecttimeout=5000
+	spring.mail.properties.mail.smtp.connectiontimeout=5000
 	spring.mail.properties.mail.smtp.timeout=3000
 	spring.mail.properties.mail.smtp.writetimeout=5000
 ----
