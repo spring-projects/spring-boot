@@ -26,7 +26,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
@@ -53,6 +58,7 @@ import org.springframework.boot.context.embedded.AbstractEmbeddedServletContaine
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 
@@ -509,4 +515,29 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		assertThat(((ConnectorStartFailedException) ex).getPort()).isEqualTo(blockedPort);
 	}
 
+	@Test(expected = EmbeddedServletContainerException.class)
+	public void startServletExceptionFilter() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+
+		FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+		filterRegistrationBean.setFilter(new Filter() {
+			@Override
+			public void init(FilterConfig filterConfig) throws ServletException {
+				throw new ServletException();
+			}
+
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response,
+					FilterChain chain) throws IOException, ServletException {
+			}
+
+			@Override
+			public void destroy() {
+			}
+		});
+		filterRegistrationBean.setUrlPatterns(Arrays.asList("/test"));
+
+		this.container = factory.getEmbeddedServletContainer(filterRegistrationBean);
+		this.container.start();
+	}
 }
