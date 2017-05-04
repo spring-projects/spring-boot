@@ -41,7 +41,7 @@ import org.springframework.core.io.ClassPathResource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HazelcastAutoConfiguration}.
+ * Tests for {@link HazelcastAutoConfiguration} when the client library is not present.
  *
  * @author Stephane Nicoll
  */

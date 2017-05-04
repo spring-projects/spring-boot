@@ -16,12 +16,10 @@
 
 package org.springframework.boot.autoconfigure.hazelcast;
 
-import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.core.HazelcastInstance;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -39,21 +37,7 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @ConditionalOnClass(HazelcastInstance.class)
 @EnableConfigurationProperties(HazelcastProperties.class)
+@Import({ HazelcastClientConfiguration.class, HazelcastServerConfiguration.class })
 public class HazelcastAutoConfiguration {
-
-	@Configuration
-	@ConditionalOnMissingBean(HazelcastInstance.class)
-	@Import(HazelcastServerConfiguration.class)
-	static class ServerConfiguration {
-
-	}
-
-	@Configuration
-	@ConditionalOnClass(HazelcastClient.class)
-	@ConditionalOnMissingBean(HazelcastInstance.class)
-	@Import(HazelcastClientConfiguration.class)
-	static class ClientConfiguration {
-
-	}
 
 }

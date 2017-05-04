@@ -22,6 +22,7 @@ import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
@@ -33,8 +34,10 @@ import org.springframework.core.io.Resource;
  * Configuration for Hazelcast client.
  *
  * @author Vedran Pavic
- * @since 2.0.0
+ * @author Stephane Nicoll
  */
+@ConditionalOnClass(HazelcastClient.class)
+@ConditionalOnMissingBean(HazelcastInstance.class)
 class HazelcastClientConfiguration {
 
 	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.client.config";
@@ -49,7 +52,7 @@ class HazelcastClientConfiguration {
 				throws IOException {
 			Resource config = properties.resolveConfigLocation();
 			if (config != null) {
-				return HazelcastInstanceFactory.createHazelcastClient(config);
+				return new HazelcastClientFactory(config).getHazelcastInstance();
 			}
 			return HazelcastClient.newHazelcastClient();
 		}
@@ -62,7 +65,7 @@ class HazelcastClientConfiguration {
 
 		@Bean
 		public HazelcastInstance hazelcastInstance(ClientConfig config) {
-			return HazelcastInstanceFactory.createHazelcastClient(config);
+			return new HazelcastClientFactory(config).getHazelcastInstance();
 		}
 
 	}

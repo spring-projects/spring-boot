@@ -34,8 +34,8 @@ import org.springframework.core.io.Resource;
  *
  * @author Stephane Nicoll
  * @author Vedran Pavic
- * @since 2.0.0
  */
+@ConditionalOnMissingBean(HazelcastInstance.class)
 class HazelcastServerConfiguration {
 
 	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.config";
@@ -50,7 +50,7 @@ class HazelcastServerConfiguration {
 				throws IOException {
 			Resource config = properties.resolveConfigLocation();
 			if (config != null) {
-				return HazelcastInstanceFactory.createHazelcastInstance(config);
+				return new HazelcastInstanceFactory(config).getHazelcastInstance();
 			}
 			return Hazelcast.newHazelcastInstance();
 		}
@@ -63,7 +63,7 @@ class HazelcastServerConfiguration {
 
 		@Bean
 		public HazelcastInstance hazelcastInstance(Config config) {
-			return HazelcastInstanceFactory.createHazelcastInstance(config);
+			return new HazelcastInstanceFactory(config).getHazelcastInstance();
 		}
 
 	}

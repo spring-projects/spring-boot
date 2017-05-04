@@ -39,9 +39,10 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for client {@link HazelcastAutoConfiguration}.
+ * Tests for {@link HazelcastAutoConfiguration} specific to the client.
  *
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  */
 public class HazelcastAutoConfigurationClientTests {
 
@@ -50,24 +51,27 @@ public class HazelcastAutoConfigurationClientTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
-	public void closeContext() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
-
-	private static HazelcastInstance hazelcastInstance;
+	/**
+	 * Servers the test clients will connect to.
+	 */
+	private static HazelcastInstance hazelcastServer;
 
 	@BeforeClass
 	public static void init() {
-		hazelcastInstance = Hazelcast.newHazelcastInstance();
+		hazelcastServer = Hazelcast.newHazelcastInstance();
 	}
 
 	@AfterClass
 	public static void close() {
-		if (hazelcastInstance != null) {
-			hazelcastInstance.shutdown();
+		if (hazelcastServer != null) {
+			hazelcastServer.shutdown();
+		}
+	}
+
+	@After
+	public void closeContext() {
+		if (this.context != null) {
+			this.context.close();
 		}
 	}
 
@@ -115,7 +119,7 @@ public class HazelcastAutoConfigurationClientTests {
 	}
 
 	@Test
-	public void clientConfigHasPriority() {
+	public void clientConfigTakesPrecedence() {
 		load(HazelcastServerAndClientConfig.class, "spring.hazelcast.config=this-is-ignored.xml");
 		HazelcastInstance hazelcastInstance = this.context
 				.getBean(HazelcastInstance.class);
