@@ -35,7 +35,7 @@ public interface FlightRepository extends CrudRepository<Flight, Long> {
 
 	@Override
 	@PreAuthorize("#oauth2.hasScope('read')")
-	Optional<Flight> findOne(Long aLong);
+	Optional<Flight> findById(Long aLong);
 
 	@Override
 	@PreAuthorize("#oauth2.hasScope('write')")
