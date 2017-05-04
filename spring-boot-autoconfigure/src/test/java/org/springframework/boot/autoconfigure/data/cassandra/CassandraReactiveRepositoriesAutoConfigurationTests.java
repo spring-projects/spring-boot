@@ -45,12 +45,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ReactiveCassandraRepositoriesAutoConfiguration}.
+ * Tests for {@link CassandraReactiveRepositoriesAutoConfiguration}.
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-public class ReactiveCassandraRepositoriesAutoConfigurationTests {
+public class CassandraReactiveRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -98,8 +98,8 @@ public class ReactiveCassandraRepositoriesAutoConfigurationTests {
 		ctx.register(CassandraAutoConfiguration.class,
 				CassandraRepositoriesAutoConfiguration.class,
 				CassandraDataAutoConfiguration.class,
-				ReactiveCassandraDataAutoConfiguration.class,
-				ReactiveCassandraRepositoriesAutoConfiguration.class,
+				CassandraReactiveDataAutoConfiguration.class,
+				CassandraReactiveRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
@@ -123,7 +123,7 @@ public class ReactiveCassandraRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration
-	@TestAutoConfigurationPackage(ReactiveCassandraRepositoriesAutoConfigurationTests.class)
+	@TestAutoConfigurationPackage(CassandraReactiveRepositoriesAutoConfigurationTests.class)
 	@EnableReactiveCassandraRepositories(basePackageClasses = ReactiveCityCassandraRepository.class)
 	static class CustomizedConfiguration {
 

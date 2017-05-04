@@ -31,7 +31,7 @@ import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.mongo.city.City;
 import org.springframework.boot.autoconfigure.data.mongo.city.ReactiveCityRepository;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.ReactiveMongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
@@ -42,11 +42,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ReactiveMongoRepositoriesAutoConfiguration}.
+ * Tests for {@link MongoReactiveRepositoriesAutoConfiguration}.
  *
  * @author Mark Paluch
  */
-public class ReactiveMongoRepositoriesAutoConfigurationTests {
+public class MongoReactiveRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -95,9 +95,9 @@ public class ReactiveMongoRepositoriesAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(configurationClasses);
 		this.context.register(MongoAutoConfiguration.class,
-				MongoDataAutoConfiguration.class, ReactiveMongoAutoConfiguration.class,
-				ReactiveMongoDataAutoConfiguration.class,
-				ReactiveMongoRepositoriesAutoConfiguration.class,
+				MongoDataAutoConfiguration.class, MongoReactiveAutoConfiguration.class,
+				MongoReactiveDataAutoConfiguration.class,
+				MongoReactiveRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 	}
@@ -115,7 +115,7 @@ public class ReactiveMongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration
-	@TestAutoConfigurationPackage(ReactiveMongoRepositoriesAutoConfigurationTests.class)
+	@TestAutoConfigurationPackage(MongoReactiveRepositoriesAutoConfigurationTests.class)
 	@EnableMongoRepositories(basePackageClasses = CityMongoDbRepository.class)
 	protected static class CustomizedConfiguration {
 
@@ -124,7 +124,7 @@ public class ReactiveMongoRepositoriesAutoConfigurationTests {
 	@Configuration
 	// To not find any repositories
 	@EnableReactiveMongoRepositories("foo.bar")
-	@TestAutoConfigurationPackage(ReactiveMongoRepositoriesAutoConfigurationTests.class)
+	@TestAutoConfigurationPackage(MongoReactiveRepositoriesAutoConfigurationTests.class)
 	protected static class SortOfInvalidCustomConfiguration {
 
 	}

@@ -21,18 +21,18 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.ReactiveMongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ReactiveMongoDataAutoConfiguration}.
+ * Tests for {@link MongoReactiveDataAutoConfiguration}.
  *
  * @author Mark Paluch
  */
-public class ReactiveMongoDataAutoConfigurationTests {
+public class MongoReactiveDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -47,8 +47,8 @@ public class ReactiveMongoDataAutoConfigurationTests {
 	public void templateExists() {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
-				MongoDataAutoConfiguration.class, ReactiveMongoAutoConfiguration.class,
-				ReactiveMongoDataAutoConfiguration.class);
+				MongoDataAutoConfiguration.class, MongoReactiveAutoConfiguration.class,
+				MongoReactiveDataAutoConfiguration.class);
 		assertThat(this.context.getBeanNamesForType(ReactiveMongoTemplate.class))
 				.hasSize(1);
 	}

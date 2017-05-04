@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.data.mongo.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.mongo.city.ReactiveCityRepository;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfigurationTests;
-import org.springframework.boot.autoconfigure.mongo.ReactiveMongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -41,11 +41,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MongoRepositoriesAutoConfiguration} and
- * {@link ReactiveMongoRepositoriesAutoConfiguration}.
+ * {@link MongoReactiveRepositoriesAutoConfiguration}.
  *
  * @author Mark Paluch
  */
-public class ReactiveAndBlockingMongoRepositoriesAutoConfigurationTests {
+public class MongoReactiveAndBlockingRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -87,11 +87,11 @@ public class ReactiveAndBlockingMongoRepositoriesAutoConfigurationTests {
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
 			List<String> names = new ArrayList<>();
 			for (Class<?> type : new Class<?>[] { MongoAutoConfiguration.class,
-					ReactiveMongoAutoConfiguration.class,
+					MongoReactiveAutoConfiguration.class,
 					MongoDataAutoConfiguration.class,
 					MongoRepositoriesAutoConfiguration.class,
-					ReactiveMongoDataAutoConfiguration.class,
-					ReactiveMongoRepositoriesAutoConfiguration.class }) {
+					MongoReactiveDataAutoConfiguration.class,
+					MongoReactiveRepositoriesAutoConfiguration.class }) {
 				names.add(type.getName());
 			}
 			return names.toArray(new String[0]);

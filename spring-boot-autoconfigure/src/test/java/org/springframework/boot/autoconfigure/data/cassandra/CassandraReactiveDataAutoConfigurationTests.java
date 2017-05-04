@@ -38,12 +38,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ReactiveCassandraDataAutoConfiguration}.
+ * Tests for {@link CassandraReactiveDataAutoConfiguration}.
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-public class ReactiveCassandraDataAutoConfigurationTests {
+public class CassandraReactiveDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -93,7 +93,7 @@ public class ReactiveCassandraDataAutoConfigurationTests {
 		}
 		ctx.register(TestConfiguration.class, CassandraAutoConfiguration.class,
 				CassandraDataAutoConfiguration.class,
-				ReactiveCassandraDataAutoConfiguration.class);
+				CassandraReactiveDataAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
 	}

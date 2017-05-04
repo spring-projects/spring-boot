@@ -46,7 +46,7 @@ import org.springframework.data.cassandra.core.ReactiveCassandraTemplate;
 @ConditionalOnClass({ Cluster.class, ReactiveCassandraTemplate.class, Flux.class })
 @ConditionalOnBean(Session.class)
 @AutoConfigureAfter(CassandraDataAutoConfiguration.class)
-public class ReactiveCassandraDataAutoConfiguration {
+public class CassandraReactiveDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveSession.class)

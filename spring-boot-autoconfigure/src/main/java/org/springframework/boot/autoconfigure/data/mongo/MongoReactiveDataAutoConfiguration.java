@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
-import org.springframework.boot.autoconfigure.mongo.ReactiveMongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,12 +48,12 @@ import org.springframework.data.mongodb.core.convert.MongoConverter;
 @Configuration
 @ConditionalOnClass({ MongoClient.class, ReactiveMongoTemplate.class })
 @EnableConfigurationProperties(MongoProperties.class)
-@AutoConfigureAfter(ReactiveMongoAutoConfiguration.class)
-public class ReactiveMongoDataAutoConfiguration {
+@AutoConfigureAfter(MongoReactiveAutoConfiguration.class)
+public class MongoReactiveDataAutoConfiguration {
 
 	private final MongoProperties properties;
 
-	public ReactiveMongoDataAutoConfiguration(MongoProperties properties) {
+	public MongoReactiveDataAutoConfiguration(MongoProperties properties) {
 		this.properties = properties;
 	}
 

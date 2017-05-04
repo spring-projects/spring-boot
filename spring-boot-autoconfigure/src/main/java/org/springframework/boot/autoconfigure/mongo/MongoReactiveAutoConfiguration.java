@@ -40,7 +40,7 @@ import org.springframework.core.env.Environment;
 @Configuration
 @ConditionalOnClass(MongoClient.class)
 @EnableConfigurationProperties(MongoProperties.class)
-public class ReactiveMongoAutoConfiguration {
+public class MongoReactiveAutoConfiguration {
 
 	private final MongoClientSettings settings;
 
@@ -48,7 +48,7 @@ public class ReactiveMongoAutoConfiguration {
 
 	private MongoClient mongo;
 
-	public ReactiveMongoAutoConfiguration(MongoProperties properties,
+	public MongoReactiveAutoConfiguration(MongoProperties properties,
 			ObjectProvider<MongoClientSettings> settings, Environment environment) {
 		this.settings = settings.getIfAvailable();
 		this.factory = new ReactiveMongoClientFactory(properties, environment);

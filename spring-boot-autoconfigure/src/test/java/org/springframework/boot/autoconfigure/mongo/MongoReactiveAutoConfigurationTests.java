@@ -39,11 +39,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ReactiveMongoAutoConfiguration}.
+ * Tests for {@link MongoReactiveAutoConfiguration}.
  *
  * @author Mark Paluch
  */
-public class ReactiveMongoAutoConfigurationTests {
+public class MongoReactiveAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -58,7 +58,7 @@ public class ReactiveMongoAutoConfigurationTests {
 	public void clientExists() {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class,
-				ReactiveMongoAutoConfiguration.class);
+				MongoReactiveAutoConfiguration.class);
 		assertThat(this.context.getBeanNamesForType(MongoClient.class).length)
 				.isEqualTo(1);
 	}
@@ -70,7 +70,7 @@ public class ReactiveMongoAutoConfigurationTests {
 				"spring.data.mongodb.host:localhost");
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				ReactiveMongoAutoConfiguration.class);
+				MongoReactiveAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(MongoClient.class).getSettings()
 				.getSocketSettings().getReadTimeout(TimeUnit.SECONDS)).isEqualTo(300);
@@ -83,7 +83,7 @@ public class ReactiveMongoAutoConfigurationTests {
 				"spring.data.mongodb.uri:mongodb://localhost/test");
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				ReactiveMongoAutoConfiguration.class);
+				MongoReactiveAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(
 				this.context.getBean(MongoClient.class).getSettings().getReadPreference())
@@ -97,7 +97,7 @@ public class ReactiveMongoAutoConfigurationTests {
 				"spring.data.mongodb.uri:mongodb://localhost/test");
 		this.context.register(SslOptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				ReactiveMongoAutoConfiguration.class);
+				MongoReactiveAutoConfiguration.class);
 		this.context.refresh();
 		MongoClient mongo = this.context.getBean(MongoClient.class);
 		MongoClientSettings settings = mongo.getSettings();
