@@ -3081,8 +3081,9 @@ normal in a Spring Boot application (you normally only have one application cont
 === Use Lettuce instead of Jedis
 The Spring Boot starter (`spring-boot-starter-data-redis`) uses
 https://github.com/xetorthio/jedis/[Jedis] by default. You need to exclude that dependency
-and include the https://github.com/lettuce-io/lettuce-core/[Lettuce] one instead. Spring
-Boot manages that dependency to help make this process as easy as possible.
+and include the https://github.com/lettuce-io/lettuce-core/[Lettuce] one instead. You also
+need `commons-pool2`. Spring Boot manages these dependencies to help make this process as
+easy as possible.
 
 Example in Maven:
 
@@ -3102,6 +3103,10 @@ Example in Maven:
 		<groupId>io.lettuce</groupId>
 		<artifactId>lettuce-core</artifactId>
 	</dependency>
+	<dependency>
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-pool2</artifactId>
+	</dependency>
 ----
 
 Example in Gradle:
@@ -3113,7 +3118,8 @@ Example in Gradle:
 	}
 
 	dependencies {
-		compile("io.lettuce:lettuce-core:{lettuce.version}")
+		compile("io.lettuce:lettuce-core")
+		compile("org.apache.commons:commons-pool2")
 		// ...
 	}
 ----
