@@ -215,7 +215,10 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> propertiesMap = (Map<String, Object>) nestedProperties
 				.get("properties");
 		assertThat(propertiesMap).isNotNull();
-		assertThat(propertiesMap).hasSize(2);
+		assertThat(propertiesMap).hasSize(4);
+		String summary = (String) propertiesMap
+				.get("summary");
+		assertThat(summary).isNull();
 		Map<String, Object> map = (Map<String, Object>) propertiesMap
 				.get("map");
 		assertThat(map).isNotNull();
@@ -436,7 +439,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	}
 
-	public static class OnlyGetterProperties {
+	public static class OnlyGetterProperties extends Foo {
 		private Map<String, Boolean> map = new HashMap<>();
 		private List<String> list = new ArrayList<>();
 
