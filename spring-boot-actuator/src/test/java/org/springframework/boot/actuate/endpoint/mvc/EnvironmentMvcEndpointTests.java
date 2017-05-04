@@ -169,7 +169,7 @@ public class EnvironmentMvcEndpointTests {
 		Map<String, Object> source = new HashMap<String, Object>();
 		source.put("foo", Collections.singletonMap("bar", "baz"));
 		propertySources.addFirst(new MapPropertySource("test", source));
-		this.mvc.perform(get("/env/foo.*")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/env/foo.*")).andExpect(status().isOk())
 				.andExpect(content().string("{\"foo\":{\"bar\":\"baz\"}}"));
 	}
 
