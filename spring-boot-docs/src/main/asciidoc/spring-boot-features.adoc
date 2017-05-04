@@ -4653,9 +4653,10 @@ the broker connection is lost. Retries are disabled by default.
 ==== Receiving a message
 When the Rabbit infrastructure is present, any bean can be annotated with
 `@RabbitListener` to create a listener endpoint. If no `RabbitListenerContainerFactory`
-has been defined, a default one is configured automatically.  If a `MessageConverter` or
-`MessageRecoverer` beans are defined, they are associated automatically to the default
-factory.
+has been defined, a default `SimpleRabbitListenerContainerFactory` is configured
+automatically and you can switch to a direct container using the
+`spring.rabbitmq.listener.type` property.  If a `MessageConverter` or `MessageRecoverer`
+beans are defined, they are associated automatically to the default factory.
 
 The following component creates a listener endpoint on the `someQueue` queue:
 
@@ -4677,9 +4678,13 @@ for more details.
 
 If you need to create more `RabbitListenerContainerFactory` instances or if you want to
 override the default, Spring Boot provides a
-`SimpleRabbitListenerContainerFactoryConfigurer` that you can use to initialize a
-`SimpleRabbitListenerContainerFactory` with the same settings as the one that is
-auto-configured.
+`SimpleRabbitListenerContainerFactoryConfigurer` and
+`DirectRabbitListenerContainerFactoryConfigurer` that you can use to initialize a
+`SimpleRabbitListenerContainerFactory` and `DirectRabbitListenerContainerFactory` with the
+same settings as the one used by the auto-configuration.
+
+TIP: It doesn't matter which container type you've chosen, those two beans are exposed by
+the auto-configuration.
 
 For instance, the following exposes another factory that uses a specific
 `MessageConverter`:

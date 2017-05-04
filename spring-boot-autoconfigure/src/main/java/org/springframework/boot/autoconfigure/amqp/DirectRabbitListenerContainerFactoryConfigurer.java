@@ -17,22 +17,25 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
-import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 
 /**
- * Configure {@link RabbitListenerContainerFactory} with sensible defaults.
+ * Configure {@link DirectRabbitListenerContainerFactoryConfigurer} with sensible defaults.
  *
  * @author Gary Russell
+ * @author Stephane Nicoll
  * @since 2.0
  */
 public final class DirectRabbitListenerContainerFactoryConfigurer
 		extends AbstractRabbitListenerContainerFactoryConfigurer<DirectRabbitListenerContainerFactory> {
 
 	@Override
-	protected void configure(DirectRabbitListenerContainerFactory factory, RabbitProperties rabbitProperties) {
-		RabbitProperties.Listener listenerConfig = rabbitProperties.getListener();
-		if (listenerConfig.getConsumersPerQueue() != null) {
-			factory.setConsumersPerQueue(listenerConfig.getConsumersPerQueue());
+	public void configure(DirectRabbitListenerContainerFactory factory, ConnectionFactory connectionFactory) {
+		RabbitProperties.DirectContainer config = getRabbitProperties().getListener()
+				.getDirect();
+		configure(factory, connectionFactory, config);
+		if (config.getConsumersPerQueue() != null) {
+			factory.setConsumersPerQueue(config.getConsumersPerQueue());
 		}
 	}
 

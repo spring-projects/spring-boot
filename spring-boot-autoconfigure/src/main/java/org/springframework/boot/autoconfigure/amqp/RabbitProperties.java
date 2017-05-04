@@ -40,22 +40,6 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
 
-	public enum ContainerType {
-
-		/**
-		 * SimpleMessageListenerContainer - legacy container where the RabbitMQ consumer
-		 * dispatches messages to an invoker thread.
-		 */
-		SIMPLE,
-
-		/**
-		 * DirectMessageListenerContainer - container where the listener is invoked
-		 * directly on the RabbitMQ consumer thread.
-		 */
-		DIRECT
-
-	}
-
 	/**
 	 * RabbitMQ host.
 	 */
@@ -481,10 +465,42 @@ public class RabbitProperties {
 
 	}
 
+	public enum ContainerType {
+
+		/**
+		 * Legacy container where the RabbitMQ consumer dispatches messages to an
+		 * invoker thread.
+		 */
+		SIMPLE,
+
+		/**
+		 * Container where the listener is invoked directly on the RabbitMQ consumer
+		 * thread.
+		 */
+		DIRECT
+
+	}
+
 	public static class Listener {
 
+		/**
+		 * Listener container type.
+		 */
+		private ContainerType type = ContainerType.SIMPLE;
+
 		@NestedConfigurationProperty
-		private final AmqpContainer simple = new AmqpContainer();
+		private final SimpleContainer simple = new SimpleContainer();
+
+		@NestedConfigurationProperty
+		private final DirectContainer direct = new DirectContainer();
+
+		public ContainerType getType() {
+			return this.type;
+		}
+
+		public void setType(ContainerType containerType) {
+			this.type = containerType;
+		}
 
 		@DeprecatedConfigurationProperty(replacement = "spring.rabbitmq.listener.simple.auto-startup")
 		@Deprecated
@@ -580,18 +596,17 @@ public class RabbitProperties {
 			return getSimple().getRetry();
 		}
 
-		public AmqpContainer getSimple() {
+		public SimpleContainer getSimple() {
 			return this.simple;
+		}
+
+		public DirectContainer getDirect() {
+			return this.direct;
 		}
 
 	}
 
-	public static class AmqpContainer {
-
-		/**
-		 * Container type.
-		 */
-		private ContainerType type = ContainerType.SIMPLE;
+	public static abstract class AmqpContainer {
 
 		/**
 		 * Start the container automatically on startup.
@@ -604,32 +619,10 @@ public class RabbitProperties {
 		private AcknowledgeMode acknowledgeMode;
 
 		/**
-		 * Minimum number of listener invoker threads - applies only to simple containers.
-		 */
-		private Integer concurrency;
-
-		/**
-		 * Maximum number of listener invoker threads - applies only to simple containers.
-		 */
-		private Integer maxConcurrency;
-
-		/**
-		 * Number of RabbitMQ consumers per queue - applies only to direct containers.
-		 */
-		private Integer consumersPerQueue;
-
-		/**
 		 * Number of messages to be handled in a single request. It should be greater than
 		 * or equal to the transaction size (if used).
 		 */
 		private Integer prefetch;
-
-		/**
-		 * Number of messages to be processed in a transaction; number of messages between
-		 * acks. For best results it should be less than or equal to the prefetch count -
-		 * applies only to simple containers.
-		 */
-		private Integer transactionSize;
 
 		/**
 		 * Whether rejected deliveries are requeued by default; default true.
@@ -647,14 +640,6 @@ public class RabbitProperties {
 		@NestedConfigurationProperty
 		private final ListenerRetry retry = new ListenerRetry();
 
-		public ContainerType getType() {
-			return this.type;
-		}
-
-		public void setType(ContainerType containerType) {
-			this.type = containerType;
-		}
-
 		public boolean isAutoStartup() {
 			return this.autoStartup;
 		}
@@ -671,44 +656,12 @@ public class RabbitProperties {
 			this.acknowledgeMode = acknowledgeMode;
 		}
 
-		public Integer getConcurrency() {
-			return this.concurrency;
-		}
-
-		public void setConcurrency(Integer concurrency) {
-			this.concurrency = concurrency;
-		}
-
-		public Integer getMaxConcurrency() {
-			return this.maxConcurrency;
-		}
-
-		public void setMaxConcurrency(Integer maxConcurrency) {
-			this.maxConcurrency = maxConcurrency;
-		}
-
-		public Integer getConsumersPerQueue() {
-			return this.consumersPerQueue;
-		}
-
-		public void setConsumersPerQueue(Integer consumersPerQueue) {
-			this.consumersPerQueue = consumersPerQueue;
-		}
-
 		public Integer getPrefetch() {
 			return this.prefetch;
 		}
 
 		public void setPrefetch(Integer prefetch) {
 			this.prefetch = prefetch;
-		}
-
-		public Integer getTransactionSize() {
-			return this.transactionSize;
-		}
-
-		public void setTransactionSize(Integer transactionSize) {
-			this.transactionSize = transactionSize;
 		}
 
 		public Boolean getDefaultRequeueRejected() {
@@ -729,6 +682,74 @@ public class RabbitProperties {
 
 		public ListenerRetry getRetry() {
 			return this.retry;
+		}
+
+	}
+
+	/**
+	 * Configuration properties for {@code SimpleMessageListenerContainer}.
+	 */
+	public static class SimpleContainer extends AmqpContainer {
+
+		/**
+		 * Minimum number of listener invoker threads.
+		 */
+		private Integer concurrency;
+
+		/**
+		 * Maximum number of listener invoker threads.
+		 */
+		private Integer maxConcurrency;
+
+		/**
+		 * Number of messages to be processed in a transaction; number of messages
+		 * between acks. For best results it should
+		 * be less than or equal to the prefetch count.
+		 */
+		private Integer transactionSize;
+
+		public Integer getConcurrency() {
+			return this.concurrency;
+		}
+
+		public void setConcurrency(Integer concurrency) {
+			this.concurrency = concurrency;
+		}
+
+		public Integer getMaxConcurrency() {
+			return this.maxConcurrency;
+		}
+
+		public void setMaxConcurrency(Integer maxConcurrency) {
+			this.maxConcurrency = maxConcurrency;
+		}
+
+		public Integer getTransactionSize() {
+			return this.transactionSize;
+		}
+
+		public void setTransactionSize(Integer transactionSize) {
+			this.transactionSize = transactionSize;
+		}
+
+	}
+
+	/**
+	 * Configuration properties for {@code DirectMessageListenerContainer}.
+	 */
+	public static class DirectContainer extends AmqpContainer {
+
+		/**
+		 * Number of consumers per queue.
+		 */
+		private Integer consumersPerQueue;
+
+		public Integer getConsumersPerQueue() {
+			return this.consumersPerQueue;
+		}
+
+		public void setConsumersPerQueue(Integer consumersPerQueue) {
+			this.consumersPerQueue = consumersPerQueue;
 		}
 
 	}

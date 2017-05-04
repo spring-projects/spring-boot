@@ -41,11 +41,11 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass(EnableRabbit.class)
 class RabbitAnnotationDrivenConfiguration {
 
-	protected final ObjectProvider<MessageConverter> messageConverter;
+	private final ObjectProvider<MessageConverter> messageConverter;
 
-	protected final ObjectProvider<MessageRecoverer> messageRecoverer;
+	private final ObjectProvider<MessageRecoverer> messageRecoverer;
 
-	protected final RabbitProperties properties;
+	private final RabbitProperties properties;
 
 	RabbitAnnotationDrivenConfiguration(ObjectProvider<MessageConverter> messageConverter,
 			ObjectProvider<MessageRecoverer> messageRecoverer,
@@ -55,68 +55,48 @@ class RabbitAnnotationDrivenConfiguration {
 		this.properties = properties;
 	}
 
-
-	@Configuration
-	@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "listener.type", havingValue = "simple",
-							matchIfMissing = true)
-	public static class SimpleContainerConfiguration extends RabbitAnnotationDrivenConfiguration {
-
-		SimpleContainerConfiguration(ObjectProvider<MessageConverter> messageConverter,
-				ObjectProvider<MessageRecoverer> messageRecoverer, RabbitProperties properties) {
-			super(messageConverter, messageRecoverer, properties);
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		public SimpleRabbitListenerContainerFactoryConfigurer rabbitListenerContainerFactoryConfigurer() {
-			SimpleRabbitListenerContainerFactoryConfigurer configurer =
-					new SimpleRabbitListenerContainerFactoryConfigurer();
-			configurer.setMessageConverter(this.messageConverter.getIfUnique());
-			configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
-			configurer.setRabbitProperties(this.properties);
-			return configurer;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
-		public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-				SimpleRabbitListenerContainerFactoryConfigurer configurer,
-				ConnectionFactory connectionFactory) {
-			SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-			configurer.configure(factory, connectionFactory);
-			return factory;
-		}
+	@Bean
+	@ConditionalOnMissingBean
+	public SimpleRabbitListenerContainerFactoryConfigurer simpleRabbitListenerContainerFactoryConfigurer() {
+		SimpleRabbitListenerContainerFactoryConfigurer configurer = new SimpleRabbitListenerContainerFactoryConfigurer();
+		configurer.setMessageConverter(this.messageConverter.getIfUnique());
+		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
+		configurer.setRabbitProperties(this.properties);
+		return configurer;
 	}
 
-	@Configuration
-	@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "listener.type", havingValue = "direct")
-	public static class DirectContainerConfiguration extends RabbitAnnotationDrivenConfiguration {
+	@Bean(name = "rabbitListenerContainerFactory")
+	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
+	@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "simple", matchIfMissing = true)
+	public SimpleRabbitListenerContainerFactory simpleRabbitListenerContainerFactory(
+			SimpleRabbitListenerContainerFactoryConfigurer configurer,
+			ConnectionFactory connectionFactory) {
+		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+		configurer.configure(factory, connectionFactory);
+		return factory;
+	}
 
-		DirectContainerConfiguration(ObjectProvider<MessageConverter> messageConverter,
-				ObjectProvider<MessageRecoverer> messageRecoverer, RabbitProperties properties) {
-			super(messageConverter, messageRecoverer, properties);
-		}
 
-		@Bean
-		@ConditionalOnMissingBean
-		public DirectRabbitListenerContainerFactoryConfigurer rabbitListenerContainerFactoryConfigurer() {
-			DirectRabbitListenerContainerFactoryConfigurer configurer =
-					new DirectRabbitListenerContainerFactoryConfigurer();
-			configurer.setMessageConverter(this.messageConverter.getIfUnique());
-			configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
-			configurer.setRabbitProperties(this.properties);
-			return configurer;
-		}
+	@Bean
+	@ConditionalOnMissingBean
+	public DirectRabbitListenerContainerFactoryConfigurer directRabbitListenerContainerFactoryConfigurer() {
+		DirectRabbitListenerContainerFactoryConfigurer configurer =
+				new DirectRabbitListenerContainerFactoryConfigurer();
+		configurer.setMessageConverter(this.messageConverter.getIfUnique());
+		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
+		configurer.setRabbitProperties(this.properties);
+		return configurer;
+	}
 
-		@Bean
-		@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
-		public DirectRabbitListenerContainerFactory rabbitListenerContainerFactory(
-				DirectRabbitListenerContainerFactoryConfigurer configurer,
-				ConnectionFactory connectionFactory) {
-			DirectRabbitListenerContainerFactory factory = new DirectRabbitListenerContainerFactory();
-			configurer.configure(factory, connectionFactory);
-			return factory;
-		}
+	@Bean(name = "rabbitListenerContainerFactory")
+	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
+	@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "direct")
+	public DirectRabbitListenerContainerFactory directRabbitListenerContainerFactory(
+			DirectRabbitListenerContainerFactoryConfigurer configurer,
+			ConnectionFactory connectionFactory) {
+		DirectRabbitListenerContainerFactory factory = new DirectRabbitListenerContainerFactory();
+		configurer.configure(factory, connectionFactory);
+		return factory;
 	}
 
 	@EnableRabbit

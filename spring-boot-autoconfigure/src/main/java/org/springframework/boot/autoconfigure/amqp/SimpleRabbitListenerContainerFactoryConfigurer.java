@@ -17,10 +17,10 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
-import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 
 /**
- * Configure {@link RabbitListenerContainerFactory} with sensible defaults.
+ * Configure {@link SimpleRabbitListenerContainerFactoryConfigurer} with sensible defaults.
  *
  * @author Stephane Nicoll
  * @author Gary Russell
@@ -30,16 +30,18 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer
 		extends AbstractRabbitListenerContainerFactoryConfigurer<SimpleRabbitListenerContainerFactory> {
 
 	@Override
-	protected void configure(SimpleRabbitListenerContainerFactory factory, RabbitProperties rabbitProperties) {
-		RabbitProperties.Listener listenerConfig = rabbitProperties.getListener();
-		if (listenerConfig.getConcurrency() != null) {
-			factory.setConcurrentConsumers(listenerConfig.getConcurrency());
+	public void configure(SimpleRabbitListenerContainerFactory factory, ConnectionFactory connectionFactory) {
+		RabbitProperties.SimpleContainer config = getRabbitProperties().getListener()
+				.getSimple();
+		configure(factory, connectionFactory, config);
+		if (config.getConcurrency() != null) {
+			factory.setConcurrentConsumers(config.getConcurrency());
 		}
-		if (listenerConfig.getMaxConcurrency() != null) {
-			factory.setMaxConcurrentConsumers(listenerConfig.getMaxConcurrency());
+		if (config.getMaxConcurrency() != null) {
+			factory.setMaxConcurrentConsumers(config.getMaxConcurrency());
 		}
-		if (listenerConfig.getTransactionSize() != null) {
-			factory.setTxSize(listenerConfig.getTransactionSize());
+		if (config.getTransactionSize() != null) {
+			factory.setTxSize(config.getTransactionSize());
 		}
 	}
 

@@ -30,13 +30,12 @@ import org.springframework.util.Assert;
  * Configure {@link RabbitListenerContainerFactory} with sensible defaults.
  *
  * @param <T> the container factory type.
- *
  * @author Gary Russell
- * @since 2.0
- *
+ * @author Stephane Nicoll
+ * @since 2.0.0
  */
 public abstract class AbstractRabbitListenerContainerFactoryConfigurer<
-			T extends AbstractRabbitListenerContainerFactory<?>> {
+		T extends AbstractRabbitListenerContainerFactory<?>> {
 
 	private MessageConverter messageConverter;
 
@@ -69,6 +68,10 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<
 		this.rabbitProperties = rabbitProperties;
 	}
 
+	protected final RabbitProperties getRabbitProperties() {
+		return this.rabbitProperties;
+	}
+
 	/**
 	 * Configure the specified rabbit listener container factory. The factory can be
 	 * further tuned and default settings can be overridden.
@@ -76,28 +79,32 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<
 	 * configure
 	 * @param connectionFactory the {@link ConnectionFactory} to use
 	 */
-	public final void configure(T factory, ConnectionFactory connectionFactory) {
+	public abstract void configure(T factory, ConnectionFactory connectionFactory);
+
+
+	protected void configure(T factory, ConnectionFactory connectionFactory,
+			RabbitProperties.AmqpContainer configuration) {
 		Assert.notNull(factory, "Factory must not be null");
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
+		Assert.notNull(configuration, "Configuration must not be null");
 		factory.setConnectionFactory(connectionFactory);
 		if (this.messageConverter != null) {
 			factory.setMessageConverter(this.messageConverter);
 		}
-		RabbitProperties.Listener listenerConfig = this.rabbitProperties.getListener();
-		factory.setAutoStartup(listenerConfig.isAutoStartup());
-		if (listenerConfig.getAcknowledgeMode() != null) {
-			factory.setAcknowledgeMode(listenerConfig.getAcknowledgeMode());
+		factory.setAutoStartup(configuration.isAutoStartup());
+		if (configuration.getAcknowledgeMode() != null) {
+			factory.setAcknowledgeMode(configuration.getAcknowledgeMode());
 		}
-		if (listenerConfig.getPrefetch() != null) {
-			factory.setPrefetchCount(listenerConfig.getPrefetch());
+		if (configuration.getPrefetch() != null) {
+			factory.setPrefetchCount(configuration.getPrefetch());
 		}
-		if (listenerConfig.getDefaultRequeueRejected() != null) {
-			factory.setDefaultRequeueRejected(listenerConfig.getDefaultRequeueRejected());
+		if (configuration.getDefaultRequeueRejected() != null) {
+			factory.setDefaultRequeueRejected(configuration.getDefaultRequeueRejected());
 		}
-		if (listenerConfig.getIdleEventInterval() != null) {
-			factory.setIdleEventInterval(listenerConfig.getIdleEventInterval());
+		if (configuration.getIdleEventInterval() != null) {
+			factory.setIdleEventInterval(configuration.getIdleEventInterval());
 		}
-		ListenerRetry retryConfig = listenerConfig.getRetry();
+		ListenerRetry retryConfig = configuration.getRetry();
 		if (retryConfig.isEnabled()) {
 			RetryInterceptorBuilder<?> builder = (retryConfig.isStateless()
 					? RetryInterceptorBuilder.stateless()
@@ -110,15 +117,6 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<
 			builder.recoverer(recoverer);
 			factory.setAdviceChain(builder.build());
 		}
-		configure(factory, this.rabbitProperties);
 	}
-
-	/**
-	 * Perform factory-specific configuration.
-	 *
-	 * @param factory the factory.
-	 * @param rabbitProperties the properties.
-	 */
-	protected abstract void configure(T factory, RabbitProperties rabbitProperties);
 
 }
