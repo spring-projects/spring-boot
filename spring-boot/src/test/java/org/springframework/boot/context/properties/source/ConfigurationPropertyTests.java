@@ -67,7 +67,7 @@ public class ConfigurationPropertyTests {
 	}
 
 	@Test
-	public void getPropertyOrginShouldReturnValuePropertyOrigin() throws Exception {
+	public void getPropertyOriginShouldReturnValuePropertyOrigin() throws Exception {
 		Origin origin = mock(Origin.class);
 		OriginProvider property = ConfigurationProperty.of(NAME, "foo", origin);
 		assertThat(property.getOrigin()).isEqualTo(origin);

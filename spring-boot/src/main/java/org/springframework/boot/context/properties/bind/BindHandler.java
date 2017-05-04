@@ -63,7 +63,7 @@ public interface BindHandler {
 
 	/**
 	 * Called when binding fails for any reason (including failures from
-	 * {@link #onSuccess} calls). Implementations may chose to swallow exceptions and
+	 * {@link #onSuccess} calls). Implementations may choose to swallow exceptions and
 	 * return an alternative result.
 	 * @param name the name of the element being bound
 	 * @param target the item being bound

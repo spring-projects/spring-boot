@@ -30,7 +30,7 @@ public class AliasedIterableConfigurationPropertySourceTests
 		extends AliasedConfigurationPropertySourceTests {
 
 	@Test
-	public void streamShouldInclueAliases() throws Exception {
+	public void streamShouldIncludeAliases() throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "bing");
 		source.put("foo.baz", "biff");

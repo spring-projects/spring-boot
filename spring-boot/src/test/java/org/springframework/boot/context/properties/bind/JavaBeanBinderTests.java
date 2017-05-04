@@ -439,7 +439,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindtoInstanceWithExistingValueShouldReturnUnbound() throws Exception {
+	public void bindToInstanceWithExistingValueShouldReturnUnbound() throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		this.sources.add(source);
 		ExampleNestedBean existingValue = new ExampleNestedBean();

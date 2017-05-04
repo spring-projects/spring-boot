@@ -87,7 +87,7 @@ public class ArrayBinderTests {
 	}
 
 	@Test
-	public void bindToArrayShouldReturnPrimativeArray() throws Exception {
+	public void bindToArrayShouldReturnPrimitiveArray() throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0]", "1");
 		source.put("foo[1]", "2");

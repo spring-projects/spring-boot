@@ -91,8 +91,8 @@ public class MustacheView extends AbstractUrlBasedView {
 				writer.flush();
 			}
 		}
-		catch (Throwable exc) {
-			return Mono.error(exc);
+		catch (Throwable ex) {
+			return Mono.error(ex);
 		}
 		return exchange.getResponse().writeWith(Flux.just(dataBuffer));
 	}
