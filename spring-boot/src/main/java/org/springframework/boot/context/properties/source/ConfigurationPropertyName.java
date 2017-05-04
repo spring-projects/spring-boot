@@ -443,7 +443,7 @@ public final class ConfigurationPropertyName
 		},
 
 		/**
-		 * The uniform configuration form (used for equals/hashcode; lower-case with only
+		 * The uniform configuration form (used for equals/hashCode; lower-case with only
 		 * alphanumeric characters).
 		 * <ul>
 		 * <li>"{@code foo-bar}" = "{@code foobar}"</li>

@@ -3262,7 +3262,7 @@ http://projects.spring.io/spring-data[projects.spring.io/spring-data].
 === Redis
 http://redis.io/[Redis] is a cache, message broker and richly-featured key-value store.
 Spring Boot offers basic auto-configuration for the
-https://github.com/xetorthio/jedis/[Jedis] and and https://github.com/mp911de/lettuce/[Lettuce]
+https://github.com/xetorthio/jedis/[Jedis] and https://github.com/mp911de/lettuce/[Lettuce]
 client library and abstractions on top of it provided by
 https://github.com/spring-projects/spring-data-redis[Spring Data Redis].
 

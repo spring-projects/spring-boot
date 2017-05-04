@@ -69,7 +69,7 @@ public class ConfigurationPropertyNameAliasesTests {
 	}
 
 	@Test
-	public void addAlaisesFromNameShouldAddMapping() throws Exception {
+	public void addAliasesFromNameShouldAddMapping() throws Exception {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases(ConfigurationPropertyName.of("foo"),
 				ConfigurationPropertyName.of("bar"), ConfigurationPropertyName.of("baz"));
