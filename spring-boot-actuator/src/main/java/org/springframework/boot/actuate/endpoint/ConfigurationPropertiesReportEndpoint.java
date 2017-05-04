@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -330,7 +331,7 @@ public class ConfigurationPropertiesReportEndpoint
 
 		private boolean isReadable(BeanDescription beanDesc, BeanPropertyWriter writer) {
 			Class<?> parentType = beanDesc.getType().getRawClass();
-			Class<?> type = writer.getType().getRawClass();
+			JavaType type = writer.getType();
 			AnnotatedMethod setter = findSetter(beanDesc, writer);
 			// If there's a setter, we assume it's OK to report on the value,
 			// similarly, if there's no setter but the package names match, we assume
@@ -338,8 +339,9 @@ public class ConfigurationPropertiesReportEndpoint
 			// should be kosher. This filter is not used if there is JSON metadata for
 			// the property, so it's mainly for user-defined beans.
 			return (setter != null)
-					|| ClassUtils.getPackageName(parentType).equals(ClassUtils.getPackageName(type))
-					|| ClassUtils.getPackageName(type).equals("java.util");
+					|| ClassUtils.getPackageName(parentType).equals(ClassUtils.getPackageName(type.getRawClass()))
+					|| type.isMapLikeType()
+					|| type.isCollectionLikeType();
 		}
 
 		private AnnotatedMethod findSetter(BeanDescription beanDesc,
