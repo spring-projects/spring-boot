@@ -192,6 +192,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 				if (connector != null && this.autoStart) {
 					startConnector(connector);
 				}
+				checkThatContextHaveStarted();
 				checkThatConnectorsHaveStarted();
 				this.started = true;
 				TomcatEmbeddedServletContainer.logger
@@ -218,6 +219,13 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			if (LifecycleState.FAILED.equals(connector.getState())) {
 				throw new ConnectorStartFailedException(connector.getPort());
 			}
+		}
+	}
+
+	private void checkThatContextHaveStarted() {
+		LifecycleState state = this.findContext().getState();
+		if (!LifecycleState.STARTED.equals(state)) {
+			throw new EmbeddedServletContainerException("Context state expect STARTED, but " + state, null);
 		}
 	}
 
