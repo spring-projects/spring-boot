@@ -92,6 +92,7 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		assertThat(systemProperties.get("mySecret")).isEqualTo("******");
 		assertThat(systemProperties.get("myCredentials")).isEqualTo("******");
 		assertThat(systemProperties.get("VCAP_SERVICES")).isEqualTo("******");
+		clearSystemProperties("dbPassword", "apiKey", "mySecret", "myCredentials");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -111,7 +112,8 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		assertThat(systemProperties.get("my.services.cleardb-free.credentials"))
 				.isEqualTo("******");
 		assertThat(systemProperties.get("foo.mycredentials.uri")).isEqualTo("******");
-
+		clearSystemProperties("my.services.amqp-free.credentials.uri", "credentials.http_api_uri",
+				"my.services.cleardb-free.credentials", "foo.mycredentials.uri");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -126,6 +128,7 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 				.get("systemProperties");
 		assertThat(systemProperties.get("dbPassword")).isEqualTo("123456");
 		assertThat(systemProperties.get("apiKey")).isEqualTo("******");
+		clearSystemProperties("dbPassword", "apiKey");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -140,6 +143,7 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 				.get("systemProperties");
 		assertThat(systemProperties.get("dbPassword")).isEqualTo("******");
 		assertThat(systemProperties.get("apiKey")).isEqualTo("123456");
+		clearSystemProperties("dbPassword", "apiKey");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -158,6 +162,7 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 				.get("systemProperties");
 		assertThat(systemProperties.get("dbPassword")).isEqualTo("123456");
 		assertThat(systemProperties.get("apiKey")).isEqualTo("******");
+		clearSystemProperties("dbPassword", "apiKey");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -176,6 +181,7 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 				.get("systemProperties");
 		assertThat(systemProperties.get("dbPassword")).isEqualTo("******");
 		assertThat(systemProperties.get("apiKey")).isEqualTo("123456");
+		clearSystemProperties("dbPassword", "apiKey");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -195,6 +201,7 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 				.get("systemProperties");
 		assertThat(systemProperties.get("dbPassword")).isEqualTo("******");
 		assertThat(systemProperties.get("apiKey")).isEqualTo("******");
+		clearSystemProperties("dbPassword", "apiKey");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -273,6 +280,12 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 				.get("test");
 		Map<String, String> foo = (Map<String, String>) testProperties.get("foo");
 		assertThat(foo.get("bar")).isEqualTo("baz");
+	}
+
+	private void clearSystemProperties(String... properties) {
+		for (String property : properties) {
+			System.clearProperty(property);
+		}
 	}
 
 	@Configuration
