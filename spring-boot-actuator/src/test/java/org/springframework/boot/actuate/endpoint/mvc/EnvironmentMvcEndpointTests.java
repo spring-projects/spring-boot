@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,6 +40,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -158,6 +160,18 @@ public class EnvironmentMvcEndpointTests {
 				.addFirst(new MapPropertySource("placeholder", map));
 		this.mvc.perform(get("/env/my.*")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("\"my.foo\":\"******\"")));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void propertyWithTypeOtherThanStringShouldNotFail() throws Exception {
+		ConfigurableEnvironment environment = (ConfigurableEnvironment) this.context.getEnvironment();
+		MutablePropertySources propertySources = environment.getPropertySources();
+		Map<String, Object> source = new HashMap<String, Object>();
+		source.put("foo", Collections.singletonMap("bar", "baz"));
+		propertySources.addFirst(new MapPropertySource("test", source));
+		this.mvc.perform(get("/env/foo.*")).andExpect(status().isOk())
+				.andExpect(content().string("{\"foo\":{\"bar\":\"baz\"}}"));
 	}
 
 	@Configuration
