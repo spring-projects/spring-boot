@@ -111,9 +111,10 @@ public class GroovyGrabDependencyResolverTests {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void resolveShorthandArtifactWithDependencies() throws Exception {
 		List<File> resolved = this.resolver.resolve(Arrays.asList("spring-beans"));
-		assertThat(resolved).hasSize(2);
-		assertThat(getNames(resolved)).has((Condition) Matched
-				.by(hasItems(startsWith("spring-core-"), startsWith("spring-beans-"))));
+		assertThat(resolved).hasSize(3);
+		assertThat(getNames(resolved))
+				.has((Condition) Matched.by(hasItems(startsWith("spring-core-"),
+						startsWith("spring-beans-"), startsWith("spring-jcl-"))));
 	}
 
 	@Test

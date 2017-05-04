@@ -67,7 +67,7 @@ public class AetherGrapeEngineTests {
 		Map<String, Object> args = new HashMap<>();
 		createGrapeEngine(this.springMilestones).grab(args,
 				createDependency("org.springframework", "spring-jdbc", null));
-		assertThat(this.groovyClassLoader.getURLs()).hasSize(4);
+		assertThat(this.groovyClassLoader.getURLs()).hasSize(5);
 	}
 
 	@Test
@@ -156,7 +156,7 @@ public class AetherGrapeEngineTests {
 				createDependency("org.springframework", "spring-jdbc", null));
 
 		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(0);
-		assertThat(customClassLoader.getURLs().length).isEqualTo(4);
+		assertThat(customClassLoader.getURLs().length).isEqualTo(5);
 	}
 
 	@Test
