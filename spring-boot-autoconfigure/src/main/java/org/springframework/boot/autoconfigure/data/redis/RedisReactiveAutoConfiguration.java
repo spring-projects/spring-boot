@@ -51,16 +51,11 @@ public class RedisReactiveAutoConfiguration {
 	public ReactiveRedisTemplate<Object, Object> reactiveRedisTemplate(
 			ReactiveRedisConnectionFactory reactiveRedisConnectionFactory,
 			ResourceLoader resourceLoader) {
-
-		JdkSerializationRedisSerializer jdkSerializer =
-				new JdkSerializationRedisSerializer(resourceLoader.getClassLoader());
-
-		RedisSerializationContext<Object, Object> serializationContext =
-				RedisSerializationContext.newSerializationContext()
-						.key(jdkSerializer)
-						.value(jdkSerializer)
-						.hashKey(jdkSerializer)
-						.hashValue(jdkSerializer).build();
+		JdkSerializationRedisSerializer jdkSerializer = new JdkSerializationRedisSerializer(
+				resourceLoader.getClassLoader());
+		RedisSerializationContext<Object, Object> serializationContext = RedisSerializationContext
+				.newSerializationContext().key(jdkSerializer).value(jdkSerializer)
+				.hashKey(jdkSerializer).hashValue(jdkSerializer).build();
 		return new ReactiveRedisTemplate<>(reactiveRedisConnectionFactory,
 				serializationContext);
 	}

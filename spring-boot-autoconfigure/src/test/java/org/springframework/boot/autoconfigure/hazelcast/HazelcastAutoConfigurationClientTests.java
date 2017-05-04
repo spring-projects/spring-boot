@@ -78,8 +78,8 @@ public class HazelcastAutoConfigurationClientTests {
 	@Test
 	public void systemProperty() throws IOException {
 		System.setProperty(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY,
-				"classpath:org/springframework/boot/autoconfigure/hazelcast/" +
-						"hazelcast-client-specific.xml");
+				"classpath:org/springframework/boot/autoconfigure/hazelcast/"
+						+ "hazelcast-client-specific.xml");
 		try {
 			load();
 			HazelcastInstance hazelcastInstance = this.context
@@ -120,7 +120,8 @@ public class HazelcastAutoConfigurationClientTests {
 
 	@Test
 	public void clientConfigTakesPrecedence() {
-		load(HazelcastServerAndClientConfig.class, "spring.hazelcast.config=this-is-ignored.xml");
+		load(HazelcastServerAndClientConfig.class,
+				"spring.hazelcast.config=this-is-ignored.xml");
 		HazelcastInstance hazelcastInstance = this.context
 				.getBean(HazelcastInstance.class);
 		assertThat(hazelcastInstance).isInstanceOf(HazelcastClientProxy.class);

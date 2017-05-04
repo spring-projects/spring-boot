@@ -19,6 +19,8 @@ package org.springframework.boot.system;
 import java.io.File;
 import java.io.FileReader;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 
@@ -59,28 +61,35 @@ public class EmbeddedServerPortFileWriterTests {
 
 	@Parameters(name = "{0}")
 	public static Object[] parameters() {
-		BiFunction<String, Integer, ? extends WebServerInitializedEvent> servletEvent = (
-				String name, Integer port) -> {
-			ServletWebServerApplicationContext applicationContext = mock(
-					ServletWebServerApplicationContext.class);
-			given(applicationContext.getNamespace()).willReturn(name);
-			WebServer source = mock(WebServer.class);
-			given(source.getPort()).willReturn(port);
-			ServletWebServerInitializedEvent event = new ServletWebServerInitializedEvent(
-					source, applicationContext);
-			return event;
-		};
-		BiFunction<String, Integer, ? extends WebServerInitializedEvent> reactiveEvent = (
-				String name, Integer port) -> {
-			ReactiveWebServerApplicationContext applicationContext = mock(
-					ReactiveWebServerApplicationContext.class);
-			given(applicationContext.getNamespace()).willReturn(name);
-			WebServer source = mock(WebServer.class);
-			given(source.getPort()).willReturn(port);
-			return new ReactiveWebServerInitializedEvent(source, applicationContext);
-		};
-		return new Object[] { new Object[] { "Servlet", servletEvent },
-				new Object[] { "Reactive", reactiveEvent } };
+		Map<String, BiFunction<String, Integer, WebServerInitializedEvent>> parameters = new LinkedHashMap<>();
+		parameters.put("Servlet",
+				EmbeddedServerPortFileWriterTests::servletEventParameter);
+		parameters.put("Reactive",
+				EmbeddedServerPortFileWriterTests::reactiveEventParameter);
+		return parameters.entrySet().stream()
+				.map((e) -> new Object[] { e.getKey(), e.getValue() }).toArray();
+	}
+
+	private static WebServerInitializedEvent servletEventParameter(String name,
+			Integer port) {
+		ServletWebServerApplicationContext applicationContext = mock(
+				ServletWebServerApplicationContext.class);
+		given(applicationContext.getNamespace()).willReturn(name);
+		WebServer source = mock(WebServer.class);
+		given(source.getPort()).willReturn(port);
+		ServletWebServerInitializedEvent event = new ServletWebServerInitializedEvent(
+				source, applicationContext);
+		return event;
+	}
+
+	private static WebServerInitializedEvent reactiveEventParameter(String name,
+			Integer port) {
+		ReactiveWebServerApplicationContext applicationContext = mock(
+				ReactiveWebServerApplicationContext.class);
+		given(applicationContext.getNamespace()).willReturn(name);
+		WebServer source = mock(WebServer.class);
+		given(source.getPort()).willReturn(port);
+		return new ReactiveWebServerInitializedEvent(source, applicationContext);
 	}
 
 	private final BiFunction<String, Integer, ? extends WebServerInitializedEvent> eventFactory;

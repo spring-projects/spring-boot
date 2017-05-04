@@ -137,8 +137,7 @@ public class ThymeleafAutoConfiguration {
 				Collection<ITemplateResolver> templateResolvers,
 				ObjectProvider<Collection<IDialect>> dialectsProvider) {
 			this.templateResolvers = templateResolvers;
-			this.dialects = dialectsProvider
-					.getIfAvailable(Collections::emptyList);
+			this.dialects = dialectsProvider.getIfAvailable(Collections::emptyList);
 		}
 
 		@Bean
@@ -221,8 +220,7 @@ public class ThymeleafAutoConfiguration {
 		ThymeleafReactiveConfiguration(Collection<ITemplateResolver> templateResolvers,
 				ObjectProvider<Collection<IDialect>> dialectsProvider) {
 			this.templateResolvers = templateResolvers;
-			this.dialects = dialectsProvider
-					.getIfAvailable(Collections::emptyList);
+			this.dialects = dialectsProvider.getIfAvailable(Collections::emptyList);
 		}
 
 		@Bean

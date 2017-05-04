@@ -261,11 +261,11 @@ public class UndertowServletWebServerFactoryTests
 	}
 
 	private ServletContainer getServletContainerFromNewFactory() {
-		UndertowServletWebServer container = (UndertowServletWebServer)
-				getFactory().getWebServer();
+		UndertowServletWebServer container = (UndertowServletWebServer) getFactory()
+				.getWebServer();
 		try {
-			return ((DeploymentManager) ReflectionTestUtils.getField(container, "manager"))
-					.getDeployment().getServletContainer();
+			return ((DeploymentManager) ReflectionTestUtils.getField(container,
+					"manager")).getDeployment().getServletContainer();
 		}
 		finally {
 			container.stop();
