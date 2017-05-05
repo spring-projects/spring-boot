@@ -21,12 +21,13 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -40,10 +41,8 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.context.config.ConfigFileApplicationListener.LoadedPropertySources;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
-import org.springframework.boot.env.EnumerableCompositePropertySource;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -55,7 +54,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ByteArrayResource;
@@ -512,24 +510,10 @@ public class ConfigFileApplicationListenerTests {
 		String property = this.environment.getProperty("my.property");
 		assertThat(this.environment.getActiveProfiles()).contains("dev");
 		assertThat(property).isEqualTo("fromdevprofile");
-		LoadedPropertySources propertySource = (LoadedPropertySources) this.environment
-				.getPropertySources()
-				.get(ConfigFileApplicationListener.APPLICATION_CONFIGURATION_PROPERTY_SOURCE_NAME);
-		Collection<org.springframework.core.env.PropertySource<?>> sources = propertySource
-				.getSource();
-		assertThat(sources).hasSize(2);
-		List<String> names = new ArrayList<>();
-		for (org.springframework.core.env.PropertySource<?> source : sources) {
-			if (source instanceof EnumerableCompositePropertySource) {
-				for (org.springframework.core.env.PropertySource<?> nested : ((EnumerableCompositePropertySource) source)
-						.getSource()) {
-					names.add(nested.getName());
-				}
-			}
-			else {
-				names.add(source.getName());
-			}
-		}
+		List<String> names = StreamSupport
+				.stream(this.environment.getPropertySources().spliterator(), false)
+				.map(org.springframework.core.env.PropertySource::getName)
+				.collect(Collectors.toList());
 		assertThat(names).contains(
 				"applicationConfig: [classpath:/testsetprofiles.yml]#dev",
 				"applicationConfig: [classpath:/testsetprofiles.yml]");
@@ -846,10 +830,7 @@ public class ConfigFileApplicationListenerTests {
 
 			@Override
 			public boolean matches(ConfigurableEnvironment value) {
-				MutablePropertySources sources = new MutablePropertySources(
-						value.getPropertySources());
-				LoadedPropertySources.finishAndRelocate(sources);
-				return sources.contains(sourceName);
+				return value.getPropertySources().contains(sourceName);
 			}
 
 		};
