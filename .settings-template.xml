@@ -49,13 +49,6 @@
 						<enabled>false</enabled>
 					</snapshots>
 				</repository>
-				<repository>
-					<id>neo4j-snapshots</id>
-					<url>http://m2.neo4j.org/content/repositories/snapshots</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</repository>
 			</repositories>
 			<pluginRepositories>
 				<pluginRepository>

@@ -135,7 +135,7 @@
 		<mysql.version>5.1.41</mysql.version>
 		<narayana.version>5.5.7.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
-		<neo4j-ogm.version>3.0.0-SNAPSHOT</neo4j-ogm.version>
+		<neo4j-ogm.version>3.0.0-M01</neo4j-ogm.version>
 		<netty.version>4.1.10.Final</netty.version>
 		<postgresql.version>42.0.0</postgresql.version>
 		<querydsl.version>4.1.4</querydsl.version>
@@ -2659,13 +2659,6 @@
 					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
 					<snapshots>
 						<enabled>false</enabled>
-					</snapshots>
-				</repository>
-				<repository>
-					<id>neo4j-snapshots</id>
-					<url>http://m2.neo4j.org/content/repositories/snapshots</url>
-					<snapshots>
-						<enabled>true</enabled>
 					</snapshots>
 				</repository>
 			</repositories>
