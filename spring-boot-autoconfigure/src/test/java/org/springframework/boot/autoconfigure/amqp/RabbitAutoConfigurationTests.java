@@ -294,27 +294,9 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	public void testSimpleRabbitListenerContainerFactoryWithCustomDeprecatedSettings() {
-		testSimpleRabbitListenerContainerFactoryWithCustomSettings(
-				"spring.rabbitmq.listener.retry.enabled:true",
-				"spring.rabbitmq.listener.retry.maxAttempts:4",
-				"spring.rabbitmq.listener.retry.initialInterval:2000",
-				"spring.rabbitmq.listener.retry.multiplier:1.5",
-				"spring.rabbitmq.listener.retry.maxInterval:5000",
-				"spring.rabbitmq.listener.autoStartup:false",
-				"spring.rabbitmq.listener.acknowledgeMode:manual",
-				"spring.rabbitmq.listener.concurrency:5",
-				"spring.rabbitmq.listener.maxConcurrency:10",
-				"spring.rabbitmq.listener.prefetch:40",
-				"spring.rabbitmq.listener.defaultRequeueRejected:false",
-				"spring.rabbitmq.listener.idleEventInterval:5",
-				"spring.rabbitmq.listener.transactionSize:20");
-	}
-
-	@Test
 	public void testSimpleRabbitListenerContainerFactoryWithCustomSettings() {
-		testSimpleRabbitListenerContainerFactoryWithCustomSettings(
+		load(new Class<?>[] { MessageConvertersConfiguration.class,
+						MessageRecoverersConfiguration.class },
 				"spring.rabbitmq.listener.simple.retry.enabled:true",
 				"spring.rabbitmq.listener.simple.retry.maxAttempts:4",
 				"spring.rabbitmq.listener.simple.retry.initialInterval:2000",
@@ -328,11 +310,6 @@ public class RabbitAutoConfigurationTests {
 				"spring.rabbitmq.listener.simple.defaultRequeueRejected:false",
 				"spring.rabbitmq.listener.simple.idleEventInterval:5",
 				"spring.rabbitmq.listener.simple.transactionSize:20");
-	}
-
-	private void testSimpleRabbitListenerContainerFactoryWithCustomSettings(String... environment) {
-		load(new Class<?>[] { MessageConvertersConfiguration.class,
-						MessageRecoverersConfiguration.class }, environment);
 		SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
 				.getBean("rabbitListenerContainerFactory",
 						SimpleRabbitListenerContainerFactory.class);
