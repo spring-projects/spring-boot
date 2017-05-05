@@ -293,9 +293,9 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void testRabbitListenerContainerFactoryWithCustomSettings() {
-		load(new Class<?>[] { MessageConvertersConfiguration.class,
-				MessageRecoverersConfiguration.class },
+	@Deprecated
+	public void testSimpleRabbitListenerContainerFactoryWithCustomDeprecatedSettings() {
+		testSimpleRabbitListenerContainerFactoryWithCustomSettings(
 				"spring.rabbitmq.listener.retry.enabled:true",
 				"spring.rabbitmq.listener.retry.maxAttempts:4",
 				"spring.rabbitmq.listener.retry.initialInterval:2000",
@@ -309,10 +309,37 @@ public class RabbitAutoConfigurationTests {
 				"spring.rabbitmq.listener.defaultRequeueRejected:false",
 				"spring.rabbitmq.listener.idleEventInterval:5",
 				"spring.rabbitmq.listener.transactionSize:20");
+	}
+
+	@Test
+	public void testSimpleRabbitListenerContainerFactoryWithCustomSettings() {
+		testSimpleRabbitListenerContainerFactoryWithCustomSettings(
+				"spring.rabbitmq.listener.simple.retry.enabled:true",
+				"spring.rabbitmq.listener.simple.retry.maxAttempts:4",
+				"spring.rabbitmq.listener.simple.retry.initialInterval:2000",
+				"spring.rabbitmq.listener.simple.retry.multiplier:1.5",
+				"spring.rabbitmq.listener.simple.retry.maxInterval:5000",
+				"spring.rabbitmq.listener.simple.autoStartup:false",
+				"spring.rabbitmq.listener.simple.acknowledgeMode:manual",
+				"spring.rabbitmq.listener.simple.concurrency:5",
+				"spring.rabbitmq.listener.simple.maxConcurrency:10",
+				"spring.rabbitmq.listener.simple.prefetch:40",
+				"spring.rabbitmq.listener.simple.defaultRequeueRejected:false",
+				"spring.rabbitmq.listener.simple.idleEventInterval:5",
+				"spring.rabbitmq.listener.simple.transactionSize:20");
+	}
+
+	private void testSimpleRabbitListenerContainerFactoryWithCustomSettings(String... environment) {
+		load(new Class<?>[] { MessageConvertersConfiguration.class,
+						MessageRecoverersConfiguration.class }, environment);
 		SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
 				.getBean("rabbitListenerContainerFactory",
 						SimpleRabbitListenerContainerFactory.class);
 		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
+		checkCommonProps(dfa);
+	}
+
+	private void checkCommonProps(DirectFieldAccessor dfa) {
 		assertThat(dfa.getPropertyValue("autoStartup")).isEqualTo(Boolean.FALSE);
 		assertThat(dfa.getPropertyValue("acknowledgeMode"))
 				.isEqualTo(AcknowledgeMode.MANUAL);

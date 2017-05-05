@@ -81,30 +81,31 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer {
 		if (this.messageConverter != null) {
 			factory.setMessageConverter(this.messageConverter);
 		}
-		RabbitProperties.Listener listenerConfig = this.rabbitProperties.getListener();
-		factory.setAutoStartup(listenerConfig.isAutoStartup());
-		if (listenerConfig.getAcknowledgeMode() != null) {
-			factory.setAcknowledgeMode(listenerConfig.getAcknowledgeMode());
+		RabbitProperties.AmqpContainer config = this.rabbitProperties.getListener()
+				.getSimple();
+		factory.setAutoStartup(config.isAutoStartup());
+		if (config.getAcknowledgeMode() != null) {
+			factory.setAcknowledgeMode(config.getAcknowledgeMode());
 		}
-		if (listenerConfig.getConcurrency() != null) {
-			factory.setConcurrentConsumers(listenerConfig.getConcurrency());
+		if (config.getConcurrency() != null) {
+			factory.setConcurrentConsumers(config.getConcurrency());
 		}
-		if (listenerConfig.getMaxConcurrency() != null) {
-			factory.setMaxConcurrentConsumers(listenerConfig.getMaxConcurrency());
+		if (config.getMaxConcurrency() != null) {
+			factory.setMaxConcurrentConsumers(config.getMaxConcurrency());
 		}
-		if (listenerConfig.getPrefetch() != null) {
-			factory.setPrefetchCount(listenerConfig.getPrefetch());
+		if (config.getPrefetch() != null) {
+			factory.setPrefetchCount(config.getPrefetch());
 		}
-		if (listenerConfig.getTransactionSize() != null) {
-			factory.setTxSize(listenerConfig.getTransactionSize());
+		if (config.getTransactionSize() != null) {
+			factory.setTxSize(config.getTransactionSize());
 		}
-		if (listenerConfig.getDefaultRequeueRejected() != null) {
-			factory.setDefaultRequeueRejected(listenerConfig.getDefaultRequeueRejected());
+		if (config.getDefaultRequeueRejected() != null) {
+			factory.setDefaultRequeueRejected(config.getDefaultRequeueRejected());
 		}
-		if (listenerConfig.getIdleEventInterval() != null) {
-			factory.setIdleEventInterval(listenerConfig.getIdleEventInterval());
+		if (config.getIdleEventInterval() != null) {
+			factory.setIdleEventInterval(config.getIdleEventInterval());
 		}
-		ListenerRetry retryConfig = listenerConfig.getRetry();
+		ListenerRetry retryConfig = config.getRetry();
 		if (retryConfig.isEnabled()) {
 			RetryInterceptorBuilder<?> builder = (retryConfig.isStateless()
 					? RetryInterceptorBuilder.stateless()
