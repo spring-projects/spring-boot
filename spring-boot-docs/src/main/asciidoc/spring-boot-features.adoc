@@ -386,10 +386,12 @@ sensible overriding of values. Properties are considered in the following order:
 . A `RandomValuePropertySource` that only has properties in `+random.*+`.
 . <<boot-features-external-config-profile-specific-properties,Profile-specific
   application properties>> outside of your packaged jar
-  (`application-{profile}.properties` and YAML variants)
+  (`application-{profile}.properties` and YAML variants. Note: will be overridden by 
+  `\{profile}\application.properties` and YAML variants.)
 . <<boot-features-external-config-profile-specific-properties,Profile-specific
   application properties>> packaged inside your jar (`application-{profile}.properties`
-  and YAML variants)
+  and YAML variants. Note: will be overridden by `\{profile}\application.properties` 
+  and YAML variants.)
 . Application properties outside of your packaged jar (`application.properties` and YAML
   variants).
 . Application properties packaged inside your jar (`application.properties` and YAML
