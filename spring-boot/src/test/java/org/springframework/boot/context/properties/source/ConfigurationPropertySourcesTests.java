@@ -202,7 +202,7 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void environmentProperyExpansionShouldWorkWhenAttached() throws Exception {
+	public void environmentPropertyExpansionShouldWorkWhenAttached() throws Exception {
 		StandardEnvironment environment = new StandardEnvironment();
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("fooBar", "Spring ${barBaz} ${bar-baz}");

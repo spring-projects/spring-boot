@@ -33,7 +33,7 @@ class TestPropertyMapper implements PropertyMapper {
 
 	private MultiValueMap<ConfigurationPropertyName, PropertyMapping> fromConfig = new LinkedMultiValueMap<>();
 
-	public void addFromProperySource(String from, String... to) {
+	public void addFromPropertySource(String from, String... to) {
 		for (String configurationPropertyName : to) {
 			this.fromSource.add(from, new PropertyMapping(from,
 					ConfigurationPropertyName.of(configurationPropertyName)));

@@ -69,9 +69,9 @@ public class PropertySourceIterableConfigurationPropertySourceTests {
 		EnumerablePropertySource<?> propertySource = new MapPropertySource("test",
 				source);
 		TestPropertyMapper mapper = new TestPropertyMapper();
-		mapper.addFromProperySource("key1", "my.key1");
-		mapper.addFromProperySource("key2", "my.key2a", "my.key2b");
-		mapper.addFromProperySource("key4", "my.key4");
+		mapper.addFromPropertySource("key1", "my.key1");
+		mapper.addFromPropertySource("key2", "my.key2a", "my.key2b");
+		mapper.addFromPropertySource("key4", "my.key4");
 		PropertySourceIterableConfigurationPropertySource adapter = new PropertySourceIterableConfigurationPropertySource(
 				propertySource, mapper);
 		assertThat(adapter.iterator()).extracting(Object::toString)
@@ -103,8 +103,8 @@ public class PropertySourceIterableConfigurationPropertySourceTests {
 		EnumerablePropertySource<?> propertySource = new MapPropertySource("test",
 				source);
 		TestPropertyMapper mapper = new TestPropertyMapper();
-		mapper.addFromProperySource("key1", "my.missing");
-		mapper.addFromProperySource("key2", "my.k-e-y");
+		mapper.addFromPropertySource("key1", "my.missing");
+		mapper.addFromPropertySource("key2", "my.k-e-y");
 		PropertySourceIterableConfigurationPropertySource adapter = new PropertySourceIterableConfigurationPropertySource(
 				propertySource, mapper);
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
