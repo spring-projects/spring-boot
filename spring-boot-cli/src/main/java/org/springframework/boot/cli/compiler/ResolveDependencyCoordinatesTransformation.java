@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class ResolveDependencyCoordinatesTransformation
 	public static final int ORDER = DependencyManagementBomTransformation.ORDER + 300;
 
 	private static final Set<String> GRAB_ANNOTATION_NAMES = Collections
-			.unmodifiableSet(new HashSet<String>(
+			.unmodifiableSet(new HashSet<>(
 					Arrays.asList(Grab.class.getName(), Grab.class.getSimpleName())));
 
 	private final DependencyResolutionContext resolutionContext;
@@ -108,4 +108,5 @@ public class ResolveDependencyCoordinatesTransformation
 		ConstantExpression expression = new ConstantExpression(value);
 		annotation.setMember(name, expression);
 	}
+
 }

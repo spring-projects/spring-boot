@@ -48,11 +48,15 @@ Spring Boot Maven Plugin
 
   * {{{./examples/repackage-disable-attach.html}Local repackaged artifact}}
 
+* {{{./examples/custom-layout.html}Custom layout}}
+
   * {{{./examples/exclude-dependency.html}Exclude a dependency}}
 
   * {{{./examples/run-debug.html}Debug the application}}
 
   * {{{./examples/it-random-port.html}Random port for integration tests}}
+
+  * {{{./examples/it-skip.html}Skip integration tests}}
 
   * {{{./examples/run-profiles.html}Specify active profiles}}
 

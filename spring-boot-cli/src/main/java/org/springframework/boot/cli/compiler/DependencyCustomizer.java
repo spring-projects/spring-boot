@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -253,7 +253,6 @@ public class DependencyCustomizer {
 	/**
 	 * Strategy called to test if dependencies can be added. Subclasses override as
 	 * required. Returns {@code true} by default.
-	 *
 	 * @return {@code true} if dependencies can be added, otherwise {@code false}
 	 */
 	protected boolean canAdd() {
@@ -267,4 +266,5 @@ public class DependencyCustomizer {
 	public DependencyResolutionContext getDependencyResolutionContext() {
 		return this.dependencyResolutionContext;
 	}
+
 }

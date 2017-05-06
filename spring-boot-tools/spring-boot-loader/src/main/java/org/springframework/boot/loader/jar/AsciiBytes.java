@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
  * reasons to save constructing Strings for ZIP data.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 final class AsciiBytes {
 
@@ -120,7 +121,7 @@ final class AsciiBytes {
 	}
 
 	public AsciiBytes append(String string) {
-		if (string == null || string.length() == 0) {
+		if (string == null || string.isEmpty()) {
 			return this;
 		}
 		return append(string.getBytes(UTF_8));
@@ -156,21 +157,35 @@ final class AsciiBytes {
 		int hash = this.hash;
 		if (hash == 0 && this.bytes.length > 0) {
 			for (int i = this.offset; i < this.offset + this.length; i++) {
-				int b = this.bytes[i] & 0xff;
-				if (b > 0x7F) {
-					// Decode multi-byte UTF
-					for (int size = 0; size < 3; size++) {
-						if ((b & (0x40 >> size)) == 0) {
-							b = b & (0x1F >> size);
-							for (int j = 0; j < size; j++) {
-								b <<= 6;
-								b |= this.bytes[++i] & 0x3F;
-							}
-							break;
-						}
+				int b = this.bytes[i];
+				if (b < 0) {
+					b = b & 0x7F;
+					int limit;
+					int excess = 0x80;
+					if (b < 96) {
+						limit = 1;
+						excess += 0x40 << 6;
 					}
+					else if (b < 112) {
+						limit = 2;
+						excess += (0x60 << 12) + (0x80 << 6);
+					}
+					else {
+						limit = 3;
+						excess += (0x70 << 18) + (0x80 << 12) + (0x80 << 6);
+					}
+					for (int j = 0; j < limit; j++) {
+						b = (b << 6) + (this.bytes[++i] & 0xFF);
+					}
+					b -= excess;
 				}
-				hash = 31 * hash + b;
+				if (b <= 0xFFFF) {
+					hash = 31 * hash + b;
+				}
+				else {
+					hash = 31 * hash + ((b >> 0xA) + 0xD7C0);
+					hash = 31 * hash + ((b & 0x3FF) + 0xDC00);
+				}
 			}
 			this.hash = hash;
 		}
@@ -209,9 +224,8 @@ final class AsciiBytes {
 	}
 
 	public static int hashCode(int hash, String string) {
-		char[] chars = string.toCharArray();
-		for (int i = 0; i < chars.length; i++) {
-			hash = 31 * hash + chars[i];
+		for (int i = 0; i < string.length(); i++) {
+			hash = 31 * hash + string.charAt(i);
 		}
 		return hash;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,30 @@
 
 package org.springframework.boot.loader.archive;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.zip.CRC32;
+import java.util.zip.ZipEntry;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.archive.Archive.Entry;
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 /**
  * Tests for {@link JarFileArchive}.
@@ -41,6 +51,9 @@ public class JarFileArchiveTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private File rootJarFile;
 
@@ -120,10 +133,52 @@ public class JarFileArchiveTests {
 		assertThat(nested.getParent()).isEqualTo(anotherNested.getParent());
 	}
 
+	@Test
+	public void zip64ArchivesAreHandledGracefully() throws IOException {
+		File file = this.temporaryFolder.newFile("test.jar");
+		FileCopyUtils.copy(writeZip64Jar(), file);
+		this.thrown.expectMessage(equalTo("Zip64 archives are not supported"));
+		new JarFileArchive(file);
+	}
+
+	@Test
+	public void nestedZip64ArchivesAreHandledGracefully() throws IOException {
+		File file = this.temporaryFolder.newFile("test.jar");
+		JarOutputStream output = new JarOutputStream(new FileOutputStream(file));
+		JarEntry zip64JarEntry = new JarEntry("nested/zip64.jar");
+		output.putNextEntry(zip64JarEntry);
+		byte[] zip64JarData = writeZip64Jar();
+		zip64JarEntry.setSize(zip64JarData.length);
+		zip64JarEntry.setCompressedSize(zip64JarData.length);
+		zip64JarEntry.setMethod(ZipEntry.STORED);
+		CRC32 crc32 = new CRC32();
+		crc32.update(zip64JarData);
+		zip64JarEntry.setCrc(crc32.getValue());
+		output.write(zip64JarData);
+		output.closeEntry();
+		output.close();
+		JarFileArchive jarFileArchive = new JarFileArchive(file);
+		this.thrown.expectMessage(
+				equalTo("Failed to get nested archive for entry nested/zip64.jar"));
+		jarFileArchive
+				.getNestedArchive(getEntriesMap(jarFileArchive).get("nested/zip64.jar"));
+	}
+
+	private byte[] writeZip64Jar() throws IOException {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		JarOutputStream jarOutput = new JarOutputStream(bytes);
+		for (int i = 0; i < 65537; i++) {
+			jarOutput.putNextEntry(new JarEntry(i + ".dat"));
+			jarOutput.closeEntry();
+		}
+		jarOutput.close();
+		return bytes.toByteArray();
+	}
+
 	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {
-		Map<String, Archive.Entry> entries = new HashMap<String, Archive.Entry>();
+		Map<String, Archive.Entry> entries = new HashMap<>();
 		for (Archive.Entry entry : archive) {
-			entries.put(entry.getName().toString(), entry);
+			entries.put(entry.getName(), entry);
 		}
 		return entries;
 	}

@@ -42,7 +42,7 @@ public class ExampleGenericServiceCaller {
 	}
 
 	public String sayGreeting() {
-		return "I say " + +this.integerService.greeting() + " "
+		return "I say " + this.integerService.greeting() + " "
 				+ this.stringService.greeting();
 	}
 

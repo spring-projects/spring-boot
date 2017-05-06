@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
  * @since 1.3.0
  */
 public abstract class AbstractEndpointMvcAdapter<E extends Endpoint<?>>
-		implements MvcEndpoint {
+		implements NamedMvcEndpoint {
 
 	private final E delegate;
 
@@ -58,6 +58,11 @@ public abstract class AbstractEndpointMvcAdapter<E extends Endpoint<?>>
 
 	public E getDelegate() {
 		return this.delegate;
+	}
+
+	@Override
+	public String getName() {
+		return this.delegate.getId();
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
 
 package org.springframework.boot.autoconfigure.freemarker;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.boot.autoconfigure.template.PathBasedTemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link TemplateAvailabilityProvider} that provides availability information for
@@ -30,24 +31,37 @@ import org.springframework.util.ClassUtils;
  * @since 1.1.0
  */
 public class FreeMarkerTemplateAvailabilityProvider
-		implements TemplateAvailabilityProvider {
+		extends PathBasedTemplateAvailabilityProvider {
 
-	@Override
-	public boolean isTemplateAvailable(String view, Environment environment,
-			ClassLoader classLoader, ResourceLoader resourceLoader) {
-		if (ClassUtils.isPresent("freemarker.template.Configuration", classLoader)) {
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
-					"spring.freemarker.");
-			String loaderPath = resolver.getProperty("template-loader-path",
-					FreeMarkerProperties.DEFAULT_TEMPLATE_LOADER_PATH);
-			String prefix = resolver.getProperty("prefix",
-					FreeMarkerProperties.DEFAULT_PREFIX);
-			String suffix = resolver.getProperty("suffix",
+	public FreeMarkerTemplateAvailabilityProvider() {
+		super("freemarker.template.Configuration",
+				FreeMarkerTemplateAvailabilityProperties.class, "spring.freemarker");
+	}
+
+	static final class FreeMarkerTemplateAvailabilityProperties
+			extends TemplateAvailabilityProperties {
+
+		private List<String> templateLoaderPath = new ArrayList<String>(
+				Arrays.asList(FreeMarkerProperties.DEFAULT_TEMPLATE_LOADER_PATH));
+
+		FreeMarkerTemplateAvailabilityProperties() {
+			super(FreeMarkerProperties.DEFAULT_PREFIX,
 					FreeMarkerProperties.DEFAULT_SUFFIX);
-			return resourceLoader.getResource(loaderPath + prefix + view + suffix)
-					.exists();
 		}
-		return false;
+
+		@Override
+		protected List<String> getLoaderPath() {
+			return this.templateLoaderPath;
+		}
+
+		public List<String> getTemplateLoaderPath() {
+			return this.templateLoaderPath;
+		}
+
+		public void setTemplateLoaderPath(List<String> templateLoaderPath) {
+			this.templateLoaderPath = templateLoaderPath;
+		}
+
 	}
 
 }

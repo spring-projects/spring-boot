@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,9 +42,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DatabaseDriverClassNameTests {
 
 	private static final EnumSet<DatabaseDriver> excludedDrivers = EnumSet.of(
-			DatabaseDriver.UNKNOWN, DatabaseDriver.ORACLE, DatabaseDriver.SQLSERVER,
-			DatabaseDriver.DB2, DatabaseDriver.DB2_AS400, DatabaseDriver.INFORMIX,
-			DatabaseDriver.TERADATA);
+			DatabaseDriver.UNKNOWN, DatabaseDriver.ORACLE, DatabaseDriver.DB2,
+			DatabaseDriver.DB2_AS400, DatabaseDriver.INFORMIX, DatabaseDriver.TERADATA);
 
 	private final String className;
 
@@ -53,7 +52,7 @@ public class DatabaseDriverClassNameTests {
 	@Parameters(name = "{0} {2}")
 	public static List<Object[]> parameters() {
 		DatabaseDriver[] databaseDrivers = DatabaseDriver.values();
-		List<Object[]> parameters = new ArrayList<Object[]>();
+		List<Object[]> parameters = new ArrayList<>();
 		for (DatabaseDriver databaseDriver : databaseDrivers) {
 			if (excludedDrivers.contains(databaseDriver)) {
 				continue;
@@ -84,7 +83,7 @@ public class DatabaseDriverClassNameTests {
 		// Use ASM to avoid unwanted side-effects of loading JDBC drivers
 		ClassReader classReader = new ClassReader(
 				getClass().getResourceAsStream("/" + className + ".class"));
-		List<String> interfaceNames = new ArrayList<String>();
+		List<String> interfaceNames = new ArrayList<>();
 		for (String name : classReader.getInterfaces()) {
 			interfaceNames.add(name);
 			interfaceNames.addAll(getInterfaceNames(name));

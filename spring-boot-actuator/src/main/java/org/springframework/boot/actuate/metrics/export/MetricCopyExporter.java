@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 
 	private final CounterWriter counter;
 
-	private ConcurrentMap<String, Long> counts = new ConcurrentHashMap<String, Long>();
+	private ConcurrentMap<String, Long> counts = new ConcurrentHashMap<>();
 
 	private String[] includes = new String[0];
 
@@ -145,7 +145,7 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 		else {
 			this.counts.putIfAbsent(value.getName(), delta);
 		}
-		return new Delta<Long>(value.getName(), delta, value.getTimestamp());
+		return new Delta<>(value.getName(), delta, value.getTimestamp());
 	}
 
 	@Override
@@ -240,4 +240,5 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 		}
 
 	};
+
 }

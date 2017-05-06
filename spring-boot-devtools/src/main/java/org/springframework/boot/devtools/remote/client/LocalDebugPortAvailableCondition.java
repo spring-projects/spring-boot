@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package org.springframework.boot.devtools.remote.client;
 
 import javax.net.ServerSocketFactory;
 
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.devtools.autoconfigure.RemoteDevToolsProperties;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -29,22 +29,22 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * Condition used to check that the actual local port is available.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 class LocalDebugPortAvailableCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), "spring.devtools.remote.debug.");
-		Integer port = resolver.getProperty("local-port", Integer.class);
-		if (port == null) {
-			port = RemoteDevToolsProperties.Debug.DEFAULT_LOCAL_PORT;
-		}
+		ConditionMessage.Builder message = ConditionMessage
+				.forCondition("Local Debug Port Condition");
+		Integer port = context.getEnvironment().getProperty(
+				"spring.devtools.remote.debug.local-port", Integer.class,
+				RemoteDevToolsProperties.Debug.DEFAULT_LOCAL_PORT);
 		if (isPortAvailable(port)) {
-			return ConditionOutcome.match("Local debug port available");
+			return ConditionOutcome.match(message.foundExactly("local debug port"));
 		}
-		return ConditionOutcome.noMatch("Local debug port unavailable");
+		return ConditionOutcome.noMatch(message.didNotFind("local debug port").atAll());
 	}
 
 	private boolean isPortAvailable(int port) {

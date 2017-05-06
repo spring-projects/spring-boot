@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,10 +155,12 @@ public class FileSystemWatcherTests {
 
 	@Test
 	public void waitsForPollingInterval() throws Exception {
-		setupWatcher(100, 1);
+		setupWatcher(10, 1);
 		File folder = startWithNewFolder();
 		touch(new File(folder, "test1.txt"));
-		Thread.sleep(200);
+		while (this.changes.size() != 1) {
+			Thread.sleep(10);
+		}
 		touch(new File(folder, "test2.txt"));
 		this.watcher.stopAfter(1);
 		assertThat(this.changes.size()).isEqualTo(2);
@@ -217,7 +219,7 @@ public class FileSystemWatcherTests {
 	@Test
 	public void multipleListeners() throws Exception {
 		File folder = this.temp.newFolder();
-		final Set<ChangedFiles> listener2Changes = new LinkedHashSet<ChangedFiles>();
+		final Set<ChangedFiles> listener2Changes = new LinkedHashSet<>();
 		this.watcher.addSourceFolder(folder);
 		this.watcher.addListener(new FileChangeListener() {
 			@Override
@@ -247,7 +249,7 @@ public class FileSystemWatcherTests {
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		Set<ChangedFile> actual = changedFiles.getFiles();
-		Set<ChangedFile> expected = new HashSet<ChangedFile>();
+		Set<ChangedFile> expected = new HashSet<>();
 		expected.add(new ChangedFile(folder, modify, Type.MODIFY));
 		expected.add(new ChangedFile(folder, delete, Type.DELETE));
 		expected.add(new ChangedFile(folder, add, Type.ADD));
@@ -276,7 +278,7 @@ public class FileSystemWatcherTests {
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		Set<ChangedFile> actual = changedFiles.getFiles();
-		Set<ChangedFile> expected = new HashSet<ChangedFile>();
+		Set<ChangedFile> expected = new HashSet<>();
 		expected.add(new ChangedFile(folder, file, Type.MODIFY));
 		assertThat(actual).isEqualTo(expected);
 	}

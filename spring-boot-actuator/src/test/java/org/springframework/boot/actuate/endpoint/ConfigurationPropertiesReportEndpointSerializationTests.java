@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -150,8 +150,8 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> map = (Map<String, Object>) nestedProperties
 				.get("properties");
 		assertThat(map).isNotNull();
-		assertThat(map).hasSize(3);
-		assertThat((map.get("map"))).isNull();
+		assertThat(map).hasSize(2);
+		assertThat(map).doesNotContainKey("map");
 	}
 
 	@Test
@@ -318,6 +318,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		}
 
 		public static class Bar {
+
 			private String name = "123456";
 
 			public String getName() {
@@ -327,6 +328,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 			public void setName(String name) {
 				this.name = name;
 			}
+
 		}
 
 	}

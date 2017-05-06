@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,10 @@
  */
 
 package org.springframework.boot.jdbc;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -38,7 +42,8 @@ public enum DatabaseDriver {
 	/**
 	 * Apache Derby.
 	 */
-	DERBY("Apache Derby", "org.apache.derby.jdbc.EmbeddedDriver", null,
+	DERBY("Apache Derby", "org.apache.derby.jdbc.EmbeddedDriver",
+			"org.apache.derby.jdbc.EmbeddedXADataSource",
 			"SELECT 1 FROM SYSIBM.SYSDUMMY1"),
 
 	/**
@@ -68,7 +73,13 @@ public enum DatabaseDriver {
 	 * Maria DB.
 	 */
 	MARIADB("MySQL", "org.mariadb.jdbc.Driver", "org.mariadb.jdbc.MariaDbDataSource",
-			"SELECT 1"),
+			"SELECT 1") {
+
+		@Override
+		public String getId() {
+			return "mysql";
+		}
+	},
 
 	/**
 	 * Google App Engine.
@@ -96,8 +107,17 @@ public enum DatabaseDriver {
 	/**
 	 * SQL Server.
 	 */
-	SQLSERVER("SQL SERVER", "com.microsoft.sqlserver.jdbc.SQLServerDriver",
-			"com.microsoft.sqlserver.jdbc.SQLServerXADataSource", "SELECT 1"),
+	SQLSERVER("Microsoft SQL Server", "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+			"com.microsoft.sqlserver.jdbc.SQLServerXADataSource", "SELECT 1") {
+
+		@Override
+		protected boolean matchProductName(String productName) {
+			return super.matchProductName(productName)
+					|| "SQL SERVER".equalsIgnoreCase(productName);
+
+		}
+
+	},
 
 	/**
 	 * Firebird.
@@ -105,6 +125,11 @@ public enum DatabaseDriver {
 	FIREBIRD("Firebird", "org.firebirdsql.jdbc.FBDriver",
 			"org.firebirdsql.pool.FBConnectionPoolDataSource",
 			"SELECT 1 FROM RDB$DATABASE") {
+
+		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Collections.singleton("firebirdsql");
+		}
 
 		@Override
 		protected boolean matchProductName(String productName) {
@@ -134,6 +159,16 @@ public enum DatabaseDriver {
 			"SELECT 1 FROM SYSIBM.SYSDUMMY1") {
 
 		@Override
+		public String getId() {
+			return "db2";
+		}
+
+		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Collections.singleton("as400");
+		}
+
+		@Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName)
 					|| productName.toLowerCase().contains("as/400");
@@ -149,7 +184,14 @@ public enum DatabaseDriver {
 	 * Informix.
 	 */
 	INFORMIX("Informix Dynamic Server", "com.informix.jdbc.IfxDriver", null,
-			"select count(*) from systables");
+			"select count(*) from systables") {
+
+		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Arrays.asList("informix-sqli", "informix-direct");
+		}
+
+	};
 
 	private final String productName;
 
@@ -159,12 +201,13 @@ public enum DatabaseDriver {
 
 	private final String validationQuery;
 
-	DatabaseDriver(String name, String driverClassName) {
-		this(name, driverClassName, null);
+	DatabaseDriver(String productName, String driverClassName) {
+		this(productName, driverClassName, null);
 	}
 
-	DatabaseDriver(String name, String driverClassName, String xaDataSourceClassName) {
-		this(name, driverClassName, xaDataSourceClassName, null);
+	DatabaseDriver(String productName, String driverClassName,
+			String xaDataSourceClassName) {
+		this(productName, driverClassName, xaDataSourceClassName, null);
 	}
 
 	DatabaseDriver(String productName, String driverClassName,
@@ -175,8 +218,20 @@ public enum DatabaseDriver {
 		this.validationQuery = validationQuery;
 	}
 
+	/**
+	 * Return the identifier of this driver.
+	 * @return the identifier
+	 */
+	public String getId() {
+		return name().toLowerCase();
+	}
+
 	protected boolean matchProductName(String productName) {
 		return this.productName != null && this.productName.equalsIgnoreCase(productName);
+	}
+
+	protected Collection<String> getUrlPrefixes() {
+		return Collections.singleton(this.name().toLowerCase());
 	}
 
 	/**
@@ -213,9 +268,11 @@ public enum DatabaseDriver {
 			Assert.isTrue(url.startsWith("jdbc"), "URL must start with 'jdbc'");
 			String urlWithoutPrefix = url.substring("jdbc".length()).toLowerCase();
 			for (DatabaseDriver driver : values()) {
-				String prefix = ":" + driver.name().toLowerCase() + ":";
-				if (driver != UNKNOWN && urlWithoutPrefix.startsWith(prefix)) {
-					return driver;
+				for (String urlPrefix : driver.getUrlPrefixes()) {
+					String prefix = ":" + urlPrefix + ":";
+					if (driver != UNKNOWN && urlWithoutPrefix.startsWith(prefix)) {
+						return driver;
+					}
 				}
 			}
 		}

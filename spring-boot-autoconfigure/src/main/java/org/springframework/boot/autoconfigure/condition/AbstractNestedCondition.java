@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
 
 /**
  * Abstract base class for nested conditions.
@@ -79,8 +78,8 @@ abstract class AbstractNestedCondition extends SpringBootCondition
 
 		public MemberMatchOutcomes(MemberConditions memberConditions) {
 			this.all = Collections.unmodifiableList(memberConditions.getMatchOutcomes());
-			List<ConditionOutcome> matches = new ArrayList<ConditionOutcome>();
-			List<ConditionOutcome> nonMatches = new ArrayList<ConditionOutcome>();
+			List<ConditionOutcome> matches = new ArrayList<>();
+			List<ConditionOutcome> nonMatches = new ArrayList<>();
 			for (ConditionOutcome outcome : this.all) {
 				(outcome.isMatch() ? matches : nonMatches).add(outcome);
 			}
@@ -120,7 +119,7 @@ abstract class AbstractNestedCondition extends SpringBootCondition
 
 		private Map<AnnotationMetadata, List<Condition>> getMemberConditions(
 				String[] members) {
-			MultiValueMap<AnnotationMetadata, Condition> memberConditions = new LinkedMultiValueMap<AnnotationMetadata, Condition>();
+			MultiValueMap<AnnotationMetadata, Condition> memberConditions = new LinkedMultiValueMap<>();
 			for (String member : members) {
 				AnnotationMetadata metadata = getMetadata(member);
 				for (String[] conditionClasses : getConditionClasses(metadata)) {
@@ -158,29 +157,67 @@ abstract class AbstractNestedCondition extends SpringBootCondition
 		}
 
 		public List<ConditionOutcome> getMatchOutcomes() {
-			List<ConditionOutcome> outcomes = new ArrayList<ConditionOutcome>();
+			List<ConditionOutcome> outcomes = new ArrayList<>();
 			for (Map.Entry<AnnotationMetadata, List<Condition>> entry : this.memberConditions
 					.entrySet()) {
 				AnnotationMetadata metadata = entry.getKey();
-				for (Condition condition : entry.getValue()) {
-					outcomes.add(getConditionOutcome(metadata, condition));
-				}
+				List<Condition> conditions = entry.getValue();
+				outcomes.add(new MemberOutcomes(this.context, metadata, conditions)
+						.getUltimateOutcome());
 			}
 			return Collections.unmodifiableList(outcomes);
 		}
 
+	}
+
+	private static class MemberOutcomes {
+
+		private final ConditionContext context;
+
+		private final AnnotationMetadata metadata;
+
+		private final List<ConditionOutcome> outcomes;
+
+		MemberOutcomes(ConditionContext context, AnnotationMetadata metadata,
+				List<Condition> conditions) {
+			this.context = context;
+			this.metadata = metadata;
+			this.outcomes = new ArrayList<>(conditions.size());
+			for (Condition condition : conditions) {
+				this.outcomes.add(getConditionOutcome(metadata, condition));
+			}
+		}
+
 		private ConditionOutcome getConditionOutcome(AnnotationMetadata metadata,
 				Condition condition) {
-			String messagePrefix = "member condition on " + metadata.getClassName();
 			if (condition instanceof SpringBootCondition) {
-				ConditionOutcome outcome = ((SpringBootCondition) condition)
-						.getMatchOutcome(this.context, metadata);
-				String message = outcome.getMessage();
-				return new ConditionOutcome(outcome.isMatch(), messagePrefix
-						+ (StringUtils.hasLength(message) ? " : " + message : ""));
+				return ((SpringBootCondition) condition).getMatchOutcome(this.context,
+						metadata);
 			}
-			boolean matches = condition.matches(this.context, metadata);
-			return new ConditionOutcome(matches, messagePrefix);
+			return new ConditionOutcome(condition.matches(this.context, metadata),
+					ConditionMessage.empty());
+		}
+
+		public ConditionOutcome getUltimateOutcome() {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("NestedCondition on "
+							+ ClassUtils.getShortName(this.metadata.getClassName()));
+			if (this.outcomes.size() == 1) {
+				ConditionOutcome outcome = this.outcomes.get(0);
+				return new ConditionOutcome(outcome.isMatch(),
+						message.because(outcome.getMessage()));
+			}
+			List<ConditionOutcome> match = new ArrayList<>();
+			List<ConditionOutcome> nonMatch = new ArrayList<>();
+			for (ConditionOutcome outcome : this.outcomes) {
+				(outcome.isMatch() ? match : nonMatch).add(outcome);
+			}
+			if (nonMatch.isEmpty()) {
+				return ConditionOutcome
+						.match(message.found("matching nested conditions").items(match));
+			}
+			return ConditionOutcome.noMatch(
+					message.found("non-matching nested conditions").items(nonMatch));
 		}
 
 	}

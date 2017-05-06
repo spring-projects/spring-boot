@@ -38,6 +38,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-cache[spring-boot-sample-cache]
 | Web application that uses Spring's cache abstraction
 
+| link:spring-boot-sample-custom-layout[spring-boot-sample-custom-layout]
+| Creates custom Jar Layout
+
 | link:spring-boot-sample-data-cassandra[spring-boot-sample-data-cassandra]
 | Stores data using Spring Data Cassandra
 
@@ -47,11 +50,11 @@ The following sample applications are provided:
 | link:spring-boot-sample-data-elasticsearch[spring-boot-sample-data-elasticsearch]
 | Stores data using Spring Data Elasticsearch
 
-| link:spring-boot-sample-data-gemfire[spring-boot-sample-data-gemfire]
-| Stores data using Spring Data GemFire
-
 | link:spring-boot-sample-data-jpa[spring-boot-sample-data-jpa]
 | Stores data using Spring Data JPA with Hibernate
+
+| link:spring-boot-sample-data-ldap[spring-boot-sample-data-ldap]
+| Stores data using Spring Data LDAP
 
 | link:spring-boot-sample-data-mongodb[spring-boot-sample-data-mongodb]
 | Stores data using Spring Data MongoDB
@@ -77,15 +80,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-hateoas[spring-boot-sample-hateoas]
 | RESTful API built using Spring Hateoas
 
-| link:spring-boot-sample-hibernate4[spring-boot-sample-hibernate4]
-| Demonstrates how to use Hibernate 4
-
-| link:spring-boot-sample-hibernate4[spring-boot-sample-hibernate52]
-| Demonstrates how to use Hibernate 5.2
-
-| link:spring-boot-sample-hornetq[spring-boot-sample-hornetq]
-| Message-oriented application using HornetQ
-
 | link:spring-boot-sample-hypermedia[spring-boot-sample-hypermedia]
 | Demonstrates Actuator's hypermedia support, including HAL Browser
 
@@ -95,6 +89,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-hypermedia-jpa[spring-boot-sample-hypermedia-jpa]
 | Demonstrates Actuator's hypermedia support alongside Spring Data JPA and Spring Data
   REST
+
+| link:spring-boot-sample-hypermedia-ui-secure[spring-boot-sample-hypermedia-ui-secure]
+| Demonstrates Actuator's hypermedia support alongside a static secure web UI
 
 | link:spring-boot-sample-hypermedia-ui[spring-boot-sample-hypermedia-ui]
 | Demonstrates Actuator's hypermedia support alongside a static web UI
@@ -116,15 +113,6 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-jetty-jsp[spring-boot-sample-jetty-jsp]
 | Web application that uses JSP templates with Jetty
-
-| link:spring-boot-sample-jetty8[spring-boot-sample-jetty8]
-| Embedded Jetty 8
-
-| link:spring-boot-sample-jetty8-ssl[spring-boot-sample-jetty8-ssl]
-| Embedded Jetty 8 SSL
-
-| link:spring-boot-sample-jetty92[spring-boot-sample-jetty92]
-| Embedded Jetty 9.2
 
 | link:spring-boot-sample-jooq[spring-boot-sample-jooq]
 | Stores data using jOOQ
@@ -171,6 +159,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-secure[spring-boot-sample-secure]
 | Non-web application that uses Spring Security
 
+| link:spring-boot-sample-secure-oauth2-actuator[spring-boot-sample-secure-oauth2-actuator]
+| RESTful service secured using OAuth2 and Actuator
+
 | link:spring-boot-sample-secure-oauth2[spring-boot-sample-secure-oauth2]
 | RESTful service secured using OAuth2
 
@@ -204,12 +195,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-tomcat-ssl[spring-boot-sample-tomcat-ssl]
 | Web application that uses Tomcat configured with SSL
 
-| link:spring-boot-sample-tomcat7-jsp[spring-boot-sample-tomcat7-jsp]
-| Web application that uses JSP templates with Tomcat 7
-
-| link:spring-boot-sample-tomcat7-ssl[spring-boot-sample-tomcat7-ssl]
-| Web application that uses Tomcat 7 configured with SSL
-
 | link:spring-boot-sample-tomcat80-ssl[spring-boot-sample-tomcat80-ssl]
 | Web application that uses Tomcat 8.0 configured with SSL
 
@@ -221,9 +206,6 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-undertow-ssl[spring-boot-sample-undertow-ssl]
 | Embedded Undertow configured to use SSL
-
-| link:spring-boot-sample-velocity[spring-boot-sample-velocity]
-| Non-web application that uses Velocity templates
 
 | link:spring-boot-sample-war[spring-boot-sample-war]
 | Web application packaged as a war file
@@ -260,9 +242,6 @@ The following sample applications are provided:
 
 | link:spring-boot-sample-web-ui[spring-boot-sample-web-ui]
 | Web application with a basic UI built using Bootstrap and JQuery
-
-| link:spring-boot-sample-web-velocity[spring-boot-sample-web-velocity]
-| Web application that uses Velocity templates
 
 | link:spring-boot-sample-webservices[spring-boot-sample-webservices]
 | Simple contract-first SOAP web service with Spring Web Services

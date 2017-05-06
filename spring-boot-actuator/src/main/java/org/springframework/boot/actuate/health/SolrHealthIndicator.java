@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,15 @@
 package org.springframework.boot.actuate.health;
 
 import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.request.CoreAdminRequest;
+import org.apache.solr.client.solrj.response.CoreAdminResponse;
+import org.apache.solr.common.params.CoreAdminParams;
 
 /**
  * {@link HealthIndicator} for Apache Solr.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 1.1.0
  */
 public class SolrHealthIndicator extends AbstractHealthIndicator {
@@ -34,8 +38,12 @@ public class SolrHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		Object status = this.solrClient.ping().getResponse().get("status");
-		builder.up().withDetail("solrStatus", status);
+		CoreAdminRequest request = new CoreAdminRequest();
+		request.setAction(CoreAdminParams.CoreAdminAction.STATUS);
+		CoreAdminResponse response = request.process(this.solrClient);
+		int statusCode = response.getStatus();
+		Status status = (statusCode == 0 ? Status.UP : Status.DOWN);
+		builder.status(status).withDetail("status", statusCode);
 	}
 
 }

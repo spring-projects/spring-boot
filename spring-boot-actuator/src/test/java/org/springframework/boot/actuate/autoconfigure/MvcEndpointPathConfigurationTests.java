@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.boot.actuate.endpoint.LiquibaseEndpoint;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.AuditEventsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.DocsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
@@ -42,14 +43,15 @@ import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.LogFileMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.LoggersMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,6 +64,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for configuring the path of an MVC endpoint.
  *
  * @author Andy Wilkinson
+ * @author Ben Hale
  */
 @RunWith(Parameterized.class)
 public class MvcEndpointPathConfigurationTests {
@@ -82,6 +85,7 @@ public class MvcEndpointPathConfigurationTests {
 	@Parameters(name = "{0}")
 	public static Object[] parameters() {
 		return new Object[] { new Object[] { "actuator", HalJsonMvcEndpoint.class },
+				new Object[] { "auditevents", AuditEventsMvcEndpoint.class },
 				new Object[] { "autoconfig", AutoConfigurationReportEndpoint.class },
 				new Object[] { "beans", BeansEndpoint.class },
 				new Object[] { "configprops",
@@ -95,6 +99,7 @@ public class MvcEndpointPathConfigurationTests {
 				new Object[] { "jolokia", JolokiaMvcEndpoint.class },
 				new Object[] { "liquibase", LiquibaseEndpoint.class },
 				new Object[] { "logfile", LogFileMvcEndpoint.class },
+				new Object[] { "loggers", LoggersMvcEndpoint.class },
 				new Object[] { "mappings", RequestMappingEndpoint.class },
 				new Object[] { "metrics", MetricsMvcEndpoint.class },
 				new Object[] { "shutdown", ShutdownEndpoint.class },
@@ -137,11 +142,8 @@ public class MvcEndpointPathConfigurationTests {
 
 	@Configuration
 	@ImportAutoConfiguration({ EndpointAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class,
-			EndpointAutoConfiguration.class })
+			HttpMessageConvertersAutoConfiguration.class, AuditAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class })
 
 	protected static class TestConfiguration {
 
@@ -149,6 +151,11 @@ public class MvcEndpointPathConfigurationTests {
 		public ConditionEvaluationReport conditionEvaluationReport(
 				ConfigurableListableBeanFactory beanFactory) {
 			return ConditionEvaluationReport.get(beanFactory);
+		}
+
+		@Bean
+		LoggingSystem loggingSystem() {
+			return LoggingSystem.get(getClass().getClassLoader());
 		}
 
 		@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.jmx.export.annotation.ManagedOperation;
-import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
  * Special endpoint wrapper for {@link ShutdownEndpoint}.
@@ -29,7 +28,6 @@ import org.springframework.jmx.export.annotation.ManagedResource;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
-@ManagedResource
 public class ShutdownEndpointMBean extends EndpointMBean {
 
 	/**
@@ -47,4 +45,5 @@ public class ShutdownEndpointMBean extends EndpointMBean {
 	public Object shutdown() {
 		return convert(getEndpoint().invoke());
 	}
+
 }

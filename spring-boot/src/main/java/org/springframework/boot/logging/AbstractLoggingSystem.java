@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,12 @@
 
 package org.springframework.boot.logging;
 
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ClassUtils;
@@ -29,6 +35,9 @@ import org.springframework.util.SystemPropertyUtils;
  * @author Dave Syer
  */
 public abstract class AbstractLoggingSystem extends LoggingSystem {
+
+	protected static final Comparator<LoggerConfiguration> CONFIGURATION_COMPARATOR = new LoggerConfigurationComparator(
+			ROOT_LOGGER_NAME);
 
 	private final ClassLoader classLoader;
 
@@ -163,7 +172,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	protected final String getPackagedConfigFile(String fileName) {
 		String defaultPath = ClassUtils.getPackageName(getClass());
-		defaultPath = defaultPath.replace(".", "/");
+		defaultPath = defaultPath.replace('.', '/');
 		defaultPath = defaultPath + "/" + fileName;
 		defaultPath = "classpath:" + defaultPath;
 		return defaultPath;
@@ -171,6 +180,45 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	protected final void applySystemProperties(Environment environment, LogFile logFile) {
 		new LoggingSystemProperties(environment).apply(logFile);
+	}
+
+	/**
+	 * Maintains a mapping between native levels and {@link LogLevel}.
+	 *
+	 * @param <T> The native level type
+	 */
+	protected static class LogLevels<T> {
+
+		private final Map<LogLevel, T> systemToNative;
+
+		private final Map<T, LogLevel> nativeToSystem;
+
+		public LogLevels() {
+			this.systemToNative = new HashMap<>();
+			this.nativeToSystem = new HashMap<>();
+		}
+
+		public void map(LogLevel system, T nativeLevel) {
+			if (!this.systemToNative.containsKey(system)) {
+				this.systemToNative.put(system, nativeLevel);
+			}
+			if (!this.nativeToSystem.containsKey(nativeLevel)) {
+				this.nativeToSystem.put(nativeLevel, system);
+			}
+		}
+
+		public LogLevel convertNativeToSystem(T level) {
+			return this.nativeToSystem.get(level);
+		}
+
+		public T convertSystemToNative(LogLevel level) {
+			return this.systemToNative.get(level);
+		}
+
+		public Set<LogLevel> getSupported() {
+			return new LinkedHashSet<>(this.nativeToSystem.values());
+		}
+
 	}
 
 }

@@ -82,6 +82,7 @@ public class BeanNotOfRequiredTypeFailureAnalyzerTests {
 		public AsyncBean asyncBean() {
 			return new AsyncBean();
 		}
+
 	}
 
 	@Configuration

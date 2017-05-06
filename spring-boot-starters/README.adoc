@@ -22,6 +22,9 @@ do as they were designed before this was clarified.
 |===
 | Name | Location
 
+| http://log4jdbc.brunorozendo.com/[Log4jdbc]
+| https://github.com/candrews/log4jdbc-spring-boot-starter
+
 | Central Authentication Service (CAS) client
 | https://github.com/Unicon/cas-client-autoconfig-support
 
@@ -100,10 +103,22 @@ do as they were designed before this was clarified.
 | Charon reverse proxy
 | https://github.com/mkopylec/charon-spring-boot-starter
 
-| http://www.wiremock.org[WireMock] and Spring RESTDocs
+| http://www.wiremock.org[WireMock] and Spring REST Docs
 | https://github.com/ePages-de/restdocs-wiremock
 
 | https://cxf.apache.org/docs/springboot.html[Apache CXF]
 | https://github.com/apache/cxf
+
+| LDAP
+| https://github.com/eddumelendez/ldap-spring-boot
+
+| http://infinispan.org/[Infinispan]
+| https://github.com/infinispan/infinispan-spring-boot
+
+| http://restfb.com/[RestFB] Messenger
+| https://github.com/marsbits/restfbmessenger
+
+| http://square.github.io/okhttp/[OkHttp]
+| https://github.com/freefair/okhttp-spring-boot
 
 |===

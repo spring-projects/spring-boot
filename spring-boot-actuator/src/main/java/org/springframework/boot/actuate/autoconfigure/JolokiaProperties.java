@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class JolokiaProperties {
 	 * Jolokia settings. These are traditionally set using servlet parameters. Refer to
 	 * the documentation of Jolokia for more details.
 	 */
-	private Map<String, String> config = new HashMap<String, String>();
+	private Map<String, String> config = new HashMap<>();
 
 	public Map<String, String> getConfig() {
 		return this.config;
@@ -43,4 +43,5 @@ public class JolokiaProperties {
 	public void setConfig(Map<String, String> config) {
 		this.config = config;
 	}
+
 }

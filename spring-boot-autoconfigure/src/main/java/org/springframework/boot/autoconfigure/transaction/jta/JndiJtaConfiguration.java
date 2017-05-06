@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 package org.springframework.boot.autoconfigure.transaction.jta;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -30,6 +32,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Kazuki Shimizu
  * @since 1.2.0
  */
 @Configuration
@@ -40,9 +43,22 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
 class JndiJtaConfiguration {
 
+	private final TransactionManagerCustomizers transactionManagerCustomizers;
+
+	JndiJtaConfiguration(
+			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+		this.transactionManagerCustomizers = transactionManagerCustomizers
+				.getIfAvailable();
+	}
+
 	@Bean
 	public JtaTransactionManager transactionManager() {
-		return new JtaTransactionManagerFactoryBean().getObject();
+		JtaTransactionManager jtaTransactionManager = new JtaTransactionManagerFactoryBean()
+				.getObject();
+		if (this.transactionManagerCustomizers != null) {
+			this.transactionManagerCustomizers.customize(jtaTransactionManager);
+		}
+		return jtaTransactionManager;
 	}
 
 }

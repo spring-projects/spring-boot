@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public class JsonTestersAutoConfiguration {
 
 	@Bean
 	@Scope("prototype")
-	public FactoryBean<BasicJsonTester> BasicJsonTesterFactoryBean() {
+	public FactoryBean<BasicJsonTester> basicJsonTesterFactoryBean() {
 		return new JsonTesterFactoryBean<BasicJsonTester, Void>(BasicJsonTester.class,
 				null);
 	}
@@ -74,8 +74,7 @@ public class JsonTestersAutoConfiguration {
 		@ConditionalOnBean(ObjectMapper.class)
 		public FactoryBean<JacksonTester<?>> jacksonTesterFactoryBean(
 				ObjectMapper mapper) {
-			return new JsonTesterFactoryBean<JacksonTester<?>, ObjectMapper>(
-					JacksonTester.class, mapper);
+			return new JsonTesterFactoryBean<>(JacksonTester.class, mapper);
 		}
 
 	}
@@ -87,7 +86,7 @@ public class JsonTestersAutoConfiguration {
 		@Scope("prototype")
 		@ConditionalOnBean(Gson.class)
 		public FactoryBean<GsonTester<?>> gsonTesterFactoryBean(Gson gson) {
-			return new JsonTesterFactoryBean<GsonTester<?>, Gson>(GsonTester.class, gson);
+			return new JsonTesterFactoryBean<>(GsonTester.class, gson);
 		}
 
 	}
@@ -155,14 +154,14 @@ public class JsonTestersAutoConfiguration {
 				@Override
 				public void doWith(Field field)
 						throws IllegalArgumentException, IllegalAccessException {
-					processFiled(bean, field);
+					processField(bean, field);
 				}
 
 			});
 			return bean;
 		}
 
-		private void processFiled(Object bean, Field field) {
+		private void processField(Object bean, Field field) {
 			if (AbstractJsonMarshalTester.class.isAssignableFrom(field.getType())
 					|| BasicJsonTester.class.isAssignableFrom(field.getType())) {
 				ResolvableType type = ResolvableType.forField(field).getGeneric();

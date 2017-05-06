@@ -41,8 +41,7 @@ public class SpringTestCompilerAutoConfiguration extends CompilerAutoConfigurati
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode,
-				"SpringApplicationConfiguration");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "SpringBootTest");
 	}
 
 	@Override
@@ -66,8 +65,12 @@ public class SpringTestCompilerAutoConfiguration extends CompilerAutoConfigurati
 	@Override
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
 		imports.addStarImports("org.junit.runner", "org.springframework.boot.test",
-				"org.springframework.http", "org.springframework.test.context.junit4",
-				"org.springframework.test.annotation")
-				.addImports("org.springframework.test.context.web.WebAppConfiguration");
+				"org.springframework.boot.test.context",
+				"org.springframework.boot.test.web.client", "org.springframework.http",
+				"org.springframework.test.context.junit4",
+				"org.springframework.test.annotation").addImports(
+						"org.springframework.boot.test.context.SpringBootTest.WebEnvironment",
+						"org.springframework.boot.test.web.client.TestRestTemplate");
 	}
+
 }

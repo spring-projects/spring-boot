@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -39,6 +40,7 @@ import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor.Registrar;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -56,6 +58,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Kazuki Shimizu
  */
 @Configuration
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
@@ -68,8 +71,9 @@ public class DataSourceAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DataSourceInitializer dataSourceInitializer() {
-		return new DataSourceInitializer();
+	public DataSourceInitializer dataSourceInitializer(DataSourceProperties properties,
+			ApplicationContext applicationContext) {
+		return new DataSourceInitializer(properties, applicationContext);
 	}
 
 	/**
@@ -94,14 +98,14 @@ public class DataSourceAutoConfiguration {
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	@Import(EmbeddedDataSourceConfiguration.class)
 	protected static class EmbeddedDatabaseConfiguration {
+
 	}
 
 	@Configuration
 	@Conditional(PooledDataSourceCondition.class)
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
-	@Import({ DataSourceConfiguration.Tomcat.class, DataSourceConfiguration.Hikari.class,
-			DataSourceConfiguration.Dbcp.class, DataSourceConfiguration.Dbcp2.class,
-			DataSourceConfiguration.Generic.class })
+	@Import({ DataSourceConfiguration.Hikari.class, DataSourceConfiguration.Tomcat.class,
+			DataSourceConfiguration.Dbcp2.class, DataSourceConfiguration.Generic.class })
 	protected static class PooledDataSourceConfiguration {
 
 	}
@@ -140,10 +144,12 @@ public class DataSourceAutoConfiguration {
 
 		@ConditionalOnProperty(prefix = "spring.datasource", name = "type")
 		static class ExplicitType {
+
 		}
 
 		@Conditional(PooledDataSourceAvailableCondition.class)
 		static class PooledDataSourceAvailable {
+
 		}
 
 	}
@@ -156,10 +162,14 @@ public class DataSourceAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("PooledDataSource");
 			if (getDataSourceClassLoader(context) != null) {
-				return ConditionOutcome.match("supported DataSource class found");
+				return ConditionOutcome
+						.match(message.foundExactly("supported DataSource"));
 			}
-			return ConditionOutcome.noMatch("missing supported DataSource");
+			return ConditionOutcome
+					.noMatch(message.didNotFind("supported DataSource").atAll());
 		}
 
 		/**
@@ -173,6 +183,7 @@ public class DataSourceAutoConfiguration {
 					.findType();
 			return (dataSourceClass == null ? null : dataSourceClass.getClassLoader());
 		}
+
 	}
 
 	/**
@@ -187,15 +198,19 @@ public class DataSourceAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("EmbeddedDataSource");
 			if (anyMatches(context, metadata, this.pooledCondition)) {
-				return ConditionOutcome.noMatch("supported DataSource class found");
+				return ConditionOutcome
+						.noMatch(message.foundExactly("supported pooled data source"));
 			}
 			EmbeddedDatabaseType type = EmbeddedDatabaseConnection
 					.get(context.getClassLoader()).getType();
 			if (type == null) {
-				return ConditionOutcome.noMatch("no embedded database detected");
+				return ConditionOutcome
+						.noMatch(message.didNotFind("embedded database").atAll());
 			}
-			return ConditionOutcome.match("embedded database " + type + " detected");
+			return ConditionOutcome.match(message.found("embedded database").items(type));
 		}
 
 	}
@@ -214,16 +229,20 @@ public class DataSourceAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("DataSourceAvailable");
 			if (hasBean(context, DataSource.class)
 					|| hasBean(context, XADataSource.class)) {
 				return ConditionOutcome
-						.match("existing bean configured database detected");
+						.match(message.foundExactly("existing data source bean"));
 			}
 			if (anyMatches(context, metadata, this.pooledCondition,
 					this.embeddedCondition)) {
-				return ConditionOutcome.match("existing auto database detected");
+				return ConditionOutcome.match(message
+						.foundExactly("existing auto-configured data source bean"));
 			}
-			return ConditionOutcome.noMatch("no existing bean configured database");
+			return ConditionOutcome
+					.noMatch(message.didNotFind("any existing data source bean").atAll());
 		}
 
 		private boolean hasBean(ConditionContext context, Class<?> type) {

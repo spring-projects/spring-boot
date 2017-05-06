@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -34,7 +33,7 @@ import org.springframework.boot.actuate.metrics.export.MetricExporters;
 import org.springframework.boot.actuate.metrics.statsd.StatsdMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -48,6 +47,9 @@ import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MetricExportAutoConfiguration}.
@@ -82,7 +84,7 @@ public class MetricExportAutoConfigurationTests {
 		MetricExporters flusher = this.context.getBean(MetricExporters.class);
 		flusher.close(); // this will be called by Spring on shutdown
 		MetricWriter writer = this.context.getBean("writer", MetricWriter.class);
-		Mockito.verify(writer, Mockito.atLeastOnce()).set(Matchers.any(Metric.class));
+		verify(writer, atLeastOnce()).set(any(Metric.class));
 	}
 
 	@Test
@@ -113,7 +115,7 @@ public class MetricExportAutoConfigurationTests {
 		exporter.setIgnoreTimestamps(true);
 		exporter.export();
 		MetricWriter writer = this.context.getBean("writer", MetricWriter.class);
-		Mockito.verify(writer, Mockito.atLeastOnce()).set(Matchers.any(Metric.class));
+		Mockito.verify(writer, Mockito.atLeastOnce()).set(any(Metric.class));
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ public class DevToolsProperties {
 
 		private static final String DEFAULT_RESTART_EXCLUDES = "META-INF/maven/**,"
 				+ "META-INF/resources/**,resources/**,static/**,public/**,templates/**,"
-				+ "**/*Test.class,**/*Tests.class,git.properties";
+				+ "**/*Test.class,**/*Tests.class,git.properties,META-INF/build-info.properties";
 
 		private static final long DEFAULT_RESTART_POLL_INTERVAL = 1000;
 
@@ -101,7 +101,7 @@ public class DevToolsProperties {
 		/**
 		 * Additional paths to watch for changes.
 		 */
-		private List<File> additionalPaths = new ArrayList<File>();
+		private List<File> additionalPaths = new ArrayList<>();
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -112,7 +112,7 @@ public class DevToolsProperties {
 		}
 
 		public String[] getAllExclude() {
-			List<String> allExclude = new ArrayList<String>();
+			List<String> allExclude = new ArrayList<>();
 			if (StringUtils.hasText(this.exclude)) {
 				allExclude.addAll(StringUtils.commaDelimitedListToSet(this.exclude));
 			}

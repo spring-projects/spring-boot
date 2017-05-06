@@ -23,10 +23,14 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
+import org.jboss.tm.XAResourceRecoveryRegistry;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 import org.springframework.boot.jta.XADataSourceWrapper;
 import org.springframework.boot.jta.narayana.NarayanaBeanFactoryPostProcessor;
@@ -46,18 +50,25 @@ import org.springframework.util.StringUtils;
  * JTA Configuration for <a href="http://narayana.io/">Narayana</a>.
  *
  * @author Gytis Trikleris
+ * @author Kazuki Shimizu
  * @since 1.4.0
  */
 @Configuration
 @ConditionalOnClass({ JtaTransactionManager.class,
-		com.arjuna.ats.jta.UserTransaction.class })
+		com.arjuna.ats.jta.UserTransaction.class, XAResourceRecoveryRegistry.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
+@EnableConfigurationProperties(JtaProperties.class)
 public class NarayanaJtaConfiguration {
 
 	private final JtaProperties jtaProperties;
 
-	public NarayanaJtaConfiguration(JtaProperties jtaProperties) {
+	private final TransactionManagerCustomizers transactionManagerCustomizers;
+
+	public NarayanaJtaConfiguration(JtaProperties jtaProperties,
+			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 		this.jtaProperties = jtaProperties;
+		this.transactionManagerCustomizers = transactionManagerCustomizers
+				.getIfAvailable();
 	}
 
 	@Bean
@@ -115,7 +126,12 @@ public class NarayanaJtaConfiguration {
 	@Bean
 	public JtaTransactionManager transactionManager(UserTransaction userTransaction,
 			TransactionManager transactionManager) {
-		return new JtaTransactionManager(userTransaction, transactionManager);
+		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(
+				userTransaction, transactionManager);
+		if (this.transactionManagerCustomizers != null) {
+			this.transactionManagerCustomizers.customize(jtaTransactionManager);
+		}
+		return jtaTransactionManager;
 	}
 
 	@Bean

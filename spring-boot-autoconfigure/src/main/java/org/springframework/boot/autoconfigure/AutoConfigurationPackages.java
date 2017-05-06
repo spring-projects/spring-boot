@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,9 +32,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.boot.context.annotation.DeterminableImports;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -111,7 +111,7 @@ public abstract class AutoConfigurationPackages {
 			ConstructorArgumentValues constructorArguments, String[] packageNames) {
 		String[] existing = (String[]) constructorArguments
 				.getIndexedArgumentValue(0, String[].class).getValue();
-		Set<String> merged = new LinkedHashSet<String>();
+		Set<String> merged = new LinkedHashSet<>();
 		merged.addAll(Arrays.asList(existing));
 		merged.addAll(Arrays.asList(packageNames));
 		return merged.toArray(new String[merged.size()]);
@@ -121,13 +121,52 @@ public abstract class AutoConfigurationPackages {
 	 * {@link ImportBeanDefinitionRegistrar} to store the base package from the importing
 	 * configuration.
 	 */
-	@Order(Ordered.HIGHEST_PRECEDENCE)
-	static class Registrar implements ImportBeanDefinitionRegistrar {
+	static class Registrar implements ImportBeanDefinitionRegistrar, DeterminableImports {
 
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata metadata,
 				BeanDefinitionRegistry registry) {
-			register(registry, ClassUtils.getPackageName(metadata.getClassName()));
+			register(registry, new PackageImport(metadata).getPackageName());
+		}
+
+		@Override
+		public Set<Object> determineImports(AnnotationMetadata metadata) {
+			return Collections.<Object>singleton(new PackageImport(metadata));
+		}
+
+	}
+
+	/**
+	 * Wrapper for a package import.
+	 */
+	private final static class PackageImport {
+
+		private final String packageName;
+
+		PackageImport(AnnotationMetadata metadata) {
+			this.packageName = ClassUtils.getPackageName(metadata.getClassName());
+		}
+
+		@Override
+		public int hashCode() {
+			return this.packageName.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null || getClass() != obj.getClass()) {
+				return false;
+			}
+			return this.packageName.equals(((PackageImport) obj).packageName);
+		}
+
+		public String getPackageName() {
+			return this.packageName;
+		}
+
+		@Override
+		public String toString() {
+			return "Package Import " + this.packageName;
 		}
 
 	}
@@ -142,7 +181,7 @@ public abstract class AutoConfigurationPackages {
 		private boolean loggedBasePackageInfo;
 
 		BasePackages(String... names) {
-			List<String> packages = new ArrayList<String>();
+			List<String> packages = new ArrayList<>();
 			for (String name : names) {
 				if (StringUtils.hasText(name)) {
 					packages.add(name);

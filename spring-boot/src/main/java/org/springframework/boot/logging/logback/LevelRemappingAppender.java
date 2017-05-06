@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public class LevelRemappingAppender extends AppenderBase<ILoggingEvent> {
 	 */
 	public void setRemapLevels(String remapLevels) {
 		Assert.hasLength(remapLevels, "RemapLevels must not be empty");
-		this.remapLevels = new HashMap<Level, Level>();
+		this.remapLevels = new HashMap<>();
 		for (String remap : StringUtils.commaDelimitedListToStringArray(remapLevels)) {
 			String[] split = StringUtils.split(remap, "->");
 			Assert.notNull(split, "Remap element '" + remap + "' must contain '->'");
@@ -117,6 +117,7 @@ public class LevelRemappingAppender extends AppenderBase<ILoggingEvent> {
 				this.logger.callAppenders(event);
 			}
 		}
+
 	}
 
 	/**

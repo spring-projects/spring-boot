@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.boot.loader.tools.MainClassFinder.ClassNameCallback;
+import org.springframework.boot.loader.tools.MainClassFinder.MainClass;
+import org.springframework.boot.loader.tools.MainClassFinder.MainClassCallback;
+import org.springframework.boot.loader.tools.sample.AnnotatedClassWithMainMethod;
 import org.springframework.boot.loader.tools.sample.ClassWithMainMethod;
 import org.springframework.boot.loader.tools.sample.ClassWithoutMainMethod;
 
@@ -88,6 +90,16 @@ public class MainClassFinderTests {
 	}
 
 	@Test
+	public void findSingleJarSearchPrefersAnnotatedMainClass() throws Exception {
+		this.testJarFile.addClass("a/B.class", ClassWithMainMethod.class);
+		this.testJarFile.addClass("a/b/c/E.class", AnnotatedClassWithMainMethod.class);
+		String mainClass = MainClassFinder.findSingleMainClass(
+				this.testJarFile.getJarFile(), "",
+				"org.springframework.boot.loader.tools.sample.SomeApplication");
+		assertThat(mainClass).isEqualTo("a.b.c.E");
+	}
+
+	@Test
 	public void findMainClassInJarSubLocation() throws Exception {
 		this.testJarFile.addClass("a/B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithMainMethod.class);
@@ -133,6 +145,16 @@ public class MainClassFinderTests {
 	}
 
 	@Test
+	public void findSingleFolderSearchPrefersAnnotatedMainClass() throws Exception {
+		this.testJarFile.addClass("a/B.class", ClassWithMainMethod.class);
+		this.testJarFile.addClass("a/b/c/E.class", AnnotatedClassWithMainMethod.class);
+		String mainClass = MainClassFinder.findSingleMainClass(
+				this.testJarFile.getJarSource(),
+				"org.springframework.boot.loader.tools.sample.SomeApplication");
+		assertThat(mainClass).isEqualTo("a.b.c.E");
+	}
+
+	@Test
 	public void doWithFolderMainMethods() throws Exception {
 		this.testJarFile.addClass("a/b/c/D.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithoutMainMethod.class);
@@ -150,17 +172,17 @@ public class MainClassFinderTests {
 		this.testJarFile.addClass("a/b/F.class", ClassWithoutMainMethod.class);
 		this.testJarFile.addClass("a/b/G.class", ClassWithMainMethod.class);
 		ClassNameCollector callback = new ClassNameCollector();
-		MainClassFinder.doWithMainClasses(this.testJarFile.getJarFile(), "", callback);
+		MainClassFinder.doWithMainClasses(this.testJarFile.getJarFile(), null, callback);
 		assertThat(callback.getClassNames().toString()).isEqualTo("[a.b.G, a.b.c.D]");
 	}
 
-	private static class ClassNameCollector implements ClassNameCallback<Object> {
+	private static class ClassNameCollector implements MainClassCallback<Object> {
 
-		private final List<String> classNames = new ArrayList<String>();
+		private final List<String> classNames = new ArrayList<>();
 
 		@Override
-		public Object doWith(String className) {
-			this.classNames.add(className);
+		public Object doWith(MainClass mainClass) {
+			this.classNames.add(mainClass.getName());
 			return null;
 		}
 

@@ -147,7 +147,8 @@ files in directories (as opposed to explicitly on the classpath). In the case of
 you just add extra jars in those locations if you want more. The `PropertiesLauncher`
 looks in `BOOT-INF/lib/` in your application archive by default, but you can add
 additional locations by setting an environment variable `LOADER_PATH` or `loader.path`
-in `application.properties` (comma-separated list of directories or archives).
+in `loader.properties` (comma-separated list of directories, archives, or directories
+within archives).
 
 
 
@@ -198,18 +199,20 @@ the appropriate launcher:
 
 `PropertiesLauncher` has a few special features that can be enabled with external
 properties (System properties, environment variables, manifest entries or
-`application.properties`).
+`loader.properties`).
 
-[cols="2,4"]
 |===
 |Key |Purpose
 
 |`loader.path`
-|Comma-separated Classpath, e.g. `lib,${HOME}/app/lib`. Earlier entries take precedence, just like a regular `-classpath` on the `javac` command line.
+|Comma-separated Classpath, e.g. `lib,${HOME}/app/lib`. Earlier entries take precedence,
+ just like a regular `-classpath` on the `javac` command line.
 
 |`loader.home`
-|Location of additional properties file, e.g. `file:///opt/app`
- (defaults to `${user.dir}`)
+|Used to resolve relative paths in `loader.path`. E.g. `loader.path=lib` then
+ `${loader.home}/lib` is a classpath location (along with all jar files in that
+ directory). Also used to locate a `loader.properties` file. Example `file:///opt/app`
+ (defaults to `${user.dir}`).
 
 |`loader.args`
 |Default arguments for the main method (space separated)
@@ -218,36 +221,75 @@ properties (System properties, environment variables, manifest entries or
 |Name of main class to launch, e.g. `com.app.Application`.
 
 |`loader.config.name`
-|Name of properties file, e.g. `loader` (defaults to `application`).
+|Name of properties file, e.g. `launcher` (defaults to `loader`).
 
 |`loader.config.location`
 |Path to properties file, e.g. `classpath:loader.properties` (defaults to
- `application.properties`).
+ `loader.properties`).
 
 |`loader.system`
 |Boolean flag to indicate that all properties should be added to System properties
  (defaults to `false`)
+
 |===
 
-Manifest entry keys are formed by capitalizing initial letters of words and changing the
-separator to "`-`" from "`.`" (e.g. `Loader-Path`). The exception is `loader.main` which
-is looked up as `Start-Class` in the manifest for compatibility with `JarLauncher`).
+When specified as environment variables or manifest entries, the following names should
+be used:
+
+|===
+|Key | Manifest entry | Environment variable
+
+|`loader.path`
+|`Loader-Path`
+|`LOADER_PATH`
+
+|`loader.home`
+|`Loader-Home`
+|`LOADER_HOME`
+
+|`loader.args`
+|`Loader-Args`
+|`LOADER_ARGS`
+
+|`loader.main`
+|`Start-Class`
+|`LOADER_MAIN`
+
+|`loader.config.location`
+|`Loader-Config-Location`
+|`LOADER_CONFIG_LOCATION`
+
+|`loader.system`
+|`Loader-System`
+|`LOADER_SYSTEM`
+
+|===
 
 TIP: Build plugins automatically move the `Main-Class` attribute to `Start-Class` when
 the fat jar is built. If you are using that, specify the name of the class to launch using
 the `Main-Class` attribute and leave out `Start-Class`.
 
-Environment variables can be capitalized with underscore separators instead of periods.
-
-* `loader.home` is the directory location of an additional properties file (overriding
-  the default) as long as `loader.config.location` is   not specified.
+* `loader.properties` are searched for in `loader.home` then in the root of the
+  classpath, then in `classpath:/BOOT-INF/classes`. The first location that exists is
+  used.
+* `loader.home` is only the directory location of an additional properties file
+  (overriding the default) as long as `loader.config.location` is not specified.
 * `loader.path` can contain directories (scanned recursively for jar and zip files),
-  archive paths, or wildcard patterns (for the default JVM behavior).
-* `loader.path` (if empty) defaults to `lib` (meaning a local directory or a nested one if
-  running from an archive). Because of this `PropertiesLauncher` behaves the same as
-  `JarLauncher` when no additional configuration is provided.
+  archive paths, a directory within an archive that is scanned for jar files (for
+  example, `dependencies.jar!/lib`), or wildcard patterns (for the default JVM behavior).
+  Archive paths can be relative to `loader.home`, or anywhere in the file system with a
+  `jar:file:` prefix.
+* `loader.path` (if empty) defaults to `BOOT-INF/lib` (meaning a local directory or a
+  nested one if running from an archive). Because of this `PropertiesLauncher` behaves the
+  same as `JarLauncher` when no additional configuration is provided.
+* `loader.path` can not be used to configure the location of `loader.properties` (the
+  classpath used to search for the latter is the JVM classpath when `PropertiesLauncher`
+  is launched).
 * Placeholder replacement is done from System and environment variables plus the
   properties file itself on all values before use.
+* The search order for properties (where it makes sense to look in more than one place)
+  is env vars, system properties, `loader.properties`, exploded archive manifest, archive
+  manifest.
 
 
 

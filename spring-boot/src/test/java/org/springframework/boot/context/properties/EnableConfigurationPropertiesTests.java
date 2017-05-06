@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +38,7 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.support.TestPropertySourceUtils;
-import org.springframework.validation.BindException;
+import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Madhura Bhave
  */
 public class EnableConfigurationPropertiesTests {
 
@@ -94,30 +96,6 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void testNestedSystemPropertiesBindingWithUnderscore() {
-		this.context.register(NestedConfiguration.class);
-		System.setProperty("name", "foo");
-		System.setProperty("nested_name", "bar");
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(NestedProperties.class)).hasSize(1);
-		assertThat(this.context.getBean(NestedProperties.class).name).isEqualTo("foo");
-		assertThat(this.context.getBean(NestedProperties.class).nested.name)
-				.isEqualTo("bar");
-	}
-
-	@Test
-	public void testNestedOsEnvironmentVariableWithUnderscore() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"NAME=foo", "NESTED_NAME=bar");
-		this.context.register(NestedConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(NestedProperties.class)).hasSize(1);
-		assertThat(this.context.getBean(NestedProperties.class).name).isEqualTo("foo");
-		assertThat(this.context.getBean(NestedProperties.class).nested.name)
-				.isEqualTo("bar");
-	}
-
-	@Test
 	public void testStrictPropertiesBinding() {
 		removeSystemProperties();
 		this.context.register(StrictTestConfiguration.class);
@@ -133,32 +111,9 @@ public class EnableConfigurationPropertiesTests {
 	public void testPropertiesEmbeddedBinding() {
 		this.context.register(EmbeddedTestConfiguration.class);
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"spring_foo_name=foo");
+				"spring.foo.name=foo");
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(EmbeddedTestProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
-	}
-
-	@Test
-	public void testOsEnvironmentVariableEmbeddedBinding() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"SPRING_FOO_NAME=foo");
-		this.context.register(EmbeddedTestConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(EmbeddedTestProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
-	}
-
-	@Test
-	public void testIgnoreNestedPropertiesBinding() {
-		removeSystemProperties();
-		this.context.register(IgnoreNestedTestConfiguration.class);
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"name=foo", "nested.name=bar");
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(IgnoreNestedTestProperties.class))
 				.hasSize(1);
 		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
 	}
@@ -173,15 +128,14 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void testNoExceptionOnValidation() {
-		this.context.register(NoExceptionIfInvalidTestConfiguration.class);
+	public void testNoExceptionOnValidationWithoutValidated() {
+		this.context.register(IgnoredIfInvalidButNotValidatedTestConfiguration.class);
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"name=foo");
+				"name:foo");
 		this.context.refresh();
-		assertThat(this.context
-				.getBeanNamesForType(NoExceptionIfInvalidTestProperties.class))
-						.hasSize(1);
-		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
+		IgnoredIfInvalidButNotValidatedTestProperties bean = this.context
+				.getBean(IgnoredIfInvalidButNotValidatedTestProperties.class);
+		assertThat(bean.getDescription()).isNull();
 	}
 
 	@Test
@@ -228,7 +182,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testCollectionPropertiesBindingWithOver256Elements() {
 		this.context.register(TestConfiguration.class);
-		List<String> pairs = new ArrayList<String>();
+		List<String> pairs = new ArrayList<>();
 		pairs.add("name:foo");
 		for (int i = 0; i < 1000; i++) {
 			pairs.add("list[" + i + "]:" + i);
@@ -279,61 +233,6 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void testBindingDirectlyToFile() {
-		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(ResourceBindingProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(ResourceBindingProperties.class).name)
-				.isEqualTo("foo");
-	}
-
-	@Test
-	public void testBindingDirectlyToFileResolvedFromEnvironment() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"binding.location=classpath:other.yml");
-		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(ResourceBindingProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(ResourceBindingProperties.class).name)
-				.isEqualTo("other");
-	}
-
-	@Test
-	public void testBindingDirectlyToFileWithDefaultsWhenProfileNotFound() {
-		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
-		this.context.getEnvironment().addActiveProfile("nonexistent");
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(ResourceBindingProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(ResourceBindingProperties.class).name)
-				.isEqualTo("foo");
-	}
-
-	@Test
-	public void testBindingDirectlyToFileWithExplicitSpringProfile() {
-		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
-		this.context.getEnvironment().addActiveProfile("super");
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(ResourceBindingProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(ResourceBindingProperties.class).name)
-				.isEqualTo("bar");
-	}
-
-	@Test
-	public void testBindingDirectlyToFileWithTwoExplicitSpringProfiles() {
-		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
-		this.context.getEnvironment().setActiveProfiles("super", "other");
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(ResourceBindingProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(ResourceBindingProperties.class).name)
-				.isEqualTo("spam");
-	}
-
-	@Test
 	public void testBindingWithTwoBeans() {
 		this.context.register(MoreConfiguration.class, TestConfiguration.class);
 		this.context.refresh();
@@ -347,16 +246,19 @@ public class EnableConfigurationPropertiesTests {
 	public void testBindingWithParentContext() {
 		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
 		parent.register(TestConfiguration.class);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(parent, "name=parent");
 		parent.refresh();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"name=foo");
 		this.context.setParent(parent);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"name=child");
 		this.context.register(TestConfiguration.class, TestConsumer.class);
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(TestProperties.class).length)
-				.isEqualTo(1);
+				.isEqualTo(0);
 		assertThat(parent.getBeanNamesForType(TestProperties.class).length).isEqualTo(1);
-		assertThat(this.context.getBean(TestConsumer.class).getName()).isEqualTo("foo");
+		assertThat(this.context.getBean(TestConsumer.class).getName())
+				.isEqualTo("parent");
+		parent.close();
 	}
 
 	@Test
@@ -372,15 +274,6 @@ public class EnableConfigurationPropertiesTests {
 				.isEqualTo(0);
 		assertThat(parent.getBeanNamesForType(TestProperties.class).length).isEqualTo(1);
 		assertThat(this.context.getBean(TestConsumer.class).getName()).isEqualTo("foo");
-	}
-
-	@Test
-	public void testUnderscoresInPrefix() throws Exception {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"spring_test_external_val=baz");
-		this.context.register(SystemExampleConfig.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(SystemEnvVar.class).getVal()).isEqualTo("baz");
 	}
 
 	@Test
@@ -415,14 +308,13 @@ public class EnableConfigurationPropertiesTests {
 
 	@Test
 	public void testBindingWithMapKeyWithPeriod() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"mymap.key1.key2:value12", "mymap.key3:value3");
 		this.context.register(ResourceBindingPropertiesWithMap.class);
 		this.context.refresh();
-
 		ResourceBindingPropertiesWithMap bean = this.context
 				.getBean(ResourceBindingPropertiesWithMap.class);
 		assertThat(bean.mymap.get("key3")).isEqualTo("value3");
-		// this should not fail!!!
-		// mymap looks to contain - {key1=, key3=value3}
 		assertThat(bean.mymap.get("key1.key2")).isEqualTo("value12");
 	}
 
@@ -477,20 +369,14 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Configuration
-	@EnableConfigurationProperties(IgnoreNestedTestProperties.class)
-	protected static class IgnoreNestedTestConfiguration {
-
-	}
-
-	@Configuration
 	@EnableConfigurationProperties(ExceptionIfInvalidTestProperties.class)
 	protected static class ExceptionIfInvalidTestConfiguration {
 
 	}
 
 	@Configuration
-	@EnableConfigurationProperties(NoExceptionIfInvalidTestProperties.class)
-	protected static class NoExceptionIfInvalidTestConfiguration {
+	@EnableConfigurationProperties(IgnoredIfInvalidButNotValidatedTestProperties.class)
+	protected static class IgnoredIfInvalidButNotValidatedTestConfiguration {
 
 	}
 
@@ -676,7 +562,7 @@ public class EnableConfigurationPropertiesTests {
 
 		private int[] array;
 
-		private final List<Integer> list = new ArrayList<Integer>();
+		private List<Integer> list = new ArrayList<>();
 
 		// No getter - you should be able to bind to a write-only bean
 
@@ -696,6 +582,10 @@ public class EnableConfigurationPropertiesTests {
 			return this.list;
 		}
 
+		public void setList(List<Integer> list) {
+			this.list = list;
+		}
+
 	}
 
 	@ConfigurationProperties(ignoreUnknownFields = false)
@@ -708,12 +598,8 @@ public class EnableConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(ignoreUnknownFields = false, ignoreNestedProperties = true)
-	protected static class IgnoreNestedTestProperties extends TestProperties {
-
-	}
-
 	@ConfigurationProperties
+	@Validated
 	protected static class ExceptionIfInvalidTestProperties extends TestProperties {
 
 		@NotNull
@@ -729,8 +615,9 @@ public class EnableConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(exceptionIfInvalid = false)
-	protected static class NoExceptionIfInvalidTestProperties extends TestProperties {
+	@ConfigurationProperties
+	protected static class IgnoredIfInvalidButNotValidatedTestProperties
+			extends TestProperties {
 
 		@NotNull
 		private String description;
@@ -755,6 +642,7 @@ public class EnableConfigurationPropertiesTests {
 		}
 
 		// No getter - you should be able to bind to a write-only bean
+
 	}
 
 	// No annotation
@@ -772,20 +660,8 @@ public class EnableConfigurationPropertiesTests {
 
 	}
 
-	@ConfigurationProperties(locations = "${binding.location:classpath:name.yml}")
-	protected static class ResourceBindingProperties {
-
-		private String name;
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		// No getter - you should be able to bind to a write-only bean
-	}
-
 	@EnableConfigurationProperties
-	@ConfigurationProperties(locations = "${binding.location:classpath:map.yml}")
+	@ConfigurationProperties
 	protected static class ResourceBindingPropertiesWithMap {
 
 		private Map<String, String> mymap;

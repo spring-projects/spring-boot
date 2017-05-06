@@ -67,7 +67,8 @@ final class SpringBootConfigurationFinder {
 			Set<BeanDefinition> components = this.scanner.findCandidateComponents(source);
 			if (!components.isEmpty()) {
 				Assert.state(components.size() == 1,
-						"Found multiple @SpringBootConfiguration annotated classes");
+						"Found multiple @SpringBootConfiguration annotated classes "
+								+ components);
 				return ClassUtils.resolveClassName(
 						components.iterator().next().getBeanClassName(), null);
 			}
@@ -99,4 +100,5 @@ final class SpringBootConfigurationFinder {
 		}
 
 	}
+
 }

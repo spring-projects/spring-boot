@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,8 +95,17 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		return statement;
 	}
 
+	protected final ConfigurableApplicationContext createContext(Class<?>... classes) {
+		return this.createContext(null, classes);
+	}
+
 	protected final ConfigurableApplicationContext createContext(String driverClassName,
 			Class<?>... classes) {
+		return this.createContext(driverClassName, null, classes);
+	}
+
+	protected final ConfigurableApplicationContext createContext(String driverClassName,
+			String url, Class<?>... classes) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(classes);
 		context.register(DevToolsDataSourceAutoConfiguration.class);
@@ -104,12 +113,11 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 			EnvironmentTestUtils.addEnvironment(context,
 					"spring.datasource.driver-class-name:" + driverClassName);
 		}
+		if (url != null) {
+			EnvironmentTestUtils.addEnvironment(context, "spring.datasource.url:" + url);
+		}
 		context.refresh();
 		return context;
-	}
-
-	protected final ConfigurableApplicationContext createContext(Class<?>... classes) {
-		return this.createContext(null, classes);
 	}
 
 	@Configuration

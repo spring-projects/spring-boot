@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.example.ExampleService;
 import org.springframework.context.ApplicationContext;
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ResetMocksTestExecutionListener}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -67,18 +69,24 @@ public class ResetMocksTestExecutionListenerTests {
 	static class Config {
 
 		@Bean
-		public ExampleService before() {
-			return mock(ExampleService.class, MockReset.before());
+		public ExampleService before(MockitoBeans mockedBeans) {
+			ExampleService mock = mock(ExampleService.class, MockReset.before());
+			mockedBeans.add(mock);
+			return mock;
 		}
 
 		@Bean
-		public ExampleService after() {
-			return mock(ExampleService.class, MockReset.before());
+		public ExampleService after(MockitoBeans mockedBeans) {
+			ExampleService mock = mock(ExampleService.class, MockReset.after());
+			mockedBeans.add(mock);
+			return mock;
 		}
 
 		@Bean
-		public ExampleService none() {
-			return mock(ExampleService.class);
+		public ExampleService none(MockitoBeans mockedBeans) {
+			ExampleService mock = mock(ExampleService.class);
+			mockedBeans.add(mock);
+			return mock;
 		}
 
 		@Bean
@@ -86,6 +94,31 @@ public class ResetMocksTestExecutionListenerTests {
 		public ExampleService fail() {
 			// gh-5870
 			throw new RuntimeException();
+		}
+
+		@Bean
+		public BrokenFactoryBean brokenFactoryBean() {
+			// gh-7270
+			return new BrokenFactoryBean();
+		}
+
+	}
+
+	static class BrokenFactoryBean implements FactoryBean<String> {
+
+		@Override
+		public String getObject() throws Exception {
+			throw new IllegalStateException();
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return String.class;
+		}
+
+		@Override
+		public boolean isSingleton() {
+			return true;
 		}
 
 	}

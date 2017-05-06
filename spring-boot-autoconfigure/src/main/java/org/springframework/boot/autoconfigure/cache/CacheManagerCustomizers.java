@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,33 @@
 package org.springframework.boot.autoconfigure.cache;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactoryUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.cache.CacheManager;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.GenericTypeResolver;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.ResolvableType;
 
 /**
  * Invokes the available {@link CacheManagerCustomizer} instances in the context for a
  * given {@link CacheManager}.
  *
  * @author Stephane Nicoll
+ * @since 1.5.0
  */
-class CacheManagerCustomizers implements ApplicationContextAware {
+public class CacheManagerCustomizers {
 
-	private ConfigurableApplicationContext applicationContext;
+	private static final Log logger = LogFactory.getLog(CacheManagerCustomizers.class);
+
+	private final List<CacheManagerCustomizer<?>> customizers;
+
+	public CacheManagerCustomizers(
+			List<? extends CacheManagerCustomizer<?>> customizers) {
+		this.customizers = (customizers != null ? new ArrayList<>(customizers)
+				: Collections.<CacheManagerCustomizer<?>>emptyList());
+	}
 
 	/**
 	 * Customize the specified {@link CacheManager}. Locates all
@@ -49,48 +54,30 @@ class CacheManagerCustomizers implements ApplicationContextAware {
 	 * @return the cache manager
 	 */
 	public <T extends CacheManager> T customize(T cacheManager) {
-		List<CacheManagerCustomizer<CacheManager>> customizers = findCustomizers(
-				cacheManager);
-		AnnotationAwareOrderComparator.sort(customizers);
-		for (CacheManagerCustomizer<CacheManager> customizer : customizers) {
-			customizer.customize(cacheManager);
+		for (CacheManagerCustomizer<?> customizer : this.customizers) {
+			Class<?> generic = ResolvableType
+					.forClass(CacheManagerCustomizer.class, customizer.getClass())
+					.resolveGeneric();
+			if (generic.isInstance(cacheManager)) {
+				customize(cacheManager, customizer);
+			}
 		}
 		return cacheManager;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private List<CacheManagerCustomizer<CacheManager>> findCustomizers(
-			CacheManager cacheManager) {
-		if (this.applicationContext == null) {
-			return Collections.emptyList();
+	private void customize(CacheManager cacheManager, CacheManagerCustomizer customizer) {
+		try {
+			customizer.customize(cacheManager);
 		}
-		Class<?> cacheManagerClass = cacheManager.getClass();
-		List<CacheManagerCustomizer<CacheManager>> customizers = new ArrayList<CacheManagerCustomizer<CacheManager>>();
-		for (CacheManagerCustomizer customizer : getBeans(CacheManagerCustomizer.class)) {
-			if (canCustomize(customizer, cacheManagerClass)) {
-				customizers.add(customizer);
+		catch (ClassCastException ex) {
+			// Possibly a lambda-defined customizer which we could not resolve the generic
+			// cache manager type for
+			if (logger.isDebugEnabled()) {
+				logger.debug(
+						"Non-matching cache manager type for customizer: " + customizer,
+						ex);
 			}
-		}
-		return customizers;
-	}
-
-	private <T> Collection<T> getBeans(Class<T> type) {
-		return BeanFactoryUtils.beansOfTypeIncludingAncestors(
-				this.applicationContext.getBeanFactory(), type).values();
-	}
-
-	private boolean canCustomize(CacheManagerCustomizer<?> customizer,
-			Class<?> cacheManagerClass) {
-		Class<?> target = GenericTypeResolver.resolveTypeArgument(customizer.getClass(),
-				CacheManagerCustomizer.class);
-		return (target == null || target.isAssignableFrom(cacheManagerClass));
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		if (applicationContext instanceof ConfigurableApplicationContext) {
-			this.applicationContext = (ConfigurableApplicationContext) applicationContext;
 		}
 	}
 

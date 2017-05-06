@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class FileSystemWatcher {
 
 	private static final long DEFAULT_QUIET_PERIOD = 400;
 
-	private final List<FileChangeListener> listeners = new ArrayList<FileChangeListener>();
+	private final List<FileChangeListener> listeners = new ArrayList<>();
 
 	private final boolean daemon;
 
@@ -55,7 +55,7 @@ public class FileSystemWatcher {
 
 	private final AtomicInteger remainingScans = new AtomicInteger(-1);
 
-	private final Map<File, FolderSnapshot> folders = new HashMap<File, FolderSnapshot>();
+	private final Map<File, FolderSnapshot> folders = new HashMap<>();
 
 	private Thread watchThread;
 
@@ -152,12 +152,11 @@ public class FileSystemWatcher {
 		synchronized (this.monitor) {
 			saveInitialSnapshots();
 			if (this.watchThread == null) {
-				Map<File, FolderSnapshot> localFolders = new HashMap<File, FolderSnapshot>();
+				Map<File, FolderSnapshot> localFolders = new HashMap<>();
 				localFolders.putAll(this.folders);
 				this.watchThread = new Thread(new Watcher(this.remainingScans,
-						new ArrayList<FileChangeListener>(this.listeners),
-						this.triggerFilter, this.pollInterval, this.quietPeriod,
-						localFolders));
+						new ArrayList<>(this.listeners), this.triggerFilter,
+						this.pollInterval, this.quietPeriod, localFolders));
 				this.watchThread.setName("File Watcher");
 				this.watchThread.setDaemon(this.daemon);
 				this.watchThread.start();
@@ -276,7 +275,7 @@ public class FileSystemWatcher {
 		}
 
 		private Map<File, FolderSnapshot> getCurrentSnapshots() {
-			Map<File, FolderSnapshot> snapshots = new LinkedHashMap<File, FolderSnapshot>();
+			Map<File, FolderSnapshot> snapshots = new LinkedHashMap<>();
 			for (File folder : this.folders.keySet()) {
 				snapshots.put(folder, new FolderSnapshot(folder));
 			}
@@ -284,8 +283,8 @@ public class FileSystemWatcher {
 		}
 
 		private void updateSnapshots(Collection<FolderSnapshot> snapshots) {
-			Map<File, FolderSnapshot> updated = new LinkedHashMap<File, FolderSnapshot>();
-			Set<ChangedFiles> changeSet = new LinkedHashSet<ChangedFiles>();
+			Map<File, FolderSnapshot> updated = new LinkedHashMap<>();
+			Set<ChangedFiles> changeSet = new LinkedHashSet<>();
 			for (FolderSnapshot snapshot : snapshots) {
 				FolderSnapshot previous = this.folders.get(snapshot.getFolder());
 				updated.put(snapshot.getFolder(), snapshot);

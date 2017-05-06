@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ import org.springframework.web.servlet.HandlerMapping;
 @ConditionalOnClass({ Servlet.class, ServletRegistration.class,
 		OncePerRequestFilter.class, HandlerMapping.class })
 @AutoConfigureAfter(MetricRepositoryAutoConfiguration.class)
-@ConditionalOnProperty(name = "endpoints.metrics.filter.enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "endpoints.metrics.filter", name = "enabled", matchIfMissing = true)
 @EnableConfigurationProperties({ MetricFilterProperties.class })
 public class MetricFilterAutoConfiguration {
 
@@ -64,7 +64,7 @@ public class MetricFilterAutoConfiguration {
 	}
 
 	@Bean
-	public MetricsFilter metricFilter() {
+	public MetricsFilter metricsFilter() {
 		return new MetricsFilter(this.counterService, this.gaugeService, this.properties);
 	}
 

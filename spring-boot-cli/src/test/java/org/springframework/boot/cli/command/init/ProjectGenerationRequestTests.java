@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
@@ -169,7 +170,7 @@ public class ProjectGenerationRequestTests {
 	}
 
 	@Test
-	public void buildNoMatch() {
+	public void buildNoMatch() throws Exception {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("does-not-exist", null);
 		this.thrown.expect(ReportableException.class);
@@ -178,7 +179,7 @@ public class ProjectGenerationRequestTests {
 	}
 
 	@Test
-	public void buildMultipleMatch() {
+	public void buildMultipleMatch() throws Exception {
 		InitializrServiceMetadata metadata = readMetadata("types-conflict");
 		setBuildAndFormat("gradle", null);
 		this.thrown.expect(ReportableException.class);
@@ -188,7 +189,7 @@ public class ProjectGenerationRequestTests {
 	}
 
 	@Test
-	public void buildOneMatch() {
+	public void buildOneMatch() throws Exception {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("gradle", null);
 		assertThat(this.request.generateUrl(metadata))
@@ -196,7 +197,7 @@ public class ProjectGenerationRequestTests {
 	}
 
 	@Test
-	public void typeAndBuildAndFormat() {
+	public void typeAndBuildAndFormat() throws Exception {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("gradle", "project");
 		this.request.setType("maven-build");
@@ -205,14 +206,14 @@ public class ProjectGenerationRequestTests {
 	}
 
 	@Test
-	public void invalidType() throws URISyntaxException {
+	public void invalidType() throws Exception {
 		this.request.setType("does-not-exist");
 		this.thrown.expect(ReportableException.class);
 		this.request.generateUrl(createDefaultMetadata());
 	}
 
 	@Test
-	public void noTypeAndNoDefault() throws URISyntaxException {
+	public void noTypeAndNoDefault() throws Exception {
 		this.thrown.expect(ReportableException.class);
 		this.thrown.expectMessage("no default is defined");
 		this.request.generateUrl(readMetadata("types-conflict"));
@@ -243,11 +244,12 @@ public class ProjectGenerationRequestTests {
 		return new InitializrServiceMetadata(projectType);
 	}
 
-	private static InitializrServiceMetadata readMetadata() {
+	private static InitializrServiceMetadata readMetadata() throws JSONException {
 		return readMetadata("2.0.0");
 	}
 
-	private static InitializrServiceMetadata readMetadata(String version) {
+	private static InitializrServiceMetadata readMetadata(String version)
+			throws JSONException {
 		try {
 			Resource resource = new ClassPathResource(
 					"metadata/service-metadata-" + version + ".json");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,56 +16,119 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import org.junit.After;
 import org.junit.Test;
+import reactor.core.publisher.Mono;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.reactive.MockReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
+import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link ConditionalOnWebApplication}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class ConditionalOnWebApplicationTests {
 
-	private final AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+	private ConfigurableApplicationContext context;
 
-	@Test
-	public void testWebApplication() {
-		this.context.register(BasicConfiguration.class);
-		this.context.setServletContext(new MockServletContext());
-		this.context.refresh();
-		assertThat(this.context.containsBean("foo")).isTrue();
-		assertThat(this.context.getBean("foo")).isEqualTo("foo");
-	}
-
-	@Test
-	public void testNotWebApplication() {
-		this.context.register(MissingConfiguration.class);
-		this.context.setServletContext(new MockServletContext());
-		this.context.refresh();
-		assertThat(this.context.containsBean("foo")).isFalse();
-	}
-
-	@Configuration
-	@ConditionalOnNotWebApplication
-	protected static class MissingConfiguration {
-		@Bean
-		public String bar() {
-			return "bar";
+	@After
+	public void closeContext() {
+		if (this.context != null) {
+			this.context.close();
 		}
+	}
+
+	@Test
+	public void testWebApplicationWithServletContext() {
+		AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
+		ctx.register(AnyWebApplicationConfiguration.class,
+				ServletWebApplicationConfiguration.class,
+				ReactiveWebApplicationConfiguration.class);
+		ctx.setServletContext(new MockServletContext());
+		ctx.refresh();
+		this.context = ctx;
+		assertThat(this.context.getBeansOfType(String.class))
+				.containsExactly(entry("any", "any"), entry("servlet", "servlet"));
+	}
+
+	@Test
+	public void testWebApplicationWithReactiveContext() {
+		GenericReactiveWebApplicationContext ctx = new GenericReactiveWebApplicationContext();
+		ctx.register(AnyWebApplicationConfiguration.class,
+				ServletWebApplicationConfiguration.class,
+				ReactiveWebApplicationConfiguration.class);
+		ctx.refresh();
+		this.context = ctx;
+		assertThat(this.context.getBeansOfType(String.class))
+				.containsExactly(entry("any", "any"), entry("reactive", "reactive"));
+	}
+
+	@Test
+	public void testNonWebApplication() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		ctx.register(AnyWebApplicationConfiguration.class,
+				ServletWebApplicationConfiguration.class,
+				ReactiveWebApplicationConfiguration.class);
+		ctx.refresh();
+		this.context = ctx;
+		assertThat(this.context.getBeansOfType(String.class)).isEmpty();
 	}
 
 	@Configuration
 	@ConditionalOnWebApplication
-	protected static class BasicConfiguration {
+	protected static class AnyWebApplicationConfiguration {
+
 		@Bean
-		public String foo() {
-			return "foo";
+		public String any() {
+			return "any";
 		}
+
 	}
+
+	@Configuration
+	@ConditionalOnWebApplication(type = Type.SERVLET)
+	protected static class ServletWebApplicationConfiguration {
+
+		@Bean
+		public String servlet() {
+			return "servlet";
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnWebApplication(type = Type.REACTIVE)
+	protected static class ReactiveWebApplicationConfiguration {
+
+		@Bean
+		public String reactive() {
+			return "reactive";
+		}
+
+		@Bean
+		public ReactiveWebServerFactory reactiveWebServerFactory() {
+			return new MockReactiveWebServerFactory();
+		}
+
+		@Bean
+		public HttpHandler httpHandler() {
+			return (request, response) -> Mono.empty();
+		}
+
+	}
+
 }

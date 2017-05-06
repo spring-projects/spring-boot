@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,30 @@
 
 package org.springframework.boot.autoconfigure.data.couchbase;
 
+import java.util.Collections;
 import java.util.Set;
-
-import javax.validation.Validator;
 
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.beans.DirectFieldAccessor;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfigurer;
 import org.springframework.boot.autoconfigure.data.couchbase.city.City;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.couchbase.config.AbstractCouchbaseDataConfiguration;
+import org.springframework.data.couchbase.config.BeanNames;
 import org.springframework.data.couchbase.config.CouchbaseConfigurer;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
+import org.springframework.data.couchbase.core.convert.CustomConversions;
 import org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext;
 import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
 import org.springframework.data.couchbase.core.query.Consistency;
@@ -44,7 +47,6 @@ import org.springframework.data.couchbase.repository.support.IndexManager;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CouchbaseDataAutoConfiguration}.
@@ -79,11 +81,9 @@ public class CouchbaseDataAutoConfigurationTests {
 
 	@Test
 	public void validatorIsPresent() {
-		load(ValidatorConfiguration.class);
-		ValidatingCouchbaseEventListener listener = this.context
-				.getBean(ValidatingCouchbaseEventListener.class);
-		assertThat(new DirectFieldAccessor(listener).getPropertyValue("validator"))
-				.isEqualTo(this.context.getBean(Validator.class));
+		load(CouchbaseTestConfigurer.class);
+		assertThat(this.context.getBeansOfType(ValidatingCouchbaseEventListener.class))
+				.hasSize(1);
 	}
 
 	@Test
@@ -125,6 +125,14 @@ public class CouchbaseDataAutoConfigurationTests {
 		assertThat(initialEntitySet).containsOnly(City.class);
 	}
 
+	@Test
+	public void customConversions() {
+		load(CustomConversionsConfig.class);
+		CouchbaseTemplate template = this.context.getBean(CouchbaseTemplate.class);
+		assertThat(template.getConverter().getConversionService()
+				.canConvert(CouchbaseProperties.class, Boolean.class)).isTrue();
+	}
+
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(context, environment);
@@ -132,20 +140,10 @@ public class CouchbaseDataAutoConfigurationTests {
 			context.register(config);
 		}
 		context.register(PropertyPlaceholderAutoConfiguration.class,
-				CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class);
+				ValidationAutoConfiguration.class, CouchbaseAutoConfiguration.class,
+				CouchbaseDataAutoConfiguration.class);
 		context.refresh();
 		this.context = context;
-	}
-
-	@Configuration
-	@Import(CouchbaseTestConfigurer.class)
-	static class ValidatorConfiguration {
-
-		@Bean
-		public Validator myValidator() {
-			return mock(Validator.class);
-		}
-
 	}
 
 	@Configuration
@@ -164,10 +162,29 @@ public class CouchbaseDataAutoConfigurationTests {
 	}
 
 	@Configuration
+	@Import(CouchbaseTestConfigurer.class)
+	static class CustomConversionsConfig {
+
+		@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
+		public CustomConversions myCustomConversions() {
+			return new CustomConversions(Collections.singletonList(new MyConverter()));
+		}
+
+	}
+
+	@Configuration
 	@EntityScan("org.springframework.boot.autoconfigure.data.couchbase.city")
 	@Import(CustomCouchbaseConfiguration.class)
 	static class EntityScanConfig {
 
+	}
+
+	static class MyConverter implements Converter<CouchbaseProperties, Boolean> {
+
+		@Override
+		public Boolean convert(CouchbaseProperties value) {
+			return true;
+		}
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import org.junit.runner.RunWith;
 
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.lang.UsesJava8;
 import org.springframework.util.StopWatch;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +48,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(Theories.class)
-@UsesJava8
 public class CounterServiceSpeedTests {
 
 	@DataPoints
@@ -155,7 +153,7 @@ public class CounterServiceSpeedTests {
 				}
 			}
 		};
-		Collection<Future<?>> futures = new HashSet<Future<?>>();
+		Collection<Future<?>> futures = new HashSet<>();
 		for (int i = 0; i < threadCount; i++) {
 			futures.add(pool.submit(task));
 		}

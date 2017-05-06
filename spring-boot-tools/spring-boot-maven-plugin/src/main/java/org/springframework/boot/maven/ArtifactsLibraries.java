@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,13 +38,14 @@ import org.springframework.boot.loader.tools.LibraryScope;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class ArtifactsLibraries implements Libraries {
 
 	private static final Map<String, LibraryScope> SCOPES;
 
 	static {
-		Map<String, LibraryScope> scopes = new HashMap<String, LibraryScope>();
+		Map<String, LibraryScope> scopes = new HashMap<>();
 		scopes.put(Artifact.SCOPE_COMPILE, LibraryScope.COMPILE);
 		scopes.put(Artifact.SCOPE_RUNTIME, LibraryScope.RUNTIME);
 		scopes.put(Artifact.SCOPE_PROVIDED, LibraryScope.PROVIDED);
@@ -71,7 +72,7 @@ public class ArtifactsLibraries implements Libraries {
 		for (Artifact artifact : this.artifacts) {
 			LibraryScope scope = SCOPES.get(artifact.getScope());
 			if (scope != null && artifact.getFile() != null) {
-				String name = artifact.getFile().getName();
+				String name = getFileName(artifact);
 				if (duplicates.contains(name)) {
 					this.log.debug("Duplicate found: " + name);
 					name = artifact.getGroupId() + "-" + name;
@@ -84,11 +85,12 @@ public class ArtifactsLibraries implements Libraries {
 	}
 
 	private Set<String> getDuplicates(Set<Artifact> artifacts) {
-		Set<String> duplicates = new HashSet<String>();
-		Set<String> seen = new HashSet<String>();
+		Set<String> duplicates = new HashSet<>();
+		Set<String> seen = new HashSet<>();
 		for (Artifact artifact : artifacts) {
-			if (artifact.getFile() != null && !seen.add(artifact.getFile().getName())) {
-				duplicates.add(artifact.getFile().getName());
+			String fileName = getFileName(artifact);
+			if (artifact.getFile() != null && !seen.add(fileName)) {
+				duplicates.add(fileName);
 			}
 		}
 		return duplicates;
@@ -104,6 +106,17 @@ public class ArtifactsLibraries implements Libraries {
 			}
 		}
 		return false;
+	}
+
+	private String getFileName(Artifact artifact) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(artifact.getArtifactId()).append("-").append(artifact.getBaseVersion());
+		String classifier = artifact.getClassifier();
+		if (classifier != null) {
+			sb.append("-").append(classifier);
+		}
+		sb.append(".").append(artifact.getArtifactHandler().getExtension());
+		return sb.toString();
 	}
 
 }

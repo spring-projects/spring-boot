@@ -8,6 +8,26 @@
     }
   },
   {
+    "name": "security.basic.authorize-mode",
+    "defaultValue": "role"
+  },
+  {
+    "name": "security.headers.content-security-policy-mode",
+    "defaultValue": "default"
+  },
+  {
+    "name": "security.headers.hsts",
+    "defaultValue": "all"
+  },
+  {
+    "name": "security.sessions",
+    "defaultValue": "stateless"
+  },
+  {
+    "name": "server.error.include-stacktrace",
+    "defaultValue": "never"
+  },
+  {
     "name": "server.error.whitelabel.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable the default error page displayed in browsers in case of a server error.",
@@ -23,7 +43,7 @@
     "name": "spring.aop.proxy-target-class",
     "type": "java.lang.Boolean",
     "description": "Whether subclass-based (CGLIB) proxies are to be created (true) as opposed to standard Java interface-based proxies (false).",
-    "defaultValue": false
+    "defaultValue": true
   },
   {
     "name": "spring.application.admin.enabled",
@@ -61,6 +81,26 @@
     "defaultValue": false
   },
   {
+    "name": "spring.data.cassandra.compression",
+    "defaultValue": "none"
+  },
+  {
+    "name": "spring.data.cassandra.reactive-repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Cassandra reactive repositories.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.data.couchbase.consistency",
+    "defaultValue": "read-your-own-writes"
+  },
+  {
+    "name": "spring.data.cassandra.repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Cassandra repositories.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.data.couchbase.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Couchbase repositories.",
@@ -79,10 +119,28 @@
     "defaultValue": true
   },
   {
+    "name": "spring.data.ldap.repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable LDAP repositories.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.data.mongodb.reactive-repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Mongo reactive repositories.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.data.mongodb.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Mongo repositories.",
     "defaultValue": true
+  },
+  {
+    "name": "spring.data.neo4j.open-in-view",
+    "type": "java.lang.Boolean",
+    "description": "Register OpenSessionInViewInterceptor. Binds a Neo4j Session to the thread for the entire processing of the request.",
+    "defaultValue": false
   },
   {
     "name": "spring.data.neo4j.repositories.enabled",
@@ -91,22 +149,24 @@
     "defaultValue": true
   },
   {
-    "name": "spring.data.neo4j.session.scope",
-    "type": "java.lang.String",
-    "description": "Scope (lifetime) of the session.",
-    "defaultValue": "singleton"
-  },
-  {
     "name": "spring.data.redis.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Redis repositories.",
     "defaultValue": true
   },
   {
+    "name": "spring.data.rest.detection-strategy",
+    "defaultValue": "default"
+  },
+  {
     "name": "spring.data.solr.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Solr repositories.",
     "defaultValue": true
+  },
+  {
+    "name": "spring.elasticsearch.jest.uris",
+    "defaultValue": ["http://localhost:9200"]
   },
   {
     "name": "spring.http.encoding.enabled",
@@ -118,6 +178,10 @@
   	"name": "spring.http.converters.preferred-json-mapper",
   	"type": "java.lang.String",
   	"description": "Preferred JSON mapper to use for HTTP message conversion. Set to \"gson\" to force the use of Gson when both it and Jackson are on the classpath."
+  },
+  {
+    "name": "spring.jersey.type",
+    "defaultValue": "servlet"
   },
   {
     "name": "spring.jmx.default-domain",
@@ -280,10 +344,32 @@
     "defaultValue": true
   },
   {
+    "name": "spring.mvc.formcontent.putfilter.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Spring's HttpPutFormContentFilter.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.mvc.locale-resolver",
+    "defaultValue": "accept-header"
+  },
+  {
+    "name": "spring.rabbitmq.cache.connection.mode",
+    "defaultValue": "channel"
+  },
+  {
     "name": "spring.rabbitmq.dynamic",
     "type": "java.lang.Boolean",
     "description": "Create an AmqpAdmin bean.",
     "defaultValue": true
+  },
+  {
+    "name": "spring.session.hazelcast.flush-mode",
+    "defaultValue": "on-save"
+  },
+  {
+    "name": "spring.session.redis.flush-mode",
+    "defaultValue": "on-save"
   },
   {
     "name": "spring.social.auto-connection-views",
@@ -304,7 +390,7 @@
     ]
   },
   {
-    "name": "server.jsp-servlet.class-name",
+    "name": "server.servlet.jsp.class-name",
     "providers": [
       {
         "name": "class-reference",
@@ -359,21 +445,13 @@
     ]
   },
   {
-    "name": "spring.data.neo4j.session.scope",
-    "values": [
-      {
-        "value": "singleton"
-      },
-      {
-        "value": "session"
-      },
-      {
-        "value": "request"
-      }
-    ],
+    "name": "spring.datasource.data",
     "providers": [
       {
-        "name": "any"
+        "name": "handle-as",
+        "parameters": {
+          "target": "java.util.List<org.springframework.core.io.Resource>"
+        }
       }
     ]
   },
@@ -389,12 +467,93 @@
     ]
   },
   {
+    "name": "spring.datasource.schema",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "java.util.List<org.springframework.core.io.Resource>"
+        }
+      }
+    ]
+  },
+  {
     "name": "spring.datasource.xa.data-source-class-name",
     "providers": [
       {
         "name": "class-reference",
         "parameters": {
           "target": "javax.sql.XADataSource"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.kafka.consumer.auto-offset-reset",
+    "values": [
+      {
+        "value": "earliest",
+        "description": "Automatically reset the offset to the earliest offset."
+      },
+      {
+        "value": "latest",
+        "description": "Automatically reset the offset to the latest offset."
+      },
+      {
+        "value": "none",
+        "description": "Throw exception to the consumer if no previous offset is found for the consumer's group."
+      },
+      {
+        "value": "exception",
+        "description": "Throw exception to the consumer."
+      }
+    ],
+    "providers": [
+      {
+        "name": "any"
+      }
+    ]
+  },
+  {
+    "name": "spring.kafka.consumer.key-deserializer",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.apache.kafka.common.serialization.Deserializer"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.kafka.consumer.value-deserializer",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.apache.kafka.common.serialization.Deserializer"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.kafka.producer.key-serializer",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.apache.kafka.common.serialization.Serializer"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.kafka.producer.value-serializer",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.apache.kafka.common.serialization.Serializer"
         }
       }
     ]

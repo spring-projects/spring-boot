@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Answers;
-import org.mockito.internal.util.MockUtil;
 import org.mockito.mock.MockCreationSettings;
 
 import org.springframework.boot.test.mock.mockito.example.ExampleExtraInterface;
@@ -28,6 +27,7 @@ import org.springframework.boot.test.mock.mockito.example.ExampleService;
 import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link MockDefinition}.
@@ -43,29 +43,31 @@ public class MockDefinitionTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void ClassToMockMustNotBeNull() throws Exception {
+	public void classToMockMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("TypeToMock must not be null");
-		new MockDefinition(null, null, null, null, false, null, true);
+		new MockDefinition(null, null, null, null, false, null, null);
 	}
 
 	@Test
 	public void createWithDefaults() throws Exception {
 		MockDefinition definition = new MockDefinition(null, EXAMPLE_SERVICE_TYPE, null,
-				null, false, null, true);
+				null, false, null, null);
 		assertThat(definition.getName()).isNull();
 		assertThat(definition.getTypeToMock()).isEqualTo(EXAMPLE_SERVICE_TYPE);
 		assertThat(definition.getExtraInterfaces()).isEmpty();
 		assertThat(definition.getAnswer()).isEqualTo(Answers.RETURNS_DEFAULTS);
 		assertThat(definition.isSerializable()).isFalse();
 		assertThat(definition.getReset()).isEqualTo(MockReset.AFTER);
+		assertThat(definition.getQualifier()).isNull();
 	}
 
 	@Test
 	public void createExplicit() throws Exception {
+		QualifierDefinition qualifier = mock(QualifierDefinition.class);
 		MockDefinition definition = new MockDefinition("name", EXAMPLE_SERVICE_TYPE,
 				new Class<?>[] { ExampleExtraInterface.class },
-				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE, false);
+				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE, qualifier);
 		assertThat(definition.getName()).isEqualTo("name");
 		assertThat(definition.getTypeToMock()).isEqualTo(EXAMPLE_SERVICE_TYPE);
 		assertThat(definition.getExtraInterfaces())
@@ -74,20 +76,20 @@ public class MockDefinitionTests {
 		assertThat(definition.isSerializable()).isTrue();
 		assertThat(definition.getReset()).isEqualTo(MockReset.BEFORE);
 		assertThat(definition.isProxyTargetAware()).isFalse();
+		assertThat(definition.getQualifier()).isEqualTo(qualifier);
 	}
 
 	@Test
 	public void createMock() throws Exception {
 		MockDefinition definition = new MockDefinition("name", EXAMPLE_SERVICE_TYPE,
 				new Class<?>[] { ExampleExtraInterface.class },
-				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE, true);
+				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE, null);
 		ExampleService mock = definition.createMock();
-		MockCreationSettings<?> settings = new MockUtil().getMockSettings(mock);
+		MockCreationSettings<?> settings = MockitoApi.get().getMockSettings(mock);
 		assertThat(mock).isInstanceOf(ExampleService.class);
 		assertThat(mock).isInstanceOf(ExampleExtraInterface.class);
 		assertThat(settings.getMockName().toString()).isEqualTo("name");
-		assertThat(settings.getDefaultAnswer())
-				.isEqualTo(Answers.RETURNS_SMART_NULLS.get());
+		assertThat(settings.getDefaultAnswer()).isEqualTo(Answers.RETURNS_SMART_NULLS);
 		assertThat(settings.isSerializable()).isTrue();
 		assertThat(MockReset.get(mock)).isEqualTo(MockReset.BEFORE);
 	}

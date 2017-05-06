@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
@@ -29,6 +28,7 @@ import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link MetricExporters}.
@@ -41,11 +41,11 @@ public class MetricExportersTests {
 
 	private MetricExportProperties export = new MetricExportProperties();
 
-	private Map<String, GaugeWriter> writers = new LinkedHashMap<String, GaugeWriter>();
+	private Map<String, GaugeWriter> writers = new LinkedHashMap<>();
 
-	private MetricReader reader = Mockito.mock(MetricReader.class);
+	private MetricReader reader = mock(MetricReader.class);
 
-	private MetricWriter writer = Mockito.mock(MetricWriter.class);
+	private MetricWriter writer = mock(MetricWriter.class);
 
 	@Test
 	public void emptyWriters() {

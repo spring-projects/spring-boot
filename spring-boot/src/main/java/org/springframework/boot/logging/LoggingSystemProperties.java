@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +17,65 @@
 package org.springframework.boot.logging;
 
 import org.springframework.boot.ApplicationPid;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertyResolver;
+import org.springframework.core.env.PropertySourcesPropertyResolver;
+import org.springframework.util.Assert;
 
 /**
  * Utility to set system properties that can later be used by log configuration files.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Madhura Bhave
+ * @since 2.0.0
  */
-class LoggingSystemProperties {
+public class LoggingSystemProperties {
 
-	static final String PID_KEY = "PID";
+	/**
+	 * The name of the System property that contains the process ID.
+	 */
+	public static final String PID_KEY = "PID";
 
-	static final String EXCEPTION_CONVERSION_WORD = "LOG_EXCEPTION_CONVERSION_WORD";
+	/**
+	 * The name of the System property that contains the exception conversion word.
+	 */
+	public static final String EXCEPTION_CONVERSION_WORD = "LOG_EXCEPTION_CONVERSION_WORD";
 
-	static final String CONSOLE_LOG_PATTERN = "CONSOLE_LOG_PATTERN";
+	/**
+	 * The name of the System property that contains the log file.
+	 */
+	public static final String LOG_FILE = "LOG_FILE";
 
-	static final String FILE_LOG_PATTERN = "FILE_LOG_PATTERN";
+	/**
+	 * The name of the System property that contains the log path.
+	 */
+	public static final String LOG_PATH = "LOG_PATH";
 
-	static final String LOG_LEVEL_PATTERN = "LOG_LEVEL_PATTERN";
+	/**
+	 * The name of the System property that contains the console log pattern.
+	 */
+	public static final String CONSOLE_LOG_PATTERN = "CONSOLE_LOG_PATTERN";
+
+	/**
+	 * The name of the System property that contains the file log pattern.
+	 */
+	public static final String FILE_LOG_PATTERN = "FILE_LOG_PATTERN";
+
+	/**
+	 * The name of the System property that contains the log level pattern.
+	 */
+	public static final String LOG_LEVEL_PATTERN = "LOG_LEVEL_PATTERN";
 
 	private final Environment environment;
 
-	LoggingSystemProperties(Environment environment) {
+	/**
+	 * Create a new {@link LoggingSystemProperties} instance.
+	 * @param environment the source environment
+	 */
+	public LoggingSystemProperties(Environment environment) {
+		Assert.notNull(environment, "Environment must not be null");
 		this.environment = environment;
 	}
 
@@ -49,22 +84,33 @@ class LoggingSystemProperties {
 	}
 
 	public void apply(LogFile logFile) {
-		RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(
-				this.environment, "logging.");
-		setSystemProperty(propertyResolver, EXCEPTION_CONVERSION_WORD,
+		PropertyResolver resolver = getPropertyResolver();
+		setSystemProperty(resolver, EXCEPTION_CONVERSION_WORD,
 				"exception-conversion-word");
-		setSystemProperty(propertyResolver, CONSOLE_LOG_PATTERN, "pattern.console");
-		setSystemProperty(propertyResolver, FILE_LOG_PATTERN, "pattern.file");
-		setSystemProperty(propertyResolver, LOG_LEVEL_PATTERN, "pattern.level");
+		setSystemProperty(resolver, CONSOLE_LOG_PATTERN, "pattern.console");
+		setSystemProperty(resolver, FILE_LOG_PATTERN, "pattern.file");
+		setSystemProperty(resolver, LOG_LEVEL_PATTERN, "pattern.level");
 		setSystemProperty(PID_KEY, new ApplicationPid().toString());
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
 		}
 	}
 
-	private void setSystemProperty(RelaxedPropertyResolver propertyResolver,
-			String systemPropertyName, String propertyName) {
-		setSystemProperty(systemPropertyName, propertyResolver.getProperty(propertyName));
+	private PropertyResolver getPropertyResolver() {
+		if (this.environment instanceof ConfigurableEnvironment) {
+			PropertyResolver resolver = new PropertySourcesPropertyResolver(
+					((ConfigurableEnvironment) this.environment).getPropertySources());
+			((PropertySourcesPropertyResolver) resolver)
+					.setIgnoreUnresolvableNestedPlaceholders(true);
+			return resolver;
+		}
+		return this.environment;
+	}
+
+	private void setSystemProperty(PropertyResolver resolver, String systemPropertyName,
+			String propertyName) {
+		setSystemProperty(systemPropertyName,
+				resolver.getProperty("logging." + propertyName));
 	}
 
 	private void setSystemProperty(String name, String value) {

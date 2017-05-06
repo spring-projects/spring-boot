@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ public class SysVinitLaunchScriptIT {
 
 	@Parameters(name = "{0} {1}")
 	public static List<Object[]> parameters() {
-		List<Object[]> parameters = new ArrayList<Object[]>();
+		List<Object[]> parameters = new ArrayList<>();
 		for (File os : new File("src/test/resources/conf").listFiles()) {
 			for (File version : os.listFiles()) {
 				parameters.add(new Object[] { os.getName(), version.getName() });
@@ -113,6 +113,14 @@ public class SysVinitLaunchScriptIT {
 	@Test
 	public void stopWhenStopped() throws Exception {
 		String output = doTest("stop-when-stopped.sh");
+		assertThat(output).contains("Status: 0");
+		assertThat(output)
+				.has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
+	}
+
+	@Test
+	public void forceStopWhenStopped() throws Exception {
+		String output = doTest("force-stop-when-stopped.sh");
 		assertThat(output).contains("Status: 0");
 		assertThat(output)
 				.has(coloredString(AnsiColor.YELLOW, "Not running (pidfile not found)"));
@@ -198,6 +206,23 @@ public class SysVinitLaunchScriptIT {
 		doLaunch("launch-with-use-of-start-stop-daemon-disabled.sh");
 	}
 
+	@Test
+	public void launchWithRelativePidFolder() throws Exception {
+		String output = doTest("launch-with-relative-pid-folder.sh");
+		assertThat(output).has(
+				coloredString(AnsiColor.GREEN, "Started [" + extractPid(output) + "]"));
+		assertThat(output).has(
+				coloredString(AnsiColor.GREEN, "Running [" + extractPid(output) + "]"));
+		assertThat(output).has(
+				coloredString(AnsiColor.GREEN, "Stopped [" + extractPid(output) + "]"));
+	}
+
+	@Test
+	public void launchWithRelativeLogFolder() throws Exception {
+		String output = doTest("launch-with-relative-log-folder.sh");
+		assertThat(output).contains("Log written");
+	}
+
 	private void doLaunch(String script) throws Exception {
 		assertThat(doTest(script)).contains("Launched");
 	}
@@ -233,7 +258,7 @@ public class SysVinitLaunchScriptIT {
 
 	private DockerClient createClient() {
 		DockerClientConfig config = DockerClientConfig.createDefaultConfigBuilder()
-				.build();
+				.withVersion("1.19").build();
 		DockerClient docker = DockerClientBuilder.getInstance(config)
 				.withDockerCmdExecFactory(this.commandExecFactory).build();
 		return docker;

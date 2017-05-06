@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,21 +73,25 @@ public class SpringApplicationRunner {
 		this.compiler = new GroovyCompiler(configuration);
 		int level = configuration.getLogLevel().intValue();
 		if (level <= Level.FINER.intValue()) {
-			System.setProperty("groovy.grape.report.downloads", "true");
+			System.setProperty(
+					"org.springframework.boot.cli.compiler.grape.ProgressReporter",
+					"detail");
 			System.setProperty("trace", "true");
 		}
 		else if (level <= Level.FINE.intValue()) {
 			System.setProperty("debug", "true");
 		}
 		else if (level == Level.OFF.intValue()) {
-			System.setProperty("spring.main.showBanner", "false");
+			System.setProperty("spring.main.banner-mode", "OFF");
 			System.setProperty("logging.level.ROOT", "OFF");
+			System.setProperty(
+					"org.springframework.boot.cli.compiler.grape.ProgressReporter",
+					"none");
 		}
 	}
 
 	/**
 	 * Compile and run the application.
-	 *
 	 * @throws Exception on error
 	 */
 	public void compileAndRun() throws Exception {
@@ -198,6 +202,7 @@ public class SpringApplicationRunner {
 				}
 			}
 		}
+
 	}
 
 	/**
@@ -225,7 +230,7 @@ public class SpringApplicationRunner {
 		}
 
 		private List<File> getSourceFiles() {
-			List<File> sources = new ArrayList<File>();
+			List<File> sources = new ArrayList<>();
 			for (String source : SpringApplicationRunner.this.sources) {
 				List<String> paths = ResourceUtils.getUrls(source,
 						SpringApplicationRunner.this.compiler.getLoader());

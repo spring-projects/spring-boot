@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,7 @@
 package org.springframework.boot.autoconfigure.batch;
 
 import javax.annotation.PostConstruct;
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
 import org.springframework.batch.core.explore.JobExplorer;
@@ -30,9 +26,8 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
 
@@ -41,19 +36,18 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
+ * @author Stephane Nicoll
  */
-@Component
 public class BasicBatchConfigurer implements BatchConfigurer {
-
-	private static final Log logger = LogFactory.getLog(BasicBatchConfigurer.class);
 
 	private final BatchProperties properties;
 
 	private final DataSource dataSource;
 
-	private final EntityManagerFactory entityManagerFactory;
-
 	private PlatformTransactionManager transactionManager;
+
+	private final TransactionManagerCustomizers transactionManagerCustomizers;
 
 	private JobRepository jobRepository;
 
@@ -65,22 +59,14 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	 * Create a new {@link BasicBatchConfigurer} instance.
 	 * @param properties the batch properties
 	 * @param dataSource the underlying data source
-	 */
-	protected BasicBatchConfigurer(BatchProperties properties, DataSource dataSource) {
-		this(properties, dataSource, null);
-	}
-
-	/**
-	 * Create a new {@link BasicBatchConfigurer} instance.
-	 * @param properties the batch properties
-	 * @param dataSource the underlying data source
-	 * @param entityManagerFactory the entity manager factory (or {@code null})
+	 * @param transactionManagerCustomizers transaction manager customizers (or
+	 * {@code null})
 	 */
 	protected BasicBatchConfigurer(BatchProperties properties, DataSource dataSource,
-			EntityManagerFactory entityManagerFactory) {
+			TransactionManagerCustomizers transactionManagerCustomizers) {
 		this.properties = properties;
-		this.entityManagerFactory = entityManagerFactory;
 		this.dataSource = dataSource;
+		this.transactionManagerCustomizers = transactionManagerCustomizers;
 	}
 
 	@Override
@@ -106,7 +92,7 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	@PostConstruct
 	public void initialize() {
 		try {
-			this.transactionManager = createTransactionManager();
+			this.transactionManager = buildTransactionManager();
 			this.jobRepository = createJobRepository();
 			this.jobLauncher = createJobLauncher();
 			this.jobExplorer = createJobExplorer();
@@ -137,10 +123,9 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	protected JobRepository createJobRepository() throws Exception {
 		JobRepositoryFactoryBean factory = new JobRepositoryFactoryBean();
 		factory.setDataSource(this.dataSource);
-		if (this.entityManagerFactory != null) {
-			logger.warn(
-					"JPA does not support custom isolation levels, so locks may not be taken when launching Jobs");
-			factory.setIsolationLevelForCreate("ISOLATION_DEFAULT");
+		String isolationLevel = determineIsolationLevel();
+		if (isolationLevel != null) {
+			factory.setIsolationLevelForCreate(isolationLevel);
 		}
 		String tablePrefix = this.properties.getTablePrefix();
 		if (StringUtils.hasText(tablePrefix)) {
@@ -151,11 +136,24 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 		return factory.getObject();
 	}
 
+	/**
+	 * Determine the isolation level for create* operation of the {@link JobRepository}.
+	 * @return the isolation level or {@code null} to use the default
+	 */
+	protected String determineIsolationLevel() {
+		return null;
+	}
+
 	protected PlatformTransactionManager createTransactionManager() {
-		if (this.entityManagerFactory != null) {
-			return new JpaTransactionManager(this.entityManagerFactory);
-		}
 		return new DataSourceTransactionManager(this.dataSource);
+	}
+
+	private PlatformTransactionManager buildTransactionManager() {
+		PlatformTransactionManager transactionManager = createTransactionManager();
+		if (this.transactionManagerCustomizers != null) {
+			this.transactionManagerCustomizers.customize(transactionManager);
+		}
+		return transactionManager;
 	}
 
 }

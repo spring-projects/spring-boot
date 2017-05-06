@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,14 +25,45 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that only matches when the application context is a web application
- * context.
+ * {@link Conditional} that matches when the application is a web application. By default,
+ * any web application will match but it can be narrowed using the {@link #type()}
+ * attribute.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Conditional(OnWebApplicationCondition.class)
 public @interface ConditionalOnWebApplication {
+
+	/**
+	 * The required type of the web application.
+	 * @return the required web application type
+	 */
+	Type type() default Type.ANY;
+
+	/**
+	 * Available application types.
+	 */
+	enum Type {
+
+		/**
+		 * Any web application will match.
+		 */
+		ANY,
+
+		/**
+		 * Only servlet-based web application will match.
+		 */
+		SERVLET,
+
+		/**
+		 * Only reactive-based web application will match.
+		 */
+		REACTIVE
+
+	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import ch.qos.logback.core.joran.spi.InterpretationContext;
 import ch.qos.logback.core.util.OptionHelper;
 import org.xml.sax.Attributes;
 
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
 
 /**
@@ -33,10 +32,12 @@ import org.springframework.core.env.Environment;
  *
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Madhura Bhave
  */
 class SpringPropertyAction extends Action {
 
 	private static final String SOURCE_ATTRIBUTE = "source";
+
 	private static final String DEFAULT_VALUE_ATTRIBUTE = "defaultValue";
 
 	private final Environment environment;
@@ -46,8 +47,8 @@ class SpringPropertyAction extends Action {
 	}
 
 	@Override
-	public void begin(InterpretationContext ic, String elementName, Attributes attributes)
-			throws ActionException {
+	public void begin(InterpretationContext context, String elementName,
+			Attributes attributes) throws ActionException {
 		String name = attributes.getValue(NAME_ATTRIBUTE);
 		String source = attributes.getValue(SOURCE_ATTRIBUTE);
 		Scope scope = ActionUtil.stringToScope(attributes.getValue(SCOPE_ATTRIBUTE));
@@ -56,7 +57,7 @@ class SpringPropertyAction extends Action {
 			addError(
 					"The \"name\" and \"source\" attributes of <springProperty> must be set");
 		}
-		ActionUtil.setProperty(ic, name, getValue(source, defaultValue), scope);
+		ActionUtil.setProperty(context, name, getValue(source, defaultValue), scope);
 	}
 
 	private String getValue(String source, String defaultValue) {
@@ -71,15 +72,14 @@ class SpringPropertyAction extends Action {
 		int lastDot = source.lastIndexOf(".");
 		if (lastDot > 0) {
 			String prefix = source.substring(0, lastDot + 1);
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-					this.environment, prefix);
-			return resolver.getProperty(source.substring(lastDot + 1), defaultValue);
+			return this.environment.getProperty(prefix + source.substring(lastDot + 1),
+					defaultValue);
 		}
 		return defaultValue;
 	}
 
 	@Override
-	public void end(InterpretationContext ic, String name) throws ActionException {
+	public void end(InterpretationContext context, String name) throws ActionException {
 	}
 
 }

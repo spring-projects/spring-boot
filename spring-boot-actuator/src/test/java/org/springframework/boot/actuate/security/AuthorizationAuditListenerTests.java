@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,24 @@
 
 package org.springframework.boot.actuate.security;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
-import org.springframework.context.ApplicationEvent;
+import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
+import org.springframework.security.access.event.AbstractAuthorizationEvent;
+import org.springframework.security.access.event.AuthenticationCredentialsNotFoundEvent;
 import org.springframework.security.access.event.AuthorizationFailureEvent;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import static org.mockito.Matchers.anyObject;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -49,12 +53,51 @@ public class AuthorizationAuditListenerTests {
 	}
 
 	@Test
-	public void testAuthenticationSuccess() {
-		this.listener.onApplicationEvent(new AuthorizationFailureEvent(this,
-				Arrays.<ConfigAttribute>asList(new SecurityConfig("USER")),
-				new UsernamePasswordAuthenticationToken("user", "password"),
-				new AccessDeniedException("Bad user")));
-		verify(this.publisher).publishEvent((ApplicationEvent) anyObject());
+	public void testAuthenticationCredentialsNotFound() {
+		AuditApplicationEvent event = handleAuthorizationEvent(
+				new AuthenticationCredentialsNotFoundEvent(this,
+						Collections.<ConfigAttribute>singletonList(
+								new SecurityConfig("USER")),
+						new AuthenticationCredentialsNotFoundException("Bad user")));
+		assertThat(event.getAuditEvent().getType())
+				.isEqualTo(AuthenticationAuditListener.AUTHENTICATION_FAILURE);
+	}
+
+	@Test
+	public void testAuthorizationFailure() {
+		AuditApplicationEvent event = handleAuthorizationEvent(
+				new AuthorizationFailureEvent(this,
+						Collections.<ConfigAttribute>singletonList(
+								new SecurityConfig("USER")),
+						new UsernamePasswordAuthenticationToken("user", "password"),
+						new AccessDeniedException("Bad user")));
+		assertThat(event.getAuditEvent().getType())
+				.isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);
+	}
+
+	@Test
+	public void testDetailsAreIncludedInAuditEvent() throws Exception {
+		Object details = new Object();
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+				"user", "password");
+		authentication.setDetails(details);
+		AuditApplicationEvent event = handleAuthorizationEvent(
+				new AuthorizationFailureEvent(this,
+						Collections.<ConfigAttribute>singletonList(
+								new SecurityConfig("USER")),
+						authentication, new AccessDeniedException("Bad user")));
+		assertThat(event.getAuditEvent().getType())
+				.isEqualTo(AuthorizationAuditListener.AUTHORIZATION_FAILURE);
+		assertThat(event.getAuditEvent().getData()).containsEntry("details", details);
+	}
+
+	private AuditApplicationEvent handleAuthorizationEvent(
+			AbstractAuthorizationEvent event) {
+		ArgumentCaptor<AuditApplicationEvent> eventCaptor = ArgumentCaptor
+				.forClass(AuditApplicationEvent.class);
+		this.listener.onApplicationEvent(event);
+		verify(this.publisher).publishEvent(eventCaptor.capture());
+		return eventCaptor.getValue();
 	}
 
 }

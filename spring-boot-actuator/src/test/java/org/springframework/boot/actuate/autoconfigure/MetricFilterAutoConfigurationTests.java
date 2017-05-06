@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,11 +58,11 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Matchers.anyDouble;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -126,6 +126,51 @@ public class MetricFilterAutoConfigurationTests {
 				.increment("status.200.templateVarTest.someVariable");
 		verify(context.getBean(GaugeService.class))
 				.submit(eq("response.templateVarTest.someVariable"), anyDouble());
+		context.close();
+	}
+
+	@Test
+	public void recordsHttpInteractionsWithRegexTemplateVariable() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				Config.class, MetricFilterAutoConfiguration.class);
+		Filter filter = context.getBean(Filter.class);
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
+				.addFilter(filter).build();
+		mvc.perform(get("/templateVarRegexTest/foo")).andExpect(status().isOk());
+		verify(context.getBean(CounterService.class))
+				.increment("status.200.templateVarRegexTest.someVariable");
+		verify(context.getBean(GaugeService.class))
+				.submit(eq("response.templateVarRegexTest.someVariable"), anyDouble());
+		context.close();
+	}
+
+	@Test
+	public void recordsHttpInteractionsWithWildcardMapping() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				Config.class, MetricFilterAutoConfiguration.class);
+		Filter filter = context.getBean(Filter.class);
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
+				.addFilter(filter).build();
+		mvc.perform(get("/wildcardMapping/foo")).andExpect(status().isOk());
+		verify(context.getBean(CounterService.class))
+				.increment("status.200.wildcardMapping.star");
+		verify(context.getBean(GaugeService.class))
+				.submit(eq("response.wildcardMapping.star"), anyDouble());
+		context.close();
+	}
+
+	@Test
+	public void recordsHttpInteractionsWithDoubleWildcardMapping() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				Config.class, MetricFilterAutoConfiguration.class);
+		Filter filter = context.getBean(Filter.class);
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
+				.addFilter(filter).build();
+		mvc.perform(get("/doubleWildcardMapping/foo/bar/baz")).andExpect(status().isOk());
+		verify(context.getBean(CounterService.class))
+				.increment("status.200.doubleWildcardMapping.star-star.baz");
+		verify(context.getBean(GaugeService.class))
+				.submit(eq("response.doubleWildcardMapping.star-star.baz"), anyDouble());
 		context.close();
 	}
 
@@ -365,6 +410,37 @@ public class MetricFilterAutoConfigurationTests {
 		context.close();
 	}
 
+	@Test
+	public void whenExceptionIsThrownResponseStatusIsUsedWhenResponseHasBeenCommitted()
+			throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(Config.class, MetricFilterAutoConfiguration.class);
+		context.refresh();
+		Filter filter = context.getBean(Filter.class);
+		final MockHttpServletRequest request = new MockHttpServletRequest("GET",
+				"/test/path");
+		final MockHttpServletResponse response = new MockHttpServletResponse();
+		FilterChain chain = mock(FilterChain.class);
+		willAnswer(new Answer<Object>() {
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				response.setStatus(200);
+				response.setCommitted(true);
+				throw new IOException();
+			}
+		}).given(chain).doFilter(request, response);
+		try {
+			filter.doFilter(request, response, chain);
+			fail();
+		}
+		catch (IOException ex) {
+			// Continue
+		}
+		verify(context.getBean(CounterService.class))
+				.increment(eq("status.200.test.path"));
+		context.close();
+	}
+
 	@Configuration
 	public static class Config {
 
@@ -398,6 +474,22 @@ public class MetricFilterAutoConfigurationTests {
 			return someVariable;
 		}
 
+		@RequestMapping("wildcardMapping/*")
+		public String testWildcardMapping() {
+			return "wildcard";
+		}
+
+		@RequestMapping("doubleWildcardMapping/**/baz")
+		public String testDoubleWildcardMapping() {
+			return "doubleWildcard";
+		}
+
+		@RequestMapping("templateVarRegexTest/{someVariable:[a-z]+}")
+		public String testTemplateVariableRegexResolution(
+				@PathVariable String someVariable) {
+			return someVariable;
+		}
+
 		@RequestMapping("knownPath/{someVariable}")
 		@ResponseStatus(HttpStatus.NOT_FOUND)
 		@ResponseBody
@@ -413,14 +505,14 @@ public class MetricFilterAutoConfigurationTests {
 
 		@RequestMapping("create")
 		public DeferredResult<ResponseEntity<String>> create() {
-			final DeferredResult<ResponseEntity<String>> result = new DeferredResult<ResponseEntity<String>>();
+			final DeferredResult<ResponseEntity<String>> result = new DeferredResult<>();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
 					try {
 						MetricFilterTestController.this.latch.await();
 						result.setResult(
-								new ResponseEntity<String>("Done", HttpStatus.CREATED));
+								new ResponseEntity<>("Done", HttpStatus.CREATED));
 					}
 					catch (InterruptedException ex) {
 					}
@@ -431,7 +523,7 @@ public class MetricFilterAutoConfigurationTests {
 
 		@RequestMapping("createFailure")
 		public DeferredResult<ResponseEntity<String>> createFailure() {
-			final DeferredResult<ResponseEntity<String>> result = new DeferredResult<ResponseEntity<String>>();
+			final DeferredResult<ResponseEntity<String>> result = new DeferredResult<>();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {

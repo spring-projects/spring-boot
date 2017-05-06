@@ -19,8 +19,7 @@ package org.springframework.boot.configurationsample.specific;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
- * Test that compilation fails if the same type is registered twice with the
- * same prefix.
+ * Test that compilation fails if the same type is registered twice with the same prefix.
  *
  * @author Stephane Nicoll
  */
@@ -43,6 +42,7 @@ public class InvalidDoubleRegistrationProperties {
 		public void setName(String name) {
 			this.name = name;
 		}
+
 	}
 
 }

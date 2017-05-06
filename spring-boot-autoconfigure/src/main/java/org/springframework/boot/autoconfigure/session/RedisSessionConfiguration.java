@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,9 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -38,14 +34,14 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisHt
  * @author Tommy Ludwig
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  */
 @Configuration
+@ConditionalOnClass(RedisTemplate.class)
 @ConditionalOnMissingBean(SessionRepository.class)
-@ConditionalOnBean({ RedisTemplate.class, RedisConnectionFactory.class })
+@ConditionalOnBean(RedisConnectionFactory.class)
 @Conditional(SessionCondition.class)
 class RedisSessionConfiguration {
-
-	private static final Log logger = LogFactory.getLog(RedisSessionConfiguration.class);
 
 	@Configuration
 	public static class SpringBootRedisHttpSessionConfiguration
@@ -63,14 +59,6 @@ class RedisSessionConfiguration {
 			SessionProperties.Redis redis = this.sessionProperties.getRedis();
 			setRedisNamespace(redis.getNamespace());
 			setRedisFlushMode(redis.getFlushMode());
-		}
-
-		@PostConstruct
-		public void validate() {
-			if (this.sessionProperties.getStoreType() == null) {
-				logger.warn("Spring Session store type is mandatory: set "
-						+ "'spring.session.store-type=redis' in your configuration");
-			}
 		}
 
 	}

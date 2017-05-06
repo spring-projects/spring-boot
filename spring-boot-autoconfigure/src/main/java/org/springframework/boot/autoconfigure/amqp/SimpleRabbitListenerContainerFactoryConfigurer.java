@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,92 +16,33 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
-import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
-import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
-import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.boot.autoconfigure.amqp.RabbitProperties.ListenerRetry;
-import org.springframework.util.Assert;
 
 /**
- * Configure {@link RabbitListenerContainerFactory} with sensible defaults.
+ * Configure {@link SimpleRabbitListenerContainerFactoryConfigurer} with sensible defaults.
  *
  * @author Stephane Nicoll
  * @author Gary Russell
  * @since 1.3.3
  */
-public final class SimpleRabbitListenerContainerFactoryConfigurer {
+public final class SimpleRabbitListenerContainerFactoryConfigurer
+		extends AbstractRabbitListenerContainerFactoryConfigurer<SimpleRabbitListenerContainerFactory> {
 
-	private MessageConverter messageConverter;
-
-	private RabbitProperties rabbitProperties;
-
-	/**
-	 * Set the {@link MessageConverter} to use or {@code null} if the out-of-the-box
-	 * converter should be used.
-	 * @param messageConverter the {@link MessageConverter}
-	 */
-	void setMessageConverter(MessageConverter messageConverter) {
-		this.messageConverter = messageConverter;
-	}
-
-	/**
-	 * Set the {@link RabbitProperties} to use.
-	 * @param rabbitProperties the {@link RabbitProperties}
-	 */
-	void setRabbitProperties(RabbitProperties rabbitProperties) {
-		this.rabbitProperties = rabbitProperties;
-	}
-
-	/**
-	 * Configure the specified rabbit listener container factory. The factory can be
-	 * further tuned and default settings can be overridden.
-	 * @param factory the {@link SimpleRabbitListenerContainerFactory} instance to
-	 * configure
-	 * @param connectionFactory the {@link ConnectionFactory} to use
-	 */
-	public void configure(SimpleRabbitListenerContainerFactory factory,
-			ConnectionFactory connectionFactory) {
-		Assert.notNull(factory, "Factory must not be null");
-		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
-		factory.setConnectionFactory(connectionFactory);
-		if (this.messageConverter != null) {
-			factory.setMessageConverter(this.messageConverter);
+	@Override
+	public void configure(SimpleRabbitListenerContainerFactory factory, ConnectionFactory connectionFactory) {
+		RabbitProperties.SimpleContainer config = getRabbitProperties().getListener()
+				.getSimple();
+		configure(factory, connectionFactory, config);
+		if (config.getConcurrency() != null) {
+			factory.setConcurrentConsumers(config.getConcurrency());
 		}
-		RabbitProperties.Listener listenerConfig = this.rabbitProperties.getListener();
-		factory.setAutoStartup(listenerConfig.isAutoStartup());
-		if (listenerConfig.getAcknowledgeMode() != null) {
-			factory.setAcknowledgeMode(listenerConfig.getAcknowledgeMode());
+		if (config.getMaxConcurrency() != null) {
+			factory.setMaxConcurrentConsumers(config.getMaxConcurrency());
 		}
-		if (listenerConfig.getConcurrency() != null) {
-			factory.setConcurrentConsumers(listenerConfig.getConcurrency());
+		if (config.getTransactionSize() != null) {
+			factory.setTxSize(config.getTransactionSize());
 		}
-		if (listenerConfig.getMaxConcurrency() != null) {
-			factory.setMaxConcurrentConsumers(listenerConfig.getMaxConcurrency());
-		}
-		if (listenerConfig.getPrefetch() != null) {
-			factory.setPrefetchCount(listenerConfig.getPrefetch());
-		}
-		if (listenerConfig.getTransactionSize() != null) {
-			factory.setTxSize(listenerConfig.getTransactionSize());
-		}
-		if (listenerConfig.getDefaultRequeueRejected() != null) {
-			factory.setDefaultRequeueRejected(listenerConfig.getDefaultRequeueRejected());
-		}
-		ListenerRetry retryConfig = listenerConfig.getRetry();
-		if (retryConfig.isEnabled()) {
-			RetryInterceptorBuilder<?> builder = (retryConfig.isStateless()
-					? RetryInterceptorBuilder.stateless()
-					: RetryInterceptorBuilder.stateful());
-			builder.maxAttempts(retryConfig.getMaxAttempts());
-			builder.backOffOptions(retryConfig.getInitialInterval(),
-					retryConfig.getMultiplier(), retryConfig.getMaxInterval());
-			builder.recoverer(new RejectAndDontRequeueRecoverer());
-			factory.setAdviceChain(builder.build());
-		}
-
 	}
 
 }

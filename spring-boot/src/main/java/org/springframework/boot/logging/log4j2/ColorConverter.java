@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 	private static final Map<String, AnsiElement> ELEMENTS;
 
 	static {
-		Map<String, AnsiElement> elements = new HashMap<String, AnsiElement>();
+		Map<String, AnsiElement> elements = new HashMap<>();
 		elements.put("faint", AnsiStyle.FAINT);
 		elements.put("red", AnsiColor.RED);
 		elements.put("green", AnsiColor.GREEN);
@@ -66,7 +66,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 	private static final Map<Integer, AnsiElement> LEVELS;
 
 	static {
-		Map<Integer, AnsiElement> levels = new HashMap<Integer, AnsiElement>();
+		Map<Integer, AnsiElement> levels = new HashMap<>();
 		levels.put(Level.FATAL.intLevel(), AnsiColor.RED);
 		levels.put(Level.ERROR.intLevel(), AnsiColor.RED);
 		levels.put(Level.WARN.intLevel(), AnsiColor.YELLOW);
@@ -85,7 +85,6 @@ public final class ColorConverter extends LogEventPatternConverter {
 
 	/**
 	 * Creates a new instance of the class. Required by Log4J2.
-	 *
 	 * @param config the configuration
 	 * @param options the options
 	 * @return a new instance, or {@code null} if the options are invalid

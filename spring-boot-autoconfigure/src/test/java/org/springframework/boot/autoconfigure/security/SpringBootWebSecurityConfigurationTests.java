@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.List;
 
 import javax.servlet.Filter;
 
@@ -31,13 +30,12 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -82,13 +80,6 @@ public class SpringBootWebSecurityConfigurationTests {
 		if (this.context != null) {
 			this.context.close();
 		}
-	}
-
-	@Test
-	public void testDefaultIgnores() {
-		List<String> ignored = SpringBootWebSecurityConfiguration
-				.getIgnored(new SecurityProperties());
-		assertThat(ignored).contains("/css/**");
 	}
 
 	@Test
@@ -182,14 +173,14 @@ public class SpringBootWebSecurityConfigurationTests {
 		TestRestTemplate rest = new TestRestTemplate();
 
 		// not overriding causes forbidden
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 
 		ResponseEntity<Object> result = rest
 				.postForEntity("http://localhost:" + port + "/", form, Object.class);
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 
 		// override method with GET
-		form = new LinkedMultiValueMap<String, String>();
+		form = new LinkedMultiValueMap<>();
 		form.add("_method", "GET");
 
 		result = rest.postForEntity("http://localhost:" + port + "/", form, Object.class);
@@ -213,7 +204,9 @@ public class SpringBootWebSecurityConfigurationTests {
 				.andExpect(MockMvcResultMatchers.header().string("Cache-Control",
 						is(notNullValue())))
 				.andExpect(MockMvcResultMatchers.header().string("X-Frame-Options",
-						is(notNullValue())));
+						is(notNullValue())))
+				.andExpect(MockMvcResultMatchers.header()
+						.doesNotExist("Content-Security-Policy"));
 	}
 
 	@Test
@@ -237,6 +230,41 @@ public class SpringBootWebSecurityConfigurationTests {
 				.andExpect(MockMvcResultMatchers.header().doesNotExist("Cache-Control"))
 				.andExpect(
 						MockMvcResultMatchers.header().doesNotExist("X-Frame-Options"));
+	}
+
+	@Test
+	public void contentSecurityPolicyConfiguration() throws Exception {
+		this.context = SpringApplication.run(VanillaWebConfiguration.class,
+				"--security.headers.content-security-policy=default-src 'self';",
+				"--server.port=0");
+		MockMvc mockMvc = MockMvcBuilders
+				.webAppContextSetup((WebApplicationContext) this.context)
+				.addFilters((FilterChainProxy) this.context
+						.getBean("springSecurityFilterChain", Filter.class))
+				.build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/"))
+				.andExpect(MockMvcResultMatchers.header()
+						.string("Content-Security-Policy", is("default-src 'self';")))
+				.andExpect(MockMvcResultMatchers.header()
+						.doesNotExist("Content-Security-Policy-Report-Only"));
+	}
+
+	@Test
+	public void contentSecurityPolicyReportOnlyConfiguration() throws Exception {
+		this.context = SpringApplication.run(VanillaWebConfiguration.class,
+				"--security.headers.content-security-policy=default-src 'self';",
+				"--security.headers.content-security-policy-mode=report-only",
+				"--server.port=0");
+		MockMvc mockMvc = MockMvcBuilders
+				.webAppContextSetup((WebApplicationContext) this.context)
+				.addFilters((FilterChainProxy) this.context
+						.getBean("springSecurityFilterChain", Filter.class))
+				.build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/"))
+				.andExpect(MockMvcResultMatchers.header().string(
+						"Content-Security-Policy-Report-Only", is("default-src 'self';")))
+				.andExpect(MockMvcResultMatchers.header()
+						.doesNotExist("Content-Security-Policy"));
 	}
 
 	@Configuration
@@ -268,6 +296,7 @@ public class SpringBootWebSecurityConfigurationTests {
 	@MinimalWebConfiguration
 	@Import(SecurityAutoConfiguration.class)
 	protected static class VanillaWebConfiguration {
+
 	}
 
 	@MinimalWebConfiguration
@@ -292,8 +321,7 @@ public class SpringBootWebSecurityConfigurationTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
+	@Import({ ServletWebServerFactoryAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })

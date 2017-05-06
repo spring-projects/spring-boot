@@ -36,43 +36,26 @@ diverge from the defaults.
 
 [[getting-started-system-requirements]]
 == System Requirements
-By default, Spring Boot {spring-boot-version} requires http://www.java.com[Java 7] and
-Spring Framework {spring-version} or above. You can use Spring Boot with Java 6 with some
-additional configuration. See <<howto.adoc#howto-use-java-6>> for more details. Explicit
-build support is provided for Maven (3.2+) and Gradle (1.12+).
+Spring Boot {spring-boot-version} requires http://www.java.com[Java 8] and Spring
+Framework {spring-version} or above. Explicit build support is provided for Maven
+(3.2+), and Gradle 3 (3.4 or later).
 
-TIP: Although you can use Spring Boot with Java 6 or 7, we generally recommend Java 8 if at
-all possible.
 
+[[getting-started-system-requirements-servlet-containers]]
 === Servlet containers
 The following embedded servlet containers are supported out of the box:
 
 |===
-|Name |Servlet Version |Java Version
+|Name |Servlet Version
 
-|Tomcat 8
+|Tomcat 8.5
 |3.1
-|Java 7+
 
-|Tomcat 7
-|3.0
-|Java 6+
-
-|Jetty 9.3
+|Jetty 9.4
 |3.1
-|Java 8+
-
-|Jetty 9.2
-|3.1
-|Java 7+
-
-|Jetty 8
-|3.0
-|Java 6+
 
 |Undertow 1.3
 |3.1
-|Java 7+
 |===
 
 You can also deploy Spring Boot applications to any Servlet 3.0+ compatible container.
@@ -82,7 +65,7 @@ You can also deploy Spring Boot applications to any Servlet 3.0+ compatible cont
 [[getting-started-installing-spring-boot]]
 == Installing Spring Boot
 Spring Boot can be used with "`classic`" Java development tools or installed as a command
-line tool. Regardless, you will need http://www.java.com[Java SDK v1.6] or higher. You
+line tool. Regardless, you will need http://www.java.com[Java SDK v1.8] or higher. You
 should check your current Java installation before you begin:
 
 [indent=0]
@@ -93,9 +76,6 @@ should check your current Java installation before you begin:
 If you are new to Java development, or if you just want to experiment with Spring Boot
 you might want to try the <<getting-started-installing-the-cli, Spring Boot CLI>> first,
 otherwise, read on for "`classic`" installation instructions.
-
-TIP: Although Spring Boot is compatible with Java 1.6, if possible, you should consider
-using the latest version of Java.
 
 
 
@@ -204,7 +184,7 @@ scope.
 
 [[getting-started-gradle-installation]]
 ==== Gradle installation
-Spring Boot is compatible with Gradle 1.12 or above. If you don't already have Gradle
+Spring Boot is compatible with Gradle 3 (3.4 or later). If you don't already have Gradle
 installed you can follow the instructions at http://www.gradle.org/.
 
 Spring Boot dependencies can be declared using the `org.springframework.boot` `group`.
@@ -217,30 +197,35 @@ that can be used to simplify dependency declarations and to create executable ja
 ****
 The Gradle Wrapper provides a nice way of "`obtaining`" Gradle when you need to build a
 project. It's a small script and library that you commit alongside your code to bootstrap
-the build process. See http://www.gradle.org/docs/current/userguide/gradle_wrapper.html
-for details.
+the build process. See {gradle-user-guide}/gradle_wrapper.html for details.
 ****
 
 Here is a typical `build.gradle` file:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
+ifeval::["{spring-boot-repo}" == "release"]
+	plugins {
+		id 'org.springframework.boot' version '{spring-boot-version}'
+		id 'java'
+	}
+endif::[]
+ifeval::["{spring-boot-repo}" != "release"]
 	buildscript {
 		repositories {
 			jcenter()
-ifndef::release[]
-			maven { url "http://repo.spring.io/snapshot" }
-			maven { url "http://repo.spring.io/milestone" }
-endif::release[]
+			maven { url 'http://repo.spring.io/snapshot' }
+			maven { url 'http://repo.spring.io/milestone' }
 		}
 		dependencies {
-			classpath("org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}")
+			classpath 'org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}'
 		}
 	}
 
 	apply plugin: 'java'
-	apply plugin: 'spring-boot'
+	apply plugin: 'org.springframework.boot'
 
+endif::[]
 	jar {
 		baseName = 'myproject'
 		version =  '0.0.1-SNAPSHOT'
@@ -248,10 +233,10 @@ endif::release[]
 
 	repositories {
 		jcenter()
-ifndef::release[]
+ifeval::["{spring-boot-repo}" != "release"]
 		maven { url "http://repo.spring.io/snapshot" }
 		maven { url "http://repo.spring.io/milestone" }
-endif::release[]
+endif::[]
 	}
 
 	dependencies {
@@ -457,7 +442,7 @@ that use Spring Boot. If you're looking to solve a specific problem; check there
 You can shortcut the steps below by going to https://start.spring.io and choosing the
 `web` starter from the dependencies searcher. This will automatically generate a new
 project structure so that you can <<getting-started-first-application-code,start coding
-right the way>>. Check the https://github.com/spring-io/initializr[documentation for
+right away>>. Check the https://github.com/spring-io/initializr[documentation for
 more details].
 ====
 
@@ -467,17 +452,17 @@ installed.
 [indent=0]
 ----
 	$ java -version
-	java version "1.7.0_51"
-	Java(TM) SE Runtime Environment (build 1.7.0_51-b13)
-	Java HotSpot(TM) 64-Bit Server VM (build 24.51-b03, mixed mode)
+	java version "1.8.0_102"
+	Java(TM) SE Runtime Environment (build 1.8.0_102-b14)
+	Java HotSpot(TM) 64-Bit Server VM (build 25.102-b14, mixed mode)
 ----
 
 [indent=0]
 ----
 	$ mvn -v
-	Apache Maven 3.2.3 (33f8c3e1027c3ddde99d3cdebad2656a31e8fdf4; 2014-08-11T13:58:10-07:00)
-	Maven home: /Users/user/tools/apache-maven-3.1.1
-	Java version: 1.7.0_51, vendor: Oracle Corporation
+	Apache Maven 3.3.9 (bb52d8502b132ec0a5a3f4c09453c07478323dc5; 2015-11-10T16:41:47+00:00)
+	Maven home: /usr/local/Cellar/maven/3.3.9/libexec
+	Java version: 1.8.0_102, vendor: Oracle Corporation
 ----
 
 NOTE: This sample needs to be created in its own folder. Subsequent instructions assume
@@ -768,7 +753,7 @@ Save your `pom.xml` and run `mvn package` from the command line:
 ----
 
 If you look in the `target` directory you should see `myproject-0.0.1-SNAPSHOT.jar`. The
-file should be around 10 Mb in size. If you want to peek inside, you can use `jar tvf`:
+file should be around 10 MB in size. If you want to peek inside, you can use `jar tvf`:
 
 [indent=0]
 ----

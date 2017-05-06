@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -62,16 +62,23 @@ public class FailureAnalyzersTests {
 	}
 
 	@Test
-	public void brokenAnalyzerDoesNotPreventOtherAnalyzersFromBeingCalled() {
+	public void analyzerThatFailsDuringInitializationDoesNotPreventOtherAnalyzersFromBeingCalled() {
 		RuntimeException failure = new RuntimeException();
-		analyzeAndReport("broken.factories", failure);
+		analyzeAndReport("broken-initialization.factories", failure);
+		verify(failureAnalyzer, times(1)).analyze(failure);
+	}
+
+	@Test
+	public void analyzerThatFailsDuringAnalysisDoesNotPreventOtherAnalyzersFromBeingCalled() {
+		RuntimeException failure = new RuntimeException();
+		analyzeAndReport("broken-analysis.factories", failure);
 		verify(failureAnalyzer, times(1)).analyze(failure);
 	}
 
 	private void analyzeAndReport(String factoriesName, Throwable failure) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		ClassLoader classLoader = new CustomSpringFactoriesClassLoader(factoriesName);
-		new FailureAnalyzers(context, classLoader).analyzeAndReport(failure);
+		new FailureAnalyzers(context, classLoader).reportException(failure);
 	}
 
 	static class BasicFailureAnalyzer implements FailureAnalyzer {
@@ -83,7 +90,7 @@ public class FailureAnalyzersTests {
 
 	}
 
-	static class BrokenFailureAnalyzer implements FailureAnalyzer {
+	static class BrokenInitializationFailureAnalyzer implements FailureAnalyzer {
 
 		static {
 			Object foo = null;
@@ -94,6 +101,16 @@ public class FailureAnalyzersTests {
 		public FailureAnalysis analyze(Throwable failure) {
 			return null;
 		}
+
+	}
+
+	static class BrokenAnalysisFailureAnalyzer implements FailureAnalyzer {
+
+		@Override
+		public FailureAnalysis analyze(Throwable failure) {
+			throw new NoClassDefFoundError();
+		}
+
 	}
 
 	interface BeanFactoryAwareFailureAnalyzer extends BeanFactoryAware, FailureAnalyzer {

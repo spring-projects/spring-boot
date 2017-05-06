@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.springframework.boot.actuate.endpoint.FlywayEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.actuate.endpoint.LiquibaseEndpoint;
+import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
@@ -54,11 +55,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionEvaluationRepor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -75,7 +76,7 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Meang Akira Tanaka
- *
+ * @author Ben Hale
  */
 @Configuration
 @AutoConfigureAfter({ FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class })
@@ -92,17 +93,16 @@ public class EndpointAutoConfiguration {
 
 	private final TraceRepository traceRepository;
 
-	public EndpointAutoConfiguration(
-			ObjectProvider<HealthAggregator> healthAggregatorProvider,
-			ObjectProvider<Map<String, HealthIndicator>> healthIndicatorsProvider,
-			ObjectProvider<List<InfoContributor>> infoContributorsProvider,
-			ObjectProvider<Collection<PublicMetrics>> publicMetricsProvider,
-			ObjectProvider<TraceRepository> traceRepositoryProvider) {
-		this.healthAggregator = healthAggregatorProvider.getIfAvailable();
-		this.healthIndicators = healthIndicatorsProvider.getIfAvailable();
-		this.infoContributors = infoContributorsProvider.getIfAvailable();
-		this.publicMetrics = publicMetricsProvider.getIfAvailable();
-		this.traceRepository = traceRepositoryProvider.getIfAvailable();
+	public EndpointAutoConfiguration(ObjectProvider<HealthAggregator> healthAggregator,
+			ObjectProvider<Map<String, HealthIndicator>> healthIndicators,
+			ObjectProvider<List<InfoContributor>> infoContributors,
+			ObjectProvider<Collection<PublicMetrics>> publicMetrics,
+			ObjectProvider<TraceRepository> traceRepository) {
+		this.healthAggregator = healthAggregator.getIfAvailable();
+		this.healthIndicators = healthIndicators.getIfAvailable();
+		this.infoContributors = infoContributors.getIfAvailable();
+		this.publicMetrics = publicMetrics.getIfAvailable();
+		this.traceRepository = traceRepository.getIfAvailable();
 	}
 
 	@Bean
@@ -136,9 +136,16 @@ public class EndpointAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnBean(LoggingSystem.class)
+	@ConditionalOnMissingBean
+	public LoggersEndpoint loggersEndpoint(LoggingSystem loggingSystem) {
+		return new LoggersEndpoint(loggingSystem);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
 	public MetricsEndpoint metricsEndpoint() {
-		List<PublicMetrics> publicMetrics = new ArrayList<PublicMetrics>();
+		List<PublicMetrics> publicMetrics = new ArrayList<>();
 		if (this.publicMetrics != null) {
 			publicMetrics.addAll(this.publicMetrics);
 		}
@@ -179,27 +186,28 @@ public class EndpointAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnSingleCandidate(Flyway.class)
+	@ConditionalOnBean(Flyway.class)
 	@ConditionalOnClass(Flyway.class)
 	static class FlywayEndpointConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public FlywayEndpoint flywayEndpoint(Flyway flyway) {
-			return new FlywayEndpoint(flyway);
+		public FlywayEndpoint flywayEndpoint(Map<String, Flyway> flyways) {
+			return new FlywayEndpoint(flyways);
 		}
 
 	}
 
 	@Configuration
-	@ConditionalOnSingleCandidate(SpringLiquibase.class)
+	@ConditionalOnBean(SpringLiquibase.class)
 	@ConditionalOnClass(SpringLiquibase.class)
 	static class LiquibaseEndpointConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public LiquibaseEndpoint liquibaseEndpoint(SpringLiquibase liquibase) {
-			return new LiquibaseEndpoint(liquibase);
+		public LiquibaseEndpoint liquibaseEndpoint(
+				Map<String, SpringLiquibase> liquibases) {
+			return new LiquibaseEndpoint(liquibases);
 		}
 
 	}

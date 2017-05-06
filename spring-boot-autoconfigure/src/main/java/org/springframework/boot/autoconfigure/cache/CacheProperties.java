@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.cache;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
@@ -42,7 +43,7 @@ public class CacheProperties {
 	 * Comma-separated list of cache names to create if supported by the underlying cache
 	 * manager. Usually, this disables the ability to create additional caches on-the-fly.
 	 */
-	private List<String> cacheNames = new ArrayList<String>();
+	private List<String> cacheNames = new ArrayList<>();
 
 	private final Caffeine caffeine = new Caffeine();
 
@@ -50,13 +51,9 @@ public class CacheProperties {
 
 	private final EhCache ehcache = new EhCache();
 
-	private final Hazelcast hazelcast = new Hazelcast();
-
 	private final Infinispan infinispan = new Infinispan();
 
 	private final JCache jcache = new JCache();
-
-	private final Guava guava = new Guava();
 
 	public CacheType getType() {
 		return this.type;
@@ -86,20 +83,12 @@ public class CacheProperties {
 		return this.ehcache;
 	}
 
-	public Hazelcast getHazelcast() {
-		return this.hazelcast;
-	}
-
 	public Infinispan getInfinispan() {
 		return this.infinispan;
 	}
 
 	public JCache getJcache() {
 		return this.jcache;
-	}
-
-	public Guava getGuava() {
-		return this.guava;
 	}
 
 	/**
@@ -145,12 +134,21 @@ public class CacheProperties {
 	public static class Couchbase {
 
 		/**
-		 * Entry expiration in milliseconds. By default the entries never expire.
+		 * Entry expiration in milliseconds. By default the entries never expire. Note
+		 * that this value is ultimately converted to seconds.
 		 */
 		private int expiration;
 
 		public int getExpiration() {
 			return this.expiration;
+		}
+
+		/**
+		 * Return the expiration in seconds.
+		 * @return the expiration in seconds
+		 */
+		public int getExpirationSeconds() {
+			return (int) TimeUnit.MILLISECONDS.toSeconds(this.expiration);
 		}
 
 		public void setExpiration(int expiration) {
@@ -166,26 +164,6 @@ public class CacheProperties {
 
 		/**
 		 * The location of the configuration file to use to initialize EhCache.
-		 */
-		private Resource config;
-
-		public Resource getConfig() {
-			return this.config;
-		}
-
-		public void setConfig(Resource config) {
-			this.config = config;
-		}
-
-	}
-
-	/**
-	 * Hazelcast specific cache properties.
-	 */
-	public static class Hazelcast {
-
-		/**
-		 * The location of the configuration file to use to initialize Hazelcast.
 		 */
 		private Resource config;
 
@@ -251,27 +229,6 @@ public class CacheProperties {
 
 		public void setConfig(Resource config) {
 			this.config = config;
-		}
-
-	}
-
-	/**
-	 * Guava specific cache properties.
-	 */
-	public static class Guava {
-
-		/**
-		 * The spec to use to create caches. Check CacheBuilderSpec for more details on
-		 * the spec format.
-		 */
-		private String spec;
-
-		public String getSpec() {
-			return this.spec;
-		}
-
-		public void setSpec(String spec) {
-			this.spec = spec;
 		}
 
 	}

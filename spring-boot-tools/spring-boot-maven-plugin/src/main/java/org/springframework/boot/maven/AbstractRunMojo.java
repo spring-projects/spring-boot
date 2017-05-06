@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,8 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  */
 public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
+	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
+
 	private static final String SPRING_LOADED_AGENT_CLASS_NAME = "org.springsource.loaded.agent.SpringLoadedAgent";
 
 	/**
@@ -86,6 +88,15 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter(property = "run.noverify")
 	private Boolean noverify;
+
+	/**
+	 * Current working directory to use for the application. If not specified, basedir
+	 * will be used. NOTE: the use of working directory means that processes will be
+	 * started by forking a new JVM.
+	 * @since 1.5
+	 */
+	@Parameter(property = "run.workingDirectory")
+	private File workingDirectory;
 
 	/**
 	 * JVM arguments that should be associated with the forked process used to run the
@@ -139,8 +150,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private File classesDirectory;
 
 	/**
-	 * Flag to indicate if the run processes should be forked. {@code fork } is
-	 * automatically enabled if an agent or jvmArguments are specified.
+	 * Flag to indicate if the run processes should be forked. {@code fork} is
+	 * automatically enabled if an agent, jvmArguments or working directory are specified,
+	 * or if devtools is present.
 	 * @since 1.2
 	 */
 	@Parameter(property = "fork")
@@ -157,8 +169,17 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * Skip the execution.
 	 * @since 1.3.2
 	 */
-	@Parameter(defaultValue = "false")
+	@Parameter(property = "skip", defaultValue = "false")
 	private boolean skip;
+
+	@Override
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (this.skip) {
+			getLog().debug("skipping run as per configuration.");
+			return;
+		}
+		run(getStartClass());
+	}
 
 	/**
 	 * Specify if the application process should be forked.
@@ -166,7 +187,16 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	protected boolean isFork() {
 		return (Boolean.TRUE.equals(this.fork)
-				|| (this.fork == null && (hasAgent() || hasJvmArgs())));
+				|| (this.fork == null && enableForkByDefault()));
+	}
+
+	/**
+	 * Specify if fork should be enabled by default.
+	 * @return {@code true} if fork should be enabled by default
+	 * @see #logDisabledFork()
+	 */
+	protected boolean enableForkByDefault() {
+		return hasAgent() || hasJvmArgs() || hasWorkingDirectorySet();
 	}
 
 	private boolean hasAgent() {
@@ -177,14 +207,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		return (this.jvmArguments != null && this.jvmArguments.length() > 0);
 	}
 
-	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException {
-		if (this.skip) {
-			getLog().debug("skipping run as per configuration.");
-			return;
-		}
-		final String startClassName = getStartClass();
-		run(startClassName);
+	private boolean hasWorkingDirectorySet() {
+		return this.workingDirectory != null;
 	}
 
 	private void findAgent() {
@@ -221,35 +245,48 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			doRunWithForkedJvm(startClassName);
 		}
 		else {
-			if (hasAgent()) {
-				getLog().warn("Fork mode disabled, ignoring agent");
-			}
-			if (hasJvmArgs()) {
-				getLog().warn("Fork mode disabled, ignoring JVM argument(s) ["
-						+ this.jvmArguments + "]");
-			}
+			logDisabledFork();
 			runWithMavenJvm(startClassName, resolveApplicationArguments().asArray());
+		}
+	}
+
+	/**
+	 * Log a warning indicating that fork mode has been explicitly disabled while some
+	 * conditions are present that require to enable it.
+	 * @see #enableForkByDefault()
+	 */
+	protected void logDisabledFork() {
+		if (hasAgent()) {
+			getLog().warn("Fork mode disabled, ignoring agent");
+		}
+		if (hasJvmArgs()) {
+			getLog().warn("Fork mode disabled, ignoring JVM argument(s) ["
+					+ this.jvmArguments + "]");
+		}
+		if (hasWorkingDirectorySet()) {
+			getLog().warn("Fork mode disabled, ignoring working directory configuration");
 		}
 	}
 
 	private void doRunWithForkedJvm(String startClassName)
 			throws MojoExecutionException, MojoFailureException {
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		addAgents(args);
 		addJvmArgs(args);
 		addClasspath(args);
 		args.add(startClassName);
 		addArgs(args);
-		runWithForkedJvm(args);
+		runWithForkedJvm(this.workingDirectory, args);
 	}
 
 	/**
 	 * Run with a forked VM, using the specified command line arguments.
+	 * @param workingDirectory the working directory of the forked JVM
 	 * @param args the arguments (JVM arguments and application arguments)
 	 * @throws MojoExecutionException in case of MOJO execution errors
 	 * @throws MojoFailureException in case of MOJO failures
 	 */
-	protected abstract void runWithForkedJvm(List<String> args)
+	protected abstract void runWithForkedJvm(File workingDirectory, List<String> args)
 			throws MojoExecutionException, MojoFailureException;
 
 	/**
@@ -339,7 +376,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		String mainClass = this.mainClass;
 		if (mainClass == null) {
 			try {
-				mainClass = MainClassFinder.findSingleMainClass(this.classesDirectory);
+				mainClass = MainClassFinder.findSingleMainClass(this.classesDirectory,
+						SPRING_BOOT_APPLICATION_CLASS_NAME);
 			}
 			catch (IOException ex) {
 				throw new MojoExecutionException(ex.getMessage(), ex);
@@ -354,7 +392,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	protected URL[] getClassPathUrls() throws MojoExecutionException {
 		try {
-			List<URL> urls = new ArrayList<URL>();
+			List<URL> urls = new ArrayList<>();
 			addUserDefinedFolders(urls);
 			addResources(urls);
 			addProjectClasses(urls);
@@ -468,6 +506,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	class LaunchRunner implements Runnable {
 
 		private final String startClassName;
+
 		private final String[] args;
 
 		LaunchRunner(String startClassName, String... args) {

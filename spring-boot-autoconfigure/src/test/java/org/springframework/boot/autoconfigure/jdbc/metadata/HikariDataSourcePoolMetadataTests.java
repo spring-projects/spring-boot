@@ -57,4 +57,5 @@ public class HikariDataSourcePoolMetadataTests
 		dataSource.setMaximumPoolSize(maxSize);
 		return dataSource;
 	}
+
 }

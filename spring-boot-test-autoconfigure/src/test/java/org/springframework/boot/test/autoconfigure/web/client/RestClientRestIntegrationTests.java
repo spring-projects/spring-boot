@@ -25,6 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -55,6 +56,13 @@ public class RestClientRestIntegrationTests {
 		this.server.expect(requestTo("/test"))
 				.andRespond(withSuccess("2", MediaType.TEXT_HTML));
 		assertThat(this.client.test()).isEqualTo("2");
+	}
+
+	@Test
+	public void mockServerCallWithContent() throws Exception {
+		this.server.expect(requestTo("/test")).andExpect(content().string("test"))
+				.andRespond(withSuccess("1", MediaType.TEXT_HTML));
+		this.client.testPostWithBody("test");
 	}
 
 }

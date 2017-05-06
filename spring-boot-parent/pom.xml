@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-dependencies</artifactId>
-		<version>1.4.1.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-dependencies</relativePath>
 	</parent>
 	<artifactId>spring-boot-parent</artifactId>
@@ -17,13 +18,14 @@
 		<url>http://www.spring.io</url>
 	</organization>
 	<properties>
-		<main.basedir>..</main.basedir>
+		<main.basedir>${basedir}/..</main.basedir>
 		<disable.checks>false</disable.checks>
-		<java.version>1.6</java.version>
+		<java.version>1.8</java.version>
 		<aether.version>1.0.2.v20150114</aether.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.version>3.1.1</maven.version>
+		<spock.version>1.0-groovy-2.4</spock.version>
 	</properties>
 	<scm>
 		<url>http://github.com/spring-projects/spring-boot</url>
@@ -40,17 +42,18 @@
 	</ciManagement>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-test-support</artifactId>
+				<version>2.0.0.BUILD-SNAPSHOT</version>
+			</dependency>
+
 			<!-- Additional Dependencies the consumers of spring-boot-dependencies
 				will generally not need -->
 			<dependency> <!-- deprecated but recent version required by 3rd party libs -->
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
 				<version>1.2.17</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>18.0</version>
 			</dependency>
 			<dependency>
 				<groupId>com.squareup.okhttp</groupId>
@@ -63,19 +66,24 @@
 				<version>3.4.1</version>
 			</dependency>
 			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-all</artifactId>
-				<version>4.0.38.Final</version>
+				<groupId>com.vaadin.external.google</groupId>
+				<artifactId>android-json</artifactId>
+				<version>0.0.20131108.vaadin1</version>
 			</dependency>
 			<dependency>
 				<groupId>io.spring.gradle</groupId>
 				<artifactId>dependency-management-plugin</artifactId>
-				<version>0.6.0.RELEASE</version>
+				<version>1.0.2.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>jline</groupId>
 				<artifactId>jline</artifactId>
 				<version>2.11</version>
+			</dependency>
+			<dependency>
+				<groupId>net.bytebuddy</groupId>
+				<artifactId>byte-buddy</artifactId>
+				<version>1.6.0</version>
 			</dependency>
 			<dependency>
 				<groupId>net.sf.jopt-simple</groupId>
@@ -193,24 +201,30 @@
 				<version>${aether.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-core</artifactId>
-				<version>${gradle.version}</version>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-runtime</artifactId>
+				<version>1.0.4</version>
 			</dependency>
 			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-base-services</artifactId>
-				<version>${gradle.version}</version>
+				<groupId>org.sonatype.plexus</groupId>
+				<artifactId>plexus-build-api</artifactId>
+				<version>0.0.7</version>
 			</dependency>
 			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-base-services-groovy</artifactId>
-				<version>${gradle.version}</version>
+				<groupId>org.spockframework</groupId>
+				<artifactId>spock-core</artifactId>
+				<version>${spock.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-all</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>org.gradle</groupId>
-				<artifactId>gradle-plugins</artifactId>
-				<version>${gradle.version}</version>
+				<groupId>org.spockframework</groupId>
+				<artifactId>spock-spring</artifactId>
+				<version>${spock.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.zeroturnaround</groupId>
@@ -264,19 +278,9 @@
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>6.17</version>
+							<version>7.6</version>
 						</dependency>
 					</dependencies>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-invoker-plugin</artifactId>
-					<version>1.10</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>1.4</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -314,7 +318,7 @@
 				<plugin>
 					<groupId>org.codehaus.cargo</groupId>
 					<artifactId>cargo-maven2-plugin</artifactId>
-					<version>1.4.15</version>
+					<version>1.6.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.gmavenplus</groupId>
@@ -475,10 +479,10 @@
 							<configLocation>src/checkstyle/checkstyle.xml</configLocation>
 							<suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
 							<headerLocation>src/checkstyle/checkstyle-header.txt</headerLocation>
-							<propertyExpansion>checkstyle.build.directory=${project.build.directory}</propertyExpansion>
+							<propertyExpansion>main.basedir=${main.basedir}</propertyExpansion>
 							<encoding>UTF-8</encoding>
 							<consoleOutput>true</consoleOutput>
-							<failsOnError>true</failsOnError>
+							<failOnViolation>true</failOnViolation>
 							<includeTestSourceDirectory>true</includeTestSourceDirectory>
 						</configuration>
 						<goals>
@@ -599,18 +603,19 @@
 					<skip>${disable.checks}</skip>
 					<signature>
 						<groupId>org.codehaus.mojo.signature</groupId>
-						<artifactId>java16</artifactId>
-						<version>1.1</version>
+						<artifactId>java18</artifactId>
+						<version>1.0</version>
 					</signature>
 					<annotations>
-						<annotation>org.springframework.lang.UsesJava8</annotation>
-						<annotation>org.springframework.lang.UsesJava7</annotation>
 						<annotation>org.springframework.boot.lang.UsesUnsafeJava</annotation>
 					</annotations>
+					<excludeDependencies>
+						<excludeDependency>org.glassfish.hk2.external:asm-all-repackaged</excludeDependency>
+					</excludeDependencies>
 				</configuration>
 				<executions>
 					<execution>
-						<id>enforce-java-6</id>
+						<id>enforce-java-8</id>
 						<phase>test</phase>
 						<goals>
 							<goal>check</goal>
@@ -651,6 +656,14 @@
 					<url>http://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>rabbit-milestones</id>
+					<name>Rabbit Milestones</name>
+					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
+					<snapshots>
+						<enabled>false</enabled>
 					</snapshots>
 				</repository>
 			</repositories>
@@ -710,6 +723,14 @@
 						<enabled>true</enabled>
 					</snapshots>
 				</repository>
+				<repository>
+					<id>rabbit-milestones</id>
+					<name>Rabbit Milestones</name>
+					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
 			</repositories>
 			<pluginRepositories>
 				<pluginRepository>
@@ -737,6 +758,12 @@
 					<name>m2e.version</name>
 				</property>
 			</activation>
+			<properties>
+				<m2e.jaxrs.activation>false</m2e.jaxrs.activation>
+				<m2e.jpa.activation>false</m2e.jpa.activation>
+				<m2e.jsf.activation>false</m2e.jsf.activation>
+				<m2e.cdi.activation>false</m2e.cdi.activation>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -778,6 +805,14 @@
 					<url>http://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>rabbit-milestones</id>
+					<name>Rabbit Milestones</name>
+					<url>https://dl.bintray.com/rabbitmq/maven-milestones</url>
+					<snapshots>
+						<enabled>false</enabled>
 					</snapshots>
 				</repository>
 			</repositories>

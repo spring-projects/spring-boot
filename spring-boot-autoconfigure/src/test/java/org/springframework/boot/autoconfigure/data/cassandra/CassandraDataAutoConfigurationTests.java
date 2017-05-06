@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@ package org.springframework.boot.autoconfigure.data.cassandra;
 import java.util.Set;
 
 import com.datastax.driver.core.Session;
-
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.mapping.CassandraMappingContext;
+import org.springframework.data.cassandra.mapping.SimpleUserTypeResolver;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,6 +44,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link CassandraDataAutoConfiguration}
  *
  * @author Eddú Meléndez
+ * @author Mark Paluch
  */
 public class CassandraDataAutoConfigurationTests {
 
@@ -58,6 +60,8 @@ public class CassandraDataAutoConfigurationTests {
 	@Test
 	public void templateExists() {
 		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.cassandra.keyspaceName:boot_test");
 		this.context.register(TestExcludeConfiguration.class, TestConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
@@ -70,6 +74,8 @@ public class CassandraDataAutoConfigurationTests {
 	@SuppressWarnings("unchecked")
 	public void entityScanShouldSetInitialEntitySet() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.cassandra.keyspaceName:boot_test");
 		this.context.register(TestConfiguration.class, EntityScanConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
@@ -79,6 +85,21 @@ public class CassandraDataAutoConfigurationTests {
 		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils
 				.getField(mappingContext, "initialEntitySet");
 		assertThat(initialEntitySet).containsOnly(City.class);
+	}
+
+	@Test
+	public void userTypeResolverShouldBeSet() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.cassandra.keyspaceName:boot_test");
+		this.context.register(TestConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
+		this.context.refresh();
+		CassandraMappingContext mappingContext = this.context
+				.getBean(CassandraMappingContext.class);
+		assertThat(ReflectionTestUtils.getField(mappingContext, "userTypeResolver"))
+				.isInstanceOf(SimpleUserTypeResolver.class);
 	}
 
 	@Configuration

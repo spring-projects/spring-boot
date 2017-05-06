@@ -252,41 +252,6 @@ http://platform.spring.io/[Spring IO Platform], e.g.
 
 
 
-[[cli-testing]]
-=== Testing your code
-The `test` command allows you to compile and run tests for your application. Typical
-usage looks like this:
-
-[indent=0]
-----
-	$ spring test app.groovy tests.groovy
-	Total: 1, Success: 1, : Failures: 0
-	Passed? true
-----
-
-In this example, `tests.groovy` contains JUnit `@Test` methods or Spock `Specification`
-classes. All the common framework annotations and static methods should be available to
-you without having to `import` them.
-
-Here is the `tests.groovy` file that we used above (with a JUnit test):
-
-[source,groovy,indent=0]
-----
-	class ApplicationTests {
-
-		@Test
-		void homeSaysHello() {
-			assertEquals("Hello World!", new WebApplication().home())
-		}
-
-	}
-----
-
-TIP: If you have more than one test source files, you might prefer to organize them
-into a `test` directory.
-
-
-
 [[cli-multiple-source-files]]
 === Applications with multiple source files
 You can use "`shell globbing`" with all commands that accept file input. This allows you
@@ -295,14 +260,6 @@ to easily use multiple files from a single directory, e.g.
 [indent=0]
 ----
 	$ spring run *.groovy
-----
-
-This technique can also be useful if you want to segregate your "`test`" or "`spec`" code
-from the main application code:
-
-[indent=0]
-----
-	$ spring test app/*.groovy test/*.groovy
 ----
 
 

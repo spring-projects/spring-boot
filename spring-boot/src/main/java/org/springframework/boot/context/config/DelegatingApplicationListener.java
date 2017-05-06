@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.context.config;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -70,9 +71,12 @@ public class DelegatingApplicationListener
 
 	@SuppressWarnings("unchecked")
 	private List<ApplicationListener<ApplicationEvent>> getListeners(
-			ConfigurableEnvironment env) {
-		String classNames = env.getProperty(PROPERTY_NAME);
-		List<ApplicationListener<ApplicationEvent>> listeners = new ArrayList<ApplicationListener<ApplicationEvent>>();
+			ConfigurableEnvironment environment) {
+		if (environment == null) {
+			return Collections.emptyList();
+		}
+		String classNames = environment.getProperty(PROPERTY_NAME);
+		List<ApplicationListener<ApplicationEvent>> listeners = new ArrayList<>();
 		if (StringUtils.hasLength(classNames)) {
 			for (String className : StringUtils.commaDelimitedListToSet(classNames)) {
 				try {

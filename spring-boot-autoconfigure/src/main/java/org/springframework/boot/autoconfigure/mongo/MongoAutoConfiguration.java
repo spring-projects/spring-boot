@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure.mongo;
-
-import java.net.UnknownHostException;
 
 import javax.annotation.PreDestroy;
 
@@ -38,6 +36,8 @@ import org.springframework.core.env.Environment;
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Phillip Webb
+ * @author Mark Paluch
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnClass(MongoClient.class)
@@ -45,19 +45,16 @@ import org.springframework.core.env.Environment;
 @ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDbFactory")
 public class MongoAutoConfiguration {
 
-	private final MongoProperties properties;
-
 	private final MongoClientOptions options;
 
-	private final Environment environment;
+	private final MongoClientFactory factory;
 
 	private MongoClient mongo;
 
 	public MongoAutoConfiguration(MongoProperties properties,
-			ObjectProvider<MongoClientOptions> optionsProvider, Environment environment) {
-		this.properties = properties;
-		this.options = optionsProvider.getIfAvailable();
-		this.environment = environment;
+			ObjectProvider<MongoClientOptions> options, Environment environment) {
+		this.options = options.getIfAvailable();
+		this.factory = new MongoClientFactory(properties, environment);
 	}
 
 	@PreDestroy
@@ -69,8 +66,8 @@ public class MongoAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoClient mongo() throws UnknownHostException {
-		this.mongo = this.properties.createMongoClient(this.options, this.environment);
+	public MongoClient mongo() {
+		this.mongo = this.factory.createMongoClient(this.options);
 		return this.mongo;
 	}
 

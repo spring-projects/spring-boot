@@ -92,15 +92,15 @@ class Installer {
 	}
 
 	public void install(List<String> artifactIdentifiers) throws Exception {
-		File libDirectory = getDefaultExtDirectory();
-		libDirectory.mkdirs();
-		Log.info("Installing into: " + libDirectory);
+		File extDirectory = getDefaultExtDirectory();
+		extDirectory.mkdirs();
+		Log.info("Installing into: " + extDirectory);
 		List<File> artifactFiles = this.dependencyResolver.resolve(artifactIdentifiers);
 		for (File artifactFile : artifactFiles) {
 			int installCount = getInstallCount(artifactFile);
 			if (installCount == 0) {
 				FileCopyUtils.copy(artifactFile,
-						new File(libDirectory, artifactFile.getName()));
+						new File(extDirectory, artifactFile.getName()));
 			}
 			setInstallCount(artifactFile, installCount + 1);
 		}

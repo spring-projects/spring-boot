@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesRes
 import org.springframework.boot.cli.compiler.dependencies.CompositeDependencyManagement;
 import org.springframework.boot.cli.compiler.dependencies.DependencyManagement;
 import org.springframework.boot.cli.compiler.dependencies.DependencyManagementArtifactCoordinatesResolver;
-import org.springframework.boot.cli.compiler.dependencies.SpringBootDependenciesDependencyManagement;
 
 /**
  * Context used when resolving dependencies.
@@ -41,17 +40,13 @@ import org.springframework.boot.cli.compiler.dependencies.SpringBootDependencies
  */
 public class DependencyResolutionContext {
 
-	private final Map<String, Dependency> managedDependencyByGroupAndArtifact = new HashMap<String, Dependency>();
+	private final Map<String, Dependency> managedDependencyByGroupAndArtifact = new HashMap<>();
 
-	private final List<Dependency> managedDependencies = new ArrayList<Dependency>();
+	private final List<Dependency> managedDependencies = new ArrayList<>();
 
 	private DependencyManagement dependencyManagement = null;
 
 	private ArtifactCoordinatesResolver artifactCoordinatesResolver;
-
-	public DependencyResolutionContext() {
-		addDependencyManagement(new SpringBootDependenciesDependencyManagement());
-	}
 
 	private String getIdentifier(Dependency dependency) {
 		return getIdentifier(dependency.getArtifact().getGroupId(),
@@ -84,7 +79,7 @@ public class DependencyResolutionContext {
 				.get(getIdentifier(group, artifact));
 	}
 
-	void addManagedDependencies(List<Dependency> dependencies) {
+	public void addManagedDependencies(List<Dependency> dependencies) {
 		this.managedDependencies.addAll(dependencies);
 		for (Dependency dependency : dependencies) {
 			this.managedDependencyByGroupAndArtifact.put(getIdentifier(dependency),
@@ -95,7 +90,7 @@ public class DependencyResolutionContext {
 	public void addDependencyManagement(DependencyManagement dependencyManagement) {
 		for (org.springframework.boot.cli.compiler.dependencies.Dependency dependency : dependencyManagement
 				.getDependencies()) {
-			List<Exclusion> aetherExclusions = new ArrayList<Exclusion>();
+			List<Exclusion> aetherExclusions = new ArrayList<>();
 			for (org.springframework.boot.cli.compiler.dependencies.Dependency.Exclusion exclusion : dependency
 					.getExclusions()) {
 				aetherExclusions.add(new Exclusion(exclusion.getGroupId(),

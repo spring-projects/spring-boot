@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jms;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.Message;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -40,7 +41,7 @@ import org.springframework.jms.support.destination.DestinationResolver;
  * @author Stephane Nicoll
  */
 @Configuration
-@ConditionalOnClass(JmsTemplate.class)
+@ConditionalOnClass({ Message.class, JmsTemplate.class })
 @ConditionalOnBean(ConnectionFactory.class)
 @EnableConfigurationProperties(JmsProperties.class)
 @Import(JmsAnnotationDrivenConfiguration.class)
@@ -78,9 +79,29 @@ public class JmsAutoConfiguration {
 			if (messageConverter != null) {
 				jmsTemplate.setMessageConverter(messageConverter);
 			}
+			JmsProperties.Template template = this.properties.getTemplate();
+			if (template.getDefaultDestination() != null) {
+				jmsTemplate.setDefaultDestinationName(template.getDefaultDestination());
+			}
+			if (template.getDeliveryDelay() != null) {
+				jmsTemplate.setDeliveryDelay(template.getDeliveryDelay());
+			}
+			jmsTemplate.setExplicitQosEnabled(template.determineQosEnabled());
+			if (template.getDeliveryMode() != null) {
+				jmsTemplate.setDeliveryMode(template.getDeliveryMode().getValue());
+			}
+			if (template.getPriority() != null) {
+				jmsTemplate.setPriority(template.getPriority());
+			}
+			if (template.getTimeToLive() != null) {
+				jmsTemplate.setTimeToLive(template.getTimeToLive());
+			}
+			if (template.getReceiveTimeout() != null) {
+				jmsTemplate.setReceiveTimeout(template.getReceiveTimeout());
+			}
 			return jmsTemplate;
-
 		}
+
 	}
 
 	@ConditionalOnClass(JmsMessagingTemplate.class)

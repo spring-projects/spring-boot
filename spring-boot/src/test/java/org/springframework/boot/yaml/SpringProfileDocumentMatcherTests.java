@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.config.YamlProcessor.DocumentMatcher;
 import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,13 +32,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link SpringProfileDocumentMatcher}.
  *
  * @author Matt Benson
+ * @author Andy Wilkinson
  */
 public class SpringProfileDocumentMatcherTests {
 
 	@Test
 	public void matchesSingleProfile() throws IOException {
 		DocumentMatcher matcher = new SpringProfileDocumentMatcher("foo", "bar");
-		Properties properties = getProperties("spring.profiles: foo");
+		Properties properties = getProperties("spring.ProfILEs: foo");
 		assertThat(matcher.matches(properties)).isEqualTo(MatchStatus.FOUND);
 	}
 
@@ -57,9 +58,24 @@ public class SpringProfileDocumentMatcherTests {
 	}
 
 	@Test
-	public void matchesCommaSeparatedArray() throws IOException {
+	public void matchesCommaSeparatedString() throws IOException {
 		DocumentMatcher matcher = new SpringProfileDocumentMatcher("foo", "bar");
 		Properties properties = getProperties("spring.profiles: bar,spam");
+		assertThat(matcher.matches(properties)).isEqualTo(MatchStatus.FOUND);
+	}
+
+	@Test
+	public void matchesCommaSeparatedArray() throws IOException {
+		DocumentMatcher matcher = new SpringProfileDocumentMatcher("foo", "bar");
+		Properties properties = getProperties("spring.profiles: [bar, spam]");
+		assertThat(matcher.matches(properties)).isEqualTo(MatchStatus.FOUND);
+	}
+
+	@Test
+	public void matchesList() throws IOException {
+		DocumentMatcher matcher = new SpringProfileDocumentMatcher("foo", "bar");
+		Properties properties = getProperties(
+				String.format("spring.profiles:%n  - bar%n  - spam"));
 		assertThat(matcher.matches(properties)).isEqualTo(MatchStatus.FOUND);
 	}
 
@@ -73,41 +89,44 @@ public class SpringProfileDocumentMatcherTests {
 	@Test
 	public void inverseMatchSingle() throws IOException {
 		DocumentMatcher matcher = new SpringProfileDocumentMatcher("foo", "bar");
-		Properties properties = getProperties("spring.profiles: !baz");
+		Properties properties = getProperties("spring.profiles: '!baz'");
 		assertThat(matcher.matches(properties)).isEqualTo(MatchStatus.FOUND);
 	}
 
 	@Test
 	public void testInverseMatchMulti() throws IOException {
 		DocumentMatcher matcher = new SpringProfileDocumentMatcher("foo", "bar");
-		Properties properties = getProperties("spring.profiles: !baz,!blah");
+		Properties properties = getProperties("spring.profiles: '!baz,!blah'");
 		assertThat(matcher.matches(properties)).isEqualTo(MatchStatus.FOUND);
 	}
 
 	@Test
 	public void negatedWithMatch() throws Exception {
 		DocumentMatcher matcher = new SpringProfileDocumentMatcher("foo", "bar", "blah");
-		Properties properties = getProperties("spring.profiles: !baz,blah");
+		Properties properties = getProperties("spring.profiles: '!baz,blah'");
 		assertThat(matcher.matches(properties)).isEqualTo(MatchStatus.FOUND);
 	}
 
 	@Test
 	public void negatedWithNoMatch() throws IOException {
 		DocumentMatcher matcher = new SpringProfileDocumentMatcher("foo", "bar", "blah");
-		Properties properties = getProperties("spring.profiles: !baz,another");
+		Properties properties = getProperties("spring.profiles: '!baz,another'");
 		assertThat(matcher.matches(properties)).isEqualTo(MatchStatus.NOT_FOUND);
 	}
 
 	@Test
 	public void negatedTrumpsMatching() throws IOException {
 		DocumentMatcher matcher = new SpringProfileDocumentMatcher("foo", "baz", "blah");
-		Properties properties = getProperties("spring.profiles: !baz,blah");
+		Properties properties = getProperties("spring.profiles: '!baz,blah'");
 		assertThat(matcher.matches(properties)).isEqualTo(MatchStatus.NOT_FOUND);
 	}
 
 	private Properties getProperties(String values) throws IOException {
+		YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
 		ByteArrayResource resource = new ByteArrayResource(values.getBytes());
-		return PropertiesLoaderUtils.loadProperties(resource);
+		yamlPropertiesFactoryBean.setResources(resource);
+		yamlPropertiesFactoryBean.afterPropertiesSet();
+		return yamlPropertiesFactoryBean.getObject();
 	}
 
 }

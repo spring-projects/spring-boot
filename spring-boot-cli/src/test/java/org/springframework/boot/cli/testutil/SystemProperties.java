@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,14 +33,13 @@ public final class SystemProperties {
 	/**
 	 * Performs the given {@code action} with the given system properties set. System
 	 * properties are restored to their previous values once the action has run.
-	 *
 	 * @param action The action to perform
 	 * @param systemPropertyPairs The system properties, each in the form
 	 * {@code key:value}
 	 */
 	public static void doWithSystemProperties(Runnable action,
 			String... systemPropertyPairs) {
-		Map<String, String> originalValues = new HashMap<String, String>();
+		Map<String, String> originalValues = new HashMap<>();
 		for (String pair : systemPropertyPairs) {
 			String[] components = pair.split(":");
 			String key = components[0];
@@ -61,4 +60,5 @@ public final class SystemProperties {
 			}
 		}
 	}
+
 }

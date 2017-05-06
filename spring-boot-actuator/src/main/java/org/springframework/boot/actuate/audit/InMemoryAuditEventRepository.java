@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  */
 public class InMemoryAuditEventRepository implements AuditEventRepository {
 
-	private static final int DEFAULT_CAPACITY = 4000;
+	private static final int DEFAULT_CAPACITY = 1000;
 
 	private final Object monitor = new Object();
 
@@ -81,7 +81,7 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 
 	@Override
 	public List<AuditEvent> find(String principal, Date after, String type) {
-		LinkedList<AuditEvent> events = new LinkedList<AuditEvent>();
+		LinkedList<AuditEvent> events = new LinkedList<>();
 		synchronized (this.monitor) {
 			for (int i = 0; i < this.events.length; i++) {
 				AuditEvent event = resolveTailEvent(i);
@@ -95,9 +95,9 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 
 	private boolean isMatch(String principal, Date after, String type, AuditEvent event) {
 		boolean match = true;
-		match &= (principal == null || event.getPrincipal().equals(principal));
-		match &= (after == null || event.getTimestamp().compareTo(after) >= 0);
-		match &= (type == null || event.getType().equals(type));
+		match = match && (principal == null || event.getPrincipal().equals(principal));
+		match = match && (after == null || event.getTimestamp().compareTo(after) >= 0);
+		match = match && (type == null || event.getType().equals(type));
 		return match;
 	}
 

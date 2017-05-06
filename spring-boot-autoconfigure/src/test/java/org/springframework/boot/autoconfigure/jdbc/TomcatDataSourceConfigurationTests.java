@@ -126,7 +126,7 @@ public class TomcatDataSourceConfigurationTests {
 		assertThat(ds.getTimeBetweenEvictionRunsMillis()).isEqualTo(5000);
 		assertThat(ds.getMinEvictableIdleTimeMillis()).isEqualTo(60000);
 		assertThat(ds.getMaxWait()).isEqualTo(30000);
-		assertThat(ds.getValidationInterval()).isEqualTo(30000L);
+		assertThat(ds.getValidationInterval()).isEqualTo(3000L);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,27 +44,21 @@ public abstract class AetherGrapeEngineFactory {
 
 	public static AetherGrapeEngine create(GroovyClassLoader classLoader,
 			List<RepositoryConfiguration> repositoryConfigurations,
-			DependencyResolutionContext dependencyResolutionContext) {
-
+			DependencyResolutionContext dependencyResolutionContext, boolean quiet) {
 		RepositorySystem repositorySystem = createServiceLocator()
 				.getService(RepositorySystem.class);
-
 		DefaultRepositorySystemSession repositorySystemSession = MavenRepositorySystemUtils
 				.newSession();
-
 		ServiceLoader<RepositorySystemSessionAutoConfiguration> autoConfigurations = ServiceLoader
 				.load(RepositorySystemSessionAutoConfiguration.class);
-
 		for (RepositorySystemSessionAutoConfiguration autoConfiguration : autoConfigurations) {
 			autoConfiguration.apply(repositorySystemSession, repositorySystem);
 		}
-
 		new DefaultRepositorySystemSessionAutoConfiguration()
 				.apply(repositorySystemSession, repositorySystem);
-
 		return new AetherGrapeEngine(classLoader, repositorySystem,
 				repositorySystemSession, createRepositories(repositoryConfigurations),
-				dependencyResolutionContext);
+				dependencyResolutionContext, quiet);
 	}
 
 	private static ServiceLocator createServiceLocator() {
@@ -79,7 +73,7 @@ public abstract class AetherGrapeEngineFactory {
 
 	private static List<RemoteRepository> createRepositories(
 			List<RepositoryConfiguration> repositoryConfigurations) {
-		List<RemoteRepository> repositories = new ArrayList<RemoteRepository>(
+		List<RemoteRepository> repositories = new ArrayList<>(
 				repositoryConfigurations.size());
 		for (RepositoryConfiguration repositoryConfiguration : repositoryConfigurations) {
 			RemoteRepository.Builder builder = new RemoteRepository.Builder(
@@ -95,4 +89,5 @@ public abstract class AetherGrapeEngineFactory {
 		}
 		return repositories;
 	}
+
 }

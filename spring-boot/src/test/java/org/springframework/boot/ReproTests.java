@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public class ReproTests {
 		// gh-308
 		SpringApplication application = new SpringApplication(Config.class);
 
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run(
 				"--spring.config.name=enableprofileviaapplicationproperties",
 				"--spring.profiles.active=dev");
@@ -58,7 +58,7 @@ public class ReproTests {
 	public void activeProfilesWithYamlAndCommandLine() throws Exception {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=activeprofilerepro";
 		this.context = application.run(configName, "--spring.profiles.active=B");
 		assertVersionProperty(this.context, "B", "B");
@@ -68,7 +68,7 @@ public class ReproTests {
 	public void activeProfilesWithYamlOnly() throws Exception {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=activeprofilerepro";
 		this.context = application.run(configName);
 		assertVersionProperty(this.context, "B", "B");
@@ -78,7 +78,7 @@ public class ReproTests {
 	public void orderActiveProfilesWithYamlOnly() throws Exception {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=activeprofilerepro-ordered";
 		this.context = application.run(configName);
 		assertVersionProperty(this.context, "B", "A", "B");
@@ -88,7 +88,7 @@ public class ReproTests {
 	public void commandLineBeatsProfilesWithYaml() throws Exception {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=activeprofilerepro";
 		this.context = application.run(configName, "--spring.profiles.active=C");
 		assertVersionProperty(this.context, "C", "C");
@@ -98,7 +98,7 @@ public class ReproTests {
 	public void orderProfilesWithYaml() throws Exception {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=activeprofilerepro";
 		this.context = application.run(configName, "--spring.profiles.active=A,C");
 		assertVersionProperty(this.context, "C", "A", "C");
@@ -108,7 +108,7 @@ public class ReproTests {
 	public void reverseOrderOfProfilesWithYaml() throws Exception {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=activeprofilerepro";
 		this.context = application.run(configName, "--spring.profiles.active=C,A");
 		assertVersionProperty(this.context, "A", "C", "A");
@@ -118,7 +118,7 @@ public class ReproTests {
 	public void activeProfilesWithYamlAndCommandLineAndNoOverride() throws Exception {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=activeprofilerepro-without-override";
 		this.context = application.run(configName, "--spring.profiles.active=B");
 		assertVersionProperty(this.context, "B", "B");
@@ -128,7 +128,7 @@ public class ReproTests {
 	public void activeProfilesWithYamlOnlyAndNoOverride() throws Exception {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=activeprofilerepro-without-override";
 		this.context = application.run(configName);
 		assertVersionProperty(this.context, null);
@@ -138,7 +138,7 @@ public class ReproTests {
 	public void commandLineBeatsProfilesWithYamlAndNoOverride() throws Exception {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=activeprofilerepro-without-override";
 		this.context = application.run(configName, "--spring.profiles.active=C");
 		assertVersionProperty(this.context, "C", "C");
@@ -148,7 +148,7 @@ public class ReproTests {
 	public void orderProfilesWithYamlAndNoOverride() throws Exception {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=activeprofilerepro-without-override";
 		this.context = application.run(configName, "--spring.profiles.active=A,C");
 		assertVersionProperty(this.context, "C", "A", "C");
@@ -158,7 +158,7 @@ public class ReproTests {
 	public void reverseOrderOfProfilesWithYamlAndNoOverride() throws Exception {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=activeprofilerepro-without-override";
 		this.context = application.run(configName, "--spring.profiles.active=C,A");
 		assertVersionProperty(this.context, "A", "C", "A");
@@ -177,4 +177,5 @@ public class ReproTests {
 	public static class Config {
 
 	}
+
 }

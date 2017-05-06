@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,24 @@ import org.springframework.util.ClassUtils;
  * Default implementation of {@link AbstractAuthenticationAuditListener}.
  *
  * @author Dave Syer
+ * @author Vedran Pavic
  */
 public class AuthenticationAuditListener extends AbstractAuthenticationAuditListener {
+
+	/**
+	 * Authentication success event type.
+	 */
+	public static final String AUTHENTICATION_SUCCESS = "AUTHENTICATION_SUCCESS";
+
+	/**
+	 * Authentication failure event type.
+	 */
+	public static final String AUTHENTICATION_FAILURE = "AUTHENTICATION_FAILURE";
+
+	/**
+	 * Authentication switch event type.
+	 */
+	public static final String AUTHENTICATION_SWITCH = "AUTHENTICATION_SWITCH";
 
 	private static final String WEB_LISTENER_CHECK_CLASS = "org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent";
 
@@ -58,23 +74,23 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 	}
 
 	private void onAuthenticationFailureEvent(AbstractAuthenticationFailureEvent event) {
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		data.put("type", event.getException().getClass().getName());
 		data.put("message", event.getException().getMessage());
 		if (event.getAuthentication().getDetails() != null) {
 			data.put("details", event.getAuthentication().getDetails());
 		}
 		publish(new AuditEvent(event.getAuthentication().getName(),
-				"AUTHENTICATION_FAILURE", data));
+				AUTHENTICATION_FAILURE, data));
 	}
 
 	private void onAuthenticationSuccessEvent(AuthenticationSuccessEvent event) {
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		if (event.getAuthentication().getDetails() != null) {
 			data.put("details", event.getAuthentication().getDetails());
 		}
 		publish(new AuditEvent(event.getAuthentication().getName(),
-				"AUTHENTICATION_SUCCESS", data));
+				AUTHENTICATION_SUCCESS, data));
 	}
 
 	private static class WebAuditListener {
@@ -83,13 +99,13 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 				AbstractAuthenticationEvent input) {
 			if (listener != null) {
 				AuthenticationSwitchUserEvent event = (AuthenticationSwitchUserEvent) input;
-				Map<String, Object> data = new HashMap<String, Object>();
+				Map<String, Object> data = new HashMap<>();
 				if (event.getAuthentication().getDetails() != null) {
 					data.put("details", event.getAuthentication().getDetails());
 				}
 				data.put("target", event.getTargetUser().getUsername());
 				listener.publish(new AuditEvent(event.getAuthentication().getName(),
-						"AUTHENTICATION_SWITCH", data));
+						AUTHENTICATION_SWITCH, data));
 			}
 
 		}

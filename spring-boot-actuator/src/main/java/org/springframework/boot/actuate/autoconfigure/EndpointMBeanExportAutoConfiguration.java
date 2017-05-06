@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,20 @@ import javax.management.MBeanServer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.autoconfigure.EndpointMBeanExportAutoConfiguration.JmxEnabledCondition;
+import org.springframework.boot.actuate.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.jmx.AuditEventsJmxEndpoint;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanExporter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -45,6 +49,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Christian Dupuis
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 @Configuration
 @Conditional(JmxEnabledCondition.class)
@@ -57,9 +62,9 @@ public class EndpointMBeanExportAutoConfiguration {
 	private final ObjectMapper objectMapper;
 
 	public EndpointMBeanExportAutoConfiguration(EndpointMBeanExportProperties properties,
-			ObjectProvider<ObjectMapper> objectMapperProvider) {
+			ObjectProvider<ObjectMapper> objectMapper) {
 		this.properties = properties;
-		this.objectMapper = objectMapperProvider.getIfAvailable();
+		this.objectMapper = objectMapper.getIfAvailable();
 	}
 
 	@Bean
@@ -82,6 +87,14 @@ public class EndpointMBeanExportAutoConfiguration {
 		return new JmxAutoConfiguration().mbeanServer();
 	}
 
+	@Bean
+	@ConditionalOnBean(AuditEventRepository.class)
+	@ConditionalOnEnabledEndpoint("auditevents")
+	public AuditEventsJmxEndpoint auditEventsEndpoint(
+			AuditEventRepository auditEventRepository) {
+		return new AuditEventsJmxEndpoint(this.objectMapper, auditEventRepository);
+	}
+
 	/**
 	 * Condition to check that spring.jmx and endpoints.jmx are enabled.
 	 */
@@ -90,16 +103,17 @@ public class EndpointMBeanExportAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			boolean jmxEnabled = isEnabled(context, "spring.jmx.");
-			boolean jmxEndpointsEnabled = isEnabled(context, "endpoints.jmx.");
-			return new ConditionOutcome(jmxEnabled && jmxEndpointsEnabled,
-					"JMX Endpoints");
-		}
-
-		private boolean isEnabled(ConditionContext context, String prefix) {
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-					context.getEnvironment(), prefix);
-			return resolver.getProperty("enabled", Boolean.class, true);
+			boolean jmxEnabled = context.getEnvironment()
+					.getProperty("spring.jmx.enabled", Boolean.class, true);
+			boolean jmxEndpointsEnabled = context.getEnvironment()
+					.getProperty("endpoints.jmx.enabled", Boolean.class, true);
+			if (jmxEnabled && jmxEndpointsEnabled) {
+				return ConditionOutcome.match(
+						ConditionMessage.forCondition("JMX Enabled").found("properties")
+								.items("spring.jmx.enabled", "endpoints.jmx.enabled"));
+			}
+			return ConditionOutcome.noMatch(ConditionMessage.forCondition("JMX Enabled")
+					.because("spring.jmx.enabled or endpoints.jmx.enabled is not set"));
 		}
 
 	}

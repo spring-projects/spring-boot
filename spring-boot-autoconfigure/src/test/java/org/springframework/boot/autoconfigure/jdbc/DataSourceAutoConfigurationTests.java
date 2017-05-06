@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,13 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -84,9 +84,8 @@ public class DataSourceAutoConfigurationTests {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		org.apache.tomcat.jdbc.pool.DataSource dataSource = this.context
-				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
-		assertThat(dataSource.getUrl()).isNotNull();
+		HikariDataSource dataSource = this.context.getBean(HikariDataSource.class);
+		assertThat(dataSource.getJdbcUrl()).isNotNull();
 		assertThat(dataSource.getDriverClassName()).isNotNull();
 	}
 
@@ -114,22 +113,6 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void tomcatValidatesConnectionByDefault() {
-		org.apache.tomcat.jdbc.pool.DataSource dataSource = autoConfigureDataSource(
-				org.apache.tomcat.jdbc.pool.DataSource.class);
-		assertThat(dataSource.isTestOnBorrow()).isTrue();
-		assertThat(dataSource.getValidationQuery())
-				.isEqualTo(DatabaseDriver.HSQLDB.getValidationQuery());
-	}
-
-	@Test
-	public void hikariIsFallback() throws Exception {
-		HikariDataSource dataSource = autoConfigureDataSource(HikariDataSource.class,
-				"org.apache.tomcat");
-		assertThat(dataSource.getJdbcUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
-	}
-
-	@Test
 	public void hikariValidatesConnectionByDefault() throws Exception {
 		HikariDataSource dataSource = autoConfigureDataSource(HikariDataSource.class,
 				"org.apache.tomcat");
@@ -138,34 +121,33 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void commonsDbcpIsFallback() throws Exception {
-		BasicDataSource dataSource = autoConfigureDataSource(BasicDataSource.class,
-				"org.apache.tomcat", "com.zaxxer.hikari");
+	public void tomcatIsFallback() throws Exception {
+		org.apache.tomcat.jdbc.pool.DataSource dataSource = autoConfigureDataSource(
+				org.apache.tomcat.jdbc.pool.DataSource.class, "com.zaxxer.hikari");
 		assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
 	}
 
 	@Test
-	public void commonsDbcpValidatesConnectionByDefault() {
-		BasicDataSource dataSource = autoConfigureDataSource(BasicDataSource.class,
-				"org.apache.tomcat", "com.zaxxer.hikari");
-		assertThat(dataSource.getTestOnBorrow()).isTrue();
+	public void tomcatValidatesConnectionByDefault() {
+		org.apache.tomcat.jdbc.pool.DataSource dataSource = autoConfigureDataSource(
+				org.apache.tomcat.jdbc.pool.DataSource.class, "com.zaxxer.hikari");
+		assertThat(dataSource.isTestOnBorrow()).isTrue();
 		assertThat(dataSource.getValidationQuery())
 				.isEqualTo(DatabaseDriver.HSQLDB.getValidationQuery());
 	}
 
 	@Test
 	public void commonsDbcp2IsFallback() throws Exception {
-		org.apache.commons.dbcp2.BasicDataSource dataSource = autoConfigureDataSource(
-				org.apache.commons.dbcp2.BasicDataSource.class, "org.apache.tomcat",
-				"com.zaxxer.hikari", "org.apache.commons.dbcp.");
+		BasicDataSource dataSource = autoConfigureDataSource(BasicDataSource.class,
+				"com.zaxxer.hikari", "org.apache.tomcat");
 		assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
 	}
 
 	@Test
 	public void commonsDbcp2ValidatesConnectionByDefault() throws Exception {
 		org.apache.commons.dbcp2.BasicDataSource dataSource = autoConfigureDataSource(
-				org.apache.commons.dbcp2.BasicDataSource.class, "org.apache.tomcat",
-				"com.zaxxer.hikari", "org.apache.commons.dbcp.");
+				org.apache.commons.dbcp2.BasicDataSource.class, "com.zaxxer.hikari",
+				"org.apache.tomcat");
 		assertThat(dataSource.getTestOnBorrow()).isEqualTo(true);
 		assertThat(dataSource.getValidationQuery()).isNull(); // Use Connection#isValid()
 	}
@@ -180,7 +162,7 @@ public class DataSourceAutoConfigurationTests {
 		this.context.refresh();
 		DataSource bean = this.context.getBean(DataSource.class);
 		assertThat(bean).isNotNull();
-		org.apache.tomcat.jdbc.pool.DataSource pool = (org.apache.tomcat.jdbc.pool.DataSource) bean;
+		HikariDataSource pool = (HikariDataSource) bean;
 		assertThat(pool.getDriverClassName()).isEqualTo("org.hsqldb.jdbcDriver");
 		assertThat(pool.getUsername()).isEqualTo("sa");
 	}
@@ -232,7 +214,7 @@ public class DataSourceAutoConfigurationTests {
 		this.context.refresh();
 		DataSource bean = this.context.getBean(DataSource.class);
 		assertThat(bean).isNotNull();
-		org.apache.tomcat.jdbc.pool.DataSource pool = (org.apache.tomcat.jdbc.pool.DataSource) bean;
+		HikariDataSource pool = (HikariDataSource) bean;
 		assertThat(pool.getDriverClassName()).isEqualTo(
 				"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseTestDriver");
 		assertThat(pool.getUsername()).isNull();

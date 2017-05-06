@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.springframework.boot.loader.data.RandomAccessData;
  * A ZIP File "End of central directory record" (EOCD).
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @see <a href="http://en.wikipedia.org/wiki/Zip_%28file_format%29">Zip File Format</a>
  */
 class CentralDirectoryEndRecord {
@@ -118,7 +119,11 @@ class CentralDirectoryEndRecord {
 	 * @return the number of records in the zip
 	 */
 	public int getNumberOfRecords() {
-		return (int) Bytes.littleEndianValue(this.block, this.offset + 10, 2);
+		long numberOfRecords = Bytes.littleEndianValue(this.block, this.offset + 10, 2);
+		if (numberOfRecords == 0xFFFF) {
+			throw new IllegalStateException("Zip64 archives are not supported");
+		}
+		return (int) numberOfRecords;
 	}
 
 }

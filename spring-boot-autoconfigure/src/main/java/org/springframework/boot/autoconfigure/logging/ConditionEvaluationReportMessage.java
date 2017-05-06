@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public class ConditionEvaluationReportMessage {
 				report.getConditionAndOutcomesBySource());
 		for (Map.Entry<String, ConditionAndOutcomes> entry : shortOutcomes.entrySet()) {
 			if (entry.getValue().isFullMatch()) {
-				addLogMessage(message, entry.getKey(), entry.getValue());
+				addMatchLogMessage(message, entry.getKey(), entry.getValue());
 			}
 		}
 		message.append(String.format("%n%n"));
@@ -63,7 +63,7 @@ public class ConditionEvaluationReportMessage {
 		message.append(String.format("-----------------%n"));
 		for (Map.Entry<String, ConditionAndOutcomes> entry : shortOutcomes.entrySet()) {
 			if (!entry.getValue().isFullMatch()) {
-				addLogMessage(message, entry.getKey(), entry.getValue());
+				addNonMatchLogMessage(message, entry.getKey(), entry.getValue());
 			}
 		}
 		message.append(String.format("%n%n"));
@@ -94,9 +94,9 @@ public class ConditionEvaluationReportMessage {
 
 	private Map<String, ConditionAndOutcomes> orderByName(
 			Map<String, ConditionAndOutcomes> outcomes) {
-		Map<String, ConditionAndOutcomes> result = new LinkedHashMap<String, ConditionAndOutcomes>();
-		List<String> names = new ArrayList<String>();
-		Map<String, String> classNames = new HashMap<String, String>();
+		Map<String, ConditionAndOutcomes> result = new LinkedHashMap<>();
+		List<String> names = new ArrayList<>();
+		Map<String, String> classNames = new HashMap<>();
 		for (String name : outcomes.keySet()) {
 			String shortName = ClassUtils.getShortName(name);
 			names.add(shortName);
@@ -109,25 +109,54 @@ public class ConditionEvaluationReportMessage {
 		return result;
 	}
 
-	private void addLogMessage(StringBuilder message, String source,
+	private void addMatchLogMessage(StringBuilder message, String source,
+			ConditionAndOutcomes matches) {
+		message.append(String.format("%n   %s matched:%n", source));
+		for (ConditionAndOutcome match : matches) {
+			logConditionAndOutcome(message, "      ", match);
+		}
+	}
+
+	private void addNonMatchLogMessage(StringBuilder message, String source,
 			ConditionAndOutcomes conditionAndOutcomes) {
-		message.append(String.format("%n   %s", source));
-		message.append(conditionAndOutcomes.isFullMatch() ? " matched" : " did not match")
-				.append(String.format("%n"));
+		message.append(String.format("%n   %s:%n", source));
+		List<ConditionAndOutcome> matches = new ArrayList<>();
+		List<ConditionAndOutcome> nonMatches = new ArrayList<>();
 		for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
-			message.append("      - ");
-			if (StringUtils.hasLength(conditionAndOutcome.getOutcome().getMessage())) {
-				message.append(conditionAndOutcome.getOutcome().getMessage());
+			if (conditionAndOutcome.getOutcome().isMatch()) {
+				matches.add(conditionAndOutcome);
 			}
 			else {
-				message.append(conditionAndOutcome.getOutcome().isMatch() ? "matched"
-						: "did not match");
+				nonMatches.add(conditionAndOutcome);
 			}
-			message.append(" (");
-			message.append(ClassUtils
-					.getShortName(conditionAndOutcome.getCondition().getClass()));
-			message.append(String.format(")%n"));
 		}
+		message.append(String.format("      Did not match:%n"));
+		for (ConditionAndOutcome nonMatch : nonMatches) {
+			logConditionAndOutcome(message, "         ", nonMatch);
+		}
+		if (!matches.isEmpty()) {
+			message.append(String.format("      Matched:%n"));
+			for (ConditionAndOutcome match : matches) {
+				logConditionAndOutcome(message, "         ", match);
+			}
+		}
+	}
+
+	private void logConditionAndOutcome(StringBuilder message, String indent,
+			ConditionAndOutcome conditionAndOutcome) {
+		message.append(String.format("%s- ", indent));
+		String outcomeMessage = conditionAndOutcome.getOutcome().getMessage();
+		if (StringUtils.hasLength(outcomeMessage)) {
+			message.append(outcomeMessage);
+		}
+		else {
+			message.append(conditionAndOutcome.getOutcome().isMatch() ? "matched"
+					: "did not match");
+		}
+		message.append(" (");
+		message.append(
+				ClassUtils.getShortName(conditionAndOutcome.getCondition().getClass()));
+		message.append(String.format(")%n"));
 	}
 
 	@Override

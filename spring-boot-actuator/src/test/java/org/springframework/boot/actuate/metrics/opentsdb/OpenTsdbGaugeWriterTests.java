@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,16 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestOperations;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -42,7 +42,7 @@ public class OpenTsdbGaugeWriterTests {
 
 	private OpenTsdbGaugeWriter writer;
 
-	private RestOperations restTemplate = Mockito.mock(RestOperations.class);
+	private RestOperations restTemplate = mock(RestOperations.class);
 
 	@Before
 	public void init() {
@@ -52,7 +52,7 @@ public class OpenTsdbGaugeWriterTests {
 
 	@Test
 	public void postSuccessfullyOnFlush() {
-		this.writer.set(new Metric<Double>("foo", 2.4));
+		this.writer.set(new Metric<>("foo", 2.4));
 		given(this.restTemplate.postForEntity(anyString(), any(Object.class), anyMap()))
 				.willReturn(emptyResponse());
 		this.writer.flush();
@@ -64,13 +64,13 @@ public class OpenTsdbGaugeWriterTests {
 		given(this.restTemplate.postForEntity(anyString(), any(Object.class), anyMap()))
 				.willReturn(emptyResponse());
 		this.writer.setBufferSize(0);
-		this.writer.set(new Metric<Double>("foo", 2.4));
+		this.writer.set(new Metric<>("foo", 2.4));
 		verify(this.restTemplate).postForEntity(anyString(), any(Object.class), anyMap());
 	}
 
 	@SuppressWarnings("rawtypes")
 	private ResponseEntity<Map> emptyResponse() {
-		return new ResponseEntity<Map>(Collections.emptyMap(), HttpStatus.OK);
+		return new ResponseEntity<>(Collections.emptyMap(), HttpStatus.OK);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

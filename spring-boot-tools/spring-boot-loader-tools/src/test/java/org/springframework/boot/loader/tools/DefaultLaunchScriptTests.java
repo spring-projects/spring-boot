@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,38 @@ public class DefaultLaunchScriptTests {
 	}
 
 	@Test
+	public void logFilenameCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("logFilename");
+	}
+
+	@Test
+	public void pidFilenameCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("pidFilename");
+	}
+
+	@Test
 	public void initInfoProvidesCanBeReplaced() throws Exception {
 		assertThatPlaceholderCanBeReplaced("initInfoProvides");
+	}
+
+	@Test
+	public void initInfoRequiredStartCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("initInfoRequiredStart");
+	}
+
+	@Test
+	public void initInfoRequiredStopCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("initInfoRequiredStop");
+	}
+
+	@Test
+	public void initInfoDefaultStartCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("initInfoDefaultStart");
+	}
+
+	@Test
+	public void initInfoDefaultStopCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("initInfoDefaultStop");
 	}
 
 	@Test
@@ -92,6 +122,11 @@ public class DefaultLaunchScriptTests {
 	}
 
 	@Test
+	public void stopWaitTimeCanBeReplaced() throws Exception {
+		assertThatPlaceholderCanBeReplaced("stopWaitTime");
+	}
+
+	@Test
 	public void defaultForUseStartStopDaemonIsTrue() throws Exception {
 		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
 		String content = new String(script.toByteArray());
@@ -103,6 +138,13 @@ public class DefaultLaunchScriptTests {
 		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
 		String content = new String(script.toByteArray());
 		assertThat(content).contains("MODE=\"auto\"");
+	}
+
+	@Test
+	public void defaultForStopWaitTimeIs60() throws Exception {
+		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
+		String content = new String(script.toByteArray());
+		assertThat(content).contains("STOP_WAIT_TIME=\"60\"");
 	}
 
 	@Test
@@ -170,7 +212,7 @@ public class DefaultLaunchScriptTests {
 	}
 
 	private Map<?, ?> createProperties(String... pairs) {
-		Map<Object, Object> properties = new HashMap<Object, Object>();
+		Map<Object, Object> properties = new HashMap<>();
 		for (String pair : pairs) {
 			String[] keyValue = pair.split(":");
 			properties.put(keyValue[0], keyValue[1]);

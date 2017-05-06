@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,44 +16,49 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.bind.BindException;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.util.ClassUtils;
 
 /**
  * General condition used with all session configuration classes.
  *
  * @author Tommy Ludwig
+ * @author Stephane Nicoll
+ * @author Madhura Bhave
  */
 class SessionCondition extends SpringBootCondition {
-
-	private static final boolean redisPresent = ClassUtils.isPresent(
-			"org.springframework.data.redis.core.RedisTemplate",
-			SessionCondition.class.getClassLoader());
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), "spring.session.");
-		StoreType sessionStoreType = SessionStoreMappings
+		ConditionMessage.Builder message = ConditionMessage
+				.forCondition("Session Condition");
+		Environment environment = context.getEnvironment();
+		StoreType required = SessionStoreMappings
 				.getType(((AnnotationMetadata) metadata).getClassName());
-		if (!resolver.containsProperty("store-type")) {
-			if (sessionStoreType == StoreType.REDIS && redisPresent) {
-				return ConditionOutcome
-						.match("Session store type default to redis (deprecated)");
-			}
-			return ConditionOutcome.noMatch("Session store type not set");
+		if (!environment.containsProperty("spring.session.store-type")) {
+			return ConditionOutcome.noMatch(
+					message.didNotFind("spring.session.store-type property").atAll());
 		}
-		String value = resolver.getProperty("store-type").replace("-", "_").toUpperCase();
-		if (value.equals(sessionStoreType.name())) {
-			return ConditionOutcome.match("Session store type " + sessionStoreType);
+		try {
+			Binder binder = Binder.get(environment);
+			return binder.bind("spring.session.store-type", StoreType.class)
+					.map((t) -> new ConditionOutcome(t == required,
+							message.found("spring.session.store-type property").items(t)))
+					.orElse(ConditionOutcome.noMatch(message
+							.didNotFind("spring.session.store-type property").atAll()));
 		}
-		return ConditionOutcome.noMatch("Session store type " + value);
+		catch (BindException ex) {
+			return ConditionOutcome.noMatch(
+					message.found("invalid spring.session.store-type property").atAll());
+		}
 	}
 
 }

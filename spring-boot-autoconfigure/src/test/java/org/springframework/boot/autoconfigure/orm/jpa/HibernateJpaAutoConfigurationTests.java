@@ -26,8 +26,9 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
-import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
@@ -36,9 +37,11 @@ import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfigurati
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link HibernateJpaAutoConfiguration}.
@@ -46,14 +49,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Kazuki Shimizu
  */
 public class HibernateJpaAutoConfigurationTests
 		extends AbstractJpaAutoConfigurationTests {
 
-	@After
-	public void cleanup() {
-		HibernateVersion.setRunning(null);
-	}
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Override
 	protected Class<?> getAutoConfigureClass() {
@@ -67,9 +69,10 @@ public class HibernateJpaAutoConfigurationTests
 				// Missing:
 				"spring.datasource.schema:classpath:/ddl.sql");
 		setupTestConfiguration();
+		this.thrown.expectMessage("ddl.sql");
+		this.thrown.expectMessage("spring.datasource.schema");
 		this.context.refresh();
-		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class))
-				.queryForObject("SELECT COUNT(*) from CITY", Integer.class)).isEqualTo(1);
+
 	}
 
 	// This can't succeed because the data SQL is executed immediately after the schema
@@ -82,38 +85,6 @@ public class HibernateJpaAutoConfigurationTests
 		this.context.refresh();
 		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class))
 				.queryForObject("SELECT COUNT(*) from CITY", Integer.class)).isEqualTo(1);
-	}
-
-	@Test
-	public void testCustomNamingStrategy() throws Exception {
-		HibernateVersion.setRunning(HibernateVersion.V4);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jpa.hibernate.namingStrategy:"
-						+ "org.hibernate.cfg.EJB3NamingStrategy");
-		setupTestConfiguration();
-		this.context.refresh();
-		LocalContainerEntityManagerFactoryBean bean = this.context
-				.getBean(LocalContainerEntityManagerFactoryBean.class);
-		String actual = (String) bean.getJpaPropertyMap()
-				.get("hibernate.ejb.naming_strategy");
-		assertThat(actual).isEqualTo("org.hibernate.cfg.EJB3NamingStrategy");
-	}
-
-	@Test
-	public void testCustomNamingStrategyViaJpaProperties() throws Exception {
-		HibernateVersion.setRunning(HibernateVersion.V4);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jpa.properties.hibernate.ejb.naming_strategy:"
-						+ "org.hibernate.cfg.EJB3NamingStrategy");
-		setupTestConfiguration();
-		this.context.refresh();
-		LocalContainerEntityManagerFactoryBean bean = this.context
-				.getBean(LocalContainerEntityManagerFactoryBean.class);
-		String actual = (String) bean.getJpaPropertyMap()
-				.get("hibernate.ejb.naming_strategy");
-		// You can't override this one from spring.jpa.properties because it has an
-		// opinionated default
-		assertThat(actual).isNotEqualTo("org.hibernate.cfg.EJB3NamingStrategy");
 	}
 
 	@Test
@@ -165,11 +136,24 @@ public class HibernateJpaAutoConfigurationTests
 				.isEqualTo(TestJtaPlatform.class.getName());
 	}
 
+	@Test
+	public void testCustomJpaTransactionManagerUsingProperties() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.transaction.default-timeout:30",
+				"spring.transaction.rollback-on-commit-failure:true");
+		setupTestConfiguration();
+		this.context.refresh();
+		JpaTransactionManager transactionManager = this.context
+				.getBean(JpaTransactionManager.class);
+		assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
+		assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
+	}
+
 	public static class TestJtaPlatform implements JtaPlatform {
 
 		@Override
 		public TransactionManager retrieveTransactionManager() {
-			throw new UnsupportedOperationException();
+			return mock(TransactionManager.class);
 		}
 
 		@Override

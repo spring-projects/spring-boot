@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,17 +27,6 @@ class OnEnabledHealthIndicatorCondition extends OnEnabledEndpointElementConditio
 
 	OnEnabledHealthIndicatorCondition() {
 		super("management.health.", ConditionalOnEnabledHealthIndicator.class);
-	}
-
-	@Override
-	protected String getEndpointElementOutcomeMessage(String name, boolean match) {
-		return "The health indicator " + name + " is " + (match ? "enabled" : "disabled");
-	}
-
-	@Override
-	protected String getDefaultEndpointElementOutcomeMessage(boolean match) {
-		return "All default health indicators are " + (match ? "enabled" : "disabled")
-				+ " by default";
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockServletContext;
@@ -55,15 +55,14 @@ public class MvcEndpointCorsIntegrationTests {
 		this.context.register(JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, AuditAutoConfiguration.class,
 				JolokiaAutoConfiguration.class, WebMvcAutoConfiguration.class);
 	}
 
 	@Test
 	public void corsIsDisabledByDefault() throws Exception {
 		createMockMvc()
-				.perform(options("/beans").header("Origin", "foo.example.com")
+				.perform(options("/application/beans").header("Origin", "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
 				.andExpect(
 						header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
@@ -74,7 +73,7 @@ public class MvcEndpointCorsIntegrationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"endpoints.cors.allowed-origins:foo.example.com");
 		createMockMvc()
-				.perform(options("/beans").header("Origin", "bar.example.com")
+				.perform(options("/application/beans").header("Origin", "bar.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
 				.andExpect(status().isForbidden());
 		performAcceptedCorsRequest();
@@ -102,7 +101,7 @@ public class MvcEndpointCorsIntegrationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"endpoints.cors.allowed-origins:foo.example.com");
 		createMockMvc()
-				.perform(options("/beans").header("Origin", "foo.example.com")
+				.perform(options("/application/beans").header("Origin", "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha"))
 				.andExpect(status().isForbidden());
@@ -114,7 +113,7 @@ public class MvcEndpointCorsIntegrationTests {
 				"endpoints.cors.allowed-origins:foo.example.com",
 				"endpoints.cors.allowed-headers:Alpha,Bravo");
 		createMockMvc()
-				.perform(options("/beans").header("Origin", "foo.example.com")
+				.perform(options("/application/beans").header("Origin", "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha"))
 				.andExpect(status().isOk()).andExpect(header()
@@ -126,7 +125,7 @@ public class MvcEndpointCorsIntegrationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"endpoints.cors.allowed-origins:foo.example.com");
 		createMockMvc()
-				.perform(options("/health").header(HttpHeaders.ORIGIN, "foo.example.com")
+				.perform(options("/application/health").header(HttpHeaders.ORIGIN, "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PATCH"))
 				.andExpect(status().isForbidden());
 	}
@@ -137,7 +136,7 @@ public class MvcEndpointCorsIntegrationTests {
 				"endpoints.cors.allowed-origins:foo.example.com",
 				"endpoints.cors.allowed-methods:GET,HEAD");
 		createMockMvc()
-				.perform(options("/health").header(HttpHeaders.ORIGIN, "foo.example.com")
+				.perform(options("/application/health").header(HttpHeaders.ORIGIN, "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "HEAD"))
 				.andExpect(status().isOk()).andExpect(header()
 						.string(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET,HEAD"));
@@ -166,10 +165,10 @@ public class MvcEndpointCorsIntegrationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"endpoints.cors.allowed-origins:foo.example.com");
 		createMockMvc()
-				.perform(options("/jolokia").header("Origin", "bar.example.com")
+				.perform(options("/application/jolokia").header("Origin", "bar.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
 				.andExpect(status().isForbidden());
-		performAcceptedCorsRequest("/jolokia");
+		performAcceptedCorsRequest("/application/jolokia");
 	}
 
 	private MockMvc createMockMvc() {
@@ -178,7 +177,7 @@ public class MvcEndpointCorsIntegrationTests {
 	}
 
 	private ResultActions performAcceptedCorsRequest() throws Exception {
-		return performAcceptedCorsRequest("/beans");
+		return performAcceptedCorsRequest("/application/beans");
 	}
 
 	private ResultActions performAcceptedCorsRequest(String url) throws Exception {

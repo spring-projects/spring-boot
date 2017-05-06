@@ -34,7 +34,6 @@ public class InfoContributorProperties {
 		return this.git;
 	}
 
-
 	public static class Git {
 
 		/**

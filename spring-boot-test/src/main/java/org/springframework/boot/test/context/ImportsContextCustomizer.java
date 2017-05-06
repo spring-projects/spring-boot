@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,10 @@ package org.springframework.boot.test.context;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.beans.BeansException;
@@ -30,19 +32,24 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.boot.context.annotation.DeterminableImports;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link ContextCustomizer} to allow {@code @Import} annotations to be used directly on
@@ -127,6 +134,11 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		return this.key.equals(other.key);
 	}
 
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("key", this.key).toString();
+	}
+
 	/**
 	 * {@link Configuration} registered to trigger the {@link ImportsSelector}.
 	 */
@@ -207,20 +219,34 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 	/**
 	 * The key used to ensure correct application context caching. Keys are generated
-	 * based on <em>all</em> the annotations used with the test. We must use something
-	 * broader than just {@link Import @Import} annotations since an {@code @Import} may
-	 * use an {@link ImportSelector} which could make decisions based on anything
-	 * available from {@link AnnotationMetadata}.
+	 * based on <em>all</em> the annotations used with the test that aren't core Java or
+	 * Kotlin annotations. We must use something broader than just {@link Import @Import}
+	 * annotations since an {@code @Import} may use an {@link ImportSelector} which could
+	 * make decisions based on anything available from {@link AnnotationMetadata}.
 	 */
 	static class ContextCustomizerKey {
 
-		private final Set<Annotation> annotations;
+		private static final Class<?>[] NO_IMPORTS = {};
+
+		private static final Set<AnnotationFilter> ANNOTATION_FILTERS;
+
+		static {
+			Set<AnnotationFilter> filters = new HashSet<>();
+			filters.add(new JavaLangAnnotationFilter());
+			filters.add(new KotlinAnnotationFilter());
+			filters.add(new SpockAnnotationFilter());
+			ANNOTATION_FILTERS = Collections.unmodifiableSet(filters);
+		}
+
+		private final Set<Object> key;
 
 		ContextCustomizerKey(Class<?> testClass) {
-			Set<Annotation> annotations = new HashSet<Annotation>();
-			Set<Class<?>> seen = new HashSet<Class<?>>();
+			Set<Annotation> annotations = new HashSet<>();
+			Set<Class<?>> seen = new HashSet<>();
 			collectClassAnnotations(testClass, annotations, seen);
-			this.annotations = Collections.unmodifiableSet(annotations);
+			Set<Object> determinedImports = determineImports(annotations, testClass);
+			this.key = Collections.<Object>unmodifiableSet(
+					determinedImports != null ? determinedImports : annotations);
 		}
 
 		private void collectClassAnnotations(Class<?> classType,
@@ -239,7 +265,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		private void collectElementAnnotations(AnnotatedElement element,
 				Set<Annotation> annotations, Set<Class<?>> seen) {
 			for (Annotation annotation : element.getDeclaredAnnotations()) {
-				if (!AnnotationUtils.isInJavaLangAnnotationPackage(annotation)) {
+				if (!isIgnoredAnnotation(annotation)) {
 					annotations.add(annotation);
 					collectClassAnnotations(annotation.annotationType(), annotations,
 							seen);
@@ -247,15 +273,136 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			}
 		}
 
+		private boolean isIgnoredAnnotation(Annotation annotation) {
+			for (AnnotationFilter annotationFilter : ANNOTATION_FILTERS) {
+				if (annotationFilter.isIgnored(annotation)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private Set<Object> determineImports(Set<Annotation> annotations,
+				Class<?> testClass) {
+			Set<Object> determinedImports = new LinkedHashSet<>();
+			AnnotationMetadata testClassMetadata = new StandardAnnotationMetadata(
+					testClass);
+			for (Annotation annotation : annotations) {
+				for (Class<?> source : getImports(annotation)) {
+					Set<Object> determinedSourceImports = determineImports(source,
+							testClassMetadata);
+					if (determinedSourceImports == null) {
+						return null;
+					}
+					determinedImports.addAll(determinedSourceImports);
+				}
+			}
+			return determinedImports;
+		}
+
+		private Class<?>[] getImports(Annotation annotation) {
+			if (annotation instanceof Import) {
+				return ((Import) annotation).value();
+			}
+			return NO_IMPORTS;
+		}
+
+		private Set<Object> determineImports(Class<?> source,
+				AnnotationMetadata metadata) {
+			if (DeterminableImports.class.isAssignableFrom(source)) {
+				// We can determine the imports
+				return ((DeterminableImports) instantiate(source))
+						.determineImports(metadata);
+			}
+			if (ImportSelector.class.isAssignableFrom(source)
+					|| ImportBeanDefinitionRegistrar.class.isAssignableFrom(source)) {
+				// Standard ImportSelector and ImportBeanDefinitionRegistrar could
+				// use anything to determine the imports so we can't be sure
+				return null;
+			}
+			// The source itself is the import
+			return Collections.<Object>singleton(source.getName());
+		}
+
+		@SuppressWarnings("unchecked")
+		private <T> T instantiate(Class<T> source) {
+			try {
+				Constructor<?> constructor = source.getDeclaredConstructor();
+				ReflectionUtils.makeAccessible(constructor);
+				return (T) constructor.newInstance();
+			}
+			catch (Throwable ex) {
+				throw new IllegalStateException(
+						"Unable to instantiate DeterminableImportSelector "
+								+ source.getName(),
+						ex);
+			}
+		}
+
 		@Override
 		public int hashCode() {
-			return this.annotations.hashCode();
+			return this.key.hashCode();
 		}
 
 		@Override
 		public boolean equals(Object obj) {
 			return (obj != null && getClass().equals(obj.getClass())
-					&& this.annotations.equals(((ContextCustomizerKey) obj).annotations));
+					&& this.key.equals(((ContextCustomizerKey) obj).key));
+		}
+
+		@Override
+		public String toString() {
+			return this.key.toString();
+		}
+	}
+
+	/**
+	 * Filter used to limit considered annotations.
+	 */
+	private interface AnnotationFilter {
+
+		boolean isIgnored(Annotation annotation);
+
+	}
+
+	/**
+	 * {@link AnnotationFilter} for {@literal java.lang} annotations.
+	 */
+	private static final class JavaLangAnnotationFilter implements AnnotationFilter {
+
+		@Override
+		public boolean isIgnored(Annotation annotation) {
+			return AnnotationUtils.isInJavaLangAnnotationPackage(annotation);
+		}
+
+	}
+
+	/**
+	 * {@link AnnotationFilter} for Kotlin annotations.
+	 */
+	private static final class KotlinAnnotationFilter implements AnnotationFilter {
+
+		@Override
+		public boolean isIgnored(Annotation annotation) {
+			return "kotlin.Metadata".equals(annotation.annotationType().getName())
+					|| isInKotlinAnnotationPackage(annotation);
+		}
+
+		private boolean isInKotlinAnnotationPackage(Annotation annotation) {
+			return annotation.annotationType().getName().startsWith("kotlin.annotation.");
+		}
+
+	}
+
+	/**
+	 * {@link AnnotationFilter} for Spock annotations.
+	 */
+	private static final class SpockAnnotationFilter implements AnnotationFilter {
+
+		@Override
+		public boolean isIgnored(Annotation annotation) {
+			return annotation.annotationType().getName().startsWith("org.spockframework.")
+					|| annotation.annotationType().getName().startsWith("spock.");
 		}
 
 	}

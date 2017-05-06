@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -84,6 +83,11 @@ public class AuthenticationManagerConfiguration {
 			SecurityProperties securityProperties,
 			List<SecurityPrerequisite> dependencies) {
 		return new SpringBootAuthenticationConfigurerAdapter(securityProperties);
+	}
+
+	@Bean
+	public AuthenticationManagerConfigurationListener authenticationManagerConfigurationListener() {
+		return new AuthenticationManagerConfigurationListener();
 	}
 
 	/**
@@ -169,7 +173,7 @@ public class AuthenticationManagerConfiguration {
 				logger.info(String.format("%n%nUsing default security password: %s%n",
 						user.getPassword()));
 			}
-			Set<String> roles = new LinkedHashSet<String>(user.getRole());
+			Set<String> roles = new LinkedHashSet<>(user.getRole());
 			withUser(user.getName()).password(user.getPassword())
 					.roles(roles.toArray(new String[roles.size()]));
 			setField(auth, "defaultUserDetailsService", getUserDetailsService());
@@ -193,7 +197,6 @@ public class AuthenticationManagerConfiguration {
 	 * {@link ApplicationListener} to autowire the {@link AuthenticationEventPublisher}
 	 * into the {@link AuthenticationManager}.
 	 */
-	@Component
 	protected static class AuthenticationManagerConfigurationListener
 			implements SmartInitializingSingleton {
 

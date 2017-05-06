@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.test.web.client;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
-import org.springframework.web.util.DefaultUriTemplateHandler;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriTemplateHandler;
 
 /**
@@ -28,6 +28,8 @@ import org.springframework.web.util.UriTemplateHandler;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
+ * @author Madhura Bhave
  * @since 1.4.0
  */
 public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
@@ -36,9 +38,11 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 
 	private final String scheme;
 
+	private final String prefix = "server.servlet.";
+
 	/**
 	 * Create a new {@code LocalHostUriTemplateHandler} that will generate {@code http}
-	 * URIs using the given {@code environment} to determine the port.
+	 * URIs using the given {@code environment} to determine the context path and port.
 	 * @param environment the environment used to determine the port
 	 */
 	public LocalHostUriTemplateHandler(Environment environment) {
@@ -46,14 +50,15 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	}
 
 	/**
-	 * Create a new {@code LocalHostUriTemplateHandler} the will generate URIs with the
-	 * given {@code scheme} and use the given {@code environment} to determine the port.
+	 * Create a new {@code LocalHostUriTemplateHandler} that will generate URIs with the
+	 * given {@code scheme} and use the given {@code environment} to determine the
+	 * context-path and port.
 	 * @param environment the environment used to determine the port
 	 * @param scheme the scheme of the root uri
 	 * @since 1.4.1
 	 */
 	public LocalHostUriTemplateHandler(Environment environment, String scheme) {
-		super(new DefaultUriTemplateHandler());
+		super(new DefaultUriBuilderFactory());
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.notNull(scheme, "Scheme must not be null");
 		this.environment = environment;
@@ -63,7 +68,9 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	@Override
 	public String getRootUri() {
 		String port = this.environment.getProperty("local.server.port", "8080");
-		return this.scheme + "://localhost:" + port;
+		String contextPath = this.environment.getProperty(this.prefix + "context-path",
+				"");
+		return this.scheme + "://localhost:" + port + contextPath;
 	}
 
 }

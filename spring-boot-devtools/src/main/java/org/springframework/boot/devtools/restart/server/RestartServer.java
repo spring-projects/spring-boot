@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -80,7 +81,7 @@ public class RestartServer {
 	 * @param files updated class loader files
 	 */
 	public void updateAndRestart(ClassLoaderFiles files) {
-		Set<URL> urls = new LinkedHashSet<URL>();
+		Set<URL> urls = new LinkedHashSet<>();
 		Set<URL> classLoaderUrls = getClassLoaderUrls();
 		for (SourceFolder folder : files.getSourceFolders()) {
 			for (Entry<String, ClassLoaderFile> entry : folder.getFilesEntrySet()) {
@@ -123,7 +124,7 @@ public class RestartServer {
 	}
 
 	private Set<URL> getMatchingUrls(Set<URL> urls, String sourceFolder) {
-		Set<URL> matchingUrls = new LinkedHashSet<URL>();
+		Set<URL> matchingUrls = new LinkedHashSet<>();
 		for (URL url : urls) {
 			if (this.sourceFolderUrlFilter.isMatch(sourceFolder, url)) {
 				if (logger.isDebugEnabled()) {
@@ -137,13 +138,11 @@ public class RestartServer {
 	}
 
 	private Set<URL> getClassLoaderUrls() {
-		Set<URL> urls = new LinkedHashSet<URL>();
+		Set<URL> urls = new LinkedHashSet<>();
 		ClassLoader classLoader = this.classLoader;
 		while (classLoader != null) {
 			if (classLoader instanceof URLClassLoader) {
-				for (URL url : ((URLClassLoader) classLoader).getURLs()) {
-					urls.add(url);
-				}
+				Collections.addAll(urls, ((URLClassLoader) classLoader).getURLs());
 			}
 			classLoader = classLoader.getParent();
 		}

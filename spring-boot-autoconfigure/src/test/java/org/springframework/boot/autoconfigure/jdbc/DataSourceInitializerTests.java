@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,15 @@ import java.util.Random;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
@@ -54,8 +57,12 @@ import static org.junit.Assert.fail;
  * Tests for {@link DataSourceInitializer}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class DataSourceInitializerTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -106,7 +113,7 @@ public class DataSourceInitializerTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from BAR", Integer.class))
@@ -125,7 +132,7 @@ public class DataSourceInitializerTests {
 						.addResourcePathToPackagePath(getClass(), "data.sql"));
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from FOO", Integer.class))
@@ -148,7 +155,7 @@ public class DataSourceInitializerTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from FOO", Integer.class))
@@ -171,7 +178,7 @@ public class DataSourceInitializerTests {
 						.addResourcePathToPackagePath(getClass(), "encoding-data.sql"));
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from BAR", Integer.class))
@@ -191,7 +198,7 @@ public class DataSourceInitializerTests {
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
 		this.context.publishEvent(new DataSourceInitializedEvent(dataSource));
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		try {
@@ -264,11 +271,41 @@ public class DataSourceInitializerTests {
 		this.context.setResourceLoader(resourceLoader);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isInstanceOf(HikariDataSource.class);
 		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from FOO", Integer.class))
 				.isEqualTo(1);
+	}
+
+	@Test
+	public void testDataSourceInitializedWithInvalidSchemaResource() {
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:true",
+				"spring.datasource.schema:classpath:does/not/exist.sql");
+
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("does/not/exist.sql");
+		this.thrown.expectMessage("spring.datasource.schema");
+		this.context.refresh();
+	}
+
+	@Test
+	public void testDataSourceInitializedWithInvalidDataResource() {
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:true",
+				"spring.datasource.schema:" + ClassUtils
+						.addResourcePathToPackagePath(getClass(), "schema.sql"),
+				"spring.datasource.data:classpath:does/not/exist.sql");
+
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("does/not/exist.sql");
+		this.thrown.expectMessage("spring.datasource.data");
+		this.context.refresh();
 	}
 
 	@Configuration

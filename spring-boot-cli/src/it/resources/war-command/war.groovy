@@ -10,6 +10,7 @@ class WarExample implements CommandLineRunner {
 
 	void run(String... args) {
 		println getClass().getResource('/org/apache/tomcat/InstanceManager.class')
+		println getClass().getResource('/root.properties')
 		throw new RuntimeException("onStart error")
 	}
 

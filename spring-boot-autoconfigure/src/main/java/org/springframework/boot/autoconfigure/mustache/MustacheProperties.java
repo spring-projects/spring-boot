@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public class MustacheProperties extends AbstractTemplateViewResolverProperties {
 
 	public static final String DEFAULT_PREFIX = "classpath:/templates/";
 
-	public static final String DEFAULT_SUFFIX = ".html";
+	public static final String DEFAULT_SUFFIX = ".mustache";
 
 	/**
 	 * Prefix to apply to template names.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,12 @@ import java.net.URL;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebClientOptions;
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebWindow;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openqa.selenium.Capabilities;
@@ -31,6 +34,8 @@ import org.openqa.selenium.Capabilities;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -81,7 +86,10 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 			throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Environment must not be null");
-		new LocalHostWebConnectionHtmlUnitDriver(null, mock(Capabilities.class));
+		Capabilities capabilities = mock(Capabilities.class);
+		given(capabilities.getBrowserName()).willReturn("htmlunit");
+		given(capabilities.getVersion()).willReturn("chrome");
+		new LocalHostWebConnectionHtmlUnitDriver(null, capabilities);
 	}
 
 	@Test
@@ -90,7 +98,8 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(
 				environment);
 		driver.get("/test");
-		verify(this.webClient).getPage(new URL("http://localhost:8080/test"));
+		verify(this.webClient).getPage(any(WebWindow.class),
+				requestToUrl(new URL("http://localhost:8080/test")));
 	}
 
 	@Test
@@ -100,7 +109,12 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(
 				environment);
 		driver.get("/test");
-		verify(this.webClient).getPage(new URL("http://localhost:8181/test"));
+		verify(this.webClient).getPage(any(WebWindow.class),
+				requestToUrl(new URL("http://localhost:8181/test")));
+	}
+
+	private WebRequest requestToUrl(URL url) {
+		return argThat(new WebRequestUrlArgumentMatcher(url));
 	}
 
 	public class TestLocalHostWebConnectionHtmlUnitDriver
@@ -113,6 +127,22 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 		@Override
 		public WebClient getWebClient() {
 			return LocalHostWebConnectionHtmlUnitDriverTests.this.webClient;
+		}
+
+	}
+
+	private static final class WebRequestUrlArgumentMatcher
+			implements ArgumentMatcher<WebRequest> {
+
+		private final URL expectedUrl;
+
+		private WebRequestUrlArgumentMatcher(URL expectedUrl) {
+			this.expectedUrl = expectedUrl;
+		}
+
+		@Override
+		public boolean matches(WebRequest argument) {
+			return argument.getUrl().equals(this.expectedUrl);
 		}
 
 	}

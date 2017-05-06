@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.json.BasicJsonTester;
 import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.test.json.JsonContent;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for {@link JsonTest}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
 @JsonTest
@@ -41,6 +43,9 @@ public class JsonTestIntegrationTests {
 
 	@Autowired
 	private JacksonTester<ExampleBasicObject> jacksonBasicJson;
+
+	@Autowired
+	private JacksonTester<ExampleJsonObjectWithView> jacksonWithViewJson;
 
 	@Autowired
 	private JacksonTester<ExampleCustomObject> jacksonCustomJson;
@@ -71,6 +76,16 @@ public class JsonTestIntegrationTests {
 		ExampleBasicObject object = new ExampleBasicObject();
 		object.setValue("spring");
 		assertThat(this.gsonJson.write(object)).isEqualToJson("example.json");
+	}
+
+	@Test
+	public void customView() throws Exception {
+		ExampleJsonObjectWithView object = new ExampleJsonObjectWithView();
+		object.setValue("spring");
+		JsonContent<ExampleJsonObjectWithView> content = this.jacksonWithViewJson
+				.forView(ExampleJsonObjectWithView.TestView.class).write(object);
+		assertThat(content).doesNotHaveJsonPathValue("id");
+		assertThat(content).isEqualToJson("example.json");
 	}
 
 }

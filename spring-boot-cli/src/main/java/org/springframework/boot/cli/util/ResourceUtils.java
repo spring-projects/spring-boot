@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ public abstract class ResourceUtils {
 		if (path.contains(":")) {
 			return getUrlsFromPrefixedWildcardPath(path, classLoader);
 		}
-		Set<String> result = new LinkedHashSet<String>();
+		Set<String> result = new LinkedHashSet<>();
 		try {
 			result.addAll(getUrls(FILE_URL_PREFIX + path, classLoader));
 		}
@@ -93,14 +93,14 @@ public abstract class ResourceUtils {
 		}
 		path = stripLeadingSlashes(path);
 		result.addAll(getUrls(ALL_CLASSPATH_URL_PREFIX + path, classLoader));
-		return new ArrayList<String>(result);
+		return new ArrayList<>(result);
 	}
 
 	private static List<String> getUrlsFromPrefixedWildcardPath(String path,
 			ClassLoader classLoader) throws IOException {
 		Resource[] resources = new PathMatchingResourcePatternResolver(
 				new FileSearchResourceLoader(classLoader)).getResources(path);
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		for (Resource resource : resources) {
 			if (resource.exists()) {
 				if (resource.getURI().getScheme().equals("file")) {
@@ -118,7 +118,7 @@ public abstract class ResourceUtils {
 	private static List<String> getChildFiles(Resource resource) throws IOException {
 		Resource[] children = new PathMatchingResourcePatternResolver()
 				.getResources(resource.getURL() + "/**");
-		List<String> childFiles = new ArrayList<String>();
+		List<String> childFiles = new ArrayList<>();
 		for (Resource child : children) {
 			if (!child.getFile().isDirectory()) {
 				childFiles.add(absolutePath(child));

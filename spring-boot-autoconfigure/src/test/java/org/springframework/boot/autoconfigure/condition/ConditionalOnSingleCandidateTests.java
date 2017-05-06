@@ -63,6 +63,46 @@ public class ConditionalOnSingleCandidateTests {
 	}
 
 	@Test
+	public void singleCandidateInAncestorsOneCandidateInCurrent() {
+		load();
+		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
+		child.register(FooConfiguration.class,
+				OnBeanSingleCandidateInAncestorsConfiguration.class);
+		child.setParent(this.context);
+		child.refresh();
+		assertThat(child.containsBean("baz")).isFalse();
+		child.close();
+	}
+
+	@Test
+	public void singleCandidateInAncestorsOneCandidateInParent() {
+		load(FooConfiguration.class);
+		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
+		child.register(OnBeanSingleCandidateInAncestorsConfiguration.class);
+		child.setParent(this.context);
+		child.refresh();
+		assertThat(child.containsBean("baz")).isTrue();
+		assertThat(child.getBean("baz")).isEqualTo("foo");
+		child.close();
+	}
+
+	@Test
+	public void singleCandidateInAncestorsOneCandidateInGrandparent() {
+		load(FooConfiguration.class);
+		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
+		parent.setParent(this.context);
+		parent.refresh();
+		AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
+		child.register(OnBeanSingleCandidateInAncestorsConfiguration.class);
+		child.setParent(parent);
+		child.refresh();
+		assertThat(child.containsBean("baz")).isTrue();
+		assertThat(child.getBean("baz")).isEqualTo("foo");
+		child.close();
+		parent.close();
+	}
+
+	@Test
 	public void singleCandidateMultipleCandidates() {
 		load(FooConfiguration.class, BarConfiguration.class,
 				OnBeanSingleCandidateConfiguration.class);
@@ -119,13 +159,26 @@ public class ConditionalOnSingleCandidateTests {
 	}
 
 	private void load(Class<?>... classes) {
-		this.context.register(classes);
+		if (classes.length > 0) {
+			this.context.register(classes);
+		}
 		this.context.refresh();
 	}
 
 	@Configuration
 	@ConditionalOnSingleCandidate(String.class)
 	protected static class OnBeanSingleCandidateConfiguration {
+
+		@Bean
+		public String baz(String s) {
+			return s;
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnSingleCandidate(value = String.class, search = SearchStrategy.ANCESTORS)
+	protected static class OnBeanSingleCandidateInAncestorsConfiguration {
 
 		@Bean
 		public String baz(String s) {
@@ -187,4 +240,5 @@ public class ConditionalOnSingleCandidateTests {
 		}
 
 	}
+
 }

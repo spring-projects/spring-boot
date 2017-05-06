@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -49,8 +48,7 @@ public class AutoConfigurationReproTests {
 	public void doesNotEarlyInitializeFactoryBeans() throws Exception {
 		SpringApplication application = new SpringApplication(EarlyInitConfig.class,
 				PropertySourcesPlaceholderConfigurer.class,
-				EmbeddedServletContainerAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class);
+				ServletWebServerFactoryAutoConfiguration.class);
 		this.context = application.run("--server.port=0");
 		String bean = (String) this.context.getBean("earlyInit");
 		assertThat(bean).isEqualTo("bucket");
@@ -58,6 +56,7 @@ public class AutoConfigurationReproTests {
 
 	@Configuration
 	public static class Config {
+
 	}
 
 	@Configuration

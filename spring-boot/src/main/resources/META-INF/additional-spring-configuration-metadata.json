@@ -146,6 +146,10 @@
     "description": "Config file locations."
   },
   {
+    "name": "spring.jta.atomikos.properties.console-log-level",
+    "defaultValue": "warn"
+  },
+  {
     "name": "spring.main.banner-mode",
     "type": "org.springframework.boot.Banner$Mode",
     "sourceType": "org.springframework.boot.SpringApplication",
@@ -179,14 +183,26 @@
     "defaultValue": "detect"
   },
   {
-    "name": "spring.profiles.active",
+    "name": "spring.pid.file",
     "type": "java.lang.String",
+    "description": "Location of the PID file to write (if ApplicationPidFileWriter is used).",
+    "sourceType": "org.springframework.boot.system.ApplicationPidFileWriter"
+  },
+  {
+    "name": "spring.pid.fail-on-write-error",
+    "type": "java.lang.Boolean",
+    "description": "Fail if ApplicationPidFileWriter is used but it cannot write the PID file.",
+    "sourceType": "org.springframework.boot.system.ApplicationPidFileWriter"
+  },
+  {
+    "name": "spring.profiles.active",
+    "type": "java.util.List<java.lang.String>",
     "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
     "description": "Comma-separated list of active profiles. Can be overridden by a command line switch."
   },
   {
     "name": "spring.profiles.include",
-    "type": "java.lang.String",
+    "type": "java.util.List<java.lang.String>",
     "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
     "description": "Unconditionally activate the specified comma separated profiles."
   },

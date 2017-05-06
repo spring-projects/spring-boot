@@ -2,7 +2,6 @@
 	<id>bin</id>
 	<formats>
 		<format>zip</format>
-		<format>dir</format>
 		<format>tar.gz</format>
 	</formats>
 	<baseDirectory>spring-${project.version}</baseDirectory>
@@ -10,7 +9,7 @@
 	<fileSets>
 		<fileSet>
 			<directory>src/main/content</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory></outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
@@ -21,7 +20,7 @@
 		</fileSet>
 		<fileSet>
 			<directory>src/main/content</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory></outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<fileMode>644</fileMode>
 			<directoryMode>755</directoryMode>
@@ -31,7 +30,7 @@
 		</fileSet>
 		<fileSet>
 			<directory>src/main/executablecontent</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory></outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<fileMode>755</fileMode>
 			<directoryMode>755</directoryMode>
@@ -40,7 +39,7 @@
 	<files>
 		<file>
 			<source>${project.build.directory}/${project.artifactId}-${project.version}-full.jar</source>
-			<outputDirectory>/lib</outputDirectory>
+			<outputDirectory>lib</outputDirectory>
 			<destName>${project.build.finalName}.jar</destName>
 		</file>
 	</files>

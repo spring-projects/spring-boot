@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ public class SamplePropertyValidationApplicationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "sample.host:xxxxxx",
 				"sample.port:9090");
 		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("xxxxxx");
+		this.thrown.expectMessage("Failed to bind properties under 'sample'");
 		this.context.refresh();
 	}
 
@@ -71,8 +71,7 @@ public class SamplePropertyValidationApplicationTests {
 	public void bindNullHost() {
 		this.context.register(SamplePropertyValidationApplication.class);
 		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("null");
-		this.thrown.expectMessage("host");
+		this.thrown.expectMessage("Failed to bind properties under 'sample'");
 		this.context.refresh();
 	}
 

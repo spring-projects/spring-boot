@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -51,11 +54,15 @@ public class MockBeanWithAopProxyTests {
 
 	@Test
 	public void verifyShouldUseProxyTarget() throws Exception {
-		Long d1 = this.dateService.getDate();
-		Thread.sleep(200);
-		Long d2 = this.dateService.getDate();
-		assertThat(d1).isEqualTo(d2);
-		verify(this.dateService, times(1)).getDate();
+		given(this.dateService.getDate(false)).willReturn(1L);
+		Long d1 = this.dateService.getDate(false);
+		assertThat(d1).isEqualTo(1L);
+		given(this.dateService.getDate(false)).willReturn(2L);
+		Long d2 = this.dateService.getDate(false);
+		assertThat(d2).isEqualTo(2L);
+		verify(this.dateService, times(2)).getDate(false);
+		verify(this.dateService, times(2)).getDate(eq(false));
+		verify(this.dateService, times(2)).getDate(anyBoolean());
 	}
 
 	@Configuration
@@ -83,7 +90,7 @@ public class MockBeanWithAopProxyTests {
 	static class DateService {
 
 		@Cacheable(cacheNames = "test")
-		public Long getDate() {
+		public Long getDate(boolean argument) {
 			return System.nanoTime();
 		}
 

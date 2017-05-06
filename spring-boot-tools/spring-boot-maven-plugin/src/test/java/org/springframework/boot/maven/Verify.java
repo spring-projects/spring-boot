@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,12 +87,13 @@ public final class Verify {
 	public static class ArchiveVerifier {
 
 		private final ZipFile zipFile;
+
 		private final Map<String, ZipEntry> content;
 
 		public ArchiveVerifier(ZipFile zipFile) {
 			this.zipFile = zipFile;
 			Enumeration<? extends ZipEntry> entries = zipFile.entries();
-			this.content = new HashMap<String, ZipEntry>();
+			this.content = new HashMap<>();
 			while (entries.hasMoreElements()) {
 				ZipEntry zipEntry = entries.nextElement();
 				this.content.put(zipEntry.getName(), zipEntry);
@@ -253,6 +254,7 @@ public final class Verify {
 			assertThat(manifest.getMainAttributes().getValue("Not-Used"))
 					.isEqualTo("Foo");
 		}
+
 	}
 
 	public static class WarArchiveVerification extends AbstractArchiveVerification {
@@ -286,6 +288,7 @@ public final class Verify {
 			assertThat(manifest.getMainAttributes().getValue("Not-Used"))
 					.isEqualTo("Foo");
 		}
+
 	}
 
 	private static class ZipArchiveVerification extends AbstractArchiveVerification {
@@ -303,6 +306,7 @@ public final class Verify {
 			assertThat(manifest.getMainAttributes().getValue("Not-Used"))
 					.isEqualTo("Foo");
 		}
+
 	}
 
 	private static class ModuleArchiveVerification extends AbstractArchiveVerification {

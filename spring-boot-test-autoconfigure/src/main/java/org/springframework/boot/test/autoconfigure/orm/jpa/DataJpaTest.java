@@ -28,10 +28,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -104,5 +106,12 @@ public @interface DataJpaTest {
 	 * @return exclude filters to apply
 	 */
 	Filter[] excludeFilters() default {};
+
+	/**
+	 * Auto-configuration exclusions that should be applied for this test.
+	 * @return auto-configuration exclusions to apply
+	 */
+	@AliasFor(annotation = ImportAutoConfiguration.class, attribute = "exclude")
+	Class<?>[] excludeAutoConfiguration() default {};
 
 }

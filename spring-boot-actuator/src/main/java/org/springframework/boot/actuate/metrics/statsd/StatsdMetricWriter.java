@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.util.StringUtils;
  * a gauge.
  *
  * @author Dave Syer
+ * @author Odín del Río
  * @since 1.3.0
  */
 public class StatsdMetricWriter implements MetricWriter, Closeable {
@@ -72,7 +73,7 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 	 * @param client StatsD client to write metrics with
 	 */
 	public StatsdMetricWriter(StatsDClient client) {
-		Assert.notNull(client);
+		Assert.notNull(client, "Client must not be null");
 		this.client = client;
 	}
 
@@ -87,12 +88,13 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 
 	@Override
 	public void increment(Delta<?> delta) {
-		this.client.count(delta.getName(), delta.getValue().longValue());
+		this.client.count(sanitizeMetricName(delta.getName()),
+				delta.getValue().longValue());
 	}
 
 	@Override
 	public void set(Metric<?> value) {
-		String name = value.getName();
+		String name = sanitizeMetricName(value.getName());
 		if (name.contains("timer.") && !name.contains("gauge.")
 				&& !name.contains("counter.")) {
 			this.client.recordExecutionTime(name, value.getValue().longValue());
@@ -115,6 +117,15 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 	@Override
 	public void close() {
 		this.client.stop();
+	}
+
+	/**
+	 * Sanitize the metric name if necessary.
+	 * @param name The metric name
+	 * @return The sanitized metric name
+	 */
+	private String sanitizeMetricName(String name) {
+		return name.replace(":", "-");
 	}
 
 	private static final class LoggingStatsdErrorHandler

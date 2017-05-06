@@ -25,6 +25,7 @@ import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.support.HttpRequestWrapper;
+import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.MockRestServiceServer.MockRestServiceServerBuilder;
@@ -37,9 +38,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplateHandler;
 
 /**
- * {@link RequestExpectationManager} that strips the specified root URI from the
- * request before verification. Can be used to simply test declarations when all REST
- * calls start the same way. For example: <pre class="code">
+ * {@link RequestExpectationManager} that strips the specified root URI from the request
+ * before verification. Can be used to simply test declarations when all REST calls start
+ * the same way. For example: <pre class="code">
  * RestTemplate restTemplate = new RestTemplateBuilder().rootUri("http://example.com").build();
  * MockRestServiceServer server = RootUriRequestExpectationManager.bindTo(restTemplate);
  * server.expect(requestTo("/hello")).andRespond(withSuccess());
@@ -77,8 +78,7 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 			throws IOException {
 		String uri = request.getURI().toString();
 		if (uri.startsWith(this.rootUri)) {
-			uri = uri.substring(this.rootUri.length());
-			request = new ReplaceUriClientHttpRequest(uri, request);
+			request = replaceURI(request, uri.substring(this.rootUri.length()));
 		}
 		try {
 			return this.expectationManager.validateRequest(request);
@@ -91,6 +91,22 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 						+ message.substring(prefix.length() - 1));
 			}
 			throw ex;
+		}
+	}
+
+	private ClientHttpRequest replaceURI(ClientHttpRequest request,
+			String replacementUri) {
+		URI uri;
+		try {
+			uri = new URI(replacementUri);
+			if (request instanceof MockClientHttpRequest) {
+				((MockClientHttpRequest) request).setURI(uri);
+				return request;
+			}
+			return new ReplaceUriClientHttpRequest(uri, request);
+		}
+		catch (URISyntaxException ex) {
+			throw new IllegalStateException(ex);
 		}
 	}
 
@@ -156,14 +172,9 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 
 		private final URI uri;
 
-		ReplaceUriClientHttpRequest(String uri, ClientHttpRequest request) {
+		ReplaceUriClientHttpRequest(URI uri, ClientHttpRequest request) {
 			super(request);
-			try {
-				this.uri = new URI(uri);
-			}
-			catch (URISyntaxException ex) {
-				throw new IllegalStateException(ex);
-			}
+			this.uri = uri;
 		}
 
 		@Override

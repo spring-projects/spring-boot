@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.util.StringUtils;
  * class.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 class DefinitionsParser {
 
@@ -50,8 +51,8 @@ class DefinitionsParser {
 	}
 
 	DefinitionsParser(Collection<? extends Definition> existing) {
-		this.definitions = new LinkedHashSet<Definition>();
-		this.definitionFields = new LinkedHashMap<Definition, Field>();
+		this.definitions = new LinkedHashSet<>();
+		this.definitionFields = new LinkedHashMap<>();
 		if (existing != null) {
 			this.definitions.addAll(existing);
 		}
@@ -93,7 +94,7 @@ class DefinitionsParser {
 			MockDefinition definition = new MockDefinition(annotation.name(), typeToMock,
 					annotation.extraInterfaces(), annotation.answer(),
 					annotation.serializable(), annotation.reset(),
-					annotation.proxyTargetAware());
+					QualifierDefinition.forElement(element));
 			addDefinition(element, definition, "mock");
 		}
 	}
@@ -108,7 +109,8 @@ class DefinitionsParser {
 		}
 		for (ResolvableType typeToSpy : typesToSpy) {
 			SpyDefinition definition = new SpyDefinition(annotation.name(), typeToSpy,
-					annotation.reset(), annotation.proxyTargetAware());
+					annotation.reset(), annotation.proxyTargetAware(),
+					QualifierDefinition.forElement(element));
 			addDefinition(element, definition, "spy");
 		}
 	}
@@ -125,9 +127,9 @@ class DefinitionsParser {
 
 	private Set<ResolvableType> getOrDeduceTypes(AnnotatedElement element,
 			Class<?>[] value) {
-		Set<ResolvableType> types = new LinkedHashSet<ResolvableType>();
-		for (Class<?> type : value) {
-			types.add(ResolvableType.forClass(type));
+		Set<ResolvableType> types = new LinkedHashSet<>();
+		for (Class<?> clazz : value) {
+			types.add(ResolvableType.forClass(clazz));
 		}
 		if (types.isEmpty() && element instanceof Field) {
 			types.add(ResolvableType.forField((Field) element));

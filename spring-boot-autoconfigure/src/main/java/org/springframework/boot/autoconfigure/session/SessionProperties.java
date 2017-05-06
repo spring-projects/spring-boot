@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.session.data.redis.RedisFlushMode;
+import org.springframework.session.hazelcast.HazelcastFlushMode;
 
 /**
  * Configuration properties for Spring Session.
@@ -29,7 +30,7 @@ import org.springframework.session.data.redis.RedisFlushMode;
  * @author Vedran Pavic
  * @since 1.4.0
  */
-@ConfigurationProperties("spring.session")
+@ConfigurationProperties(prefix = "spring.session")
 public class SessionProperties {
 
 	/**
@@ -42,8 +43,6 @@ public class SessionProperties {
 	private final Hazelcast hazelcast = new Hazelcast();
 
 	private final Jdbc jdbc = new Jdbc();
-
-	private final Mongo mongo = new Mongo();
 
 	private final Redis redis = new Redis();
 
@@ -77,10 +76,6 @@ public class SessionProperties {
 		return this.jdbc;
 	}
 
-	public Mongo getMongo() {
-		return this.mongo;
-	}
-
 	public Redis getRedis() {
 		return this.redis;
 	}
@@ -92,12 +87,25 @@ public class SessionProperties {
 		 */
 		private String mapName = "spring:session:sessions";
 
+		/**
+		 * Sessions flush mode.
+		 */
+		private HazelcastFlushMode flushMode = HazelcastFlushMode.ON_SAVE;
+
 		public String getMapName() {
 			return this.mapName;
 		}
 
 		public void setMapName(String mapName) {
 			this.mapName = mapName;
+		}
+
+		public HazelcastFlushMode getFlushMode() {
+			return this.flushMode;
+		}
+
+		public void setFlushMode(HazelcastFlushMode flushMode) {
+			this.flushMode = flushMode;
 		}
 
 	}
@@ -107,6 +115,8 @@ public class SessionProperties {
 		private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
 				+ "session/jdbc/schema-@@platform@@.sql";
 
+		private static final String DEFAULT_TABLE_NAME = "SPRING_SESSION";
+
 		/**
 		 * Path to the SQL file to use to initialize the database schema.
 		 */
@@ -115,7 +125,7 @@ public class SessionProperties {
 		/**
 		 * Name of database table used to store sessions.
 		 */
-		private String tableName = "SPRING_SESSION";
+		private String tableName = DEFAULT_TABLE_NAME;
 
 		private final Initializer initializer = new Initializer();
 
@@ -139,38 +149,30 @@ public class SessionProperties {
 			return this.initializer;
 		}
 
-		public static class Initializer {
+		public class Initializer {
 
 			/**
-			 * Create the required session tables on startup if necessary.
+			 * Create the required session tables on startup if necessary. Enabled
+			 * automatically if the default table name is set or a custom schema is
+			 * configured.
 			 */
-			private boolean enabled = true;
+			private Boolean enabled;
 
 			public boolean isEnabled() {
-				return this.enabled;
+				if (this.enabled != null) {
+					return this.enabled;
+				}
+				boolean defaultTableName = DEFAULT_TABLE_NAME
+						.equals(Jdbc.this.getTableName());
+				boolean customSchema = !DEFAULT_SCHEMA_LOCATION
+						.equals(Jdbc.this.getSchema());
+				return (defaultTableName || customSchema);
 			}
 
 			public void setEnabled(boolean enabled) {
 				this.enabled = enabled;
 			}
 
-		}
-
-	}
-
-	public static class Mongo {
-
-		/**
-		 * Collection name used to store sessions.
-		 */
-		private String collectionName = "sessions";
-
-		public String getCollectionName() {
-			return this.collectionName;
-		}
-
-		public void setCollectionName(String collectionName) {
-			this.collectionName = collectionName;
 		}
 
 	}
@@ -183,7 +185,7 @@ public class SessionProperties {
 		private String namespace = "";
 
 		/**
-		 * Flush mode for the Redis sessions.
+		 * Sessions flush mode.
 		 */
 		private RedisFlushMode flushMode = RedisFlushMode.ON_SAVE;
 

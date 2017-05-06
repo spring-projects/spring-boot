@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties for ActiveMQ.
@@ -72,27 +71,6 @@ public class ActiveMQProperties {
 
 	public void setInMemory(boolean inMemory) {
 		this.inMemory = inMemory;
-	}
-
-	/**
-	 * Get if pooling is enabled.
-	 * @return if pooling is enabled
-	 * @deprecated as of 1.4 in favor of "spring.activemq.pool.enabled"
-	 */
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.activemq.pool.enabled")
-	public boolean isPooled() {
-		return getPool().isEnabled();
-	}
-
-	/**
-	 * Set if pooling is enabled.
-	 * @param pooled the pooling enabled value
-	 * @deprecated as of 1.4 in favor of "spring.activemq.pool.enabled"
-	 */
-	@Deprecated
-	public void setPooled(boolean pooled) {
-		getPool().setEnabled(pooled);
 	}
 
 	public String getUser() {
@@ -191,7 +169,7 @@ public class ActiveMQProperties {
 		 * Comma-separated list of specific packages to trust (when not trusting all
 		 * packages).
 		 */
-		private List<String> trusted = new ArrayList<String>();
+		private List<String> trusted = new ArrayList<>();
 
 		public Boolean getTrustAll() {
 			return this.trustAll;

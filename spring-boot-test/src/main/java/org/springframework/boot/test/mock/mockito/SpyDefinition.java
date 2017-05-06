@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.test.mock.mockito;
 
 import org.mockito.MockSettings;
 import org.mockito.Mockito;
-import org.mockito.internal.util.MockUtil;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.core.style.ToStringCreator;
@@ -33,15 +32,13 @@ import org.springframework.util.StringUtils;
  */
 class SpyDefinition extends Definition {
 
-	private MockUtil mockUtil = new MockUtil();
-
 	private static final int MULTIPLIER = 31;
 
 	private final ResolvableType typeToSpy;
 
 	SpyDefinition(String name, ResolvableType typeToSpy, MockReset reset,
-			boolean proxyTargetAware) {
-		super(name, reset, proxyTargetAware);
+			boolean proxyTargetAware, QualifierDefinition qualifier) {
+		super(name, reset, proxyTargetAware, qualifier);
 		Assert.notNull(typeToSpy, "TypeToSpy must not be null");
 		this.typeToSpy = typeToSpy;
 
@@ -68,7 +65,7 @@ class SpyDefinition extends Definition {
 		}
 		SpyDefinition other = (SpyDefinition) obj;
 		boolean result = super.equals(obj);
-		result &= ObjectUtils.nullSafeEquals(this.typeToSpy, other.typeToSpy);
+		result = result && ObjectUtils.nullSafeEquals(this.typeToSpy, other.typeToSpy);
 		return result;
 	}
 
@@ -87,7 +84,7 @@ class SpyDefinition extends Definition {
 	public <T> T createSpy(String name, Object instance) {
 		Assert.notNull(instance, "Instance must not be null");
 		Assert.isInstanceOf(this.typeToSpy.resolve(), instance);
-		if (this.mockUtil.isSpy(instance)) {
+		if (Mockito.mockingDetails(instance).isSpy()) {
 			return (T) instance;
 		}
 		MockSettings settings = MockReset.withSettings(getReset());

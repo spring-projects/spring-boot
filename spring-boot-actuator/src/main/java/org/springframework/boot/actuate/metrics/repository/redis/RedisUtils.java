@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,9 @@ final class RedisUtils {
 
 	static <K, V> RedisTemplate<K, V> createRedisTemplate(
 			RedisConnectionFactory connectionFactory, Class<V> valueClass) {
-		RedisTemplate<K, V> redisTemplate = new RedisTemplate<K, V>();
+		RedisTemplate<K, V> redisTemplate = new RedisTemplate<>();
 		redisTemplate.setKeySerializer(new StringRedisSerializer());
-		redisTemplate.setValueSerializer(new GenericToStringSerializer<V>(valueClass));
+		redisTemplate.setValueSerializer(new GenericToStringSerializer<>(valueClass));
 
 		// avoids proxy
 		redisTemplate.setExposeConnection(true);
@@ -51,4 +51,5 @@ final class RedisUtils {
 			RedisConnectionFactory redisConnectionFactory) {
 		return new StringRedisTemplate(redisConnectionFactory);
 	}
+
 }

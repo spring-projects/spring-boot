@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,20 @@ import java.io.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
+import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 /**
  * An {@link ApplicationListener} that saves embedded server port and management port into
- * file. This application listener will be triggered whenever the servlet container
- * starts, and the file name can be overridden at runtime with a System property or
- * environment variable named "PORTFILE" or "portfile".
+ * file. This application listener will be triggered whenever the server starts, and the
+ * file name can be overridden at runtime with a System property or environment variable
+ * named "PORTFILE" or "portfile".
  *
  * @author David Liu
  * @author Phillip Webb
@@ -40,7 +42,7 @@ import org.springframework.util.StringUtils;
  * @since 1.4.0
  */
 public class EmbeddedServerPortFileWriter
-		implements ApplicationListener<EmbeddedServletContainerInitializedEvent> {
+		implements ApplicationListener<WebServerInitializedEvent> {
 
 	private static final String DEFAULT_FILE_NAME = "application.port";
 
@@ -84,10 +86,10 @@ public class EmbeddedServerPortFileWriter
 	}
 
 	@Override
-	public void onApplicationEvent(EmbeddedServletContainerInitializedEvent event) {
+	public void onApplicationEvent(WebServerInitializedEvent event) {
 		File portFile = getPortFile(event.getApplicationContext());
 		try {
-			String port = String.valueOf(event.getEmbeddedServletContainer().getPort());
+			String port = String.valueOf(event.getWebServer().getPort());
 			createParentFolder(portFile);
 			FileCopyUtils.copy(port.getBytes(), portFile);
 			portFile.deleteOnExit();
@@ -100,12 +102,12 @@ public class EmbeddedServerPortFileWriter
 	/**
 	 * Return the actual port file that should be written for the given application
 	 * context. The default implementation builds a file from the source file and the
-	 * application context namespace.
+	 * application context namespace if available.
 	 * @param applicationContext the source application context
 	 * @return the file that should be written
 	 */
-	protected File getPortFile(EmbeddedWebApplicationContext applicationContext) {
-		String contextName = applicationContext.getNamespace();
+	protected File getPortFile(ApplicationContext applicationContext) {
+		String contextName = getContextName(applicationContext);
 		if (StringUtils.isEmpty(contextName)) {
 			return this.file;
 		}
@@ -122,6 +124,17 @@ public class EmbeddedServerPortFileWriter
 			name = name + "." + extension;
 		}
 		return new File(this.file.getParentFile(), name);
+	}
+
+	private String getContextName(ApplicationContext applicationContext) {
+		if (applicationContext instanceof ConfigurableWebApplicationContext) {
+			return ((ConfigurableWebApplicationContext) applicationContext)
+					.getNamespace();
+		}
+		if (applicationContext instanceof ReactiveWebApplicationContext) {
+			return ((ReactiveWebApplicationContext) applicationContext).getNamespace();
+		}
+		return null;
 	}
 
 	private boolean isUpperCase(String name) {

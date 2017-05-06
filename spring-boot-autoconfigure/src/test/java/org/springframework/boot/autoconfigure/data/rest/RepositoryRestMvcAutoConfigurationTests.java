@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.city.City;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -38,7 +38,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
+import org.springframework.data.rest.core.mapping.RepositoryDetectionStrategy.RepositoryDetectionStrategies;
 import org.springframework.data.rest.webmvc.BaseUri;
+import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -53,6 +55,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Rob Winch
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class RepositoryRestMvcAutoConfigurationTests {
 
@@ -94,6 +97,7 @@ public class RepositoryRestMvcAutoConfigurationTests {
 				"spring.data.rest.page-param-name:_page",
 				"spring.data.rest.limit-param-name:_limit",
 				"spring.data.rest.sort-param-name:_sort",
+				"spring.data.rest.detection-strategy=visibility",
 				"spring.data.rest.default-media-type:application/my-json",
 				"spring.data.rest.return-body-on-create:false",
 				"spring.data.rest.return-body-on-update:false",
@@ -107,11 +111,29 @@ public class RepositoryRestMvcAutoConfigurationTests {
 		assertThat(bean.getPageParamName()).isEqualTo("_page");
 		assertThat(bean.getLimitParamName()).isEqualTo("_limit");
 		assertThat(bean.getSortParamName()).isEqualTo("_sort");
+		assertThat(bean.getRepositoryDetectionStrategy())
+				.isEqualTo(RepositoryDetectionStrategies.VISIBILITY);
 		assertThat(bean.getDefaultMediaType())
 				.isEqualTo(MediaType.parseMediaType("application/my-json"));
 		assertThat(bean.returnBodyOnCreate(null)).isFalse();
 		assertThat(bean.returnBodyOnUpdate(null)).isFalse();
 		assertThat(bean.isEnableEnumTranslation()).isTrue();
+	}
+
+	@Test
+	public void testWithCustomConfigurer() {
+		load(TestConfigurationWithConfigurer.class,
+				"spring.data.rest.detection-strategy=visibility",
+				"spring.data.rest.default-media-type:application/my-json");
+		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class))
+				.isNotNull();
+		RepositoryRestConfiguration bean = this.context
+				.getBean(RepositoryRestConfiguration.class);
+		assertThat(bean.getRepositoryDetectionStrategy())
+				.isEqualTo(RepositoryDetectionStrategies.ALL);
+		assertThat(bean.getDefaultMediaType())
+				.isEqualTo(MediaType.parseMediaType("application/my-custom-json"));
+		assertThat(bean.getMaxPageSize()).isEqualTo(78);
 	}
 
 	@Test
@@ -175,6 +197,11 @@ public class RepositoryRestMvcAutoConfigurationTests {
 
 	}
 
+	@Import({ TestConfiguration.class, TestRepositoryRestConfigurer.class })
+	protected static class TestConfigurationWithConfigurer {
+
+	}
+
 	@Import({ TestConfiguration.class, RepositoryRestMvcConfiguration.class })
 	protected static class TestConfigurationWithRestMvcConfig {
 
@@ -190,6 +217,19 @@ public class RepositoryRestMvcAutoConfigurationTests {
 			Jackson2ObjectMapperBuilder objectMapperBuilder = new Jackson2ObjectMapperBuilder();
 			objectMapperBuilder.simpleDateFormat("yyyy-MM");
 			return objectMapperBuilder;
+		}
+
+	}
+
+	static class TestRepositoryRestConfigurer extends RepositoryRestConfigurerAdapter {
+
+		@Override
+		public void configureRepositoryRestConfiguration(
+				RepositoryRestConfiguration config) {
+			config.setRepositoryDetectionStrategy(RepositoryDetectionStrategies.ALL);
+			config.setDefaultMediaType(
+					MediaType.parseMediaType("application/my-custom-json"));
+			config.setMaxPageSize(78);
 		}
 
 	}

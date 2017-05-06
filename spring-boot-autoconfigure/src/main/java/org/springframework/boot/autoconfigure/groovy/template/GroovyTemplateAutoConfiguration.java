@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -77,10 +78,10 @@ public class GroovyTemplateAutoConfiguration {
 
 		public GroovyMarkupConfiguration(ApplicationContext applicationContext,
 				GroovyTemplateProperties properties,
-				ObjectProvider<MarkupTemplateEngine> templateEngineProvider) {
+				ObjectProvider<MarkupTemplateEngine> templateEngine) {
 			this.applicationContext = applicationContext;
 			this.properties = properties;
-			this.templateEngine = templateEngineProvider.getIfAvailable();
+			this.templateEngine = templateEngine.getIfAvailable();
 		}
 
 		@PostConstruct
@@ -138,7 +139,7 @@ public class GroovyTemplateAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class,
 			UrlBasedViewResolver.class })
-	@ConditionalOnWebApplication
+	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnProperty(name = "spring.groovy.template.enabled", matchIfMissing = true)
 	public static class GroovyWebConfiguration {
 

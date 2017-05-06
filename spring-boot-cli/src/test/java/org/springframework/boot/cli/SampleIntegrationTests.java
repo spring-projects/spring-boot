@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,17 +79,6 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
-	public void reactorSample() throws Exception {
-		String output = this.cli.run("reactor.groovy", "Phil");
-		int count = 0;
-		while (!output.contains("Hello Phil") && count++ < 5) {
-			Thread.sleep(200);
-			output = this.cli.getOutput();
-		}
-		assertThat(output).contains("Hello Phil");
-	}
-
-	@Test
 	public void jobWebSample() throws Exception {
 		String output = this.cli.run("job.groovy", "web.groovy", "foo=bar");
 		assertThat(output).contains("completed with the following parameters");
@@ -144,8 +133,15 @@ public class SampleIntegrationTests {
 
 	@Test
 	public void jmsSample() throws Exception {
-		String output = this.cli.run("jms.groovy");
-		assertThat(output).contains("Received Greetings from Spring Boot via HornetQ");
+		System.setProperty("spring.artemis.embedded.queues", "spring-boot");
+		try {
+			String output = this.cli.run("jms.groovy");
+			assertThat(output)
+					.contains("Received Greetings from Spring Boot via Artemis");
+		}
+		finally {
+			System.clearProperty("spring.artemis.embedded.queues");
+		}
 	}
 
 	@Test
@@ -163,8 +159,7 @@ public class SampleIntegrationTests {
 
 	@Test
 	public void caching() throws Exception {
-		this.cli.run("caching.groovy");
-		assertThat(this.cli.getOutput()).contains("Hello World");
+		assertThat(this.cli.run("caching.groovy")).contains("Hello World");
 	}
 
 }

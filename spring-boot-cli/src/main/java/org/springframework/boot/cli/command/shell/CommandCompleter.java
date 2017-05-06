@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,20 +42,20 @@ import org.springframework.boot.cli.util.Log;
  */
 public class CommandCompleter extends StringsCompleter {
 
-	private final Map<String, Completer> commandCompleters = new HashMap<String, Completer>();
+	private final Map<String, Completer> commandCompleters = new HashMap<>();
 
-	private final List<Command> commands = new ArrayList<Command>();
+	private final List<Command> commands = new ArrayList<>();
 
 	private final ConsoleReader console;
 
 	public CommandCompleter(ConsoleReader consoleReader,
 			ArgumentDelimiter argumentDelimiter, Iterable<Command> commands) {
 		this.console = consoleReader;
-		List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<>();
 		for (Command command : commands) {
 			this.commands.add(command);
 			names.add(command.getName());
-			List<String> options = new ArrayList<String>();
+			List<String> options = new ArrayList<>();
 			for (OptionHelp optionHelp : command.getOptionsHelp()) {
 				options.addAll(optionHelp.getOptions());
 			}
@@ -95,7 +95,7 @@ public class CommandCompleter extends StringsCompleter {
 	private void printUsage(Command command) {
 		try {
 			int maxOptionsLength = 0;
-			List<OptionHelpLine> optionHelpLines = new ArrayList<OptionHelpLine>();
+			List<OptionHelpLine> optionHelpLines = new ArrayList<>();
 			for (OptionHelp optionHelp : command.getOptionsHelp()) {
 				OptionHelpLine optionHelpLine = new OptionHelpLine(optionHelp);
 				optionHelpLines.add(optionHelpLine);
@@ -143,5 +143,7 @@ public class CommandCompleter extends StringsCompleter {
 		public String getUsage() {
 			return this.usage;
 		}
+
 	}
+
 }

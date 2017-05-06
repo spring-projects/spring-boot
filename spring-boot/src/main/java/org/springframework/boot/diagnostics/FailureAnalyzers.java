@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.boot.SpringBootExceptionReporter;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -44,22 +45,16 @@ import org.springframework.util.ReflectionUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @since 1.4.0
  */
-public final class FailureAnalyzers {
+final class FailureAnalyzers implements SpringBootExceptionReporter {
 
-	private static final Log log = LogFactory.getLog(FailureAnalyzers.class);
+	private static final Log logger = LogFactory.getLog(FailureAnalyzers.class);
 
 	private final ClassLoader classLoader;
 
 	private final List<FailureAnalyzer> analyzers;
 
-	/**
-	 * Create a new {@link FailureAnalyzers} instance.
-	 * @param context the source application context
-	 * @since 1.4.1
-	 */
-	public FailureAnalyzers(ConfigurableApplicationContext context) {
+	FailureAnalyzers(ConfigurableApplicationContext context) {
 		this(context, null);
 	}
 
@@ -73,7 +68,7 @@ public final class FailureAnalyzers {
 	private List<FailureAnalyzer> loadFailureAnalyzers(ClassLoader classLoader) {
 		List<String> analyzerNames = SpringFactoriesLoader
 				.loadFactoryNames(FailureAnalyzer.class, classLoader);
-		List<FailureAnalyzer> analyzers = new ArrayList<FailureAnalyzer>();
+		List<FailureAnalyzer> analyzers = new ArrayList<>();
 		for (String analyzerName : analyzerNames) {
 			try {
 				Constructor<?> constructor = ClassUtils.forName(analyzerName, classLoader)
@@ -82,7 +77,7 @@ public final class FailureAnalyzers {
 				analyzers.add((FailureAnalyzer) constructor.newInstance());
 			}
 			catch (Throwable ex) {
-				log.trace("Failed to load " + analyzerName, ex);
+				logger.trace("Failed to load " + analyzerName, ex);
 			}
 		}
 		AnnotationAwareOrderComparator.sort(analyzers);
@@ -103,21 +98,22 @@ public final class FailureAnalyzers {
 		}
 	}
 
-	/**
-	 * Analyze and report the specified {@code failure}.
-	 * @param failure the failure to analyze
-	 * @return {@code true} if the failure was handled
-	 */
-	public boolean analyzeAndReport(Throwable failure) {
+	@Override
+	public boolean reportException(Throwable failure) {
 		FailureAnalysis analysis = analyze(failure, this.analyzers);
 		return report(analysis, this.classLoader);
 	}
 
 	private FailureAnalysis analyze(Throwable failure, List<FailureAnalyzer> analyzers) {
 		for (FailureAnalyzer analyzer : analyzers) {
-			FailureAnalysis analysis = analyzer.analyze(failure);
-			if (analysis != null) {
-				return analysis;
+			try {
+				FailureAnalysis analysis = analyzer.analyze(failure);
+				if (analysis != null) {
+					return analysis;
+				}
+			}
+			catch (Throwable ex) {
+				logger.debug("FailureAnalyzer " + analyzer + " failed", ex);
 			}
 		}
 		return null;
@@ -133,20 +129,6 @@ public final class FailureAnalyzers {
 			reporter.report(analysis);
 		}
 		return true;
-	}
-
-	/**
-	 * Analyze and report the specified {@code failure}.
-	 * @param failure the failure to analyze
-	 * @param classLoader the classloader to use
-	 * @param context the context to use
-	 * @return {@code true} if the failure was handled
-	 * @deprecated as of 1.4.1 in favor of {@link #analyzeAndReport(Throwable)}
-	 */
-	@Deprecated
-	public static boolean analyzeAndReport(Throwable failure, ClassLoader classLoader,
-			ConfigurableApplicationContext context) {
-		return new FailureAnalyzers(context, classLoader).analyzeAndReport(failure);
 	}
 
 }

@@ -1,13 +1,12 @@
-@SpringApplicationConfiguration(ReactorApplication)
-@IntegrationTest('server.port:0')
-class RestTests {
+@SpringBootTest(classes=App)
+class AppTests {
 
 	@Autowired
-	EventBus eventBus
+	MyService myService
 
 	@Test
 	void test() {
-		assertNotNull(eventBus)
+		assertNotNull(myService)
 	}
 
 }

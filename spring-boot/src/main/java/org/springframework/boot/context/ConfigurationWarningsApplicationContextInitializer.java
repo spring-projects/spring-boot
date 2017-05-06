@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,6 +114,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 	/**
 	 * A single check that can be applied.
 	 */
+	@FunctionalInterface
 	protected interface Check {
 
 		/**
@@ -133,7 +134,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 		private static final Set<String> PROBLEM_PACKAGES;
 
 		static {
-			Set<String> packages = new HashSet<String>();
+			Set<String> packages = new HashSet<>();
 			packages.add("org.springframework");
 			packages.add("org");
 			PROBLEM_PACKAGES = Collections.unmodifiableSet(packages);
@@ -154,7 +155,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 
 		protected Set<String> getComponentScanningPackages(
 				BeanDefinitionRegistry registry) {
-			Set<String> packages = new LinkedHashSet<String>();
+			Set<String> packages = new LinkedHashSet<>();
 			String[] names = registry.getBeanDefinitionNames();
 			for (String name : names) {
 				BeanDefinition definition = registry.getBeanDefinition(name);
@@ -183,9 +184,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 
 		private void addPackages(Set<String> packages, String[] values) {
 			if (values != null) {
-				for (String value : values) {
-					packages.add(value);
-				}
+				Collections.addAll(packages, values);
 			}
 		}
 
@@ -198,7 +197,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 		}
 
 		private List<String> getProblematicPackages(Set<String> scannedPackages) {
-			List<String> problematicPackages = new ArrayList<String>();
+			List<String> problematicPackages = new ArrayList<>();
 			for (String scannedPackage : scannedPackages) {
 				if (isProblematicPackage(scannedPackage)) {
 					problematicPackages.add(getDisplayName(scannedPackage));
@@ -208,14 +207,14 @@ public class ConfigurationWarningsApplicationContextInitializer
 		}
 
 		private boolean isProblematicPackage(String scannedPackage) {
-			if (scannedPackage == null || scannedPackage.length() == 0) {
+			if (scannedPackage == null || scannedPackage.isEmpty()) {
 				return true;
 			}
 			return PROBLEM_PACKAGES.contains(scannedPackage);
 		}
 
 		private String getDisplayName(String scannedPackage) {
-			if (scannedPackage == null || scannedPackage.length() == 0) {
+			if (scannedPackage == null || scannedPackage.isEmpty()) {
 				return "the default package";
 			}
 			return "'" + scannedPackage + "'";

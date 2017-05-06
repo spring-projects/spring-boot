@@ -10,9 +10,10 @@ The setup that's required varies depending on your operating system.
 
 === Docker on OS X
 
-Docker relies on Linux kernel features so the Docker Daemon must be run inside a Linux VM.
-Following the https://docs.docker.com/engine/installation/mac/[OS X installation
-instructions] to install Docker Toolbox which uses VirtualBox to host the required VM.
+The latest version of Docker runs as a native Mac application but isn't supported by
+docker-java. This means that you should use Docker Toolbox. See the
+https://docs.docker.com/engine/installation/mac/[OS X installation instructions] for
+details.
 
 === Docker on Linux
 

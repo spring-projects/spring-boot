@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,35 @@
 package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.http.MediaType;
 import org.springframework.util.MimeType;
 
 /**
  * Properties for Thymeleaf.
  *
  * @author Stephane Nicoll
+ * @author Brian Clozel
+ * @author Daniel Fernández
  * @since 1.2.0
  */
-@ConfigurationProperties("spring.thymeleaf")
+@ConfigurationProperties(prefix = "spring.thymeleaf")
 public class ThymeleafProperties {
 
 	private static final Charset DEFAULT_ENCODING = Charset.forName("UTF-8");
 
-	private static final MimeType DEFAULT_CONTENT_TYPE = MimeType.valueOf("text/html");
-
 	public static final String DEFAULT_PREFIX = "classpath:/templates/";
 
 	public static final String DEFAULT_SUFFIX = ".html";
+
+	/**
+	 * Check that the template exists before rendering it.
+	 */
+	private boolean checkTemplate = true;
 
 	/**
 	 * Check that the templates location exists.
@@ -54,19 +63,15 @@ public class ThymeleafProperties {
 	private String suffix = DEFAULT_SUFFIX;
 
 	/**
-	 * Template mode to be applied to templates. See also StandardTemplateModeHandlers.
+	 * Template mode to be applied to templates. See also
+	 * org.thymeleaf.templatemode.TemplateMode.
 	 */
-	private String mode = "HTML5";
+	private String mode = "HTML";
 
 	/**
-	 * Template encoding.
+	 * Template files encoding.
 	 */
 	private Charset encoding = DEFAULT_ENCODING;
-
-	/**
-	 * Content-Type value.
-	 */
-	private MimeType contentType = DEFAULT_CONTENT_TYPE;
 
 	/**
 	 * Enable template caching.
@@ -91,9 +96,13 @@ public class ThymeleafProperties {
 	private String[] excludedViewNames;
 
 	/**
-	 * Enable MVC Thymeleaf view resolution.
+	 * Enable Thymeleaf view resolution for Web frameworks.
 	 */
 	private boolean enabled = true;
+
+	private final Servlet servlet = new Servlet();
+
+	private final Reactive reactive = new Reactive();
 
 	public boolean isEnabled() {
 		return this.enabled;
@@ -101,6 +110,14 @@ public class ThymeleafProperties {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public boolean isCheckTemplate() {
+		return this.checkTemplate;
+	}
+
+	public void setCheckTemplate(boolean checkTemplate) {
+		this.checkTemplate = checkTemplate;
 	}
 
 	public boolean isCheckTemplateLocation() {
@@ -143,14 +160,6 @@ public class ThymeleafProperties {
 		this.encoding = encoding;
 	}
 
-	public MimeType getContentType() {
-		return this.contentType;
-	}
-
-	public void setContentType(MimeType contentType) {
-		this.contentType = contentType;
-	}
-
 	public boolean isCache() {
 		return this.cache;
 	}
@@ -181,6 +190,62 @@ public class ThymeleafProperties {
 
 	public void setViewNames(String[] viewNames) {
 		this.viewNames = viewNames;
+	}
+
+	public Reactive getReactive() {
+		return this.reactive;
+	}
+
+	public Servlet getServlet() {
+		return this.servlet;
+	}
+
+	public static class Servlet {
+
+		/**
+		 * Content-Type value written to HTTP responses.
+		 */
+		private MimeType contentType = MimeType.valueOf("text/html");
+
+		public MimeType getContentType() {
+			return this.contentType;
+		}
+
+		public void setContentType(MimeType contentType) {
+			this.contentType = contentType;
+		}
+
+	}
+
+	public static class Reactive {
+
+		/**
+		 * Maximum size of data buffers used for writing to the response, in bytes.
+		 */
+		private int maxChunkSize;
+
+		/**
+		 * Media types supported by the view technology.
+		 */
+		private List<MediaType> mediaTypes = new ArrayList<>(
+				Collections.singletonList(MediaType.TEXT_HTML));
+
+		public List<MediaType> getMediaTypes() {
+			return this.mediaTypes;
+		}
+
+		public void setMediaTypes(List<MediaType> mediaTypes) {
+			this.mediaTypes = mediaTypes;
+		}
+
+		public int getMaxChunkSize() {
+			return this.maxChunkSize;
+		}
+
+		public void setMaxChunkSize(int maxChunkSize) {
+			this.maxChunkSize = maxChunkSize;
+		}
+
 	}
 
 }

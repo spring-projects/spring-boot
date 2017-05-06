@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.boot.cli.command.core.HintCommand;
 import org.springframework.boot.cli.command.core.VersionCommand;
 import org.springframework.boot.cli.command.shell.ShellCommand;
 import org.springframework.boot.loader.tools.LogbackInitializer;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.SystemPropertyUtils;
 
 /**
@@ -51,6 +52,7 @@ public final class SpringCli {
 		LogbackInitializer.initialize();
 
 		CommandRunner runner = new CommandRunner("spring");
+		ClassUtils.overrideThreadContextClassLoader(createExtendedClassLoader(runner));
 		runner.addCommand(new HelpCommand(runner));
 		addServiceLoaderCommands(runner);
 		runner.addCommand(new ShellCommand());
@@ -66,19 +68,19 @@ public final class SpringCli {
 	}
 
 	private static void addServiceLoaderCommands(CommandRunner runner) {
-		ServiceLoader<CommandFactory> factories = ServiceLoader.load(CommandFactory.class,
-				createCommandClassLoader(runner));
+		ServiceLoader<CommandFactory> factories = ServiceLoader
+				.load(CommandFactory.class);
 		for (CommandFactory factory : factories) {
 			runner.addCommands(factory.getCommands());
 		}
 	}
 
-	private static URLClassLoader createCommandClassLoader(CommandRunner runner) {
+	private static URLClassLoader createExtendedClassLoader(CommandRunner runner) {
 		return new URLClassLoader(getExtensionURLs(), runner.getClass().getClassLoader());
 	}
 
 	private static URL[] getExtensionURLs() {
-		List<URL> urls = new ArrayList<URL>();
+		List<URL> urls = new ArrayList<>();
 		String home = SystemPropertyUtils
 				.resolvePlaceholders("${spring.home:${SPRING_HOME:.}}");
 		File extDirectory = new File(new File(home, "lib"), "ext");

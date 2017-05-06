@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.loader.tools;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,9 +40,9 @@ import org.springframework.boot.loader.tools.sample.ClassWithoutMainMethod;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -59,6 +60,7 @@ public class RepackagerTests {
 	};
 
 	private static final long JAN_1_1980;
+
 	private static final long JAN_1_1985;
 
 	static {
@@ -347,14 +349,46 @@ public class RepackagerTests {
 		final LibraryScope scope = mock(LibraryScope.class);
 		given(layout.getLauncherClassName()).willReturn("testLauncher");
 		given(layout.getLibraryDestination(anyString(), eq(scope))).willReturn("test/");
+		given(layout.getLibraryDestination(anyString(), eq(LibraryScope.COMPILE)))
+				.willReturn("test-lib/");
 		repackager.setLayout(layout);
 		repackager.repackage(new Libraries() {
+
 			@Override
 			public void doWithLibraries(LibraryCallback callback) throws IOException {
 				callback.library(new Library(libJarFile, scope));
 			}
+
 		});
 		assertThat(hasEntry(file, "test/" + libJarFile.getName())).isTrue();
+		assertThat(getManifest(file).getMainAttributes().getValue("Spring-Boot-Lib"))
+				.isEqualTo("test-lib/");
+		assertThat(getManifest(file).getMainAttributes().getValue("Main-Class"))
+				.isEqualTo("testLauncher");
+	}
+
+	@Test
+	public void customLayoutNoBootLib() throws Exception {
+		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
+		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
+		final File libJarFile = libJar.getFile();
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File file = this.testJarFile.getFile();
+		Repackager repackager = new Repackager(file);
+		Layout layout = mock(Layout.class);
+		final LibraryScope scope = mock(LibraryScope.class);
+		given(layout.getLauncherClassName()).willReturn("testLauncher");
+		repackager.setLayout(layout);
+		repackager.repackage(new Libraries() {
+
+			@Override
+			public void doWithLibraries(LibraryCallback callback) throws IOException {
+				callback.library(new Library(libJarFile, scope));
+			}
+
+		});
+		assertThat(getManifest(file).getMainAttributes().getValue("Spring-Boot-Lib"))
+				.isNull();
 		assertThat(getManifest(file).getMainAttributes().getValue("Main-Class"))
 				.isEqualTo("testLauncher");
 	}
@@ -536,6 +570,49 @@ public class RepackagerTests {
 		}
 	}
 
+	@Test
+	public void customLayoutFactoryWithoutLayout() throws Exception {
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File source = this.testJarFile.getFile();
+		Repackager repackager = new Repackager(source, new TestLayoutFactory());
+		repackager.repackage(NO_LIBRARIES);
+		JarFile jarFile = new JarFile(source);
+		assertThat(jarFile.getEntry("test")).isNotNull();
+		jarFile.close();
+	}
+
+	@Test
+	public void customLayoutFactoryWithLayout() throws Exception {
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File source = this.testJarFile.getFile();
+		Repackager repackager = new Repackager(source, new TestLayoutFactory());
+		repackager.setLayout(new Layouts.Jar());
+		repackager.repackage(NO_LIBRARIES);
+		JarFile jarFile = new JarFile(source);
+		assertThat(jarFile.getEntry("test")).isNull();
+		jarFile.close();
+	}
+
+	@Test
+	public void metaInfAopXmlIsMovedBeneathBootInfClassesWhenRepackaged()
+			throws Exception {
+		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
+		this.testJarFile.addFile("META-INF/aop.xml",
+				this.temporaryFolder.newFile("aop.xml"));
+		File source = this.testJarFile.getFile();
+		File dest = this.temporaryFolder.newFile("dest.jar");
+		Repackager repackager = new Repackager(source);
+		repackager.repackage(dest, NO_LIBRARIES);
+		JarFile jarFile = new JarFile(dest);
+		try {
+			assertThat(jarFile.getEntry("META-INF/aop.xml")).isNull();
+			assertThat(jarFile.getEntry("BOOT-INF/classes/META-INF/aop.xml")).isNotNull();
+		}
+		finally {
+			jarFile.close();
+		}
+	}
+
 	private boolean hasLauncherClasses(File file) throws IOException {
 		return hasEntry(file, "org/springframework/boot/")
 				&& hasEntry(file, "org/springframework/boot/loader/JarLauncher.class");
@@ -576,6 +653,24 @@ public class RepackagerTests {
 		@Override
 		public byte[] toByteArray() {
 			return this.bytes;
+		}
+
+	}
+
+	public static class TestLayoutFactory implements LayoutFactory {
+
+		@Override
+		public Layout getLayout(File source) {
+			return new TestLayout();
+		}
+
+	}
+
+	private static class TestLayout extends Layouts.Jar implements CustomLoaderLayout {
+
+		@Override
+		public void writeLoadedClasses(LoaderClassesWriter writer) throws IOException {
+			writer.writeEntry("test", new ByteArrayInputStream("test".getBytes()));
 		}
 
 	}

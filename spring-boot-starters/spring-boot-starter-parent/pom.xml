@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-dependencies</artifactId>
-		<version>1.4.1.BUILD-SNAPSHOT</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../../spring-boot-dependencies</relativePath>
 	</parent>
 	<artifactId>spring-boot-starter-parent</artifactId>
@@ -18,7 +17,7 @@
 		<url>http://www.spring.io</url>
 	</organization>
 	<properties>
-		<java.version>1.6</java.version>
+		<java.version>1.8</java.version>
 		<resource.delimiter>@</resource.delimiter> <!-- delimiter that doesn't clash with Spring ${} placeholders -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -48,6 +47,7 @@
 				<filtering>true</filtering>
 				<includes>
 					<include>**/application*.yml</include>
+					<include>**/application*.yaml</include>
 					<include>**/application*.properties</include>
 				</includes>
 			</resource>
@@ -55,6 +55,7 @@
 				<directory>${basedir}/src/main/resources</directory>
 				<excludes>
 					<exclude>**/application*.yml</exclude>
+					<exclude>**/application*.yaml</exclude>
 					<exclude>**/application*.properties</exclude>
 				</excludes>
 			</resource>
@@ -133,7 +134,6 @@
 				<plugin>
 					<groupId>pl.project13.maven</groupId>
 					<artifactId>git-commit-id-plugin</artifactId>
-					<version>2.1.11</version>
 					<executions>
 						<execution>
 							<goals>
@@ -171,7 +171,7 @@
 						<dependency>
 							<groupId>org.springframework.boot</groupId>
 							<artifactId>spring-boot-maven-plugin</artifactId>
-							<version>1.4.1.BUILD-SNAPSHOT</version>
+							<version>2.0.0.BUILD-SNAPSHOT</version>
 						</dependency>
 					</dependencies>
 					<configuration>
@@ -205,7 +205,7 @@
 									<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 										<resource>META-INF/spring.schemas</resource>
 									</transformer>
-									<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+									<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
 									<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 										<mainClass>${start-class}</mainClass>
 									</transformer>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
@@ -40,11 +43,13 @@ public class DevToolsSettings {
 	 */
 	public static final String SETTINGS_RESOURCE_LOCATION = "META-INF/spring-devtools.properties";
 
+	private static final Log logger = LogFactory.getLog(DevToolsSettings.class);
+
 	private static DevToolsSettings settings;
 
-	private final List<Pattern> restartIncludePatterns = new ArrayList<Pattern>();
+	private final List<Pattern> restartIncludePatterns = new ArrayList<>();
 
-	private final List<Pattern> restartExcludePatterns = new ArrayList<Pattern>();
+	private final List<Pattern> restartExcludePatterns = new ArrayList<>();
 
 	DevToolsSettings() {
 	}
@@ -57,7 +62,7 @@ public class DevToolsSettings {
 	}
 
 	private Map<String, Pattern> getPatterns(Map<?, ?> properties, String prefix) {
-		Map<String, Pattern> patterns = new LinkedHashMap<String, Pattern>();
+		Map<String, Pattern> patterns = new LinkedHashMap<>();
 		for (Map.Entry<?, ?> entry : properties.entrySet()) {
 			String name = String.valueOf(entry.getKey());
 			if (name.startsWith(prefix)) {
@@ -104,6 +109,12 @@ public class DevToolsSettings {
 			while (urls.hasMoreElements()) {
 				settings.add(PropertiesLoaderUtils
 						.loadProperties(new UrlResource(urls.nextElement())));
+			}
+			if (logger.isDebugEnabled()) {
+				logger.debug("Included patterns for restart : "
+						+ settings.restartIncludePatterns);
+				logger.debug("Excluded patterns for restart : "
+						+ settings.restartExcludePatterns);
 			}
 			return settings;
 		}

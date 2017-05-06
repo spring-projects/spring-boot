@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ public class ShellPrompts {
 
 	private static final String DEFAULT_PROMPT = "$ ";
 
-	private final Stack<String> prompts = new Stack<String>();
+	private final Stack<String> prompts = new Stack<>();
 
 	/**
 	 * Push a new prompt to be used by the shell.
@@ -55,4 +55,5 @@ public class ShellPrompts {
 	public String getPrompt() {
 		return this.prompts.isEmpty() ? DEFAULT_PROMPT : this.prompts.peek();
 	}
+
 }

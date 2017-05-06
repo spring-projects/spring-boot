@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,17 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers;
-import org.springframework.boot.autoconfigure.web.ErrorController;
+import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers.ContentSecurityPolicyMode;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorController;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +42,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity.IgnoredRequestConfigurer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -47,14 +50,16 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.header.writers.HstsHeaderWriter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for security of a web application or
- * service. By default everything is secured with HTTP Basic authentication except the
+ * Configuration for security of a web application or service. By default everything is
+ * secured with HTTP Basic authentication except the
  * {@link SecurityProperties#getIgnored() explicitly ignored} paths (defaults to
  * <code>&#47;css&#47;**, &#47;js&#47;**, &#47;images&#47;**, &#47;**&#47;favicon.ico</code>
  * ). Many aspects of the behavior can be controller with {@link SecurityProperties} via
@@ -66,9 +71,10 @@ import org.springframework.util.StringUtils;
  * Some common simple customizations:
  * <ul>
  * <li>Switch off security completely and permanently: remove Spring Security from the
- * classpath or {@link EnableAutoConfiguration#exclude() exclude} this configuration.</li>
+ * classpath or {@link EnableAutoConfiguration#exclude() exclude}
+ * {@link SecurityAutoConfiguration}.</li>
  * <li>Switch off security temporarily (e.g. for a dev environment): set
- * {@code security.basic.enabled: false}</li>
+ * {@code security.basic.enabled=false}</li>
  * <li>Customize the user details: autowire an {@link AuthenticationManagerBuilder} into a
  * method in one of your configuration classes or equivalently add a bean of type
  * AuthenticationManager</li>
@@ -80,10 +86,10 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 @Configuration
-@EnableConfigurationProperties
+@EnableConfigurationProperties(ServerProperties.class)
 @ConditionalOnClass({ EnableWebSecurity.class, AuthenticationEntryPoint.class })
 @ConditionalOnMissingBean(WebSecurityConfiguration.class)
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableWebSecurity
 public class SpringBootWebSecurityConfiguration {
 
@@ -92,20 +98,39 @@ public class SpringBootWebSecurityConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean({ IgnoredPathsWebSecurityConfigurerAdapter.class })
-	public IgnoredPathsWebSecurityConfigurerAdapter ignoredPathsWebSecurityConfigurerAdapter() {
-		return new IgnoredPathsWebSecurityConfigurerAdapter();
+	public IgnoredPathsWebSecurityConfigurerAdapter ignoredPathsWebSecurityConfigurerAdapter(
+			List<IgnoredRequestCustomizer> customizers) {
+		return new IgnoredPathsWebSecurityConfigurerAdapter(customizers);
+	}
+
+	@Bean
+	public IgnoredRequestCustomizer defaultIgnoredRequestsCustomizer(
+			ServerProperties server, SecurityProperties security,
+			ObjectProvider<ErrorController> errorController) {
+		return new DefaultIgnoredRequestCustomizer(server, security,
+				errorController.getIfAvailable());
 	}
 
 	public static void configureHeaders(HeadersConfigurer<?> configurer,
 			SecurityProperties.Headers headers) throws Exception {
 		if (headers.getHsts() != Headers.HSTS.NONE) {
-			boolean includeSubdomains = headers.getHsts() == Headers.HSTS.ALL;
-			HstsHeaderWriter writer = new HstsHeaderWriter(includeSubdomains);
+			boolean includeSubDomains = headers.getHsts() == Headers.HSTS.ALL;
+			HstsHeaderWriter writer = new HstsHeaderWriter(includeSubDomains);
 			writer.setRequestMatcher(AnyRequestMatcher.INSTANCE);
 			configurer.addHeaderWriter(writer);
 		}
 		if (!headers.isContentType()) {
 			configurer.contentTypeOptions().disable();
+		}
+		if (StringUtils.hasText(headers.getContentSecurityPolicy())) {
+			String policyDirectives = headers.getContentSecurityPolicy();
+			ContentSecurityPolicyMode mode = headers.getContentSecurityPolicyMode();
+			if (mode == ContentSecurityPolicyMode.DEFAULT) {
+				configurer.contentSecurityPolicy(policyDirectives);
+			}
+			else {
+				configurer.contentSecurityPolicy(policyDirectives).reportOnly();
+			}
 		}
 		if (!headers.isXss()) {
 			configurer.xssProtection().disable();
@@ -118,30 +143,17 @@ public class SpringBootWebSecurityConfiguration {
 		}
 	}
 
-	public static List<String> getIgnored(SecurityProperties security) {
-		List<String> ignored = new ArrayList<String>(security.getIgnored());
-		if (ignored.isEmpty()) {
-			ignored.addAll(DEFAULT_IGNORED);
-		}
-		else if (ignored.contains("none")) {
-			ignored.remove("none");
-		}
-		return ignored;
-	}
-
 	// Get the ignored paths in early
 	@Order(SecurityProperties.IGNORED_ORDER)
 	private static class IgnoredPathsWebSecurityConfigurerAdapter
 			implements WebSecurityConfigurer<WebSecurity> {
 
-		@Autowired(required = false)
-		private ErrorController errorController;
+		private final List<IgnoredRequestCustomizer> customizers;
 
-		@Autowired
-		private SecurityProperties security;
-
-		@Autowired
-		private ServerProperties server;
+		IgnoredPathsWebSecurityConfigurerAdapter(
+				List<IgnoredRequestCustomizer> customizers) {
+			this.customizers = customizers;
+		}
 
 		@Override
 		public void configure(WebSecurity builder) throws Exception {
@@ -149,14 +161,55 @@ public class SpringBootWebSecurityConfiguration {
 
 		@Override
 		public void init(WebSecurity builder) throws Exception {
+			for (IgnoredRequestCustomizer customizer : this.customizers) {
+				customizer.customize(builder.ignoring());
+			}
+		}
+
+	}
+
+	private class DefaultIgnoredRequestCustomizer implements IgnoredRequestCustomizer {
+
+		private final ServerProperties server;
+
+		private final SecurityProperties security;
+
+		private final ErrorController errorController;
+
+		DefaultIgnoredRequestCustomizer(ServerProperties server,
+				SecurityProperties security, ErrorController errorController) {
+			this.server = server;
+			this.security = security;
+			this.errorController = errorController;
+		}
+
+		@Override
+		public void customize(IgnoredRequestConfigurer configurer) {
 			List<String> ignored = getIgnored(this.security);
 			if (this.errorController != null) {
 				ignored.add(normalizePath(this.errorController.getErrorPath()));
 			}
-			String[] paths = this.server.getPathsArray(ignored);
+			String[] paths = this.server.getServlet().getPathsArray(ignored);
+			List<RequestMatcher> matchers = new ArrayList<>();
 			if (!ObjectUtils.isEmpty(paths)) {
-				builder.ignoring().antMatchers(paths);
+				for (String pattern : paths) {
+					matchers.add(new AntPathRequestMatcher(pattern, null));
+				}
 			}
+			if (!matchers.isEmpty()) {
+				configurer.requestMatchers(new OrRequestMatcher(matchers));
+			}
+		}
+
+		private List<String> getIgnored(SecurityProperties security) {
+			List<String> ignored = new ArrayList<>(security.getIgnored());
+			if (ignored.isEmpty()) {
+				ignored.addAll(DEFAULT_IGNORED);
+			}
+			else if (ignored.contains("none")) {
+				ignored.remove("none");
+			}
+			return ignored;
 		}
 
 		private String normalizePath(String errorPath) {
@@ -174,6 +227,7 @@ public class SpringBootWebSecurityConfiguration {
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	protected static class ApplicationNoWebSecurityConfigurerAdapter
 			extends WebSecurityConfigurerAdapter {
+
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.requestMatcher(new RequestMatcher() {
@@ -183,6 +237,7 @@ public class SpringBootWebSecurityConfiguration {
 				}
 			});
 		}
+
 	}
 
 	@Configuration
@@ -227,7 +282,7 @@ public class SpringBootWebSecurityConfiguration {
 		}
 
 		private String[] getSecureApplicationPaths() {
-			List<String> list = new ArrayList<String>();
+			List<String> list = new ArrayList<>();
 			for (String path : this.security.getBasic().getPath()) {
 				path = (path == null ? "" : path.trim());
 				if (path.equals("/**")) {

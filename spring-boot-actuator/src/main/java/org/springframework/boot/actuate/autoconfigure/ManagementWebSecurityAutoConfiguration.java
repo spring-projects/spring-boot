@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,26 +26,27 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.AuthenticationManagerConfiguration;
 import org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.IgnoredRequestCustomizer;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityPrerequisite;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.SpringBootWebSecurityConfiguration;
-import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -55,14 +56,13 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity.IgnoredRequestConfigurer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -70,7 +70,6 @@ import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -87,11 +86,11 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ EnableWebSecurity.class })
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
 @AutoConfigureBefore(FallbackWebSecurityAutoConfiguration.class)
-@EnableConfigurationProperties
+@EnableConfigurationProperties(ManagementServerProperties.class)
 public class ManagementWebSecurityAutoConfiguration {
 
 	private static final String[] NO_PATHS = new String[0];
@@ -100,106 +99,59 @@ public class ManagementWebSecurityAutoConfiguration {
 			AnyRequestMatcher.INSTANCE);
 
 	@Bean
-	@ConditionalOnMissingBean({ IgnoredPathsWebSecurityConfigurerAdapter.class })
-	public IgnoredPathsWebSecurityConfigurerAdapter ignoredPathsWebSecurityConfigurerAdapter() {
-		return new IgnoredPathsWebSecurityConfigurerAdapter();
+	public IgnoredRequestCustomizer managementIgnoredRequestCustomizer(
+			ManagementServerProperties management,
+			ObjectProvider<ManagementContextResolver> contextResolver) {
+		return new ManagementIgnoredRequestCustomizer(management,
+				contextResolver.getIfAvailable());
+	}
+
+	private class ManagementIgnoredRequestCustomizer implements IgnoredRequestCustomizer {
+
+		private final ManagementServerProperties management;
+
+		private final ManagementContextResolver contextResolver;
+
+		ManagementIgnoredRequestCustomizer(ManagementServerProperties management,
+				ManagementContextResolver contextResolver) {
+			this.management = management;
+			this.contextResolver = contextResolver;
+		}
+
+		@Override
+		public void customize(IgnoredRequestConfigurer configurer) {
+			if (!this.management.getSecurity().isEnabled()) {
+				RequestMatcher requestMatcher = LazyEndpointPathRequestMatcher
+						.getRequestMatcher(this.contextResolver);
+				configurer.requestMatchers(requestMatcher);
+			}
+
+		}
+
 	}
 
 	@Configuration
 	protected static class ManagementSecurityPropertiesConfiguration
 			implements SecurityPrerequisite {
 
-		private final SecurityProperties security;
+		private final SecurityProperties securityProperties;
 
-		private final ManagementServerProperties management;
+		private final ManagementServerProperties managementServerProperties;
 
 		public ManagementSecurityPropertiesConfiguration(
-				ObjectProvider<SecurityProperties> securityProvider,
-				ObjectProvider<ManagementServerProperties> managementProvider) {
-			this.security = securityProvider.getIfAvailable();
-			this.management = managementProvider.getIfAvailable();
+				ObjectProvider<SecurityProperties> securityProperties,
+				ObjectProvider<ManagementServerProperties> managementServerProperties) {
+			this.securityProperties = securityProperties.getIfAvailable();
+			this.managementServerProperties = managementServerProperties.getIfAvailable();
 		}
 
 		@PostConstruct
 		public void init() {
-			if (this.management != null && this.security != null) {
-				this.security.getUser().getRole()
-						.addAll(this.management.getSecurity().getRoles());
+			if (this.managementServerProperties != null
+					&& this.securityProperties != null) {
+				this.securityProperties.getUser().getRole()
+						.addAll(this.managementServerProperties.getSecurity().getRoles());
 			}
-		}
-
-	}
-
-	// Get the ignored paths in early
-	@Order(SecurityProperties.IGNORED_ORDER + 1)
-	private static class IgnoredPathsWebSecurityConfigurerAdapter
-			implements WebSecurityConfigurer<WebSecurity> {
-
-		@Autowired(required = false)
-		private ErrorController errorController;
-
-		@Autowired
-		private SecurityProperties security;
-
-		@Autowired
-		private ManagementServerProperties management;
-
-		@Autowired(required = false)
-		private ManagementContextResolver contextResolver;
-
-		@Autowired(required = false)
-		private ServerProperties server;
-
-		@Override
-		public void configure(WebSecurity builder) throws Exception {
-		}
-
-		@Override
-		public void init(WebSecurity builder) throws Exception {
-			if (this.server == null) {
-				return;
-			}
-			IgnoredRequestConfigurer ignoring = builder.ignoring();
-			// The ignores are not cumulative, so to prevent overwriting the defaults
-			// we add them back.
-			Set<String> ignored = new LinkedHashSet<String>(
-					SpringBootWebSecurityConfiguration.getIgnored(this.security));
-			if (ignored.contains("none")) {
-				ignored.remove("none");
-			}
-			if (this.errorController != null) {
-				ignored.add(normalizePath(this.errorController.getErrorPath()));
-			}
-			RequestMatcher requestMatcher = getRequestMatcher();
-			String[] paths = this.server.getPathsArray(ignored);
-			if (!ObjectUtils.isEmpty(paths)) {
-				List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
-				for (String pattern : paths) {
-					matchers.add(new AntPathRequestMatcher(pattern, null));
-				}
-				if (requestMatcher != null) {
-					matchers.add(requestMatcher);
-				}
-				requestMatcher = new OrRequestMatcher(matchers);
-			}
-			if (requestMatcher != null) {
-				ignoring.requestMatchers(requestMatcher);
-			}
-		}
-
-		private RequestMatcher getRequestMatcher() {
-			if (this.management.getSecurity().isEnabled()) {
-				return null;
-			}
-			return LazyEndpointPathRequestMatcher.getRequestMatcher(this.contextResolver);
-		}
-
-		private String normalizePath(String errorPath) {
-			String result = StringUtils.cleanPath(errorPath);
-			if (!result.startsWith("/")) {
-				result = "/" + result;
-			}
-			return result;
 		}
 
 	}
@@ -209,6 +161,7 @@ public class ManagementWebSecurityAutoConfiguration {
 	@Conditional(WebSecurityEnablerCondition.class)
 	@EnableWebSecurity
 	protected static class WebSecurityEnabler extends AuthenticationManagerConfiguration {
+
 	}
 
 	/**
@@ -223,10 +176,13 @@ public class ManagementWebSecurityAutoConfiguration {
 					.getProperty("management.security.enabled", "true");
 			String basicEnabled = context.getEnvironment()
 					.getProperty("security.basic.enabled", "true");
-			return new ConditionOutcome(
-					"true".equalsIgnoreCase(managementEnabled)
-							&& !"true".equalsIgnoreCase(basicEnabled),
-					"Management security enabled and basic disabled");
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("WebSecurityEnabled");
+			if ("true".equalsIgnoreCase(managementEnabled)
+					&& !"true".equalsIgnoreCase(basicEnabled)) {
+				return ConditionOutcome.match(message.because("security enabled"));
+			}
+			return ConditionOutcome.noMatch(message.because("security disabled"));
 		}
 
 	}
@@ -234,6 +190,7 @@ public class ManagementWebSecurityAutoConfiguration {
 	@Configuration
 	@ConditionalOnMissingBean({ ManagementWebSecurityConfigurerAdapter.class })
 	@ConditionalOnProperty(prefix = "management.security", name = "enabled", matchIfMissing = true)
+	@EnableConfigurationProperties(SecurityProperties.class)
 	@Order(ManagementServerProperties.BASIC_AUTH_ORDER)
 	protected static class ManagementWebSecurityConfigurerAdapter
 			extends WebSecurityConfigurerAdapter {
@@ -246,10 +203,10 @@ public class ManagementWebSecurityAutoConfiguration {
 
 		public ManagementWebSecurityConfigurerAdapter(SecurityProperties security,
 				ManagementServerProperties management,
-				ObjectProvider<ManagementContextResolver> contextResolverProvider) {
+				ObjectProvider<ManagementContextResolver> contextResolver) {
 			this.security = security;
 			this.management = management;
-			this.contextResolver = contextResolverProvider.getIfAvailable();
+			this.contextResolver = contextResolver.getIfAvailable();
 		}
 
 		@Override
@@ -270,11 +227,20 @@ public class ManagementWebSecurityAutoConfiguration {
 				http.httpBasic().authenticationEntryPoint(entryPoint);
 				// No cookies for management endpoints by default
 				http.csrf().disable();
-				http.sessionManagement().sessionCreationPolicy(
-						this.management.getSecurity().getSessions());
+				http.sessionManagement()
+						.sessionCreationPolicy(asSpringSecuritySessionCreationPolicy(
+								this.management.getSecurity().getSessions()));
 				SpringBootWebSecurityConfiguration.configureHeaders(http.headers(),
 						this.security.getHeaders());
 			}
+		}
+
+		private SessionCreationPolicy asSpringSecuritySessionCreationPolicy(
+				Enum<?> value) {
+			if (value == null) {
+				return SessionCreationPolicy.STATELESS;
+			}
+			return SessionCreationPolicy.valueOf(value.name());
 		}
 
 		private RequestMatcher getRequestMatcher() {
@@ -293,12 +259,11 @@ public class ManagementWebSecurityAutoConfiguration {
 
 		private void configurePermittedRequests(
 				ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry requests) {
+			requests.requestMatchers(new LazyEndpointPathRequestMatcher(
+					this.contextResolver, EndpointPaths.SENSITIVE)).authenticated();
 			// Permit access to the non-sensitive endpoints
 			requests.requestMatchers(new LazyEndpointPathRequestMatcher(
 					this.contextResolver, EndpointPaths.NON_SENSITIVE)).permitAll();
-			// Restrict the rest to the configured roles
-			List<String> roles = this.management.getSecurity().getRoles();
-			requests.anyRequest().hasAnyRole(roles.toArray(new String[roles.size()]));
 		}
 
 	}
@@ -314,6 +279,15 @@ public class ManagementWebSecurityAutoConfiguration {
 				return !endpoint.isSensitive();
 			}
 
+		},
+
+		SENSITIVE {
+
+			@Override
+			protected boolean isIncluded(MvcEndpoint endpoint) {
+				return endpoint.isSensitive();
+			}
+
 		};
 
 		public String[] getPaths(EndpointHandlerMapping endpointHandlerMapping) {
@@ -321,18 +295,15 @@ public class ManagementWebSecurityAutoConfiguration {
 				return NO_PATHS;
 			}
 			Set<? extends MvcEndpoint> endpoints = endpointHandlerMapping.getEndpoints();
-			Set<String> paths = new LinkedHashSet<String>(endpoints.size());
+			Set<String> paths = new LinkedHashSet<>(endpoints.size());
 			for (MvcEndpoint endpoint : endpoints) {
 				if (isIncluded(endpoint)) {
 					String path = endpointHandlerMapping.getPath(endpoint.getPath());
 					paths.add(path);
 					if (!path.equals("")) {
-						if (endpoint.isSensitive()) {
-							// Ensure that nested paths are secured
-							paths.add(path + "/**");
-							// Add Spring MVC-generated additional paths
-							paths.add(path + ".*");
-						}
+						paths.add(path + "/**");
+						// Add Spring MVC-generated additional paths
+						paths.add(path + ".*");
 					}
 					paths.add(path + "/");
 				}
@@ -366,7 +337,7 @@ public class ManagementWebSecurityAutoConfiguration {
 			String path = management.getContextPath();
 			if (StringUtils.hasText(path)) {
 				AntPathRequestMatcher matcher = new AntPathRequestMatcher(
-						server.getPath(path) + "/**");
+						server.getServlet().getPath(path) + "/**");
 				return matcher;
 			}
 			// Match everything, including the sensitive and non-sensitive paths
@@ -390,10 +361,11 @@ public class ManagementWebSecurityAutoConfiguration {
 		private RequestMatcher createDelegate() {
 			ServerProperties server = this.contextResolver.getApplicationContext()
 					.getBean(ServerProperties.class);
-			List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
+			List<RequestMatcher> matchers = new ArrayList<>();
 			EndpointHandlerMapping endpointHandlerMapping = getRequiredEndpointHandlerMapping();
 			for (String path : this.endpointPaths.getPaths(endpointHandlerMapping)) {
-				matchers.add(new AntPathRequestMatcher(server.getPath(path)));
+				matchers.add(
+						new AntPathRequestMatcher(server.getServlet().getPath(path)));
 			}
 			return (matchers.isEmpty() ? MATCH_NONE : new OrRequestMatcher(matchers));
 		}

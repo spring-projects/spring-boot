@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import javax.annotation.PostConstruct;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Collector;
-import com.samskivert.mustache.Mustache.Compiler;
 import com.samskivert.mustache.Mustache.TemplateLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,25 +27,25 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.mustache.web.MustacheViewResolver;
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Mustache.
  *
  * @author Dave Syer
+ * @author Brian Clozel
  * @since 1.2.2
  */
 @Configuration
 @ConditionalOnClass(Mustache.class)
 @EnableConfigurationProperties(MustacheProperties.class)
+@Import({ MustacheServletWebConfiguration.class, MustacheReactiveWebConfiguration.class })
 public class MustacheAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(MustacheAutoConfiguration.class);
@@ -99,26 +98,4 @@ public class MustacheAutoConfiguration {
 		return loader;
 	}
 
-	@Configuration
-	@ConditionalOnWebApplication
-	protected static class MustacheWebConfiguration {
-
-		private final MustacheProperties mustache;
-
-		protected MustacheWebConfiguration(MustacheProperties mustache) {
-			this.mustache = mustache;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(MustacheViewResolver.class)
-		public MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler) {
-			MustacheViewResolver resolver = new MustacheViewResolver();
-			this.mustache.applyToViewResolver(resolver);
-			resolver.setCharset(this.mustache.getCharsetName());
-			resolver.setCompiler(mustacheCompiler);
-			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
-			return resolver;
-		}
-
-	}
 }

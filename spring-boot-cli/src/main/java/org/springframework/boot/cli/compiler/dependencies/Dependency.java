@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,10 +125,10 @@ public final class Dependency {
 		if (getClass() == obj.getClass()) {
 			Dependency other = (Dependency) obj;
 			boolean result = true;
-			result &= this.groupId.equals(other.groupId);
-			result &= this.artifactId.equals(other.artifactId);
-			result &= this.version.equals(other.version);
-			result &= this.exclusions.equals(other.exclusions);
+			result = result && this.groupId.equals(other.groupId);
+			result = result && this.artifactId.equals(other.artifactId);
+			result = result && this.version.equals(other.version);
+			result = result && this.exclusions.equals(other.exclusions);
 			return result;
 		}
 		return false;
@@ -187,8 +187,8 @@ public final class Dependency {
 			if (getClass() == obj.getClass()) {
 				Exclusion other = (Exclusion) obj;
 				boolean result = true;
-				result &= this.groupId.equals(other.groupId);
-				result &= this.artifactId.equals(other.artifactId);
+				result = result && this.groupId.equals(other.groupId);
+				result = result && this.artifactId.equals(other.artifactId);
 				return result;
 			}
 			return false;

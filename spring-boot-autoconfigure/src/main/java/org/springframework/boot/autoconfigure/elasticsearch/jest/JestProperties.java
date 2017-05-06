@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch.jest;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,13 +28,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@ConfigurationProperties("spring.elasticsearch.jest")
+@ConfigurationProperties(prefix = "spring.elasticsearch.jest")
 public class JestProperties {
 
 	/**
 	 * Comma-separated list of the Elasticsearch instances to use.
 	 */
-	private List<String> uris = Collections.singletonList("http://localhost:9200");
+	private List<String> uris = new ArrayList<String>(
+			Collections.singletonList("http://localhost:9200"));
 
 	/**
 	 * Login user.
@@ -44,6 +46,11 @@ public class JestProperties {
 	 * Login password.
 	 */
 	private String password;
+
+	/**
+	 * Enable connection requests from multiple execution threads.
+	 */
+	private boolean multiThreaded = true;
 
 	/**
 	 * Connection timeout in milliseconds.
@@ -82,6 +89,14 @@ public class JestProperties {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public boolean isMultiThreaded() {
+		return this.multiThreaded;
+	}
+
+	public void setMultiThreaded(boolean multiThreaded) {
+		this.multiThreaded = multiThreaded;
 	}
 
 	public int getConnectionTimeout() {

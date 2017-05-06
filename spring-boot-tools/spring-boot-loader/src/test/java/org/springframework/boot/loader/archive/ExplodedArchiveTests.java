@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -188,9 +188,9 @@ public class ExplodedArchiveTests {
 	}
 
 	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {
-		Map<String, Archive.Entry> entries = new HashMap<String, Archive.Entry>();
+		Map<String, Archive.Entry> entries = new HashMap<>();
 		for (Archive.Entry entry : archive) {
-			entries.put(entry.getName().toString(), entry);
+			entries.put(entry.getName(), entry);
 		}
 		return entries;
 	}

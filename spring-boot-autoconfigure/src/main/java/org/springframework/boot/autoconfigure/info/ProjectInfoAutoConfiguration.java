@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.PropertyResolver;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -43,6 +43,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * {@link EnableAutoConfiguration Auto-configuration} for various project information.
  *
  * @author Stephane Nicoll
+ * @author Madhura Bhave
  * @since 1.4.0
  */
 @Configuration
@@ -90,23 +91,21 @@ public class ProjectInfoAutoConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			ResourceLoader loader = context.getResourceLoader();
-			if (loader == null) {
-				loader = this.defaultResourceLoader;
-			}
-			PropertyResolver propertyResolver = context.getEnvironment();
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-					propertyResolver, "spring.info.git.");
-			String location = resolver.getProperty("location");
+			loader = (loader != null ? loader : this.defaultResourceLoader);
+			Environment environment = context.getEnvironment();
+			String location = environment.getProperty("spring.info.git.location");
 			if (location == null) {
-				resolver = new RelaxedPropertyResolver(propertyResolver, "spring.git.");
-				location = resolver.getProperty("properties");
-				if (location == null) {
-					location = "classpath:git.properties";
-				}
+				location = environment.getProperty("spring.git.properties");
+				location = (location != null ? location : "classpath:git.properties");
 			}
-			boolean match = loader.getResource(location).exists();
-			return new ConditionOutcome(match,
-					"Git info " + (match ? "found" : "not found") + " at " + location);
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("GitResource");
+			if (loader.getResource(location).exists()) {
+				return ConditionOutcome
+						.match(message.found("git info at").items(location));
+			}
+			return ConditionOutcome
+					.noMatch(message.didNotFind("git info at").items(location));
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.lang.UsesJava7;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StreamUtils;
@@ -54,9 +53,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Phillip Webb
  * @since 1.4.0
  */
-@ConfigurationProperties("endpoints.heapdump")
+@ConfigurationProperties(prefix = "endpoints.heapdump")
 @HypermediaDisabled
-public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint {
+public class HeapdumpMvcEndpoint extends AbstractNamedMvcEndpoint {
 
 	private final long timeout;
 
@@ -69,7 +68,7 @@ public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint {
 	}
 
 	protected HeapdumpMvcEndpoint(long timeout) {
-		super("/heapdump", true);
+		super("heapdump", "/heapdump", true);
 		this.timeout = timeout;
 	}
 
@@ -169,6 +168,7 @@ public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint {
 	/**
 	 * Strategy interface used to dump the heap to a file.
 	 */
+	@FunctionalInterface
 	protected interface HeapDumper {
 
 		/**
@@ -187,7 +187,6 @@ public class HeapdumpMvcEndpoint extends AbstractMvcEndpoint {
 	 * {@link HeapDumper} that uses {@code com.sun.management.HotSpotDiagnosticMXBean}
 	 * available on Oracle and OpenJDK to dump the heap to a file.
 	 */
-	@UsesJava7
 	protected static class HotSpotDiagnosticMXBeanHeapDumper implements HeapDumper {
 
 		private Object diagnosticMXBean;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,9 +117,8 @@ public class ResourceProperties implements ResourceLoaderAware {
 		return result;
 	}
 
-	List<Resource> getFaviconLocations() {
-		List<Resource> locations = new ArrayList<Resource>(
-				this.staticLocations.length + 1);
+	public List<Resource> getFaviconLocations() {
+		List<Resource> locations = new ArrayList<>(this.staticLocations.length + 1);
 		if (this.resourceLoader != null) {
 			for (String location : this.staticLocations) {
 				locations.add(this.resourceLoader.getResource(location));
@@ -172,7 +171,7 @@ public class ResourceProperties implements ResourceLoaderAware {
 
 		/**
 		 * Enable resolution of already gzipped resources. Checks for a resource name
-		 * variant with the {@code *.gz} extension.
+		 * variant with the "*.gz" extension.
 		 */
 		private boolean gzipped = false;
 
@@ -186,9 +185,8 @@ public class ResourceProperties implements ResourceLoaderAware {
 		 * settings are present.
 		 */
 		public Boolean getEnabled() {
-			Boolean strategyEnabled = getStrategy().getFixed().isEnabled()
-					|| getStrategy().getContent().isEnabled();
-			return (strategyEnabled ? Boolean.TRUE : this.enabled);
+			return getEnabled(getStrategy().getFixed().isEnabled(),
+					getStrategy().getContent().isEnabled(), this.enabled);
 		}
 
 		public void setEnabled(boolean enabled) {
@@ -221,6 +219,11 @@ public class ResourceProperties implements ResourceLoaderAware {
 
 		public void setGzipped(boolean gzipped) {
 			this.gzipped = gzipped;
+		}
+
+		static Boolean getEnabled(boolean fixedEnabled, boolean contentEnabled,
+				Boolean chainEnabled) {
+			return (fixedEnabled || contentEnabled ? Boolean.TRUE : chainEnabled);
 		}
 
 	}

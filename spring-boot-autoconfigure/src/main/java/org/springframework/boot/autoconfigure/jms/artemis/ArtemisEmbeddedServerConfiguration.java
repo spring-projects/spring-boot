@@ -56,13 +56,13 @@ class ArtemisEmbeddedServerConfiguration {
 	private final List<TopicConfiguration> topicsConfiguration;
 
 	ArtemisEmbeddedServerConfiguration(ArtemisProperties properties,
-			ObjectProvider<List<ArtemisConfigurationCustomizer>> configurationCustomizersProvider,
-			ObjectProvider<List<JMSQueueConfiguration>> queuesConfigurationProvider,
-			ObjectProvider<List<TopicConfiguration>> topicsConfigurationProvider) {
+			ObjectProvider<List<ArtemisConfigurationCustomizer>> configurationCustomizers,
+			ObjectProvider<List<JMSQueueConfiguration>> queuesConfiguration,
+			ObjectProvider<List<TopicConfiguration>> topicsConfiguration) {
 		this.properties = properties;
-		this.configurationCustomizers = configurationCustomizersProvider.getIfAvailable();
-		this.queuesConfiguration = queuesConfigurationProvider.getIfAvailable();
-		this.topicsConfiguration = topicsConfigurationProvider.getIfAvailable();
+		this.configurationCustomizers = configurationCustomizers.getIfAvailable();
+		this.queuesConfiguration = queuesConfiguration.getIfAvailable();
+		this.topicsConfiguration = topicsConfiguration.getIfAvailable();
 	}
 
 	@Bean

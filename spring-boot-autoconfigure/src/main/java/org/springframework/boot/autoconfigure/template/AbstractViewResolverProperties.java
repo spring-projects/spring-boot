@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ public abstract class AbstractViewResolverProperties {
 
 	public MimeType getContentType() {
 		if (this.contentType.getCharset() == null) {
-			Map<String, String> parameters = new LinkedHashMap<String, String>();
+			Map<String, String> parameters = new LinkedHashMap<>();
 			parameters.put("charset", this.charset.name());
 			parameters.putAll(this.contentType.getParameters());
 			return new MimeType(this.contentType, parameters);

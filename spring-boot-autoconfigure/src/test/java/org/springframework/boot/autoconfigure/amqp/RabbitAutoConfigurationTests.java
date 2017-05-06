@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,9 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -38,6 +40,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.rabbit.support.ValueExpression;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.DirectFieldAccessor;
@@ -48,6 +51,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
+import org.springframework.retry.interceptor.MethodInvocationRecoverer;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 
@@ -261,8 +265,8 @@ public class RabbitAutoConfigurationTests {
 		load(TestConfiguration.class, "spring.rabbitmq.dynamic:false");
 		// There should NOT be an AmqpAdmin bean when dynamic is switch to false
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.thrown.expectMessage("No qualifying bean of type "
-				+ "[org.springframework.amqp.core.AmqpAdmin] is defined");
+		this.thrown.expectMessage("No qualifying bean of type");
+		this.thrown.expectMessage(AmqpAdmin.class.getName());
 		this.context.getBean(AmqpAdmin.class);
 	}
 
@@ -290,39 +294,124 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void testRabbitListenerContainerFactoryWithCustomSettings() {
-		load(MessageConvertersConfiguration.class,
-				"spring.rabbitmq.listener.retry.enabled:true",
-				"spring.rabbitmq.listener.retry.maxAttempts:4",
-				"spring.rabbitmq.listener.retry.initialInterval:2000",
-				"spring.rabbitmq.listener.retry.multiplier:1.5",
-				"spring.rabbitmq.listener.retry.maxInterval:5000",
-				"spring.rabbitmq.listener.autoStartup:false",
-				"spring.rabbitmq.listener.acknowledgeMode:manual",
-				"spring.rabbitmq.listener.concurrency:5",
-				"spring.rabbitmq.listener.maxConcurrency:10",
-				"spring.rabbitmq.listener.prefetch:40",
-				"spring.rabbitmq.listener.defaultRequeueRejected:false",
-				"spring.rabbitmq.listener.transactionSize:20");
+	public void testSimpleRabbitListenerContainerFactoryWithCustomSettings() {
+		load(new Class<?>[] { MessageConvertersConfiguration.class,
+						MessageRecoverersConfiguration.class },
+				"spring.rabbitmq.listener.simple.retry.enabled:true",
+				"spring.rabbitmq.listener.simple.retry.maxAttempts:4",
+				"spring.rabbitmq.listener.simple.retry.initialInterval:2000",
+				"spring.rabbitmq.listener.simple.retry.multiplier:1.5",
+				"spring.rabbitmq.listener.simple.retry.maxInterval:5000",
+				"spring.rabbitmq.listener.simple.autoStartup:false",
+				"spring.rabbitmq.listener.simple.acknowledgeMode:manual",
+				"spring.rabbitmq.listener.simple.concurrency:5",
+				"spring.rabbitmq.listener.simple.maxConcurrency:10",
+				"spring.rabbitmq.listener.simple.prefetch:40",
+				"spring.rabbitmq.listener.simple.defaultRequeueRejected:false",
+				"spring.rabbitmq.listener.simple.idleEventInterval:5",
+				"spring.rabbitmq.listener.simple.transactionSize:20");
 		SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
 				.getBean("rabbitListenerContainerFactory",
 						SimpleRabbitListenerContainerFactory.class);
 		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
+		assertThat(dfa.getPropertyValue("concurrentConsumers")).isEqualTo(5);
+		assertThat(dfa.getPropertyValue("maxConcurrentConsumers")).isEqualTo(10);
+		assertThat(dfa.getPropertyValue("txSize")).isEqualTo(20);
+		checkCommonProps(dfa);
+	}
+
+	@Test
+	public void testDirectRabbitListenerContainerFactoryWithCustomSettings() {
+		load(new Class<?>[] { MessageConvertersConfiguration.class,
+				MessageRecoverersConfiguration.class },
+				"spring.rabbitmq.listener.type:direct",
+				"spring.rabbitmq.listener.direct.retry.enabled:true",
+				"spring.rabbitmq.listener.direct.retry.maxAttempts:4",
+				"spring.rabbitmq.listener.direct.retry.initialInterval:2000",
+				"spring.rabbitmq.listener.direct.retry.multiplier:1.5",
+				"spring.rabbitmq.listener.direct.retry.maxInterval:5000",
+				"spring.rabbitmq.listener.direct.autoStartup:false",
+				"spring.rabbitmq.listener.direct.acknowledgeMode:manual",
+				"spring.rabbitmq.listener.direct.consumers-per-queue:5",
+				"spring.rabbitmq.listener.direct.prefetch:40",
+				"spring.rabbitmq.listener.direct.defaultRequeueRejected:false",
+				"spring.rabbitmq.listener.direct.idleEventInterval:5");
+		DirectRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
+				.getBean("rabbitListenerContainerFactory",
+						DirectRabbitListenerContainerFactory.class);
+		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
+		assertThat(dfa.getPropertyValue("consumersPerQueue")).isEqualTo(5);
+		checkCommonProps(dfa);
+	}
+
+	@Test
+	public void testRabbitListenerContainerFactoryConfigurersAreAvailable() {
+		load(TestConfiguration.class,
+				"spring.rabbitmq.listener.simple.concurrency:5",
+				"spring.rabbitmq.listener.simple.maxConcurrency:10",
+				"spring.rabbitmq.listener.simple.prefetch:40",
+				"spring.rabbitmq.listener.direct.consumers-per-queue:5",
+				"spring.rabbitmq.listener.direct.prefetch:40");
+		assertThat(this.context.getBeansOfType(
+				SimpleRabbitListenerContainerFactoryConfigurer.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(
+				DirectRabbitListenerContainerFactoryConfigurer.class)).hasSize(1);
+	}
+
+	@Test
+	public void testSimpleRabbitListenerContainerFactoryConfigurerUsesConfig() {
+		load(TestConfiguration.class,
+				"spring.rabbitmq.listener.type:direct", // listener type is irrelevant
+				"spring.rabbitmq.listener.simple.concurrency:5",
+				"spring.rabbitmq.listener.simple.maxConcurrency:10",
+				"spring.rabbitmq.listener.simple.prefetch:40");
+		SimpleRabbitListenerContainerFactoryConfigurer configurer = this.context
+				.getBean(SimpleRabbitListenerContainerFactoryConfigurer.class);
+		SimpleRabbitListenerContainerFactory factory =
+				mock(SimpleRabbitListenerContainerFactory.class);
+		configurer.configure(factory, mock(ConnectionFactory.class));
+		verify(factory).setConcurrentConsumers(5);
+		verify(factory).setMaxConcurrentConsumers(10);
+		verify(factory).setPrefetchCount(40);
+	}
+
+	@Test
+	public void testDirectRabbitListenerContainerFactoryConfigurerUsesConfig() {
+		load(TestConfiguration.class,
+				"spring.rabbitmq.listener.type:simple", // listener type is irrelevant
+				"spring.rabbitmq.listener.direct.consumers-per-queue:5",
+				"spring.rabbitmq.listener.direct.prefetch:40");
+		DirectRabbitListenerContainerFactoryConfigurer configurer = this.context
+				.getBean(DirectRabbitListenerContainerFactoryConfigurer.class);
+		DirectRabbitListenerContainerFactory factory =
+				mock(DirectRabbitListenerContainerFactory.class);
+		configurer.configure(factory, mock(ConnectionFactory.class));
+		verify(factory).setConsumersPerQueue(5);
+		verify(factory).setPrefetchCount(40);
+	}
+
+	private void checkCommonProps(DirectFieldAccessor dfa) {
 		assertThat(dfa.getPropertyValue("autoStartup")).isEqualTo(Boolean.FALSE);
 		assertThat(dfa.getPropertyValue("acknowledgeMode"))
 				.isEqualTo(AcknowledgeMode.MANUAL);
-		assertThat(dfa.getPropertyValue("concurrentConsumers")).isEqualTo(5);
-		assertThat(dfa.getPropertyValue("maxConcurrentConsumers")).isEqualTo(10);
 		assertThat(dfa.getPropertyValue("prefetchCount")).isEqualTo(40);
-		assertThat(dfa.getPropertyValue("txSize")).isEqualTo(20);
 		assertThat(dfa.getPropertyValue("messageConverter"))
 				.isSameAs(this.context.getBean("myMessageConverter"));
 		assertThat(dfa.getPropertyValue("defaultRequeueRejected"))
 				.isEqualTo(Boolean.FALSE);
+		assertThat(dfa.getPropertyValue("idleEventInterval")).isEqualTo(5L);
 		Advice[] adviceChain = (Advice[]) dfa.getPropertyValue("adviceChain");
 		assertThat(adviceChain).isNotNull();
 		assertThat(adviceChain.length).isEqualTo(1);
 		dfa = new DirectFieldAccessor(adviceChain[0]);
+		MessageRecoverer messageRecoverer = this.context.getBean("myMessageRecoverer",
+				MessageRecoverer.class);
+		MethodInvocationRecoverer<?> mir = (MethodInvocationRecoverer<?>) dfa
+				.getPropertyValue("recoverer");
+		Message message = mock(Message.class);
+		Exception ex = new Exception("test");
+		mir.recover(new Object[] { "foo", message }, ex);
+		verify(messageRecoverer).recover(message, ex);
 		RetryTemplate retryTemplate = (RetryTemplate) dfa
 				.getPropertyValue("retryOperations");
 		assertThat(retryTemplate).isNotNull();
@@ -398,17 +487,16 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	private void load(Class<?> config, String... environment) {
-		this.context = doLoad(new Class<?>[] { config }, environment);
+		load(new Class<?>[] { config }, environment);
 	}
 
-	private AnnotationConfigApplicationContext doLoad(Class<?>[] configs,
-			String... environment) {
+	private void load(Class<?>[] configs, String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(configs);
 		applicationContext.register(RabbitAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.refresh();
-		return applicationContext;
+		this.context = applicationContext;
 	}
 
 	@Configuration
@@ -418,10 +506,12 @@ public class RabbitAutoConfigurationTests {
 
 	@Configuration
 	protected static class TestConfiguration2 {
+
 		@Bean
 		ConnectionFactory aDifferentConnectionFactory() {
 			return new CachingConnectionFactory("otherserver", 8001);
 		}
+
 	}
 
 	@Configuration
@@ -451,6 +541,7 @@ public class RabbitAutoConfigurationTests {
 			messagingTemplate.setDefaultDestination("fooBar");
 			return messagingTemplate;
 		}
+
 	}
 
 	@Configuration
@@ -475,6 +566,22 @@ public class RabbitAutoConfigurationTests {
 		@Bean
 		public MessageConverter anotherMessageConverter() {
 			return mock(MessageConverter.class);
+		}
+
+	}
+
+	@Configuration
+	protected static class MessageRecoverersConfiguration {
+
+		@Bean
+		@Primary
+		public MessageRecoverer myMessageRecoverer() {
+			return mock(MessageRecoverer.class);
+		}
+
+		@Bean
+		public MessageRecoverer anotherMessageRecoverer() {
+			return mock(MessageRecoverer.class);
 		}
 
 	}

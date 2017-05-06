@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ class TypeUtils {
 	private static final Map<TypeKind, Class<?>> PRIMITIVE_WRAPPERS;
 
 	static {
-		Map<TypeKind, Class<?>> wrappers = new HashMap<TypeKind, Class<?>>();
+		Map<TypeKind, Class<?>> wrappers = new HashMap<>();
 		wrappers.put(TypeKind.BOOLEAN, Boolean.class);
 		wrappers.put(TypeKind.BYTE, Byte.class);
 		wrappers.put(TypeKind.CHAR, Character.class);
@@ -56,7 +56,7 @@ class TypeUtils {
 	private static final Map<String, TypeKind> WRAPPER_TO_PRIMITIVE;
 
 	static {
-		Map<String, TypeKind> primitives = new HashMap<String, TypeKind>();
+		Map<String, TypeKind> primitives = new HashMap<>();
 		for (Map.Entry<TypeKind, Class<?>> entry : PRIMITIVE_WRAPPERS.entrySet()) {
 			primitives.put(entry.getValue().getName(), entry.getKey());
 		}
@@ -93,10 +93,35 @@ class TypeUtils {
 		}
 	}
 
-	public String getType(Element element) {
-		return getType(element == null ? null : element.asType());
+	/**
+	 * Return the qualified name of the specified element.
+	 * @param element the element to handle
+	 * @return the fully qualified name of the element, suitable for a call to
+	 * {@link Class#forName(String)}
+	 */
+	public String getQualifiedName(Element element) {
+		if (element == null) {
+			return null;
+		}
+		TypeElement enclosingElement = getEnclosingTypeElement(element.asType());
+		if (enclosingElement != null) {
+			return getQualifiedName(enclosingElement) + "$"
+					+ ((DeclaredType) element.asType()).asElement().getSimpleName()
+							.toString();
+		}
+		if (element instanceof TypeElement) {
+			return ((TypeElement) element).getQualifiedName().toString();
+		}
+		throw new IllegalStateException(
+				"Could not extract qualified name from " + element);
 	}
 
+	/**
+	 * Return the type of the specified {@link TypeMirror} including all its generic
+	 * information.
+	 * @param type the type to handle
+	 * @return a representation of the type including all its generic information
+	 */
 	public String getType(TypeMirror type) {
 		if (type == null) {
 			return null;
@@ -105,15 +130,23 @@ class TypeUtils {
 		if (wrapper != null) {
 			return wrapper.getName();
 		}
+		TypeElement enclosingElement = getEnclosingTypeElement(type);
+		if (enclosingElement != null) {
+			return getQualifiedName(enclosingElement) + "$"
+					+ ((DeclaredType) type).asElement().getSimpleName().toString();
+		}
+		return type.toString();
+	}
+
+	private TypeElement getEnclosingTypeElement(TypeMirror type) {
 		if (type instanceof DeclaredType) {
 			DeclaredType declaredType = (DeclaredType) type;
 			Element enclosingElement = declaredType.asElement().getEnclosingElement();
 			if (enclosingElement != null && enclosingElement instanceof TypeElement) {
-				return getType(enclosingElement) + "$"
-						+ declaredType.asElement().getSimpleName().toString();
+				return (TypeElement) enclosingElement;
 			}
 		}
-		return type.toString();
+		return null;
 	}
 
 	public boolean isCollectionOrMap(TypeMirror type) {

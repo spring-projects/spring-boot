@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,20 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import java.io.IOException;
+
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastConfigResourceCondition;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * Hazelcast cache configuration. Can either reuse the {@link HazelcastInstance} that has
@@ -44,8 +47,21 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnClass({ HazelcastInstance.class, HazelcastCacheManager.class })
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional(CacheCondition.class)
-@Import({ HazelcastInstanceConfiguration.Existing.class,
-		HazelcastInstanceConfiguration.Specific.class })
+@ConditionalOnSingleCandidate(HazelcastInstance.class)
 class HazelcastCacheConfiguration {
+
+	private final CacheManagerCustomizers customizers;
+
+	HazelcastCacheConfiguration(CacheManagerCustomizers customizers) {
+		this.customizers = customizers;
+	}
+
+	@Bean
+	public HazelcastCacheManager cacheManager(HazelcastInstance existingHazelcastInstance)
+			throws IOException {
+		HazelcastCacheManager cacheManager = new HazelcastCacheManager(
+				existingHazelcastInstance);
+		return this.customizers.customize(cacheManager);
+	}
 
 }

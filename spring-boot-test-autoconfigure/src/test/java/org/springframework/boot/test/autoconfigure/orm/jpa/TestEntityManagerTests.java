@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ public class TestEntityManagerTests {
 	public void persistAndGetIdShouldPersistAndGetId() throws Exception {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
-		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(null, 123);
+		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		Object result = this.testEntityManager.persistAndGetId(entity);
 		verify(this.entityManager).persist(entity);
 		assertThat(result).isEqualTo(123);
@@ -84,7 +84,7 @@ public class TestEntityManagerTests {
 	public void persistAndGetIdForTypeShouldPersistAndGetId() throws Exception {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
-		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(null, 123);
+		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		Integer result = this.testEntityManager.persistAndGetId(entity, Integer.class);
 		verify(this.entityManager).persist(entity);
 		assertThat(result).isEqualTo(123);
@@ -97,17 +97,6 @@ public class TestEntityManagerTests {
 		TestEntity result = this.testEntityManager.persist(entity);
 		verify(this.entityManager).persist(entity);
 		assertThat(result).isSameAs(entity);
-	}
-
-	@Test
-	public void persistWhenAlreadyHasIdShouldThrowException() throws Exception {
-		bindEntityManager();
-		TestEntity entity = new TestEntity();
-		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage(
-				"Entity " + TestEntity.class.getName() + " already has an ID");
-		this.testEntityManager.persistAndGetId(entity, Integer.class);
 	}
 
 	@Test
@@ -125,7 +114,7 @@ public class TestEntityManagerTests {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		TestEntity found = new TestEntity();
-		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(null, 123);
+		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		given(this.entityManager.find(TestEntity.class, 123)).willReturn(found);
 		TestEntity result = this.testEntityManager.persistFlushFind(entity);
 		verify(this.entityManager).persist(entity);
@@ -202,7 +191,7 @@ public class TestEntityManagerTests {
 	public void getIdForTypeWhenTypeIsWrongShouldThrowException() throws Exception {
 		TestEntity entity = new TestEntity();
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
-		this.thrown.expectMessage("ID mismatch Object of class [java.lang.Integer] "
+		this.thrown.expectMessage("ID mismatch: Object of class [java.lang.Integer] "
 				+ "must be an instance of class java.lang.Long");
 		this.testEntityManager.getId(entity, Long.class);
 	}

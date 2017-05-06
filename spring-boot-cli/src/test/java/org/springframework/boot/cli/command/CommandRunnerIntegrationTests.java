@@ -49,4 +49,5 @@ public class CommandRunnerIntegrationTests {
 		runner.runAndHandleErrors("run", "samples/app.groovy", "--", "-d");
 		assertThat(this.output.toString()).doesNotContain("Negative matches:");
 	}
+
 }

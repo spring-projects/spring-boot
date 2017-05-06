@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-@ConfigurationProperties("spring.jersey")
+@ConfigurationProperties(prefix = "spring.jersey")
 public class JerseyProperties {
 
 	/**
@@ -40,7 +40,7 @@ public class JerseyProperties {
 	/**
 	 * Init parameters to pass to Jersey via the servlet or filter.
 	 */
-	private Map<String, String> init = new HashMap<String, String>();
+	private Map<String, String> init = new HashMap<>();
 
 	private final Filter filter = new Filter();
 
@@ -85,7 +85,9 @@ public class JerseyProperties {
 	}
 
 	public enum Type {
+
 		SERVLET, FILTER
+
 	}
 
 	public static class Filter {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,12 @@ package org.springframework.boot.logging.java;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.apache.commons.logging.impl.Jdk14Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,6 +32,8 @@ import org.junit.Test;
 
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggerConfiguration;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -40,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Ben Hale
  */
 public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 
@@ -58,7 +64,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Rule
 	public InternalOutputCapture output = new InternalOutputCapture();
 
-	private Jdk14Logger logger;
+	private Logger logger;
 
 	private Locale defaultLocale;
 
@@ -66,12 +72,17 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	public void init() throws SecurityException, IOException {
 		this.defaultLocale = Locale.getDefault();
 		Locale.setDefault(Locale.ENGLISH);
-		this.logger = new Jdk14Logger(getClass().getName());
+		this.logger = Logger.getLogger(getClass().getName());
 	}
 
 	@After
 	public void clearLocale() {
 		Locale.setDefault(this.defaultLocale);
+	}
+
+	@After
+	public void resetLogger() {
+		this.logger.setLevel(Level.OFF);
 	}
 
 	@Test
@@ -140,14 +151,44 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	public void getSupportedLevels() {
+		assertThat(this.loggingSystem.getSupportedLogLevels())
+				.isEqualTo(EnumSet.of(LogLevel.TRACE, LogLevel.DEBUG, LogLevel.INFO,
+						LogLevel.WARN, LogLevel.ERROR, LogLevel.OFF));
+	}
+
+	@Test
 	public void setLevel() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
-		this.logger.debug("Hello");
+		this.logger.fine("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
-		this.logger.debug("Hello");
+		this.logger.fine("Hello");
 		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"))
 				.isEqualTo(1);
+	}
+
+	@Test
+	public void getLoggingConfigurations() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
+		List<LoggerConfiguration> configurations = this.loggingSystem
+				.getLoggerConfigurations();
+		assertThat(configurations).isNotEmpty();
+		assertThat(configurations.get(0).getName())
+				.isEqualTo(LoggingSystem.ROOT_LOGGER_NAME);
+	}
+
+	@Test
+	public void getLoggingConfiguration() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
+		LoggerConfiguration configuration = this.loggingSystem
+				.getLoggerConfiguration(getClass().getName());
+		assertThat(configuration).isEqualTo(new LoggerConfiguration(getClass().getName(),
+				LogLevel.DEBUG, LogLevel.DEBUG));
 	}
 
 }

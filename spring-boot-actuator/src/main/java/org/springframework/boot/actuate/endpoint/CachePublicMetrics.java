@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.cache.CacheStatistics;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
 import org.springframework.boot.actuate.metrics.Metric;
@@ -39,15 +38,24 @@ import org.springframework.util.MultiValueMap;
  */
 public class CachePublicMetrics implements PublicMetrics {
 
-	@Autowired
-	private Map<String, CacheManager> cacheManagers;
+	private final Map<String, CacheManager> cacheManagers;
 
-	@Autowired
-	private Collection<CacheStatisticsProvider<?>> statisticsProviders;
+	private final Collection<CacheStatisticsProvider<?>> statisticsProviders;
+
+	/**
+	 * Create a new {@link CachePublicMetrics} instance.
+	 * @param cacheManagers the cache managers
+	 * @param statisticsProviders the statistics providers
+	 */
+	public CachePublicMetrics(Map<String, CacheManager> cacheManagers,
+			Collection<CacheStatisticsProvider<?>> statisticsProviders) {
+		this.cacheManagers = cacheManagers;
+		this.statisticsProviders = statisticsProviders;
+	}
 
 	@Override
 	public Collection<Metric<?>> metrics() {
-		Collection<Metric<?>> metrics = new HashSet<Metric<?>>();
+		Collection<Metric<?>> metrics = new HashSet<>();
 		for (Map.Entry<String, List<CacheManagerBean>> entry : getCacheManagerBeans()
 				.entrySet()) {
 			addMetrics(metrics, entry.getKey(), entry.getValue());
@@ -56,7 +64,7 @@ public class CachePublicMetrics implements PublicMetrics {
 	}
 
 	private MultiValueMap<String, CacheManagerBean> getCacheManagerBeans() {
-		MultiValueMap<String, CacheManagerBean> cacheManagerNamesByCacheName = new LinkedMultiValueMap<String, CacheManagerBean>();
+		MultiValueMap<String, CacheManagerBean> cacheManagerNamesByCacheName = new LinkedMultiValueMap<>();
 		for (Map.Entry<String, CacheManager> entry : this.cacheManagers.entrySet()) {
 			for (String cacheName : entry.getValue().getCacheNames()) {
 				cacheManagerNamesByCacheName.add(cacheName,
