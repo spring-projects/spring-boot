@@ -159,7 +159,7 @@
 		<spring-hateoas.version>0.23.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>4.3.9.RELEASE</spring-integration.version>
 		<spring-integration-java-dsl.version>1.2.1.RELEASE</spring-integration-java-dsl.version>
-		<spring-kafka.version>1.1.4.RELEASE</spring-kafka.version>
+		<spring-kafka.version>1.1.5.RELEASE</spring-kafka.version>
 		<spring-ldap.version>2.3.1.RELEASE</spring-ldap.version>
 		<spring-loaded.version>1.2.7.RELEASE</spring-loaded.version>
 		<spring-mobile.version>1.1.5.RELEASE</spring-mobile.version>
