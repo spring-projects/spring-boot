@@ -67,26 +67,26 @@ public class HalBrowserMvcEndpointDisabledIntegrationTests {
 
 	@Test
 	public void linksOnActuator() throws Exception {
-		this.mockMvc.perform(get("/actuator").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/application").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists())
 				.andExpect(header().doesNotExist("cache-control"));
 	}
 
 	@Test
 	public void browserRedirect() throws Exception {
-		this.mockMvc.perform(get("/actuator/").accept(MediaType.TEXT_HTML))
+		this.mockMvc.perform(get("/application/").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isFound()).andExpect(header().string(
-						HttpHeaders.LOCATION, "http://localhost/actuator/browser.html"));
+						HttpHeaders.LOCATION, "http://localhost/application/browser.html"));
 	}
 
 	@Test
 	public void endpointsDoNotHaveLinks() throws Exception {
 		for (MvcEndpoint endpoint : this.mvcEndpoints.getEndpoints()) {
 			String path = endpoint.getPath();
-			if ("/actuator".equals(path) || endpoint instanceof HeapdumpMvcEndpoint) {
+			if ("".equals(path) || endpoint instanceof HeapdumpMvcEndpoint) {
 				continue;
 			}
-			path = path.length() > 0 ? path : "/";
+			path = "/application" + (path.length() > 0 ? path : "/");
 			MockHttpServletRequestBuilder requestBuilder = get(path);
 			if (endpoint instanceof AuditEventsMvcEndpoint) {
 				requestBuilder.param("after", "2016-01-01T12:00:00+00:00");

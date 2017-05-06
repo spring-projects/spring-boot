@@ -276,7 +276,7 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void concurrentReads() throws Exception {
 		ExecutorService executorService = Executors.newFixedThreadPool(20);
-		List<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
+		List<Future<Boolean>> results = new ArrayList<>();
 		for (int i = 0; i < 100; i++) {
 			results.add(executorService.submit(new Callable<Boolean>() {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ public class SampleActuatorLog4J2ApplicationTests {
 
 	@Test
 	public void validateLoggersEndpoint() throws Exception {
-		this.mvc.perform(get("/loggers/org.apache.coyote.http11.Http11NioProtocol"))
+		this.mvc.perform(get("/application/loggers/org.apache.coyote.http11.Http11NioProtocol"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(equalTo("{\"configuredLevel\":\"WARN\","
 						+ "\"effectiveLevel\":\"WARN\"}")));

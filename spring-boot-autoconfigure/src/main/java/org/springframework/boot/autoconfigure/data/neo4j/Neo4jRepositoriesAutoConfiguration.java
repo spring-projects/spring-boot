@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.neo4j.repository.GraphRepository;
+import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.repository.config.Neo4jRepositoryConfigurationExtension;
 import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryBean;
@@ -35,9 +35,9 @@ import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryB
  * Repositories.
  * <p>
  * Activates when there is no bean of type {@link Neo4jRepositoryFactoryBean} configured
- * in the context, the Spring Data Neo4j {@link GraphRepository} type is on the classpath,
+ * in the context, the Spring Data Neo4j {@link Neo4jRepository} type is on the classpath,
  * the Neo4j client driver API is on the classpath, and there is no other configured
- * {@link GraphRepository}.
+ * {@link Neo4jRepository}.
  * <p>
  * Once in effect, the auto-configuration is the equivalent of enabling Neo4j repositories
  * using the {@link EnableNeo4jRepositories} annotation.
@@ -49,7 +49,7 @@ import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryB
  * @see EnableNeo4jRepositories
  */
 @Configuration
-@ConditionalOnClass({ Neo4jSession.class, GraphRepository.class })
+@ConditionalOnClass({ Neo4jSession.class, Neo4jRepository.class })
 @ConditionalOnMissingBean({ Neo4jRepositoryFactoryBean.class,
 		Neo4jRepositoryConfigurationExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.neo4j.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)

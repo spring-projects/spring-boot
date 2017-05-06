@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package org.springframework.boot.context.embedded;
 
-import org.apache.catalina.Context;
 import org.apache.tomcat.util.http.LegacyCookieProcessor;
 
-import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,33 +31,16 @@ import org.springframework.context.annotation.Configuration;
 public class TomcatLegacyCookieProcessorExample {
 
 	/**
-	 * Configuration class that declares the required
-	 * {@link EmbeddedServletContainerCustomizer}.
+	 * Configuration class that declares the required {@link WebServerFactoryCustomizer}.
 	 */
 	@Configuration
 	static class LegacyCookieProcessorConfiguration {
 
 		// tag::customizer[]
 		@Bean
-		public EmbeddedServletContainerCustomizer cookieProcessorCustomizer() {
-			return new EmbeddedServletContainerCustomizer() {
-
-				@Override
-				public void customize(ConfigurableEmbeddedServletContainer container) {
-					if (container instanceof TomcatEmbeddedServletContainerFactory) {
-						((TomcatEmbeddedServletContainerFactory) container)
-								.addContextCustomizers(new TomcatContextCustomizer() {
-
-							@Override
-							public void customize(Context context) {
-								context.setCookieProcessor(new LegacyCookieProcessor());
-							}
-
-						});
-					}
-				}
-
-			};
+		public WebServerFactoryCustomizer<TomcatServletWebServerFactory> cookieProcessorCustomizer() {
+			return (serverFactory) -> serverFactory.addContextCustomizers(
+					(context) -> context.setCookieProcessor(new LegacyCookieProcessor()));
 		}
 		// end::customizer[]
 

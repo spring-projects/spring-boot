@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,12 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.websocket.jsr356.server.ServerContainer;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 
-import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
+import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.core.Ordered;
 
 /**
- * {@link WebSocketContainerCustomizer} for {@link JettyEmbeddedServletContainerFactory}.
+ * WebSocket customizer for {@link JettyServletWebServerFactory}.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -33,11 +35,11 @@ import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletConta
  * @since 1.2.0
  */
 public class JettyWebSocketContainerCustomizer
-		extends WebSocketContainerCustomizer<JettyEmbeddedServletContainerFactory> {
+		implements WebServerFactoryCustomizer<JettyServletWebServerFactory>, Ordered {
 
 	@Override
-	protected void doCustomize(JettyEmbeddedServletContainerFactory container) {
-		container.addConfigurations(new AbstractConfiguration() {
+	public void customize(JettyServletWebServerFactory factory) {
+		factory.addConfigurations(new AbstractConfiguration() {
 
 			@Override
 			public void configure(WebAppContext context) throws Exception {
@@ -47,6 +49,11 @@ public class JettyWebSocketContainerCustomizer
 			}
 
 		});
+	}
+
+	@Override
+	public int getOrder() {
+		return 0;
 	}
 
 }

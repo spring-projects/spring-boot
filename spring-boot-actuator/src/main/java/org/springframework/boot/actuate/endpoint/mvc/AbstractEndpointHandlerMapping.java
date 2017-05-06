@@ -94,7 +94,7 @@ public abstract class AbstractEndpointHandlerMapping<E extends MvcEndpoint>
 	 */
 	public AbstractEndpointHandlerMapping(Collection<? extends E> endpoints,
 			CorsConfiguration corsConfiguration) {
-		this.endpoints = new HashSet<E>(endpoints);
+		this.endpoints = new HashSet<>(endpoints);
 		postProcessEndpoints(this.endpoints);
 		this.corsConfiguration = corsConfiguration;
 		// By default the static resource handler mapping is LOWEST_PRECEDENCE - 1
@@ -169,7 +169,7 @@ public abstract class AbstractEndpointHandlerMapping<E extends MvcEndpoint>
 		if (defaultPatterns.isEmpty()) {
 			return new String[] { patternPrefix, patternPrefix + ".json" };
 		}
-		List<String> patterns = new ArrayList<String>(defaultPatterns);
+		List<String> patterns = new ArrayList<>(defaultPatterns);
 		for (int i = 0; i < patterns.size(); i++) {
 			patterns.set(i, patternPrefix + patterns.get(i));
 		}
@@ -213,7 +213,7 @@ public abstract class AbstractEndpointHandlerMapping<E extends MvcEndpoint>
 	}
 
 	private HandlerExecutionChain addSecurityInterceptor(HandlerExecutionChain chain) {
-		List<HandlerInterceptor> interceptors = new ArrayList<HandlerInterceptor>();
+		List<HandlerInterceptor> interceptors = new ArrayList<>();
 		if (chain.getInterceptors() != null) {
 			interceptors.addAll(Arrays.asList(chain.getInterceptors()));
 		}

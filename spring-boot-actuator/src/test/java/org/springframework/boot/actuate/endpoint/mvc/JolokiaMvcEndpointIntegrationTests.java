@@ -26,9 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
@@ -80,20 +79,20 @@ public class JolokiaMvcEndpointIntegrationTests {
 
 	@Test
 	public void search() throws Exception {
-		this.mvc.perform(get("/jolokia/search/java.lang:*")).andExpect(status().isOk())
+		this.mvc.perform(get("/application/jolokia/search/java.lang:*")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("GarbageCollector")));
 	}
 
 	@Test
 	public void read() throws Exception {
-		this.mvc.perform(get("/jolokia/read/java.lang:type=Memory"))
+		this.mvc.perform(get("/application/jolokia/read/java.lang:type=Memory"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("NonHeapMemoryUsage")));
 	}
 
 	@Test
 	public void list() throws Exception {
-		this.mvc.perform(get("/jolokia/list/java.lang/type=Memory/attr"))
+		this.mvc.perform(get("/application/jolokia/list/java.lang/type=Memory/attr"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("NonHeapMemoryUsage")));
 	}
@@ -103,8 +102,7 @@ public class JolokiaMvcEndpointIntegrationTests {
 	@EnableWebMvc
 	@Import({ JacksonAutoConfiguration.class, AuditAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class })
+			EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class })
 	public static class Config {
 
 	}

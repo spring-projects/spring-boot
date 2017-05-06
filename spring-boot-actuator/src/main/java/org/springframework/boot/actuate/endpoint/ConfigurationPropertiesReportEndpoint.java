@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
@@ -100,7 +101,7 @@ public class ConfigurationPropertiesReportEndpoint
 	}
 
 	private Map<String, Object> extract(ApplicationContext context, ObjectMapper mapper) {
-		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> result = new HashMap<>();
 		ConfigurationBeanFactoryMetaData beanFactoryMetaData = getBeanFactoryMetaData(
 				context);
 		Map<String, Object> beans = getConfigurationPropertiesBeans(context,
@@ -108,7 +109,7 @@ public class ConfigurationPropertiesReportEndpoint
 		for (Map.Entry<String, Object> entry : beans.entrySet()) {
 			String beanName = entry.getKey();
 			Object bean = entry.getValue();
-			Map<String, Object> root = new HashMap<String, Object>();
+			Map<String, Object> root = new HashMap<>();
 			String prefix = extractPrefix(context, beanFactoryMetaData, beanName, bean);
 			root.put("prefix", prefix);
 			root.put("properties", sanitize(prefix, safeSerialize(mapper, bean, prefix)));
@@ -133,7 +134,7 @@ public class ConfigurationPropertiesReportEndpoint
 	private Map<String, Object> getConfigurationPropertiesBeans(
 			ApplicationContext context,
 			ConfigurationBeanFactoryMetaData beanFactoryMetaData) {
-		Map<String, Object> beans = new HashMap<String, Object>();
+		Map<String, Object> beans = new HashMap<>();
 		beans.putAll(context.getBeansWithAnnotation(ConfigurationProperties.class));
 		if (beanFactoryMetaData != null) {
 			beans.putAll(beanFactoryMetaData
@@ -154,13 +155,13 @@ public class ConfigurationPropertiesReportEndpoint
 			String prefix) {
 		try {
 			@SuppressWarnings("unchecked")
-			Map<String, Object> result = new HashMap<String, Object>(
+			Map<String, Object> result = new HashMap<>(
 					mapper.convertValue(bean, Map.class));
 			return result;
 		}
 		catch (Exception ex) {
-			return new HashMap<String, Object>(Collections.<String, Object>singletonMap(
-					"error", "Cannot serialize '" + prefix + "'"));
+			return new HashMap<>(Collections.<String, Object>singletonMap("error",
+					"Cannot serialize '" + prefix + "'"));
 		}
 	}
 
@@ -171,7 +172,7 @@ public class ConfigurationPropertiesReportEndpoint
 	 */
 	protected void configureObjectMapper(ObjectMapper mapper) {
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
+		mapper.setSerializationInclusion(Include.NON_NULL);
 		applyCglibFilters(mapper);
 		applySerializationModifier(mapper);
 	}
@@ -253,7 +254,7 @@ public class ConfigurationPropertiesReportEndpoint
 
 	@SuppressWarnings("unchecked")
 	private List<Object> sanitize(String prefix, List<Object> list) {
-		List<Object> sanitized = new ArrayList<Object>();
+		List<Object> sanitized = new ArrayList<>();
 		for (Object item : list) {
 			if (item instanceof Map) {
 				sanitized.add(sanitize(prefix, (Map<String, Object>) item));
@@ -317,7 +318,7 @@ public class ConfigurationPropertiesReportEndpoint
 		@Override
 		public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
 				BeanDescription beanDesc, List<BeanPropertyWriter> beanProperties) {
-			List<BeanPropertyWriter> result = new ArrayList<BeanPropertyWriter>();
+			List<BeanPropertyWriter> result = new ArrayList<>();
 			for (BeanPropertyWriter writer : beanProperties) {
 				boolean readable = isReadable(beanDesc, writer);
 				if (readable) {

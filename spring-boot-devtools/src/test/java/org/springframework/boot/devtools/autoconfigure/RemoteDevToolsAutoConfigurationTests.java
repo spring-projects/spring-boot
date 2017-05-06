@@ -26,7 +26,6 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.devtools.remote.server.DispatcherFilter;
 import org.springframework.boot.devtools.restart.MockRestarter;
 import org.springframework.boot.devtools.restart.server.HttpRestartServer;
@@ -139,7 +138,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	@Test
 	public void invokeRestartWithCustomServerContextPath() throws Exception {
 		loadContext("spring.devtools.remote.secret:supersecret",
-				"server.context-path:/test");
+				"server.servlet.context-path:/test");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI("/test" + DEFAULT_CONTEXT_PATH + "/restart");
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
@@ -168,7 +167,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	@Test
 	public void invokeTunnelWithCustomServerContextPath() throws Exception {
 		loadContext("spring.devtools.remote.secret:supersecret",
-				"server.context-path:/test");
+				"server.servlet.context-path:/test");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI("/test" + DEFAULT_CONTEXT_PATH + "/debug");
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
@@ -209,7 +208,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	@Test
 	public void devToolsHealthWithCustomServerContextPathReturns200() throws Exception {
 		loadContext("spring.devtools.remote.secret:supersecret",
-				"server.context-path:/test");
+				"server.servlet.context-path:/test");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI("/test" + DEFAULT_CONTEXT_PATH);
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
@@ -231,8 +230,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	private void loadContext(String... properties) {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(Config.class, PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, properties);
 		this.context.refresh();
 	}

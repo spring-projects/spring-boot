@@ -81,7 +81,7 @@ public class HypermediaHttpMessageConverterConfiguration {
 
 		private void configureHttpMessageConverter(HttpMessageConverter<?> converter) {
 			if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-				List<MediaType> supportedMediaTypes = new ArrayList<MediaType>(
+				List<MediaType> supportedMediaTypes = new ArrayList<>(
 						converter.getSupportedMediaTypes());
 				if (!supportedMediaTypes.contains(MediaType.APPLICATION_JSON)) {
 					supportedMediaTypes.add(MediaType.APPLICATION_JSON);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Utility that can be used to {@link MutablePropertySources} using
- * {@link PropertySourceLoader}s.
+ * Utility that can be used to update {@link MutablePropertySources} using
+ * {@link PropertySourceLoader PropertySourceLoaders}.
  *
  * @author Phillip Webb
  */
@@ -200,7 +200,7 @@ public class PropertySourcesLoader {
 	 * @return the file extensions
 	 */
 	public Set<String> getAllFileExtensions() {
-		Set<String> fileExtensions = new LinkedHashSet<String>();
+		Set<String> fileExtensions = new LinkedHashSet<>();
 		for (PropertySourceLoader loader : this.loaders) {
 			fileExtensions.addAll(Arrays.asList(loader.getFileExtensions()));
 		}

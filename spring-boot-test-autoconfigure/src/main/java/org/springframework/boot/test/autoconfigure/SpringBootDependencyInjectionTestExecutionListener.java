@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public class SpringBootDependencyInjectionTestExecutionListener
 		@Override
 		public Set<Class<? extends TestExecutionListener>> postProcessDefaultTestExecutionListeners(
 				Set<Class<? extends TestExecutionListener>> listeners) {
-			Set<Class<? extends TestExecutionListener>> updated = new LinkedHashSet<Class<? extends TestExecutionListener>>(
+			Set<Class<? extends TestExecutionListener>> updated = new LinkedHashSet<>(
 					listeners.size());
 			for (Class<? extends TestExecutionListener> listener : listeners) {
 				updated.add(

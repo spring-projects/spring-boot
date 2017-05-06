@@ -70,19 +70,19 @@ public class SampleSecureOAuth2ActuatorApplicationTests {
 
 	@Test
 	public void healthAvailable() throws Exception {
-		this.mvc.perform(get("/health")).andExpect(status().isOk()).andDo(print());
+		this.mvc.perform(get("/application/health")).andExpect(status().isOk()).andDo(print());
 	}
 
 	@Test
 	public void envSecuredWithBasic() throws Exception {
-		this.mvc.perform(get("/env")).andExpect(status().isUnauthorized())
+		this.mvc.perform(get("/application/env")).andExpect(status().isUnauthorized())
 				.andExpect(header().string("WWW-Authenticate", containsString("Basic")))
 				.andDo(print());
 	}
 
 	@Test
 	public void envWithPassword() throws Exception {
-		this.mvc.perform(get("/env").header("Authorization",
+		this.mvc.perform(get("/application/env").header("Authorization",
 				"Basic " + Base64Utils.encodeToString("user:password".getBytes())))
 				.andExpect(status().isOk()).andDo(print());
 	}

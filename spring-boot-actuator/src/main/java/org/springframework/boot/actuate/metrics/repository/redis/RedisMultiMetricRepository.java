@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 		Set<String> keys = zSetOperations.range(0, -1);
 		Iterator<String> keysIt = keys.iterator();
 
-		List<Metric<?>> result = new ArrayList<Metric<?>>(keys.size());
+		List<Metric<?>> result = new ArrayList<>(keys.size());
 		List<String> values = this.redisOperations.opsForValue().multiGet(keys);
 		for (String v : values) {
 			String key = keysIt.next();
@@ -109,14 +109,14 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 		String key = keyFor(delta.getName());
 		double value = zSetOperations.incrementScore(key, delta.getValue().doubleValue());
 		String raw = serialize(
-				new Metric<Double>(delta.getName(), value, delta.getTimestamp()));
+				new Metric<>(delta.getName(), value, delta.getTimestamp()));
 		this.redisOperations.opsForValue().set(key, raw);
 	}
 
 	@Override
 	public Iterable<String> groups() {
 		Set<String> range = this.zSetOperations.range(0, -1);
-		Collection<String> result = new ArrayList<String>();
+		Collection<String> result = new ArrayList<>();
 		for (String key : range) {
 			result.add(key.substring(this.prefix.length()));
 		}
@@ -145,7 +145,7 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 
 	private Metric<?> deserialize(String group, String redisKey, String v, Double value) {
 		Date timestamp = new Date(Long.valueOf(v));
-		return new Metric<Double>(nameFor(redisKey), value, timestamp);
+		return new Metric<>(nameFor(redisKey), value, timestamp);
 	}
 
 	private String serialize(Metric<?> entity) {

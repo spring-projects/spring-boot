@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class AuthorizationAuditListener extends AbstractAuthorizationAuditListen
 
 	private void onAuthenticationCredentialsNotFoundEvent(
 			AuthenticationCredentialsNotFoundEvent event) {
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		data.put("type", event.getCredentialsNotFoundException().getClass().getName());
 		data.put("message", event.getCredentialsNotFoundException().getMessage());
 		publish(new AuditEvent("<unknown>",
@@ -58,7 +58,7 @@ public class AuthorizationAuditListener extends AbstractAuthorizationAuditListen
 	}
 
 	private void onAuthorizationFailureEvent(AuthorizationFailureEvent event) {
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		data.put("type", event.getAccessDeniedException().getClass().getName());
 		data.put("message", event.getAccessDeniedException().getMessage());
 		if (event.getAuthentication().getDetails() != null) {

@@ -51,12 +51,12 @@ public class AuditEventsMvcEndpoint extends AbstractNamedMvcEndpoint {
 	@ResponseBody
 	public ResponseEntity<?> findByPrincipalAndAfterAndType(
 			@RequestParam(required = false) String principal,
-			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ") Date after,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ") Date after,
 			@RequestParam(required = false) String type) {
 		if (!isEnabled()) {
 			return DISABLED_RESPONSE;
 		}
-		Map<Object, Object> result = new LinkedHashMap<Object, Object>();
+		Map<Object, Object> result = new LinkedHashMap<>();
 		result.put("events", this.auditEventRepository.find(principal, after, type));
 		return ResponseEntity.ok(result);
 	}

@@ -86,17 +86,7 @@ public @interface ConditionalOnJava {
 		/**
 		 * Java 1.8.
 		 */
-		EIGHT(8, "1.8", "java.util.function.Function"),
-
-		/**
-		 * Java 1.7.
-		 */
-		SEVEN(7, "1.7", "java.nio.file.Files"),
-
-		/**
-		 * Java 1.6.
-		 */
-		SIX(6, "1.6", "java.util.ServiceLoader");
+		EIGHT(8, "1.8", "java.util.function.Function");
 
 		private final int value;
 
@@ -143,7 +133,7 @@ public @interface ConditionalOnJava {
 					return candidate;
 				}
 			}
-			return SIX;
+			return EIGHT;
 		}
 
 	}

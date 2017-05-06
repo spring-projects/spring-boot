@@ -104,10 +104,8 @@ public class DataSourceAutoConfiguration {
 	@Configuration
 	@Conditional(PooledDataSourceCondition.class)
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
-	@Import({ DataSourceConfiguration.Tomcat.class, DataSourceConfiguration.Hikari.class,
-			DataSourceConfiguration.Dbcp.class, DataSourceConfiguration.Dbcp2.class,
-			DataSourceConfiguration.Generic.class })
-	@SuppressWarnings("deprecation")
+	@Import({ DataSourceConfiguration.Hikari.class, DataSourceConfiguration.Tomcat.class,
+			DataSourceConfiguration.Dbcp2.class, DataSourceConfiguration.Generic.class })
 	protected static class PooledDataSourceConfiguration {
 
 	}

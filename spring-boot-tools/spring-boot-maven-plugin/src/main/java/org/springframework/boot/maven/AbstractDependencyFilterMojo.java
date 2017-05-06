@@ -90,7 +90,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	protected Set<Artifact> filterDependencies(Set<Artifact> dependencies,
 			FilterArtifacts filters) throws MojoExecutionException {
 		try {
-			Set<Artifact> filtered = new LinkedHashSet<Artifact>(dependencies);
+			Set<Artifact> filtered = new LinkedHashSet<>(dependencies);
 			filtered.retainAll(filters.filter(dependencies));
 			return filtered;
 		}

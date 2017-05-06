@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,22 @@
 
 package org.springframework.boot.gradle.plugin;
 
-import org.gradle.api.Action;
+import java.util.Arrays;
+import java.util.List;
+
+import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
-import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.tasks.compile.JavaCompile;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.component.SoftwareComponent;
+import org.gradle.util.GradleVersion;
 
-import org.springframework.boot.gradle.SpringBootPluginExtension;
-import org.springframework.boot.gradle.agent.AgentPluginFeatures;
-import org.springframework.boot.gradle.dependencymanagement.DependencyManagementPluginFeatures;
-import org.springframework.boot.gradle.repackage.RepackagePluginFeatures;
-import org.springframework.boot.gradle.run.RunPluginFeatures;
+import org.springframework.boot.gradle.dsl.SpringBootExtension;
+import org.springframework.boot.gradle.tasks.bundling.BootJar;
+import org.springframework.boot.gradle.tasks.bundling.BootWar;
 
 /**
- * Gradle 'Spring Boot' {@link Plugin}.
+ * Gradle plugin for Spring Boot.
  *
  * @author Phillip Webb
  * @author Dave Syer
@@ -38,34 +39,91 @@ import org.springframework.boot.gradle.run.RunPluginFeatures;
  */
 public class SpringBootPlugin implements Plugin<Project> {
 
+	/**
+	 * The name of the {@link Configuration} that contains Spring Boot archives.
+	 *
+	 * @since 2.0.0
+	 */
+	public static final String BOOT_ARCHIVES_CONFIGURATION_NAME = "bootArchives";
+
+	/**
+	 * The name of the {@link SoftwareComponent} for a Spring Boot Java application.
+	 *
+	 * @since 2.0.0
+	 */
+	public static final String BOOT_JAVA_SOFTWARE_COMPONENT_NAME = "bootJava";
+
+	/**
+	 * The name of the {@link SoftwareComponent} for a Spring Boot Web application.
+	 *
+	 * @since 2.0.0
+	 */
+	public static final String BOOT_WEB_SOFTWARE_COMPONENT_NAME = "bootWeb";
+
+	/**
+	 * The name of the default {@link BootJar} task.
+	 *
+	 * @since 2.0.0
+	 */
+	public static final String BOOT_JAR_TASK_NAME = "bootJar";
+
+	/**
+	 * The name of the default {@link BootWar} task.
+	 *
+	 * @since 2.0.0
+	 */
+	public static final String BOOT_WAR_TASK_NAME = "bootWar";
+
 	@Override
 	public void apply(Project project) {
-		project.getExtensions().create("springBoot", SpringBootPluginExtension.class,
-				project);
-		project.getPlugins().apply(JavaPlugin.class);
-		new AgentPluginFeatures().apply(project);
-		new RepackagePluginFeatures().apply(project);
-		new RunPluginFeatures().apply(project);
-		new DependencyManagementPluginFeatures().apply(project);
-		project.getTasks().withType(JavaCompile.class).all(new SetUtf8EncodingAction());
+		verifyGradleVersion();
+		createExtension(project);
+		Configuration bootArchives = createBootArchivesConfiguration(project);
+		registerPluginActions(project, bootArchives);
+		unregisterUnresolvedDependenciesAnalyzer(project);
 	}
 
-	private static class SetUtf8EncodingAction implements Action<JavaCompile> {
-
-		@Override
-		public void execute(final JavaCompile compile) {
-			compile.doFirst(new Action<Task>() {
-
-				@Override
-				public void execute(Task t) {
-					if (compile.getOptions().getEncoding() == null) {
-						compile.getOptions().setEncoding("UTF-8");
-					}
-				}
-
-			});
+	private void verifyGradleVersion() {
+		if (GradleVersion.current().compareTo(GradleVersion.version("3.4")) < 0) {
+			throw new GradleException("Spring Boot plugin requires Gradle 3.4 or later."
+					+ " The current version is " + GradleVersion.current());
 		}
+	}
 
+	private void createExtension(Project project) {
+		project.getExtensions().create("springBoot", SpringBootExtension.class, project);
+	}
+
+	private Configuration createBootArchivesConfiguration(Project project) {
+		Configuration bootArchives = project.getConfigurations()
+				.create(BOOT_ARCHIVES_CONFIGURATION_NAME);
+		bootArchives.setDescription("Configuration for Spring Boot archive artifacts.");
+		return bootArchives;
+	}
+
+	private void registerPluginActions(Project project, Configuration bootArchives) {
+		SinglePublishedArtifact singlePublishedArtifact = new SinglePublishedArtifact(
+				bootArchives.getArtifacts());
+		List<PluginApplicationAction> actions = Arrays.asList(
+				new JavaPluginAction(singlePublishedArtifact),
+				new WarPluginAction(singlePublishedArtifact),
+				new MavenPluginAction(bootArchives.getUploadTaskName()),
+				new DependencyManagementPluginAction(), new ApplicationPluginAction());
+		for (PluginApplicationAction action : actions) {
+			project.getPlugins().withType(action.getPluginClass(),
+					plugin -> action.execute(project));
+		}
+	}
+
+	private void unregisterUnresolvedDependenciesAnalyzer(Project project) {
+		UnresolvedDependenciesAnalyzer unresolvedDependenciesAnalyzer = new UnresolvedDependenciesAnalyzer();
+		project.getConfigurations().all(configuration -> configuration.getIncoming()
+				.afterResolve(resolvableDependencies -> unresolvedDependenciesAnalyzer
+						.analyze(configuration.getResolvedConfiguration()
+								.getLenientConfiguration()
+								.getUnresolvedModuleDependencies())));
+		project.getGradle().buildFinished(
+				buildResult -> unresolvedDependenciesAnalyzer.buildFinished(project));
 	}
 
 }

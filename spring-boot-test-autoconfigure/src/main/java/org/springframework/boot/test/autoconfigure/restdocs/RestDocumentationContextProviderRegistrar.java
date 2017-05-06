@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@ package org.springframework.boot.test.autoconfigure.restdocs;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.restdocs.ManualRestDocumentation;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link ImportBeanDefinitionRegistrar} used by {@link AutoConfigureRestDocs}.
@@ -38,12 +38,14 @@ class RestDocumentationContextProviderRegistrar implements ImportBeanDefinitionR
 			BeanDefinitionRegistry registry) {
 		Map<String, Object> annotationAttributes = importingClassMetadata
 				.getAnnotationAttributes(AutoConfigureRestDocs.class.getName());
+		BeanDefinitionBuilder definitionBuilder = BeanDefinitionBuilder
+				.genericBeanDefinition(ManualRestDocumentation.class);
 		String outputDir = (String) annotationAttributes.get("outputDir");
-		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder
-				.genericBeanDefinition(ManualRestDocumentation.class)
-				.addConstructorArgValue(outputDir).getBeanDefinition();
+		if (StringUtils.hasText(outputDir)) {
+			definitionBuilder.addConstructorArgValue(outputDir);
+		}
 		registry.registerBeanDefinition(ManualRestDocumentation.class.getName(),
-				beanDefinition);
+				definitionBuilder.getBeanDefinition());
 	}
 
 }

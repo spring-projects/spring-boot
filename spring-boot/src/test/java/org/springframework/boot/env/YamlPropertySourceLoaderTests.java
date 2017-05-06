@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,7 +52,7 @@ public class YamlPropertySourceLoaderTests {
 	@Test
 	public void orderedItems() throws Exception {
 		StringBuilder yaml = new StringBuilder();
-		List<String> expected = new ArrayList<String>();
+		List<String> expected = new ArrayList<>();
 		for (char c = 'a'; c <= 'z'; c++) {
 			yaml.append(c + ": value" + c + "\n");
 			expected.add(String.valueOf(c));
@@ -82,6 +84,16 @@ public class YamlPropertySourceLoaderTests {
 		PropertySource<?> source = this.loader.load("resource", resource, null);
 		assertThat(source).isNotNull();
 		assertThat(source.getProperty("foo")).isEqualTo("2015-01-28");
+	}
+
+	@Test
+	public void loadOriginAware() throws Exception {
+		Resource resource = new ClassPathResource("test-yaml.yml", getClass());
+		PropertySource<?> source = this.loader.load("resource", resource, null);
+		EnumerablePropertySource<?> enumerableSource = (EnumerablePropertySource<?>) source;
+		for (String name : enumerableSource.getPropertyNames()) {
+			System.out.println(name + " = " + enumerableSource.getProperty(name));
+		}
 	}
 
 }

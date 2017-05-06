@@ -24,8 +24,6 @@ import java.util.Collections;
 
 import org.junit.Test;
 
-import org.springframework.boot.configurationprocessor.Metadata;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
