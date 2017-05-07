@@ -128,7 +128,7 @@ public class HandlerTests {
 	}
 
 	@Test
-	public void hashcodesAreEqualForUrlsThatReferenceSameFileViaNestedArchiveAndFromRootOfJar()
+	public void hashCodesAreEqualForUrlsThatReferenceSameFileViaNestedArchiveAndFromRootOfJar()
 			throws MalformedURLException {
 		assertThat(this.handler
 				.hashCode(new URL("jar:file:/test.jar!/BOOT-INF/classes!/foo.txt")))

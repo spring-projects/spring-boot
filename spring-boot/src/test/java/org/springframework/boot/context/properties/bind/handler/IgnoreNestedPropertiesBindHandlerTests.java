@@ -51,14 +51,14 @@ public class IgnoreNestedPropertiesBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenNotIngoringNestedShouldBindAll() throws Exception {
+	public void bindWhenNotIgnoringNestedShouldBindAll() throws Exception {
 		Example bound = this.binder.bind("example", Bindable.of(Example.class)).get();
 		assertThat(bound.getFoo()).isEqualTo("foovalue");
 		assertThat(bound.getNested().getBar()).isEqualTo("barvalue");
 	}
 
 	@Test
-	public void bindWhenIngoringNestedShouldFilterNested() throws Exception {
+	public void bindWhenIgnoringNestedShouldFilterNested() throws Exception {
 		Example bound = this.binder.bind("example", Bindable.of(Example.class),
 				new IgnoreNestedPropertiesBindHandler()).get();
 		assertThat(bound.getFoo()).isEqualTo("foovalue");

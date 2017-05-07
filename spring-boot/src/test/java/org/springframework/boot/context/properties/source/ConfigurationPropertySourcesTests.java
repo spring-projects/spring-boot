@@ -111,7 +111,7 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void attachShouldAddAdapterAtBegining() throws Exception {
+	public void attachShouldAddAdapterAtBeginning() throws Exception {
 		MutablePropertySources sources = new MutablePropertySources();
 		sources.addLast(new SystemEnvironmentPropertySource("system",
 				Collections.<String, Object>singletonMap("SERVER_PORT", "1234")));

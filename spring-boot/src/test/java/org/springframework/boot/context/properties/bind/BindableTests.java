@@ -113,7 +113,7 @@ public class BindableTests {
 	}
 
 	@Test
-	public void getBoxedTypeWhenPrimativeShouldReturnBoxedType() throws Exception {
+	public void getBoxedTypeWhenPrimitiveShouldReturnBoxedType() throws Exception {
 		Bindable<Integer> bindable = Bindable.of(int.class);
 		assertThat(bindable.getType()).isEqualTo(ResolvableType.forClass(int.class));
 		assertThat(bindable.getBoxedType())
@@ -121,7 +121,7 @@ public class BindableTests {
 	}
 
 	@Test
-	public void getBoxedTypeWhenPrimativeArrayShouldReturnBoxedType() throws Exception {
+	public void getBoxedTypeWhenPrimitiveArrayShouldReturnBoxedType() throws Exception {
 		Bindable<int[]> bindable = Bindable.of(int[].class);
 		assertThat(bindable.getType().getComponentType())
 				.isEqualTo(ResolvableType.forClass(int.class));
@@ -156,7 +156,7 @@ public class BindableTests {
 	}
 
 	@Test
-	public void equalsAndHashcode() throws Exception {
+	public void equalsAndHashCode() throws Exception {
 		Annotation annotation = AnnotationUtils
 				.synthesizeAnnotation(TestAnnotation.class);
 		Bindable<String> bindable1 = Bindable.of(String.class).withExistingValue("foo")

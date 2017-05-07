@@ -32,7 +32,7 @@ import org.springframework.util.ObjectUtils;
  * Source that can be bound by a {@link Binder}.
  *
  * @param <T> The source type
- * @author Philip Webb
+ * @author Phillip Webb
  * @author Madhura Bhave
  * @since 2.0.0
  * @see Bindable#of(Class)
@@ -195,7 +195,7 @@ public final class Bindable<T> {
 	}
 
 	/**
-	 * Create a new {@link Bindable} {@link Map} of the specified kay and value type.
+	 * Create a new {@link Bindable} {@link Map} of the specified key and value type.
 	 * @param <K> the key type
 	 * @param <V> the value type
 	 * @param keyType the map key type
