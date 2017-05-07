@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%-5level %logger{36} - %msg%n</Pattern>
+		</layout>
+	</appender>
+
+	<appender name="file" class="ch.qos.logback.core.FileAppender">
+		<file>target/log.txt</file>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%-5level %logger{36} - %msg%n</Pattern>
+		</layout>
+	</appender>
+	
+	<logger name="org.apache.activemq.ActiveMQSession" level="INFO"/>
+	<logger name="org.apache.activemq.transport.AbstractInactivityMonitor" level="INFO"/>
+	<logger name="org.springframework.jms.listener.DefaultMessageListenerContainer" level="INFO"/>
+	
+	<root level="INFO">
+		<!-- 
+		<appender-ref ref="STDOUT" />
+	    -->
+		<appender-ref ref="file" />
+	</root>
+
+</configuration>
