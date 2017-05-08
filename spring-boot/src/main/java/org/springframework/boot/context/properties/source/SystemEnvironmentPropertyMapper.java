@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
@@ -47,9 +46,6 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
 	public static final PropertyMapper INSTANCE = new SystemEnvironmentPropertyMapper();
 
-	private final ConfigurationPropertyNameBuilder nameBuilder = new ConfigurationPropertyNameBuilder(
-			this::createElement);
-
 	private SystemEnvironmentPropertyMapper() {
 	}
 
@@ -57,7 +53,7 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	public List<PropertyMapping> map(PropertySource<?> propertySource,
 			String propertySourceName) {
 		ConfigurationPropertyName name = convertName(propertySourceName);
-		if (name == null) {
+		if (name == null || name.isEmpty()) {
 			return Collections.emptyList();
 		}
 		if (propertySourceName.endsWith("__")) {
@@ -69,7 +65,8 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
 	private ConfigurationPropertyName convertName(String propertySourceName) {
 		try {
-			return this.nameBuilder.from(propertySourceName, '_');
+			return ConfigurationPropertyName.adapt(propertySourceName, '_',
+					this::processElementValue);
 		}
 		catch (Exception ex) {
 			return null;
@@ -85,8 +82,7 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		String[] elements = StringUtils
 				.commaDelimitedListToStringArray(String.valueOf(value));
 		for (int i = 0; i < elements.length; i++) {
-			ConfigurationPropertyName name = ConfigurationPropertyName
-					.of(rootName.toString() + "[" + i + "]");
+			ConfigurationPropertyName name = rootName.append("[" + i + "]");
 			mappings.add(new PropertyMapping(propertySourceName, name,
 					new ElementExtractor(i)));
 		}
@@ -106,33 +102,38 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		return result;
 	}
 
-	private String convertName(ConfigurationPropertyName configurationPropertyName) {
-		return configurationPropertyName.stream()
-				.map(name -> name.getValue(Form.UNIFORM).toUpperCase())
-				.collect(Collectors.joining("_"));
+	private String convertName(ConfigurationPropertyName name) {
+		return convertName(name, name.getNumberOfElements());
+	}
+
+	private String convertName(ConfigurationPropertyName name, int numberOfElements) {
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < numberOfElements; i++) {
+			result.append(result.length() == 0 ? "" : "_");
+			result.append(name.getElement(i, Form.UNIFORM).toString().toUpperCase());
+		}
+		return result.toString();
 	}
 
 	private boolean isListShortcutPossible(ConfigurationPropertyName name) {
-		return (name.getElement().isIndexed()
-				&& isNumber(name.getElement().getValue(Form.UNIFORM))
-				&& name.getParent() != null);
+		return (name.isLastElementIndexed() && isNumber(name.getLastElement(Form.UNIFORM))
+				&& name.getNumberOfElements() >= 1);
 	}
 
 	private List<PropertyMapping> mapListShortcut(PropertySource<?> propertySource,
-			ConfigurationPropertyName configurationPropertyName) {
-		String propertyName = convertName(configurationPropertyName.getParent()) + "__";
-		if (propertySource.containsProperty(propertyName)) {
-			int index = Integer.parseInt(
-					configurationPropertyName.getElement().getValue(Form.UNIFORM));
-			return Collections.singletonList(new PropertyMapping(propertyName,
-					configurationPropertyName, new ElementExtractor(index)));
+			ConfigurationPropertyName name) {
+		String result = convertName(name, name.getNumberOfElements() - 1) + "__";
+		if (propertySource.containsProperty(result)) {
+			int index = Integer.parseInt(name.getLastElement(Form.UNIFORM));
+			return Collections.singletonList(
+					new PropertyMapping(result, name, new ElementExtractor(index)));
 		}
 		return Collections.emptyList();
 	}
 
-	private String createElement(String value) {
-		value = value.toLowerCase();
-		return (isNumber(value) ? "[" + value + "]" : value);
+	private CharSequence processElementValue(CharSequence value) {
+		String result = value.toString().toLowerCase();
+		return (isNumber(result) ? "[" + result + "]" : result);
 	}
 
 	private static boolean isNumber(String string) {

@@ -58,6 +58,7 @@ public class FileEncodingApplicationListenerTests {
 		Assume.assumeNotNull(System.getProperty("file.encoding"));
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.mandatory_file_encoding:" + System.getProperty("file.encoding"));
+		ConfigurationPropertySources.attach(this.environment);
 		this.initializer.onApplicationEvent(this.event);
 	}
 

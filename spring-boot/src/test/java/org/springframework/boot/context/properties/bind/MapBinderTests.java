@@ -129,7 +129,6 @@ public class MapBinderTests {
 		this.sources.add(source);
 		Map<String, Map<String, Integer>> result = this.binder
 				.bind("foo", Bindable.<Map<String, Map<String, Integer>>>of(type)).get();
-		System.out.println(result);
 		assertThat(result).hasSize(2);
 		assertThat(result.get("bar")).containsEntry("baz", 1).containsEntry("bin", 2);
 		assertThat(result.get("far")).containsEntry("baz", 3).containsEntry("bin", 4);

@@ -42,6 +42,8 @@ import org.springframework.util.MultiValueMap;
  */
 abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
+	private static final String INDEX_ZERO = "[0]";
+
 	IndexedElementsBinder(BindContext context) {
 		super(context);
 	}
@@ -81,12 +83,13 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		MultiValueMap<String, ConfigurationProperty> knownIndexedChildren = getKnownIndexedChildren(
 				source, root);
 		for (int i = 0; i < Integer.MAX_VALUE; i++) {
-			ConfigurationPropertyName name = root.appendIndex(i);
+			ConfigurationPropertyName name = root
+					.append(i == 0 ? INDEX_ZERO : "[" + i + "]");
 			Object value = elementBinder.bind(name, Bindable.of(elementType), source);
 			if (value == null) {
 				break;
 			}
-			knownIndexedChildren.remove(name.getElement().getValue(Form.UNIFORM));
+			knownIndexedChildren.remove(name.getLastElement(Form.UNIFORM));
 			collection.get().add(value);
 		}
 		assertNoUnboundChildren(knownIndexedChildren);
@@ -100,9 +103,9 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		}
 		for (ConfigurationPropertyName name : (IterableConfigurationPropertySource) source
 				.filter(root::isAncestorOf)) {
-			name = rollUp(name, root);
-			if (name.getElement().isIndexed()) {
-				String key = name.getElement().getValue(Form.UNIFORM);
+			name = name.chop(root.getNumberOfElements() + 1);
+			if (name.isLastElementIndexed()) {
+				String key = name.getLastElement(Form.UNIFORM);
 				ConfigurationProperty value = source.getConfigurationProperty(name);
 				children.add(key, value);
 			}

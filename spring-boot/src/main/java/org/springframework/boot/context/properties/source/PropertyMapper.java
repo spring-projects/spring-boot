@@ -27,10 +27,10 @@ import org.springframework.core.env.PropertySource;
  * <P>
  * Mappings should be provided for both {@link ConfigurationPropertyName
  * ConfigurationPropertyName} types and {@code String} based names. This allows the
- * {@link SpringConfigurationPropertySource} to first attempt any direct mappings
- * (i.e. map the {@link ConfigurationPropertyName} directly to the {@link PropertySource}
- * name) before falling back to {@link EnumerablePropertySource enumerating} property
- * names, mapping them to a {@link ConfigurationPropertyName} and checking for
+ * {@link SpringConfigurationPropertySource} to first attempt any direct mappings (i.e.
+ * map the {@link ConfigurationPropertyName} directly to the {@link PropertySource} name)
+ * before falling back to {@link EnumerablePropertySource enumerating} property names,
+ * mapping them to a {@link ConfigurationPropertyName} and checking for
  * {@link PropertyMapping#isApplicable(ConfigurationPropertyName) applicability}. See
  * {@link SpringConfigurationPropertySource} for more details.
  *

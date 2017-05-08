@@ -48,7 +48,8 @@ class FilteredConfigurationPropertiesSource implements ConfigurationPropertySour
 	}
 
 	@Override
-	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
+	public ConfigurationPropertyState containsDescendantOf(
+			ConfigurationPropertyName name) {
 		ConfigurationPropertyState result = this.source.containsDescendantOf(name);
 		if (result == ConfigurationPropertyState.PRESENT) {
 			// We can't be sure a contained descendant won't be filtered

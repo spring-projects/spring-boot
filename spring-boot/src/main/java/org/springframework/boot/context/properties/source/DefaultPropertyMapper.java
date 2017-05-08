@@ -40,8 +40,6 @@ final class DefaultPropertyMapper implements PropertyMapper {
 
 	private LastMapping<String> lastMappedPropertyName;
 
-	private final ConfigurationPropertyNameBuilder nameBuilder = new ConfigurationPropertyNameBuilder();
-
 	private DefaultPropertyMapper() {
 	}
 
@@ -76,14 +74,17 @@ final class DefaultPropertyMapper implements PropertyMapper {
 
 	private List<PropertyMapping> tryMap(String propertySourceName) {
 		try {
-			ConfigurationPropertyName convertedName = this.nameBuilder
-					.from(propertySourceName, '.');
-			PropertyMapping o = new PropertyMapping(propertySourceName, convertedName);
-			return Collections.singletonList(o);
+			ConfigurationPropertyName convertedName = ConfigurationPropertyName
+					.adapt(propertySourceName, '.');
+			if (!convertedName.isEmpty()) {
+				PropertyMapping o = new PropertyMapping(propertySourceName,
+						convertedName);
+				return Collections.singletonList(o);
+			}
 		}
 		catch (Exception ex) {
-			return Collections.emptyList();
 		}
+		return Collections.emptyList();
 	}
 
 	private static class LastMapping<T> {

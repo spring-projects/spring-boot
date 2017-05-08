@@ -22,8 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.assertj.core.util.Objects;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -97,8 +95,9 @@ public class ValidationErrors implements Iterable<ObjectError> {
 
 	private boolean isForError(ConfigurationPropertyName name,
 			ConfigurationPropertyName boundPropertyName, FieldError error) {
-		return Objects.areEqual(boundPropertyName.getParent(), name) && boundPropertyName
-				.getElement().getValue(Form.UNIFORM).equalsIgnoreCase(error.getField());
+		return name.isParentOf(boundPropertyName)
+				&& boundPropertyName.getLastElement(Form.UNIFORM).toString()
+						.equalsIgnoreCase(error.getField());
 	}
 
 	/**

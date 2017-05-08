@@ -89,7 +89,8 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	@Override
-	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
+	public ConfigurationPropertyState containsDescendantOf(
+			ConfigurationPropertyName name) {
 		return this.containsDescendantOfMethod.apply(name);
 	}
 
@@ -176,7 +177,8 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 			PropertySource<?> source) {
 		if (source instanceof RandomValuePropertySource) {
 			return (name) -> (name.isAncestorOf(RANDOM) || name.equals(RANDOM)
-					? ConfigurationPropertyState.PRESENT : ConfigurationPropertyState.ABSENT);
+					? ConfigurationPropertyState.PRESENT
+					: ConfigurationPropertyState.ABSENT);
 		}
 		return null;
 	}
