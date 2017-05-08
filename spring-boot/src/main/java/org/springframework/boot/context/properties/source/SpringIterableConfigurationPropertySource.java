@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.springframework.core.env.EnumerablePropertySource;
@@ -88,8 +87,8 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	@Override
-	public Optional<Boolean> containsDescendantOf(ConfigurationPropertyName name) {
-		return Optional.of(stream().anyMatch(name::isAncestorOf));
+	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
+		return ConfigurationPropertyState.search(this, name::isAncestorOf);
 	}
 
 	private List<ConfigurationPropertyName> getConfigurationPropertyNames() {

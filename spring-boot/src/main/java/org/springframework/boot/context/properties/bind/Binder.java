@@ -36,6 +36,7 @@ import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyState;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.Environment;
 import org.springframework.format.support.DefaultFormattingConversionService;
@@ -309,8 +310,8 @@ public class Binder {
 
 	private boolean isUnbindableBean(ConfigurationPropertyName name, Bindable<?> target,
 			Context context) {
-		if (context.streamSources().map((s) -> s.containsDescendantOf(name).orElse(false))
-				.anyMatch(Boolean.TRUE::equals)) {
+		if (context.streamSources().anyMatch((s) -> s
+				.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT)) {
 			// We know there are properties to bind so we can't bypass anything
 			return false;
 		}
@@ -324,8 +325,8 @@ public class Binder {
 
 	private boolean containsNoDescendantOf(Stream<ConfigurationPropertySource> sources,
 			ConfigurationPropertyName name) {
-		return sources.map((s) -> s.containsDescendantOf(name).orElse(true))
-				.allMatch(Boolean.FALSE::equals);
+		return sources.allMatch(
+				(s) -> s.containsDescendantOf(name) == ConfigurationPropertyState.ABSENT);
 	}
 
 	/**

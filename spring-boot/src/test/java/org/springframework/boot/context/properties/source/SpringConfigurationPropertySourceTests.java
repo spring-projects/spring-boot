@@ -122,7 +122,7 @@ public class SpringConfigurationPropertySourceTests {
 		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(
 				propertySource, DefaultPropertyMapper.INSTANCE, null);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo")))
-				.isEmpty();
+				.isEqualTo(ConfigurationPropertyState.UNKNOWN);
 	}
 
 	@Test

@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
 
 import org.springframework.boot.env.RandomValuePropertySource;
@@ -62,7 +61,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 
 	private final PropertyMapper mapper;
 
-	private final Function<ConfigurationPropertyName, Optional<Boolean>> containsDescendantOfMethod;
+	private final Function<ConfigurationPropertyName, ConfigurationPropertyState> containsDescendantOfMethod;
 
 	/**
 	 * Create a new {@link SpringConfigurationPropertySource} implementation.
@@ -73,13 +72,13 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	 */
 	SpringConfigurationPropertySource(PropertySource<?> propertySource,
 			PropertyMapper mapper,
-			Function<ConfigurationPropertyName, Optional<Boolean>> containsDescendantOfMethod) {
+			Function<ConfigurationPropertyName, ConfigurationPropertyState> containsDescendantOfMethod) {
 		Assert.notNull(propertySource, "PropertySource must not be null");
 		Assert.notNull(mapper, "Mapper must not be null");
 		this.propertySource = propertySource;
 		this.mapper = new ExceptionSwallowingPropertyMapper(mapper);
 		this.containsDescendantOfMethod = (containsDescendantOfMethod != null
-				? containsDescendantOfMethod : (n) -> Optional.empty());
+				? containsDescendantOfMethod : (n) -> ConfigurationPropertyState.UNKNOWN);
 	}
 
 	@Override
@@ -90,7 +89,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	@Override
-	public Optional<Boolean> containsDescendantOf(ConfigurationPropertyName name) {
+	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		return this.containsDescendantOfMethod.apply(name);
 	}
 
@@ -173,11 +172,11 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		return source;
 	}
 
-	private static Function<ConfigurationPropertyName, Optional<Boolean>> getContainsDescendantOfMethod(
+	private static Function<ConfigurationPropertyName, ConfigurationPropertyState> getContainsDescendantOfMethod(
 			PropertySource<?> source) {
 		if (source instanceof RandomValuePropertySource) {
-			return (name) -> Optional
-					.of(name.isAncestorOf(RANDOM) || name.equals(RANDOM));
+			return (name) -> (name.isAncestorOf(RANDOM) || name.equals(RANDOM)
+					? ConfigurationPropertyState.PRESENT : ConfigurationPropertyState.ABSENT);
 		}
 		return null;
 	}

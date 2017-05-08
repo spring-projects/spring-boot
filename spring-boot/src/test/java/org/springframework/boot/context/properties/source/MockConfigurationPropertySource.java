@@ -19,7 +19,6 @@ package org.springframework.boot.context.properties.source;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.springframework.boot.origin.MockOrigin;
@@ -99,8 +98,9 @@ public class MockConfigurationPropertySource
 		}
 
 		@Override
-		public Optional<Boolean> containsDescendantOf(ConfigurationPropertyName name) {
-			return Optional.empty();
+		public ConfigurationPropertyState containsDescendantOf(
+				ConfigurationPropertyName name) {
+			return ConfigurationPropertyState.UNKNOWN;
 		}
 
 	}

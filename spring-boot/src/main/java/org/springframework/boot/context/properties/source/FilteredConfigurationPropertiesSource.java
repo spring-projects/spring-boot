@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.springframework.util.Assert;
@@ -49,10 +48,13 @@ class FilteredConfigurationPropertiesSource implements ConfigurationPropertySour
 	}
 
 	@Override
-	public Optional<Boolean> containsDescendantOf(ConfigurationPropertyName name) {
-		// We can't be sure a contained descendant won't be filtered
-		return this.source.containsDescendantOf(name)
-				.flatMap((result) -> result ? Optional.empty() : Optional.of(result));
+	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
+		ConfigurationPropertyState result = this.source.containsDescendantOf(name);
+		if (result == ConfigurationPropertyState.PRESENT) {
+			// We can't be sure a contained descendant won't be filtered
+			return ConfigurationPropertyState.UNKNOWN;
+		}
+		return result;
 	}
 
 	protected ConfigurationPropertySource getSource() {

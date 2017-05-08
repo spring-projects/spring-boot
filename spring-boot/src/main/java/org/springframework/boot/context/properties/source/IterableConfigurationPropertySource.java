@@ -17,7 +17,6 @@
 package org.springframework.boot.context.properties.source;
 
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -62,8 +61,8 @@ public interface IterableConfigurationPropertySource
 	Stream<ConfigurationPropertyName> stream();
 
 	@Override
-	default Optional<Boolean> containsDescendantOf(ConfigurationPropertyName name) {
-		return Optional.of(stream().anyMatch(name::isAncestorOf));
+	default ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
+		return ConfigurationPropertyState.search(this, name::isAncestorOf);
 	}
 
 	@Override
