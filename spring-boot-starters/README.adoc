@@ -121,4 +121,7 @@ do as they were designed before this was clarified.
 | http://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot
 
+| https://github.com/membrane/service-proxy[Membrane Service Proxy]
+| https://github.com/helpermethod/membrane-spring-boot-starter
+
 |===
