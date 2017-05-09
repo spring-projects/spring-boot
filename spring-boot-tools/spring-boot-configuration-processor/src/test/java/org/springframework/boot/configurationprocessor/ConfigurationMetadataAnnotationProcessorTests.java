@@ -65,6 +65,7 @@ import org.springframework.boot.configurationsample.specific.DoubleRegistrationP
 import org.springframework.boot.configurationsample.specific.ExcludedTypesPojo;
 import org.springframework.boot.configurationsample.specific.GenericConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassAnnotatedGetterConfig;
+import org.springframework.boot.configurationsample.specific.InnerClassHierachicalProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
 import org.springframework.boot.configurationsample.specific.InvalidAccessorProperties;
@@ -346,6 +347,19 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withProperty("config.third.value"));
 		assertThat(metadata).has(Metadata.withProperty("config.fourth"));
 		assertThat(metadata).isNotEqualTo(Metadata.withGroup("config.fourth"));
+	}
+
+	@Test
+	public void innerClassPropertiesHierachical() throws Exception {
+		ConfigurationMetadata metadata = compile(InnerClassHierachicalProperties.class);
+		assertThat(metadata)
+				.has(Metadata.withGroup("config.foo").ofType(InnerClassHierachicalProperties.Foo.class));
+		assertThat(metadata).has(
+				Metadata.withGroup("config.foo.bar").ofType(InnerClassHierachicalProperties.Bar.class));
+		assertThat(metadata).has(
+				Metadata.withGroup("config.foo.bar.baz").ofType(InnerClassHierachicalProperties.Foo.Baz.class));
+		assertThat(metadata).has(Metadata.withProperty("config.foo.bar.baz.blah"));
+		assertThat(metadata).has(Metadata.withProperty("config.foo.bar.bling"));
 	}
 
 	@Test
