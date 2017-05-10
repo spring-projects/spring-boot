@@ -20,17 +20,19 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 
 /**
- * Configure {@link SimpleRabbitListenerContainerFactoryConfigurer} with sensible defaults.
+ * Configure {@link SimpleRabbitListenerContainerFactoryConfigurer} with sensible
+ * defaults.
  *
  * @author Stephane Nicoll
  * @author Gary Russell
  * @since 1.3.3
  */
-public final class SimpleRabbitListenerContainerFactoryConfigurer
-		extends AbstractRabbitListenerContainerFactoryConfigurer<SimpleRabbitListenerContainerFactory> {
+public final class SimpleRabbitListenerContainerFactoryConfigurer extends
+		AbstractRabbitListenerContainerFactoryConfigurer<SimpleRabbitListenerContainerFactory> {
 
 	@Override
-	public void configure(SimpleRabbitListenerContainerFactory factory, ConnectionFactory connectionFactory) {
+	public void configure(SimpleRabbitListenerContainerFactory factory,
+			ConnectionFactory connectionFactory) {
 		RabbitProperties.SimpleContainer config = getRabbitProperties().getListener()
 				.getSimple();
 		configure(factory, connectionFactory, config);

@@ -467,8 +467,8 @@ public class RabbitProperties {
 	public enum ContainerType {
 
 		/**
-		 * Legacy container where the RabbitMQ consumer dispatches messages to an
-		 * invoker thread.
+		 * Legacy container where the RabbitMQ consumer dispatches messages to an invoker
+		 * thread.
 		 */
 		SIMPLE,
 
@@ -607,9 +607,8 @@ public class RabbitProperties {
 		private Integer maxConcurrency;
 
 		/**
-		 * Number of messages to be processed in a transaction; number of messages
-		 * between acks. For best results it should
-		 * be less than or equal to the prefetch count.
+		 * Number of messages to be processed in a transaction; number of messages between
+		 * acks. For best results it should be less than or equal to the prefetch count.
 		 */
 		private Integer transactionSize;
 

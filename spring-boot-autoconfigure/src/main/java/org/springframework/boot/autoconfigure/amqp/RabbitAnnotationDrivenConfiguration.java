@@ -76,12 +76,10 @@ class RabbitAnnotationDrivenConfiguration {
 		return factory;
 	}
 
-
 	@Bean
 	@ConditionalOnMissingBean
 	public DirectRabbitListenerContainerFactoryConfigurer directRabbitListenerContainerFactoryConfigurer() {
-		DirectRabbitListenerContainerFactoryConfigurer configurer =
-				new DirectRabbitListenerContainerFactoryConfigurer();
+		DirectRabbitListenerContainerFactoryConfigurer configurer = new DirectRabbitListenerContainerFactoryConfigurer();
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
 		configurer.setRabbitProperties(this.properties);

@@ -34,8 +34,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public abstract class AbstractRabbitListenerContainerFactoryConfigurer<
-		T extends AbstractRabbitListenerContainerFactory<?>> {
+public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends AbstractRabbitListenerContainerFactory<?>> {
 
 	private MessageConverter messageConverter;
 
@@ -80,7 +79,6 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<
 	 * @param connectionFactory the {@link ConnectionFactory} to use
 	 */
 	public abstract void configure(T factory, ConnectionFactory connectionFactory);
-
 
 	protected void configure(T factory, ConnectionFactory connectionFactory,
 			RabbitProperties.AmqpContainer configuration) {
