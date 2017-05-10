@@ -31,21 +31,24 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * {@link ConfigurationPropertySource} backed by a {@link EnumerablePropertySource}.
- * Extends {@link PropertySourceConfigurationPropertySource} with full "relaxed" mapping
- * support. In order to use this adapter the underlying {@link PropertySource} must be
- * fully enumerable. A security restricted {@link SystemEnvironmentPropertySource} cannot
- * be adapted.
+ * Extends {@link SpringConfigurationPropertySource} with full "relaxed" mapping support.
+ * In order to use this adapter the underlying {@link PropertySource} must be fully
+ * enumerable. A security restricted {@link SystemEnvironmentPropertySource} cannot be
+ * adapted.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
  * @see PropertyMapper
  */
-class PropertySourceIterableConfigurationPropertySource
-		extends PropertySourceConfigurationPropertySource
+class SpringIterableConfigurationPropertySource extends SpringConfigurationPropertySource
 		implements IterableConfigurationPropertySource {
 
-	PropertySourceIterableConfigurationPropertySource(
-			EnumerablePropertySource<?> propertySource, PropertyMapper mapper) {
+	private volatile Object cacheKey;
+
+	private volatile Cache cache;
+
+	SpringIterableConfigurationPropertySource(EnumerablePropertySource<?> propertySource,
+			PropertyMapper mapper) {
 		super(propertySource, mapper, null);
 		assertEnumerablePropertySource(propertySource);
 	}
@@ -62,10 +65,6 @@ class PropertySourceIterableConfigurationPropertySource
 			}
 		}
 	}
-
-	private volatile Object cacheKey;
-
-	private volatile Cache cache;
 
 	@Override
 	public ConfigurationProperty getConfigurationProperty(

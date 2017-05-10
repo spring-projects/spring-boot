@@ -48,7 +48,6 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -868,8 +867,7 @@ public class SpringApplicationTests {
 		assertThat(this.context.getEnvironment().getProperty("foo")).isEqualTo("bar");
 		Iterator<PropertySource<?>> iterator = this.context.getEnvironment()
 				.getPropertySources().iterator();
-		assertThat(iterator.next().getName())
-				.isEqualTo(ConfigurationPropertySources.PROPERTY_SOURCE_NAME);
+		assertThat(iterator.next().getName()).isEqualTo("configurationProperties");
 		assertThat(iterator.next().getName()).isEqualTo(
 				TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
 	}

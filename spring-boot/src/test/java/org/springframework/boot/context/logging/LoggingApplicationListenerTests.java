@@ -105,7 +105,7 @@ public class LoggingApplicationListenerTests {
 		new File("target/foo.log").delete();
 		new File(tmpDir() + "/spring.log").delete();
 		ConfigurableEnvironment environment = this.context.getEnvironment();
-		ConfigurationPropertySources.attach(environment.getPropertySources());
+		ConfigurationPropertySources.attach(environment);
 	}
 
 	@After

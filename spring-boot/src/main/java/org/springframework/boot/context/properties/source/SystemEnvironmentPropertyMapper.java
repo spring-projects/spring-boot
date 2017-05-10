@@ -41,14 +41,17 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @see PropertyMapper
- * @see PropertySourceConfigurationPropertySource
+ * @see SpringConfigurationPropertySource
  */
-class SystemEnvironmentPropertyMapper implements PropertyMapper {
+final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
 	public static final PropertyMapper INSTANCE = new SystemEnvironmentPropertyMapper();
 
 	private final ConfigurationPropertyNameBuilder nameBuilder = new ConfigurationPropertyNameBuilder(
 			this::createElement);
+
+	private SystemEnvironmentPropertyMapper() {
+	}
 
 	@Override
 	public List<PropertyMapping> map(PropertySource<?> propertySource,

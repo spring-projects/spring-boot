@@ -36,11 +36,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapperTests {
 
-	private SystemEnvironmentPropertyMapper mapper = new SystemEnvironmentPropertyMapper();
-
 	@Override
 	protected PropertyMapper getMapper() {
-		return this.mapper;
+		return SystemEnvironmentPropertyMapper.INSTANCE;
 	}
 
 	@Test
@@ -75,7 +73,7 @@ public class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapper
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("SERVER__", "foo,bar,baz");
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
-		List<PropertyMapping> mappings = this.mapper.map(propertySource, "SERVER__");
+		List<PropertyMapping> mappings = getMapper().map(propertySource, "SERVER__");
 		List<Object> result = new ArrayList<>();
 		for (PropertyMapping mapping : mappings) {
 			Object value = propertySource.getProperty(mapping.getPropertySourceName());
@@ -91,7 +89,7 @@ public class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapper
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("SERVER__", "foo,bar,baz");
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
-		List<PropertyMapping> mappings = this.mapper.map(propertySource,
+		List<PropertyMapping> mappings = getMapper().map(propertySource,
 				ConfigurationPropertyName.of("server[1]"));
 		List<Object> result = new ArrayList<>();
 		for (PropertyMapping mapping : mappings) {
@@ -108,7 +106,7 @@ public class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapper
 	public void underscoreShouldNotMapToEmptyString() throws Exception {
 		Map<String, Object> source = new LinkedHashMap<>();
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
-		List<PropertyMapping> mappings = this.mapper.map(propertySource, "_");
+		List<PropertyMapping> mappings = getMapper().map(propertySource, "_");
 		boolean applicable = false;
 		for (PropertyMapping mapping : mappings) {
 			applicable = mapping.isApplicable(ConfigurationPropertyName.of(""));
@@ -120,7 +118,7 @@ public class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapper
 	public void underscoreWithWhitespaceShouldNotMapToEmptyString() throws Exception {
 		Map<String, Object> source = new LinkedHashMap<>();
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
-		List<PropertyMapping> mappings = this.mapper.map(propertySource, "  _");
+		List<PropertyMapping> mappings = getMapper().map(propertySource, "  _");
 		boolean applicable = false;
 		for (PropertyMapping mapping : mappings) {
 			applicable = mapping.isApplicable(ConfigurationPropertyName.of(""));

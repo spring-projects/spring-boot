@@ -16,72 +16,115 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.WeakHashMap;
-import java.util.function.Function;
+import java.util.Collections;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.springframework.boot.env.RandomValuePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySource.StubPropertySource;
-import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
-import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.util.Assert;
 
 /**
- * A managed set of {@link ConfigurationPropertySource} instances, usually adapted from
- * Spring's {@link PropertySources}.
+ * Provides access to {@link ConfigurationPropertySource ConfigurationPropertySources}.
  *
  * @author Phillip Webb
- * @author Madhura Bhave
  * @since 2.0.0
- * @see #attach(MutablePropertySources)
- * @see #get(PropertySources)
  */
-public class ConfigurationPropertySources
-		implements Iterable<ConfigurationPropertySource> {
-
-	private static final ConfigurationPropertyName RANDOM = ConfigurationPropertyName
-			.of("random");
+public final class ConfigurationPropertySources {
 
 	/**
 	 * The name of the {@link PropertySource} {@link #adapt adapter}.
 	 */
-	public static final String PROPERTY_SOURCE_NAME = "configurationProperties";
+	private static final String ATTACHED_PROPERTY_SOURCE_NAME = "configurationProperties";
 
-	private final PropertySources propertySources;
-
-	private final Map<PropertySource<?>, ConfigurationPropertySource> adapters = new WeakHashMap<>();
+	private ConfigurationPropertySources() {
+	}
 
 	/**
-	 * Create a new {@link ConfigurationPropertySources} instance.
-	 * @param propertySources the property sources to expose
+	 * Attach a {@link ConfigurationPropertySource} support to the specified
+	 * {@link Environment}. Adapts each {@link PropertySource} managed by the environment
+	 * to a {@link ConfigurationPropertySource} and allows classic
+	 * {@link PropertySourcesPropertyResolver} calls to resolve using
+	 * {@link ConfigurationPropertyName configuration property names}.
+	 * <p>
+	 * The attached resolver will dynamically track any additions or removals from the
+	 * underlying {@link Environment} property sources.
+	 * @param environment the source environment (must be an instance of
+	 * {@link ConfigurableEnvironment})
+	 * @see #get(Environment)
 	 */
-	ConfigurationPropertySources(PropertySources propertySources) {
-		Assert.notNull(propertySources, "PropertySources must not be null");
-		this.propertySources = propertySources;
+	public static void attach(Environment environment) {
+		Assert.isInstanceOf(ConfigurableEnvironment.class, environment);
+		MutablePropertySources sources = ((ConfigurableEnvironment) environment)
+				.getPropertySources();
+		if (!sources.contains(ATTACHED_PROPERTY_SOURCE_NAME)) {
+			sources.addFirst(new ConfigurationPropertySourcesPropertySource(
+					ATTACHED_PROPERTY_SOURCE_NAME,
+					new SpringConfigurationPropertySources(sources)));
+		}
 	}
 
-	@Override
-	public Iterator<ConfigurationPropertySource> iterator() {
-		return streamPropertySources(this.propertySources)
-				.filter(s -> !(s instanceof ConfigurationPropertySourcesPropertySource))
-				.map(this::adapt).iterator();
+	/**
+	 * Return a set of {@link ConfigurationPropertySource} instances that have previously
+	 * been {@link #attach(Environment) attached} to the {@link Environment}.
+	 * @param environment the source environment (must be an instance of
+	 * {@link ConfigurableEnvironment})
+	 * @return an iterable set of configuration property sources
+	 * @throws IllegalStateException if not configuration property sources have been
+	 * attached
+	 */
+	public static Iterable<ConfigurationPropertySource> get(Environment environment) {
+		Assert.isInstanceOf(ConfigurableEnvironment.class, environment);
+		MutablePropertySources sources = ((ConfigurableEnvironment) environment)
+				.getPropertySources();
+		ConfigurationPropertySourcesPropertySource attached = (ConfigurationPropertySourcesPropertySource) sources
+				.get(ATTACHED_PROPERTY_SOURCE_NAME);
+		if (attached == null) {
+			return from(sources);
+		}
+		return attached.getSource();
 	}
 
-	private Stream<PropertySource<?>> streamPropertySources(PropertySources sources) {
-		return StreamSupport.stream(sources.spliterator(), false).flatMap(this::flatten)
-				.filter(this::notStubSource);
+	/**
+	 * Return {@link Iterable} containing a single new {@link ConfigurationPropertySource}
+	 * adapted from the given Spring {@link PropertySource}.
+	 * @param source the Spring property source to adapt
+	 * @return an {@link Iterable} containing a single newly adapted
+	 * {@link SpringConfigurationPropertySource}
+	 */
+	public static Iterable<ConfigurationPropertySource> from(PropertySource<?> source) {
+		return Collections.singleton(SpringConfigurationPropertySource.from(source));
 	}
 
-	private Stream<PropertySource<?>> flatten(PropertySource<?> source) {
+	/**
+	 * Return {@link Iterable} containing new {@link ConfigurationPropertySource}
+	 * instances adapted from the given Spring {@link PropertySource PropertySources}.
+	 * <p>
+	 * This method will flatten any nested property sources and will filter all
+	 * {@link StubPropertySource stub property sources}.
+	 * @param sources the Spring property sources to adapt
+	 * @return an {@link Iterable} containing a single newly adapted
+	 * {@link SpringConfigurationPropertySource} instances
+	 */
+	public static Iterable<ConfigurationPropertySource> from(
+			Iterable<PropertySource<?>> sources) {
+		return streamPropertySources(sources).map(SpringConfigurationPropertySource::from)
+				.collect(Collectors.toList());
+	}
+
+	private static Stream<PropertySource<?>> streamPropertySources(
+			Iterable<PropertySource<?>> sources) {
+		return StreamSupport.stream(sources.spliterator(), false)
+				.flatMap(ConfigurationPropertySources::flatten)
+				.filter(ConfigurationPropertySources::isIncluded);
+	}
+
+	private static Stream<PropertySource<?>> flatten(PropertySource<?> source) {
 		if (source.getSource() instanceof ConfigurableEnvironment) {
 			return streamPropertySources(
 					((ConfigurableEnvironment) source.getSource()).getPropertySources());
@@ -89,124 +132,9 @@ public class ConfigurationPropertySources
 		return Stream.of(source);
 	}
 
-	private boolean notStubSource(PropertySource<?> source) {
-		return !(source instanceof StubPropertySource);
-	}
-
-	private ConfigurationPropertySource adapt(PropertySource<?> source) {
-		return this.adapters.computeIfAbsent(source, this::createAdapter);
-	}
-
-	private ConfigurationPropertySource createAdapter(PropertySource<?> source) {
-		PropertyMapper mapper = getPropertyMapper(source);
-		if (isFullEnumerable(source)) {
-			return new PropertySourceIterableConfigurationPropertySource(
-					(EnumerablePropertySource<?>) source, mapper);
-		}
-		return new PropertySourceConfigurationPropertySource(source, mapper,
-				getContainsDescendantOfMethod(source));
-	}
-
-	private PropertyMapper getPropertyMapper(PropertySource<?> source) {
-		if (source instanceof SystemEnvironmentPropertySource) {
-			return SystemEnvironmentPropertyMapper.INSTANCE;
-		}
-		return DefaultPropertyMapper.INSTANCE;
-	}
-
-	private boolean isFullEnumerable(PropertySource<?> source) {
-		PropertySource<?> rootSource = getRootSource(source);
-		if (rootSource.getSource() instanceof Map) {
-			// Check we're not security restricted
-			try {
-				((Map<?, ?>) rootSource.getSource()).size();
-			}
-			catch (UnsupportedOperationException ex) {
-				return false;
-			}
-		}
-		return (source instanceof EnumerablePropertySource);
-	}
-
-	private PropertySource<?> getRootSource(PropertySource<?> source) {
-		while (source.getSource() != null
-				&& source.getSource() instanceof PropertySource) {
-			source = (PropertySource<?>) source.getSource();
-		}
-		return source;
-	}
-
-	private Function<ConfigurationPropertyName, Optional<Boolean>> getContainsDescendantOfMethod(
-			PropertySource<?> source) {
-		if (source instanceof RandomValuePropertySource) {
-			return (name) -> Optional
-					.of(name.isAncestorOf(RANDOM) || name.equals(RANDOM));
-		}
-		return null;
-	}
-
-	/**
-	 * Attach a {@link ConfigurationPropertySources} instance to the specified
-	 * {@link ConfigurableEnvironment} so that classic
-	 * {@link PropertySourcesPropertyResolver} calls will resolve using
-	 * {@link ConfigurationPropertyName configuration property names}.
-	 * @param environment the source environment
-	 * @return the instance attached
-	 */
-	public static ConfigurationPropertySources attach(
-			ConfigurableEnvironment environment) {
-		return attach(environment.getPropertySources());
-	}
-
-	/**
-	 * Attach a {@link ConfigurationPropertySources} instance to the specified
-	 * {@link PropertySources} so that classic {@link PropertySourcesPropertyResolver}
-	 * calls will resolve using using {@link ConfigurationPropertyName configuration
-	 * property names}.
-	 * @param propertySources the source property sources
-	 * @return the instance attached
-	 */
-	public static ConfigurationPropertySources attach(
-			MutablePropertySources propertySources) {
-		ConfigurationPropertySources adapted = new ConfigurationPropertySources(
-				propertySources);
-		propertySources.addFirst(new ConfigurationPropertySourcesPropertySource(
-				PROPERTY_SOURCE_NAME, adapted));
-		return adapted;
-	}
-
-	/**
-	 * Get a {@link ConfigurationPropertySources} instance for the specified
-	 * {@link PropertySources} (either previously {@link #attach(MutablePropertySources)
-	 * attached} or a new instance.
-	 * @param propertySources the source property sources
-	 * @return a {@link ConfigurationPropertySources} instance
-	 */
-	public static ConfigurationPropertySources get(PropertySources propertySources) {
-		if (propertySources == null) {
-			return null;
-		}
-		PropertySource<?> source = propertySources.get(PROPERTY_SOURCE_NAME);
-		if (source != null) {
-			return (ConfigurationPropertySources) source.getSource();
-		}
-		return new ConfigurationPropertySources(propertySources);
-	}
-
-	/**
-	 * Get a {@link ConfigurationPropertySources} instance for the {@link PropertySources}
-	 * from the specified {@link ConfigurableEnvironment}, (either previously
-	 * {@link #attach(MutablePropertySources) attached} or a new instance.
-	 * @param environment the configurable environment
-	 * @return a {@link ConfigurationPropertySources} instance
-	 */
-	public static ConfigurationPropertySources get(ConfigurableEnvironment environment) {
-		MutablePropertySources propertySources = environment.getPropertySources();
-		PropertySource<?> source = propertySources.get(PROPERTY_SOURCE_NAME);
-		if (source != null) {
-			return (ConfigurationPropertySources) source.getSource();
-		}
-		return new ConfigurationPropertySources(propertySources);
+	private static boolean isIncluded(PropertySource<?> source) {
+		return !(source instanceof StubPropertySource)
+				&& !(source instanceof ConfigurationPropertySourcesPropertySource);
 	}
 
 }

@@ -31,7 +31,6 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
- * @since 2.0.0
  */
 public class MapConfigurationPropertySource
 		implements IterableConfigurationPropertySource {
@@ -54,9 +53,9 @@ public class MapConfigurationPropertySource
 	 */
 	public MapConfigurationPropertySource(Map<?, ?> map) {
 		this.source = new LinkedHashMap<>();
-		this.delegate = new PropertySourceIterableConfigurationPropertySource(
+		this.delegate = new SpringIterableConfigurationPropertySource(
 				new MapPropertySource("source", this.source),
-				new DefaultPropertyMapper());
+				DefaultPropertyMapper.INSTANCE);
 		putAll(map);
 	}
 

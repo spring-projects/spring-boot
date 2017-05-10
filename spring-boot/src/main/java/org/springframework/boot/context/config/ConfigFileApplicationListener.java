@@ -480,9 +480,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		}
 
 		private void handleProfileProperties(PropertySource<?> propertySource) {
-			MutablePropertySources propertySources = new MutablePropertySources();
-			propertySources.addFirst(propertySource);
-			Binder binder = new Binder(ConfigurationPropertySources.get(propertySources),
+			Binder binder = new Binder(ConfigurationPropertySources.from(propertySource),
 					new PropertySourcesPlaceholdersResolver(this.environment));
 			Set<Profile> active = getProfiles(binder, "spring.profiles.active");
 			Set<Profile> include = getProfiles(binder, "spring.profiles.include");

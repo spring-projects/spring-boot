@@ -17,11 +17,10 @@
 package org.springframework.boot.context.properties.source;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.core.env.PropertySource;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Default {@link PropertyMapper} implementation. Names are mapped by removing invalid
@@ -31,36 +30,48 @@ import org.springframework.core.env.PropertySource;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @see PropertyMapper
- * @see PropertySourceConfigurationPropertySource
+ * @see SpringConfigurationPropertySource
  */
-class DefaultPropertyMapper implements PropertyMapper {
+final class DefaultPropertyMapper implements PropertyMapper {
 
 	public static final PropertyMapper INSTANCE = new DefaultPropertyMapper();
 
-	private final Cache<ConfigurationPropertyName> configurationPropertySourceCache = new Cache<>();
+	private LastMapping<ConfigurationPropertyName> lastMappedConfigurationPropertyName;
 
-	private final Cache<String> propertySourceCache = new Cache<>();
+	private LastMapping<String> lastMappedPropertyName;
 
 	private final ConfigurationPropertyNameBuilder nameBuilder = new ConfigurationPropertyNameBuilder();
+
+	private DefaultPropertyMapper() {
+	}
 
 	@Override
 	public List<PropertyMapping> map(PropertySource<?> propertySource,
 			ConfigurationPropertyName configurationPropertyName) {
-		List<PropertyMapping> mapping = this.configurationPropertySourceCache
-				.get(configurationPropertyName);
-		if (mapping == null) {
-			String convertedName = configurationPropertyName.toString();
-			mapping = Collections.singletonList(
-					new PropertyMapping(convertedName, configurationPropertyName));
-			this.configurationPropertySourceCache.put(configurationPropertyName, mapping);
+		// Use a local copy in case another thread changes things
+		LastMapping<ConfigurationPropertyName> last = this.lastMappedConfigurationPropertyName;
+		if (last != null && last.isFrom(configurationPropertyName)) {
+			return last.getMapping();
 		}
+		String convertedName = configurationPropertyName.toString();
+		List<PropertyMapping> mapping = Collections.singletonList(
+				new PropertyMapping(convertedName, configurationPropertyName));
+		this.lastMappedConfigurationPropertyName = new LastMapping<>(
+				configurationPropertyName, mapping);
 		return mapping;
 	}
 
 	@Override
 	public List<PropertyMapping> map(PropertySource<?> propertySource,
 			String propertySourceName) {
-		return this.propertySourceCache.computeIfAbsent(propertySourceName, this::tryMap);
+		// Use a local copy in case another thread changes things
+		LastMapping<String> last = this.lastMappedPropertyName;
+		if (last != null && last.isFrom(propertySourceName)) {
+			return last.getMapping();
+		}
+		List<PropertyMapping> mapping = tryMap(propertySourceName);
+		this.lastMappedPropertyName = new LastMapping<>(propertySourceName, mapping);
+		return mapping;
 	}
 
 	private List<PropertyMapping> tryMap(String propertySourceName) {
@@ -75,23 +86,23 @@ class DefaultPropertyMapper implements PropertyMapper {
 		}
 	}
 
-	private static class Cache<K> extends LinkedHashMap<K, List<PropertyMapping>> {
+	private static class LastMapping<T> {
 
-		private final int capacity;
+		private final T from;
 
-		Cache() {
-			this(1);
+		private final List<PropertyMapping> mapping;
+
+		LastMapping(T from, List<PropertyMapping> mapping) {
+			this.from = from;
+			this.mapping = mapping;
 		}
 
-		Cache(int capacity) {
-			super(capacity, (float) 0.75, true);
-			this.capacity = capacity;
+		public boolean isFrom(T from) {
+			return ObjectUtils.nullSafeEquals(from, this.from);
 		}
 
-		@Override
-		protected boolean removeEldestEntry(Map.Entry<K, List<PropertyMapping>> eldest) {
-			return size() > this.capacity;
-
+		public List<PropertyMapping> getMapping() {
+			return this.mapping;
 		}
 
 	}

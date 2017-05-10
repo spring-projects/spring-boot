@@ -33,12 +33,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link PropertySourceIterableConfigurationPropertySource}.
+ * Tests for {@link SpringIterableConfigurationPropertySource}.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class PropertySourceIterableConfigurationPropertySourceTests {
+public class SpringIterableConfigurationPropertySourceTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -47,15 +47,14 @@ public class PropertySourceIterableConfigurationPropertySourceTests {
 	public void createWhenPropertySourceIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("PropertySource must not be null");
-		new PropertySourceIterableConfigurationPropertySource(null,
-				mock(PropertyMapper.class));
+		new SpringIterableConfigurationPropertySource(null, mock(PropertyMapper.class));
 	}
 
 	@Test
 	public void createWhenMapperIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Mapper must not be null");
-		new PropertySourceIterableConfigurationPropertySource(
+		new SpringIterableConfigurationPropertySource(
 				mock(EnumerablePropertySource.class), null);
 	}
 
@@ -72,7 +71,7 @@ public class PropertySourceIterableConfigurationPropertySourceTests {
 		mapper.addFromPropertySource("key1", "my.key1");
 		mapper.addFromPropertySource("key2", "my.key2a", "my.key2b");
 		mapper.addFromPropertySource("key4", "my.key4");
-		PropertySourceIterableConfigurationPropertySource adapter = new PropertySourceIterableConfigurationPropertySource(
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, mapper);
 		assertThat(adapter.iterator()).extracting(Object::toString)
 				.containsExactly("my.key1", "my.key2a", "my.key2b", "my.key4");
@@ -89,7 +88,7 @@ public class PropertySourceIterableConfigurationPropertySourceTests {
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key2");
-		PropertySourceIterableConfigurationPropertySource adapter = new PropertySourceIterableConfigurationPropertySource(
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, mapper);
 		assertThat(adapter.getConfigurationProperty(name).getValue()).isEqualTo("value2");
 	}
@@ -105,7 +104,7 @@ public class PropertySourceIterableConfigurationPropertySourceTests {
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		mapper.addFromPropertySource("key1", "my.missing");
 		mapper.addFromPropertySource("key2", "my.k-e-y");
-		PropertySourceIterableConfigurationPropertySource adapter = new PropertySourceIterableConfigurationPropertySource(
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, mapper);
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		assertThat(adapter.getConfigurationProperty(name).getValue()).isEqualTo("value2");
@@ -121,7 +120,7 @@ public class PropertySourceIterableConfigurationPropertySourceTests {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key",
 				(value) -> value.toString().replace("ue", "let"));
-		PropertySourceIterableConfigurationPropertySource adapter = new PropertySourceIterableConfigurationPropertySource(
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, mapper);
 		assertThat(adapter.getConfigurationProperty(name).getValue()).isEqualTo("vallet");
 	}
@@ -135,7 +134,7 @@ public class PropertySourceIterableConfigurationPropertySourceTests {
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key");
-		PropertySourceIterableConfigurationPropertySource adapter = new PropertySourceIterableConfigurationPropertySource(
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, mapper);
 		assertThat(adapter.getConfigurationProperty(name).getOrigin().toString())
 				.isEqualTo("\"key\" from property source \"test\"");
@@ -150,7 +149,7 @@ public class PropertySourceIterableConfigurationPropertySourceTests {
 		TestPropertyMapper mapper = new TestPropertyMapper();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
 		mapper.addFromConfigurationProperty(name, "key");
-		PropertySourceIterableConfigurationPropertySource adapter = new PropertySourceIterableConfigurationPropertySource(
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, mapper);
 		assertThat(adapter.getConfigurationProperty(name).getOrigin().toString())
 				.isEqualTo("TestOrigin key");
@@ -163,8 +162,8 @@ public class PropertySourceIterableConfigurationPropertySourceTests {
 		source.put("faf", "value");
 		EnumerablePropertySource<?> propertySource = new OriginCapablePropertySource<>(
 				new MapPropertySource("test", source));
-		PropertySourceIterableConfigurationPropertySource adapter = new PropertySourceIterableConfigurationPropertySource(
-				propertySource, new DefaultPropertyMapper());
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
+				propertySource, DefaultPropertyMapper.INSTANCE);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo")))
 				.contains(true);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("faf")))

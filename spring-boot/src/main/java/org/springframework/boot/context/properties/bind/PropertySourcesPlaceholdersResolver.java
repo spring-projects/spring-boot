@@ -33,7 +33,7 @@ import org.springframework.util.SystemPropertyUtils;
  */
 public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver {
 
-	private final PropertySources sources;
+	private final Iterable<PropertySource<?>> sources;
 
 	private final PropertyPlaceholderHelper helper;
 
@@ -41,11 +41,11 @@ public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver
 		this(getSources(environment), null);
 	}
 
-	public PropertySourcesPlaceholdersResolver(PropertySources sources) {
+	public PropertySourcesPlaceholdersResolver(Iterable<PropertySource<?>> sources) {
 		this(sources, null);
 	}
 
-	public PropertySourcesPlaceholdersResolver(PropertySources sources,
+	public PropertySourcesPlaceholdersResolver(Iterable<PropertySource<?>> sources,
 			PropertyPlaceholderHelper helper) {
 		this.sources = sources;
 		this.helper = (helper != null ? helper

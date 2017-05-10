@@ -28,6 +28,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
@@ -173,7 +174,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		return binder.bind("server.port", Bindable.of(String.class)).isBound();
 	}
 
-	private MapConfigurationPropertySource convertToConfigurationPropertySource(
+	private ConfigurationPropertySource convertToConfigurationPropertySource(
 			List<String> properties) {
 		String[] array = properties.toArray(new String[properties.size()]);
 		return new MapConfigurationPropertySource(

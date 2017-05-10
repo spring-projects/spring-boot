@@ -26,7 +26,7 @@ import org.springframework.core.env.PropertySource;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
- * @see PropertySourceConfigurationPropertySource
+ * @see SpringConfigurationPropertySource
  */
 class PropertyMapping {
 

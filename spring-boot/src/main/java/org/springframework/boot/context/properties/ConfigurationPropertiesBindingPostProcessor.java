@@ -40,6 +40,7 @@ import org.springframework.boot.context.properties.bind.PropertySourcesPlacehold
 import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBindHandler;
 import org.springframework.boot.context.properties.bind.handler.NoUnboundElementsBindHandler;
 import org.springframework.boot.context.properties.bind.validation.ValidationBindHandler;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.ApplicationContext;
@@ -59,6 +60,7 @@ import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.Assert;
@@ -95,7 +97,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	private ConfigurationBeanFactoryMetaData beans = new ConfigurationBeanFactoryMetaData();
 
-	private PropertySources propertySources;
+	private Iterable<PropertySource<?>> propertySources;
 
 	private Validator validator;
 
@@ -117,7 +119,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	private int order = Ordered.HIGHEST_PRECEDENCE + 1;
 
-	private ConfigurationPropertySources configurationSources;
+	private Iterable<ConfigurationPropertySource> configurationSources;
 
 	private Binder binder;
 
@@ -164,7 +166,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	 * Set the property sources to bind.
 	 * @param propertySources the property sources
 	 */
-	public void setPropertySources(PropertySources propertySources) {
+	public void setPropertySources(Iterable<PropertySource<?>> propertySources) {
 		this.propertySources = propertySources;
 	}
 
@@ -221,7 +223,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 					ConversionService.class);
 		}
 		this.configurationSources = ConfigurationPropertySources
-				.get(this.propertySources);
+				.from(this.propertySources);
 	}
 
 	@Override

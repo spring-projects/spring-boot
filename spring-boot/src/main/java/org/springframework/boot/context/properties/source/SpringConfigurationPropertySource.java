@@ -18,14 +18,17 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.springframework.boot.env.RandomValuePropertySource;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.util.Assert;
 
 /**
@@ -41,16 +44,19 @@ import org.springframework.util.Assert;
  * {@link ConfigurationPropertyName} to one or more {@code String} based names. This
  * allows fast property resolution for well formed property sources.
  * <p>
- * If at all possible the {@link PropertySourceIterableConfigurationPropertySource} should
- * be used in preference to this implementation since it supports "relaxed" style
- * resolution.
+ * When possible the {@link SpringIterableConfigurationPropertySource} will be used in
+ * preference to this implementation since it supports full "relaxed" style resolution.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @see #from(PropertySource)
  * @see PropertyMapper
- * @see PropertySourceIterableConfigurationPropertySource
+ * @see SpringIterableConfigurationPropertySource
  */
-class PropertySourceConfigurationPropertySource implements ConfigurationPropertySource {
+class SpringConfigurationPropertySource implements ConfigurationPropertySource {
+
+	private static final ConfigurationPropertyName RANDOM = ConfigurationPropertyName
+			.of("random");
 
 	private final PropertySource<?> propertySource;
 
@@ -59,21 +65,21 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 	private final Function<ConfigurationPropertyName, Optional<Boolean>> containsDescendantOfMethod;
 
 	/**
-	 * Create a new {@link PropertySourceConfigurationPropertySource} implementation.
+	 * Create a new {@link SpringConfigurationPropertySource} implementation.
 	 * @param propertySource the source property source
 	 * @param mapper the property mapper
 	 * @param containsDescendantOfMethod function used to implement
 	 * {@link #containsDescendantOf(ConfigurationPropertyName)} (may be {@code null})
 	 */
-	PropertySourceConfigurationPropertySource(PropertySource<?> propertySource,
+	SpringConfigurationPropertySource(PropertySource<?> propertySource,
 			PropertyMapper mapper,
 			Function<ConfigurationPropertyName, Optional<Boolean>> containsDescendantOfMethod) {
 		Assert.notNull(propertySource, "PropertySource must not be null");
 		Assert.notNull(mapper, "Mapper must not be null");
 		this.propertySource = propertySource;
 		this.mapper = new ExceptionSwallowingPropertyMapper(mapper);
-		this.containsDescendantOfMethod = (containsDescendantOfMethod != null ? containsDescendantOfMethod
-				: (n) -> Optional.empty());
+		this.containsDescendantOfMethod = (containsDescendantOfMethod != null
+				? containsDescendantOfMethod : (n) -> Optional.empty());
 	}
 
 	@Override
@@ -118,6 +124,62 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 	@Override
 	public String toString() {
 		return this.propertySource.toString();
+	}
+
+	/**
+	 * Create a new {@link SpringConfigurationPropertySource} for the specified
+	 * {@link PropertySource}.
+	 * @param source the source Spring {@link PropertySource}
+	 * @return a {@link SpringConfigurationPropertySource} or
+	 * {@link SpringIterableConfigurationPropertySource} instance
+	 */
+	public static SpringConfigurationPropertySource from(PropertySource<?> source) {
+		Assert.notNull(source, "Source must not be null");
+		PropertyMapper mapper = getPropertyMapper(source);
+		if (isFullEnumerable(source)) {
+			return new SpringIterableConfigurationPropertySource(
+					(EnumerablePropertySource<?>) source, mapper);
+		}
+		return new SpringConfigurationPropertySource(source, mapper,
+				getContainsDescendantOfMethod(source));
+	}
+
+	private static PropertyMapper getPropertyMapper(PropertySource<?> source) {
+		if (source instanceof SystemEnvironmentPropertySource) {
+			return SystemEnvironmentPropertyMapper.INSTANCE;
+		}
+		return DefaultPropertyMapper.INSTANCE;
+	}
+
+	private static boolean isFullEnumerable(PropertySource<?> source) {
+		PropertySource<?> rootSource = getRootSource(source);
+		if (rootSource.getSource() instanceof Map) {
+			// Check we're not security restricted
+			try {
+				((Map<?, ?>) rootSource.getSource()).size();
+			}
+			catch (UnsupportedOperationException ex) {
+				return false;
+			}
+		}
+		return (source instanceof EnumerablePropertySource);
+	}
+
+	private static PropertySource<?> getRootSource(PropertySource<?> source) {
+		while (source.getSource() != null
+				&& source.getSource() instanceof PropertySource) {
+			source = (PropertySource<?>) source.getSource();
+		}
+		return source;
+	}
+
+	private static Function<ConfigurationPropertyName, Optional<Boolean>> getContainsDescendantOfMethod(
+			PropertySource<?> source) {
+		if (source instanceof RandomValuePropertySource) {
+			return (name) -> Optional
+					.of(name.isAncestorOf(RANDOM) || name.equals(RANDOM));
+		}
+		return null;
 	}
 
 	/**

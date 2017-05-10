@@ -16,10 +16,6 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Objects;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.Environment;
@@ -70,10 +66,14 @@ class ConfigurationPropertySourcesPropertySource
 		if (name == null) {
 			return null;
 		}
-		Stream<ConfigurationPropertySource> sources = StreamSupport
-				.stream(getSource().spliterator(), false);
-		return sources.map(source -> source.getConfigurationProperty(name))
-				.filter(Objects::nonNull).findFirst().orElse(null);
+		for (ConfigurationPropertySource configurationPropertySource : getSource()) {
+			ConfigurationProperty configurationProperty = configurationPropertySource
+					.getConfigurationProperty(name);
+			if (configurationProperty != null) {
+				return configurationProperty;
+			}
+		}
+		return null;
 	}
 
 }

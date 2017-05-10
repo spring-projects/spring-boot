@@ -37,7 +37,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.util.Assert;
@@ -331,13 +330,12 @@ public class Binder {
 
 	/**
 	 * Create a new {@link Binder} instance from the specified environment.
-	 * @param environment the environment (must be a {@link ConfigurableEnvironment})
+	 * @param environment the environment source (must have attached
+	 * {@link ConfigurationPropertySources})
 	 * @return a {@link Binder} instance
 	 */
 	public static Binder get(Environment environment) {
-		Assert.isInstanceOf(ConfigurableEnvironment.class, environment);
-		return new Binder(
-				ConfigurationPropertySources.get((ConfigurableEnvironment) environment),
+		return new Binder(ConfigurationPropertySources.get(environment),
 				new PropertySourcesPlaceholdersResolver(environment));
 	}
 
