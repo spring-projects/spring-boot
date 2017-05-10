@@ -18,7 +18,9 @@ package org.springframework.boot.env;
 
 import org.junit.Test;
 
+import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
@@ -116,4 +118,15 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 				.isEqualTo("spam");
 	}
 
+	@Test
+	public void propertySourceShouldTrackOrigin() throws Exception {
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.application.json={\"foo\":\"bar\"}");
+		this.processor.postProcessEnvironment(this.environment, null);
+		PropertySource<?> propertySource = this.environment.getPropertySources().get("spring.application.json");
+		PropertySourceOrigin origin = (PropertySourceOrigin) PropertySourceOrigin.get(propertySource, "foo");
+		assertThat(origin.getPropertySource().getName()).isEqualTo("Inlined Test Properties");
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("bar");
+	}
 }
