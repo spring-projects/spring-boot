@@ -67,7 +67,6 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * @see ConditionalOnClass
  * @see AutoConfigureAfter
  */
-@SuppressWarnings("deprecation")
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

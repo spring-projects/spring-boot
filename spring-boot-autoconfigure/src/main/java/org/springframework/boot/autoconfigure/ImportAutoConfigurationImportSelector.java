@@ -39,8 +39,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 
 /**
- * Variant of {@link EnableAutoConfigurationImportSelector} for
- * {@link ImportAutoConfiguration}.
+ * Variant of {@link AutoConfigurationImportSelector} for {@link ImportAutoConfiguration}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

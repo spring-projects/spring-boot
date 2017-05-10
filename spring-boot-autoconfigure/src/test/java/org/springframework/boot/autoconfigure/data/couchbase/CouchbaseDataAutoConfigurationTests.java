@@ -39,7 +39,7 @@ import org.springframework.data.couchbase.config.AbstractCouchbaseDataConfigurat
 import org.springframework.data.couchbase.config.BeanNames;
 import org.springframework.data.couchbase.config.CouchbaseConfigurer;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
-import org.springframework.data.couchbase.core.convert.CustomConversions;
+import org.springframework.data.couchbase.core.convert.CouchbaseCustomConversions;
 import org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext;
 import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
 import org.springframework.data.couchbase.core.query.Consistency;
@@ -166,8 +166,9 @@ public class CouchbaseDataAutoConfigurationTests {
 	static class CustomConversionsConfig {
 
 		@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
-		public CustomConversions myCustomConversions() {
-			return new CustomConversions(Collections.singletonList(new MyConverter()));
+		public CouchbaseCustomConversions myCustomConversions() {
+			return new CouchbaseCustomConversions(
+					Collections.singletonList(new MyConverter()));
 		}
 
 	}

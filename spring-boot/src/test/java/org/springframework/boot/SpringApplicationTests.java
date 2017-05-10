@@ -359,7 +359,6 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	public void eventsOrder() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);

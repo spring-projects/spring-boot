@@ -162,6 +162,7 @@ public class DataSourceAutoConfigurationTests {
 		this.context.refresh();
 		DataSource bean = this.context.getBean(DataSource.class);
 		assertThat(bean).isNotNull();
+		@SuppressWarnings("resource")
 		HikariDataSource pool = (HikariDataSource) bean;
 		assertThat(pool.getDriverClassName()).isEqualTo("org.hsqldb.jdbcDriver");
 		assertThat(pool.getUsername()).isEqualTo("sa");
