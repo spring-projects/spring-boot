@@ -296,7 +296,7 @@ public class RabbitAutoConfigurationTests {
 	@Test
 	public void testSimpleRabbitListenerContainerFactoryWithCustomSettings() {
 		load(new Class<?>[] { MessageConvertersConfiguration.class,
-						MessageRecoverersConfiguration.class },
+				MessageRecoverersConfiguration.class },
 				"spring.rabbitmq.listener.simple.retry.enabled:true",
 				"spring.rabbitmq.listener.simple.retry.maxAttempts:4",
 				"spring.rabbitmq.listener.simple.retry.initialInterval:2000",
@@ -346,29 +346,31 @@ public class RabbitAutoConfigurationTests {
 
 	@Test
 	public void testRabbitListenerContainerFactoryConfigurersAreAvailable() {
-		load(TestConfiguration.class,
-				"spring.rabbitmq.listener.simple.concurrency:5",
+		load(TestConfiguration.class, "spring.rabbitmq.listener.simple.concurrency:5",
 				"spring.rabbitmq.listener.simple.maxConcurrency:10",
 				"spring.rabbitmq.listener.simple.prefetch:40",
 				"spring.rabbitmq.listener.direct.consumers-per-queue:5",
 				"spring.rabbitmq.listener.direct.prefetch:40");
-		assertThat(this.context.getBeansOfType(
-				SimpleRabbitListenerContainerFactoryConfigurer.class)).hasSize(1);
-		assertThat(this.context.getBeansOfType(
-				DirectRabbitListenerContainerFactoryConfigurer.class)).hasSize(1);
+		assertThat(this.context
+				.getBeansOfType(SimpleRabbitListenerContainerFactoryConfigurer.class))
+						.hasSize(1);
+		assertThat(this.context
+				.getBeansOfType(DirectRabbitListenerContainerFactoryConfigurer.class))
+						.hasSize(1);
 	}
 
 	@Test
 	public void testSimpleRabbitListenerContainerFactoryConfigurerUsesConfig() {
-		load(TestConfiguration.class,
-				"spring.rabbitmq.listener.type:direct", // listener type is irrelevant
+		load(TestConfiguration.class, "spring.rabbitmq.listener.type:direct", // listener
+																				// type is
+																				// irrelevant
 				"spring.rabbitmq.listener.simple.concurrency:5",
 				"spring.rabbitmq.listener.simple.maxConcurrency:10",
 				"spring.rabbitmq.listener.simple.prefetch:40");
 		SimpleRabbitListenerContainerFactoryConfigurer configurer = this.context
 				.getBean(SimpleRabbitListenerContainerFactoryConfigurer.class);
-		SimpleRabbitListenerContainerFactory factory =
-				mock(SimpleRabbitListenerContainerFactory.class);
+		SimpleRabbitListenerContainerFactory factory = mock(
+				SimpleRabbitListenerContainerFactory.class);
 		configurer.configure(factory, mock(ConnectionFactory.class));
 		verify(factory).setConcurrentConsumers(5);
 		verify(factory).setMaxConcurrentConsumers(10);
@@ -377,14 +379,15 @@ public class RabbitAutoConfigurationTests {
 
 	@Test
 	public void testDirectRabbitListenerContainerFactoryConfigurerUsesConfig() {
-		load(TestConfiguration.class,
-				"spring.rabbitmq.listener.type:simple", // listener type is irrelevant
+		load(TestConfiguration.class, "spring.rabbitmq.listener.type:simple", // listener
+																				// type is
+																				// irrelevant
 				"spring.rabbitmq.listener.direct.consumers-per-queue:5",
 				"spring.rabbitmq.listener.direct.prefetch:40");
 		DirectRabbitListenerContainerFactoryConfigurer configurer = this.context
 				.getBean(DirectRabbitListenerContainerFactoryConfigurer.class);
-		DirectRabbitListenerContainerFactory factory =
-				mock(DirectRabbitListenerContainerFactory.class);
+		DirectRabbitListenerContainerFactory factory = mock(
+				DirectRabbitListenerContainerFactory.class);
 		configurer.configure(factory, mock(ConnectionFactory.class));
 		verify(factory).setConsumersPerQueue(5);
 		verify(factory).setPrefetchCount(40);

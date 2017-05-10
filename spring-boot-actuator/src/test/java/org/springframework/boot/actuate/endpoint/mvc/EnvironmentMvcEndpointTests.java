@@ -161,11 +161,10 @@ public class EnvironmentMvcEndpointTests {
 				.andExpect(content().string(containsString("\"my.foo\":\"******\"")));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void propertyWithTypeOtherThanStringShouldNotFail() throws Exception {
-		ConfigurableEnvironment environment = (ConfigurableEnvironment) this.context.getEnvironment();
-		MutablePropertySources propertySources = environment.getPropertySources();
+		MutablePropertySources propertySources = ((ConfigurableEnvironment) this.context
+				.getEnvironment()).getPropertySources();
 		Map<String, Object> source = new HashMap<String, Object>();
 		source.put("foo", Collections.singletonMap("bar", "baz"));
 		propertySources.addFirst(new MapPropertySource("test", source));
