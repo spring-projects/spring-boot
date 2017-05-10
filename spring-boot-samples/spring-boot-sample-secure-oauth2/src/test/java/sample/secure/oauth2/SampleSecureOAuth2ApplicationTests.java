@@ -16,6 +16,7 @@
 
 package sample.secure.oauth2;
 
+import java.util.Base64;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,7 +30,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -85,7 +85,8 @@ public class SampleSecureOAuth2ApplicationTests {
 	@Test
 	@Ignore
 	public void accessingRootUriPossibleWithUserAccount() throws Exception {
-		String header = "Basic " + new String(Base64.encode("greg:turnquist".getBytes()));
+		String header = "Basic "
+				+ new String(Base64.getEncoder().encode("greg:turnquist".getBytes()));
 		this.mvc.perform(
 				get("/").accept(MediaTypes.HAL_JSON).header("Authorization", header))
 				.andExpect(
@@ -95,7 +96,8 @@ public class SampleSecureOAuth2ApplicationTests {
 
 	@Test
 	public void useAppSecretsPlusUserAccountToGetBearerToken() throws Exception {
-		String header = "Basic " + new String(Base64.encode("foo:bar".getBytes()));
+		String header = "Basic "
+				+ new String(Base64.getEncoder().encode("foo:bar".getBytes()));
 		MvcResult result = this.mvc
 				.perform(post("/oauth/token").header("Authorization", header)
 						.param("grant_type", "password").param("scope", "read")
