@@ -329,9 +329,10 @@ public class RabbitAutoConfigurationTests {
 				"spring.rabbitmq.listener.simple.transactionSize:20");
 	}
 
-	private void testSimpleRabbitListenerContainerFactoryWithCustomSettings(String... environment) {
+	private void testSimpleRabbitListenerContainerFactoryWithCustomSettings(
+			String... environment) {
 		load(new Class<?>[] { MessageConvertersConfiguration.class,
-						MessageRecoverersConfiguration.class }, environment);
+				MessageRecoverersConfiguration.class }, environment);
 		SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
 				.getBean("rabbitListenerContainerFactory",
 						SimpleRabbitListenerContainerFactory.class);
