@@ -795,7 +795,7 @@ public class KafkaProperties {
 		private boolean enabled;
 
 		/**
-		 * Login module; default: com.sun.security.auth.module.Krb5LoginModule
+		 * Login module; default: com.sun.security.auth.module.Krb5LoginModule.
 		 */
 		private String loginModule;
 

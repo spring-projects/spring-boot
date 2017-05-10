@@ -198,7 +198,7 @@ public class KafkaAutoConfigurationTests {
 		assertThat(dfa.getPropertyValue("containerProperties.pollTimeout"))
 				.isEqualTo(2000L);
 		assertThat(this.context.containsBean("kafkaJaasInitializer")).isTrue();
-		KafkaJaasLoginModuleInitializer jaas = context.getBean(KafkaJaasLoginModuleInitializer.class);
+		KafkaJaasLoginModuleInitializer jaas = this.context.getBean(KafkaJaasLoginModuleInitializer.class);
 		dfa = new DirectFieldAccessor(jaas);
 		assertThat(dfa.getPropertyValue("loginModule")).isEqualTo("foo");
 		assertThat(dfa.getPropertyValue("controlFlag"))
