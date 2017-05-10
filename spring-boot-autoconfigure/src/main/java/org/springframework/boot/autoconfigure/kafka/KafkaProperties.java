@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -33,7 +35,9 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
+import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.util.CollectionUtils;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * Configuration properties for Spring for Apache Kafka.
@@ -73,6 +77,8 @@ public class KafkaProperties {
 	private final Listener listener = new Listener();
 
 	private final Ssl ssl = new Ssl();
+
+	private final Jaas jaas = new Jaas();
 
 	private final Template template = new Template();
 
@@ -114,6 +120,10 @@ public class KafkaProperties {
 
 	public Ssl getSsl() {
 		return this.ssl;
+	}
+
+	public Jaas getJaas() {
+		return this.jaas;
 	}
 
 	public Template getTemplate() {
@@ -772,6 +782,68 @@ public class KafkaProperties {
 
 		public void setTruststorePassword(String truststorePassword) {
 			this.truststorePassword = truststorePassword;
+		}
+
+	}
+
+	@Validated
+	public class Jaas {
+
+		/**
+		 * True to enable JAAS.
+		 */
+		private boolean enabled;
+
+		/**
+		 * Login module; default: com.sun.security.auth.module.Krb5LoginModule
+		 */
+		private String loginModule;
+
+		/**
+		 * Control flag; default REQUIRED.
+		 */
+		private KafkaJaasLoginModuleInitializer.ControlFlag controlFlag =
+				KafkaJaasLoginModuleInitializer.ControlFlag.REQUIRED;
+
+		/**
+		 * Options.
+		 */
+		private final Map<String, String> options = new HashMap<>();
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		@NotNull
+		public String getLoginModule() {
+			return this.loginModule;
+		}
+
+		public void setLoginModule(String loginModule) {
+			this.loginModule = loginModule;
+		}
+
+		@NotNull
+		public KafkaJaasLoginModuleInitializer.ControlFlag getControlFlag() {
+			return this.controlFlag;
+		}
+
+		public void setControlFlag(KafkaJaasLoginModuleInitializer.ControlFlag controlFlag) {
+			this.controlFlag = controlFlag;
+		}
+
+		public Map<String, String> getOptions() {
+			return this.options;
+		}
+
+		public void setOptions(Map<String, String> options) {
+			if (options != null) {
+				this.options.putAll(options);
+			}
 		}
 
 	}
