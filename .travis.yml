@@ -1,11 +1,13 @@
 language: java
 jdk:
-  - oraclejdk8
+  - oraclejdk9
 services:
   - mongodb
   - redis
   - cassandra
 sudo: required
+dist: trusty
+group: edge
 cache:
   directories:
     - $HOME/.m2
