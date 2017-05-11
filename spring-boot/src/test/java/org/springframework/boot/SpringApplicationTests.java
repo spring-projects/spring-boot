@@ -51,6 +51,7 @@ import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
@@ -84,6 +85,8 @@ import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.ConfigurableWebEnvironment;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -888,6 +891,16 @@ public class SpringApplicationTests {
 		int occurrences = StringUtils.countOccurrencesOf(this.output.toString(),
 				"Caused by: java.lang.RuntimeException: ExpectedError");
 		assertThat(occurrences).as("Expected single stacktrace").isEqualTo(1);
+	}
+
+	@Test
+	public void nonWebApplicationConfiguredViaAPropertyHasTheCorrectTypeOfContextAndEnvironment() {
+		ConfigurableApplicationContext context = new SpringApplication(
+				ExampleConfig.class).run("--spring.main.web-application-type=NONE");
+		assertThat(context).isNotInstanceOfAny(WebApplicationContext.class,
+				ReactiveWebApplicationContext.class);
+		assertThat(context.getEnvironment())
+				.isNotInstanceOfAny(ConfigurableWebEnvironment.class);
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(

@@ -339,7 +339,6 @@ public class SpringApplication {
 			ConfigurableEnvironment environment = prepareEnvironment(listeners,
 					applicationArguments);
 			configureIgnoreBeanInfo(environment);
-			bindToSpringApplication(environment);
 			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
 			exceptionReporters = getSpringFactoriesInstances(
@@ -370,6 +369,7 @@ public class SpringApplication {
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		listeners.environmentPrepared(environment);
+		bindToSpringApplication(environment);
 		if (isWebEnvironment(environment)
 				&& this.webApplicationType == WebApplicationType.NONE) {
 			environment = convertToStandardEnvironment(environment);
