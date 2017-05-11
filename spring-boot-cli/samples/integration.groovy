@@ -2,6 +2,7 @@ package org.test
 
 @Configuration
 @EnableIntegration
+@Grab("jackson-databind")
 class SpringIntegrationExample implements CommandLineRunner {
 
 	@Autowired
