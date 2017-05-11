@@ -190,6 +190,7 @@
 		<webjars-locator.version>0.32-1</webjars-locator.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
+		<dropwizard-metrics-spring.version>3.1.3</dropwizard-metrics-spring.version>
 		<!-- Plugin versions -->
 		<build-helper-maven-plugin.version>1.10</build-helper-maven-plugin.version>
 		<exec-maven-plugin.version>1.5.0</exec-maven-plugin.version>
@@ -2424,6 +2425,11 @@
 				<groupId>xml-apis</groupId>
 				<artifactId>xml-apis</artifactId>
 				<version>${xml-apis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.ryantenney.metrics</groupId>
+				<artifactId>metrics-spring</artifactId>
+				<version>${dropwizard-metrics-spring.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
