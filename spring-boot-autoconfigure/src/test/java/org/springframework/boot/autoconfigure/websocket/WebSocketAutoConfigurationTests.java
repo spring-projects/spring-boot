@@ -16,15 +16,10 @@
 
 package org.springframework.boot.autoconfigure.websocket;
 
-import java.net.URL;
-
 import javax.websocket.server.ServerContainer;
 
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
@@ -34,7 +29,6 @@ import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebSe
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,14 +51,6 @@ public class WebSocketAutoConfigurationTests {
 		if (this.context != null) {
 			this.context.close();
 		}
-	}
-
-	@BeforeClass
-	@AfterClass
-	public static void uninstallUrlStreamHandlerFactory() {
-		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
-				null);
-		ReflectionTestUtils.setField(URL.class, "factory", null);
 	}
 
 	@Test

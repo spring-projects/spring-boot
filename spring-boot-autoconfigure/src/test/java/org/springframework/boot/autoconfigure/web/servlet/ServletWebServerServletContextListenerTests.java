@@ -16,14 +16,9 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import java.net.URL;
-
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
@@ -35,7 +30,6 @@ import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebSe
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -47,14 +41,6 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  */
 public class ServletWebServerServletContextListenerTests {
-
-	@BeforeClass
-	@AfterClass
-	public static void uninstallUrlStreamHandlerFactory() {
-		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
-				null);
-		ReflectionTestUtils.setField(URL.class, "factory", null);
-	}
 
 	@Test
 	public void registeredServletContextListenerBeanIsCalledByJetty() {

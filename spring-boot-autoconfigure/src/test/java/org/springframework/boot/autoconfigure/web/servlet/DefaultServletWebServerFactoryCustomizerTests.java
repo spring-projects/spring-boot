@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Locale;
@@ -34,13 +33,10 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.coyote.AbstractProtocol;
 import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.RequestLog;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -59,7 +55,6 @@ import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFa
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.mock.env.MockEnvironment;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -88,14 +83,6 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	public void setup() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		this.customizer = new DefaultServletWebServerFactoryCustomizer(this.properties);
-	}
-
-	@BeforeClass
-	@AfterClass
-	public static void uninstallUrlStreamHandlerFactory() {
-		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
-				null);
-		ReflectionTestUtils.setField(URL.class, "factory", null);
 	}
 
 	@Test

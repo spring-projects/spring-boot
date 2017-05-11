@@ -59,7 +59,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.InputStreamFactory;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -73,9 +72,7 @@ import org.apache.http.ssl.TrustStrategy;
 import org.apache.jasper.EmbeddedServletOptions;
 import org.apache.jasper.servlet.JspServlet;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assume;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -139,14 +136,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 	protected WebServer webServer;
 
 	private final HttpClientContext httpClientContext = HttpClientContext.create();
-
-	@BeforeClass
-	@AfterClass
-	public static void uninstallUrlStreamHandlerFactory() {
-		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
-				null);
-		ReflectionTestUtils.setField(URL.class, "factory", null);
-	}
 
 	@After
 	public void tearDown() {

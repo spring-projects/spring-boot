@@ -16,13 +16,8 @@
 
 package org.springframework.boot.context.embedded;
 
-import java.net.URL;
-
 import org.apache.catalina.Context;
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.tomcat.util.http.LegacyCookieProcessor;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.springframework.boot.SpringApplication;
@@ -33,7 +28,6 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostPro
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,14 +37,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 public class TomcatLegacyCookieProcessorExampleTests {
-
-	@BeforeClass
-	@AfterClass
-	public static void uninstallUrlStreamHandlerFactory() {
-		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
-				null);
-		ReflectionTestUtils.setField(URL.class, "factory", null);
-	}
 
 	@Test
 	public void cookieProcessorIsCustomized() {

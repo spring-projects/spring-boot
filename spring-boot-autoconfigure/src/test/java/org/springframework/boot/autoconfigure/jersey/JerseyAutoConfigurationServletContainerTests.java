@@ -16,19 +16,14 @@
 
 package org.springframework.boot.autoconfigure.jersey;
 
-import java.net.URL;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Wrapper;
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.tomcat.util.buf.UDecoder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,7 +42,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -64,14 +58,6 @@ public class JerseyAutoConfigurationServletContainerTests {
 
 	@ClassRule
 	public static OutputCapture output = new OutputCapture();
-
-	@BeforeClass
-	@AfterClass
-	public static void uninstallUrlStreamHandlerFactory() {
-		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
-				null);
-		ReflectionTestUtils.setField(URL.class, "factory", null);
-	}
 
 	@Test
 	public void existingJerseyServletIsAmended() {

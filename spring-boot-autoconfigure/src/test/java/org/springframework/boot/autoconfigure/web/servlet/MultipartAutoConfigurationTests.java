@@ -17,13 +17,10 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.net.URI;
-import java.net.URL;
 
 import javax.servlet.MultipartConfigElement;
 
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -78,14 +75,6 @@ public class MultipartAutoConfigurationTests {
 		if (this.context != null) {
 			this.context.close();
 		}
-	}
-
-	@Before
-	@After
-	public void uninstallUrlStreamHandlerFactory() {
-		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
-				null);
-		ReflectionTestUtils.setField(URL.class, "factory", null);
 	}
 
 	@Test
