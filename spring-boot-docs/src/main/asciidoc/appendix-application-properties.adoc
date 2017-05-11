@@ -106,7 +106,7 @@ content into your application; rather pick only the properties that you need.
 	# APPLICATION SETTINGS ({sc-spring-boot}/SpringApplication.{sc-ext}[SpringApplication])
 	spring.main.banner-mode=console # Mode used to display the banner when the application runs.
 	spring.main.sources= # Sources (class name, package name or XML resource location) to include in the ApplicationContext.
-	spring.main.web-environment= # Run the application in a web environment (auto-detected by default).
+	spring.main.web-application-type= # Flag to explicitly request a specific type of web application. Auto-detected based on the classpath if not set.
 
 	# FILE ENCODING ({sc-spring-boot}/context/FileEncodingApplicationListener.{sc-ext}[FileEncodingApplicationListener])
 	spring.mandatory-file-encoding= # Expected character encoding the application must use.
