@@ -170,12 +170,26 @@ class JsonReader {
 		if (object.has("deprecation")) {
 			JSONObject deprecationJsonObject = object.getJSONObject("deprecation");
 			Deprecation deprecation = new Deprecation();
+			deprecation.setLevel(parseDeprecationLevel(
+					deprecationJsonObject.optString("level", null)));
 			deprecation.setReason(deprecationJsonObject.optString("reason", null));
 			deprecation
 					.setReplacement(deprecationJsonObject.optString("replacement", null));
 			return deprecation;
 		}
 		return (object.optBoolean("deprecated") ? new Deprecation() : null);
+	}
+
+	private Deprecation.Level parseDeprecationLevel(String value) {
+		if (value != null) {
+			try {
+				return Deprecation.Level.valueOf(value.toUpperCase());
+			}
+			catch (IllegalArgumentException e) {
+				// let's use the default
+			}
+		}
+		return Deprecation.Level.WARNING;
 	}
 
 	private Object readItemValue(Object value) throws Exception {
