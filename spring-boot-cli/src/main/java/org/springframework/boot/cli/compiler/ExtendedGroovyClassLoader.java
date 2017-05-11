@@ -236,8 +236,20 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		@Override
 		protected Class<?> loadClass(String name, boolean resolve)
 				throws ClassNotFoundException {
-			this.groovyOnlyClassLoader.loadClass(name);
-			return super.loadClass(name, resolve);
+			try {
+				this.groovyOnlyClassLoader.loadClass(name);
+				return super.loadClass(name, resolve);
+			}
+			catch (ClassNotFoundException e) {
+				// Fall back to system class loader
+				ClassLoader fallback = ClassLoader.getSystemClassLoader();
+				if (fallback != null) {
+					return fallback.loadClass(name);
+				}
+				else {
+					throw new ClassNotFoundException(name);
+				}
+			}
 		}
 
 	}
