@@ -17,6 +17,22 @@
 			"name": "spring.server.name",
 			"type": "java.lang.String",
 			"deprecated": false
-		}
+		},
+    {
+      "name": "spring.server-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.server.name"
+      }
+    },
+    {
+      "name": "spring.server-name2",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "INVALID",
+        "replacement": "spring.server.name"
+      }
+    }
 	]
 }
