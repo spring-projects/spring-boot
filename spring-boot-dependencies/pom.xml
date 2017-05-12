@@ -137,7 +137,7 @@
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.0.0-M01</neo4j-ogm.version>
 		<netty.version>4.1.11.Final</netty.version>
-		<postgresql.version>42.0.0</postgresql.version>
+		<postgresql.version>42.1.1</postgresql.version>
 		<querydsl.version>4.1.4</querydsl.version>
 		<reactor-bom.version>Bismuth-M1</reactor-bom.version>
 		<rxjava.version>1.3.0</rxjava.version>
