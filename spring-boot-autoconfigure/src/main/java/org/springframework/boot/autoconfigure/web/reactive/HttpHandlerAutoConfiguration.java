@@ -36,7 +36,6 @@ import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.reactive.function.server.HandlerStrategies;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
-import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebHandler;
@@ -101,10 +100,10 @@ public class HttpHandlerAutoConfiguration {
 		}
 
 		@Bean
-		public <T extends ServerResponse> HttpHandler httpHandler(List<RouterFunction<T>> routerFunctions) {
+		public HttpHandler httpHandler(List<RouterFunction<?>> routerFunctions) {
 			routerFunctions.sort(new AnnotationAwareOrderComparator());
-			RouterFunction<T> routerFunction = routerFunctions.stream()
-				.reduce(RouterFunction::and).get();
+			RouterFunction<?> routerFunction = routerFunctions.stream()
+				.reduce(RouterFunction::andOther).get();
 			if (this.handlerStrategiesBuilder == null) {
 				this.handlerStrategiesBuilder = HandlerStrategies.builder();
 			}
