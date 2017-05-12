@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure.jersey;
+
+import java.nio.charset.Charset;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -105,7 +107,7 @@ public class JerseyAutoConfigurationServletContainerTests {
 					jerseyServlet.setServlet(new ServletContainer());
 					jerseyServlet.setOverridable(false);
 					context.addChild(jerseyServlet);
-					String pattern = UDecoder.URLDecode("/*", "UTF-8");
+					String pattern = UDecoder.URLDecode("/*", Charset.forName("UTF-8"));
 					context.addServletMappingDecoded(pattern, servletName);
 				}
 
