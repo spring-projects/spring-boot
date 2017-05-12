@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.util.StringUtils;
 
@@ -159,7 +158,6 @@ public class JpaProperties {
 		 */
 		private Boolean useNewIdGeneratorMappings;
 
-		@NestedConfigurationProperty
 		private final Naming naming = new Naming();
 
 		public String getDdlAuto() {

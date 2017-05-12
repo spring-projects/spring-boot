@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.couchbase;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
@@ -89,13 +88,10 @@ public class CouchbaseProperties {
 
 	public static class Env {
 
-		@NestedConfigurationProperty
 		private final Endpoints endpoints = new Endpoints();
 
-		@NestedConfigurationProperty
 		private final Ssl ssl = new Ssl();
 
-		@NestedConfigurationProperty
 		private final Timeouts timeouts = new Timeouts();
 
 		public Endpoints getEndpoints() {

@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -175,7 +174,6 @@ public class ResourceProperties implements ResourceLoaderAware {
 		 */
 		private boolean gzipped = false;
 
-		@NestedConfigurationProperty
 		private final Strategy strategy = new Strategy();
 
 		/**
@@ -233,10 +231,8 @@ public class ResourceProperties implements ResourceLoaderAware {
 	 */
 	public static class Strategy {
 
-		@NestedConfigurationProperty
 		private final Fixed fixed = new Fixed();
 
-		@NestedConfigurationProperty
 		private final Content content = new Content();
 
 		public Fixed getFixed() {

@@ -22,7 +22,6 @@ import java.util.List;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -486,10 +485,8 @@ public class RabbitProperties {
 		 */
 		private ContainerType type = ContainerType.SIMPLE;
 
-		@NestedConfigurationProperty
 		private final SimpleContainer simple = new SimpleContainer();
 
-		@NestedConfigurationProperty
 		private final DirectContainer direct = new DirectContainer();
 
 		public ContainerType getType() {
@@ -541,7 +538,6 @@ public class RabbitProperties {
 		/**
 		 * Optional properties for a retry interceptor.
 		 */
-		@NestedConfigurationProperty
 		private final ListenerRetry retry = new ListenerRetry();
 
 		public boolean isAutoStartup() {
@@ -659,7 +655,6 @@ public class RabbitProperties {
 
 	public static class Template {
 
-		@NestedConfigurationProperty
 		private final Retry retry = new Retry();
 
 		/**
