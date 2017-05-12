@@ -252,7 +252,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		// Otherwise the default location of a Spring DispatcherServlet cannot be set
 		defaultServlet.setOverridable(true);
 		context.addChild(defaultServlet);
-		addServletMapping(context, "/", "default");
+		context.addServletMappingDecoded("/", "default");
 	}
 
 	private void addJspServlet(Context context) {
@@ -266,13 +266,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		}
 		jspServlet.setLoadOnStartup(3);
 		context.addChild(jspServlet);
-		addServletMapping(context, "*.jsp", "jsp");
-		addServletMapping(context, "*.jspx", "jsp");
-	}
-
-	@SuppressWarnings("deprecation")
-	private void addServletMapping(Context context, String pattern, String name) {
-		context.addServletMapping(pattern, name);
+		context.addServletMappingDecoded("*.jsp", "jsp");
+		context.addServletMappingDecoded("*.jspx", "jsp");
 	}
 
 	private void addJasperInitializer(TomcatEmbeddedContext context) {
