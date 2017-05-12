@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.bind;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
@@ -44,13 +45,22 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	protected Object bind(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder, Class<?> type) {
 		Map<Object, Object> map = CollectionFactory.createMap(type, 0);
+		Bindable<?> resolvedTarget = resolveTarget(target);
 		for (ConfigurationPropertySource source : getContext().getSources()) {
 			if (!ConfigurationPropertyName.EMPTY.equals(name)) {
 				source = source.filter(name::isAncestorOf);
 			}
-			new EntryBinder(name, target, elementBinder).bindEntries(source, map);
+			new EntryBinder(name, resolvedTarget, elementBinder).bindEntries(source, map);
 		}
 		return (map.isEmpty() ? null : map);
+	}
+
+	private Bindable<?> resolveTarget(Bindable<?> target) {
+		Class<?> type = target.getType().resolve();
+		if (Properties.class.isAssignableFrom(type)) {
+			return Bindable.mapOf(String.class, String.class);
+		}
+		return target;
 	}
 
 	@Override

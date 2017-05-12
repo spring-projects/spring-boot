@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -370,6 +371,21 @@ public class MapBinderTests {
 		assertThat(array.getValue()).containsExactly("a", "b", "c");
 		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")),
 				eq(target), any(), isA(Map.class));
+	}
+
+	@Test
+	public void bindToPropertiesShouldBeEquivalentToMapOfStringString() throws Exception {
+		this.sources
+				.add(new MockConfigurationPropertySource("foo.bar.baz", "1", "line1"));
+		BindHandler handler = mock(BindHandler.class,
+				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+		Bindable<Properties> target = Bindable.of(Properties.class);
+		this.binder.bind("foo", target, handler);
+		InOrder inOrder = inOrder(handler);
+		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.bar.baz")),
+				eq(Bindable.of(String.class)), any(), eq("1"));
+		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")),
+				eq(target), any(), isA(Properties.class));
 	}
 
 }
