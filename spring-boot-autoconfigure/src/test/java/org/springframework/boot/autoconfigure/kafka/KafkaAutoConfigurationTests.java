@@ -20,6 +20,8 @@ import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 
+import javax.security.auth.login.AppConfigurationEntry;
+
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SslConfigs;
@@ -38,6 +40,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
+import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -160,6 +163,7 @@ public class KafkaAutoConfigurationTests {
 		assertThat(configs.get(ProducerConfig.RETRIES_CONFIG)).isEqualTo(2);
 		assertThat(configs.get(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG))
 				.isEqualTo(IntegerSerializer.class);
+		assertThat(this.context.containsBean("kafkaJaasInitializer")).isFalse();
 	}
 
 	@Test
@@ -169,7 +173,11 @@ public class KafkaAutoConfigurationTests {
 				"spring.kafka.listener.ack-count=123",
 				"spring.kafka.listener.ack-time=456",
 				"spring.kafka.listener.concurrency=3",
-				"spring.kafka.listener.poll-timeout=2000");
+				"spring.kafka.listener.poll-timeout=2000",
+				"spring.kafka.jaas.enabled=true",
+				"spring.kafka.jaas.login-module=foo",
+				"spring.kafka.jaas.control-flag=REQUISITE",
+				"spring.kafka.jaas.options.useKeyTab=true");
 		DefaultKafkaProducerFactory<?, ?> producerFactory = this.context
 				.getBean(DefaultKafkaProducerFactory.class);
 		DefaultKafkaConsumerFactory<?, ?> consumerFactory = this.context
@@ -189,6 +197,13 @@ public class KafkaAutoConfigurationTests {
 		assertThat(dfa.getPropertyValue("concurrency")).isEqualTo(3);
 		assertThat(dfa.getPropertyValue("containerProperties.pollTimeout"))
 				.isEqualTo(2000L);
+		assertThat(this.context.containsBean("kafkaJaasInitializer")).isTrue();
+		KafkaJaasLoginModuleInitializer jaas = this.context.getBean(KafkaJaasLoginModuleInitializer.class);
+		dfa = new DirectFieldAccessor(jaas);
+		assertThat(dfa.getPropertyValue("loginModule")).isEqualTo("foo");
+		assertThat(dfa.getPropertyValue("controlFlag"))
+				.isEqualTo(AppConfigurationEntry.LoginModuleControlFlag.REQUISITE);
+		assertThat(((Map<?, ?>) dfa.getPropertyValue("options")).get("useKeyTab")).isEqualTo("true");
 	}
 
 	private void load(String... environment) {
