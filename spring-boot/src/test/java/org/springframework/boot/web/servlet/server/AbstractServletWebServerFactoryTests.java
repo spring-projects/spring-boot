@@ -44,7 +44,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPInputStream;
@@ -98,13 +97,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.HttpComponentsAsyncClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.SocketUtils;
 import org.springframework.util.StreamUtils;
-import org.springframework.util.concurrent.ListenableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -198,28 +195,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 		String response = getResponse(getLocalUrl(port, "/hello"));
 		throw new RuntimeException(
 				"Unexpected response on port " + port + " : " + response);
-	}
-
-	@Test
-	public void restartWithKeepAlive() throws Exception {
-		AbstractServletWebServerFactory factory = getFactory();
-		this.webServer = factory.getWebServer(exampleServletRegistration());
-		this.webServer.start();
-		HttpComponentsAsyncClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsAsyncClientHttpRequestFactory();
-		ListenableFuture<ClientHttpResponse> response1 = clientHttpRequestFactory
-				.createAsyncRequest(new URI(getLocalUrl("/hello")), HttpMethod.GET)
-				.executeAsync();
-		assertThat(response1.get(10, TimeUnit.SECONDS).getRawStatusCode()).isEqualTo(200);
-
-		this.webServer.stop();
-		this.webServer = factory.getWebServer(exampleServletRegistration());
-		this.webServer.start();
-
-		ListenableFuture<ClientHttpResponse> response2 = clientHttpRequestFactory
-				.createAsyncRequest(new URI(getLocalUrl("/hello")), HttpMethod.GET)
-				.executeAsync();
-		assertThat(response2.get(10, TimeUnit.SECONDS).getRawStatusCode()).isEqualTo(200);
-		clientHttpRequestFactory.destroy();
 	}
 
 	@Test
