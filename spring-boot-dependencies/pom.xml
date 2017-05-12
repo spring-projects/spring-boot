@@ -46,7 +46,7 @@
 		<!-- Dependency versions -->
 		<activemq.version>5.14.5</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
-		<appengine-sdk.version>1.9.51</appengine-sdk.version>
+		<appengine-sdk.version>1.9.53</appengine-sdk.version>
 		<artemis.version>1.5.4</artemis.version>
 		<aspectj.version>1.8.10</aspectj.version>
 		<assertj.version>2.6.0</assertj.version>
@@ -134,7 +134,7 @@
 		<mssql-jdbc.version>6.1.0.jre7</mssql-jdbc.version>
 		<mockito.version>1.10.19</mockito.version>
 		<mongodb.version>3.4.2</mongodb.version>
-		<mysql.version>5.1.41</mysql.version>
+		<mysql.version>5.1.42</mysql.version>
 		<narayana.version>5.5.7.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>2.1.2</neo4j-ogm.version>
@@ -153,7 +153,7 @@
 		<spock.version>1.0-groovy-2.4</spock.version>
 		<spring.version>4.3.8.RELEASE</spring.version>
 		<spring-amqp.version>1.7.2.RELEASE</spring-amqp.version>
-		<spring-cloud-connectors.version>1.2.3.RELEASE</spring-cloud-connectors.version>
+		<spring-cloud-connectors.version>1.2.4.RELEASE</spring-cloud-connectors.version>
 		<spring-batch.version>3.0.7.RELEASE</spring-batch.version>
 		<spring-data-releasetrain.version>Ingalls-SR3</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.23.0.RELEASE</spring-hateoas.version>
