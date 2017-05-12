@@ -122,6 +122,6 @@ do as they were designed before this was clarified.
 | https://github.com/freefair/okhttp-spring-boot
 
 | https://github.com/membrane/service-proxy[Membrane Service Proxy]
-| https://github.com/helpermethod/membrane-spring-boot-starter
+| https://github.com/membrane/membrane-spring-boot-starter
 
 |===
