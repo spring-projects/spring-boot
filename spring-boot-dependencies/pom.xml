@@ -102,7 +102,7 @@
 		<javax-transaction.version>1.2</javax-transaction.version>
 		<javax-validation.version>1.1.0.Final</javax-validation.version>
 		<jaxen.version>1.1.6</jaxen.version>
-		<jaybird.version>2.2.13</jaybird.version>
+		<jaybird.version>3.0.0</jaybird.version>
 		<jboss-logging.version>3.3.1.Final</jboss-logging.version>
 		<jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
 		<jdom2.version>2.0.6</jdom2.version>
@@ -1606,11 +1606,6 @@
 				<groupId>org.elasticsearch</groupId>
 				<artifactId>elasticsearch</artifactId>
 				<version>${elasticsearch.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.firebirdsql.jdbc</groupId>
-				<artifactId>jaybird-jdk16</artifactId>
-				<version>${jaybird.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.firebirdsql.jdbc</groupId>
