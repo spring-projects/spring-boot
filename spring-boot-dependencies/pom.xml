@@ -111,7 +111,7 @@
 		<jest.version>2.4.0</jest.version>
 		<jetty.version>9.4.5.v20170502</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
-		<jetty-el.version>8.0.33</jetty-el.version>
+		<jetty-el.version>8.5.9.1</jetty-el.version>
 		<jmustache.version>1.13</jmustache.version>
 		<jna.version>4.4.0</jna.version>
 		<joda-time.version>2.9.9</joda-time.version>
