@@ -196,12 +196,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 						: ClassUtils.getDefaultClassLoader());
 		resetDefaultLocaleMapping(context);
 		addLocaleMappings(context);
-		try {
-			context.setUseRelativeRedirects(false);
-		}
-		catch (NoSuchMethodError ex) {
-			// Tomcat is < 8.0.30. Continue
-		}
+		context.setUseRelativeRedirects(false);
 		SkipPatternJarScanner.apply(context, this.tldSkipPatterns);
 		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
@@ -357,21 +352,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		protocol.setKeyPass(ssl.getKeyPassword());
 		protocol.setKeyAlias(ssl.getKeyAlias());
 		String ciphers = StringUtils.arrayToCommaDelimitedString(ssl.getCiphers());
-		protocol.setCiphers(StringUtils.hasText(ciphers) ? ciphers : null);
+		if (StringUtils.hasText(ciphers)) {
+			protocol.setCiphers(ciphers);
+		}
 		if (ssl.getEnabledProtocols() != null) {
-			try {
-				for (SSLHostConfig sslHostConfig : protocol.findSslHostConfigs()) {
-					sslHostConfig.setProtocols(StringUtils
-							.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
-				}
-			}
-			catch (NoSuchMethodError ex) {
-				// Tomcat 8.0.x or earlier
-				Assert.isTrue(
-						protocol.setProperty("sslEnabledProtocols",
-								StringUtils.arrayToCommaDelimitedString(
-										ssl.getEnabledProtocols())),
-						"Failed to set sslEnabledProtocols");
+			for (SSLHostConfig sslHostConfig : protocol.findSslHostConfigs()) {
+				sslHostConfig.setProtocols(StringUtils
+						.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
 			}
 		}
 		if (getSslStoreProvider() != null) {
