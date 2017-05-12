@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -64,7 +65,7 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 	/**
 	 * Adapts {@link ConditionEvaluationReport} to a JSON friendly structure.
 	 */
-	@JsonPropertyOrder({ "positiveMatches", "negativeMatches", "exclusions" })
+	@JsonPropertyOrder({ "positiveMatches", "negativeMatches", "exclusions", "unconditionalClasses" })
 	@JsonInclude(Include.NON_EMPTY)
 	public static class Report {
 
@@ -74,12 +75,15 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 
 		private final List<String> exclusions;
 
+		private final Set<String> unconditionalClasses;
+
 		private final Report parent;
 
 		public Report(ConditionEvaluationReport report) {
 			this.positiveMatches = new LinkedMultiValueMap<>();
 			this.negativeMatches = new LinkedHashMap<>();
 			this.exclusions = report.getExclusions();
+			this.unconditionalClasses = report.getUnconditionalClasses();
 			for (Map.Entry<String, ConditionAndOutcomes> entry : report
 					.getConditionAndOutcomesBySource().entrySet()) {
 				if (entry.getValue().isFullMatch()) {
@@ -117,6 +121,10 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 
 		public List<String> getExclusions() {
 			return this.exclusions;
+		}
+
+		public Set<String> getUnconditionalClasses() {
+			return this.unconditionalClasses;
 		}
 
 		public Report getParent() {
