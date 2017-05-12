@@ -351,7 +351,7 @@ public class WebMvcAutoConfiguration {
 			public ResourceHttpRequestHandler faviconRequestHandler() {
 				ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
 				requestHandler
-						.setLocations(this.resourceProperties.getFaviconLocations());
+						.setLocations(this.resourceProperties.resolveFaviconLocations());
 				return requestHandler;
 			}
 
