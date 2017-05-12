@@ -177,7 +177,7 @@
 		<sqlite-jdbc.version>3.16.1</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
-		<thymeleaf.version>3.0.5.RELEASE</thymeleaf.version>
+		<thymeleaf.version>3.0.6.RELEASE</thymeleaf.version>
 		<thymeleaf-spring5.version>3.0.5.M3</thymeleaf-spring5.version>
 		<thymeleaf-extras-springsecurity4.version>3.0.2.RELEASE</thymeleaf-extras-springsecurity4.version>
 		<thymeleaf-layout-dialect.version>2.2.1</thymeleaf-layout-dialect.version>

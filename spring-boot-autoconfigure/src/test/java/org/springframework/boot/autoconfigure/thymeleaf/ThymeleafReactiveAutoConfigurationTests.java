@@ -68,7 +68,7 @@ public class ThymeleafReactiveAutoConfigurationTests {
 
 	@Test
 	public void createFromConfigClass() throws Exception {
-		load(BaseConfiguration.class, "spring.thymeleaf.suffix:.txt");
+		load(BaseConfiguration.class, "spring.thymeleaf.suffix:.html");
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
 		String result = engine.process("template", attrs);
