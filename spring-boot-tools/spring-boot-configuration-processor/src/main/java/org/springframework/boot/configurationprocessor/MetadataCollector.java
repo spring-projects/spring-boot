@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -39,7 +39,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
  */
 public class MetadataCollector {
 
-	private final List<ItemMetadata> metadataItems = new ArrayList<ItemMetadata>();
+	private final Set<ItemMetadata> metadataItems = new LinkedHashSet<ItemMetadata>();
 
 	private final ProcessingEnvironment processingEnvironment;
 

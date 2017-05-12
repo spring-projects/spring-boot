@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,6 +80,8 @@ public final class Metadata {
 
 		private final Class<?> sourceType;
 
+		private final String sourceMethod;
+
 		private final String description;
 
 		private final Object defaultValue;
@@ -87,16 +89,17 @@ public final class Metadata {
 		private final ItemDeprecation deprecation;
 
 		public MetadataItemCondition(ItemType itemType, String name) {
-			this(itemType, name, null, null, null, null, null);
+			this(itemType, name, null, null, null, null, null, null);
 		}
 
 		public MetadataItemCondition(ItemType itemType, String name, String type,
-				Class<?> sourceType, String description, Object defaultValue,
-				ItemDeprecation deprecation) {
+				Class<?> sourceType, String sourceMethod, String description,
+				Object defaultValue, ItemDeprecation deprecation) {
 			this.itemType = itemType;
 			this.name = name;
 			this.type = type;
 			this.sourceType = sourceType;
+			this.sourceMethod = sourceMethod;
 			this.description = description;
 			this.defaultValue = defaultValue;
 			this.deprecation = deprecation;
@@ -111,6 +114,9 @@ public final class Metadata {
 			}
 			if (this.sourceType != null) {
 				description.append(" with sourceType:").append(this.sourceType);
+			}
+			if (this.sourceMethod != null) {
+				description.append(" with sourceMethod:").append(this.sourceMethod);
 			}
 			if (this.defaultValue != null) {
 				description.append(" with defaultValue:").append(this.defaultValue);
@@ -137,6 +143,10 @@ public final class Metadata {
 					&& !this.sourceType.getName().equals(itemMetadata.getSourceType())) {
 				return false;
 			}
+			if (this.sourceMethod != null
+					&& !this.sourceMethod.equals(itemMetadata.getSourceMethod())) {
+				return false;
+			}
 			if (this.defaultValue != null && !ObjectUtils
 					.nullSafeEquals(this.defaultValue, itemMetadata.getDefaultValue())) {
 				return false;
@@ -157,40 +167,50 @@ public final class Metadata {
 
 		public MetadataItemCondition ofType(Class<?> dataType) {
 			return new MetadataItemCondition(this.itemType, this.name, dataType.getName(),
-					this.sourceType, this.description, this.defaultValue,
-					this.deprecation);
+					this.sourceType, this.sourceMethod, this.description,
+					this.defaultValue, this.deprecation);
 		}
 
 		public MetadataItemCondition ofType(String dataType) {
 			return new MetadataItemCondition(this.itemType, this.name, dataType,
-					this.sourceType, this.description, this.defaultValue,
-					this.deprecation);
+					this.sourceType, this.sourceMethod, this.description,
+					this.defaultValue, this.deprecation);
 		}
 
 		public MetadataItemCondition fromSource(Class<?> sourceType) {
 			return new MetadataItemCondition(this.itemType, this.name, this.type,
-					sourceType, this.description, this.defaultValue, this.deprecation);
+					sourceType, this.sourceMethod, this.description, this.defaultValue,
+					this.deprecation);
+		}
+
+		public MetadataItemCondition fromSourceMethod(String sourceMethod) {
+			return new MetadataItemCondition(this.itemType, this.name, this.type,
+					this.sourceType, sourceMethod, this.description, this.defaultValue,
+					this.deprecation);
 		}
 
 		public MetadataItemCondition withDescription(String description) {
 			return new MetadataItemCondition(this.itemType, this.name, this.type,
-					this.sourceType, description, this.defaultValue, this.deprecation);
+					this.sourceType, this.sourceMethod, description, this.defaultValue,
+					this.deprecation);
 		}
 
 		public MetadataItemCondition withDefaultValue(Object defaultValue) {
 			return new MetadataItemCondition(this.itemType, this.name, this.type,
-					this.sourceType, this.description, defaultValue, this.deprecation);
+					this.sourceType, this.sourceMethod, this.description, defaultValue,
+					this.deprecation);
 		}
 
 		public MetadataItemCondition withDeprecation(String reason, String replacement) {
 			return new MetadataItemCondition(this.itemType, this.name, this.type,
-					this.sourceType, this.description, this.defaultValue,
-					new ItemDeprecation(reason, replacement));
+					this.sourceType, this.sourceMethod, this.description,
+					this.defaultValue, new ItemDeprecation(reason, replacement));
 		}
 
 		public MetadataItemCondition withNoDeprecation() {
 			return new MetadataItemCondition(this.itemType, this.name, this.type,
-					this.sourceType, this.description, this.defaultValue, null);
+					this.sourceType, this.sourceMethod, this.description,
+					this.defaultValue, null);
 		}
 
 		private ItemMetadata getFirstItemWithName(ConfigurationMetadata metadata,

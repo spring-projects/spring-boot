@@ -40,6 +40,7 @@ import org.springframework.boot.configurationsample.incremental.FooProperties;
 import org.springframework.boot.configurationsample.incremental.RenamedBarProperties;
 import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
 import org.springframework.boot.configurationsample.lombok.LombokInnerClassProperties;
+import org.springframework.boot.configurationsample.lombok.LombokInnerClassWithGetterProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
 import org.springframework.boot.configurationsample.lombok.SimpleLombokPojo;
@@ -485,6 +486,20 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		// containsProperty("config.third.value"));
 		assertThat(metadata).has(Metadata.withProperty("config.fourth"));
 		assertThat(metadata).isNotEqualTo(Metadata.withGroup("config.fourth"));
+	}
+
+	@Test
+	public void lombokInnerClassWithGetterProperties() throws IOException {
+		ConfigurationMetadata metadata =
+				compile(LombokInnerClassWithGetterProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("config")
+				.fromSource(LombokInnerClassWithGetterProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("config.first")
+				.ofType(LombokInnerClassWithGetterProperties.Foo.class)
+				.fromSourceMethod("getFirst()")
+				.fromSource(LombokInnerClassWithGetterProperties.class));
+		assertThat(metadata).has(Metadata.withProperty("config.first.name"));
+		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	@Test
