@@ -294,7 +294,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			String name = entry.getKey();
 			VariableElement field = entry.getValue();
 			if (isLombokField(field, element)) {
-				processNestedType(prefix, element, source, name, null, field,
+				ExecutableElement getter = members.getPublicGetter(name, field.asType());
+				processNestedType(prefix, element, source, name, getter, field,
 						field.asType());
 			}
 		}
