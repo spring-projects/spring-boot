@@ -88,4 +88,19 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		return getAddress().getHostAddress();
 	}
 
+	public void setBufferSize(Integer bufferSize) {
+		this.bufferSize = bufferSize;
+	}
+
+	public void setIoThreads(Integer ioThreads) {
+		this.ioThreads = ioThreads;
+	}
+
+	public void setWorkerThreads(Integer workerThreads) {
+		this.workerThreads = workerThreads;
+	}
+
+	public void setDirectBuffers(Boolean directBuffers) {
+		this.directBuffers = directBuffers;
+	}
 }

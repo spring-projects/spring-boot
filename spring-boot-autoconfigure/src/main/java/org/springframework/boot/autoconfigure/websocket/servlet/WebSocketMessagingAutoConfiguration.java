@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.websocket;
+package org.springframework.boot.autoconfigure.websocket.servlet;
 
 import java.util.List;
 

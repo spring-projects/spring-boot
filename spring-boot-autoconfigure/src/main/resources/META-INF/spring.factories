@@ -118,8 +118,9 @@ org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfigurati
 org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration,\
-org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration,\
-org.springframework.boot.autoconfigure.websocket.WebSocketMessagingAutoConfiguration,\
+org.springframework.boot.autoconfigure.websocket.reactive.WebSocketReactiveAutoConfiguration,\
+org.springframework.boot.autoconfigure.websocket.servlet.WebSocketServletAutoConfiguration,\
+org.springframework.boot.autoconfigure.websocket.servlet.WebSocketMessagingAutoConfiguration,\
 org.springframework.boot.autoconfigure.webservices.WebServicesAutoConfiguration
 
 # Failure analyzers

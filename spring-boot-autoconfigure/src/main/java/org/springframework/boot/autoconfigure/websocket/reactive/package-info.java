@@ -14,21 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.embedded.undertow;
-
-import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
-
 /**
- * Tests for {@link UndertowReactiveWebServerFactory} and {@link UndertowWebServer}.
- *
- * @author Brian Clozel
+ * Auto-configuration for WebSocket support in reactive web servers.
  */
-public class UndertowReactiveWebServerFactoryTests
-		extends AbstractReactiveWebServerFactoryTests {
-
-	@Override
-	protected UndertowReactiveWebServerFactory getFactory() {
-		return new UndertowReactiveWebServerFactory(0);
-	}
-
-}
+package org.springframework.boot.autoconfigure.websocket.reactive;

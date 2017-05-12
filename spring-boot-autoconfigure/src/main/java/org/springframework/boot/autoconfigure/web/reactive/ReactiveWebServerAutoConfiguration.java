@@ -50,8 +50,8 @@ import org.springframework.util.ObjectUtils;
 @Import({ ReactiveWebServerAutoConfiguration.BeanPostProcessorsRegistrar.class,
 		ReactiveWebServerConfiguration.TomcatAutoConfiguration.class,
 		ReactiveWebServerConfiguration.JettyAutoConfiguration.class,
-		ReactiveWebServerConfiguration.ReactorNettyAutoConfiguration.class,
-		ReactiveWebServerConfiguration.UndertowAutoConfiguration.class })
+		ReactiveWebServerConfiguration.UndertowAutoConfiguration.class,
+		ReactiveWebServerConfiguration.ReactorNettyAutoConfiguration.class})
 public class ReactiveWebServerAutoConfiguration {
 
 	@ConditionalOnMissingBean

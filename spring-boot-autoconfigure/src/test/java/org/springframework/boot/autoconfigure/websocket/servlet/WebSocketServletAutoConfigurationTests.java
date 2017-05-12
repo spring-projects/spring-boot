@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.websocket;
+package org.springframework.boot.autoconfigure.websocket.servlet;
 
 import javax.websocket.server.ServerContainer;
 
@@ -33,11 +33,11 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WebSocketAutoConfiguration}
+ * Tests for {@link WebSocketServletAutoConfiguration}
  *
  * @author Andy Wilkinson
  */
-public class WebSocketAutoConfigurationTests {
+public class WebSocketServletAutoConfigurationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
@@ -56,13 +56,13 @@ public class WebSocketAutoConfigurationTests {
 	@Test
 	public void tomcatServerContainerIsAvailableFromTheServletContext() {
 		serverContainerIsAvailableFromTheServletContext(TomcatConfiguration.class,
-				WebSocketAutoConfiguration.TomcatWebSocketConfiguration.class);
+				WebSocketServletAutoConfiguration.TomcatWebSocketConfiguration.class);
 	}
 
 	@Test
 	public void jettyServerContainerIsAvailableFromTheServletContext() {
 		serverContainerIsAvailableFromTheServletContext(JettyConfiguration.class,
-				WebSocketAutoConfiguration.JettyWebSocketConfiguration.class);
+				WebSocketServletAutoConfiguration.JettyWebSocketConfiguration.class);
 	}
 
 	private void serverContainerIsAvailableFromTheServletContext(

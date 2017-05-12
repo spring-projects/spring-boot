@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.websocket;
+package org.springframework.boot.autoconfigure.websocket.servlet;
 
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.websockets.jsr.WebSocketDeploymentInfo;
@@ -28,9 +28,9 @@ import org.springframework.core.Ordered;
  * WebSocket customizer for {@link UndertowServletWebServerFactory}.
  *
  * @author Phillip Webb
- * @since 1.2.0
+ * @since 2.0.0
  */
-public class UndertowWebSocketContainerCustomizer
+public class UndertowWebSocketServletWebServerCustomizer
 		implements WebServerFactoryCustomizer<UndertowServletWebServerFactory>, Ordered {
 
 	@Override

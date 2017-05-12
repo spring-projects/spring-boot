@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.websocket;
+package org.springframework.boot.autoconfigure.websocket.servlet;
 
 import org.eclipse.jetty.util.thread.ShutdownThread;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
@@ -32,9 +32,9 @@ import org.springframework.core.Ordered;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 1.2.0
+ * @since 2.0.0
  */
-public class JettyWebSocketContainerCustomizer
+public class JettyWebSocketServletWebServerCustomizer
 		implements WebServerFactoryCustomizer<JettyServletWebServerFactory>, Ordered {
 
 	@Override

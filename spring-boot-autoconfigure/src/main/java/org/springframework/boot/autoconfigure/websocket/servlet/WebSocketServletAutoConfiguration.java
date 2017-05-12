@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.websocket;
+package org.springframework.boot.autoconfigure.websocket.servlet;
 
 import javax.servlet.Servlet;
 import javax.websocket.server.ServerContainer;
@@ -32,11 +32,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Auto configuration for websocket server in embedded Tomcat, Jetty or Undertow. Requires
- * the appropriate WebSocket modules to be on the classpath.
+ * Auto configuration for WebSocket servlet server in embedded Tomcat, Jetty or Undertow.
+ * Requires the appropriate WebSocket modules to be on the classpath.
  * <p>
  * If Tomcat's WebSocket support is detected on the classpath we add a customizer that
- * installs the Tomcat Websocket initializer. In a non-embedded server it should already
+ * installs the Tomcat WebSocket initializer. In a non-embedded server it should already
  * be there.
  * <p>
  * If Jetty's WebSocket support is detected on the classpath we add a configuration that
@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Configuration;
  * already be there.
  * <p>
  * If Undertow's WebSocket support is detected on the classpath we add a customizer that
- * installs the Undertow Websocket DeploymentInfo Customizer. In a non-embedded server it
+ * installs the Undertow WebSocket DeploymentInfo Customizer. In a non-embedded server it
  * should already be there.
  *
  * @author Dave Syer
@@ -55,16 +55,16 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass({ Servlet.class, ServerContainer.class })
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @AutoConfigureBefore(ServletWebServerFactoryAutoConfiguration.class)
-public class WebSocketAutoConfiguration {
+public class WebSocketServletAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(name = "org.apache.tomcat.websocket.server.WsSci", value = Tomcat.class)
 	static class TomcatWebSocketConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(name = "websocketContainerCustomizer")
-		public TomcatWebSocketContainerCustomizer websocketContainerCustomizer() {
-			return new TomcatWebSocketContainerCustomizer();
+		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
+		public TomcatWebSocketServletWebServerCustomizer websocketContainerCustomizer() {
+			return new TomcatWebSocketServletWebServerCustomizer();
 		}
 
 	}
@@ -74,9 +74,9 @@ public class WebSocketAutoConfiguration {
 	static class JettyWebSocketConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(name = "websocketContainerCustomizer")
-		public JettyWebSocketContainerCustomizer websocketContainerCustomizer() {
-			return new JettyWebSocketContainerCustomizer();
+		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
+		public JettyWebSocketServletWebServerCustomizer websocketContainerCustomizer() {
+			return new JettyWebSocketServletWebServerCustomizer();
 		}
 
 	}
@@ -86,9 +86,9 @@ public class WebSocketAutoConfiguration {
 	static class UndertowWebSocketConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(name = "websocketContainerCustomizer")
-		public UndertowWebSocketContainerCustomizer websocketContainerCustomizer() {
-			return new UndertowWebSocketContainerCustomizer();
+		@ConditionalOnMissingBean(name = "websocketServletWebServerCustomizer")
+		public UndertowWebSocketServletWebServerCustomizer websocketContainerCustomizer() {
+			return new UndertowWebSocketServletWebServerCustomizer();
 		}
 
 	}

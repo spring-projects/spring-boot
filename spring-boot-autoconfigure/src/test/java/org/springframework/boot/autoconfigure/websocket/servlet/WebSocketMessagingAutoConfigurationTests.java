@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.websocket;
+package org.springframework.boot.autoconfigure.websocket.servlet;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -207,10 +207,10 @@ public class WebSocketMessagingAutoConfigurationTests {
 	@EnableWebSocket
 	@EnableConfigurationProperties
 	@EnableWebSocketMessageBroker
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
+	@ImportAutoConfiguration({JacksonAutoConfiguration.class,
 			ServletWebServerFactoryAutoConfiguration.class,
 			WebSocketMessagingAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class })
+			DispatcherServletAutoConfiguration.class})
 	static class WebSocketMessagingConfiguration
 			extends AbstractWebSocketMessageBrokerConfigurer {
 
@@ -235,8 +235,8 @@ public class WebSocketMessagingAutoConfigurationTests {
 		}
 
 		@Bean
-		public TomcatWebSocketContainerCustomizer tomcatCustomizer() {
-			return new TomcatWebSocketContainerCustomizer();
+		public TomcatWebSocketServletWebServerCustomizer tomcatCustomizer() {
+			return new TomcatWebSocketServletWebServerCustomizer();
 		}
 
 	}

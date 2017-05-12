@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.websocket;
+package org.springframework.boot.autoconfigure.websocket.servlet;
 
-import org.apache.catalina.Context;
 import org.apache.tomcat.websocket.server.WsContextListener;
 
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
@@ -30,21 +29,15 @@ import org.springframework.core.Ordered;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 1.2.0
+ * @since 2.0.0
  */
-public class TomcatWebSocketContainerCustomizer
+public class TomcatWebSocketServletWebServerCustomizer
 		implements WebServerFactoryCustomizer<TomcatServletWebServerFactory>, Ordered {
 
 	@Override
 	public void customize(TomcatServletWebServerFactory factory) {
-		factory.addContextCustomizers(new TomcatContextCustomizer() {
-
-			@Override
-			public void customize(Context context) {
-				context.addApplicationListener(WsContextListener.class.getName());
-			}
-
-		});
+		factory.addContextCustomizers((TomcatContextCustomizer) context ->
+				context.addApplicationListener(WsContextListener.class.getName()));
 	}
 
 	@Override
