@@ -72,8 +72,6 @@ public class RestTemplateBuilder {
 				"org.springframework.http.client.OkHttp3ClientHttpRequestFactory");
 		candidates.put("com.squareup.okhttp.OkHttpClient",
 				"org.springframework.http.client.OkHttpClientHttpRequestFactory");
-		candidates.put("io.netty.channel.EventLoopGroup",
-				"org.springframework.http.client.Netty4ClientHttpRequestFactory");
 		REQUEST_FACTORY_CANDIDATES = Collections.unmodifiableMap(candidates);
 	}
 
