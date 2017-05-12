@@ -37,6 +37,9 @@ import org.springframework.core.ResolvableType;
  */
 class MapBinder extends AggregateBinder<Map<Object, Object>> {
 
+	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable
+			.mapOf(String.class, String.class);
+
 	MapBinder(BindContext context) {
 		super(context);
 	}
@@ -58,7 +61,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	private Bindable<?> resolveTarget(Bindable<?> target) {
 		Class<?> type = target.getType().resolve();
 		if (Properties.class.isAssignableFrom(type)) {
-			return Bindable.mapOf(String.class, String.class);
+			return STRING_STRING_MAP;
 		}
 		return target;
 	}
