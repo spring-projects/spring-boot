@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -55,6 +56,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.http.MediaType;
 import org.springframework.util.MimeType;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 
@@ -252,8 +254,10 @@ public class ThymeleafAutoConfiguration {
 			ThymeleafReactiveViewResolver resolver = new ThymeleafReactiveViewResolver();
 			resolver.setTemplateEngine(templateEngine);
 			resolver.setDefaultCharset(this.properties.getEncoding());
-			resolver.setSupportedMediaTypes(
-					this.properties.getReactive().getMediaTypes());
+			final List<MediaType> mediaTypes = this.properties.getReactive().getMediaTypes();
+			if (mediaTypes != null) {
+				resolver.setSupportedMediaTypes(mediaTypes);
+			}
 			resolver.setExcludedViewNames(this.properties.getExcludedViewNames());
 			resolver.setViewNames(this.properties.getViewNames());
 			if (this.properties.getReactive().getMaxChunkSize() > 0) {
