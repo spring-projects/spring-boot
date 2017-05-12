@@ -134,8 +134,6 @@ content into your application; rather pick only the properties that you need.
 
 	# SENDGRID ({sc-spring-boot-autoconfigure}/sendgrid/SendGridAutoConfiguration.{sc-ext}[SendGridAutoConfiguration])
 	spring.sendgrid.api-key= # SendGrid api key (alternative to username/password)
-	spring.sendgrid.username= # SendGrid account username
-	spring.sendgrid.password= # SendGrid account password
 	spring.sendgrid.proxy.host= # SendGrid proxy host
 	spring.sendgrid.proxy.port= # SendGrid proxy port
 
