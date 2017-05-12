@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -37,7 +35,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.util.CollectionUtils;
-import org.springframework.validation.annotation.Validated;
 
 /**
  * Configuration properties for Spring for Apache Kafka.
@@ -786,27 +783,26 @@ public class KafkaProperties {
 
 	}
 
-	@Validated
-	public class Jaas {
+	public static class Jaas {
 
 		/**
-		 * True to enable JAAS.
+		 * Enable JAAS configuration.
 		 */
 		private boolean enabled;
 
 		/**
-		 * Login module; default: com.sun.security.auth.module.Krb5LoginModule.
+		 * Login module.
 		 */
 		private String loginModule;
 
 		/**
-		 * Control flag; default REQUIRED.
+		 * AppConfigurationEntry.LoginModuleControlFlag value.
 		 */
 		private KafkaJaasLoginModuleInitializer.ControlFlag controlFlag =
 				KafkaJaasLoginModuleInitializer.ControlFlag.REQUIRED;
 
 		/**
-		 * Options.
+		 * Map of JAAS options, e.g. 'spring.kafka.jaas.options.useKeyTab=true'.
 		 */
 		private final Map<String, String> options = new HashMap<>();
 
@@ -818,7 +814,6 @@ public class KafkaProperties {
 			this.enabled = enabled;
 		}
 
-		@NotNull
 		public String getLoginModule() {
 			return this.loginModule;
 		}
@@ -827,7 +822,6 @@ public class KafkaProperties {
 			this.loginModule = loginModule;
 		}
 
-		@NotNull
 		public KafkaJaasLoginModuleInitializer.ControlFlag getControlFlag() {
 			return this.controlFlag;
 		}
