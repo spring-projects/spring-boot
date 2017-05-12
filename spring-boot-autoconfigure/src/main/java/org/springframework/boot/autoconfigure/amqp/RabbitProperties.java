@@ -467,8 +467,7 @@ public class RabbitProperties {
 	public enum ContainerType {
 
 		/**
-		 * Legacy container where the RabbitMQ consumer dispatches messages to an invoker
-		 * thread.
+		 * Container where the RabbitMQ consumer dispatches messages to an invoker thread.
 		 */
 		SIMPLE,
 
