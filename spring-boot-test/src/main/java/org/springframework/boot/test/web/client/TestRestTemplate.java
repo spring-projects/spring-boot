@@ -73,7 +73,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * If you are using the
  * {@link org.springframework.boot.test.context.SpringBootTest @SpringBootTest}
  * annotation, a {@link TestRestTemplate} is automatically available and can be
- * {@code @Autowired} into you test. If you need customizations (for example to adding
+ * {@code @Autowired} into your test. If you need customizations (for example to adding
  * additional message converters) use a {@link RestTemplateBuilder} {@code @Bean}.
  *
  * @author Dave Syer
