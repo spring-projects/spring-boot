@@ -390,8 +390,31 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 					SslStoreProviderUrlStreamHandlerFactory.TRUST_STORE_URL);
 		}
 		else {
-			configureSslKeyStore(protocol, ssl);
+			if (ssl.getCertificateFile() != null) {
+				configureSSLCertificate(protocol, ssl);
+			}
+			else {
+				configureSslKeyStore(protocol, ssl);
+			}
 			configureSslTrustStore(protocol, ssl);
+		}
+		if (ssl.isDisableCompression() != null) {
+			protocol.setSSLDisableCompression(ssl.isDisableCompression());
+		}
+		if (ssl.getHonorCipherOrder() != null) {
+			protocol.setSSLHonorCipherOrder(ssl.getHonorCipherOrder());
+		}
+	}
+
+	private void configureSSLCertificate(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
+		if (ssl.getCertificateFile() != null) {
+			protocol.setSSLCertificateFile(ssl.getCertificateFile());
+		}
+		if (ssl.getCertificateKeyFile() != null) {
+			protocol.setSSLCertificateKeyFile(ssl.getCertificateKeyFile());
+		}
+		if (ssl.getCertificateChainFile() != null) {
+			protocol.setSSLCertificateChainFile(ssl.getCertificateChainFile());
 		}
 	}
 

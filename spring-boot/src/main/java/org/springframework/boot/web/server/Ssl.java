@@ -101,6 +101,31 @@ public class Ssl {
 	 */
 	private String protocol = "TLS";
 
+	/**
+	 * Disable SSL compression.
+	 */
+	private Boolean disableCompression;
+
+	/**
+	 * Honor SSL cipher suite order.
+	 */
+	private String honorCipherOrder;
+
+	/**
+	 * SSL certificate file.
+	 */
+	private String certificateFile;
+
+	/**
+	 * SSL certificate key file.
+	 */
+	private String certificateKeyFile;
+
+	/**
+	 * SSL certificate chain file.
+	 */
+	private String certificateChainFile;
+
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -219,6 +244,46 @@ public class Ssl {
 
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
+	}
+
+	public Boolean isDisableCompression() {
+		return this.disableCompression;
+	}
+
+	public void setDisableCompression(Boolean disableCompression) {
+		this.disableCompression = disableCompression;
+	}
+
+	public void setHonorCipherOrder(String honorCipherOrder) {
+		this.honorCipherOrder = honorCipherOrder;
+	}
+
+	public String getHonorCipherOrder() {
+		return this.honorCipherOrder;
+	}
+
+	public void setCertificateFile(String certificateFile) {
+		this.certificateFile = certificateFile;
+	}
+
+	public String getCertificateFile() {
+		return this.certificateFile;
+	}
+
+	public void setCertificateKeyFile(String certificateKeyFile) {
+		this.certificateKeyFile = certificateKeyFile;
+	}
+
+	public String getCertificateKeyFile() {
+		return this.certificateKeyFile;
+	}
+
+	public void setCertificateChainFile(String certificateChainFile) {
+		this.certificateChainFile = certificateChainFile;
+	}
+
+	public String getCertificateChainFile() {
+		return this.certificateChainFile;
 	}
 
 	/**
