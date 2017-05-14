@@ -1526,9 +1526,9 @@ is going to be used at runtime for more details.
 There is a catch however. Because the actual type of the connection pool is not exposed,
 no keys are generated in the metadata for your custom `DataSource` and no completion is
 available in your IDE (The `DataSource` interface doesn't expose any property). Also, if
-you happen to _only_ have Hikari on the classpath, this basic setup will not work because
-Hikari has no `url` parameter (but a `jdbcUrl` parameter). You will have to rewrite
-your configuration as follows:
+you happen to have Hikari on the classpath, this basic setup will not work because Hikari
+has no `url` parameter (but a `jdbcUrl` parameter). You will have to rewrite your
+configuration as follows:
 
 [source,properties,indent=0]
 ----
