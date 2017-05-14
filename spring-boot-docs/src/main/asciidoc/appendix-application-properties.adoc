@@ -942,10 +942,10 @@ content into your application; rather pick only the properties that you need.
 	spring.kafka.consumer.key-deserializer= # Deserializer class for keys.
 	spring.kafka.consumer.max-poll-records= # Maximum number of records returned in a single call to poll().
 	spring.kafka.consumer.value-deserializer= # Deserializer class for values.
-	spring.kafka.jaas.control-flag=REQUIRED # AppConfigurationEntry.LoginModuleControlFlag value.
+	spring.kafka.jaas.control-flag=required # Control flag for login configuration.
 	spring.kafka.jaas.enabled= # Enable JAAS configuration.
 	spring.kafka.jaas.login-module=com.sun.security.auth.module.Krb5LoginModule # Login module.
-	spring.kafka.jaas.options= # Map of JAAS options, e.g. 'spring.kafka.jaas.options.useKeyTab=true'.
+	spring.kafka.jaas.options= # Additional JAAS options.
 	spring.kafka.listener.ack-count= # Number of records between offset commits when ackMode is "COUNT" or "COUNT_TIME".
 	spring.kafka.listener.ack-mode= # Listener AckMode; see the spring-kafka documentation.
 	spring.kafka.listener.ack-time= # Time in milliseconds between offset commits when ackMode is "TIME" or "COUNT_TIME".

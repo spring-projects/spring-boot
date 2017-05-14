@@ -326,6 +326,10 @@
     "defaultValue": true
   },
   {
+    "name": "spring.kafka.jaas.control-flag",
+    "defaultValue": "required"
+  },
+  {
     "name": "spring.mobile.devicedelegatingviewresolver.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable device view resolver.",

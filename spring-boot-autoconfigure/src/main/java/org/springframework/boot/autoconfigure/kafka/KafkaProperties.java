@@ -793,16 +793,16 @@ public class KafkaProperties {
 		/**
 		 * Login module.
 		 */
-		private String loginModule;
+		private String loginModule = "com.sun.security.auth.module.Krb5LoginModule";
 
 		/**
-		 * AppConfigurationEntry.LoginModuleControlFlag value.
+		 * Control flag for login configuration.
 		 */
 		private KafkaJaasLoginModuleInitializer.ControlFlag controlFlag =
 				KafkaJaasLoginModuleInitializer.ControlFlag.REQUIRED;
 
 		/**
-		 * Map of JAAS options, e.g. 'spring.kafka.jaas.options.useKeyTab=true'.
+		 * Additional JAAS options.
 		 */
 		private final Map<String, String> options = new HashMap<>();
 

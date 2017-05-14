@@ -40,6 +40,7 @@ import org.springframework.kafka.support.ProducerListener;
  * {@link EnableAutoConfiguration Auto-configuration} for Apache Kafka.
  *
  * @author Gary Russell
+ * @author Stephane Nicoll
  * @since 1.5.0
  */
 @Configuration
@@ -88,7 +89,7 @@ public class KafkaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(name = "spring.kafka.jaas.enabled")
-	@ConditionalOnMissingBean(KafkaJaasLoginModuleInitializer.class)
+	@ConditionalOnMissingBean
 	public KafkaJaasLoginModuleInitializer kafkaJaasInitializer() throws IOException {
 		KafkaJaasLoginModuleInitializer jaas = new KafkaJaasLoginModuleInitializer();
 		Jaas jaasProperties = this.properties.getJaas();

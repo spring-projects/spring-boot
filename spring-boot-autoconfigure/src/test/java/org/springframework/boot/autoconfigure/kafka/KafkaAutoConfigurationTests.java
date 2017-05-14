@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMo
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link KafkaAutoConfiguration}.
@@ -163,7 +164,8 @@ public class KafkaAutoConfigurationTests {
 		assertThat(configs.get(ProducerConfig.RETRIES_CONFIG)).isEqualTo(2);
 		assertThat(configs.get(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG))
 				.isEqualTo(IntegerSerializer.class);
-		assertThat(this.context.containsBean("kafkaJaasInitializer")).isFalse();
+		assertThat(this.context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
+				.isEmpty();
 	}
 
 	@Test
@@ -197,13 +199,16 @@ public class KafkaAutoConfigurationTests {
 		assertThat(dfa.getPropertyValue("concurrency")).isEqualTo(3);
 		assertThat(dfa.getPropertyValue("containerProperties.pollTimeout"))
 				.isEqualTo(2000L);
-		assertThat(this.context.containsBean("kafkaJaasInitializer")).isTrue();
-		KafkaJaasLoginModuleInitializer jaas = this.context.getBean(KafkaJaasLoginModuleInitializer.class);
+		assertThat(this.context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
+				.hasSize(1);
+		KafkaJaasLoginModuleInitializer jaas = this.context.getBean(
+				KafkaJaasLoginModuleInitializer.class);
 		dfa = new DirectFieldAccessor(jaas);
 		assertThat(dfa.getPropertyValue("loginModule")).isEqualTo("foo");
 		assertThat(dfa.getPropertyValue("controlFlag"))
 				.isEqualTo(AppConfigurationEntry.LoginModuleControlFlag.REQUISITE);
-		assertThat(((Map<?, ?>) dfa.getPropertyValue("options")).get("useKeyTab")).isEqualTo("true");
+		assertThat(((Map<String, String>) dfa.getPropertyValue("options")))
+				.containsExactly(entry("useKeyTab", "true"));
 	}
 
 	private void load(String... environment) {
