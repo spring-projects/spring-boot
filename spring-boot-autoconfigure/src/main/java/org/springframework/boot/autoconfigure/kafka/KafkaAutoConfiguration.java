@@ -16,9 +16,13 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
+import java.io.IOException;
+
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Jaas;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +32,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.ProducerListener;
 
@@ -35,6 +40,7 @@ import org.springframework.kafka.support.ProducerListener;
  * {@link EnableAutoConfiguration Auto-configuration} for Apache Kafka.
  *
  * @author Gary Russell
+ * @author Stephane Nicoll
  * @since 1.5.0
  */
 @Configuration
@@ -79,6 +85,22 @@ public class KafkaAutoConfiguration {
 	public ProducerFactory<?, ?> kafkaProducerFactory() {
 		return new DefaultKafkaProducerFactory<>(
 				this.properties.buildProducerProperties());
+	}
+
+	@Bean
+	@ConditionalOnProperty(name = "spring.kafka.jaas.enabled")
+	@ConditionalOnMissingBean
+	public KafkaJaasLoginModuleInitializer kafkaJaasInitializer() throws IOException {
+		KafkaJaasLoginModuleInitializer jaas = new KafkaJaasLoginModuleInitializer();
+		Jaas jaasProperties = this.properties.getJaas();
+		if (jaasProperties.getControlFlag() != null) {
+			jaas.setControlFlag(jaasProperties.getControlFlag());
+		}
+		if (jaasProperties.getLoginModule() != null) {
+			jaas.setLoginModule(jaasProperties.getLoginModule());
+		}
+		jaas.setOptions(jaasProperties.getOptions());
+		return jaas;
 	}
 
 }
