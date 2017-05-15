@@ -1,7 +1,6 @@
 buildscript {
 	ext {
 		springBootVersion = '2.0.0.BUILD-SNAPSHOT'
-		springLoadedVersion = '1.2.4.RELEASE'
 	}
 	repositories {
 		// NOTE: You should declare only repositories that you need here
@@ -13,7 +12,6 @@ buildscript {
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-		classpath("org.springframework:springloaded:${springLoadedVersion}")
 	}
 }
 
@@ -35,6 +33,5 @@ repositories {
 dependencies {
 	compile("org.springframework.boot:spring-boot-starter-web")
 	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
-	compile("org.hibernate:hibernate-validator")
 	testCompile("org.springframework.boot:spring-boot-starter-test")
 }

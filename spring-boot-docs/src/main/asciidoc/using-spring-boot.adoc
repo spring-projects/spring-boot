@@ -664,8 +664,7 @@ You might also want to use this useful operating system environment variable:
 Since Spring Boot applications are just plain Java applications, JVM hot-swapping should
 work out of the box. JVM hot swapping is somewhat limited with the bytecode that it can
 replace, for a more complete solution
-http://zeroturnaround.com/software/jrebel/[JRebel] or the
-https://github.com/spring-projects/spring-loaded[Spring Loaded] project can be used. The
+http://zeroturnaround.com/software/jrebel/[JRebel] can be used. The
 `spring-boot-devtools` module also includes support for quick application restarts.
 
 See the <<using-boot-devtools>> section below and the
@@ -791,8 +790,6 @@ If you find that restarts aren't quick enough for your applications, or you enco
 classloading issues, you could consider reloading technologies such as
 http://zeroturnaround.com/software/jrebel/[JRebel] from ZeroTurnaround. These work by
 rewriting classes as they are loaded to make them more amenable to reloading.
-https://github.com/spring-projects/spring-loaded[Spring Loaded] provides another option,
-however it doesn't support as many frameworks and it isn't commercially supported.
 ****
 
 

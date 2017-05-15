@@ -160,7 +160,6 @@
 		<spring-integration.version>5.0.0.M4</spring-integration.version>
 		<spring-kafka.version>2.0.0.M2</spring-kafka.version>
 		<spring-ldap.version>2.3.1.RELEASE</spring-ldap.version>
-		<spring-loaded.version>1.2.7.RELEASE</spring-loaded.version>
 		<spring-mobile.version>2.0.0.M1</spring-mobile.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-restdocs.version>1.2.1.RELEASE</spring-restdocs.version>
@@ -2079,11 +2078,6 @@
 				<version>${spring.version}</version>
 				<scope>import</scope>
 				<type>pom</type>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>springloaded</artifactId>
-				<version>${spring-loaded.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.amqp</groupId>

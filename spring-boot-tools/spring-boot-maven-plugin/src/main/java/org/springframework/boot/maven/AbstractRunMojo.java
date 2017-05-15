@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,8 +53,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
-	private static final String SPRING_LOADED_AGENT_CLASS_NAME = "org.springsource.loaded.agent.SpringLoadedAgent";
-
 	/**
 	 * The Maven project.
 	 * @since 1.0
@@ -87,7 +84,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.0
 	 */
 	@Parameter(property = "run.noverify")
-	private Boolean noverify;
+	private boolean noverify = false;
 
 	/**
 	 * Current working directory to use for the application. If not specified, basedir
@@ -211,33 +208,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		return this.workingDirectory != null;
 	}
 
-	private void findAgent() {
-		try {
-			if (this.agent == null || this.agent.length == 0) {
-				Class<?> loaded = Class.forName(SPRING_LOADED_AGENT_CLASS_NAME);
-				if (loaded != null) {
-					if (this.noverify == null) {
-						this.noverify = true;
-					}
-					CodeSource source = loaded.getProtectionDomain().getCodeSource();
-					if (source != null) {
-						this.agent = new File[] {
-								new File(source.getLocation().getFile()) };
-					}
-				}
-			}
-		}
-		catch (ClassNotFoundException ex) {
-			// ignore;
-		}
-		if (this.noverify == null) {
-			this.noverify = false;
-		}
-	}
-
 	private void run(String startClassName)
 			throws MojoExecutionException, MojoFailureException {
-		findAgent();
 		boolean fork = isFork();
 		this.project.getProperties().setProperty("_spring.boot.fork.enabled",
 				Boolean.toString(fork));
