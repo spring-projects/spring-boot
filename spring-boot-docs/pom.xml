@@ -124,6 +124,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast-client</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.hazelcast</groupId>
 			<artifactId>hazelcast-spring</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -331,6 +336,11 @@
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-websocket</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -585,6 +595,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-jdbc</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-jmx</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -801,8 +816,8 @@
 										<link>http://docs.oracle.com/javase/7/docs/api/</link>
 										<link>http://docs.oracle.com/javaee/7/api/</link>
 										<link>http://docs.spring.io/spring-framework/docs/${spring.version}/javadoc-api/</link>
-										<link>http://docs.spring.io/autorepo/docs/spring-security/${spring-security.version}/apidocs/</link>
-										<link>http://tomcat.apache.org/tomcat-8.0-doc/api/</link>
+										<link>http://docs.spring.io/spring-security/site/docs/${spring-security.version}/api/</link>
+										<link>http://tomcat.apache.org/tomcat-8.5-doc/api/</link>
 										<link>http://download.eclipse.org/jetty/stable-9/apidocs/</link>
 										<link>http://www.thymeleaf.org/apidocs/thymeleaf/${thymeleaf.version}/</link>
 									</links>
