@@ -6036,27 +6036,10 @@ automatically generate the default snippets:
 ==== Using Spock to test Spring Boot applications
 If you wish to use Spock to test a Spring Boot application you should add a dependency
 on Spock's `spock-spring` module to your application's build. `spock-spring` integrates
-Spring's test framework into Spock. Exactly how you can use Spock to test a Spring Boot
-application depends on the version of Spock that you are using.
-
-NOTE: Spring Boot provides dependency management for Spock 1.0. If you wish to use Spock
-1.1 you should <<howto.adoc#howto-customize-dependency-versions,override the
-`spock.version` property>> in your `build.gradle` or `pom.xml` file.
-
-When using Spock 1.1, the annotations <<boot-features-testing-spring-boot-applications,
-described above>> can only be used and you can annotate your `Specification` with
-`@SpringBootTest` to suit the needs of your tests.
-
-When using Spock 1.0, `@SpringBootTest` will not work for a web project. You need to use
-`@SpringApplicationConfiguration` and `@WebIntegrationTest(randomPort = true)`. Being
-unable to use `@SpringBootTest` means that you also lose the auto-configured
-`TestRestTemplate` bean. You can create an equivalent bean yourself using the following
-configuration:
-
-[source,java,indent=0]
-----
-include::{code-examples}/test/spock/SpockTestRestTemplateExample.java[tag=test-rest-template-configuration]
-----
+Spring's test framework into Spock. It is recommended that you use Spock 1.1 or later to
+benefit from a number of recent improvements to Spock's Spring Framework and Spring Boot
+integration. Please refer to http://spockframework.org/spock/docs/1.1/modules.html[the
+documentation for Spock's Spring module] for further details.
 
 
 
