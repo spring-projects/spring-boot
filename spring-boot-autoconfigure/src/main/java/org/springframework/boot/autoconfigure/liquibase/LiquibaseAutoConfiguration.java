@@ -116,9 +116,9 @@ public class LiquibaseAutoConfiguration {
 
 		private SpringLiquibase createSpringLiquibase() {
 			SpringLiquibase liquibase;
-			DataSource dataSource = getDataSource();
-			if (dataSource == null) {
-				dataSource = DataSourceBuilder.create().url(this.properties.getUrl())
+			DataSource dataSourceToUse = getDataSource();
+			if (dataSourceToUse == null) {
+				dataSourceToUse = DataSourceBuilder.create().url(this.properties.getUrl())
 						.username(this.properties.getUser())
 						.password(this.properties.getPassword()).build();
 				liquibase = new DataSourceClosingSpringLiquibase();
@@ -126,7 +126,7 @@ public class LiquibaseAutoConfiguration {
 			else {
 				liquibase = new SpringLiquibase();
 			}
-			liquibase.setDataSource(dataSource);
+			liquibase.setDataSource(dataSourceToUse);
 			return liquibase;
 		}
 
