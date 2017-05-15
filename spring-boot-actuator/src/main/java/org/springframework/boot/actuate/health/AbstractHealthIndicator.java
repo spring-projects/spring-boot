@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.health;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.actuate.health.Health.Builder;
 
 /**
@@ -31,6 +34,8 @@ import org.springframework.boot.actuate.health.Health.Builder;
  */
 public abstract class AbstractHealthIndicator implements HealthIndicator {
 
+	private final Log logger = LogFactory.getLog(getClass());
+
 	@Override
 	public final Health health() {
 		Health.Builder builder = new Health.Builder();
@@ -38,6 +43,7 @@ public abstract class AbstractHealthIndicator implements HealthIndicator {
 			doHealthCheck(builder);
 		}
 		catch (Exception ex) {
+			this.logger.warn("Health check failed", ex);
 			builder.down(ex);
 		}
 		return builder.build();
