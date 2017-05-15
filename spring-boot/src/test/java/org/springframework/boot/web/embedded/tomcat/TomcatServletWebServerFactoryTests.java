@@ -44,6 +44,7 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.jasper.servlet.JspServlet;
 import org.apache.tomcat.util.net.SSLHostConfig;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -84,6 +85,20 @@ public class TomcatServletWebServerFactoryTests
 	@After
 	public void restoreTccl() {
 		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+	}
+
+	@Override
+	@Test
+	@Ignore
+	public void errorPage() throws Exception {
+		super.errorPage();
+	}
+
+	@Override
+	@Test
+	@Ignore
+	public void errorPageFromPutRequest() throws Exception {
+		super.errorPageFromPutRequest();
 	}
 
 	// JMX MBean names clash if you get more than one Engine with the same name...

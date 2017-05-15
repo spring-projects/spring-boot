@@ -34,7 +34,8 @@ public class Compression {
 	 * Comma-separated list of MIME types that should be compressed.
 	 */
 	private String[] mimeTypes = new String[] { "text/html", "text/xml", "text/plain",
-			"text/css", "text/javascript", "application/javascript" };
+			"text/css", "text/javascript", "application/javascript", "application/json",
+			"application/xml" };
 
 	/**
 	 * Comma-separated list of user agents for which responses should not be compressed.
