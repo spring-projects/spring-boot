@@ -36,6 +36,12 @@ org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 
+# AutoConfigureDataRedis auto-configuration imports
+org.springframework.boot.test.autoconfigure.data.redis.AutoConfigureDataRedis=\
+org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
+
 # AutoConfigureJdbc auto-configuration imports
 org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureJdbc=\
 org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,\
@@ -128,9 +134,3 @@ org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListen
 org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener
-
-# AutoConfigureDataRedis auto-configuration imports
-org.springframework.boot.test.autoconfigure.data.redis.AutoConfigureDataRedis=\
-org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,\
-org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration,\
-org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
