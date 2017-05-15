@@ -186,7 +186,9 @@ public class LiquibaseAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertThat(liquibase.getDataSource().getConnection().getMetaData().getURL())
+		DataSource dataSource = liquibase.getDataSource();
+		assertThat(ReflectionTestUtils.getField(dataSource, "pool")).isNull();
+		assertThat(dataSource.getConnection().getMetaData().getURL())
 				.isEqualTo("jdbc:hsqldb:mem:liquibase");
 	}
 
