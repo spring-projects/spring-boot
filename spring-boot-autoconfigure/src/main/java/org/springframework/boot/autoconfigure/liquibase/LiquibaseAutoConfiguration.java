@@ -115,18 +115,14 @@ public class LiquibaseAutoConfiguration {
 		}
 
 		private SpringLiquibase createSpringLiquibase() {
-			SpringLiquibase liquibase;
-			DataSource dataSourceToUse = getDataSource();
-			if (dataSourceToUse == null) {
-				dataSourceToUse = DataSourceBuilder.create().url(this.properties.getUrl())
-						.username(this.properties.getUser())
-						.password(this.properties.getPassword()).build();
-				liquibase = new DataSourceClosingSpringLiquibase();
+			DataSource liquibaseDataSource = getDataSource();
+			if (liquibaseDataSource != null) {
+				SpringLiquibase liquibase = new SpringLiquibase();
+				liquibase.setDataSource(liquibaseDataSource);
+				return liquibase;
 			}
-			else {
-				liquibase = new SpringLiquibase();
-			}
-			liquibase.setDataSource(dataSourceToUse);
+			SpringLiquibase liquibase = new DataSourceClosingSpringLiquibase();
+			liquibase.setDataSource(createNewDataSource());
 			return liquibase;
 		}
 
@@ -134,10 +130,16 @@ public class LiquibaseAutoConfiguration {
 			if (this.liquibaseDataSource != null) {
 				return this.liquibaseDataSource;
 			}
-			else if (this.properties.getUrl() == null) {
+			if (this.properties.getUrl() == null) {
 				return this.dataSource;
 			}
 			return null;
+		}
+
+		private DataSource createNewDataSource() {
+			return DataSourceBuilder.create().url(this.properties.getUrl())
+					.username(this.properties.getUser())
+					.password(this.properties.getPassword()).build();
 		}
 
 	}
@@ -171,8 +173,8 @@ public class LiquibaseAutoConfiguration {
 		}
 
 		private void closeDataSource() {
-			Method closeMethod = ReflectionUtils.findMethod(getDataSource().getClass(),
-					"close");
+			Class<?> dataSourceClass = getDataSource().getClass();
+			Method closeMethod = ReflectionUtils.findMethod(dataSourceClass, "close");
 			if (closeMethod != null) {
 				ReflectionUtils.invokeMethod(closeMethod, getDataSource());
 			}
