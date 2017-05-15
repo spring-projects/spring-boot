@@ -131,6 +131,10 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 		if (StringUtils.hasText(tablePrefix)) {
 			factory.setTablePrefix(tablePrefix);
 		}
+		String tablePrefix = this.properties.getTablePrefix();
+		if (StringUtils.hasText(tablePrefix)) {
+			factory.setTablePrefix(tablePrefix);
+		}
 		factory.setTransactionManager(getTransactionManager());
 		factory.afterPropertiesSet();
 		return factory.getObject();
