@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.After;
 import org.junit.Before;
@@ -186,7 +187,9 @@ public class LiquibaseAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertThat(liquibase.getDataSource().getConnection().getMetaData().getURL())
+		DataSource dataSource = liquibase.getDataSource();
+		assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
+		assertThat(((HikariDataSource) dataSource).getJdbcUrl())
 				.isEqualTo("jdbc:hsqldb:mem:liquibase");
 	}
 
