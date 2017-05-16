@@ -33,8 +33,8 @@ public class PropertySourceOrigin implements Origin {
 
 	/**
 	 * Create a new {@link PropertySourceOrigin} instance.
-	 * @param propertySource the origin property source
-	 * @param propertyName the origin property name
+	 * @param propertySource the property source
+	 * @param propertyName the name from the property source
 	 */
 	public PropertySourceOrigin(PropertySource<?> propertySource, String propertyName) {
 		Assert.notNull(propertySource, "PropertySource must not be null");
@@ -52,7 +52,8 @@ public class PropertySourceOrigin implements Origin {
 	}
 
 	/**
-	 * Return the origin property name.
+	 * Return the property name that was used when obtaining the original value from the
+	 * {@link #getPropertySource() property source}.
 	 * @return the origin property name
 	 */
 	public String getPropertyName() {

@@ -30,6 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link SpringApplicationJsonEnvironmentPostProcessor}.
  *
  * @author Dave Syer
+ * @author Madhura Bhave
+ * @author Phillip Webb
  */
 public class SpringApplicationJsonEnvironmentPostProcessorTests {
 
@@ -124,9 +126,13 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.application.json={\"foo\":\"bar\"}");
 		this.processor.postProcessEnvironment(this.environment, null);
-		PropertySource<?> propertySource = this.environment.getPropertySources().get("spring.application.json");
-		PropertySourceOrigin origin = (PropertySourceOrigin) PropertySourceOrigin.get(propertySource, "foo");
-		assertThat(origin.getPropertySource().getName()).isEqualTo("Inlined Test Properties");
+		PropertySource<?> propertySource = this.environment.getPropertySources()
+				.get("spring.application.json");
+		PropertySourceOrigin origin = (PropertySourceOrigin) PropertySourceOrigin
+				.get(propertySource, "foo");
+		assertThat(origin.getPropertySource().getName())
+				.isEqualTo("Inlined Test Properties");
+		assertThat(origin.getPropertyName()).isEqualTo("spring.application.json");
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("bar");
 	}
 }
