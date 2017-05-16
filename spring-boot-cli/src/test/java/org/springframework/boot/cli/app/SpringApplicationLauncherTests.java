@@ -73,7 +73,7 @@ public class SpringApplicationLauncherTests {
 	public void sourcesDefaultPropertiesAndArgsAreUsedToLaunch() throws Exception {
 		System.setProperty("spring.application.class.name",
 				TestSpringApplication.class.getName());
-		Object[] sources = new Object[0];
+		Class<?>[] sources = new Class<?>[0];
 		String[] args = new String[0];
 		new SpringApplicationLauncher(getClass().getClassLoader()).launch(sources, args);
 
@@ -88,7 +88,7 @@ public class SpringApplicationLauncherTests {
 	private Set<String> launch() {
 		TestClassLoader classLoader = new TestClassLoader(getClass().getClassLoader());
 		try {
-			new TestSpringApplicationLauncher(classLoader).launch(new Object[0],
+			new TestSpringApplicationLauncher(classLoader).launch(new Class<?>[0],
 					new String[0]);
 		}
 		catch (Exception ex) {
@@ -129,7 +129,7 @@ public class SpringApplicationLauncherTests {
 
 		private static String[] args;
 
-		public TestSpringApplication(Object[] sources) {
+		public TestSpringApplication(Class<?>[] sources) {
 			TestSpringApplication.sources = sources;
 		}
 

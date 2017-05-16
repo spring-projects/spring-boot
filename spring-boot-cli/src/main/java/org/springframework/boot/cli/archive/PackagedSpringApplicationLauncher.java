@@ -51,7 +51,7 @@ public final class PackagedSpringApplicationLauncher {
 		new SpringApplicationLauncher(classLoader).launch(getSources(classLoader), args);
 	}
 
-	private Object[] getSources(URLClassLoader classLoader) throws Exception {
+	private Class<?>[] getSources(URLClassLoader classLoader) throws Exception {
 		Enumeration<URL> urls = classLoader.getResources("META-INF/MANIFEST.MF");
 		while (urls.hasMoreElements()) {
 			URL url = urls.nextElement();

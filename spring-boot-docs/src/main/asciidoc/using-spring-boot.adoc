@@ -398,10 +398,10 @@ The `Application.java` file would declare the `main` method, along with the basi
 
 [[using-boot-configuration-classes]]
 == Configuration classes
-Spring Boot favors Java-based configuration. Although it is possible to call
-`SpringApplication.run()` with an XML source, we generally recommend that your primary
-source is a `@Configuration` class. Usually the class that defines the `main` method
-is also a good candidate as the primary `@Configuration`.
+Spring Boot favors Java-based configuration. Although it is possible to use
+`SpringApplication` with an XML sources, we generally recommend that your primary
+source is a single `@Configuration` class. Usually the class that defines the `main`
+method is also a good candidate as the primary `@Configuration`.
 
 TIP: Many Spring configuration examples have been published on the Internet that use XML
 configuration. Always try to use the equivalent Java-based configuration if possible.

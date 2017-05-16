@@ -160,7 +160,7 @@ public class SpringApplicationTests {
 	public void sourcesMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("PrimarySources must not be null");
-		new SpringApplication((Object[]) null).run();
+		new SpringApplication((Class<?>[]) null).run();
 	}
 
 	@Test
@@ -576,20 +576,22 @@ public class SpringApplicationTests {
 
 	@Test
 	public void loadSources() throws Exception {
-		Object[] sources = { ExampleConfig.class, "a", TestCommandLineRunner.class };
+		Class<?>[] sources = { ExampleConfig.class, TestCommandLineRunner.class };
 		TestSpringApplication application = new TestSpringApplication(sources);
+		application.getSources().add("a");
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setUseMockLoader(true);
 		this.context = application.run();
 		Set<Object> allSources = application.getAllSources();
-		assertThat(allSources.toArray()).isEqualTo(sources);
+		assertThat(allSources).contains(ExampleConfig.class, TestCommandLineRunner.class,
+				"a");
 	}
 
 	@Test
 	public void wildcardSources() {
-		Object[] sources = {
-				"classpath:org/springframework/boot/sample-${sample.app.test.prop}.xml" };
-		TestSpringApplication application = new TestSpringApplication(sources);
+		TestSpringApplication application = new TestSpringApplication();
+		application.getSources().add(
+				"classpath:org/springframework/boot/sample-${sample.app.test.prop}.xml");
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 	}
@@ -603,7 +605,7 @@ public class SpringApplicationTests {
 	@Test
 	public void runComponents() throws Exception {
 		this.context = SpringApplication.run(
-				new Object[] { ExampleWebConfig.class, Object.class }, new String[0]);
+				new Class<?>[] { ExampleWebConfig.class, Object.class }, new String[0]);
 		assertThat(this.context).isNotNull();
 	}
 
@@ -970,12 +972,12 @@ public class SpringApplicationTests {
 
 		private Banner.Mode bannerMode;
 
-		TestSpringApplication(Object... sources) {
-			super(sources);
+		TestSpringApplication(Class<?>... primarySources) {
+			super(primarySources);
 		}
 
-		TestSpringApplication(ResourceLoader resourceLoader, Object... sources) {
-			super(resourceLoader, sources);
+		TestSpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+			super(resourceLoader, primarySources);
 		}
 
 		public void setUseMockLoader(boolean useMockLoader) {
