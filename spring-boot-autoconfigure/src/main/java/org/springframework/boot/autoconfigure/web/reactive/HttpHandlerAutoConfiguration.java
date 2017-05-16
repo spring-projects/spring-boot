@@ -69,7 +69,8 @@ public class HttpHandlerAutoConfiguration {
 
 		@Bean
 		public HttpHandler httpHandler() {
-			return WebHttpHandlerBuilder.applicationContext(this.applicationContext).build();
+			return WebHttpHandlerBuilder.applicationContext(this.applicationContext)
+					.build();
 		}
 
 	}
@@ -87,9 +88,9 @@ public class HttpHandlerAutoConfiguration {
 		private final List<ViewResolver> viewResolvers;
 
 		public FunctionalConfig(ObjectProvider<List<WebFilter>> webFilters,
-			ObjectProvider<WebSessionManager> webSessionManager,
-			ObjectProvider<HandlerStrategies.Builder> handlerStrategiesBuilder,
-			ObjectProvider<List<ViewResolver>> viewResolvers) {
+				ObjectProvider<WebSessionManager> webSessionManager,
+				ObjectProvider<HandlerStrategies.Builder> handlerStrategiesBuilder,
+				ObjectProvider<List<ViewResolver>> viewResolvers) {
 			this.webFilters = webFilters.getIfAvailable();
 			if (this.webFilters != null) {
 				AnnotationAwareOrderComparator.sort(this.webFilters);
@@ -103,7 +104,7 @@ public class HttpHandlerAutoConfiguration {
 		public HttpHandler httpHandler(List<RouterFunction<?>> routerFunctions) {
 			routerFunctions.sort(new AnnotationAwareOrderComparator());
 			RouterFunction<?> routerFunction = routerFunctions.stream()
-				.reduce(RouterFunction::andOther).get();
+					.reduce(RouterFunction::andOther).get();
 			if (this.handlerStrategiesBuilder == null) {
 				this.handlerStrategiesBuilder = HandlerStrategies.builder();
 			}
@@ -111,9 +112,9 @@ public class HttpHandlerAutoConfiguration {
 				this.viewResolvers.forEach(this.handlerStrategiesBuilder::viewResolver);
 			}
 			WebHandler webHandler = RouterFunctions.toHttpHandler(routerFunction,
-				this.handlerStrategiesBuilder.build());
+					this.handlerStrategiesBuilder.build());
 			WebHttpHandlerBuilder builder = WebHttpHandlerBuilder.webHandler(webHandler)
-				.sessionManager(this.webSessionManager);
+					.sessionManager(this.webSessionManager);
 			builder.filters(this.webFilters);
 			return builder.build();
 		}

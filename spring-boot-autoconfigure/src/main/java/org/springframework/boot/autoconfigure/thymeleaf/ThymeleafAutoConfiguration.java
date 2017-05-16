@@ -254,7 +254,7 @@ public class ThymeleafAutoConfiguration {
 			ThymeleafReactiveViewResolver resolver = new ThymeleafReactiveViewResolver();
 			resolver.setTemplateEngine(templateEngine);
 			resolver.setDefaultCharset(this.properties.getEncoding());
-			final List<MediaType> mediaTypes = this.properties.getReactive().getMediaTypes();
+			List<MediaType> mediaTypes = this.properties.getReactive().getMediaTypes();
 			if (mediaTypes != null) {
 				resolver.setSupportedMediaTypes(mediaTypes);
 			}

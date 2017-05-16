@@ -349,8 +349,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private Element getTopLevelType(Element element) {
-		if ((element.getEnclosingElement() == null) ||
-				!(element.getEnclosingElement() instanceof TypeElement)) {
+		if ((element.getEnclosingElement() == null)
+				|| !(element.getEnclosingElement() instanceof TypeElement)) {
 			return element;
 		}
 		return getTopLevelType(element.getEnclosingElement());

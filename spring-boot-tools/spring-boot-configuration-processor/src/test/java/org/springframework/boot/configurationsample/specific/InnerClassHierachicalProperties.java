@@ -19,8 +19,8 @@ package org.springframework.boot.configurationsample.specific;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
- * Demonstrate inner classes end up in metadata regardless of
- * position in hierarchy and without the use of
+ * Demonstrate inner classes end up in metadata regardless of position in hierarchy and
+ * without the use of
  * {@link org.springframework.boot.configurationsample.NestedConfigurationProperty}.
  *
  * @author Madhura Bhave
@@ -61,7 +61,9 @@ public class InnerClassHierachicalProperties {
 			public void setBlah(String blah) {
 				this.blah = blah;
 			}
+
 		}
+
 	}
 
 	public static class Bar {
@@ -85,6 +87,7 @@ public class InnerClassHierachicalProperties {
 		public void setBaz(Foo.Baz baz) {
 			this.baz = baz;
 		}
+
 	}
 
 }

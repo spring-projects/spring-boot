@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.websocket.servlet;
 
 import org.apache.tomcat.websocket.server.WsContextListener;
 
-import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
@@ -36,8 +35,8 @@ public class TomcatWebSocketServletWebServerCustomizer
 
 	@Override
 	public void customize(TomcatServletWebServerFactory factory) {
-		factory.addContextCustomizers((TomcatContextCustomizer) context ->
-				context.addApplicationListener(WsContextListener.class.getName()));
+		factory.addContextCustomizers((context) -> context
+				.addApplicationListener(WsContextListener.class.getName()));
 	}
 
 	@Override

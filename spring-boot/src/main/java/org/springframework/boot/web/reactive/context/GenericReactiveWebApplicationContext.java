@@ -23,6 +23,7 @@ import java.io.InputStream;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.io.AbstractResource;
 import org.springframework.core.io.Resource;
+import org.springframework.util.StringUtils;
 
 /**
  * Subclass of {@link AnnotationConfigApplicationContext}, suitable for reactive web
@@ -36,8 +37,6 @@ public class GenericReactiveWebApplicationContext extends
 		AnnotationConfigApplicationContext implements ReactiveWebApplicationContext {
 
 	private String namespace;
-
-	private final NonExistentResource nonExistentResource = new NonExistentResource();
 
 	public GenericReactiveWebApplicationContext() {
 		super();
@@ -59,24 +58,25 @@ public class GenericReactiveWebApplicationContext extends
 
 	@Override
 	protected Resource getResourceByPath(String path) {
-		// No ServletContext is available
-		if (path.startsWith("/")) {
-			return this.nonExistentResource;
-		}
-		else {
-			return super.getResourceByPath(path);
-		}
+		// We must be careful not to expose classpath resources
+		return new FilteredReactiveWebContextResource(path);
 	}
 
 	/**
 	 * Resource implementation that replaces the
-	 * {@link org.springframework.web.context.support.ServletContextResource}
-	 * in a reactive web application.
-	 *
-	 * <p>{@link #exists()} always returns null in order to avoid exposing
-	 * the whole classpath in a non-servlet environment.
+	 * {@link org.springframework.web.context.support.ServletContextResource} in a
+	 * reactive web application.
+	 * <p>
+	 * {@link #exists()} always returns null in order to avoid exposing the whole
+	 * classpath in a non-servlet environment.
 	 */
-	class NonExistentResource extends AbstractResource {
+	class FilteredReactiveWebContextResource extends AbstractResource {
+
+		private final String path;
+
+		FilteredReactiveWebContextResource(String path) {
+			this.path = path;
+		}
 
 		@Override
 		public boolean exists() {
@@ -85,17 +85,20 @@ public class GenericReactiveWebApplicationContext extends
 
 		@Override
 		public Resource createRelative(String relativePath) throws IOException {
-			return this;
+			String pathToUse = StringUtils.applyRelativePath(this.path, relativePath);
+			return new FilteredReactiveWebContextResource(pathToUse);
 		}
 
 		@Override
 		public String getDescription() {
-			return "NonExistentResource";
+			return "ReactiveWebContext resource [" + this.path + "]";
 		}
 
 		@Override
 		public InputStream getInputStream() throws IOException {
-			throw new FileNotFoundException(this.getDescription() + " cannot be opened because it does not exist");
+			throw new FileNotFoundException(this.getDescription()
+					+ " cannot be opened because it does not exist");
 		}
+
 	}
 }

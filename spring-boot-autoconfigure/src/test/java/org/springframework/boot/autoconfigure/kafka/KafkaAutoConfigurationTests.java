@@ -176,8 +176,7 @@ public class KafkaAutoConfigurationTests {
 				"spring.kafka.listener.ack-time=456",
 				"spring.kafka.listener.concurrency=3",
 				"spring.kafka.listener.poll-timeout=2000",
-				"spring.kafka.jaas.enabled=true",
-				"spring.kafka.jaas.login-module=foo",
+				"spring.kafka.jaas.enabled=true", "spring.kafka.jaas.login-module=foo",
 				"spring.kafka.jaas.control-flag=REQUISITE",
 				"spring.kafka.jaas.options.useKeyTab=true");
 		DefaultKafkaProducerFactory<?, ?> producerFactory = this.context
@@ -201,8 +200,8 @@ public class KafkaAutoConfigurationTests {
 				.isEqualTo(2000L);
 		assertThat(this.context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
 				.hasSize(1);
-		KafkaJaasLoginModuleInitializer jaas = this.context.getBean(
-				KafkaJaasLoginModuleInitializer.class);
+		KafkaJaasLoginModuleInitializer jaas = this.context
+				.getBean(KafkaJaasLoginModuleInitializer.class);
 		dfa = new DirectFieldAccessor(jaas);
 		assertThat(dfa.getPropertyValue("loginModule")).isEqualTo("foo");
 		assertThat(dfa.getPropertyValue("controlFlag"))

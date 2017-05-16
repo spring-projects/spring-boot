@@ -352,12 +352,12 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void innerClassPropertiesHierachical() throws Exception {
 		ConfigurationMetadata metadata = compile(InnerClassHierachicalProperties.class);
-		assertThat(metadata)
-				.has(Metadata.withGroup("config.foo").ofType(InnerClassHierachicalProperties.Foo.class));
-		assertThat(metadata).has(
-				Metadata.withGroup("config.foo.bar").ofType(InnerClassHierachicalProperties.Bar.class));
-		assertThat(metadata).has(
-				Metadata.withGroup("config.foo.bar.baz").ofType(InnerClassHierachicalProperties.Foo.Baz.class));
+		assertThat(metadata).has(Metadata.withGroup("config.foo")
+				.ofType(InnerClassHierachicalProperties.Foo.class));
+		assertThat(metadata).has(Metadata.withGroup("config.foo.bar")
+				.ofType(InnerClassHierachicalProperties.Bar.class));
+		assertThat(metadata).has(Metadata.withGroup("config.foo.bar.baz")
+				.ofType(InnerClassHierachicalProperties.Foo.Baz.class));
 		assertThat(metadata).has(Metadata.withProperty("config.foo.bar.baz.blah"));
 		assertThat(metadata).has(Metadata.withProperty("config.foo.bar.bling"));
 	}
@@ -505,8 +505,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Test
 	public void lombokInnerClassWithGetterProperties() throws IOException {
-		ConfigurationMetadata metadata =
-				compile(LombokInnerClassWithGetterProperties.class);
+		ConfigurationMetadata metadata = compile(
+				LombokInnerClassWithGetterProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("config")
 				.fromSource(LombokInnerClassWithGetterProperties.class));
 		assertThat(metadata).has(Metadata.withGroup("config.first")

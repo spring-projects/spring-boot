@@ -798,8 +798,7 @@ public class KafkaProperties {
 		/**
 		 * Control flag for login configuration.
 		 */
-		private KafkaJaasLoginModuleInitializer.ControlFlag controlFlag =
-				KafkaJaasLoginModuleInitializer.ControlFlag.REQUIRED;
+		private KafkaJaasLoginModuleInitializer.ControlFlag controlFlag = KafkaJaasLoginModuleInitializer.ControlFlag.REQUIRED;
 
 		/**
 		 * Additional JAAS options.
@@ -826,7 +825,8 @@ public class KafkaProperties {
 			return this.controlFlag;
 		}
 
-		public void setControlFlag(KafkaJaasLoginModuleInitializer.ControlFlag controlFlag) {
+		public void setControlFlag(
+				KafkaJaasLoginModuleInitializer.ControlFlag controlFlag) {
 			this.controlFlag = controlFlag;
 		}
 

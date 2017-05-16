@@ -34,7 +34,9 @@ public class GenericReactiveWebApplicationContextTests {
 		GenericReactiveWebApplicationContext context = new GenericReactiveWebApplicationContext();
 		Resource rootResource = context.getResourceByPath("/");
 		assertThat(rootResource.exists()).isFalse();
-		assertThat(rootResource.createRelative("application.properties").exists()).isFalse();
+		assertThat(rootResource.createRelative("application.properties").exists())
+				.isFalse();
+		context.close();
 	}
 
 }

@@ -46,24 +46,23 @@ public class DataSourceBuilderTests {
 
 	@Test
 	public void defaultToHikari() {
-		this.dataSource = DataSourceBuilder.create()
-				.url("jdbc:h2:test").build();
+		this.dataSource = DataSourceBuilder.create().url("jdbc:h2:test").build();
 		assertThat(this.dataSource).isInstanceOf(HikariDataSource.class);
 	}
 
 	@Test
 	public void defaultToTomcatIfHikariIsNotAvailable() {
-		this.dataSource = DataSourceBuilder.create(
-				new HidePackagesClassLoader("com.zaxxer.hikari"))
+		this.dataSource = DataSourceBuilder
+				.create(new HidePackagesClassLoader("com.zaxxer.hikari"))
 				.url("jdbc:h2:test").build();
-		assertThat(this.dataSource).isInstanceOf(
-				org.apache.tomcat.jdbc.pool.DataSource.class);
+		assertThat(this.dataSource)
+				.isInstanceOf(org.apache.tomcat.jdbc.pool.DataSource.class);
 	}
 
 	@Test
 	public void defaultToCommonsDbcp2AsLastResort() {
-		this.dataSource = DataSourceBuilder.create(
-				new HidePackagesClassLoader("com.zaxxer.hikari",
+		this.dataSource = DataSourceBuilder
+				.create(new HidePackagesClassLoader("com.zaxxer.hikari",
 						"org.apache.tomcat.jdbc.pool"))
 				.url("jdbc:h2:test").build();
 		assertThat(this.dataSource).isInstanceOf(BasicDataSource.class);
