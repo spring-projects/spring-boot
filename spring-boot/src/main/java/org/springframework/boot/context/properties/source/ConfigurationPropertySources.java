@@ -103,6 +103,22 @@ public final class ConfigurationPropertySources {
 
 	/**
 	 * Return {@link Iterable} containing new {@link ConfigurationPropertySource}
+	 * instances adapted from the given Spring {@link MutablePropertySources}.
+	 * <p>
+	 * This method will flatten any nested property sources and will filter all
+	 * {@link StubPropertySource stub property sources}. Updates to the underlying source
+	 * will be automatically tracked.
+	 * @param sources the Spring property sources to adapt
+	 * @return an {@link Iterable} containing a single newly adapted
+	 * {@link SpringConfigurationPropertySource} instances
+	 */
+	public static Iterable<ConfigurationPropertySource> from(
+			MutablePropertySources sources) {
+		return new SpringConfigurationPropertySources(sources);
+	}
+
+	/**
+	 * Return {@link Iterable} containing new {@link ConfigurationPropertySource}
 	 * instances adapted from the given Spring {@link PropertySource PropertySources}.
 	 * <p>
 	 * This method will flatten any nested property sources and will filter all

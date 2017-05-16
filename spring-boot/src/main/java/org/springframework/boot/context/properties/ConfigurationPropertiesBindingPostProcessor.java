@@ -37,6 +37,7 @@ import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
+import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBindHandler;
 import org.springframework.boot.context.properties.bind.handler.NoUnboundElementsBindHandler;
 import org.springframework.boot.context.properties.bind.validation.ValidationBindHandler;
@@ -60,6 +61,7 @@ import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.StandardEnvironment;
@@ -121,7 +123,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	private Iterable<ConfigurationPropertySource> configurationSources;
 
-	private Binder binder;
+	private BinderConversionService binderConversionService;
 
 	/**
 	 * A list of custom converters (in addition to the defaults) to use when converting
@@ -222,8 +224,14 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 					ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME,
 					ConversionService.class);
 		}
-		this.configurationSources = ConfigurationPropertySources
-				.from(this.propertySources);
+		if (this.propertySources instanceof MutablePropertySources) {
+			this.configurationSources = ConfigurationPropertySources
+					.from((MutablePropertySources) this.propertySources);
+		}
+		else {
+			this.configurationSources = ConfigurationPropertySources
+					.from(this.propertySources);
+		}
 	}
 
 	@Override
@@ -317,7 +325,9 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	private void postProcessBeforeInitialization(Object bean, String beanName,
 			ConfigurationProperties annotation) {
-		Binder binder = getBinder();
+		Binder binder = new Binder(this.configurationSources,
+				new PropertySourcesPlaceholdersResolver(this.propertySources),
+				getBinderConversionService());
 		Validator validator = determineValidator(bean);
 		BindHandler handler = getBindHandler(annotation, validator);
 		Bindable<?> bindable = Bindable.ofInstance(bean);
@@ -331,19 +341,17 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		}
 	}
 
-	private Binder getBinder() {
-		Binder binder = this.binder;
-		if (binder == null) {
+	private BinderConversionService getBinderConversionService() {
+		BinderConversionService binderConversionService = this.binderConversionService;
+		if (binderConversionService == null) {
 			ConversionService conversionService = this.conversionService;
 			if (conversionService == null) {
 				conversionService = getDefaultConversionService();
 			}
-			binder = new Binder(this.configurationSources,
-					new PropertySourcesPlaceholdersResolver(this.propertySources),
-					conversionService);
-			this.binder = binder;
+			binderConversionService = new BinderConversionService(conversionService);
+			this.binderConversionService = binderConversionService;
 		}
-		return binder;
+		return binderConversionService;
 	}
 
 	private ConversionService getDefaultConversionService() {
