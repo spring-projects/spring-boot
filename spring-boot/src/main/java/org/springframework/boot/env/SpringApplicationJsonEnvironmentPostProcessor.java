@@ -106,8 +106,6 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 	/**
 	 * Flatten the map keys using period separator.
 	 * @param map The map that should be flattened
-	 * @param source The property source for spring.application.json or
-	 * SPRING_APPLICATION_JSON
 	 * @return the flattened map
 	 */
 	private Map<String, Object> flatten(Map<String, Object> map) {
