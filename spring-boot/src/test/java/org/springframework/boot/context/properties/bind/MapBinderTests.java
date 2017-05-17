@@ -388,4 +388,39 @@ public class MapBinderTests {
 				eq(target), any(), isA(Properties.class));
 	}
 
+	@Test
+	public void bindToMapShouldNotTreatClassWithStringConstructorAsScalar() throws Exception {
+		this.sources
+				.add(new MockConfigurationPropertySource("foo.bar.pattern", "1", "line1"));
+		BindHandler handler = mock(BindHandler.class,
+				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+		Bindable<Map<String, Foo>> target = Bindable.of(ResolvableType.forClassWithGenerics(Map.class, String.class, Foo.class));
+		this.binder.bind("foo", target, handler);
+		InOrder inOrder = inOrder(handler);
+		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.bar.pattern")),
+				eq(Bindable.of(String.class)), any(), eq("1"));
+		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")),
+				eq(target), any(), isA(Map.class));
+	}
+
+	public static class Foo {
+		private String pattern;
+
+		public Foo() {
+		}
+
+		public Foo(String pattern) {
+			this.pattern = pattern;
+		}
+
+		public String getPattern() {
+			return this.pattern;
+		}
+
+		public void setPattern(String pattern) {
+			this.pattern = pattern;
+		}
+
+	}
+
 }
