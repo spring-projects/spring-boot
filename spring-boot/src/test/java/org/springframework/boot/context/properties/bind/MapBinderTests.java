@@ -30,6 +30,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 import org.springframework.boot.context.properties.bind.BinderTests.ExampleEnum;
+import org.springframework.boot.context.properties.bind.BinderTests.JavaBean;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
@@ -369,6 +370,31 @@ public class MapBinderTests {
 		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.bar")),
 				eq(Bindable.of(String[].class)), any(), array.capture());
 		assertThat(array.getValue()).containsExactly("a", "b", "c");
+		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")),
+				eq(target), any(), isA(Map.class));
+	}
+
+	@Test
+	public void bindToMapNonScalarCollectionShouldTriggerOnSuccess() throws Exception {
+		Bindable<List<JavaBean>> valueType = Bindable.listOf(JavaBean.class);
+		ResolvableType mapType = ResolvableType.forClassWithGenerics(Map.class, ResolvableType.forClass(String.class), valueType.getType());
+		Bindable<Map<String, List<JavaBean>>> target = Bindable.of(mapType);
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.bar[0].value", "a");
+		source.put("foo.bar[1].value", "b");
+		source.put("foo.bar[2].value", "c");
+		this.sources
+				.add(source);
+		BindHandler handler = mock(BindHandler.class,
+				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
+		this.binder.bind("foo", target, handler);
+		InOrder inOrder = inOrder(handler);
+		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.bar[0].value")),
+				eq(Bindable.of(String.class)), any(), eq("a"));
+		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.bar[1].value")),
+				eq(Bindable.of(String.class)), any(), eq("b"));
+		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.bar[2].value")),
+				eq(Bindable.of(String.class)), any(), eq("c"));
 		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")),
 				eq(target), any(), isA(Map.class));
 	}
