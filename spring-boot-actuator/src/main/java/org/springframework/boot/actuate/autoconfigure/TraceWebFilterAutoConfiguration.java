@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,19 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletRegistration;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.trace.TraceProperties;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.web.ErrorAttributes;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorAttributes;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -37,23 +41,32 @@ import org.springframework.web.servlet.DispatcherServlet;
  *
  * @author Dave Syer
  */
+@Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class, ServletRegistration.class })
 @AutoConfigureAfter(TraceRepositoryAutoConfiguration.class)
+@ConditionalOnProperty(prefix = "endpoints.trace.filter", name = "enabled", matchIfMissing = true)
+@EnableConfigurationProperties(TraceProperties.class)
 public class TraceWebFilterAutoConfiguration {
 
-	@Autowired
-	private TraceRepository traceRepository;
+	private final TraceRepository traceRepository;
 
-	@Autowired(required = false)
-	private ErrorAttributes errorAttributes;
+	private final TraceProperties traceProperties;
 
-	@Value("${management.dump_requests:false}")
-	private boolean dumpRequests;
+	private final ErrorAttributes errorAttributes;
+
+	public TraceWebFilterAutoConfiguration(TraceRepository traceRepository,
+			TraceProperties traceProperties,
+			ObjectProvider<ErrorAttributes> errorAttributes) {
+		this.traceRepository = traceRepository;
+		this.traceProperties = traceProperties;
+		this.errorAttributes = errorAttributes.getIfAvailable();
+	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	public WebRequestTraceFilter webRequestLoggingFilter(BeanFactory beanFactory) {
-		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.traceRepository);
-		filter.setDumpRequests(this.dumpRequests);
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.traceRepository,
+				this.traceProperties);
 		if (this.errorAttributes != null) {
 			filter.setErrorAttributes(this.errorAttributes);
 		}

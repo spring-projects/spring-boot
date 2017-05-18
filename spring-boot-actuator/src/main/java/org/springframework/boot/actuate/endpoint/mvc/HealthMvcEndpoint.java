@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,24 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.security.Principal;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.springframework.boot.actuate.endpoint.Endpoint;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -41,17 +44,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Eddú Meléndez
+ * @author Madhura Bhave
  * @since 1.1.0
  */
-public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
+@ConfigurationProperties(prefix = "endpoints.health")
+public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint> {
 
-	private final HealthEndpoint delegate;
+	private static final List<String> DEFAULT_ROLES = Arrays.asList("ROLE_ACTUATOR");
 
 	private final boolean secure;
 
-	private Map<String, HttpStatus> statusMapping = new HashMap<String, HttpStatus>();
+	private final List<String> roles;
 
-	private RelaxedPropertyResolver propertyResolver;
+	private Map<String, HttpStatus> statusMapping = new HashMap<>();
 
 	private long lastAccess = 0;
 
@@ -62,9 +68,15 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	}
 
 	public HealthMvcEndpoint(HealthEndpoint delegate, boolean secure) {
-		Assert.notNull(delegate, "Delegate must not be null");
-		this.delegate = delegate;
+		this(delegate, secure, new ArrayList<>(DEFAULT_ROLES));
+	}
+
+	public HealthMvcEndpoint(HealthEndpoint delegate, boolean secure,
+			List<String> roles) {
+		super(delegate);
+		Assert.notNull(roles, "Roles must not be null");
 		this.secure = secure;
+		this.roles = roles;
 		setupDefaultStatusMapping();
 	}
 
@@ -73,23 +85,17 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		addStatusMapping(Status.OUT_OF_SERVICE, HttpStatus.SERVICE_UNAVAILABLE);
 	}
 
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.propertyResolver = new RelaxedPropertyResolver(environment,
-				"endpoints.health.");
-	}
-
 	/**
 	 * Set specific status mappings.
 	 * @param statusMapping a map of status code to {@link HttpStatus}
 	 */
 	public void setStatusMapping(Map<String, HttpStatus> statusMapping) {
 		Assert.notNull(statusMapping, "StatusMapping must not be null");
-		this.statusMapping = new HashMap<String, HttpStatus>(statusMapping);
+		this.statusMapping = new HashMap<>(statusMapping);
 	}
 
 	/**
-	 * Add specfic status mappings to the existing set.
+	 * Add specific status mappings to the existing set.
 	 * @param statusMapping a map of status code to {@link HttpStatus}
 	 */
 	public void addStatusMapping(Map<String, HttpStatus> statusMapping) {
@@ -119,29 +125,51 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		this.statusMapping.put(statusCode, httpStatus);
 	}
 
-	@RequestMapping
+	@ActuatorGetMapping
 	@ResponseBody
-	public Object invoke(Principal principal) {
-		if (!this.delegate.isEnabled()) {
+	public Object invoke(HttpServletRequest request, Principal principal) {
+		if (!getDelegate().isEnabled()) {
 			// Shouldn't happen because the request mapping should not be registered
-			return new ResponseEntity<Map<String, String>>(Collections.singletonMap(
-					"message", "This endpoint is disabled"), HttpStatus.NOT_FOUND);
+			return getDisabledResponse();
 		}
-		Health health = getHealth(principal);
-		HttpStatus status = this.statusMapping.get(health.getStatus().getCode());
+		Health health = getHealth(request, principal);
+		HttpStatus status = getStatus(health);
 		if (status != null) {
-			return new ResponseEntity<Health>(health, status);
+			return new ResponseEntity<>(health, status);
 		}
 		return health;
 	}
 
-	private Health getHealth(Principal principal) {
-		long accessTime = System.currentTimeMillis();
-		if (isCacheStale(accessTime) || isSecure(principal) || isUnrestricted()) {
-			this.lastAccess = accessTime;
-			this.cached = this.delegate.invoke();
+	private HttpStatus getStatus(Health health) {
+		String code = getUniformValue(health.getStatus().getCode());
+		if (code != null) {
+			return this.statusMapping.keySet().stream()
+					.filter((key) -> code.equals(getUniformValue(key)))
+					.map(this.statusMapping::get).findFirst().orElse(null);
 		}
-		if (isSecure(principal) || isUnrestricted()) {
+		return null;
+	}
+
+	private String getUniformValue(String code) {
+		if (code == null) {
+			return null;
+		}
+		StringBuilder builder = new StringBuilder();
+		for (char ch : code.toCharArray()) {
+			if (Character.isAlphabetic(ch) || Character.isDigit(ch)) {
+				builder.append(Character.toLowerCase(ch));
+			}
+		}
+		return builder.toString();
+	}
+
+	private Health getHealth(HttpServletRequest request, Principal principal) {
+		long accessTime = System.currentTimeMillis();
+		if (isCacheStale(accessTime)) {
+			this.lastAccess = accessTime;
+			this.cached = getDelegate().invoke();
+		}
+		if (exposeHealthDetails(request, principal)) {
 			return this.cached;
 		}
 		return Health.status(this.cached.getStatus()).build();
@@ -151,33 +179,39 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		if (this.cached == null) {
 			return true;
 		}
-		return (accessTime - this.lastAccess) > this.delegate.getTimeToLive();
+		return (accessTime - this.lastAccess) >= getDelegate().getTimeToLive();
 	}
 
-	private boolean isUnrestricted() {
-		Boolean sensitive = this.propertyResolver.getProperty("sensitive", Boolean.class);
-		return !this.secure || Boolean.FALSE.equals(sensitive);
+	protected boolean exposeHealthDetails(HttpServletRequest request,
+			Principal principal) {
+		if (!this.secure) {
+			return true;
+		}
+		List<String> roles = getRoles();
+		for (String role : roles) {
+			if (request.isUserInRole(role)) {
+				return true;
+			}
+			if (isSpringSecurityAuthentication(principal)) {
+				Authentication authentication = (Authentication) principal;
+				for (GrantedAuthority authority : authentication.getAuthorities()) {
+					String name = authority.getAuthority();
+					if (role.equals(name)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
-	private boolean isSecure(Principal principal) {
-		return (principal != null && !principal.getClass().getName()
-				.contains("Anonymous"));
+	private List<String> getRoles() {
+		return this.roles;
 	}
 
-	@Override
-	public String getPath() {
-		return "/" + this.delegate.getId();
-	}
-
-	@Override
-	public boolean isSensitive() {
-		return this.delegate.isSensitive();
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public Class<? extends Endpoint> getEndpointType() {
-		return this.delegate.getClass();
+	private boolean isSpringSecurityAuthentication(Principal principal) {
+		return ClassUtils.isPresent("org.springframework.security.core.Authentication",
+				null) && principal instanceof Authentication;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,9 @@ package org.springframework.boot.autoconfigure.data.jpa;
 
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.city.City;
 import org.springframework.boot.autoconfigure.data.jpa.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration;
@@ -32,8 +33,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringDataWebAutoConfiguration} and
@@ -61,10 +61,11 @@ public class JpaWebAutoConfigurationTests {
 				SpringDataWebAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(CityRepository.class));
-		assertNotNull(this.context.getBean(PageableHandlerMethodArgumentResolver.class));
-		assertTrue(this.context.getBean(FormattingConversionService.class).canConvert(
-				Long.class, City.class));
+		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
+		assertThat(this.context.getBean(PageableHandlerMethodArgumentResolver.class))
+				.isNotNull();
+		assertThat(this.context.getBean(FormattingConversionService.class)
+				.canConvert(Long.class, City.class)).isTrue();
 	}
 
 	@Configuration

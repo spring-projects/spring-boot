@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
@@ -31,14 +32,17 @@ import org.springframework.util.ReflectionUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 1.1.0
  */
 public class RunProcess {
 
-	private static final Method INHERIT_IO_METHOD = ReflectionUtils.findMethod(
-			ProcessBuilder.class, "inheritIO");
+	private static final Method INHERIT_IO_METHOD = ReflectionUtils
+			.findMethod(ProcessBuilder.class, "inheritIO");
 
 	private static final long JUST_ENDED_LIMIT = 500;
+
+	private File workingDirectory;
 
 	private final String[] command;
 
@@ -46,16 +50,34 @@ public class RunProcess {
 
 	private volatile long endTime;
 
+	/**
+	 * Creates new {@link RunProcess} instance for the specified command.
+	 * @param command the program to execute and its arguments
+	 */
 	public RunProcess(String... command) {
+		this(null, command);
+	}
+
+	/**
+	 * Creates new {@link RunProcess} instance for the specified working directory and
+	 * command.
+	 * @param workingDirectory the working directory of the child process or {@code null}
+	 * to run in the working directory of the current Java process
+	 * @param command the program to execute and its arguments
+	 */
+	public RunProcess(File workingDirectory, String... command) {
+		this.workingDirectory = workingDirectory;
 		this.command = command;
 	}
 
-	public int run(String... args) throws IOException {
-		return run(Arrays.asList(args));
+	public int run(boolean waitForProcess, String... args) throws IOException {
+		return run(waitForProcess, Arrays.asList(args));
 	}
 
-	protected int run(Collection<String> args) throws IOException {
+	protected int run(boolean waitForProcess, Collection<String> args)
+			throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(this.command);
+		builder.directory(this.workingDirectory);
 		builder.command().addAll(args);
 		builder.redirectErrorStream(true);
 		boolean inheritedIO = inheritIO(builder);
@@ -71,17 +93,22 @@ public class RunProcess {
 					handleSigInt();
 				}
 			});
-			try {
-				return process.waitFor();
+			if (waitForProcess) {
+				try {
+					return process.waitFor();
+				}
+				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
+					return 1;
+				}
 			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-				return 1;
-			}
+			return 5;
 		}
 		finally {
-			this.endTime = System.currentTimeMillis();
-			this.process = null;
+			if (waitForProcess) {
+				this.endTime = System.currentTimeMillis();
+				this.process = null;
+			}
 		}
 	}
 
@@ -118,15 +145,15 @@ public class RunProcess {
 				return true;
 			}
 		}
-		catch (Exception e) {
+		catch (Exception ex) {
 			return true;
 		}
 		return false;
 	}
 
 	private void redirectOutput(Process process) {
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(
-				process.getInputStream()));
+		final BufferedReader reader = new BufferedReader(
+				new InputStreamReader(process.getInputStream()));
 		new Thread() {
 
 			@Override
@@ -141,6 +168,7 @@ public class RunProcess {
 					reader.close();
 				}
 				catch (Exception ex) {
+					// Ignore
 				}
 			}
 
@@ -148,22 +176,33 @@ public class RunProcess {
 	}
 
 	/**
-	 * @return the running process or {@code null}
+	 * Return the running process.
+	 * @return the process or {@code null}
 	 */
 	public Process getRunningProcess() {
 		return this.process;
 	}
 
 	/**
-	 * @return {@code true} if the process was stopped.
+	 * Return if the process was stopped.
+	 * @return {@code true} if stopped
 	 */
 	public boolean handleSigInt() {
-
 		// if the process has just ended, probably due to this SIGINT, consider handled.
 		if (hasJustEnded()) {
 			return true;
 		}
+		return doKill();
+	}
 
+	/**
+	 * Kill this process.
+	 */
+	public void kill() {
+		doKill();
+	}
+
+	private boolean doKill() {
 		// destroy the running process
 		Process process = this.process;
 		if (process != null) {
@@ -177,7 +216,6 @@ public class RunProcess {
 				Thread.currentThread().interrupt();
 			}
 		}
-
 		return false;
 	}
 

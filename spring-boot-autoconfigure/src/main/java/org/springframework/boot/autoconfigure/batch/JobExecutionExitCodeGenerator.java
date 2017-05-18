@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,10 @@ import org.springframework.context.ApplicationListener;
  *
  * @author Dave Syer
  */
-public class JobExecutionExitCodeGenerator implements
-		ApplicationListener<JobExecutionEvent>, ExitCodeGenerator {
+public class JobExecutionExitCodeGenerator
+		implements ApplicationListener<JobExecutionEvent>, ExitCodeGenerator {
 
-	private final List<JobExecution> executions = new ArrayList<JobExecution>();
+	private final List<JobExecution> executions = new ArrayList<>();
 
 	@Override
 	public void onApplicationEvent(JobExecutionEvent event) {

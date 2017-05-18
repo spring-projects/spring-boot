@@ -1,8 +1,14 @@
 language: java
-services: mongodb
-
+jdk:
+  - oraclejdk8
+services:
+  - mongodb
+  - redis
+  - cassandra
+sudo: required
+cache:
+  directories:
+    - $HOME/.m2
 install: true
-before_script:
-- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true || true
-- mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true
-script: mvn install -q -nsu -Dmaven.test.redirectTestOutputToFile=true -P '!integration'
+before_script: travis_wait 45 ./mvnw install -q -U -DskipTests=true -Pfast -Dmaven.test.redirectTestOutputToFile=true
+script: ./mvnw install -q -nsu -Dmaven.test.redirectTestOutputToFile=true -P '!integration'

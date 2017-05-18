@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,15 @@ import javax.sql.XADataSource;
 
 import org.hsqldb.jdbc.pool.JDBCXADataSource;
 import org.junit.Test;
+
 import org.springframework.boot.jta.XADataSourceWrapper;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -46,7 +45,7 @@ public class XADataSourceAutoConfigurationTests {
 		context.getBean(DataSource.class);
 		XADataSource source = context.getBean(XADataSource.class);
 		MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
-		assertThat(wrapper.getXaDataSource(), equalTo(source));
+		assertThat(wrapper.getXaDataSource()).isEqualTo(source);
 	}
 
 	@Test
@@ -57,23 +56,21 @@ public class XADataSourceAutoConfigurationTests {
 		context.getBean(DataSource.class);
 		MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
 		JDBCXADataSource dataSource = (JDBCXADataSource) wrapper.getXaDataSource();
-		assertNotNull(dataSource);
-		assertThat(dataSource.getUrl(), equalTo("jdbc:hsqldb:mem:test"));
-		assertThat(dataSource.getUser(), equalTo("un"));
+		assertThat(dataSource).isNotNull();
+		assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:test");
+		assertThat(dataSource.getUser()).isEqualTo("un");
 	}
 
 	@Test
 	public void createFromClass() throws Exception {
-		ApplicationContext context = createContext(
-				FromProperties.class,
-				"spring.datasource.xa.data-source-class:org.hsqldb.jdbc.pool.JDBCXADataSource",
-				"spring.datasource.xa.properties.database-name:test");
+		ApplicationContext context = createContext(FromProperties.class,
+				"spring.datasource.xa.data-source-class-name:org.hsqldb.jdbc.pool.JDBCXADataSource",
+				"spring.datasource.xa.properties.login-timeout:123");
 		context.getBean(DataSource.class);
 		MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
 		JDBCXADataSource dataSource = (JDBCXADataSource) wrapper.getXaDataSource();
-		assertNotNull(dataSource);
-		assertThat(dataSource.getDatabaseName(), equalTo("test"));
-
+		assertThat(dataSource).isNotNull();
+		assertThat(dataSource.getLoginTimeout()).isEqualTo(123);
 	}
 
 	private ApplicationContext createContext(Class<?> configuration, String... env) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,18 +22,16 @@ import java.util.HashSet;
 import javax.jms.ConnectionFactory;
 import javax.sql.DataSource;
 
+import com.atomikos.icatch.jta.UserTransactionManager;
+import com.atomikos.jms.extra.MessageDrivenContainer;
 import org.junit.Test;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.atomikos.icatch.jta.UserTransactionManager;
-import com.atomikos.jms.extra.MessageDrivenContainer;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -58,12 +56,12 @@ public class AtomikosDependsOnBeanFactoryPostProcessorTests {
 	private void assertDependsOn(String bean, String... expected) {
 		BeanDefinition definition = this.context.getBeanDefinition(bean);
 		if (definition.getDependsOn() == null) {
-			assertTrue("No dependsOn expected for " + bean, expected.length == 0);
+			assertThat(expected).as("No dependsOn expected for " + bean).isEmpty();
 			return;
 		}
-		HashSet<String> dependsOn = new HashSet<String>(Arrays.asList(definition
-				.getDependsOn()));
-		assertThat(dependsOn, equalTo(new HashSet<String>(Arrays.asList(expected))));
+		HashSet<String> dependsOn = new HashSet<>(
+				Arrays.asList(definition.getDependsOn()));
+		assertThat(dependsOn).isEqualTo(new HashSet<>(Arrays.asList(expected)));
 	}
 
 	@Configuration

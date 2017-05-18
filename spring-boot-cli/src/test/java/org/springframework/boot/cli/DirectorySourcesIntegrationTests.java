@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ package org.springframework.boot.cli;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for code in directories.
@@ -34,19 +33,17 @@ public class DirectorySourcesIntegrationTests {
 
 	@Test
 	public void runDirectory() throws Exception {
-		this.cli.run("code");
-		assertThat(this.cli.getOutput(), containsString("Hello World"));
+		assertThat(this.cli.run("code")).contains("Hello World");
 	}
 
 	@Test
 	public void runDirectoryRecursive() throws Exception {
-		this.cli.run("");
-		assertThat(this.cli.getOutput(), containsString("Hello World"));
+		assertThat(this.cli.run("")).contains("Hello World");
 	}
 
 	@Test
 	public void runPathPattern() throws Exception {
-		this.cli.run("**/*.groovy");
-		assertThat(this.cli.getOutput(), containsString("Hello World"));
+		assertThat(this.cli.run("**/*.groovy")).contains("Hello World");
 	}
+
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2013-2104 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,24 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.metrics.reader;
 
 import java.beans.PropertyDescriptor;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
@@ -40,25 +33,39 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.MetricRegistryListener;
 import com.codahale.metrics.Sampling;
 import com.codahale.metrics.Timer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 /**
- * A Spring Boot {@link MetricReader} that reads metrics from a Codahale
+ * A Spring Boot {@link MetricReader} that reads metrics from a Dropwizard
  * {@link MetricRegistry}. Gauges and Counters are reflected as a single value. Timers,
  * Meters and Histograms are expanded into sets of metrics containing all the properties
  * of type Number.
  *
  * @author Dave Syer
- *
+ * @author Andy Wilkinson
  */
 public class MetricRegistryMetricReader implements MetricReader, MetricRegistryListener {
 
-	private static Map<Class<?>, Set<String>> numberKeys = new ConcurrentHashMap<Class<?>, Set<String>>();
+	private static final Log logger = LogFactory.getLog(MetricRegistryMetricReader.class);
 
-	private MetricRegistry registry;
+	private static final Map<Class<?>, Set<String>> numberKeys = new ConcurrentHashMap<>();
 
-	private Map<String, String> names = new HashMap<String, String>();
+	private final Object monitor = new Object();
 
-	private MultiValueMap<String, String> reverse = new LinkedMultiValueMap<String, String>();
+	private final Map<String, String> names = new ConcurrentHashMap<>();
+
+	private final MultiValueMap<String, String> reverse = new LinkedMultiValueMap<>();
+
+	private final MetricRegistry registry;
 
 	public MetricRegistryMetricReader(MetricRegistry registry) {
 		this.registry = registry;
@@ -67,19 +74,28 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 
 	@Override
 	public Metric<?> findOne(String metricName) {
-		if (!names.containsKey(metricName)) {
+		String name = this.names.get(metricName);
+		if (name == null) {
 			return null;
 		}
-		com.codahale.metrics.Metric metric = registry.getMetrics().get(
-				names.get(metricName));
+		com.codahale.metrics.Metric metric = this.registry.getMetrics().get(name);
+		if (metric == null) {
+			return null;
+		}
 		if (metric instanceof Counter) {
 			Counter counter = (Counter) metric;
 			return new Metric<Number>(metricName, counter.getCount());
 		}
 		if (metric instanceof Gauge) {
-			@SuppressWarnings("unchecked")
-			Gauge<Number> value = (Gauge<Number>) metric;
-			return new Metric<Number>(metricName, value.getValue());
+			Object value = ((Gauge<?>) metric).getValue();
+			if (value instanceof Number) {
+				return new Metric<>(metricName, (Number) value);
+			}
+			if (logger.isDebugEnabled()) {
+				logger.debug("Ignoring gauge '" + name + "' (" + metric
+						+ ") as its value is not a Number");
+			}
+			return null;
 		}
 		if (metric instanceof Sampling) {
 			if (metricName.contains(".snapshot.")) {
@@ -89,10 +105,10 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 					value = TimeUnit.MILLISECONDS.convert(value.longValue(),
 							TimeUnit.NANOSECONDS);
 				}
-				return new Metric<Number>(metricName, value);
+				return new Metric<>(metricName, value);
 			}
 		}
-		return new Metric<Number>(metricName, getMetric(metric, metricName));
+		return new Metric<>(metricName, getMetric(metric, metricName));
 	}
 
 	@Override
@@ -100,20 +116,29 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 		return new Iterable<Metric<?>>() {
 			@Override
 			public Iterator<Metric<?>> iterator() {
-				return new MetricRegistryIterator();
+				Set<Metric<?>> metrics = new HashSet<>();
+				for (String name : MetricRegistryMetricReader.this.names.keySet()) {
+					Metric<?> metric = findOne(name);
+					if (metric != null) {
+						metrics.add(metric);
+					}
+				}
+				return metrics.iterator();
 			}
 		};
 	}
 
 	@Override
 	public long count() {
-		return names.size();
+		return this.names.size();
 	}
 
 	@Override
 	public void onGaugeAdded(String name, Gauge<?> gauge) {
-		names.put(name, name);
-		reverse.add(name, name);
+		this.names.put(name, name);
+		synchronized (this.monitor) {
+			this.reverse.add(name, name);
+		}
 	}
 
 	@Override
@@ -123,8 +148,10 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 
 	@Override
 	public void onCounterAdded(String name, Counter counter) {
-		names.put(name, name);
-		reverse.add(name, name);
+		this.names.put(name, name);
+		synchronized (this.monitor) {
+			this.reverse.add(name, name);
+		}
 	}
 
 	@Override
@@ -136,13 +163,17 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 	public void onHistogramAdded(String name, Histogram histogram) {
 		for (String key : getNumberKeys(histogram)) {
 			String metricName = name + "." + key;
-			names.put(metricName, name);
-			reverse.add(name, metricName);
+			this.names.put(metricName, name);
+			synchronized (this.monitor) {
+				this.reverse.add(name, metricName);
+			}
 		}
 		for (String key : getNumberKeys(histogram.getSnapshot())) {
 			String metricName = name + ".snapshot." + key;
-			names.put(metricName, name);
-			reverse.add(name, metricName);
+			this.names.put(metricName, name);
+			synchronized (this.monitor) {
+				this.reverse.add(name, metricName);
+			}
 		}
 	}
 
@@ -155,8 +186,10 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 	public void onMeterAdded(String name, Meter meter) {
 		for (String key : getNumberKeys(meter)) {
 			String metricName = name + "." + key;
-			names.put(metricName, name);
-			reverse.add(name, metricName);
+			this.names.put(metricName, name);
+			synchronized (this.monitor) {
+				this.reverse.add(name, metricName);
+			}
 		}
 	}
 
@@ -169,13 +202,17 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 	public void onTimerAdded(String name, Timer timer) {
 		for (String key : getNumberKeys(timer)) {
 			String metricName = name + "." + key;
-			names.put(metricName, name);
-			reverse.add(name, metricName);
+			this.names.put(metricName, name);
+			synchronized (this.monitor) {
+				this.reverse.add(name, metricName);
+			}
 		}
 		for (String key : getNumberKeys(timer.getSnapshot())) {
 			String metricName = name + ".snapshot." + key;
-			names.put(metricName, name);
-			reverse.add(name, metricName);
+			this.names.put(metricName, name);
+			synchronized (this.monitor) {
+				this.reverse.add(name, metricName);
+			}
 		}
 	}
 
@@ -185,46 +222,25 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 	}
 
 	private void remove(String name) {
-		for (String key : reverse.get(name)) {
-			names.remove(name + "." + key);
+		List<String> keys;
+		synchronized (this.monitor) {
+			keys = this.reverse.remove(name);
 		}
-		reverse.remove(name);
-	}
-
-	private class MetricRegistryIterator implements Iterator<Metric<?>> {
-
-		private Iterator<String> iterator;
-
-		public MetricRegistryIterator() {
-			this.iterator = new HashSet<String>(
-					MetricRegistryMetricReader.this.names.keySet()).iterator();
+		if (keys != null) {
+			for (String key : keys) {
+				this.names.remove(name + "." + key);
+			}
 		}
-
-		@Override
-		public boolean hasNext() {
-			return iterator.hasNext();
-		}
-
-		@Override
-		public Metric<?> next() {
-			String name = iterator.next();
-			return MetricRegistryMetricReader.this.findOne(name);
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException(
-					"You cannot remove from this iterator.");
-		}
-
 	}
 
 	private static Set<String> getNumberKeys(Object metric) {
-		Set<String> result = numberKeys.containsKey(metric.getClass()) ? numberKeys
-				.get(metric.getClass()) : new HashSet<String>();
+		Set<String> result = numberKeys.get(metric.getClass());
+		if (result == null) {
+			result = new HashSet<>();
+		}
 		if (result.isEmpty()) {
-			for (PropertyDescriptor descriptor : BeanUtils.getPropertyDescriptors(metric
-					.getClass())) {
+			for (PropertyDescriptor descriptor : BeanUtils
+					.getPropertyDescriptors(metric.getClass())) {
 				if (ClassUtils.isAssignable(Number.class, descriptor.getPropertyType())) {
 					result.add(descriptor.getName());
 				}

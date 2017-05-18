@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.util.Assert;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
-@ConfigurationProperties(prefix = "endpoints.health", ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = "endpoints.health")
 public class HealthEndpoint extends AbstractEndpoint<Health> {
 
 	private final HealthIndicator healthIndicator;
@@ -43,7 +43,7 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 	private long timeToLive = 1000;
 
 	/**
-	 * Create a new {@link HealthIndicator} instance.
+	 * Create a new {@link HealthEndpoint} instance.
 	 * @param healthAggregator the health aggregator
 	 * @param healthIndicators the health indicators
 	 */
@@ -54,15 +54,15 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
 		CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(
 				healthAggregator);
-		for (Map.Entry<String, HealthIndicator> h : healthIndicators.entrySet()) {
-			healthIndicator.addHealthIndicator(getKey(h.getKey()), h.getValue());
+		for (Map.Entry<String, HealthIndicator> entry : healthIndicators.entrySet()) {
+			healthIndicator.addHealthIndicator(getKey(entry.getKey()), entry.getValue());
 		}
 		this.healthIndicator = healthIndicator;
 	}
 
 	/**
-	 * Time to live for cached result. If accessed anonymously, we might need to cache the
-	 * result of this endpoint to prevent a DOS attack.
+	 * Time to live for cached result. This is particularly useful to cache the result of
+	 * this endpoint to prevent a DOS attack if it is accessed anonymously.
 	 * @return time to live in milliseconds (default 1000)
 	 */
 	public long getTimeToLive() {
@@ -83,6 +83,8 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 
 	/**
 	 * Turns the bean name into a key that can be used in the map of health information.
+	 * @param name the bean name
+	 * @return the key
 	 */
 	private String getKey(String name) {
 		int index = name.toLowerCase().indexOf("healthindicator");
@@ -91,4 +93,5 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 		}
 		return name;
 	}
+
 }

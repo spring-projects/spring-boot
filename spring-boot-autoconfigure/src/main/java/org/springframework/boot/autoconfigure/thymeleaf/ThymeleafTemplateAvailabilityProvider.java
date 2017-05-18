@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,18 +23,19 @@ import org.springframework.util.ClassUtils;
 
 /**
  * {@link TemplateAvailabilityProvider} that provides availability information for
- * Thymeleaf view templates
+ * Thymeleaf view templates.
  *
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  * @since 1.1.0
  */
-public class ThymeleafTemplateAvailabilityProvider implements
-		TemplateAvailabilityProvider {
+public class ThymeleafTemplateAvailabilityProvider
+		implements TemplateAvailabilityProvider {
 
 	@Override
 	public boolean isTemplateAvailable(String view, Environment environment,
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
-		if (ClassUtils.isPresent("org.thymeleaf.spring4.SpringTemplateEngine",
+		if (ClassUtils.isPresent("org.thymeleaf.spring5.SpringTemplateEngine",
 				classLoader)) {
 			String prefix = environment.getProperty("spring.thymeleaf.prefix",
 					ThymeleafProperties.DEFAULT_PREFIX);

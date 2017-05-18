@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public class HintCommand extends AbstractCommand {
 	public ExitStatus run(String... args) throws Exception {
 		try {
 			int index = (args.length == 0 ? 0 : Integer.valueOf(args[0]) - 1);
-			List<String> arguments = new ArrayList<String>(args.length);
+			List<String> arguments = new ArrayList<>(args.length);
 			for (int i = 2; i < args.length; i++) {
 				arguments.add(args[i]);
 			}
@@ -57,7 +57,7 @@ public class HintCommand extends AbstractCommand {
 			if (index == 0) {
 				showCommandHints(starting);
 			}
-			else if ((arguments.size() > 0) && (starting.length() > 0)) {
+			else if (!arguments.isEmpty() && (starting.length() > 0)) {
 				String command = arguments.remove(0);
 				showCommandOptionHints(command, Collections.unmodifiableList(arguments),
 						starting);
@@ -83,8 +83,8 @@ public class HintCommand extends AbstractCommand {
 			return false;
 		}
 		return command.getName().startsWith(starting)
-				|| (this.commandRunner.isOptionCommand(command) && ("--" + command
-						.getName()).startsWith(starting));
+				|| (this.commandRunner.isOptionCommand(command)
+						&& ("--" + command.getName()).startsWith(starting));
 	}
 
 	private void showCommandOptionHints(String commandName,
@@ -111,4 +111,5 @@ public class HintCommand extends AbstractCommand {
 		}
 		return false;
 	}
+
 }

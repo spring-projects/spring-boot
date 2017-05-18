@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,14 +52,14 @@ public class DelegatingApplicationContextInitializer implements
 	public void initialize(ConfigurableApplicationContext context) {
 		ConfigurableEnvironment environment = context.getEnvironment();
 		List<Class<?>> initializerClasses = getInitializerClasses(environment);
-		if (initializerClasses.size() > 0) {
+		if (!initializerClasses.isEmpty()) {
 			applyInitializerClasses(context, initializerClasses);
 		}
 	}
 
 	private List<Class<?>> getInitializerClasses(ConfigurableEnvironment env) {
 		String classNames = env.getProperty(PROPERTY_NAME);
-		List<Class<?>> classes = new ArrayList<Class<?>>();
+		List<Class<?>> classes = new ArrayList<>();
 		if (StringUtils.hasLength(classNames)) {
 			for (String className : StringUtils.tokenizeToStringArray(classNames, ",")) {
 				classes.add(getInitializerClass(className));
@@ -84,23 +84,25 @@ public class DelegatingApplicationContextInitializer implements
 	private void applyInitializerClasses(ConfigurableApplicationContext context,
 			List<Class<?>> initializerClasses) {
 		Class<?> contextClass = context.getClass();
-		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
 		for (Class<?> initializerClass : initializerClasses) {
 			initializers.add(instantiateInitializer(contextClass, initializerClass));
 		}
 		applyInitializers(context, initializers);
 	}
 
-	private ApplicationContextInitializer<?> instantiateInitializer(
-			Class<?> contextClass, Class<?> initializerClass) {
+	private ApplicationContextInitializer<?> instantiateInitializer(Class<?> contextClass,
+			Class<?> initializerClass) {
 		Class<?> requireContextClass = GenericTypeResolver.resolveTypeArgument(
 				initializerClass, ApplicationContextInitializer.class);
-		Assert.isAssignable(requireContextClass, contextClass, String.format(
-				"Could not add context initializer [%s]"
-						+ " as its generic parameter [%s] is not assignable "
-						+ "from the type of application context used by this "
-						+ "context loader [%s]: ", initializerClass.getName(),
-				requireContextClass.getName(), contextClass.getName()));
+		Assert.isAssignable(requireContextClass, contextClass,
+				String.format(
+						"Could not add context initializer [%s]"
+								+ " as its generic parameter [%s] is not assignable "
+								+ "from the type of application context used by this "
+								+ "context loader [%s]: ",
+						initializerClass.getName(), requireContextClass.getName(),
+						contextClass.getName()));
 		return (ApplicationContextInitializer<?>) BeanUtils
 				.instantiateClass(initializerClass);
 	}

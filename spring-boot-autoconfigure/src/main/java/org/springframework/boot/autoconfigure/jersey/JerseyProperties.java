@@ -1,11 +1,11 @@
 /*
- * Copyright 2013-2104 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,29 +25,39 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link ConfigurationProperties} for Jersey.
  *
  * @author Dave Syer
+ * @author Eddú Meléndez
+ * @author Stephane Nicoll
  * @since 1.2.0
  */
-@ConfigurationProperties("spring.jersey")
+@ConfigurationProperties(prefix = "spring.jersey")
 public class JerseyProperties {
 
 	/**
-	 * Jersey integration type. Can be either "servlet" or "filter".
+	 * Jersey integration type.
 	 */
 	private Type type = Type.SERVLET;
 
 	/**
-	 * Init parameters to pass to Jersey.
+	 * Init parameters to pass to Jersey via the servlet or filter.
 	 */
-	private Map<String, String> init = new HashMap<String, String>();
+	private Map<String, String> init = new HashMap<>();
 
-	private Filter filter = new Filter();
+	private final Filter filter = new Filter();
+
+	private final Servlet servlet = new Servlet();
+
+	/**
+	 * Path that serves as the base URI for the application. Overrides the value of
+	 * "@ApplicationPath" if specified.
+	 */
+	private String applicationPath;
 
 	public Filter getFilter() {
 		return this.filter;
 	}
 
-	public void setFilter(Filter filter) {
-		this.filter = filter;
+	public Servlet getServlet() {
+		return this.servlet;
 	}
 
 	public Type getType() {
@@ -66,8 +76,18 @@ public class JerseyProperties {
 		this.init = init;
 	}
 
+	public String getApplicationPath() {
+		return this.applicationPath;
+	}
+
+	public void setApplicationPath(String applicationPath) {
+		this.applicationPath = applicationPath;
+	}
+
 	public enum Type {
+
 		SERVLET, FILTER
+
 	}
 
 	public static class Filter {
@@ -83,6 +103,23 @@ public class JerseyProperties {
 
 		public void setOrder(int order) {
 			this.order = order;
+		}
+
+	}
+
+	public static class Servlet {
+
+		/**
+		 * Load on startup priority of the Jersey servlet.
+		 */
+		private int loadOnStartup = -1;
+
+		public int getLoadOnStartup() {
+			return this.loadOnStartup;
+		}
+
+		public void setLoadOnStartup(int loadOnStartup) {
+			this.loadOnStartup = loadOnStartup;
 		}
 
 	}

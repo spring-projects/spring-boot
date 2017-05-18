@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,9 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.List;
+import com.mongodb.MongoClientURI;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoClientOptions.Builder;
-import com.mongodb.MongoClientURI;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
 
 /**
  * Configuration properties for Mongo.
@@ -36,26 +27,38 @@ import com.mongodb.ServerAddress;
  * @author Phillip Webb
  * @author Josh Long
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
+ * @author Stephane Nicoll
+ * @author Nasko Vasilev
+ * @author Mark Paluch
  */
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 public class MongoProperties {
 
-	private static final int DEFAULT_PORT = 27017;
+	/**
+	 * Default port used when the configured port is {@code null}.
+	 */
+	public static final int DEFAULT_PORT = 27017;
 
 	/**
-	 * Mongo server host.
+	 * Default URI used when the configured URI is {@code null}.
+	 */
+	public static final String DEFAULT_URI = "mongodb://localhost/test";
+
+	/**
+	 * Mongo server host. Cannot be set with uri.
 	 */
 	private String host;
 
 	/**
-	 * Mongo server port.
+	 * Mongo server port. Cannot be set with uri.
 	 */
 	private Integer port = null;
 
 	/**
-	 * Mmongo database URI. When set, host and port are ignored.
+	 * Mongo database URI. Cannot be set with host, port and credentials.
 	 */
-	private String uri = "mongodb://localhost/test";
+	private String uri;
 
 	/**
 	 * Database name.
@@ -73,14 +76,19 @@ public class MongoProperties {
 	private String gridFsDatabase;
 
 	/**
-	 * Login user of the mongo server.
+	 * Login user of the mongo server. Cannot be set with uri.
 	 */
 	private String username;
 
 	/**
-	 * Login password of the mongo server.
+	 * Login password of the mongo server. Cannot be set with uri.
 	 */
 	private char[] password;
+
+	/**
+	 * Fully qualified name of the FieldNamingStrategy to use.
+	 */
+	private Class<?> fieldNamingStrategy;
 
 	public String getHost() {
 		return this.host;
@@ -122,17 +130,20 @@ public class MongoProperties {
 		this.password = password;
 	}
 
-	public void clearPassword() {
-		if (this.password == null) {
-			return;
-		}
-		for (int i = 0; i < this.password.length; i++) {
-			this.password[i] = 0;
-		}
+	public Class<?> getFieldNamingStrategy() {
+		return this.fieldNamingStrategy;
+	}
+
+	public void setFieldNamingStrategy(Class<?> fieldNamingStrategy) {
+		this.fieldNamingStrategy = fieldNamingStrategy;
 	}
 
 	public String getUri() {
 		return this.uri;
+	}
+
+	public String determineUri() {
+		return (this.uri != null ? this.uri : DEFAULT_URI);
 	}
 
 	public void setUri(String uri) {
@@ -159,62 +170,7 @@ public class MongoProperties {
 		if (this.database != null) {
 			return this.database;
 		}
-		return new MongoClientURI(this.uri).getDatabase();
-	}
-
-	public MongoClient createMongoClient(MongoClientOptions options)
-			throws UnknownHostException {
-		try {
-			if (hasCustomAddress() || hasCustomCredentials()) {
-				if (options == null) {
-					options = MongoClientOptions.builder().build();
-				}
-				List<MongoCredential> credentials = null;
-				if (hasCustomCredentials()) {
-					credentials = Arrays.asList(MongoCredential.createMongoCRCredential(
-							this.username, getMongoClientDatabase(), this.password));
-				}
-				String host = this.host == null ? "localhost" : this.host;
-				int port = this.port == null ? DEFAULT_PORT : this.port;
-				return new MongoClient(Arrays.asList(new ServerAddress(host, port)),
-						credentials, options);
-			}
-			// The options and credentials are in the URI
-			return new MongoClient(new MongoClientURI(this.uri, builder(options)));
-		}
-		finally {
-			clearPassword();
-		}
-	}
-
-	private boolean hasCustomAddress() {
-		return this.host != null || this.port != null;
-	}
-
-	private boolean hasCustomCredentials() {
-		return this.username != null && this.password != null;
-	}
-
-	private Builder builder(MongoClientOptions options) {
-		Builder builder = MongoClientOptions.builder();
-		if (options != null) {
-			builder.alwaysUseMBeans(options.isAlwaysUseMBeans());
-			builder.connectionsPerHost(options.getConnectionsPerHost());
-			builder.connectTimeout(options.getConnectTimeout());
-			builder.cursorFinalizerEnabled(options.isCursorFinalizerEnabled());
-			builder.dbDecoderFactory(options.getDbDecoderFactory());
-			builder.dbEncoderFactory(options.getDbEncoderFactory());
-			builder.description(options.getDescription());
-			builder.maxWaitTime(options.getMaxWaitTime());
-			builder.readPreference(options.getReadPreference());
-			builder.socketFactory(options.getSocketFactory());
-			builder.socketKeepAlive(options.isSocketKeepAlive());
-			builder.socketTimeout(options.getSocketTimeout());
-			builder.threadsAllowedToBlockForConnectionMultiplier(options
-					.getThreadsAllowedToBlockForConnectionMultiplier());
-			builder.writeConcern(options.getWriteConcern());
-		}
-		return builder;
+		return new MongoClientURI(determineUri()).getDatabase();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.util.Assert;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
+import org.springframework.util.Assert;
 
 /**
  * Carries information about the health of a component or subsystem.
@@ -39,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  * <pre class="code">
  * try {
  * 	// do some test to determine state of component
- * 	return new Health.Builder().up().withDetail(&quot;version&quot;, &quot;1.1.2&quot;).build();
+ * 	return new Health.Builder().up().withDetail("version", "1.1.2").build();
  * }
  * catch (Exception ex) {
  * 	return new Health.Builder().down(ex).build();
@@ -68,7 +68,8 @@ public final class Health {
 	}
 
 	/**
-	 * @return the status of the health (never {@code null})
+	 * Return the status of the health.
+	 * @return the status (never {@code null})
 	 */
 	@JsonUnwrapped
 	public Status getStatus() {
@@ -76,7 +77,8 @@ public final class Health {
 	}
 
 	/**
-	 * @return the details of the health or an empty map.
+	 * Return the details of the health.
+	 * @return the details (or an empty map)
 	 */
 	@JsonAnyGetter
 	public Map<String, Object> getDetails() {
@@ -180,22 +182,22 @@ public final class Health {
 		 */
 		public Builder() {
 			this.status = Status.UNKNOWN;
-			this.details = new LinkedHashMap<String, Object>();
+			this.details = new LinkedHashMap<>();
 		}
 
 		/**
-		 * Create new Builder instance, setting status to given <code>status</code>.
+		 * Create new Builder instance, setting status to given {@code status}.
 		 * @param status the {@link Status} to use
 		 */
 		public Builder(Status status) {
 			Assert.notNull(status, "Status must not be null");
 			this.status = status;
-			this.details = new LinkedHashMap<String, Object>();
+			this.details = new LinkedHashMap<>();
 		}
 
 		/**
-		 * Create new Builder instance, setting status to given <code>status</code> and
-		 * details to given <code>details</code>.
+		 * Create new Builder instance, setting status to given {@code status} and details
+		 * to given {@code details}.
 		 * @param status the {@link Status} to use
 		 * @param details the details {@link Map} to use
 		 */
@@ -203,7 +205,7 @@ public final class Health {
 			Assert.notNull(status, "Status must not be null");
 			Assert.notNull(details, "Details must not be null");
 			this.status = status;
-			this.details = new LinkedHashMap<String, Object>(details);
+			this.details = new LinkedHashMap<>(details);
 		}
 
 		/**
@@ -217,15 +219,15 @@ public final class Health {
 		}
 
 		/**
-		 * Record detail using <code>key</code> and <code>value</code>.
+		 * Record detail using given {@code key} and {@code value}.
 		 * @param key the detail key
-		 * @param data the detail data
+		 * @param value the detail value
 		 * @return this {@link Builder} instance
 		 */
-		public Builder withDetail(String key, Object data) {
+		public Builder withDetail(String key, Object value) {
 			Assert.notNull(key, "Key must not be null");
-			Assert.notNull(data, "Data must not be null");
-			this.details.put(key, data);
+			Assert.notNull(value, "Value must not be null");
+			this.details.put(key, value);
 			return this;
 		}
 
@@ -271,7 +273,7 @@ public final class Health {
 		}
 
 		/**
-		 * Set status to given <code>statusCode</code>.
+		 * Set status to given {@code statusCode}.
 		 * @param statusCode the status code
 		 * @return this {@link Builder} instance
 		 */
@@ -280,7 +282,7 @@ public final class Health {
 		}
 
 		/**
-		 * Set status to given {@link Status} instance
+		 * Set status to given {@link Status} instance.
 		 * @param status the status
 		 * @return this {@link Builder} instance
 		 */
@@ -297,6 +299,7 @@ public final class Health {
 		public Health build() {
 			return new Health(this);
 		}
+
 	}
 
 }

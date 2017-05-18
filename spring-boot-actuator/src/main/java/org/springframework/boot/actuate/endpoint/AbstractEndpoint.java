@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import java.util.regex.Pattern;
 
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
+import org.springframework.util.Assert;
 
 /**
  * Abstract base for {@link Endpoint} implementations.
@@ -31,7 +31,7 @@ import org.springframework.core.env.Environment;
  */
 public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAware {
 
-	private static final String ENDPOINTS_ENABLED_PROPERTY = "endpoints.enabled";
+	private static final Pattern ID_PATTERN = Pattern.compile("\\w+");
 
 	private Environment environment;
 
@@ -39,14 +39,14 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	 * Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped
 	 * to a URL (e.g. 'foo' is mapped to '/foo').
 	 */
-	@NotNull
-	@Pattern(regexp = "\\w+", message = "ID must only contains letters, numbers and '_'")
 	private String id;
+
+	private final boolean sensitiveDefault;
 
 	/**
 	 * Mark if the endpoint exposes sensitive information.
 	 */
-	private boolean sensitive;
+	private Boolean sensitive;
 
 	/**
 	 * Enable the endpoint.
@@ -54,7 +54,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	private Boolean enabled;
 
 	/**
-	 * Create a new sensitive endpoint instance. The enpoint will enabled flag will be
+	 * Create a new sensitive endpoint instance. The endpoint will enabled flag will be
 	 * based on the spring {@link Environment} unless explicitly set.
 	 * @param id the endpoint ID
 	 */
@@ -63,14 +63,14 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	}
 
 	/**
-	 * Create a new endpoint instance. The enpoint will enabled flag will be based on the
+	 * Create a new endpoint instance. The endpoint will enabled flag will be based on the
 	 * spring {@link Environment} unless explicitly set.
 	 * @param id the endpoint ID
-	 * @param sensitive if the endpoint is sensitive
+	 * @param sensitive if the endpoint is sensitive by default
 	 */
 	public AbstractEndpoint(String id, boolean sensitive) {
-		this.id = id;
-		this.sensitive = sensitive;
+		setId(id);
+		this.sensitiveDefault = sensitive;
 	}
 
 	/**
@@ -80,8 +80,8 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	 * @param enabled if the endpoint is enabled or not.
 	 */
 	public AbstractEndpoint(String id, boolean sensitive, boolean enabled) {
-		this.id = id;
-		this.sensitive = sensitive;
+		setId(id);
+		this.sensitiveDefault = sensitive;
 		this.enabled = enabled;
 	}
 
@@ -100,19 +100,15 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	}
 
 	public void setId(String id) {
+		Assert.notNull(id, "Id must not be null");
+		Assert.isTrue(ID_PATTERN.matcher(id).matches(),
+				"Id must only contains letters, numbers and '_'");
 		this.id = id;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		if (this.enabled != null) {
-			return this.enabled;
-		}
-		if (this.environment != null) {
-			return this.environment.getProperty(ENDPOINTS_ENABLED_PROPERTY,
-					Boolean.class, true);
-		}
-		return true;
+		return EndpointProperties.isEnabled(this.environment, this.enabled);
 	}
 
 	public void setEnabled(Boolean enabled) {
@@ -121,10 +117,11 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 
 	@Override
 	public boolean isSensitive() {
-		return this.sensitive;
+		return EndpointProperties.isSensitive(this.environment, this.sensitive,
+				this.sensitiveDefault);
 	}
 
-	public void setSensitive(boolean sensitive) {
+	public void setSensitive(Boolean sensitive) {
 		this.sensitive = sensitive;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.MethodCallback;
 
 /**
- * Utility class to memorize <code>@Bean</code> definition meta data during initialization
- * of the bean factory.
+ * Utility class to memorize {@code @Bean} definition meta data during initialization of
+ * the bean factory.
  *
  * @author Dave Syer
  * @since 1.1.0
@@ -41,7 +41,7 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 
 	private ConfigurableListableBeanFactory beanFactory;
 
-	private Map<String, MetaData> beans = new HashMap<String, MetaData>();
+	private final Map<String, MetaData> beans = new HashMap<>();
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
@@ -59,7 +59,7 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 
 	public <A extends Annotation> Map<String, Object> getBeansWithFactoryAnnotation(
 			Class<A> type) {
-		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> result = new HashMap<>();
 		for (String name : this.beans.keySet()) {
 			if (findFactoryAnnotation(name, type) != null) {
 				result.put(name, this.beanFactory.getBean(name));
@@ -68,7 +68,8 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 		return result;
 	}
 
-	public <A extends Annotation> A findFactoryAnnotation(String beanName, Class<A> type) {
+	public <A extends Annotation> A findFactoryAnnotation(String beanName,
+			Class<A> type) {
 		Method method = findFactoryMethod(beanName);
 		return (method == null ? null : AnnotationUtils.findAnnotation(method, type));
 	}
@@ -77,14 +78,14 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 		if (!this.beans.containsKey(beanName)) {
 			return null;
 		}
-		final AtomicReference<Method> found = new AtomicReference<Method>(null);
+		final AtomicReference<Method> found = new AtomicReference<>(null);
 		MetaData meta = this.beans.get(beanName);
 		final String factory = meta.getMethod();
 		Class<?> type = this.beanFactory.getType(meta.getBean());
 		ReflectionUtils.doWithMethods(type, new MethodCallback() {
 			@Override
-			public void doWith(Method method) throws IllegalArgumentException,
-					IllegalAccessException {
+			public void doWith(Method method)
+					throws IllegalArgumentException, IllegalAccessException {
 				if (method.getName().equals(factory)) {
 					found.compareAndSet(null, method);
 				}
@@ -95,11 +96,11 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 
 	private static class MetaData {
 
-		private String bean;
+		private final String bean;
 
-		private String method;
+		private final String method;
 
-		public MetaData(String bean, String method) {
+		MetaData(String bean, String method) {
 			this.bean = bean;
 			this.method = method;
 		}

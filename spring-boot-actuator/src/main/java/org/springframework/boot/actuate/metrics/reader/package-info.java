@@ -20,4 +20,3 @@
  * @see org.springframework.boot.actuate.metrics.reader.MetricReader
  */
 package org.springframework.boot.actuate.metrics.reader;
-

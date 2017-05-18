@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,19 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Date;
 
 import org.junit.Test;
+
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,9 +39,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConditionalOnBean}.
@@ -49,8 +54,8 @@ public class ConditionalOnBeanTests {
 	public void testNameOnBeanCondition() {
 		this.context.register(FooConfiguration.class, OnBeanNameConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
@@ -58,12 +63,7 @@ public class ConditionalOnBeanTests {
 		this.context.register(FooConfiguration.class,
 				OnBeanNameAndTypeConfiguration.class);
 		this.context.refresh();
-		/*
-		 * Arguably this should be true, but as things are implemented the conditions
-		 * specified in the different attributes of @ConditionalOnBean are combined with
-		 * logical OR (not AND) so if any of them match the condition is true.
-		 */
-		assertFalse(this.context.containsBean("bar"));
+		assertThat(this.context.containsBean("bar")).isFalse();
 	}
 
 	@Test
@@ -71,31 +71,31 @@ public class ConditionalOnBeanTests {
 		this.context.register(OnBeanNameConfiguration.class, FooConfiguration.class);
 		this.context.refresh();
 		// Ideally this should be true
-		assertFalse(this.context.containsBean("bar"));
+		assertThat(this.context.containsBean("bar")).isFalse();
 	}
 
 	@Test
 	public void testClassOnBeanCondition() {
 		this.context.register(FooConfiguration.class, OnBeanClassConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
 	public void testClassOnBeanClassNameCondition() {
 		this.context.register(FooConfiguration.class, OnBeanClassNameConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
 	public void testOnBeanConditionWithXml() {
 		this.context.register(XmlConfiguration.class, OnBeanNameConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
@@ -103,15 +103,15 @@ public class ConditionalOnBeanTests {
 		this.context.register(CombinedXmlConfiguration.class);
 		this.context.refresh();
 		// Ideally this should be true
-		assertFalse(this.context.containsBean("bar"));
+		assertThat(this.context.containsBean("bar")).isFalse();
 	}
 
 	@Test
 	public void testAnnotationOnBeanCondition() {
 		this.context.register(FooConfiguration.class, OnAnnotationConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
@@ -119,7 +119,7 @@ public class ConditionalOnBeanTests {
 		this.context.register(FooConfiguration.class,
 				OnBeanMissingClassConfiguration.class);
 		this.context.refresh();
-		assertFalse(this.context.containsBean("bar"));
+		assertThat(this.context.containsBean("bar")).isFalse();
 	}
 
 	@Test
@@ -130,78 +130,103 @@ public class ConditionalOnBeanTests {
 		this.context.refresh();
 	}
 
-	@Configuration
-	@ConditionalOnBean(name = "foo")
-	protected static class OnBeanNameConfiguration {
-		@Bean
-		public String bar() {
-			return "bar";
-		}
+	@Test
+	public void beanProducedByFactoryBeanIsConsideredWhenMatchingOnAnnotation() {
+		this.context.register(FactoryBeanConfiguration.class,
+				OnAnnotationWithFactoryBeanConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(1);
 	}
 
 	@Configuration
-	@ConditionalOnMissingBean(name = "foo", value = Date.class)
-	protected static class OnBeanNameAndTypeConfiguration {
+	@ConditionalOnBean(name = "foo")
+	protected static class OnBeanNameConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
+	}
+
+	@Configuration
+	@ConditionalOnBean(name = "foo", value = Date.class)
+	protected static class OnBeanNameAndTypeConfiguration {
+
+		@Bean
+		public String bar() {
+			return "bar";
+		}
+
 	}
 
 	@Configuration
 	@ConditionalOnBean(annotation = EnableScheduling.class)
 	protected static class OnAnnotationConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnBean(String.class)
 	protected static class OnBeanClassConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnBean(type = "java.lang.String")
 	protected static class OnBeanClassNameConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnBean(type = "some.type.Missing")
 	protected static class OnBeanMissingClassConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
 	@EnableScheduling
 	protected static class FooConfiguration {
+
 		@Bean
 		public String foo() {
 			return "foo";
 		}
+
 	}
 
 	@Configuration
 	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
 	protected static class XmlConfiguration {
+
 	}
 
 	@Configuration
 	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
 	@Import(OnBeanNameConfiguration.class)
 	protected static class CombinedXmlConfiguration {
+
 	}
 
 	@Configuration
@@ -210,8 +235,29 @@ public class ConditionalOnBeanTests {
 
 	}
 
-	protected static class WithPropertyPlaceholderClassNameRegistrar implements
-			ImportBeanDefinitionRegistrar {
+	@Configuration
+	static class FactoryBeanConfiguration {
+
+		@Bean
+		public ExampleFactoryBean exampleBeanFactoryBean() {
+			return new ExampleFactoryBean();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnBean(annotation = TestAnnotation.class)
+	static class OnAnnotationWithFactoryBeanConfiguration {
+
+		@Bean
+		public String bar() {
+			return "bar";
+		}
+
+	}
+
+	protected static class WithPropertyPlaceholderClassNameRegistrar
+			implements ImportBeanDefinitionRegistrar {
 
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
@@ -220,6 +266,48 @@ public class ConditionalOnBeanTests {
 			bd.setBeanClassName("${mybeanclass}");
 			registry.registerBeanDefinition("mybean", bd);
 		}
+
+	}
+
+	public static class ExampleFactoryBean implements FactoryBean<ExampleBean> {
+
+		@Override
+		public ExampleBean getObject() throws Exception {
+			return new ExampleBean("fromFactory");
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return ExampleBean.class;
+		}
+
+		@Override
+		public boolean isSingleton() {
+			return false;
+		}
+
+	}
+
+	@TestAnnotation
+	public static class ExampleBean {
+
+		private String value;
+
+		public ExampleBean(String value) {
+			this.value = value;
+		}
+
+		@Override
+		public String toString() {
+			return this.value;
+		}
+
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	public @interface TestAnnotation {
 
 	}
 

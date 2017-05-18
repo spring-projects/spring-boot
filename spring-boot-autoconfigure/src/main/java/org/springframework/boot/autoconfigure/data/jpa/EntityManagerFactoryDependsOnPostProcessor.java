@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,76 +16,30 @@
 
 package org.springframework.boot.autoconfigure.data.jpa;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.EntityManagerFactory;
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link BeanFactoryPostProcessor} that can be used to dynamically declare that all
- * {@link EntityManagerFactory} beans should "depend on" a specific bean.
+ * {@link EntityManagerFactory} beans should "depend on" one or more specific beans.
  *
  * @author Marcel Overdijk
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.1.0
  * @see BeanDefinition#setDependsOn(String[])
  */
-public class EntityManagerFactoryDependsOnPostProcessor implements
-		BeanFactoryPostProcessor {
+public class EntityManagerFactoryDependsOnPostProcessor
+		extends AbstractDependsOnBeanFactoryPostProcessor {
 
-	private final String dependsOn;
-
-	public EntityManagerFactoryDependsOnPostProcessor(String dependsOn) {
-		this.dependsOn = dependsOn;
-	}
-
-	@Override
-	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-		for (String beanName : getEntityManagerFactoryBeanNames(beanFactory)) {
-			BeanDefinition definition = getBeanDefinition(beanName, beanFactory);
-			definition.setDependsOn(StringUtils.addStringToArray(
-					definition.getDependsOn(), this.dependsOn));
-		}
-	}
-
-	private static BeanDefinition getBeanDefinition(String beanName,
-			ConfigurableListableBeanFactory beanFactory) {
-		try {
-			return beanFactory.getBeanDefinition(beanName);
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
-			if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
-				return getBeanDefinition(beanName,
-						(ConfigurableListableBeanFactory) parentBeanFactory);
-			}
-			throw ex;
-		}
-	}
-
-	private Iterable<String> getEntityManagerFactoryBeanNames(
-			ListableBeanFactory beanFactory) {
-		Set<String> names = new HashSet<String>();
-		names.addAll(Arrays.asList(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-				beanFactory, EntityManagerFactory.class, true, false)));
-		for (String factoryBeanName : BeanFactoryUtils
-				.beanNamesForTypeIncludingAncestors(beanFactory,
-						AbstractEntityManagerFactoryBean.class, true, false)) {
-			names.add(BeanFactoryUtils.transformedBeanName(factoryBeanName));
-		}
-		return names;
+	public EntityManagerFactoryDependsOnPostProcessor(String... dependsOn) {
+		super(EntityManagerFactory.class, AbstractEntityManagerFactoryBean.class,
+				dependsOn);
 	}
 
 }

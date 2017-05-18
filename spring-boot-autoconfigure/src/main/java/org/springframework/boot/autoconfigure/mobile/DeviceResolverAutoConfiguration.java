@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,21 +18,22 @@ package org.springframework.boot.autoconfigure.mobile;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.mobile.device.DeviceHandlerMethodArgumentResolver;
 import org.springframework.mobile.device.DeviceResolver;
 import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Mobile's
@@ -44,24 +45,33 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @ConditionalOnClass({ DeviceResolverHandlerInterceptor.class,
 		DeviceHandlerMethodArgumentResolver.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
+@ConditionalOnWebApplication(type = Type.SERVLET)
 public class DeviceResolverAutoConfiguration {
 
-	@Configuration
-	@ConditionalOnWebApplication
-	protected static class DeviceResolverMvcConfiguration extends WebMvcConfigurerAdapter {
+	@Bean
+	@ConditionalOnMissingBean(DeviceResolverHandlerInterceptor.class)
+	public DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor() {
+		return new DeviceResolverHandlerInterceptor();
+	}
 
-		@Autowired
+	@Bean
+	public DeviceHandlerMethodArgumentResolver deviceHandlerMethodArgumentResolver() {
+		return new DeviceHandlerMethodArgumentResolver();
+	}
+
+	@Configuration
+	@Order(0)
+	protected static class DeviceResolverMvcConfiguration implements WebMvcConfigurer {
+
 		private DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor;
 
-		@Bean
-		@ConditionalOnMissingBean(DeviceResolverHandlerInterceptor.class)
-		public DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor() {
-			return new DeviceResolverHandlerInterceptor();
-		}
+		private DeviceHandlerMethodArgumentResolver deviceHandlerMethodArgumentResolver;
 
-		@Bean
-		public DeviceHandlerMethodArgumentResolver deviceHandlerMethodArgumentResolver() {
-			return new DeviceHandlerMethodArgumentResolver();
+		protected DeviceResolverMvcConfiguration(
+				DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor,
+				DeviceHandlerMethodArgumentResolver deviceHandlerMethodArgumentResolver) {
+			this.deviceResolverHandlerInterceptor = deviceResolverHandlerInterceptor;
+			this.deviceHandlerMethodArgumentResolver = deviceHandlerMethodArgumentResolver;
 		}
 
 		@Override
@@ -72,7 +82,7 @@ public class DeviceResolverAutoConfiguration {
 		@Override
 		public void addArgumentResolvers(
 				List<HandlerMethodArgumentResolver> argumentResolvers) {
-			argumentResolvers.add(deviceHandlerMethodArgumentResolver());
+			argumentResolvers.add(this.deviceHandlerMethodArgumentResolver);
 		}
 
 	}

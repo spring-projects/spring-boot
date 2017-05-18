@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link YamlPropertySourceLoader}.
@@ -42,16 +42,17 @@ public class YamlPropertySourceLoaderTests {
 
 	@Test
 	public void load() throws Exception {
-		ByteArrayResource resource = new ByteArrayResource("foo:\n  bar: spam".getBytes());
+		ByteArrayResource resource = new ByteArrayResource(
+				"foo:\n  bar: spam".getBytes());
 		PropertySource<?> source = this.loader.load("resource", resource, null);
-		assertNotNull(source);
-		assertEquals("spam", source.getProperty("foo.bar"));
+		assertThat(source).isNotNull();
+		assertThat(source.getProperty("foo.bar")).isEqualTo("spam");
 	}
 
 	@Test
 	public void orderedItems() throws Exception {
 		StringBuilder yaml = new StringBuilder();
-		List<String> expected = new ArrayList<String>();
+		List<String> expected = new ArrayList<>();
 		for (char c = 'a'; c <= 'z'; c++) {
 			yaml.append(c + ": value" + c + "\n");
 			expected.add(String.valueOf(c));
@@ -59,8 +60,9 @@ public class YamlPropertySourceLoaderTests {
 		ByteArrayResource resource = new ByteArrayResource(yaml.toString().getBytes());
 		EnumerablePropertySource<?> source = (EnumerablePropertySource<?>) this.loader
 				.load("resource", resource, null);
-		assertNotNull(source);
-		assertThat(source.getPropertyNames(), equalTo(expected.toArray(new String[] {})));
+		assertThat(source).isNotNull();
+		assertThat(source.getPropertyNames())
+				.isEqualTo(expected.toArray(new String[] {}));
 	}
 
 	@Test
@@ -71,17 +73,27 @@ public class YamlPropertySourceLoaderTests {
 		yaml.append("foo:\n  baz: wham\n");
 		ByteArrayResource resource = new ByteArrayResource(yaml.toString().getBytes());
 		PropertySource<?> source = this.loader.load("resource", resource, null);
-		assertNotNull(source);
-		assertEquals("spam", source.getProperty("foo.bar"));
-		assertEquals("wham", source.getProperty("foo.baz"));
+		assertThat(source).isNotNull();
+		assertThat(source.getProperty("foo.bar")).isEqualTo("spam");
+		assertThat(source.getProperty("foo.baz")).isEqualTo("wham");
 	}
 
 	@Test
 	public void timestampLikeItemsDoNotBecomeDates() throws Exception {
 		ByteArrayResource resource = new ByteArrayResource("foo: 2015-01-28".getBytes());
 		PropertySource<?> source = this.loader.load("resource", resource, null);
-		assertNotNull(source);
-		assertEquals("2015-01-28", source.getProperty("foo"));
+		assertThat(source).isNotNull();
+		assertThat(source.getProperty("foo")).isEqualTo("2015-01-28");
+	}
+
+	@Test
+	public void loadOriginAware() throws Exception {
+		Resource resource = new ClassPathResource("test-yaml.yml", getClass());
+		PropertySource<?> source = this.loader.load("resource", resource, null);
+		EnumerablePropertySource<?> enumerableSource = (EnumerablePropertySource<?>) source;
+		for (String name : enumerableSource.getPropertyNames()) {
+			System.out.println(name + " = " + enumerableSource.getProperty(name));
+		}
 	}
 
 }

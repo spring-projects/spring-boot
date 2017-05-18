@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.logging;
 
 import org.slf4j.bridge.SLF4JBridgeHandler;
+
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -44,9 +46,18 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 		removeJdkLoggingBridgeHandler();
 	}
 
+	@Override
+	protected void loadConfiguration(LoggingInitializationContext initializationContext,
+			String location, LogFile logFile) {
+		Assert.notNull(location, "Location must not be null");
+		if (initializationContext != null) {
+			applySystemProperties(initializationContext.getEnvironment(), logFile);
+		}
+	}
+
 	private void configureJdkLoggingBridgeHandler() {
 		try {
-			if (bridgeHandlerIsAvailable()) {
+			if (isBridgeHandlerAvailable()) {
 				removeJdkLoggingBridgeHandler();
 				SLF4JBridgeHandler.install();
 			}
@@ -56,13 +67,13 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
-	private boolean bridgeHandlerIsAvailable() {
+	protected final boolean isBridgeHandlerAvailable() {
 		return ClassUtils.isPresent(BRIDGE_HANDLER, getClassLoader());
 	}
 
 	private void removeJdkLoggingBridgeHandler() {
 		try {
-			if (bridgeHandlerIsAvailable()) {
+			if (isBridgeHandlerAvailable()) {
 				try {
 					SLF4JBridgeHandler.removeHandlersForRootLogger();
 				}

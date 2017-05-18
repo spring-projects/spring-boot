@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,21 @@ package org.springframework.boot.actuate.health;
 
 import java.io.IOException;
 
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.response.SolrPingResponse;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.request.CoreAdminRequest;
 import org.apache.solr.common.util.NamedList;
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -56,36 +57,53 @@ public class SolrHealthIndicatorTests {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, SolrAutoConfiguration.class,
 				EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
-		assertEquals(1, this.context.getBeanNamesForType(SolrServer.class).length);
+		assertThat(this.context.getBeanNamesForType(SolrClient.class).length)
+				.isEqualTo(1);
 		SolrHealthIndicator healthIndicator = this.context
 				.getBean(SolrHealthIndicator.class);
-		assertNotNull(healthIndicator);
+		assertThat(healthIndicator).isNotNull();
 	}
 
 	@Test
 	public void solrIsUp() throws Exception {
-		SolrServer solrServer = mock(SolrServer.class);
-		SolrPingResponse pingResponse = new SolrPingResponse();
-		NamedList<Object> response = new NamedList<Object>();
-		response.add("status", "OK");
-		pingResponse.setResponse(response);
-		given(solrServer.ping()).willReturn(pingResponse);
-
-		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrServer);
+		SolrClient solrClient = mock(SolrClient.class);
+		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
+				.willReturn(mockResponse(0));
+		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
-		assertEquals(Status.UP, health.getStatus());
-		assertEquals("OK", health.getDetails().get("solrStatus"));
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails().get("status")).isEqualTo(0);
+	}
+
+	@Test
+	public void solrIsUpAndRequestFailed() throws Exception {
+		SolrClient solrClient = mock(SolrClient.class);
+		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
+				.willReturn(mockResponse(400));
+		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails().get("status")).isEqualTo(400);
 	}
 
 	@Test
 	public void solrIsDown() throws Exception {
-		SolrServer solrServer = mock(SolrServer.class);
-		given(solrServer.ping()).willThrow(new IOException("Connection failed"));
-
-		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrServer);
+		SolrClient solrClient = mock(SolrClient.class);
+		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
+				.willThrow(new IOException("Connection failed"));
+		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
-		assertEquals(Status.DOWN, health.getStatus());
-		assertTrue(((String) health.getDetails().get("error"))
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(((String) health.getDetails().get("error"))
 				.contains("Connection failed"));
 	}
+
+	private NamedList<Object> mockResponse(int status) {
+		NamedList<Object> response = new NamedList<>();
+		NamedList<Object> headers = new NamedList<>();
+		headers.add("status", status);
+		response.add("responseHeader", headers);
+		return response;
+	}
+
 }

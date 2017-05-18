@@ -29,7 +29,7 @@ public class CustomCommandFactory implements CommandFactory {
 
 	@Override
 	public Collection<Command> getCommands() {
-		return Collections.<Command> singleton(new CustomCommand());
+		return Collections.<Command>singleton(new CustomCommand());
 	}
 
 }

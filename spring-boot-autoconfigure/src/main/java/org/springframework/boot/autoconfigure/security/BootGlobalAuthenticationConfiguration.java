@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security;
 
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -30,20 +31,21 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 
 /**
- * This works with the {@link AuthenticationConfiguration} to ensure that users are able
- * to use:
+ * {@link GlobalAuthenticationConfigurerAdapter} to trigger early initialization of
+ * {@code @EnableAutoConfiguration} beans. This configuration is imported from
+ * {@link AuthenticationConfiguration} to ensure that users are able to configure the
+ * {@link AuthenticationManagerBuilder} from their {@code @EnableAutoConfiguration} or
+ * {@code @SpringBootApplication} configuration class:
  *
- * <pre>
+ * <pre class="code">
+ * &#064;Autowired
  * public void configureGlobal(AuthenticationManagerBuilder auth) {
  *     ...
  * }
  * </pre>
  *
- * within their classes annotated with {@link EnableAutoConfiguration} or
- * {@link SpringBootApplication}.
- *
  * @author Rob Winch
- * @since 1.2.2
+ * @since 1.1.11
  */
 @Configuration
 @ConditionalOnClass(GlobalAuthenticationConfigurerAdapter.class)
@@ -55,13 +57,15 @@ public class BootGlobalAuthenticationConfiguration {
 		return new BootGlobalAuthenticationConfigurationAdapter(context);
 	}
 
-	private static class BootGlobalAuthenticationConfigurationAdapter extends
-			GlobalAuthenticationConfigurerAdapter {
-		private final ApplicationContext context;
+	private static class BootGlobalAuthenticationConfigurationAdapter
+			extends GlobalAuthenticationConfigurerAdapter {
+
 		private static final Log logger = LogFactory
 				.getLog(BootGlobalAuthenticationConfiguration.class);
 
-		public BootGlobalAuthenticationConfigurationAdapter(ApplicationContext context) {
+		private final ApplicationContext context;
+
+		BootGlobalAuthenticationConfigurationAdapter(ApplicationContext context) {
 			this.context = context;
 		}
 
@@ -73,5 +77,7 @@ public class BootGlobalAuthenticationConfiguration {
 				logger.debug("Eagerly initializing " + beansWithAnnotation);
 			}
 		}
+
 	}
+
 }

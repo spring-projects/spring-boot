@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,19 +21,21 @@ import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.jta.JtaAutoConfiguration;
-import org.springframework.boot.bind.RelaxedDataBinder;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyNameAliases;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jta.XADataSourceWrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -46,10 +48,10 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Josh Long
+ * @author Madhura Bhave
  * @since 1.2.0
  */
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
-@AutoConfigureAfter(JtaAutoConfiguration.class)
 @EnableConfigurationProperties(DataSourceProperties.class)
 @ConditionalOnClass({ DataSource.class, TransactionManager.class,
 		EmbeddedDatabaseType.class })
@@ -69,7 +71,6 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	private ClassLoader classLoader;
 
 	@Bean
-	@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
 	public DataSource dataSource() throws Exception {
 		XADataSource xaDataSource = this.xaDataSource;
 		if (xaDataSource == null) {
@@ -86,7 +87,7 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	private XADataSource createXaDataSource() {
 		String className = this.properties.getXa().getDataSourceClassName();
 		if (!StringUtils.hasLength(className)) {
-			className = DatabaseDriver.fromJdbcUrl(this.properties.getUrl())
+			className = DatabaseDriver.fromJdbcUrl(this.properties.determineUrl())
 					.getXaDataSourceClassName();
 		}
 		Assert.state(StringUtils.hasLength(className),
@@ -99,7 +100,7 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	private XADataSource createXaDataSourceInstance(String className) {
 		try {
 			Class<?> dataSourceClass = ClassUtils.forName(className, this.classLoader);
-			Object instance = BeanUtils.instantiate(dataSourceClass);
+			Object instance = BeanUtils.instantiateClass(dataSourceClass);
 			Assert.isInstanceOf(XADataSource.class, instance);
 			return (XADataSource) instance;
 		}
@@ -109,13 +110,22 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 		}
 	}
 
-	private void bindXaProperties(XADataSource target, DataSourceProperties properties) {
-		MutablePropertyValues values = new MutablePropertyValues();
-		values.add("user", this.properties.getUsername());
-		values.add("password", this.properties.getPassword());
-		values.add("url", this.properties.getUrl());
-		values.addPropertyValues(properties.getXa().getProperties());
-		new RelaxedDataBinder(target).withAlias("user", "username").bind(values);
+	private void bindXaProperties(XADataSource target,
+			DataSourceProperties dataSourceProperties) {
+		Binder binder = new Binder(getBinderSource(dataSourceProperties));
+		binder.bind(ConfigurationPropertyName.EMPTY, Bindable.ofInstance(target));
+	}
+
+	private ConfigurationPropertySource getBinderSource(
+			DataSourceProperties dataSourceProperties) {
+		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
+		source.put("user", this.properties.determineUsername());
+		source.put("password", this.properties.determinePassword());
+		source.put("url", this.properties.determineUrl());
+		source.putAll(dataSourceProperties.getXa().getProperties());
+		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
+		aliases.addAliases("user", "username");
+		return source.withAliases(aliases);
 	}
 
 }

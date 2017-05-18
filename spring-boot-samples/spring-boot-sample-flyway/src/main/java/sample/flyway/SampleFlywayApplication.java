@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,65 +16,28 @@
 
 package sample.flyway;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-public class SampleFlywayApplication implements CommandLineRunner {
-
-	@Autowired
-	private PersonRepository repository;
-
-	@Override
-	public void run(String... args) throws Exception {
-		System.err.println(this.repository.findAll());
-	}
+public class SampleFlywayApplication {
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleFlywayApplication.class, args);
 	}
-}
 
-@Repository
-interface PersonRepository extends CrudRepository<Person, Long> {
+	@Bean
+	public CommandLineRunner runner(final PersonRepository repository) {
+		return new CommandLineRunner() {
 
-}
+			@Override
+			public void run(String... args) throws Exception {
+				System.err.println(repository.findAll());
+			}
 
-@Entity
-class Person {
-	@Id
-	@GeneratedValue
-	private Long id;
-	private String firstName;
-	private String lastName;
-
-	public String getFirstName() {
-		return this.firstName;
+		};
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return this.lastName;
-	}
-
-	public void setLastName(String lastname) {
-		this.lastName = lastname;
-	}
-
-	@Override
-	public String toString() {
-		return "Person [firstName=" + this.firstName + ", lastName=" + this.lastName
-				+ "]";
-	}
 }

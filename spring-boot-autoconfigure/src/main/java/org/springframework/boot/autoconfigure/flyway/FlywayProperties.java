@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.flywaydb.core.Flyway;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -36,9 +37,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class FlywayProperties {
 
 	/**
-	 * Locations of migrations scripts.
+	 * Locations of migrations scripts. Can contain the special "{vendor}" placeholder to
+	 * use vendor-specific locations.
 	 */
-	private List<String> locations = Arrays.asList("db/migration");
+	private List<String> locations = new ArrayList<>(
+			Collections.singletonList("db/migration"));
 
 	/**
 	 * Check that migration scripts location exists.
@@ -70,7 +73,7 @@ public class FlywayProperties {
 	 * SQL statements to execute to initialize a connection immediately after obtaining
 	 * it.
 	 */
-	private List<String> initSqls = Collections.emptyList();
+	private List<String> initSqls = new ArrayList<String>();
 
 	public void setLocations(List<String> locations) {
 		this.locations = locations;
@@ -131,4 +134,5 @@ public class FlywayProperties {
 	public boolean isCreateDataSource() {
 		return this.url != null && this.user != null;
 	}
+
 }

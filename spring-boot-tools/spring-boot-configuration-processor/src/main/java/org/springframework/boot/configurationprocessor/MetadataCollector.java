@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -39,7 +39,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
  */
 public class MetadataCollector {
 
-	private final List<ItemMetadata> metadataItems = new ArrayList<ItemMetadata>();
+	private final Set<ItemMetadata> metadataItems = new LinkedHashSet<>();
 
 	private final ProcessingEnvironment processingEnvironment;
 
@@ -47,7 +47,7 @@ public class MetadataCollector {
 
 	private final TypeUtils typeUtils;
 
-	private final Set<String> processedSourceTypes = new HashSet<String>();
+	private final Set<String> processedSourceTypes = new HashSet<>();
 
 	/**
 	 * Creates a new {@code MetadataProcessor} instance.
@@ -69,12 +69,26 @@ public class MetadataCollector {
 
 	private void markAsProcessed(Element element) {
 		if (element instanceof TypeElement) {
-			this.processedSourceTypes.add(this.typeUtils.getType(element));
+			this.processedSourceTypes.add(this.typeUtils.getQualifiedName(element));
 		}
 	}
 
 	public void add(ItemMetadata metadata) {
 		this.metadataItems.add(metadata);
+	}
+
+	public boolean hasSimilarGroup(ItemMetadata metadata) {
+		if (!metadata.isOfItemType(ItemMetadata.ItemType.GROUP)) {
+			throw new IllegalStateException("item " + metadata + " must be a group");
+		}
+		for (ItemMetadata existing : this.metadataItems) {
+			if (existing.isOfItemType(ItemMetadata.ItemType.GROUP)
+					&& existing.getName().equals(metadata.getName())
+					&& existing.getType().equals(metadata.getType())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public ConfigurationMetadata getMetadata() {
@@ -95,11 +109,13 @@ public class MetadataCollector {
 
 	private boolean shouldBeMerged(ItemMetadata itemMetadata) {
 		String sourceType = itemMetadata.getSourceType();
-		return (sourceType != null && !deletedInCurrentBuild(sourceType) && !processedInCurrentBuild(sourceType));
+		return (sourceType != null && !deletedInCurrentBuild(sourceType)
+				&& !processedInCurrentBuild(sourceType));
 	}
 
 	private boolean deletedInCurrentBuild(String sourceType) {
-		return this.processingEnvironment.getElementUtils().getTypeElement(sourceType) == null;
+		return this.processingEnvironment.getElementUtils()
+				.getTypeElement(sourceType) == null;
 	}
 
 	private boolean processedInCurrentBuild(String sourceType) {

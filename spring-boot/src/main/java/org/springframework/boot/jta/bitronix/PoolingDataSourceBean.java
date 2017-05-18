@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,14 @@ import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
+import bitronix.tm.resource.common.ResourceBean;
+import bitronix.tm.resource.common.XAStatefulHolder;
+import bitronix.tm.resource.jdbc.PoolingDataSource;
+
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
-
-import bitronix.tm.resource.common.ResourceBean;
-import bitronix.tm.resource.common.XAStatefulHolder;
-import bitronix.tm.resource.jdbc.PoolingDataSource;
 
 /**
  * Spring friendly version of {@link PoolingDataSource}. Provides sensible defaults and
@@ -46,10 +46,10 @@ import bitronix.tm.resource.jdbc.PoolingDataSource;
  */
 @SuppressWarnings("serial")
 @ConfigurationProperties(prefix = "spring.jta.bitronix.datasource")
-public class PoolingDataSourceBean extends PoolingDataSource implements BeanNameAware,
-		InitializingBean {
+public class PoolingDataSourceBean extends PoolingDataSource
+		implements BeanNameAware, InitializingBean {
 
-	private static ThreadLocal<PoolingDataSourceBean> source = new ThreadLocal<PoolingDataSourceBean>();
+	private static final ThreadLocal<PoolingDataSourceBean> source = new ThreadLocal<>();
 
 	private XADataSource dataSource;
 

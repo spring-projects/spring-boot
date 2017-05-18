@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,15 +32,14 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.boot.configurationprocessor.TestCompiler.TestCompilationTask;
+
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.NestedConfigurationProperty;
+import org.springframework.boot.junit.compiler.TestCompiler;
+import org.springframework.boot.junit.compiler.TestCompiler.TestCompilationTask;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
-
-import static org.springframework.boot.configurationprocessor.TestCompiler.ORIGINAL_SOURCE_FOLDER;
-import static org.springframework.boot.configurationprocessor.TestCompiler.sourcePathFor;
 
 /**
  * A TestProject contains a copy of a subset of test sample code.
@@ -61,9 +60,10 @@ public class TestProject {
 	 * incremental builds.
 	 */
 	private File sourceFolder;
+
 	private TestCompiler compiler;
 
-	private Set<File> sourceFiles = new LinkedHashSet<File>();
+	private Set<File> sourceFiles = new LinkedHashSet<>();
 
 	public TestProject(TemporaryFolder tempFolder, Class<?>... classes)
 			throws IOException {
@@ -74,7 +74,7 @@ public class TestProject {
 				return TestProject.this.sourceFolder;
 			}
 		};
-		Set<Class<?>> contents = new HashSet<Class<?>>(Arrays.asList(classes));
+		Set<Class<?>> contents = new HashSet<>(Arrays.asList(classes));
 		contents.addAll(Arrays.asList(ALWAYS_INCLUDE));
 		copySources(contents);
 	}
@@ -94,7 +94,7 @@ public class TestProject {
 	}
 
 	public File getSourceFile(Class<?> type) {
-		return new File(this.sourceFolder, sourcePathFor(type));
+		return new File(this.sourceFolder, TestCompiler.sourcePathFor(type));
 	}
 
 	public ConfigurationMetadata fullBuild() {
@@ -140,8 +140,8 @@ public class TestProject {
 		File targetFile = getSourceFile(target);
 		String contents = getContents(targetFile);
 		int insertAt = contents.lastIndexOf('}');
-		String additionalSource = FileCopyUtils.copyToString(new InputStreamReader(
-				snippetStream));
+		String additionalSource = FileCopyUtils
+				.copyToString(new InputStreamReader(snippetStream));
 		contents = contents.substring(0, insertAt) + additionalSource
 				+ contents.substring(insertAt);
 		putContents(targetFile, contents);
@@ -160,7 +160,7 @@ public class TestProject {
 	/**
 	 * Restore source code of given class to its original contents.
 	 * @param type the class to revert
-	 * @throws IOException
+	 * @throws IOException on IO error
 	 */
 	public void revert(Class<?> type) throws IOException {
 		Assert.assertTrue(getSourceFile(type).exists());
@@ -170,7 +170,7 @@ public class TestProject {
 	/**
 	 * Add source code of given class to this project.
 	 * @param type the class to add
-	 * @throws IOException
+	 * @throws IOException on IO error
 	 */
 	public void add(Class<?> type) throws IOException {
 		Assert.assertFalse(getSourceFile(type).exists());
@@ -190,7 +190,7 @@ public class TestProject {
 	 * code.
 	 */
 	private File getOriginalSourceFile(Class<?> type) {
-		return new File(ORIGINAL_SOURCE_FOLDER, sourcePathFor(type));
+		return new File(TestCompiler.SOURCE_FOLDER, TestCompiler.sourcePathFor(type));
 	}
 
 	private static void putContents(File targetFile, String contents)
@@ -201,4 +201,5 @@ public class TestProject {
 	private static String getContents(File file) throws Exception {
 		return FileCopyUtils.copyToString(new FileReader(file));
 	}
+
 }

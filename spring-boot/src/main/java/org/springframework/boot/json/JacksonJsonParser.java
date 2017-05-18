@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.json;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -29,11 +30,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class JacksonJsonParser implements JsonParser {
 
+	private static final TypeReference<?> MAP_TYPE = new MapTypeReference();
+
+	private static final TypeReference<?> LIST_TYPE = new ListTypeReference();
+
+	private ObjectMapper objectMapper; // Late binding
+
 	@Override
-	@SuppressWarnings("unchecked")
 	public Map<String, Object> parseMap(String json) {
 		try {
-			return new ObjectMapper().readValue(json, Map.class);
+			return getObjectMapper().readValue(json, MAP_TYPE);
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException("Cannot parse JSON", ex);
@@ -41,14 +47,28 @@ public class JacksonJsonParser implements JsonParser {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<Object> parseList(String json) {
 		try {
-			return new ObjectMapper().readValue(json, List.class);
+			return getObjectMapper().readValue(json, LIST_TYPE);
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException("Cannot parse JSON", ex);
 		}
 	}
+
+	private ObjectMapper getObjectMapper() {
+		if (this.objectMapper == null) {
+			this.objectMapper = new ObjectMapper();
+		}
+		return this.objectMapper;
+	}
+
+	private static class MapTypeReference extends TypeReference<Map<String, Object>> {
+
+	};
+
+	private static class ListTypeReference extends TypeReference<List<Object>> {
+
+	};
 
 }

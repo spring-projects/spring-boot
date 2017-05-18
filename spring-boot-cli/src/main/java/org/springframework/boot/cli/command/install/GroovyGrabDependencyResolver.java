@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.codehaus.groovy.control.CompilationFailedException;
+
 import org.springframework.boot.cli.compiler.GroovyCompiler;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 
 /**
- * A {@code DependencyResolver} implemented using Groovy's {@code @Grab}
+ * A {@code DependencyResolver} implemented using Groovy's {@code @Grab}.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
@@ -41,7 +42,7 @@ class GroovyGrabDependencyResolver implements DependencyResolver {
 
 	private final GroovyCompilerConfiguration configuration;
 
-	public GroovyGrabDependencyResolver(GroovyCompilerConfiguration configuration) {
+	GroovyGrabDependencyResolver(GroovyCompilerConfiguration configuration) {
 		this.configuration = configuration;
 	}
 
@@ -49,7 +50,7 @@ class GroovyGrabDependencyResolver implements DependencyResolver {
 	public List<File> resolve(List<String> artifactIdentifiers)
 			throws CompilationFailedException, IOException {
 		GroovyCompiler groovyCompiler = new GroovyCompiler(this.configuration);
-		List<File> artifactFiles = new ArrayList<File>();
+		List<File> artifactFiles = new ArrayList<>();
 		if (!artifactIdentifiers.isEmpty()) {
 			List<URL> initialUrls = getClassPathUrls(groovyCompiler);
 			groovyCompiler.compile(createSources(artifactIdentifiers));
@@ -63,7 +64,7 @@ class GroovyGrabDependencyResolver implements DependencyResolver {
 	}
 
 	private List<URL> getClassPathUrls(GroovyCompiler compiler) {
-		return new ArrayList<URL>(Arrays.asList(compiler.getLoader().getURLs()));
+		return new ArrayList<>(Arrays.asList(compiler.getLoader().getURLs()));
 	}
 
 	private String createSources(List<String> artifactIdentifiers) throws IOException {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@ package org.springframework.boot.logging.java;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -28,6 +30,8 @@ import java.util.logging.Logger;
 import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggerConfiguration;
+import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
@@ -39,20 +43,21 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
+ * @author Ben Hale
  */
 public class JavaLoggingSystem extends AbstractLoggingSystem {
 
-	private static final Map<LogLevel, Level> LEVELS;
+	private static final LogLevels<Level> LEVELS = new LogLevels<>();
+
 	static {
-		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
-		levels.put(LogLevel.TRACE, Level.FINEST);
-		levels.put(LogLevel.DEBUG, Level.FINE);
-		levels.put(LogLevel.INFO, Level.INFO);
-		levels.put(LogLevel.WARN, Level.WARNING);
-		levels.put(LogLevel.ERROR, Level.SEVERE);
-		levels.put(LogLevel.FATAL, Level.SEVERE);
-		levels.put(LogLevel.OFF, Level.OFF);
-		LEVELS = Collections.unmodifiableMap(levels);
+		LEVELS.map(LogLevel.TRACE, Level.FINEST);
+		LEVELS.map(LogLevel.DEBUG, Level.FINE);
+		LEVELS.map(LogLevel.INFO, Level.INFO);
+		LEVELS.map(LogLevel.WARN, Level.WARNING);
+		LEVELS.map(LogLevel.ERROR, Level.SEVERE);
+		LEVELS.map(LogLevel.FATAL, Level.SEVERE);
+		LEVELS.map(LogLevel.OFF, Level.OFF);
 	}
 
 	public JavaLoggingSystem(ClassLoader classLoader) {
@@ -71,7 +76,8 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	protected void loadDefaults(LogFile logFile) {
+	protected void loadDefaults(LoggingInitializationContext initializationContext,
+			LogFile logFile) {
 		if (logFile != null) {
 			loadConfiguration(getPackagedConfigFile("logging-file.properties"), logFile);
 		}
@@ -81,11 +87,16 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
+	protected void loadConfiguration(LoggingInitializationContext initializationContext,
+			String location, LogFile logFile) {
+		loadConfiguration(location, logFile);
+	}
+
 	protected void loadConfiguration(String location, LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
 		try {
-			String configuration = FileCopyUtils.copyToString(new InputStreamReader(
-					ResourceUtils.getURL(location).openStream()));
+			String configuration = FileCopyUtils.copyToString(
+					new InputStreamReader(ResourceUtils.getURL(location).openStream()));
 			if (logFile != null) {
 				configuration = configuration.replace("${LOG_FILE}",
 						StringUtils.cleanPath(logFile.toString()));
@@ -94,16 +105,72 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 					new ByteArrayInputStream(configuration.getBytes()));
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Could not initialize Java logging from "
-					+ location, ex);
+			throw new IllegalStateException(
+					"Could not initialize Java logging from " + location, ex);
 		}
+	}
+
+	@Override
+	public Set<LogLevel> getSupportedLogLevels() {
+		return LEVELS.getSupported();
 	}
 
 	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
 		Assert.notNull(level, "Level must not be null");
-		Logger logger = Logger.getLogger(loggerName == null ? "" : loggerName);
-		logger.setLevel(LEVELS.get(level));
+		if (loggerName == null || ROOT_LOGGER_NAME.equals(loggerName)) {
+			loggerName = "";
+		}
+		Logger logger = Logger.getLogger(loggerName);
+		if (logger != null) {
+			logger.setLevel(LEVELS.convertSystemToNative(level));
+		}
+	}
+
+	@Override
+	public List<LoggerConfiguration> getLoggerConfigurations() {
+		List<LoggerConfiguration> result = new ArrayList<>();
+		Enumeration<String> names = LogManager.getLogManager().getLoggerNames();
+		while (names.hasMoreElements()) {
+			result.add(getLoggerConfiguration(names.nextElement()));
+		}
+		Collections.sort(result, CONFIGURATION_COMPARATOR);
+		return Collections.unmodifiableList(result);
+	}
+
+	@Override
+	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+		Logger logger = Logger.getLogger(loggerName);
+		if (logger == null) {
+			return null;
+		}
+		LogLevel level = LEVELS.convertNativeToSystem(logger.getLevel());
+		LogLevel effectiveLevel = LEVELS.convertNativeToSystem(getEffectiveLevel(logger));
+		String name = (StringUtils.hasLength(logger.getName()) ? logger.getName()
+				: ROOT_LOGGER_NAME);
+		return new LoggerConfiguration(name, level, effectiveLevel);
+	}
+
+	private Level getEffectiveLevel(Logger root) {
+		Logger logger = root;
+		while (logger.getLevel() == null) {
+			logger = logger.getParent();
+		}
+		return logger.getLevel();
+	}
+
+	@Override
+	public Runnable getShutdownHandler() {
+		return new ShutdownHandler();
+	}
+
+	private final class ShutdownHandler implements Runnable {
+
+		@Override
+		public void run() {
+			LogManager.getLogManager().reset();
+		}
+
 	}
 
 }

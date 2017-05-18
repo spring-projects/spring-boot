@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.NestedConfigurationProperty;
 
 /**
- * Demonstrate the auto-detection of a inner config classes.
+ * Demonstrate the auto-detection of inner config classes.
  *
  * @author Stephane Nicoll
  */
@@ -89,12 +89,15 @@ public class InnerClassProperties {
 			public void setName(String name) {
 				this.name = name;
 			}
+
 		}
 
 	}
 
-	public static enum Fourth {
+	public enum Fourth {
+
 		YES, NO
+
 	}
 
 }

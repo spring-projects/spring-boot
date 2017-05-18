@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,17 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
  * If the user explicitly disables the basic security features and forgets to
- * <code>@EnableWebSecurity</code>, and yet still wants a bean of type
+ * {@code @EnableWebSecurity}, and yet still wants a bean of type
  * WebSecurityConfigurerAdapter, he is trying to use a custom security setup. The app
  * would fail in a confusing way without this shim configuration, which just helpfully
- * defines an empty <code>@EnableWebSecurity</code>.
+ * defines an empty {@code @EnableWebSecurity}.
  *
  * @author Dave Syer
  */
@@ -39,8 +40,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @ConditionalOnBean(WebSecurityConfigurerAdapter.class)
 @ConditionalOnClass(EnableWebSecurity.class)
 @ConditionalOnMissingBean(WebSecurityConfiguration.class)
-@ConditionalOnWebApplication
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
 @EnableWebSecurity
 public class FallbackWebSecurityAutoConfiguration {
+
 }

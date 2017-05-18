@@ -1,0 +1,20 @@
+=== /health
+This endpoint is an indication of the health of the application. It has an overall status
+("UP", "DOWN" etc.), which is the only thing you see unless either you are authenticated
+or the endpoint is marked as `sensitive=false` (`endpoints.health.sensitive=false`).
+
+The HTTP code in the response reflects the status (e.g. "`UP`"=200,
+"`OUT_OF_SERVICE`"=503, "`DOWN`"=503). The mappings can be changed by configuring
+`endpoints.health.mapping.<STATUS>=XXX`.
+
+Example curl request:
+include::{generated}/health/curl-request.adoc[]
+
+Example HTTP request: [small]##link:../health[icon:external-link[role="silver"]]##
+include::{generated}/health/http-request.adoc[]
+
+Example HTTP response:
+include::{generated}/health/http-response.adoc[]
+
+Example HTTP response with `endpoints.health.sensitive=false`:
+include::{generated}/health/insensitive/http-response.adoc[]

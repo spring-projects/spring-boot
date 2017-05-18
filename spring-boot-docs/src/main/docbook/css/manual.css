@@ -16,6 +16,9 @@ body {
 code {
 	font-size: 16px;
 	font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+:not(a)>code {
 	color: #6D180B;
 }
 

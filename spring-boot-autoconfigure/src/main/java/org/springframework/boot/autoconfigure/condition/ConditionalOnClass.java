@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,16 +36,19 @@ import org.springframework.context.annotation.Conditional;
 public @interface ConditionalOnClass {
 
 	/**
-	 * The classes that must be present. Since this annotation parsed by loading class
-	 * bytecode it is safe to specify classes here that may ultimately not be on the
-	 * classpath.
+	 * The classes that must be present. Since this annotation is parsed by loading class
+	 * bytecode, it is safe to specify classes here that may ultimately not be on the
+	 * classpath, only if this annotation is directly on the affected component and
+	 * <b>not</b> if this annotation is used as a composed, meta-annotation. In order to
+	 * use this annotation as a meta-annotation, only use the {@link #name} attribute.
 	 * @return the classes that must be present
 	 */
-	public Class<?>[] value() default {};
+	Class<?>[] value() default {};
 
 	/**
 	 * The classes names that must be present.
 	 * @return the class names that must be present.
 	 */
-	public String[] name() default {};
+	String[] name() default {};
+
 }

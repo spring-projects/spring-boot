@@ -16,13 +16,13 @@
 
 package org.springframework.boot.autoconfigure.gson;
 
+import com.google.gson.Gson;
+
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.google.gson.Gson;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Gson.

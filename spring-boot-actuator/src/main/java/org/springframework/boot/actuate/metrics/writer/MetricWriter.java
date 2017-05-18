@@ -22,27 +22,9 @@ import org.springframework.boot.actuate.metrics.Metric;
  * Basic strategy for write operations on {@link Metric} data.
  *
  * @author Dave Syer
+ * @see GaugeWriter
+ * @see CounterWriter
  */
-public interface MetricWriter {
-
-	/**
-	 * Increment the value of a metric (or decrement if the delta is negative). The name
-	 * of the delta is the name of the metric to increment.
-	 * @param delta the amount to increment by
-	 */
-	void increment(Delta<?> delta);
-
-	/**
-	 * Set the value of a metric.
-	 * @param value the value
-	 */
-	void set(Metric<?> value);
-
-	/**
-	 * Reset the value of a metric, usually to zero value. Implementations can discard the
-	 * old values if desired, but may choose not to.
-	 * @param metricName the name to reset
-	 */
-	void reset(String metricName);
+public interface MetricWriter extends GaugeWriter, CounterWriter {
 
 }

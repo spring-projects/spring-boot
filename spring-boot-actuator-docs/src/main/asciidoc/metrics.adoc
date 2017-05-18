@@ -1,0 +1,15 @@
+=== /metrics
+This endpoint lists the public metrics exposed by the application. By default this
+includes all the counters in the `CounterService` and all the gauges in the
+`GaugeService`, plus a few JVM metrics about memory and uptime. Users can register
+additional sources by creating beans of type `PublicMetrics` and/or by registering
+counters and gauges.
+
+Example curl request:
+include::{generated}/metrics/curl-request.adoc[]
+
+Example HTTP request: [small]##link:../metrics[icon:external-link[role="silver"]]##
+include::{generated}/metrics/http-request.adoc[]
+
+Example HTTP response:
+include::{generated}/metrics/http-response.adoc[]

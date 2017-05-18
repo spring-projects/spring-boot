@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,27 +24,27 @@ package org.springframework.boot.configurationprocessor.metadata;
  * @since 1.2.0
  * @see ConfigurationMetadata
  */
-public class ItemMetadata implements Comparable<ItemMetadata> {
+public final class ItemMetadata implements Comparable<ItemMetadata> {
 
-	private final ItemType itemType;
+	private ItemType itemType;
 
-	private final String name;
+	private String name;
 
-	private final String type;
+	private String type;
 
-	private final String description;
+	private String description;
 
-	private final String sourceType;
+	private String sourceType;
 
-	private final String sourceMethod;
+	private String sourceMethod;
 
-	private final Object defaultValue;
+	private Object defaultValue;
 
-	private final boolean deprecated;
+	private ItemDeprecation deprecation;
 
 	ItemMetadata(ItemType itemType, String prefix, String name, String type,
 			String sourceType, String sourceMethod, String description,
-			Object defaultValue, boolean deprecated) {
+			Object defaultValue, ItemDeprecation deprecation) {
 		super();
 		this.itemType = itemType;
 		this.name = buildName(prefix, name);
@@ -53,7 +53,7 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 		this.sourceMethod = sourceMethod;
 		this.description = description;
 		this.defaultValue = defaultValue;
-		this.deprecated = deprecated;
+		this.deprecation = deprecation;
 	}
 
 	private String buildName(String prefix, String name) {
@@ -72,32 +72,64 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 		return this.itemType == itemType;
 	}
 
+	public boolean hasSameType(ItemMetadata metadata) {
+		return this.itemType == metadata.itemType;
+	}
+
 	public String getName() {
 		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getType() {
 		return this.type;
 	}
 
-	public String getSourceType() {
-		return this.sourceType;
-	}
-
-	public String getSourceMethod() {
-		return this.sourceMethod;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getDescription() {
 		return this.description;
 	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getSourceType() {
+		return this.sourceType;
+	}
+
+	public void setSourceType(String sourceType) {
+		this.sourceType = sourceType;
+	}
+
+	public String getSourceMethod() {
+		return this.sourceMethod;
+	}
+
+	public void setSourceMethod(String sourceMethod) {
+		this.sourceMethod = sourceMethod;
+	}
+
 	public Object getDefaultValue() {
 		return this.defaultValue;
 	}
 
-	public boolean isDeprecated() {
-		return this.deprecated;
+	public void setDefaultValue(Object defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	public ItemDeprecation getDeprecation() {
+		return this.deprecation;
+	}
+
+	public void setDeprecation(ItemDeprecation deprecation) {
+		this.deprecation = deprecation;
 	}
 
 	@Override
@@ -107,15 +139,63 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 		buildToStringProperty(string, "sourceType", this.sourceType);
 		buildToStringProperty(string, "description", this.description);
 		buildToStringProperty(string, "defaultValue", this.defaultValue);
-		buildToStringProperty(string, "deprecated", this.deprecated);
+		buildToStringProperty(string, "deprecation", this.deprecation);
 		return string.toString();
 	}
 
-	protected final void buildToStringProperty(StringBuilder string, String property,
+	protected void buildToStringProperty(StringBuilder string, String property,
 			Object value) {
 		if (value != null) {
 			string.append(" ").append(property).append(":").append(value);
 		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		ItemMetadata other = (ItemMetadata) o;
+		boolean result = true;
+		result = result && nullSafeEquals(this.itemType, other.itemType);
+		result = result && nullSafeEquals(this.name, other.name);
+		result = result && nullSafeEquals(this.type, other.type);
+		result = result && nullSafeEquals(this.description, other.description);
+		result = result && nullSafeEquals(this.sourceType, other.sourceType);
+		result = result && nullSafeEquals(this.sourceMethod, other.sourceMethod);
+		result = result && nullSafeEquals(this.defaultValue, other.defaultValue);
+		result = result && nullSafeEquals(this.deprecation, other.deprecation);
+		return result;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = nullSafeHashCode(this.itemType);
+		result = 31 * result + nullSafeHashCode(this.name);
+		result = 31 * result + nullSafeHashCode(this.type);
+		result = 31 * result + nullSafeHashCode(this.description);
+		result = 31 * result + nullSafeHashCode(this.sourceType);
+		result = 31 * result + nullSafeHashCode(this.sourceMethod);
+		result = 31 * result + nullSafeHashCode(this.defaultValue);
+		result = 31 * result + nullSafeHashCode(this.deprecation);
+		return result;
+	}
+
+	private boolean nullSafeEquals(Object o1, Object o2) {
+		if (o1 == o2) {
+			return true;
+		}
+		if (o1 == null || o2 == null) {
+			return false;
+		}
+		return o1.equals(o2);
+	}
+
+	private int nullSafeHashCode(Object o) {
+		return (o == null ? 0 : o.hashCode());
 	}
 
 	@Override
@@ -126,21 +206,31 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 	public static ItemMetadata newGroup(String name, String type, String sourceType,
 			String sourceMethod) {
 		return new ItemMetadata(ItemType.GROUP, name, null, type, sourceType,
-				sourceMethod, null, null, false);
+				sourceMethod, null, null, null);
 	}
 
 	public static ItemMetadata newProperty(String prefix, String name, String type,
 			String sourceType, String sourceMethod, String description,
-			Object defaultValue, boolean deprecated) {
+			Object defaultValue, ItemDeprecation deprecation) {
 		return new ItemMetadata(ItemType.PROPERTY, prefix, name, type, sourceType,
-				sourceMethod, description, defaultValue, deprecated);
+				sourceMethod, description, defaultValue, deprecation);
 	}
 
 	/**
 	 * The item type.
 	 */
-	public static enum ItemType {
-		GROUP, PROPERTY
+	public enum ItemType {
+
+		/**
+		 * Group item type.
+		 */
+		GROUP,
+
+		/**
+		 * Property item type.
+		 */
+		PROPERTY
+
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@ import org.springframework.util.ObjectUtils;
  * @author Dave Syer
  * @since 1.1.1
  */
-public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements
-		ApplicationContextAware {
+public class ParentAwareNamingStrategy extends MetadataNamingStrategy
+		implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
 
@@ -48,9 +48,11 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements
 	}
 
 	/**
-	 * @param ensureUniqueRuntimeObjectNames the ensureUniqueRuntimeObjectNames to set
+	 * Set if unique runtime object names should be ensured.
+	 * @param ensureUniqueRuntimeObjectNames {@code true} if unique names should ensured.
 	 */
-	public void setEnsureUniqueRuntimeObjectNames(boolean ensureUniqueRuntimeObjectNames) {
+	public void setEnsureUniqueRuntimeObjectNames(
+			boolean ensureUniqueRuntimeObjectNames) {
 		this.ensureUniqueRuntimeObjectNames = ensureUniqueRuntimeObjectNames;
 	}
 
@@ -58,7 +60,7 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements
 	public ObjectName getObjectName(Object managedBean, String beanKey)
 			throws MalformedObjectNameException {
 		ObjectName name = super.getObjectName(managedBean, beanKey);
-		Hashtable<String, String> properties = new Hashtable<String, String>();
+		Hashtable<String, String> properties = new Hashtable<>();
 		properties.putAll(name.getKeyPropertyList());
 		if (this.ensureUniqueRuntimeObjectNames) {
 			properties.put("identity", ObjectUtils.getIdentityHexString(managedBean));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Types;
 
 /**
@@ -40,8 +39,9 @@ import javax.lang.model.util.Types;
 class TypeUtils {
 
 	private static final Map<TypeKind, Class<?>> PRIMITIVE_WRAPPERS;
+
 	static {
-		Map<TypeKind, Class<?>> wrappers = new HashMap<TypeKind, Class<?>>();
+		Map<TypeKind, Class<?>> wrappers = new HashMap<>();
 		wrappers.put(TypeKind.BOOLEAN, Boolean.class);
 		wrappers.put(TypeKind.BYTE, Byte.class);
 		wrappers.put(TypeKind.CHAR, Character.class);
@@ -53,44 +53,100 @@ class TypeUtils {
 		PRIMITIVE_WRAPPERS = Collections.unmodifiableMap(wrappers);
 	}
 
+	private static final Map<String, TypeKind> WRAPPER_TO_PRIMITIVE;
+
+	static {
+		Map<String, TypeKind> primitives = new HashMap<>();
+		for (Map.Entry<TypeKind, Class<?>> entry : PRIMITIVE_WRAPPERS.entrySet()) {
+			primitives.put(entry.getValue().getName(), entry.getKey());
+		}
+		WRAPPER_TO_PRIMITIVE = primitives;
+	}
+
 	private final ProcessingEnvironment env;
 
 	private final TypeMirror collectionType;
 
 	private final TypeMirror mapType;
 
-	public TypeUtils(ProcessingEnvironment env) {
+	TypeUtils(ProcessingEnvironment env) {
 		this.env = env;
 		Types types = env.getTypeUtils();
-		WildcardType wc = types.getWildcardType(null, null);
-		this.collectionType = types.getDeclaredType(this.env.getElementUtils()
-				.getTypeElement(Collection.class.getName()), wc);
-		this.mapType = types.getDeclaredType(
-				this.env.getElementUtils().getTypeElement(Map.class.getName()), wc, wc);
-
+		this.collectionType = getDeclaredType(types, Collection.class, 1);
+		this.mapType = getDeclaredType(types, Map.class, 2);
 	}
 
-	public String getType(Element element) {
-		return getType(element == null ? null : element.asType());
+	private TypeMirror getDeclaredType(Types types, Class<?> typeClass,
+			int numberOfTypeArgs) {
+		TypeMirror[] typeArgs = new TypeMirror[numberOfTypeArgs];
+		for (int i = 0; i < typeArgs.length; i++) {
+			typeArgs[i] = types.getWildcardType(null, null);
+		}
+		TypeElement typeElement = this.env.getElementUtils()
+				.getTypeElement(typeClass.getName());
+		try {
+			return types.getDeclaredType(typeElement, typeArgs);
+		}
+		catch (IllegalArgumentException ex) {
+			// Try again without generics for older Java versions
+			return types.getDeclaredType(typeElement);
+		}
 	}
 
+	/**
+	 * Return the qualified name of the specified element.
+	 * @param element the element to handle
+	 * @return the fully qualified name of the element, suitable for a call to
+	 * {@link Class#forName(String)}
+	 */
+	public String getQualifiedName(Element element) {
+		if (element == null) {
+			return null;
+		}
+		TypeElement enclosingElement = getEnclosingTypeElement(element.asType());
+		if (enclosingElement != null) {
+			return getQualifiedName(enclosingElement) + "$"
+					+ ((DeclaredType) element.asType()).asElement().getSimpleName()
+							.toString();
+		}
+		if (element instanceof TypeElement) {
+			return ((TypeElement) element).getQualifiedName().toString();
+		}
+		throw new IllegalStateException(
+				"Could not extract qualified name from " + element);
+	}
+
+	/**
+	 * Return the type of the specified {@link TypeMirror} including all its generic
+	 * information.
+	 * @param type the type to handle
+	 * @return a representation of the type including all its generic information
+	 */
 	public String getType(TypeMirror type) {
 		if (type == null) {
 			return null;
 		}
-		Class<?> wrapper = PRIMITIVE_WRAPPERS.get(type.getKind());
+		Class<?> wrapper = getWrapperFor(type);
 		if (wrapper != null) {
 			return wrapper.getName();
 		}
+		TypeElement enclosingElement = getEnclosingTypeElement(type);
+		if (enclosingElement != null) {
+			return getQualifiedName(enclosingElement) + "$"
+					+ ((DeclaredType) type).asElement().getSimpleName().toString();
+		}
+		return type.toString();
+	}
+
+	private TypeElement getEnclosingTypeElement(TypeMirror type) {
 		if (type instanceof DeclaredType) {
 			DeclaredType declaredType = (DeclaredType) type;
 			Element enclosingElement = declaredType.asElement().getEnclosingElement();
 			if (enclosingElement != null && enclosingElement instanceof TypeElement) {
-				return getType(enclosingElement) + "$"
-						+ declaredType.asElement().getSimpleName().toString();
+				return (TypeElement) enclosingElement;
 			}
 		}
-		return type.toString();
+		return null;
 	}
 
 	public boolean isCollectionOrMap(TypeMirror type) {
@@ -109,12 +165,33 @@ class TypeUtils {
 	}
 
 	public String getJavaDoc(Element element) {
-		String javadoc = (element == null ? null : this.env.getElementUtils()
-				.getDocComment(element));
+		String javadoc = (element == null ? null
+				: this.env.getElementUtils().getDocComment(element));
 		if (javadoc != null) {
 			javadoc = javadoc.trim();
 		}
 		return ("".equals(javadoc) ? null : javadoc);
+	}
+
+	public TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {
+		Class<?> candidate = getWrapperFor(typeMirror);
+		if (candidate != null) {
+			return this.env.getElementUtils().getTypeElement(candidate.getName())
+					.asType();
+		}
+		TypeKind primitiveKind = getPrimitiveFor(typeMirror);
+		if (primitiveKind != null) {
+			return this.env.getTypeUtils().getPrimitiveType(primitiveKind);
+		}
+		return null;
+	}
+
+	private Class<?> getWrapperFor(TypeMirror type) {
+		return PRIMITIVE_WRAPPERS.get(type.getKind());
+	}
+
+	private TypeKind getPrimitiveFor(TypeMirror type) {
+		return WRAPPER_TO_PRIMITIVE.get(type.toString());
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,10 @@ import org.springframework.core.env.Environment;
  *
  * @author Phillip Webb
  * @author Michael Stummvoll
+ * @author Jeremy Rickard
  * @since 1.2.0
  */
+@FunctionalInterface
 public interface Banner {
 
 	/**
@@ -36,5 +38,27 @@ public interface Banner {
 	 * @param out the output print stream
 	 */
 	void printBanner(Environment environment, Class<?> sourceClass, PrintStream out);
+
+	/**
+	 * An enumeration of possible values for configuring the Banner.
+	 */
+	enum Mode {
+
+		/**
+		 * Disable printing of the banner.
+		 */
+		OFF,
+
+		/**
+		 * Print the banner to System.out.
+		 */
+		CONSOLE,
+
+		/**
+		 * Print the banner to the log file.
+		 */
+		LOG
+
+	}
 
 }

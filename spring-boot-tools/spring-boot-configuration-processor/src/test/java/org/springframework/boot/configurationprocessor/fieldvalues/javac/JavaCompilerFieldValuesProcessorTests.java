@@ -28,8 +28,8 @@ import static org.junit.Assume.assumeNoException;
  *
  * @author Phillip Webb
  */
-public class JavaCompilerFieldValuesProcessorTests extends
-		AbstractFieldValuesProcessorTests {
+public class JavaCompilerFieldValuesProcessorTests
+		extends AbstractFieldValuesProcessorTests {
 
 	@Override
 	protected FieldValuesParser createProcessor(ProcessingEnvironment env) {

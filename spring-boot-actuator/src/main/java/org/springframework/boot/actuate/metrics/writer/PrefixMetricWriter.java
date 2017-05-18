@@ -38,7 +38,7 @@ public interface PrefixMetricWriter {
 
 	/**
 	 * Increment the value of a metric (or decrement if the delta is negative). The name
-	 * of the metric to increment is <code>group + "." + delta.name</code>.
+	 * of the metric to increment is {@code group + "." + delta.name}.
 	 * @param group the name of the group
 	 * @param delta the amount to increment by
 	 */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@
 package org.springframework.boot.cli.compiler;
 
 import groovy.lang.GroovyClassLoader;
-
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.ASTTransformation;
+
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.core.annotation.Order;
 
@@ -38,7 +38,10 @@ import org.springframework.core.annotation.Order;
 @Order(DependencyAutoConfigurationTransformation.ORDER)
 public class DependencyAutoConfigurationTransformation implements ASTTransformation {
 
-	public static final int ORDER = GrabMetadataTransformation.ORDER + 100;
+	/**
+	 * The order of the transformation.
+	 */
+	public static final int ORDER = DependencyManagementBomTransformation.ORDER + 100;
 
 	private final GroovyClassLoader loader;
 
@@ -75,4 +78,5 @@ public class DependencyAutoConfigurationTransformation implements ASTTransformat
 			}
 		}
 	}
+
 }

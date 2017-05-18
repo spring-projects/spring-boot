@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,12 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author Dave Syer
  * @author Phillip Webb
  */
-public class ConfigurationPropertiesBindingPostProcessorRegistrar implements
-		ImportBeanDefinitionRegistrar {
+public class ConfigurationPropertiesBindingPostProcessorRegistrar
+		implements ImportBeanDefinitionRegistrar {
 
+	/**
+	 * The bean name of the {@link ConfigurationPropertiesBindingPostProcessor}.
+	 */
 	public static final String BINDER_BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.class
 			.getName();
 
@@ -42,8 +45,8 @@ public class ConfigurationPropertiesBindingPostProcessorRegistrar implements
 		if (!registry.containsBeanDefinition(BINDER_BEAN_NAME)) {
 			BeanDefinitionBuilder meta = BeanDefinitionBuilder
 					.genericBeanDefinition(ConfigurationBeanFactoryMetaData.class);
-			BeanDefinitionBuilder bean = BeanDefinitionBuilder
-					.genericBeanDefinition(ConfigurationPropertiesBindingPostProcessor.class);
+			BeanDefinitionBuilder bean = BeanDefinitionBuilder.genericBeanDefinition(
+					ConfigurationPropertiesBindingPostProcessor.class);
 			bean.addPropertyReference("beanMetaDataStore", METADATA_BEAN_NAME);
 			registry.registerBeanDefinition(BINDER_BEAN_NAME, bean.getBeanDefinition());
 			registry.registerBeanDefinition(METADATA_BEAN_NAME, meta.getBeanDefinition());

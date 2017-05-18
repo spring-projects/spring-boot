@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,16 @@ import sun.misc.SignalHandler;
  * @since 1.1.0
  */
 @SuppressWarnings("restriction")
-public class SignalUtils {
+@UsesUnsafeJava
+public final class SignalUtils {
 
 	private static final Signal SIG_INT = new Signal("INT");
 
+	private SignalUtils() {
+	}
+
 	/**
-	 * Handle {@literal INT} signals by calling the specified {@link Runnable}
+	 * Handle {@literal INT} signals by calling the specified {@link Runnable}.
 	 * @param runnable the runnable to call on SIGINT.
 	 */
 	public static void attachSignalHandler(final Runnable runnable) {

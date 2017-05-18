@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
 
 /**
- * A {@code MetadataStore} is responsible for the storage of metadata on the filesystem
+ * A {@code MetadataStore} is responsible for the storage of metadata on the filesystem.
  *
  * @author Andy Wilkinson
  * @since 1.2.2
@@ -83,27 +85,33 @@ public class MetadataStore {
 		catch (IOException ex) {
 			return null;
 		}
+		catch (Exception ex) {
+			throw new InvalidConfigurationMetadataException(
+					"Invalid additional meta-data in '" + METADATA_PATH + "': "
+							+ ex.getMessage(),
+					Diagnostic.Kind.ERROR);
+		}
 		finally {
 			in.close();
 		}
 	}
 
 	private FileObject getMetadataResource() throws IOException {
-		FileObject resource = this.environment.getFiler().getResource(
-				StandardLocation.CLASS_OUTPUT, "", METADATA_PATH);
+		FileObject resource = this.environment.getFiler()
+				.getResource(StandardLocation.CLASS_OUTPUT, "", METADATA_PATH);
 		return resource;
 	}
 
 	private FileObject createMetadataResource() throws IOException {
-		FileObject resource = this.environment.getFiler().createResource(
-				StandardLocation.CLASS_OUTPUT, "", METADATA_PATH);
+		FileObject resource = this.environment.getFiler()
+				.createResource(StandardLocation.CLASS_OUTPUT, "", METADATA_PATH);
 		return resource;
 	}
 
 	private InputStream getAdditionalMetadataStream() throws IOException {
 		// Most build systems will have copied the file to the class output location
-		FileObject fileObject = this.environment.getFiler().getResource(
-				StandardLocation.CLASS_OUTPUT, "", ADDITIONAL_METADATA_PATH);
+		FileObject fileObject = this.environment.getFiler()
+				.getResource(StandardLocation.CLASS_OUTPUT, "", ADDITIONAL_METADATA_PATH);
 		File file = new File(fileObject.toUri());
 		if (!file.exists()) {
 			// Gradle keeps things separate
@@ -115,8 +123,8 @@ public class MetadataStore {
 				file = new File(path);
 			}
 		}
-		return (file.exists() ? new FileInputStream(file) : fileObject.toUri().toURL()
-				.openStream());
+		return (file.exists() ? new FileInputStream(file)
+				: fileObject.toUri().toURL().openStream());
 	}
 
 }

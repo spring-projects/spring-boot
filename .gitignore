@@ -10,10 +10,12 @@
 .settings
 .metadata
 .factorypath
+.recommenders
 bin
 build
 lib/
 target
+.factorypath
 .springBeans
 interpolated*.xml
 dependency-reduced-pom.xml
@@ -31,3 +33,6 @@ overridedb.*
 .idea
 *.jar
 .DS_Store
+.factorypath
+dump.rdb
+transaction-logs

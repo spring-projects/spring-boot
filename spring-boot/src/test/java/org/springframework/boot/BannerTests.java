@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,41 +18,115 @@ package org.springframework.boot;
 
 import java.io.PrintStream;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.test.OutputCapture;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.MockitoAnnotations;
+
+import org.springframework.boot.Banner.Mode;
+import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link Banner} and its usage by {@link SpringApplication}.
  *
  * @author Phillip Webb
  * @author Michael Stummvoll
+ * @author Michael Simons
  */
 public class BannerTests {
 
+	private ConfigurableApplicationContext context;
+
+	@After
+	public void cleanUp() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Rule
-	public OutputCapture out = new OutputCapture();
+	public InternalOutputCapture out = new InternalOutputCapture();
+
+	@Captor
+	private ArgumentCaptor<Class<?>> sourceClassCaptor;
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+	}
 
 	@Test
 	public void testDefaultBanner() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
-		application.run();
-		assertThat(this.out.toString(), containsString(":: Spring Boot ::"));
+		application.setWebApplicationType(WebApplicationType.NONE);
+		this.context = application.run();
+		assertThat(this.out.toString()).contains(":: Spring Boot ::");
+	}
+
+	@Test
+	public void testDefaultBannerInLog() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		this.context = application.run();
+		assertThat(this.out.toString()).contains(":: Spring Boot ::");
 	}
 
 	@Test
 	public void testCustomBanner() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebEnvironment(false);
+		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setBanner(new DummyBanner());
-		application.run();
-		assertThat(this.out.toString(), containsString("My Banner"));
+		this.context = application.run();
+		assertThat(this.out.toString()).contains("My Banner");
+	}
+
+	@Test
+	public void testBannerInContext() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		this.context = application.run();
+		assertThat(this.context.containsBean("springBootBanner")).isTrue();
+	}
+
+	@Test
+	public void testCustomBannerInContext() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		Banner banner = mock(Banner.class);
+		application.setBanner(banner);
+		this.context = application.run();
+		Banner printedBanner = (Banner) this.context.getBean("springBootBanner");
+		assertThat(ReflectionTestUtils.getField(printedBanner, "banner"))
+				.isEqualTo(banner);
+		verify(banner).printBanner(any(Environment.class),
+				this.sourceClassCaptor.capture(), any(PrintStream.class));
+		reset(banner);
+		printedBanner.printBanner(this.context.getEnvironment(), null, System.out);
+		verify(banner).printBanner(any(Environment.class),
+				eq(this.sourceClassCaptor.getValue()), any(PrintStream.class));
+	}
+
+	@Test
+	public void testDisableBannerInContext() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setBannerMode(Mode.OFF);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		this.context = application.run();
+		assertThat(this.context.containsBean("springBootBanner")).isFalse();
 	}
 
 	static class DummyBanner implements Banner {

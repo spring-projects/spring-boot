@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.test.OutputCapture;
 
-import static org.junit.Assert.assertTrue;
+import org.springframework.boot.test.rule.OutputCapture;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SampleSimpleApplication}.
@@ -56,14 +57,18 @@ public class SampleSimpleApplicationTests {
 	public void testDefaultSettings() throws Exception {
 		SampleSimpleApplication.main(new String[0]);
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output, output.contains("Hello Phil"));
+		assertThat(output).contains("Hello Phil");
+		assertThat(output).contains("The @ConfigurationProperties bean class "
+				+ "sample.simple.SampleConfigurationProperties contains "
+				+ "validation constraints but had not been annotated "
+				+ "with @Validated");
 	}
 
 	@Test
 	public void testCommandLineOverrides() throws Exception {
 		SampleSimpleApplication.main(new String[] { "--name=Gordon" });
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output, output.contains("Hello Gordon"));
+		assertThat(output).contains("Hello Gordon");
 	}
 
 }

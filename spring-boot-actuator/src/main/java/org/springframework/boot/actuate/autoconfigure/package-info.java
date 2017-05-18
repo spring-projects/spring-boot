@@ -18,4 +18,3 @@
  * Auto-configuration for the actuator.
  */
 package org.springframework.boot.actuate.autoconfigure;
-

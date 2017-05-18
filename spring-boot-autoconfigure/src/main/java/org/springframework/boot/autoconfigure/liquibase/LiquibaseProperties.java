@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,13 @@
 
 package org.springframework.boot.autoconfigure.liquibase;
 
-import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.util.Map;
 
 import liquibase.integration.spring.SpringLiquibase;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
 
 /**
  * Configuration properties to configure {@link SpringLiquibase}.
@@ -34,7 +36,6 @@ public class LiquibaseProperties {
 	/**
 	 * Change log configuration path.
 	 */
-	@NotNull
 	private String changeLog = "classpath:/db/changelog/db.changelog-master.yaml";
 
 	/**
@@ -78,11 +79,27 @@ public class LiquibaseProperties {
 	 */
 	private String url;
 
+	/**
+	 * Comma-separated list of runtime labels to use.
+	 */
+	private String labels;
+
+	/**
+	 * Change log parameters.
+	 */
+	private Map<String, String> parameters;
+
+	/**
+	 * File to which rollback SQL will be written when an update is performed.
+	 */
+	private File rollbackFile;
+
 	public String getChangeLog() {
 		return this.changeLog;
 	}
 
 	public void setChangeLog(String changeLog) {
+		Assert.notNull(changeLog, "ChangeLog must not be null");
 		this.changeLog = changeLog;
 	}
 
@@ -148,6 +165,30 @@ public class LiquibaseProperties {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public String getLabels() {
+		return this.labels;
+	}
+
+	public void setLabels(String labels) {
+		this.labels = labels;
+	}
+
+	public Map<String, String> getParameters() {
+		return this.parameters;
+	}
+
+	public void setParameters(Map<String, String> parameters) {
+		this.parameters = parameters;
+	}
+
+	public File getRollbackFile() {
+		return this.rollbackFile;
+	}
+
+	public void setRollbackFile(File rollbackFile) {
+		this.rollbackFile = rollbackFile;
 	}
 
 }

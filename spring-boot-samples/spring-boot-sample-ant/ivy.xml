@@ -1,0 +1,12 @@
+<ivy-module version="2.0">
+	<info organisation="org.springframework.boot" module="spring-boot-sample-ant" />
+	<configurations>
+		<conf name="compile" description="everything needed to compile this module" />
+		<conf name="runtime" extends="compile" description="everything needed to run this module" />
+		<conf name="loader" description="Spring Boot loader used when manually building an executable archive" />
+	</configurations>
+	<dependencies>
+		<dependency org="org.springframework.boot" name="spring-boot-starter" rev="${spring-boot.version}" conf="compile" />
+		<dependency org="org.springframework.boot" name="spring-boot-loader" rev="${spring-boot.version}" conf="loader->default" />
+	</dependencies>
+</ivy-module>

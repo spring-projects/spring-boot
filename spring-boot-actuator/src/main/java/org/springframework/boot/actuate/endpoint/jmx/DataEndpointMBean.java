@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,29 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
-import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
  * Simple wrapper around {@link Endpoint} implementations that provide actuator data of
  * some sort.
  *
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  */
-@ManagedResource
 public class DataEndpointMBean extends EndpointMBean {
 
-	public DataEndpointMBean(String beanName, Endpoint<?> endpoint) {
-		super(beanName, endpoint);
+	/**
+	 * Create a new {@link DataEndpointMBean} instance.
+	 * @param beanName the bean name
+	 * @param endpoint the endpoint to wrap
+	 * @param objectMapper the {@link ObjectMapper} used to convert the payload
+	 */
+	public DataEndpointMBean(String beanName, Endpoint<?> endpoint,
+			ObjectMapper objectMapper) {
+		super(beanName, endpoint, objectMapper);
 	}
 
 	@ManagedAttribute(description = "Invoke the underlying endpoint")

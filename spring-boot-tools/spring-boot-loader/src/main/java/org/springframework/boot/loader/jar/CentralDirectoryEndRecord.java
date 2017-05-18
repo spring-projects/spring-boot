@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.springframework.boot.loader.data.RandomAccessData;
  * A ZIP File "End of central directory record" (EOCD).
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @see <a href="http://en.wikipedia.org/wiki/Zip_%28file_format%29">Zip File Format</a>
  */
 class CentralDirectoryEndRecord {
@@ -51,9 +52,9 @@ class CentralDirectoryEndRecord {
 	 * {@link RandomAccessData}, searching backwards from the end until a valid block is
 	 * located.
 	 * @param data the source data
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
-	public CentralDirectoryEndRecord(RandomAccessData data) throws IOException {
+	CentralDirectoryEndRecord(RandomAccessData data) throws IOException {
 		this.block = createBlockFromEndOfData(data, READ_BLOCK_SIZE);
 		this.size = MINIMUM_SIZE;
 		this.offset = this.block.length - this.size;
@@ -82,8 +83,8 @@ class CentralDirectoryEndRecord {
 			return false;
 		}
 		// Total size must be the structure size + comment
-		long commentLength = Bytes.littleEndianValue(this.block, this.offset
-				+ COMMENT_LENGTH_OFFSET, 2);
+		long commentLength = Bytes.littleEndianValue(this.block,
+				this.offset + COMMENT_LENGTH_OFFSET, 2);
 		return this.size == MINIMUM_SIZE + commentLength;
 	}
 
@@ -118,7 +119,11 @@ class CentralDirectoryEndRecord {
 	 * @return the number of records in the zip
 	 */
 	public int getNumberOfRecords() {
-		return (int) Bytes.littleEndianValue(this.block, this.offset + 10, 2);
+		long numberOfRecords = Bytes.littleEndianValue(this.block, this.offset + 10, 2);
+		if (numberOfRecords == 0xFFFF) {
+			throw new IllegalStateException("Zip64 archives are not supported");
+		}
+		return (int) numberOfRecords;
 	}
 
 }

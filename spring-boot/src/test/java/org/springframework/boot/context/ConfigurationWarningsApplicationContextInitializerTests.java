@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,27 @@
 
 package org.springframework.boot.context;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer.ComponentScanDefaultPackageCheck;
-import org.springframework.boot.context.configwarnings.InDefaultPackageConfiguration;
-import org.springframework.boot.context.configwarnings.InDefaultPackageWithBasePackageClassesConfiguration;
-import org.springframework.boot.context.configwarnings.InDefaultPackageWithBasePackagesConfiguration;
-import org.springframework.boot.context.configwarnings.InDefaultPackageWithMetaAnnotationConfiguration;
-import org.springframework.boot.context.configwarnings.InDefaultPackageWithValueConfiguration;
-import org.springframework.boot.context.configwarnings.InDefaultPackageWithoutScanConfiguration;
-import org.springframework.boot.context.configwarnings.InRealPackageConfiguration;
-import org.springframework.boot.test.OutputCapture;
+
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer.ComponentScanPackageCheck;
+import org.springframework.boot.context.configwarnings.dflt.InDefaultPackageConfiguration;
+import org.springframework.boot.context.configwarnings.dflt.InDefaultPackageWithBasePackageClassesConfiguration;
+import org.springframework.boot.context.configwarnings.dflt.InDefaultPackageWithBasePackagesConfiguration;
+import org.springframework.boot.context.configwarnings.dflt.InDefaultPackageWithMetaAnnotationConfiguration;
+import org.springframework.boot.context.configwarnings.dflt.InDefaultPackageWithValueConfiguration;
+import org.springframework.boot.context.configwarnings.dflt.InDefaultPackageWithoutScanConfiguration;
+import org.springframework.boot.context.configwarnings.orgspring.InOrgSpringPackageConfiguration;
+import org.springframework.boot.context.configwarnings.real.InRealButScanningProblemPackages;
+import org.springframework.boot.context.configwarnings.real.InRealPackageConfiguration;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationWarningsApplicationContextInitializer}.
@@ -40,52 +45,70 @@ import static org.junit.Assert.assertThat;
  */
 public class ConfigurationWarningsApplicationContextInitializerTests {
 
-	private static final String SCAN_WARNING = "Your ApplicationContext is unlikely to "
-			+ "start due to a @ComponentScan of the default package";
+	private static final String DEFAULT_SCAN_WARNING = "Your ApplicationContext is unlikely to "
+			+ "start due to a @ComponentScan of the default package.";
+
+	private static final String ORGSPRING_SCAN_WARNING = "Your ApplicationContext is unlikely to "
+			+ "start due to a @ComponentScan of 'org.springframework'.";
 
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public InternalOutputCapture output = new InternalOutputCapture();
 
 	@Test
 	public void logWarningInDefaultPackage() {
 		load(InDefaultPackageConfiguration.class);
-		assertThat(this.output.toString(), containsString(SCAN_WARNING));
+		assertThat(this.output.toString()).contains(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void logWarningInDefaultPackageAndMetaAnnotation() {
 		load(InDefaultPackageWithMetaAnnotationConfiguration.class);
-		assertThat(this.output.toString(), containsString(SCAN_WARNING));
+		assertThat(this.output.toString()).contains(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void noLogIfInRealPackage() throws Exception {
 		load(InRealPackageConfiguration.class);
-		assertThat(this.output.toString(), not(containsString(SCAN_WARNING)));
+		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	public void noLogWithoutComponetScanAnnotation() throws Exception {
+	public void noLogWithoutComponentScanAnnotation() throws Exception {
 		load(InDefaultPackageWithoutScanConfiguration.class);
-		assertThat(this.output.toString(), not(containsString(SCAN_WARNING)));
+		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void noLogIfHasValue() throws Exception {
 		load(InDefaultPackageWithValueConfiguration.class);
-		assertThat(this.output.toString(), not(containsString(SCAN_WARNING)));
+		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void noLogIfHasBasePackages() throws Exception {
 		load(InDefaultPackageWithBasePackagesConfiguration.class);
-		assertThat(this.output.toString(), not(containsString(SCAN_WARNING)));
+		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void noLogIfHasBasePackageClasses() throws Exception {
 		load(InDefaultPackageWithBasePackageClassesConfiguration.class);
-		assertThat(this.output.toString(), not(containsString(SCAN_WARNING)));
+		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
+	}
+
+	@Test
+	public void logWarningInOrgSpringPackage() {
+		load(InOrgSpringPackageConfiguration.class);
+		assertThat(this.output.toString()).contains(ORGSPRING_SCAN_WARNING);
+	}
+
+	@Test
+	public void logWarningIfScanningProblemPackages() throws Exception {
+		load(InRealButScanningProblemPackages.class);
+		assertThat(this.output.toString())
+				.contains("Your ApplicationContext is unlikely to start due to a "
+						+ "@ComponentScan of the default package, 'org.springframework'.");
+
 	}
 
 	private void load(Class<?> configClass) {
@@ -106,26 +129,39 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	/**
 	 * Testable version of {@link ConfigurationWarningsApplicationContextInitializer}.
 	 */
-	public static class TestConfigurationWarningsApplicationContextInitializer extends
-			ConfigurationWarningsApplicationContextInitializer {
+	public static class TestConfigurationWarningsApplicationContextInitializer
+			extends ConfigurationWarningsApplicationContextInitializer {
 
 		@Override
 		protected Check[] getChecks() {
-			return new Check[] { new TestComponentScanDefaultPackageCheck() };
+			return new Check[] { new TestComponentScanPackageCheck() };
 		}
 
 	}
 
 	/**
-	 * Testable ComponentScanDefaultPackageCheck that doesn't need to use the default
-	 * package.
+	 * Testable ComponentScanPackageCheck that doesn't need to use the default or
+	 * {@code org.springframework} package.
 	 */
-	static class TestComponentScanDefaultPackageCheck extends
-			ComponentScanDefaultPackageCheck {
+	static class TestComponentScanPackageCheck extends ComponentScanPackageCheck {
 
 		@Override
-		protected boolean isInDefaultPackage(String className) {
-			return className.contains("InDefault");
+		protected Set<String> getComponentScanningPackages(
+				BeanDefinitionRegistry registry) {
+			Set<String> scannedPackages = super.getComponentScanningPackages(registry);
+			Set<String> result = new LinkedHashSet<>();
+			for (String scannedPackage : scannedPackages) {
+				if (scannedPackage.endsWith("dflt")) {
+					result.add("");
+				}
+				else if (scannedPackage.endsWith("orgspring")) {
+					result.add("org.springframework");
+				}
+				else {
+					result.add(scannedPackage);
+				}
+			}
+			return result;
 		}
 
 	}

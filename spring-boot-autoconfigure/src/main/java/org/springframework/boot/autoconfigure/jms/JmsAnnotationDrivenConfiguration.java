@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.jms;
 
 import javax.jms.ConnectionFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -27,9 +27,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerConfigUtils;
+import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.JndiDestinationResolver;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.jta.JtaTransactionManager;
 
 /**
  * Configuration for Spring 4.1 annotation driven JMS.
@@ -42,42 +43,57 @@ import org.springframework.transaction.PlatformTransactionManager;
 @ConditionalOnClass(EnableJms.class)
 class JmsAnnotationDrivenConfiguration {
 
-	@Autowired(required = false)
-	private DestinationResolver destinationResolver;
+	private final ObjectProvider<DestinationResolver> destinationResolver;
 
-	@Autowired(required = false)
-	private PlatformTransactionManager transactionManager;
+	private final ObjectProvider<JtaTransactionManager> transactionManager;
 
-	@Autowired
-	private JmsProperties properties;
+	private final ObjectProvider<MessageConverter> messageConverter;
+
+	private final JmsProperties properties;
+
+	JmsAnnotationDrivenConfiguration(
+			ObjectProvider<DestinationResolver> destinationResolver,
+			ObjectProvider<JtaTransactionManager> transactionManager,
+			ObjectProvider<MessageConverter> messageConverter, JmsProperties properties) {
+		this.destinationResolver = destinationResolver;
+		this.transactionManager = transactionManager;
+		this.messageConverter = messageConverter;
+		this.properties = properties;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer() {
+		DefaultJmsListenerContainerFactoryConfigurer configurer = new DefaultJmsListenerContainerFactoryConfigurer();
+		configurer.setDestinationResolver(this.destinationResolver.getIfUnique());
+		configurer.setTransactionManager(this.transactionManager.getIfUnique());
+		configurer.setMessageConverter(this.messageConverter.getIfUnique());
+		configurer.setJmsProperties(this.properties);
+		return configurer;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
 	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
+			DefaultJmsListenerContainerFactoryConfigurer configurer,
 			ConnectionFactory connectionFactory) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-		factory.setConnectionFactory(connectionFactory);
-		factory.setPubSubDomain(this.properties.isPubSubDomain());
-		if (this.transactionManager != null) {
-			factory.setTransactionManager(this.transactionManager);
-		}
-		if (this.destinationResolver != null) {
-			factory.setDestinationResolver(this.destinationResolver);
-		}
+		configurer.configure(factory, connectionFactory);
 		return factory;
 	}
 
 	@EnableJms
 	@ConditionalOnMissingBean(name = JmsListenerConfigUtils.JMS_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 	protected static class EnableJmsConfiguration {
+
 	}
 
 	@ConditionalOnJndi
 	protected static class JndiConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		public DestinationResolver destinationResolver() {
+		@ConditionalOnMissingBean(DestinationResolver.class)
+		public JndiDestinationResolver destinationResolver() {
 			JndiDestinationResolver resolver = new JndiDestinationResolver();
 			resolver.setFallbackToDynamicDestination(true);
 			return resolver;

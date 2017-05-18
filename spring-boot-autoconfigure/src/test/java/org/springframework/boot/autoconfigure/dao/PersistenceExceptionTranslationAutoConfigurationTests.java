@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,10 @@ import javax.persistence.EntityManagerFactory;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,16 +34,13 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.stereotype.Repository;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- *
  * Tests for {@link PersistenceExceptionTranslationAutoConfiguration}
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class PersistenceExceptionTranslationAutoConfigurationTests {
 
@@ -56,17 +54,30 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 	}
 
 	@Test
-	public void exceptionTranslationPostProcessorBeanIsCreated() {
+	public void exceptionTranslationPostProcessorUsesCglibByDefault() {
 		this.context = new AnnotationConfigApplicationContext(
 				PersistenceExceptionTranslationAutoConfiguration.class);
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
 				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
-		assertThat(beans.size(), is(equalTo(1)));
-		assertThat(beans.values().iterator().next().isProxyTargetClass(), equalTo(true));
+		assertThat(beans).hasSize(1);
+		assertThat(beans.values().iterator().next().isProxyTargetClass()).isTrue();
 	}
 
 	@Test
-	public void exceptionTranslationPostProcessorBeanIsDisabled() {
+	public void exceptionTranslationPostProcessorCanBeConfiguredToUseJdkProxy() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.aop.proxy-target-class=false");
+		this.context.register(PersistenceExceptionTranslationAutoConfiguration.class);
+		this.context.refresh();
+		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
+				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
+		assertThat(beans).hasSize(1);
+		assertThat(beans.values().iterator().next().isProxyTargetClass()).isFalse();
+	}
+
+	@Test
+	public void exceptionTranslationPostProcessorCanBeDisabled() {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.dao.exceptiontranslation.enabled=false");
@@ -74,7 +85,7 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 		this.context.refresh();
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
 				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
-		assertThat(beans.entrySet(), empty());
+		assertThat(beans.entrySet()).isEmpty();
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -101,20 +112,22 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 		public TestRepository testRepository(EntityManagerFactory entityManagerFactory) {
 			return new TestRepository(entityManagerFactory.createEntityManager());
 		}
+
 	}
 
 	@Repository
 	private static class TestRepository {
 
-		private final EntityManager entityManger;
+		private final EntityManager entityManager;
 
-		public TestRepository(EntityManager entityManager) {
-			this.entityManger = entityManager;
+		TestRepository(EntityManager entityManager) {
+			this.entityManager = entityManager;
 		}
 
 		public void doSomething() {
-			this.entityManger.persist(null);
+			this.entityManager.persist(null);
 		}
+
 	}
 
 }

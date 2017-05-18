@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 	@Autowired
 	private Collection<DataSourcePoolMetadataProvider> providers;
 
-	private final Map<String, DataSourcePoolMetadata> metadataByPrefix = new HashMap<String, DataSourcePoolMetadata>();
+	private final Map<String, DataSourcePoolMetadata> metadataByPrefix = new HashMap<>();
 
 	@PostConstruct
 	public void initialize() {
@@ -72,7 +72,7 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 
 	@Override
 	public Collection<Metric<?>> metrics() {
-		Set<Metric<?>> metrics = new LinkedHashSet<Metric<?>>();
+		Set<Metric<?>> metrics = new LinkedHashSet<>();
 		for (Map.Entry<String, DataSourcePoolMetadata> entry : this.metadataByPrefix
 				.entrySet()) {
 			String prefix = entry.getKey();
@@ -84,9 +84,10 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 		return metrics;
 	}
 
-	private <T extends Number> void addMetric(Set<Metric<?>> metrics, String name, T value) {
+	private <T extends Number> void addMetric(Set<Metric<?>> metrics, String name,
+			T value) {
 		if (value != null) {
-			metrics.add(new Metric<T>(name, value));
+			metrics.add(new Metric<>(name, value));
 		}
 	}
 
@@ -111,8 +112,9 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 
 	/**
 	 * Attempt to locate the primary {@link DataSource} (i.e. either the only data source
-	 * available or the one amongst the candidates marked as {@link Primary}. Return
+	 * available or the one amongst the candidates marked as {@link Primary}). Return
 	 * {@code null} if there no primary data source could be found.
+	 * @return the primary datasource
 	 */
 	private DataSource getPrimaryDataSource() {
 		try {

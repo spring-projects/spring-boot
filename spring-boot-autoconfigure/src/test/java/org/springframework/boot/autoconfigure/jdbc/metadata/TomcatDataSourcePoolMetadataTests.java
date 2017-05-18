@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,21 +19,22 @@ package org.springframework.boot.autoconfigure.jdbc.metadata;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.junit.Before;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link TomcatDataSourcePoolMetadata}.
  *
  * @author Stephane Nicoll
  */
-public class TomcatDataSourcePoolMetadataTests extends
-		AbstractDataSourcePoolMetadataTests<TomcatDataSourcePoolMetadata> {
+public class TomcatDataSourcePoolMetadataTests
+		extends AbstractDataSourcePoolMetadataTests<TomcatDataSourcePoolMetadata> {
 
 	private TomcatDataSourcePoolMetadata dataSourceMetadata;
 
 	@Before
 	public void setup() {
-		this.dataSourceMetadata = new TomcatDataSourcePoolMetadata(createDataSource(0, 2));
+		this.dataSourceMetadata = new TomcatDataSourcePoolMetadata(
+				createDataSource(0, 2));
 	}
 
 	@Override
@@ -45,8 +46,8 @@ public class TomcatDataSourcePoolMetadataTests extends
 	public void getValidationQuery() {
 		DataSource dataSource = createDataSource(0, 4);
 		dataSource.setValidationQuery("SELECT FROM FOO");
-		assertEquals("SELECT FROM FOO",
-				new TomcatDataSourcePoolMetadata(dataSource).getValidationQuery());
+		assertThat(new TomcatDataSourcePoolMetadata(dataSource).getValidationQuery())
+				.isEqualTo("SELECT FROM FOO");
 	}
 
 	private DataSource createDataSource(int minSize, int maxSize) {

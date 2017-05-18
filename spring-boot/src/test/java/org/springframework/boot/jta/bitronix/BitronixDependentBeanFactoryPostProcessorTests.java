@@ -19,13 +19,13 @@ package org.springframework.boot.jta.bitronix;
 import javax.jms.ConnectionFactory;
 import javax.sql.DataSource;
 
+import bitronix.tm.BitronixTransactionManager;
 import org.junit.Test;
+
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import bitronix.tm.BitronixTransactionManager;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;

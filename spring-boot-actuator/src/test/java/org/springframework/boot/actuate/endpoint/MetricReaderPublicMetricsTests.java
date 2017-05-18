@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -36,13 +37,13 @@ public class MetricReaderPublicMetricsTests {
 
 	@Test
 	public void exposesMetrics() {
-		List<Metric<?>> metrics = new ArrayList<Metric<?>>();
+		List<Metric<?>> metrics = new ArrayList<>();
 		metrics.add(mock(Metric.class));
 		metrics.add(mock(Metric.class));
 		MetricReader reader = mock(MetricReader.class);
 		given(reader.findAll()).willReturn(metrics);
 		MetricReaderPublicMetrics publicMetrics = new MetricReaderPublicMetrics(reader);
-		assertEquals(metrics, publicMetrics.metrics());
+		assertThat(publicMetrics.metrics()).isEqualTo(metrics);
 	}
 
 }

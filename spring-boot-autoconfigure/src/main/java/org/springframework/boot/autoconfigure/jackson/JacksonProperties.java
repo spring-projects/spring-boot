@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,25 @@
 package org.springframework.boot.autoconfigure.jackson;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 /**
- * Configuration properties to configure Jackson
+ * Configuration properties to configure Jackson.
  *
  * @author Andy Wilkinson
  * @author Marcel Overdijk
+ * @author Johannes Edmeier
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.jackson")
@@ -45,8 +49,7 @@ public class JacksonProperties {
 
 	/**
 	 * Joda date time format string (yyyy-MM-dd HH:mm:ss). If not configured,
-	 * {@code date-format} will be used as a fallback if it is configured with a format
-	 * string.
+	 * "date-format" will be used as a fallback if it is configured with a format string.
 	 */
 	private String jodaDateTimeFormat;
 
@@ -60,27 +63,44 @@ public class JacksonProperties {
 	/**
 	 * Jackson on/off features that affect the way Java objects are serialized.
 	 */
-	private Map<SerializationFeature, Boolean> serialization = new HashMap<SerializationFeature, Boolean>();
+	private Map<SerializationFeature, Boolean> serialization = new HashMap<>();
 
 	/**
 	 * Jackson on/off features that affect the way Java objects are deserialized.
 	 */
-	private Map<DeserializationFeature, Boolean> deserialization = new HashMap<DeserializationFeature, Boolean>();
+	private Map<DeserializationFeature, Boolean> deserialization = new HashMap<>();
 
 	/**
 	 * Jackson general purpose on/off features.
 	 */
-	private Map<MapperFeature, Boolean> mapper = new HashMap<MapperFeature, Boolean>();
+	private Map<MapperFeature, Boolean> mapper = new HashMap<>();
 
 	/**
 	 * Jackson on/off features for parsers.
 	 */
-	private Map<JsonParser.Feature, Boolean> parser = new HashMap<JsonParser.Feature, Boolean>();
+	private Map<JsonParser.Feature, Boolean> parser = new HashMap<>();
 
 	/**
 	 * Jackson on/off features for generators.
 	 */
-	private Map<JsonGenerator.Feature, Boolean> generator = new HashMap<JsonGenerator.Feature, Boolean>();
+	private Map<JsonGenerator.Feature, Boolean> generator = new HashMap<>();
+
+	/**
+	 * Controls the inclusion of properties during serialization. Configured with one of
+	 * the values in Jackson's JsonInclude.Include enumeration.
+	 */
+	private JsonInclude.Include defaultPropertyInclusion;
+
+	/**
+	 * Time zone used when formatting dates. Configured using any recognized time zone
+	 * identifier, for example "America/Los_Angeles" or "GMT+10".
+	 */
+	private TimeZone timeZone = null;
+
+	/**
+	 * Locale used for formatting.
+	 */
+	private Locale locale;
 
 	public String getDateFormat() {
 		return this.dateFormat;
@@ -124,6 +144,31 @@ public class JacksonProperties {
 
 	public Map<JsonGenerator.Feature, Boolean> getGenerator() {
 		return this.generator;
+	}
+
+	public JsonInclude.Include getDefaultPropertyInclusion() {
+		return this.defaultPropertyInclusion;
+	}
+
+	public void setDefaultPropertyInclusion(
+			JsonInclude.Include defaultPropertyInclusion) {
+		this.defaultPropertyInclusion = defaultPropertyInclusion;
+	}
+
+	public TimeZone getTimeZone() {
+		return this.timeZone;
+	}
+
+	public void setTimeZone(TimeZone timeZone) {
+		this.timeZone = timeZone;
+	}
+
+	public Locale getLocale() {
+		return this.locale;
+	}
+
+	public void setLocale(Locale locale) {
+		this.locale = locale;
 	}
 
 }

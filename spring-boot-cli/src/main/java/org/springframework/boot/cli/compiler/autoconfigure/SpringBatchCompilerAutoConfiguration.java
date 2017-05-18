@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.cli.compiler.autoconfigure;
 
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+
 import org.springframework.boot.cli.compiler.AstUtils;
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
@@ -37,16 +38,15 @@ public class SpringBatchCompilerAutoConfiguration extends CompilerAutoConfigurat
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies.ifAnyMissingClasses("org.springframework.batch.core.Job").add(
-				"spring-boot-starter-batch");
+		dependencies.ifAnyMissingClasses("org.springframework.batch.core.Job")
+				.add("spring-boot-starter-batch");
 		dependencies.ifAnyMissingClasses("org.springframework.jdbc.core.JdbcTemplate")
 				.add("spring-jdbc");
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addImports(
-				"org.springframework.batch.repeat.RepeatStatus",
+		imports.addImports("org.springframework.batch.repeat.RepeatStatus",
 				"org.springframework.batch.core.scope.context.ChunkContext",
 				"org.springframework.batch.core.step.tasklet.Tasklet",
 				"org.springframework.batch.core.configuration.annotation.StepScope",
@@ -64,4 +64,5 @@ public class SpringBatchCompilerAutoConfiguration extends CompilerAutoConfigurat
 				"org.springframework.batch.core.converter.JobParametersConverter",
 				"org.springframework.batch.core.converter.DefaultJobParametersConverter");
 	}
+
 }

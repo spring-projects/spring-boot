@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,8 @@ import org.eclipse.aether.transfer.TransferResource;
  */
 final class DetailedProgressReporter implements ProgressReporter {
 
-	DetailedProgressReporter(DefaultRepositorySystemSession session, final PrintStream out) {
+	DetailedProgressReporter(DefaultRepositorySystemSession session,
+			final PrintStream out) {
 
 		session.setTransferListener(new AbstractTransferListener() {
 
@@ -56,8 +57,8 @@ final class DetailedProgressReporter implements ProgressReporter {
 
 	private String getTransferSpeed(TransferEvent event) {
 		long kb = event.getTransferredBytes() / 1024;
-		float seconds = (System.currentTimeMillis() - event.getResource()
-				.getTransferStartTime()) / 1000.0f;
+		float seconds = (System.currentTimeMillis()
+				- event.getResource().getTransferStartTime()) / 1000.0f;
 
 		return String.format("%dKB at %.1fKB/sec", kb, (kb / seconds));
 	}
@@ -65,4 +66,5 @@ final class DetailedProgressReporter implements ProgressReporter {
 	@Override
 	public void finished() {
 	}
+
 }

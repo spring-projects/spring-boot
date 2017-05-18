@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,11 @@
 package org.springframework.boot.logging;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -29,6 +32,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Ben Hale
  */
 public abstract class LoggingSystem {
 
@@ -37,15 +41,27 @@ public abstract class LoggingSystem {
 	 */
 	public static final String SYSTEM_PROPERTY = LoggingSystem.class.getName();
 
+	/**
+	 * The value of the {@link #SYSTEM_PROPERTY} that can be used to indicate that no
+	 * {@link LoggingSystem} should be used.
+	 */
+	public static final String NONE = "none";
+
+	/**
+	 * The name used for the root logger. LoggingSystem implementations should ensure that
+	 * this is the name used to represent the root logger, regardless of the underlying
+	 * implementation.
+	 */
+	public static final String ROOT_LOGGER_NAME = "ROOT";
+
 	private static final Map<String, String> SYSTEMS;
+
 	static {
-		Map<String, String> systems = new LinkedHashMap<String, String>();
+		Map<String, String> systems = new LinkedHashMap<>();
 		systems.put("ch.qos.logback.core.Appender",
 				"org.springframework.boot.logging.logback.LogbackLoggingSystem");
-		systems.put("org.apache.logging.log4j.LogManager",
+		systems.put("org.apache.logging.log4j.core.impl.Log4jContextFactory",
 				"org.springframework.boot.logging.log4j2.Log4J2LoggingSystem");
-		systems.put("org.apache.log4j.PropertyConfigurator",
-				"org.springframework.boot.logging.log4j.Log4JLoggingSystem");
 		systems.put("java.util.logging.LogManager",
 				"org.springframework.boot.logging.java.JavaLoggingSystem");
 		SYSTEMS = Collections.unmodifiableMap(systems);
@@ -53,19 +69,22 @@ public abstract class LoggingSystem {
 
 	/**
 	 * Reset the logging system to be limit output. This method may be called before
-	 * {@link #initialize(String, LogFile)} to reduce logging noise until the system has
-	 * been fully Initialized.
+	 * {@link #initialize(LoggingInitializationContext, String, LogFile)} to reduce
+	 * logging noise until the system has been fully initialized.
 	 */
 	public abstract void beforeInitialize();
 
 	/**
 	 * Fully initialize the logging system.
+	 * @param initializationContext the logging initialization context
 	 * @param configLocation a log configuration location or {@code null} if default
 	 * initialization is required
 	 * @param logFile the log output file that should be written or {@code null} for
 	 * console only output
 	 */
-	public abstract void initialize(String configLocation, LogFile logFile);
+	public void initialize(LoggingInitializationContext initializationContext,
+			String configLocation, LogFile logFile) {
+	}
 
 	/**
 	 * Clean up the logging system. The default implementation does nothing. Subclasses
@@ -75,21 +94,65 @@ public abstract class LoggingSystem {
 	}
 
 	/**
-	 * Sets the logging level for a given logger.
-	 * @param loggerName the name of the logger to set
-	 * @param level the log level
+	 * Returns a {@link Runnable} that can handle shutdown of this logging system when the
+	 * JVM exits. The default implementation returns {@code null}, indicating that no
+	 * shutdown is required.
+	 * @return the shutdown handler, or {@code null}
 	 */
-	public abstract void setLogLevel(String loggerName, LogLevel level);
+	public Runnable getShutdownHandler() {
+		return null;
+	}
 
 	/**
-	 * Detect and return the logging system in use. Supports Logback, Log4J, Log4J2 and
-	 * Java Logging.
+	 * Returns a set of the {@link LogLevel LogLevels} that are actually supported by the
+	 * logging system.
+	 * @return the supported levels
+	 */
+	public Set<LogLevel> getSupportedLogLevels() {
+		return EnumSet.allOf(LogLevel.class);
+	}
+
+	/**
+	 * Sets the logging level for a given logger.
+	 * @param loggerName the name of the logger to set ({@code null} can be used for the
+	 * root logger).
+	 * @param level the log level
+	 */
+	public void setLogLevel(String loggerName, LogLevel level) {
+		throw new UnsupportedOperationException("Unable to set log level");
+	}
+
+	/**
+	 * Returns a collection of the current configuration for all a {@link LoggingSystem}'s
+	 * loggers.
+	 * @return the current configurations
+	 * @since 1.5.0
+	 */
+	public List<LoggerConfiguration> getLoggerConfigurations() {
+		throw new UnsupportedOperationException("Unable to get logger configurations");
+	}
+
+	/**
+	 * Returns the current configuration for a {@link LoggingSystem}'s logger.
+	 * @param loggerName the name of the logger
+	 * @return the current configuration
+	 * @since 1.5.0
+	 */
+	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+		throw new UnsupportedOperationException("Unable to get logger configuration");
+	}
+
+	/**
+	 * Detect and return the logging system in use. Supports Logback and Java Logging.
 	 * @param classLoader the classloader
 	 * @return The logging system
 	 */
 	public static LoggingSystem get(ClassLoader classLoader) {
 		String loggingSystem = System.getProperty(SYSTEM_PROPERTY);
 		if (StringUtils.hasLength(loggingSystem)) {
+			if (NONE.equals(loggingSystem)) {
+				return new NoOpLoggingSystem();
+			}
 			return get(classLoader, loggingSystem);
 		}
 		for (Map.Entry<String, String> entry : SYSTEMS.entrySet()) {
@@ -109,6 +172,33 @@ public abstract class LoggingSystem {
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	/**
+	 * {@link LoggingSystem} that does nothing.
+	 */
+	static class NoOpLoggingSystem extends LoggingSystem {
+
+		@Override
+		public void beforeInitialize() {
+
+		}
+
+		@Override
+		public void setLogLevel(String loggerName, LogLevel level) {
+
+		}
+
+		@Override
+		public List<LoggerConfiguration> getLoggerConfigurations() {
+			return Collections.emptyList();
+		}
+
+		@Override
+		public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+			return null;
+		}
+
 	}
 
 }

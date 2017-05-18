@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package sample.jndi;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +28,6 @@ public class AccountService {
 
 	private final AccountRepository accountRepository;
 
-	@Autowired
 	public AccountService(JmsTemplate jmsTemplate, AccountRepository accountRepository) {
 		this.jmsTemplate = jmsTemplate;
 		this.accountRepository = accountRepository;

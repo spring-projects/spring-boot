@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.health;
 
+import org.bson.Document;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.util.Assert;
-
-import com.mongodb.CommandResult;
 
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for
@@ -39,7 +39,7 @@ public class MongoHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		CommandResult result = this.mongoTemplate.executeCommand("{ buildInfo: 1 }");
+		Document result = this.mongoTemplate.executeCommand("{ buildInfo: 1 }");
 		builder.up().withDetail("version", result.getString("version"));
 	}
 

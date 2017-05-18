@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package org.springframework.boot.loader.tools;
 
+import ch.qos.logback.classic.Level;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.impl.StaticLoggerBinder;
-import org.springframework.util.ClassUtils;
 
-import ch.qos.logback.classic.Level;
+import org.springframework.util.ClassUtils;
 
 /**
  * Utility to initialize logback (when present) to use INFO level logging.
@@ -39,10 +39,13 @@ public abstract class LogbackInitializer {
 	}
 
 	private static class Initializer {
+
 		public void setRootLogLevel() {
 			ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
 			Logger logger = factory.getLogger(Logger.ROOT_LOGGER_NAME);
 			((ch.qos.logback.classic.Logger) logger).setLevel(Level.INFO);
 		}
+
 	}
+
 }

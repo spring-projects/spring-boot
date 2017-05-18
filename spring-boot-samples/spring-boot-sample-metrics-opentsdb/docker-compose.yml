@@ -1,0 +1,4 @@
+opentsdb:
+  image: lancope/opentsdb
+  ports:
+    - "4242:4242"

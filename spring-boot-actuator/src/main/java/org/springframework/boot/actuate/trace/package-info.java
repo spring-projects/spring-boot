@@ -20,4 +20,3 @@
  * @see org.springframework.boot.actuate.trace.TraceRepository
  */
 package org.springframework.boot.actuate.trace;
-

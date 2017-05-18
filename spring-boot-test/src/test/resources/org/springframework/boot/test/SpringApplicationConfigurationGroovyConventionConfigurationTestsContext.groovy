@@ -1,0 +1,3 @@
+beans {
+	foo String, "World"
+}

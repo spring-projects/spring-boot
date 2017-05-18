@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,18 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for ActiveMQ
+ * Configuration properties for ActiveMQ.
  *
  * @author Greg Turnquist
  * @author Stephane Nicoll
+ * @author Aurélien Leboulanger
+ * @author Venil Noronha
  */
 @ConfigurationProperties(prefix = "spring.activemq")
 public class ActiveMQProperties {
@@ -39,12 +44,6 @@ public class ActiveMQProperties {
 	private boolean inMemory = true;
 
 	/**
-	 * Specify if a PooledConnectionFactory should be created instead of a regular
-	 * ConnectionFactory.
-	 */
-	private boolean pooled;
-
-	/**
 	 * Login user of the broker.
 	 */
 	private String user;
@@ -53,6 +52,10 @@ public class ActiveMQProperties {
 	 * Login password of the broker.
 	 */
 	private String password;
+
+	private Pool pool = new Pool();
+
+	private Packages packages = new Packages();
 
 	public String getBrokerUrl() {
 		return this.brokerUrl;
@@ -70,14 +73,6 @@ public class ActiveMQProperties {
 		this.inMemory = inMemory;
 	}
 
-	public boolean isPooled() {
-		return this.pooled;
-	}
-
-	public void setPooled(boolean pooled) {
-		this.pooled = pooled;
-	}
-
 	public String getUser() {
 		return this.user;
 	}
@@ -92,6 +87,106 @@ public class ActiveMQProperties {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public Pool getPool() {
+		return this.pool;
+	}
+
+	public void setPool(Pool pool) {
+		this.pool = pool;
+	}
+
+	public Packages getPackages() {
+		return this.packages;
+	}
+
+	public static class Pool {
+
+		/**
+		 * Whether a PooledConnectionFactory should be created instead of a regular
+		 * ConnectionFactory.
+		 */
+		private boolean enabled;
+
+		/**
+		 * Maximum number of pooled connections.
+		 */
+		private int maxConnections = 1;
+
+		/**
+		 * Connection idle timeout in milliseconds.
+		 */
+		private int idleTimeout = 30000;
+
+		/**
+		 * Connection expiration timeout in milliseconds.
+		 */
+		private long expiryTimeout = 0;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public int getMaxConnections() {
+			return this.maxConnections;
+		}
+
+		public void setMaxConnections(int maxConnections) {
+			this.maxConnections = maxConnections;
+		}
+
+		public int getIdleTimeout() {
+			return this.idleTimeout;
+		}
+
+		public void setIdleTimeout(int idleTimeout) {
+			this.idleTimeout = idleTimeout;
+		}
+
+		public long getExpiryTimeout() {
+			return this.expiryTimeout;
+		}
+
+		public void setExpiryTimeout(long expiryTimeout) {
+			this.expiryTimeout = expiryTimeout;
+		}
+
+	}
+
+	public static class Packages {
+
+		/**
+		 * Trust all packages.
+		 */
+		private Boolean trustAll;
+
+		/**
+		 * Comma-separated list of specific packages to trust (when not trusting all
+		 * packages).
+		 */
+		private List<String> trusted = new ArrayList<>();
+
+		public Boolean getTrustAll() {
+			return this.trustAll;
+		}
+
+		public void setTrustAll(Boolean trustAll) {
+			this.trustAll = trustAll;
+		}
+
+		public List<String> getTrusted() {
+			return this.trusted;
+		}
+
+		public void setTrusted(List<String> trusted) {
+			this.trusted = trusted;
+		}
+
 	}
 
 }

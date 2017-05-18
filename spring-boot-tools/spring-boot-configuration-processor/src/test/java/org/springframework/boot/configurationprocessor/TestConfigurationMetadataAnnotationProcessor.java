@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.configurationprocessor;
 
 import java.io.File;
@@ -27,6 +28,8 @@ import org.springframework.boot.configurationprocessor.metadata.ConfigurationMet
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
 
 /**
+ * Test {@link ConfigurationMetadataAnnotationProcessor}.
+ *
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -34,12 +37,14 @@ import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
  */
 @SupportedAnnotationTypes({ "*" })
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
-public class TestConfigurationMetadataAnnotationProcessor extends
-		ConfigurationMetadataAnnotationProcessor {
+public class TestConfigurationMetadataAnnotationProcessor
+		extends ConfigurationMetadataAnnotationProcessor {
 
 	static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot.configurationsample.ConfigurationProperties";
 
 	static final String NESTED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.NestedConfigurationProperty";
+
+	static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.DeprecatedConfigurationProperty";
 
 	private ConfigurationMetadata metadata;
 
@@ -60,14 +65,19 @@ public class TestConfigurationMetadataAnnotationProcessor extends
 	}
 
 	@Override
-	protected ConfigurationMetadata writeMetaData() {
+	protected String deprecatedConfigurationPropertyAnnotation() {
+		return DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION;
+	}
+
+	@Override
+	protected ConfigurationMetadata writeMetaData() throws Exception {
 		super.writeMetaData();
 		try {
 			File metadataFile = new File(this.outputLocation,
 					"META-INF/spring-configuration-metadata.json");
 			if (metadataFile.isFile()) {
-				this.metadata = new JsonMarshaller().read(new FileInputStream(
-						metadataFile));
+				this.metadata = new JsonMarshaller()
+						.read(new FileInputStream(metadataFile));
 			}
 			else {
 				this.metadata = new ConfigurationMetadata();

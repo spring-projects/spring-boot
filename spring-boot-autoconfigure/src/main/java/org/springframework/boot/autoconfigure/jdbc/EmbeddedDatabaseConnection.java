@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -32,6 +33,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Stephane Nicoll
  * @see #get(ClassLoader)
  */
 public enum EmbeddedDatabaseConnection {
@@ -45,18 +47,20 @@ public enum EmbeddedDatabaseConnection {
 	 * H2 Database Connection.
 	 */
 	H2(EmbeddedDatabaseType.H2, "org.h2.Driver",
-			"jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"),
+			"jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"),
 
 	/**
 	 * Derby Database Connection.
 	 */
 	DERBY(EmbeddedDatabaseType.DERBY, "org.apache.derby.jdbc.EmbeddedDriver",
-			"jdbc:derby:memory:testdb;create=true"),
+			"jdbc:derby:memory:%s;create=true"),
 
 	/**
 	 * HSQL Database Connection.
 	 */
-	HSQL(EmbeddedDatabaseType.HSQL, "org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:testdb");
+	HSQL(EmbeddedDatabaseType.HSQL, "org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:%s");
+
+	private static final String DEFAULT_DATABASE_NAME = "testdb";
 
 	private final EmbeddedDatabaseType type;
 
@@ -64,7 +68,7 @@ public enum EmbeddedDatabaseConnection {
 
 	private final String url;
 
-	private EmbeddedDatabaseConnection(EmbeddedDatabaseType type, String driverClass,
+	EmbeddedDatabaseConnection(EmbeddedDatabaseType type, String driverClass,
 			String url) {
 		this.type = type;
 		this.driverClass = driverClass;
@@ -88,11 +92,21 @@ public enum EmbeddedDatabaseConnection {
 	}
 
 	/**
-	 * Returns the URL for the connection.
+	 * Returns the URL for the connection using the default database name.
 	 * @return the connection URL
 	 */
 	public String getUrl() {
-		return this.url;
+		return getUrl(DEFAULT_DATABASE_NAME);
+	}
+
+	/**
+	 * Returns the URL for the connection using the specified {@code databaseName}.
+	 * @param databaseName the name of the database
+	 * @return the connection URL
+	 */
+	public String getUrl(String databaseName) {
+		Assert.hasText(databaseName, "DatabaseName must not be null.");
+		return String.format(this.url, databaseName);
 	}
 
 	/**
@@ -103,23 +117,20 @@ public enum EmbeddedDatabaseConnection {
 	/**
 	 * Convenience method to determine if a given driver class name represents an embedded
 	 * database type.
-	 *
 	 * @param driverClass the driver class
 	 * @return true if the driver class is one of the embedded types
 	 */
 	public static boolean isEmbedded(String driverClass) {
-		return driverClass != null
-				&& (driverClass.equals(HSQL.driverClass)
-						|| driverClass.equals(H2.driverClass) || driverClass
-							.equals(DERBY.driverClass));
+		return driverClass != null && (driverClass.equals(HSQL.driverClass)
+				|| driverClass.equals(H2.driverClass)
+				|| driverClass.equals(DERBY.driverClass));
 	}
 
 	/**
 	 * Convenience method to determine if a given data source represents an embedded
 	 * database type.
-	 *
 	 * @param dataSource the data source to interrogate
-	 * @return true if the data sourceis one of the embedded types
+	 * @return true if the data source is one of the embedded types
 	 */
 	public static boolean isEmbedded(DataSource dataSource) {
 		try {
@@ -142,8 +153,8 @@ public enum EmbeddedDatabaseConnection {
 			return override;
 		}
 		for (EmbeddedDatabaseConnection candidate : EmbeddedDatabaseConnection.values()) {
-			if (candidate != NONE
-					&& ClassUtils.isPresent(candidate.getDriverClassName(), classLoader)) {
+			if (candidate != NONE && ClassUtils.isPresent(candidate.getDriverClassName(),
+					classLoader)) {
 				return candidate;
 			}
 		}
@@ -156,8 +167,8 @@ public enum EmbeddedDatabaseConnection {
 	private static class IsEmbedded implements ConnectionCallback<Boolean> {
 
 		@Override
-		public Boolean doInConnection(Connection connection) throws SQLException,
-				DataAccessException {
+		public Boolean doInConnection(Connection connection)
+				throws SQLException, DataAccessException {
 			String productName = connection.getMetaData().getDatabaseProductName();
 			if (productName == null) {
 				return false;
@@ -173,4 +184,5 @@ public enum EmbeddedDatabaseConnection {
 		}
 
 	}
+
 }

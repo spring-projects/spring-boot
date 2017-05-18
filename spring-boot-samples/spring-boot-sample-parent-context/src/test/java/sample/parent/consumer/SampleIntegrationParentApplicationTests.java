@@ -21,15 +21,15 @@ import java.io.IOException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import sample.parent.SampleParentContextApplication;
+import sample.parent.producer.ProducerApplication;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.util.StreamUtils;
-
-import sample.parent.SampleParentContextApplication;
-import sample.parent.producer.ProducerApplication;
 
 import static org.junit.Assert.fail;
 
@@ -86,15 +86,16 @@ public class SampleIntegrationParentApplicationTests {
 	}
 
 	private Resource[] findResources() throws IOException {
-		return ResourcePatternUtils.getResourcePatternResolver(
-				new DefaultResourceLoader()).getResources("file:target/output/**/*.msg");
+		return ResourcePatternUtils
+				.getResourcePatternResolver(new DefaultResourceLoader())
+				.getResources("file:target/output/*.txt");
 	}
 
 	private String readResources(Resource[] resources) throws IOException {
 		StringBuilder builder = new StringBuilder();
 		for (Resource resource : resources) {
-			builder.append(new String(StreamUtils.copyToByteArray(resource
-					.getInputStream())));
+			builder.append(
+					new String(StreamUtils.copyToByteArray(resource.getInputStream())));
 		}
 		return builder.toString();
 	}

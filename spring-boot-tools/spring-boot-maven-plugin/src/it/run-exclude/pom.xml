@@ -7,6 +7,8 @@
 	<version>0.0.1.BUILD-SNAPSHOT</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>@java.version@</maven.compiler.source>
+		<maven.compiler.target>@java.version@</maven.compiler.target>
 	</properties>
 	<build>
 		<plugins>
@@ -23,8 +25,8 @@
 						<configuration>
 							<excludes>
 								<exclude>
-									<groupId>log4j</groupId>
-									<artifactId>log4j</artifactId>
+									<groupId>org.apache.logging.log4j</groupId>
+									<artifactId>log4j-api</artifactId>
 								</exclude>
 							</excludes>
 							<excludeGroupIds>javax.servlet</excludeGroupIds>
@@ -36,9 +38,9 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>@log4j.version@</version>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>@log4j2.version@</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

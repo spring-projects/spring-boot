@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import org.springframework.boot.cli.util.Log;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
@@ -51,22 +52,22 @@ class InitializrService {
 	/**
 	 * Accept header to use to retrieve the json meta-data.
 	 */
-	public static final String ACCEPT_META_DATA =
-			"application/vnd.initializr.v2.1+json,application/vnd.initializr.v2+json";
+	public static final String ACCEPT_META_DATA = "application/vnd.initializr.v2.1+"
+			+ "json,application/vnd.initializr.v2+json";
 
 	/**
 	 * Accept header to use to retrieve the service capabilities of the service. If the
 	 * service does not offer such feature, the json meta-data are retrieved instead.
 	 */
-	public static final String ACCEPT_SERVICE_CAPABILITIES =
-			"text/plain," + ACCEPT_META_DATA;
+	public static final String ACCEPT_SERVICE_CAPABILITIES = "text/plain,"
+			+ ACCEPT_META_DATA;
 
 	/**
 	 * Late binding HTTP client.
 	 */
 	private CloseableHttpClient http;
 
-	public InitializrService() {
+	InitializrService() {
 	}
 
 	InitializrService(CloseableHttpClient http) {
@@ -75,13 +76,13 @@ class InitializrService {
 
 	protected CloseableHttpClient getHttp() {
 		if (this.http == null) {
-			this.http = HttpClientBuilder.create().build();
+			this.http = HttpClientBuilder.create().useSystemProperties().build();
 		}
 		return this.http;
 	}
 
 	/**
-	 * Generate a project based on the specified {@link ProjectGenerationRequest}
+	 * Generate a project based on the specified {@link ProjectGenerationRequest}.
 	 * @param request the generation request
 	 * @return an entity defining the project
 	 * @throws IOException if generation fails
@@ -104,46 +105,51 @@ class InitializrService {
 	 * @throws IOException if the service's metadata cannot be loaded
 	 */
 	public InitializrServiceMetadata loadMetadata(String serviceUrl) throws IOException {
-		CloseableHttpResponse httpResponse = executeInitializrMetadataRetrieval(serviceUrl);
+		CloseableHttpResponse httpResponse = executeInitializrMetadataRetrieval(
+				serviceUrl);
 		validateResponse(httpResponse, serviceUrl);
 		return parseJsonMetadata(httpResponse.getEntity());
 	}
 
 	/**
-	 * Loads the service capabilities of the service at the specified url.
-	 * <p>If the service supports generating a textual representation of the
-	 * capabilities, it is returned. Otherwhise the json meta-data as a
-	 * {@link JSONObject} is returned.
+	 * Loads the service capabilities of the service at the specified URL. If the service
+	 * supports generating a textual representation of the capabilities, it is returned,
+	 * otherwise {@link InitializrServiceMetadata} is returned.
 	 * @param serviceUrl to url of the initializer service
-	 * @return the service capabilities (as a String) or the metadata describing the service
+	 * @return the service capabilities (as a String) or the
+	 * {@link InitializrServiceMetadata} describing the service
 	 * @throws IOException if the service capabilities cannot be loaded
 	 */
-	public Object loadServiceCapabilities(String serviceUrl) throws IOException  {
-		CloseableHttpResponse httpResponse = executeServiceCapabilitiesRetrieval(serviceUrl);
+	public Object loadServiceCapabilities(String serviceUrl) throws IOException {
+		HttpGet request = new HttpGet(serviceUrl);
+		request.setHeader(
+				new BasicHeader(HttpHeaders.ACCEPT, ACCEPT_SERVICE_CAPABILITIES));
+		CloseableHttpResponse httpResponse = execute(request, serviceUrl,
+				"retrieve help");
 		validateResponse(httpResponse, serviceUrl);
 		HttpEntity httpEntity = httpResponse.getEntity();
 		ContentType contentType = ContentType.getOrDefault(httpEntity);
 		if (contentType.getMimeType().equals("text/plain")) {
-			return  getContent(httpEntity);
-		} else {
-			return parseJsonMetadata(httpEntity);
+			return getContent(httpEntity);
 		}
+		return parseJsonMetadata(httpEntity);
 	}
 
-	private InitializrServiceMetadata parseJsonMetadata(HttpEntity httpEntity) throws IOException {
+	private InitializrServiceMetadata parseJsonMetadata(HttpEntity httpEntity)
+			throws IOException {
 		try {
 			return new InitializrServiceMetadata(getContentAsJson(httpEntity));
 		}
 		catch (JSONException ex) {
-			throw new ReportableException("Invalid content received from server ("
-					+ ex.getMessage() + ")", ex);
+			throw new ReportableException(
+					"Invalid content received from server (" + ex.getMessage() + ")", ex);
 		}
 	}
 
 	private void validateResponse(CloseableHttpResponse httpResponse, String serviceUrl) {
 		if (httpResponse.getEntity() == null) {
-			throw new ReportableException("No content received from server '"
-					+ serviceUrl + "'");
+			throw new ReportableException(
+					"No content received from server '" + serviceUrl + "'");
 		}
 		if (httpResponse.getStatusLine().getStatusCode() != 200) {
 			throw createException(serviceUrl, httpResponse);
@@ -155,8 +161,8 @@ class InitializrService {
 		ProjectGenerationResponse response = new ProjectGenerationResponse(
 				ContentType.getOrDefault(httpEntity));
 		response.setContent(FileCopyUtils.copyToByteArray(httpEntity.getContent()));
-		String fileName = extractFileName(httpResponse
-				.getFirstHeader("Content-Disposition"));
+		String fileName = extractFileName(
+				httpResponse.getFirstHeader("Content-Disposition"));
 		if (fileName != null) {
 			response.setFileName(fileName);
 		}
@@ -164,28 +170,23 @@ class InitializrService {
 	}
 
 	/**
-	 * Request the creation of the project using the specified URL
+	 * Request the creation of the project using the specified URL.
+	 * @param url the URL
+	 * @return the response
 	 */
 	private CloseableHttpResponse executeProjectGenerationRequest(URI url) {
 		return execute(new HttpGet(url), url, "generate project");
 	}
 
 	/**
-	 * Retrieves the meta-data of the service at the specified URL
+	 * Retrieves the meta-data of the service at the specified URL.
+	 * @param url the URL
+	 * @return the response
 	 */
 	private CloseableHttpResponse executeInitializrMetadataRetrieval(String url) {
 		HttpGet request = new HttpGet(url);
 		request.setHeader(new BasicHeader(HttpHeaders.ACCEPT, ACCEPT_META_DATA));
 		return execute(request, url, "retrieve metadata");
-	}
-
-	/**
-	 * Retrieves the service capabilities of the service at the specified URL
-	 */
-	private CloseableHttpResponse executeServiceCapabilitiesRetrieval(String url) {
-		HttpGet request = new HttpGet(url);
-		request.setHeader(new BasicHeader(HttpHeaders.ACCEPT, ACCEPT_SERVICE_CAPABILITIES));
-		return execute(request, url, "retrieve help");
 	}
 
 	private CloseableHttpResponse execute(HttpUriRequest request, Object url,
@@ -226,12 +227,14 @@ class InitializrService {
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return null;
 	}
 
-	private JSONObject getContentAsJson(HttpEntity entity) throws IOException {
+	private JSONObject getContentAsJson(HttpEntity entity)
+			throws IOException, JSONException {
 		return new JSONObject(getContent(entity));
 	}
 
@@ -248,8 +251,7 @@ class InitializrService {
 			String value = header.getValue();
 			int start = value.indexOf(FILENAME_HEADER_PREFIX);
 			if (start != -1) {
-				value = value.substring(start + FILENAME_HEADER_PREFIX.length(),
-						value.length());
+				value = value.substring(start + FILENAME_HEADER_PREFIX.length());
 				int end = value.indexOf("\"");
 				if (end != -1) {
 					return value.substring(0, end);

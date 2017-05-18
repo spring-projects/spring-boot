@@ -92,4 +92,4 @@ if $cygwin; then
 	CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
 fi
 
-"${JAVA_HOME}/bin/java" ${JAVA_OPTS} -cp "$CLASSPATH" org.springframework.boot.loader.JarLauncher $*
+"${JAVA_HOME}/bin/java" ${JAVA_OPTS} -cp "$CLASSPATH" org.springframework.boot.loader.JarLauncher "$@"

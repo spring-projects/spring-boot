@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@SpringBootConfiguration
 @EnableAutoConfiguration
 public class SampleServletApplication extends SpringBootServletInitializer {
 
@@ -48,13 +48,13 @@ public class SampleServletApplication extends SpringBootServletInitializer {
 		};
 	}
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleServletApplication.class, args);
-	}
-
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(SampleServletApplication.class);
+	}
+
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(SampleServletApplication.class, args);
 	}
 
 }

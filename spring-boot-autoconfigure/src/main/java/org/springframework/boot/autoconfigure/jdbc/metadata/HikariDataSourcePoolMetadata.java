@@ -18,10 +18,10 @@ package org.springframework.boot.autoconfigure.jdbc.metadata;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.DirectFieldAccessor;
-
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool;
+
+import org.springframework.beans.DirectFieldAccessor;
 
 /**
  * {@link DataSourcePoolMetadata} for a Hikari {@link DataSource}.
@@ -29,8 +29,8 @@ import com.zaxxer.hikari.pool.HikariPool;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-public class HikariDataSourcePoolMetadata extends
-		AbstractDataSourcePoolMetadata<HikariDataSource> {
+public class HikariDataSourcePoolMetadata
+		extends AbstractDataSourcePoolMetadata<HikariDataSource> {
 
 	public HikariDataSourcePoolMetadata(HikariDataSource dataSource) {
 		super(dataSource);

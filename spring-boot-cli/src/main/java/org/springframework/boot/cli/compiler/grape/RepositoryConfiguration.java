@@ -21,7 +21,7 @@ import java.net.URI;
 import org.springframework.util.ObjectUtils;
 
 /**
- * The configuration of a repository
+ * The configuration of a repository.
  *
  * @author Andy Wilkinson
  */
@@ -47,7 +47,8 @@ public final class RepositoryConfiguration {
 	}
 
 	/**
-	 * @return the name of the repository
+	 * Return the name of the repository.
+	 * @return the repository name
 	 */
 	public String getName() {
 		return this.name;
@@ -60,15 +61,16 @@ public final class RepositoryConfiguration {
 	}
 
 	/**
-	 * @return the uri of the repository
+	 * Return the URI of the repository.
+	 * @return the repository URI
 	 */
 	public URI getUri() {
 		return this.uri;
 	}
 
 	/**
-	 * @return {@code true} if the repository should enable access to snapshots,
-	 * {@code false} otherwise
+	 * Return if the repository should enable access to snapshots.
+	 * @return {@code true} if snapshot access is enabled
 	 */
 	public boolean getSnapshotsEnabled() {
 		return this.snapshotsEnabled;

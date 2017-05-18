@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.social;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -24,7 +23,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,9 +37,7 @@ import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.web.GenericConnectionStatusView;
 import org.springframework.social.facebook.api.Facebook;
-import org.springframework.social.facebook.api.impl.FacebookTemplate;
 import org.springframework.social.facebook.connect.FacebookConnectionFactory;
-import org.springframework.web.servlet.View;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity with
@@ -58,11 +56,14 @@ public class FacebookAutoConfiguration {
 	@Configuration
 	@EnableSocial
 	@EnableConfigurationProperties(FacebookProperties.class)
-	@ConditionalOnWebApplication
+	@ConditionalOnWebApplication(type = Type.SERVLET)
 	protected static class FacebookConfigurerAdapter extends SocialAutoConfigurerAdapter {
 
-		@Autowired
-		private FacebookProperties properties;
+		private final FacebookProperties properties;
+
+		protected FacebookConfigurerAdapter(FacebookProperties properties) {
+			this.properties = properties;
+		}
 
 		@Bean
 		@ConditionalOnMissingBean(Facebook.class)
@@ -70,12 +71,12 @@ public class FacebookAutoConfiguration {
 		public Facebook facebook(ConnectionRepository repository) {
 			Connection<Facebook> connection = repository
 					.findPrimaryConnection(Facebook.class);
-			return connection != null ? connection.getApi() : new FacebookTemplate();
+			return connection != null ? connection.getApi() : null;
 		}
 
 		@Bean(name = { "connect/facebookConnect", "connect/facebookConnected" })
 		@ConditionalOnProperty(prefix = "spring.social", name = "auto-connection-views")
-		public View facebookConnectView() {
+		public GenericConnectionStatusView facebookConnectView() {
 			return new GenericConnectionStatusView("facebook", "Facebook");
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.util.Assert;
@@ -39,6 +43,7 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  * @see AuditEventRepository
  */
+@JsonInclude(Include.NON_EMPTY)
 public class AuditEvent implements Serializable {
 
 	private final Date timestamp;
@@ -61,7 +66,7 @@ public class AuditEvent implements Serializable {
 
 	/**
 	 * Create a new audit event for the current time from data provided as name-value
-	 * pairs
+	 * pairs.
 	 * @param principal The user principal responsible
 	 * @param type the event type
 	 * @param data The event data in the form 'key=value' or simply 'key'
@@ -80,6 +85,7 @@ public class AuditEvent implements Serializable {
 	public AuditEvent(Date timestamp, String principal, String type,
 			Map<String, Object> data) {
 		Assert.notNull(timestamp, "Timestamp must not be null");
+		Assert.notNull(principal, "Principal must not be null");
 		Assert.notNull(type, "Type must not be null");
 		this.timestamp = timestamp;
 		this.principal = principal;
@@ -88,7 +94,7 @@ public class AuditEvent implements Serializable {
 	}
 
 	private static Map<String, Object> convert(String[] data) {
-		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> result = new HashMap<>();
 		for (String entry : data) {
 			if (entry.contains("=")) {
 				int index = entry.indexOf("=");
@@ -105,13 +111,14 @@ public class AuditEvent implements Serializable {
 	 * Returns the date/time that the even was logged.
 	 * @return the time stamp
 	 */
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
 	public Date getTimestamp() {
 		return this.timestamp;
 	}
 
 	/**
-	 * Returns the user principal responsible for the event or {@code null}.
-	 * @return the principal or {@code null}
+	 * Returns the user principal responsible for the event.
+	 * @return the principal
 	 */
 	public String getPrincipal() {
 		return this.principal;
@@ -135,8 +142,8 @@ public class AuditEvent implements Serializable {
 
 	@Override
 	public String toString() {
-		return "AuditEvent [timestamp=" + this.timestamp + ", principal="
-				+ this.principal + ", type=" + this.type + ", data=" + this.data + "]";
+		return "AuditEvent [timestamp=" + this.timestamp + ", principal=" + this.principal
+				+ ", type=" + this.type + ", data=" + this.data + "]";
 	}
 
 }

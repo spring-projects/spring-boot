@@ -18,11 +18,11 @@ package org.springframework.boot.actuate.health;
 
 import java.util.Map;
 
+import com.rabbitmq.client.Channel;
+
 import org.springframework.amqp.rabbit.core.ChannelCallback;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.util.Assert;
-
-import com.rabbitmq.client.Channel;
 
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for the

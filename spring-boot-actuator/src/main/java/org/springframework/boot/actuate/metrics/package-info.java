@@ -18,4 +18,3 @@
  * Core metrics classes.
  */
 package org.springframework.boot.actuate.metrics;
-

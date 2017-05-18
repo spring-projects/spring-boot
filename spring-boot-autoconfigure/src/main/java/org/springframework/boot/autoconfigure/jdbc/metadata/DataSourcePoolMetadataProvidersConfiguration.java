@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@ package org.springframework.boot.autoconfigure.jdbc.metadata;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * Register the {@link DataSourcePoolMetadataProvider} instances for the supported data
@@ -79,16 +79,16 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(BasicDataSource.class)
-	static class CommonsDbcpPoolDataSourceMetadataProviderConfiguration {
+	static class CommonsDbcp2PoolDataSourceMetadataProviderConfiguration {
 
 		@Bean
-		public DataSourcePoolMetadataProvider commonsDbcpPoolDataSourceMetadataProvider() {
+		public DataSourcePoolMetadataProvider commonsDbcp2PoolDataSourceMetadataProvider() {
 			return new DataSourcePoolMetadataProvider() {
 				@Override
 				public DataSourcePoolMetadata getDataSourcePoolMetadata(
 						DataSource dataSource) {
 					if (dataSource instanceof BasicDataSource) {
-						return new CommonsDbcpDataSourcePoolMetadata(
+						return new CommonsDbcp2DataSourcePoolMetadata(
 								(BasicDataSource) dataSource);
 					}
 					return null;

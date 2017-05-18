@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import org.springframework.util.Assert;
  * @author Christian Dupuis
  * @author Toshiaki Maki
  * @author Phillip Webb
+ * @author Nicolas Lejeune
+ * @author Stephane Nicoll
  */
 class Sanitizer {
 
@@ -33,8 +35,12 @@ class Sanitizer {
 
 	private Pattern[] keysToSanitize;
 
-	public Sanitizer() {
-		setKeysToSanitize(new String[] { "password", "secret", "key" });
+	Sanitizer() {
+		this("password", "secret", "key", "token", ".*credentials.*", "vcap_services");
+	}
+
+	Sanitizer(String... keysToSanitize) {
+		setKeysToSanitize(keysToSanitize);
 	}
 
 	/**

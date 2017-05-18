@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,14 @@ import org.springframework.util.ClassUtils;
 
 /**
  * {@link TemplateAvailabilityProvider} that provides availability information for
- * Mustache view templates
+ * Mustache view templates.
  *
  * @author Dave Syer
+ * @author Madhura Bhave
  * @since 1.2.2
  */
-public class MustacheTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
+public class MustacheTemplateAvailabilityProvider
+		implements TemplateAvailabilityProvider {
 
 	@Override
 	public boolean isTemplateAvailable(String view, Environment environment,

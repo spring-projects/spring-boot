@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,16 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.springframework.batch.core.configuration.ListableJobLocator;
-import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.batch.core.explore.support.JobExplorerFactoryBean;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.support.SimpleJobOperator;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -40,6 +37,8 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.util.StringUtils;
 
@@ -55,25 +54,33 @@ import org.springframework.util.StringUtils;
  * JobRegistry.
  *
  * @author Dave Syer
+ * @author Eddú Meléndez
+ * @author Kazuki Shimizu
  */
 @Configuration
 @ConditionalOnClass({ JobLauncher.class, DataSource.class, JdbcOperations.class })
 @AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
 @ConditionalOnBean(JobLauncher.class)
 @EnableConfigurationProperties(BatchProperties.class)
+@Import(BatchConfigurerConfiguration.class)
 public class BatchAutoConfiguration {
 
-	@Autowired
-	private BatchProperties properties;
+	private final BatchProperties properties;
 
-	@Autowired(required = false)
-	private JobParametersConverter jobParametersConverter;
+	private final JobParametersConverter jobParametersConverter;
+
+	public BatchAutoConfiguration(BatchProperties properties,
+			ObjectProvider<JobParametersConverter> jobParametersConverter) {
+		this.properties = properties;
+		this.jobParametersConverter = jobParametersConverter.getIfAvailable();
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(DataSource.class)
-	public BatchDatabaseInitializer batchDatabaseInitializer() {
-		return new BatchDatabaseInitializer();
+	public BatchDatabaseInitializer batchDatabaseInitializer(DataSource dataSource,
+			ResourceLoader resourceLoader) {
+		return new BatchDatabaseInitializer(dataSource, resourceLoader, this.properties);
 	}
 
 	@Bean
@@ -91,25 +98,16 @@ public class BatchAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	public ExitCodeGenerator jobExecutionExitCodeGenerator() {
+	@ConditionalOnMissingBean(ExitCodeGenerator.class)
+	public JobExecutionExitCodeGenerator jobExecutionExitCodeGenerator() {
 		return new JobExecutionExitCodeGenerator();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnBean(DataSource.class)
-	public JobExplorer jobExplorer(DataSource dataSource) throws Exception {
-		JobExplorerFactoryBean factory = new JobExplorerFactoryBean();
-		factory.setDataSource(dataSource);
-		factory.afterPropertiesSet();
-		return factory.getObject();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public JobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
-			ListableJobLocator jobRegistry, JobRepository jobRepository) throws Exception {
+	@ConditionalOnMissingBean(JobOperator.class)
+	public SimpleJobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
+			ListableJobLocator jobRegistry, JobRepository jobRepository)
+					throws Exception {
 		SimpleJobOperator factory = new SimpleJobOperator();
 		factory.setJobExplorer(jobExplorer);
 		factory.setJobLauncher(jobLauncher);
@@ -119,29 +117,6 @@ public class BatchAutoConfiguration {
 			factory.setJobParametersConverter(this.jobParametersConverter);
 		}
 		return factory;
-	}
-
-	@ConditionalOnClass(name = "javax.persistence.EntityManagerFactory")
-	@ConditionalOnMissingBean(BatchConfigurer.class)
-	@Configuration
-	protected static class JpaBatchConfiguration {
-
-		// The EntityManagerFactory may not be discoverable by type when this condition
-		// is evaluated, so we need a well-known bean name. This is the one used by Spring
-		// Boot in the JPA auto configuration.
-		@Bean
-		@ConditionalOnBean(name = "entityManagerFactory")
-		public BatchConfigurer jpaBatchConfigurer(DataSource dataSource,
-				EntityManagerFactory entityManagerFactory) {
-			return new BasicBatchConfigurer(dataSource, entityManagerFactory);
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(name = "entityManagerFactory")
-		public BatchConfigurer basicBatchConfigurer(DataSource dataSource) {
-			return new BasicBatchConfigurer(dataSource);
-		}
-
 	}
 
 }

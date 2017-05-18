@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,39 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
-import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.util.ObjectUtils;
 
 /**
- * Simple wrapper around {@link Endpoint} implementations to enable JMX export.
+ * Base for adapters that convert {@link Endpoint} implementations to {@link JmxEndpoint}.
  *
  * @author Christian Dupuis
+ * @author Andy Wilkinson
+ * @author Vedran Pavic
+ * @author Phillip Webb
+ * @see JmxEndpoint
+ * @see DataEndpointMBean
  */
-@ManagedResource
-public class EndpointMBean {
+public abstract class EndpointMBean implements JmxEndpoint {
+
+	private final DataConverter dataConverter;
 
 	private final Endpoint<?> endpoint;
 
-	private final ObjectMapper mapper = new ObjectMapper();
-
-	public EndpointMBean(String beanName, Endpoint<?> endpoint) {
+	/**
+	 * Create a new {@link EndpointMBean} instance.
+	 * @param beanName the bean name
+	 * @param endpoint the endpoint to wrap
+	 * @param objectMapper the {@link ObjectMapper} used to convert the payload
+	 */
+	public EndpointMBean(String beanName, Endpoint<?> endpoint,
+			ObjectMapper objectMapper) {
+		this.dataConverter = new DataConverter(objectMapper);
 		Assert.notNull(beanName, "BeanName must not be null");
 		Assert.notNull(endpoint, "Endpoint must not be null");
 		this.endpoint = endpoint;
@@ -47,7 +56,12 @@ public class EndpointMBean {
 
 	@ManagedAttribute(description = "Returns the class of the underlying endpoint")
 	public String getEndpointClass() {
-		return ClassUtils.getQualifiedName(this.endpoint.getClass());
+		return ClassUtils.getQualifiedName(getEndpointType());
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return this.endpoint.isEnabled();
 	}
 
 	@ManagedAttribute(description = "Indicates whether the underlying endpoint exposes sensitive information")
@@ -55,24 +69,28 @@ public class EndpointMBean {
 		return this.endpoint.isSensitive();
 	}
 
+	@Override
+	public String getIdentity() {
+		return ObjectUtils.getIdentityHexString(getEndpoint());
+	}
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	public Class<? extends Endpoint> getEndpointType() {
+		return getEndpoint().getClass();
+	}
+
 	public Endpoint<?> getEndpoint() {
 		return this.endpoint;
 	}
 
-	protected Object convert(Object result) {
-		if (result == null) {
-			return null;
-		}
-
-		if (result instanceof String) {
-			return result;
-		}
-
-		if (result.getClass().isArray() || result instanceof List) {
-			return this.mapper.convertValue(result, List.class);
-		}
-
-		return this.mapper.convertValue(result, Map.class);
+	/**
+	 * Convert the given data into JSON.
+	 * @param data the source data
+	 * @return the JSON representation
+	 */
+	protected Object convert(Object data) {
+		return this.dataConverter.convert(data);
 	}
 
 }

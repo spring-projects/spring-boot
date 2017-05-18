@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,14 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Test;
+
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link LogFile}.
@@ -42,7 +41,7 @@ public class LogFileTests {
 	public void noProperties() throws Exception {
 		PropertyResolver resolver = getPropertyResolver(null, null);
 		LogFile logFile = LogFile.get(resolver);
-		assertThat(logFile, nullValue());
+		assertThat(logFile).isNull();
 	}
 
 	@Test
@@ -51,9 +50,9 @@ public class LogFileTests {
 		LogFile logFile = LogFile.get(resolver);
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
-		assertThat(logFile.toString(), equalTo("log.file"));
-		assertThat(properties.getProperty("LOG_FILE"), equalTo("log.file"));
-		assertThat(properties.getProperty("LOG_PATH"), nullValue());
+		assertThat(logFile.toString()).isEqualTo("log.file");
+		assertThat(properties.getProperty("LOG_FILE")).isEqualTo("log.file");
+		assertThat(properties.getProperty("LOG_PATH")).isNull();
 	}
 
 	@Test
@@ -62,9 +61,9 @@ public class LogFileTests {
 		LogFile logFile = LogFile.get(resolver);
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
-		assertThat(logFile.toString(), equalTo("logpath/spring.log"));
-		assertThat(properties.getProperty("LOG_FILE"), equalTo("logpath/spring.log"));
-		assertThat(properties.getProperty("LOG_PATH"), equalTo("logpath"));
+		assertThat(logFile.toString()).isEqualTo("logpath/spring.log");
+		assertThat(properties.getProperty("LOG_FILE")).isEqualTo("logpath/spring.log");
+		assertThat(properties.getProperty("LOG_PATH")).isEqualTo("logpath");
 	}
 
 	@Test
@@ -73,16 +72,17 @@ public class LogFileTests {
 		LogFile logFile = LogFile.get(resolver);
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
-		assertThat(logFile.toString(), equalTo("log.file"));
-		assertThat(properties.getProperty("LOG_FILE"), equalTo("log.file"));
-		assertThat(properties.getProperty("LOG_PATH"), equalTo("logpath"));
+		assertThat(logFile.toString()).isEqualTo("log.file");
+		assertThat(properties.getProperty("LOG_FILE")).isEqualTo("log.file");
+		assertThat(properties.getProperty("LOG_PATH")).isEqualTo("logpath");
 	}
 
 	private PropertyResolver getPropertyResolver(String file, String path) {
-		Map<String, Object> properties = new LinkedHashMap<String, Object>();
+		Map<String, Object> properties = new LinkedHashMap<>();
 		properties.put("logging.file", file);
 		properties.put("logging.path", path);
-		PropertySource<?> propertySource = new MapPropertySource("properties", properties);
+		PropertySource<?> propertySource = new MapPropertySource("properties",
+				properties);
 		MutablePropertySources propertySources = new MutablePropertySources();
 		propertySources.addFirst(propertySource);
 		return new PropertySourcesPropertyResolver(propertySources);

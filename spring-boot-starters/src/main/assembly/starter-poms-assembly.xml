@@ -1,0 +1,22 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 http://maven.apache.org/xsd/assembly-1.1.3.xsd">
+	<id>starter-poms</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<moduleSets>
+		<moduleSet>
+			<sources>
+				<fileSets>
+					<fileSet>
+						<includes>
+							<include>**/pom.xml</include>
+						</includes>
+					</fileSet>
+				</fileSets>
+			</sources>
+		</moduleSet>
+	</moduleSets>
+</assembly>

@@ -1,5 +1,6 @@
 /*
- * Copyright 2014-2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,7 +28,7 @@ import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 /**
  * Base class for {@link ArtifactsFilter} based on a {@link FilterableDependency} list.
  *
- * @author Stephane Nicol
+ * @author Stephane Nicoll
  * @author David Turanski
  * @since 1.2
  */

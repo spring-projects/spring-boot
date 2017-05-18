@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,19 +20,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
-
 import sample.data.jpa.domain.City;
 import sample.data.jpa.domain.Hotel;
 import sample.data.jpa.domain.Rating;
 import sample.data.jpa.domain.RatingCount;
 import sample.data.jpa.domain.Review;
 import sample.data.jpa.domain.ReviewDetails;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 @Component("hotelService")
 @Transactional
@@ -42,7 +41,6 @@ class HotelServiceImpl implements HotelService {
 
 	private final ReviewRepository reviewRepository;
 
-	@Autowired
 	public HotelServiceImpl(HotelRepository hotelRepository,
 			ReviewRepository reviewRepository) {
 		this.hotelRepository = hotelRepository;
@@ -71,7 +69,7 @@ class HotelServiceImpl implements HotelService {
 	@Override
 	public Review addReview(Hotel hotel, ReviewDetails details) {
 		Review review = new Review(hotel, 1, details);
-		return reviewRepository.save(review);
+		return this.reviewRepository.save(review);
 	}
 
 	@Override
@@ -85,7 +83,7 @@ class HotelServiceImpl implements HotelService {
 		private final Map<Rating, Long> ratingCount;
 
 		public ReviewsSummaryImpl(List<RatingCount> ratingCounts) {
-			this.ratingCount = new HashMap<Rating, Long>();
+			this.ratingCount = new HashMap<>();
 			for (RatingCount ratingCount : ratingCounts) {
 				this.ratingCount.put(ratingCount.getRating(), ratingCount.getCount());
 			}

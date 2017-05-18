@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,29 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import com.rabbitmq.client.Channel;
+
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
-import com.rabbitmq.client.Channel;
+import org.springframework.retry.backoff.ExponentialBackOffPolicy;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RabbitTemplate}.
@@ -42,36 +48,34 @@ import com.rabbitmq.client.Channel;
  * <P>
  * Registers the following beans:
  * <ul>
- * <li>
- * {@link org.springframework.amqp.rabbit.core.RabbitTemplate RabbitTemplate} if there is
- * no other bean of the same type in the context.</li>
- * <li>
- * {@link org.springframework.amqp.rabbit.connection.CachingConnectionFactory
+ * <li>{@link org.springframework.amqp.rabbit.core.RabbitTemplate RabbitTemplate} if there
+ * is no other bean of the same type in the context.</li>
+ * <li>{@link org.springframework.amqp.rabbit.connection.CachingConnectionFactory
  * CachingConnectionFactory} instance if there is no other bean of the same type in the
  * context.</li>
- * <li>
- * {@link org.springframework.amqp.core.AmqpAdmin } instance as long as
+ * <li>{@link org.springframework.amqp.core.AmqpAdmin } instance as long as
  * {@literal spring.rabbitmq.dynamic=true}.</li>
  * </ul>
  * <p>
  * The {@link org.springframework.amqp.rabbit.connection.CachingConnectionFactory} honors
  * the following properties:
  * <ul>
- * <li>
- * {@literal spring.rabbitmq.port} is used to specify the port to which the client should
- * connect, and defaults to 5672.</li>
- * <li>
- * {@literal spring.rabbitmq.username} is used to specify the (optional) username.</li>
- * <li>
- * {@literal spring.rabbitmq.password} is used to specify the (optional) password.</li>
- * <li>
- * {@literal spring.rabbitmq.host} is used to specify the host, and defaults to
+ * <li>{@literal spring.rabbitmq.port} is used to specify the port to which the client
+ * should connect, and defaults to 5672.</li>
+ * <li>{@literal spring.rabbitmq.username} is used to specify the (optional) username.
+ * </li>
+ * <li>{@literal spring.rabbitmq.password} is used to specify the (optional) password.
+ * </li>
+ * <li>{@literal spring.rabbitmq.host} is used to specify the host, and defaults to
  * {@literal localhost}.</li>
  * <li>{@literal spring.rabbitmq.virtualHost} is used to specify the (optional) virtual
  * host to which the client should connect.</li>
  * </ul>
+ *
  * @author Greg Turnquist
  * @author Josh Long
+ * @author Stephane Nicoll
+ * @author Gary Russell
  */
 @Configuration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
@@ -79,54 +83,146 @@ import com.rabbitmq.client.Channel;
 @Import(RabbitAnnotationDrivenConfiguration.class)
 public class RabbitAutoConfiguration {
 
-	@Bean
-	@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "dynamic", matchIfMissing = true)
-	@ConditionalOnMissingBean(AmqpAdmin.class)
-	public AmqpAdmin amqpAdmin(CachingConnectionFactory connectionFactory) {
-		return new RabbitAdmin(connectionFactory);
-	}
-
-	@Autowired
-	private ConnectionFactory connectionFactory;
-
-	@Bean
-	@ConditionalOnMissingBean(RabbitTemplate.class)
-	public RabbitTemplate rabbitTemplate() {
-		return new RabbitTemplate(this.connectionFactory);
-	}
-
 	@Configuration
 	@ConditionalOnMissingBean(ConnectionFactory.class)
 	protected static class RabbitConnectionFactoryCreator {
 
 		@Bean
-		public ConnectionFactory rabbitConnectionFactory(RabbitProperties config) {
-			CachingConnectionFactory factory = new CachingConnectionFactory();
-			String addresses = config.getAddresses();
-			factory.setAddresses(addresses);
-			if (config.getHost() != null) {
-				factory.setHost(config.getHost());
-				factory.setPort(config.getPort());
+		public CachingConnectionFactory rabbitConnectionFactory(RabbitProperties config)
+				throws Exception {
+			RabbitConnectionFactoryBean factory = new RabbitConnectionFactoryBean();
+			if (config.determineHost() != null) {
+				factory.setHost(config.determineHost());
 			}
-			if (config.getUsername() != null) {
-				factory.setUsername(config.getUsername());
+			factory.setPort(config.determinePort());
+			if (config.determineUsername() != null) {
+				factory.setUsername(config.determineUsername());
 			}
-			if (config.getPassword() != null) {
-				factory.setPassword(config.getPassword());
+			if (config.determinePassword() != null) {
+				factory.setPassword(config.determinePassword());
 			}
-			if (config.getVirtualHost() != null) {
-				factory.setVirtualHost(config.getVirtualHost());
+			if (config.determineVirtualHost() != null) {
+				factory.setVirtualHost(config.determineVirtualHost());
 			}
-			return factory;
+			if (config.getRequestedHeartbeat() != null) {
+				factory.setRequestedHeartbeat(config.getRequestedHeartbeat());
+			}
+			RabbitProperties.Ssl ssl = config.getSsl();
+			if (ssl.isEnabled()) {
+				factory.setUseSSL(true);
+				if (ssl.getAlgorithm() != null) {
+					factory.setSslAlgorithm(ssl.getAlgorithm());
+				}
+				factory.setKeyStore(ssl.getKeyStore());
+				factory.setKeyStorePassphrase(ssl.getKeyStorePassword());
+				factory.setTrustStore(ssl.getTrustStore());
+				factory.setTrustStorePassphrase(ssl.getTrustStorePassword());
+			}
+			if (config.getConnectionTimeout() != null) {
+				factory.setConnectionTimeout(config.getConnectionTimeout());
+			}
+			factory.afterPropertiesSet();
+			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
+					factory.getObject());
+			connectionFactory.setAddresses(config.determineAddresses());
+			connectionFactory.setPublisherConfirms(config.isPublisherConfirms());
+			connectionFactory.setPublisherReturns(config.isPublisherReturns());
+			if (config.getCache().getChannel().getSize() != null) {
+				connectionFactory
+						.setChannelCacheSize(config.getCache().getChannel().getSize());
+			}
+			if (config.getCache().getConnection().getMode() != null) {
+				connectionFactory
+						.setCacheMode(config.getCache().getConnection().getMode());
+			}
+			if (config.getCache().getConnection().getSize() != null) {
+				connectionFactory.setConnectionCacheSize(
+						config.getCache().getConnection().getSize());
+			}
+			if (config.getCache().getChannel().getCheckoutTimeout() != null) {
+				connectionFactory.setChannelCheckoutTimeout(
+						config.getCache().getChannel().getCheckoutTimeout());
+			}
+			return connectionFactory;
 		}
 
 	}
 
+	@Configuration
+	@Import(RabbitConnectionFactoryCreator.class)
+	protected static class RabbitTemplateConfiguration {
+
+		private final ObjectProvider<MessageConverter> messageConverter;
+
+		private final RabbitProperties properties;
+
+		public RabbitTemplateConfiguration(
+				ObjectProvider<MessageConverter> messageConverter,
+				RabbitProperties properties) {
+			this.messageConverter = messageConverter;
+			this.properties = properties;
+		}
+
+		@Bean
+		@ConditionalOnSingleCandidate(ConnectionFactory.class)
+		@ConditionalOnMissingBean(RabbitTemplate.class)
+		public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+			RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+			MessageConverter messageConverter = this.messageConverter.getIfUnique();
+			if (messageConverter != null) {
+				rabbitTemplate.setMessageConverter(messageConverter);
+			}
+			rabbitTemplate.setMandatory(determineMandatoryFlag());
+			RabbitProperties.Template templateProperties = this.properties.getTemplate();
+			RabbitProperties.Retry retryProperties = templateProperties.getRetry();
+			if (retryProperties.isEnabled()) {
+				rabbitTemplate.setRetryTemplate(createRetryTemplate(retryProperties));
+			}
+			if (templateProperties.getReceiveTimeout() != null) {
+				rabbitTemplate.setReceiveTimeout(templateProperties.getReceiveTimeout());
+			}
+			if (templateProperties.getReplyTimeout() != null) {
+				rabbitTemplate.setReplyTimeout(templateProperties.getReplyTimeout());
+			}
+			return rabbitTemplate;
+		}
+
+		private boolean determineMandatoryFlag() {
+			Boolean mandatory = this.properties.getTemplate().getMandatory();
+			return (mandatory != null ? mandatory : this.properties.isPublisherReturns());
+		}
+
+		private RetryTemplate createRetryTemplate(RabbitProperties.Retry properties) {
+			RetryTemplate template = new RetryTemplate();
+			SimpleRetryPolicy policy = new SimpleRetryPolicy();
+			policy.setMaxAttempts(properties.getMaxAttempts());
+			template.setRetryPolicy(policy);
+			ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+			backOffPolicy.setInitialInterval(properties.getInitialInterval());
+			backOffPolicy.setMultiplier(properties.getMultiplier());
+			backOffPolicy.setMaxInterval(properties.getMaxInterval());
+			template.setBackOffPolicy(backOffPolicy);
+			return template;
+		}
+
+		@Bean
+		@ConditionalOnSingleCandidate(ConnectionFactory.class)
+		@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "dynamic", matchIfMissing = true)
+		@ConditionalOnMissingBean(AmqpAdmin.class)
+		public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
+			return new RabbitAdmin(connectionFactory);
+		}
+
+	}
+
+	@Configuration
 	@ConditionalOnClass(RabbitMessagingTemplate.class)
 	@ConditionalOnMissingBean(RabbitMessagingTemplate.class)
+	@Import(RabbitTemplateConfiguration.class)
 	protected static class MessagingTemplateConfiguration {
 
 		@Bean
+		@ConditionalOnSingleCandidate(RabbitTemplate.class)
 		public RabbitMessagingTemplate rabbitMessagingTemplate(
 				RabbitTemplate rabbitTemplate) {
 			return new RabbitMessagingTemplate(rabbitTemplate);

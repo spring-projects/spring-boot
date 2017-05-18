@@ -27,12 +27,12 @@ package org.springframework.boot.cli.command.status;
 public final class ExitStatus {
 
 	/**
-	 * Generic "OK" exit status with zero exit code and {@literal hangup=false}
+	 * Generic "OK" exit status with zero exit code and {@literal hangup=false}.
 	 */
 	public static ExitStatus OK = new ExitStatus(0, "OK");
 
 	/**
-	 * Generic "not OK" exit status with non-zero exit code and {@literal hangup=true}
+	 * Generic "not OK" exit status with non-zero exit code and {@literal hangup=true}.
 	 */
 	public static ExitStatus ERROR = new ExitStatus(-1, "ERROR", true);
 
@@ -43,7 +43,7 @@ public final class ExitStatus {
 	private final boolean hangup;
 
 	/**
-	 * Create a new ExitStatus with an exit code and name as specified.
+	 * Create a new {@link ExitStatus} instance.
 	 * @param code the exit code
 	 * @param name the name
 	 */
@@ -52,6 +52,7 @@ public final class ExitStatus {
 	}
 
 	/**
+	 * Create a new {@link ExitStatus} instance.
 	 * @param code the exit code
 	 * @param name the name
 	 * @param hangup true if it is OK for the caller to hangup
@@ -63,7 +64,7 @@ public final class ExitStatus {
 	}
 
 	/**
-	 * An exit code appropriate for use in System.exit()
+	 * An exit code appropriate for use in {@code System.exit()}.
 	 * @return an exit code
 	 */
 	public int getCode() {
@@ -71,7 +72,7 @@ public final class ExitStatus {
 	}
 
 	/**
-	 * A name describing the outcome
+	 * A name describing the outcome.
 	 * @return a name
 	 */
 	public String getName() {

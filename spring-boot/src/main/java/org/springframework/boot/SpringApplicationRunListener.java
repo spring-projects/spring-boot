@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public interface SpringApplicationRunListener {
 	 * Called immediately when the run method has first started. Can be used for very
 	 * early initialization.
 	 */
-	void started();
+	void starting();
 
 	/**
 	 * Called once the environment has been prepared, but before the
@@ -62,7 +62,8 @@ public interface SpringApplicationRunListener {
 
 	/**
 	 * Called immediately before the run method finishes.
-	 * @param context the application context
+	 * @param context the application context or null if a failure occurred before the
+	 * context was created
 	 * @param exception any run exception or null if run completed successfully.
 	 */
 	void finished(ConfigurableApplicationContext context, Throwable exception);

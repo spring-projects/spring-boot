@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,34 +20,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.actuate.audit.AuditEvent;
-import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.context.ApplicationListener;
 import org.springframework.security.access.event.AbstractAuthorizationEvent;
 import org.springframework.security.access.event.AuthenticationCredentialsNotFoundEvent;
 import org.springframework.security.access.event.AuthorizationFailureEvent;
 
 /**
- * {@link ApplicationListener} expose Spring Security {@link AbstractAuthorizationEvent
- * authorization events} as {@link AuditEvent}s.
+ * Default implementation of {@link AbstractAuthorizationAuditListener}.
  *
  * @author Dave Syer
+ * @author Vedran Pavic
  */
-public class AuthorizationAuditListener implements
-		ApplicationListener<AbstractAuthorizationEvent>, ApplicationEventPublisherAware {
+public class AuthorizationAuditListener extends AbstractAuthorizationAuditListener {
 
-	private ApplicationEventPublisher publisher;
-
-	@Override
-	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
-		this.publisher = publisher;
-	}
+	/**
+	 * Authorization failure event type.
+	 */
+	public static final String AUTHORIZATION_FAILURE = "AUTHORIZATION_FAILURE";
 
 	@Override
 	public void onApplicationEvent(AbstractAuthorizationEvent event) {
 		if (event instanceof AuthenticationCredentialsNotFoundEvent) {
-			onAuthenticationCredentialsNotFoundEvent((AuthenticationCredentialsNotFoundEvent) event);
+			onAuthenticationCredentialsNotFoundEvent(
+					(AuthenticationCredentialsNotFoundEvent) event);
 		}
 		else if (event instanceof AuthorizationFailureEvent) {
 			onAuthorizationFailureEvent((AuthorizationFailureEvent) event);
@@ -56,24 +50,22 @@ public class AuthorizationAuditListener implements
 
 	private void onAuthenticationCredentialsNotFoundEvent(
 			AuthenticationCredentialsNotFoundEvent event) {
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		data.put("type", event.getCredentialsNotFoundException().getClass().getName());
 		data.put("message", event.getCredentialsNotFoundException().getMessage());
-		publish(new AuditEvent("<unknown>", "AUTHENTICATION_FAILURE", data));
+		publish(new AuditEvent("<unknown>",
+				AuthenticationAuditListener.AUTHENTICATION_FAILURE, data));
 	}
 
 	private void onAuthorizationFailureEvent(AuthorizationFailureEvent event) {
-		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<>();
 		data.put("type", event.getAccessDeniedException().getClass().getName());
 		data.put("message", event.getAccessDeniedException().getMessage());
-		publish(new AuditEvent(event.getAuthentication().getName(),
-				"AUTHORIZATION_FAILURE", data));
-	}
-
-	private void publish(AuditEvent event) {
-		if (this.publisher != null) {
-			this.publisher.publishEvent(new AuditApplicationEvent(event));
+		if (event.getAuthentication().getDetails() != null) {
+			data.put("details", event.getAuthentication().getDetails());
 		}
+		publish(new AuditEvent(event.getAuthentication().getName(), AUTHORIZATION_FAILURE,
+				data));
 	}
 
 }

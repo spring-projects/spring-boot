@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.audit.listener;
 import java.util.Collections;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 
@@ -36,7 +37,7 @@ public class AuditListenerTests {
 	public void testStoredEvents() {
 		AuditEventRepository repository = mock(AuditEventRepository.class);
 		AuditEvent event = new AuditEvent("principal", "type",
-				Collections.<String, Object> emptyMap());
+				Collections.<String, Object>emptyMap());
 		AuditListener listener = new AuditListener(repository);
 		listener.onApplicationEvent(new AuditApplicationEvent(event));
 		verify(repository).add(event);

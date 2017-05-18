@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,15 +33,15 @@ class SmartImportCustomizer extends ImportCustomizer {
 
 	private SourceUnit source;
 
-	public SmartImportCustomizer(SourceUnit source, GeneratorContext context,
+	SmartImportCustomizer(SourceUnit source, GeneratorContext context,
 			ClassNode classNode) {
 		this.source = source;
 	}
 
 	@Override
 	public ImportCustomizer addImport(String alias, String className) {
-		if (this.source.getAST().getImport(
-				ClassHelper.make(className).getNameWithoutPackage()) == null) {
+		if (this.source.getAST()
+				.getImport(ClassHelper.make(className).getNameWithoutPackage()) == null) {
 			super.addImport(alias, className);
 		}
 		return this;
@@ -50,8 +50,8 @@ class SmartImportCustomizer extends ImportCustomizer {
 	@Override
 	public ImportCustomizer addImports(String... imports) {
 		for (String alias : imports) {
-			if (this.source.getAST().getImport(
-					ClassHelper.make(alias).getNameWithoutPackage()) == null) {
+			if (this.source.getAST()
+					.getImport(ClassHelper.make(alias).getNameWithoutPackage()) == null) {
 				super.addImports(alias);
 			}
 		}

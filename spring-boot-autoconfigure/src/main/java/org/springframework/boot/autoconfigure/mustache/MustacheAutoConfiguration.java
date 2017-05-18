@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,55 +18,61 @@ package org.springframework.boot.autoconfigure.mustache;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Mustache.Collector;
+import com.samskivert.mustache.Mustache.TemplateLoader;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.mustache.web.MustacheViewResolver;
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
-import org.springframework.util.Assert;
-
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Mustache.Collector;
-import com.samskivert.mustache.Mustache.Compiler;
-import com.samskivert.mustache.Mustache.TemplateLoader;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Mustache.
  *
  * @author Dave Syer
+ * @author Brian Clozel
  * @since 1.2.2
  */
 @Configuration
 @ConditionalOnClass(Mustache.class)
 @EnableConfigurationProperties(MustacheProperties.class)
+@Import({ MustacheServletWebConfiguration.class, MustacheReactiveWebConfiguration.class })
 public class MustacheAutoConfiguration {
 
-	@Autowired
-	private MustacheProperties mustache;
+	private static final Log logger = LogFactory.getLog(MustacheAutoConfiguration.class);
 
-	@Autowired
-	private Environment environment;
+	private final MustacheProperties mustache;
 
-	@Autowired
-	private ApplicationContext applicationContext;
+	private final Environment environment;
+
+	private final ApplicationContext applicationContext;
+
+	public MustacheAutoConfiguration(MustacheProperties mustache, Environment environment,
+			ApplicationContext applicationContext) {
+		this.mustache = mustache;
+		this.environment = environment;
+		this.applicationContext = applicationContext;
+	}
 
 	@PostConstruct
 	public void checkTemplateLocationExists() {
 		if (this.mustache.isCheckTemplateLocation()) {
 			TemplateLocation location = new TemplateLocation(this.mustache.getPrefix());
-			Assert.state(location.exists(this.applicationContext),
-					"Cannot find template location: " + location
-							+ " (please add some templates, check your Mustache "
-							+ "configuration, or set spring.mustache.template."
-							+ "check-template-location=false)");
+			if (!location.exists(this.applicationContext)) {
+				logger.warn("Cannot find template location: " + location
+						+ " (please add some templates, check your Mustache "
+						+ "configuration, or set spring.mustache."
+						+ "check-template-location=false)");
+			}
 		}
 	}
 
@@ -88,30 +94,8 @@ public class MustacheAutoConfiguration {
 	public MustacheResourceTemplateLoader mustacheTemplateLoader() {
 		MustacheResourceTemplateLoader loader = new MustacheResourceTemplateLoader(
 				this.mustache.getPrefix(), this.mustache.getSuffix());
-		loader.setCharset(this.mustache.getCharset());
+		loader.setCharset(this.mustache.getCharsetName());
 		return loader;
 	}
 
-	@Configuration
-	@ConditionalOnWebApplication
-	protected static class MustacheWebConfiguration {
-
-		@Autowired
-		private MustacheProperties mustache;
-
-		@Bean
-		@ConditionalOnMissingBean(MustacheViewResolver.class)
-		public MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler) {
-			MustacheViewResolver resolver = new MustacheViewResolver();
-			resolver.setPrefix(this.mustache.getPrefix());
-			resolver.setSuffix(this.mustache.getSuffix());
-			resolver.setCache(this.mustache.isCache());
-			resolver.setViewNames(this.mustache.getViewNames());
-			resolver.setContentType(this.mustache.getContentType());
-			resolver.setCompiler(mustacheCompiler);
-			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
-			return resolver;
-		}
-
-	}
 }

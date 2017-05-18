@@ -21,7 +21,7 @@ class SpringIntegrationExample implements CommandLineRunner {
 		 *  Since this is a simple application that we want to exit right away,
 		 *  close the context. For an active integration application, with pollers
 		 *  etc, you can either suspend the main thread here (e.g. with System.in.read()),
-		 *  or exit the run() method without closing he context, and stop the
+		 *  or exit the run() method without closing the context, and stop the
 		 *  application later using some other technique (kill, JMX etc).
 		 */
 		context.close()

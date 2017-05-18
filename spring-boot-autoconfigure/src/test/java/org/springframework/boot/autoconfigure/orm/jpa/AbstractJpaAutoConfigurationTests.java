@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
@@ -27,15 +28,17 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -50,12 +53,7 @@ import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Base for JPA tests and tests for {@link JpaBaseConfiguration}.
@@ -91,8 +89,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	public void testEntityManagerCreated() throws Exception {
 		setupTestConfiguration();
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
-		assertNotNull(this.context.getBean(JpaTransactionManager.class));
+		assertThat(this.context.getBean(DataSource.class)).isNotNull();
+		assertThat(this.context.getBean(JpaTransactionManager.class)).isNotNull();
 	}
 
 	@Test
@@ -100,8 +98,9 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		this.context.register(DataSourceTransactionManagerAutoConfiguration.class);
 		setupTestConfiguration();
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
-		assertTrue(this.context.getBean("transactionManager") instanceof JpaTransactionManager);
+		assertThat(this.context.getBean(DataSource.class)).isNotNull();
+		assertThat(this.context.getBean("transactionManager"))
+				.isInstanceOf(JpaTransactionManager.class);
 	}
 
 	@Test
@@ -110,7 +109,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 		context.refresh();
-		assertNotNull(context.getBean(OpenEntityManagerInViewInterceptor.class));
+		assertThat(context.getBean(OpenEntityManagerInViewInterceptor.class)).isNotNull();
 		context.close();
 	}
 
@@ -122,7 +121,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 				EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 		context.refresh();
-		assertEquals(0, getInterceptorBeans(context).length);
+		assertThat(getInterceptorBeans(context).length).isEqualTo(0);
 		context.close();
 	}
 
@@ -133,8 +132,9 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(context, "spring.jpa.open_in_view:false");
 		context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
+		ConfigurationPropertySources.attach(context.getEnvironment());
 		context.refresh();
-		assertEquals(0, getInterceptorBeans(context).length);
+		assertThat(getInterceptorBeans(context).length).isEqualTo(0);
 		context.close();
 	}
 
@@ -147,21 +147,34 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		LocalContainerEntityManagerFactoryBean bean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
 		Map<String, Object> map = bean.getJpaPropertyMap();
-		assertThat(map.get("a"), equalTo((Object) "b"));
-		assertThat(map.get("c"), equalTo((Object) "d"));
-		assertThat(map.get("a.b"), equalTo((Object) "c"));
+		assertThat(map.get("a")).isEqualTo("b");
+		assertThat(map.get("c")).isEqualTo("d");
+		assertThat(map.get("a.b")).isEqualTo("c");
 	}
 
 	@Test
-	public void usesManuallyDefinedEntityManagerFactoryBeanIfAvailable() {
+	public void usesManuallyDefinedLocalContainerEntityManagerFactoryBeanIfAvailable() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.initialize:false");
-		setupTestConfiguration(TestConfigurationWithEntityManagerFactory.class);
+		setupTestConfiguration(
+				TestConfigurationWithLocalContainerEntityManagerFactoryBean.class);
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean factoryBean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
 		Map<String, Object> map = factoryBean.getJpaPropertyMap();
-		assertThat(map.get("configured"), equalTo((Object) "manually"));
+		assertThat(map.get("configured")).isEqualTo("manually");
+	}
+
+	@Test
+	public void usesManuallyDefinedEntityManagerFactoryIfAvailable() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:false");
+		setupTestConfiguration(TestConfigurationWithEntityManagerFactory.class);
+		this.context.refresh();
+		EntityManagerFactory factoryBean = this.context
+				.getBean(EntityManagerFactory.class);
+		Map<String, Object> map = factoryBean.getProperties();
+		assertThat(map.get("configured")).isEqualTo("manually");
 	}
 
 	@Test
@@ -170,7 +183,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		this.context.refresh();
 		PlatformTransactionManager txManager = this.context
 				.getBean(PlatformTransactionManager.class);
-		assertThat(txManager, instanceOf(CustomJpaTransactionManager.class));
+		assertThat(txManager).isInstanceOf(CustomJpaTransactionManager.class);
 	}
 
 	@Test
@@ -182,8 +195,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		Field field = LocalContainerEntityManagerFactoryBean.class
 				.getDeclaredField("persistenceUnitManager");
 		field.setAccessible(true);
-		assertThat(field.get(entityManagerFactoryBean),
-				equalTo((Object) this.context.getBean(PersistenceUnitManager.class)));
+		assertThat(field.get(entityManagerFactoryBean))
+				.isEqualTo(this.context.getBean(PersistenceUnitManager.class));
 	}
 
 	protected void setupTestConfiguration() {
@@ -192,7 +205,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	protected void setupTestConfiguration(Class<?> configClass) {
 		this.context.register(configClass, EmbeddedDataSourceConfiguration.class,
-				DataSourceAutoConfiguration.class,
+				DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 	}
 
@@ -218,23 +231,51 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class TestConfigurationWithEntityManagerFactory extends
-			TestConfiguration {
+	protected static class TestConfigurationWithLocalContainerEntityManagerFactoryBean
+			extends TestConfiguration {
 
 		@Bean
 		public LocalContainerEntityManagerFactoryBean entityManagerFactory(
 				DataSource dataSource, JpaVendorAdapter adapter) {
-
 			LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 			factoryBean.setJpaVendorAdapter(adapter);
 			factoryBean.setDataSource(dataSource);
 			factoryBean.setPersistenceUnitName("manually-configured");
-			Map<String, Object> properties = new HashMap<String, Object>();
+			Map<String, Object> properties = new HashMap<>();
 			properties.put("configured", "manually");
 			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
 			factoryBean.setJpaPropertyMap(properties);
 			return factoryBean;
 		}
+
+	}
+
+	@Configuration
+	protected static class TestConfigurationWithEntityManagerFactory
+			extends TestConfiguration {
+
+		@Bean
+		public EntityManagerFactory entityManagerFactory(DataSource dataSource,
+				JpaVendorAdapter adapter) {
+			LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
+			factoryBean.setJpaVendorAdapter(adapter);
+			factoryBean.setDataSource(dataSource);
+			factoryBean.setPersistenceUnitName("manually-configured");
+			Map<String, Object> properties = new HashMap<>();
+			properties.put("configured", "manually");
+			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
+			factoryBean.setJpaPropertyMap(properties);
+			factoryBean.afterPropertiesSet();
+			return factoryBean.getObject();
+		}
+
+		@Bean
+		public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+			JpaTransactionManager transactionManager = new JpaTransactionManager();
+			transactionManager.setEntityManagerFactory(emf);
+			return transactionManager;
+		}
+
 	}
 
 	@Configuration
@@ -252,8 +293,11 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	@TestAutoConfigurationPackage(AbstractJpaAutoConfigurationTests.class)
 	public static class TestConfigurationWithCustomPersistenceUnitManager {
 
-		@Autowired
-		private DataSource dataSource;
+		private final DataSource dataSource;
+
+		public TestConfigurationWithCustomPersistenceUnitManager(DataSource dataSource) {
+			this.dataSource = dataSource;
+		}
 
 		@Bean
 		public PersistenceUnitManager persistenceUnitManager() {
@@ -267,6 +311,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@SuppressWarnings("serial")
 	static class CustomJpaTransactionManager extends JpaTransactionManager {
+
 	}
 
 }

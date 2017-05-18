@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,46 +17,59 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import javax.validation.constraints.NotNull;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.boot.autoconfigure.security.SecurityPrerequisite;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.util.ClassUtils;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.web.server.Ssl;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Properties for the management server (e.g. port and path settings).
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @see ServerProperties
  */
 @ConfigurationProperties(prefix = "management", ignoreUnknownFields = true)
 public class ManagementServerProperties implements SecurityPrerequisite {
 
-	private static final String SECURITY_CHECK_CLASS = "org.springframework.security.config.http.SessionCreationPolicy";
-
 	/**
 	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
 	 * authentication for management endpoints. If you want to add your own authentication
-	 * for all or some of those endpoints the best thing to do is add your own
-	 * WebSecurityConfigurerAdapter with lower order.
+	 * for all or some of those endpoints the best thing to do is to add your own
+	 * WebSecurityConfigurerAdapter with lower order, for instance by using
+	 * {@code ACCESS_OVERRIDE_ORDER}.
 	 */
 	public static final int BASIC_AUTH_ORDER = SecurityProperties.BASIC_AUTH_ORDER - 5;
 
 	/**
-	 * Order after the basic authentication access control provided automatically for the
+	 * Order before the basic authentication access control provided automatically for the
 	 * management endpoints. This is a useful place to put user-defined access rules if
-	 * you want to override the default access rules.
+	 * you want to override the default access rules for the management endpoints. If you
+	 * want to keep the default rules for management endpoints but want to override the
+	 * security for the rest of the application, use
+	 * {@code SecurityProperties.ACCESS_OVERRIDE_ORDER} instead.
 	 */
-	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER - 1;
+	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER
+			- 1;
 
 	/**
-	 * Management endpoint HTTP port. Use the same port as the applicationby default.
+	 * Management endpoint HTTP port. Use the same port as the application by default.
 	 */
 	private Integer port;
+
+	@NestedConfigurationProperty
+	private Ssl ssl;
 
 	/**
 	 * Network address that the management endpoints should bind to.
@@ -66,15 +79,14 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	/**
 	 * Management endpoint context-path.
 	 */
-	@NotNull
-	private String contextPath = "";
+	private String contextPath = "/application";
 
 	/**
 	 * Add the "X-Application-Context" HTTP header in each response.
 	 */
-	private boolean addApplicationContextHeader = true;
+	private boolean addApplicationContextHeader = false;
 
-	private final Security security = maybeCreateSecurity();
+	private final Security security = new Security();
 
 	/**
 	 * Returns the management port or {@code null} if the
@@ -95,6 +107,14 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		this.port = port;
 	}
 
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
+	public void setSsl(Ssl ssl) {
+		this.ssl = ssl;
+	}
+
 	public InetAddress getAddress() {
 		return this.address;
 	}
@@ -103,12 +123,25 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		this.address = address;
 	}
 
+	/**
+	 * Return the context path with no trailing slash (i.e. the '/' root context is
+	 * represented as the empty string).
+	 * @return the context path (no trailing slash)
+	 */
 	public String getContextPath() {
 		return this.contextPath;
 	}
 
 	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
+		Assert.notNull(contextPath, "ContextPath must not be null");
+		this.contextPath = cleanContextPath(contextPath);
+	}
+
+	private String cleanContextPath(String contextPath) {
+		if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
+			return contextPath.substring(0, contextPath.length() - 1);
+		}
+		return contextPath;
 	}
 
 	public Security getSecurity() {
@@ -134,12 +167,14 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		private boolean enabled = true;
 
 		/**
-		 * Role required to access the management endpoint.
+		 * Comma-separated list of roles that can access the management endpoint.
 		 */
-		private String role = "ADMIN";
+		private List<String> roles = new ArrayList<String>(
+				Collections.singletonList("ACTUATOR"));
 
 		/**
-		 * Session creating policy to use (always, never, if_required, stateless).
+		 * Session creating policy for security use (always, never, if_required,
+		 * stateless).
 		 */
 		private SessionCreationPolicy sessions = SessionCreationPolicy.STATELESS;
 
@@ -151,12 +186,12 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 			this.sessions = sessions;
 		}
 
-		public void setRole(String role) {
-			this.role = role;
+		public void setRoles(List<String> roles) {
+			this.roles = roles;
 		}
 
-		public String getRole() {
-			return this.role;
+		public List<String> getRoles() {
+			return this.roles;
 		}
 
 		public boolean isEnabled() {
@@ -169,11 +204,29 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 
 	}
 
-	private static Security maybeCreateSecurity() {
-		if (ClassUtils.isPresent(SECURITY_CHECK_CLASS, null)) {
-			return new Security();
-		}
-		return null;
+	public enum SessionCreationPolicy {
+
+		/**
+		 * Always create an {@link HttpSession}.
+		 */
+		ALWAYS,
+
+		/**
+		 * Never create an {@link HttpSession}, but use any {@link HttpSession} that
+		 * already exists.
+		 */
+		NEVER,
+
+		/**
+		 * Only create an {@link HttpSession} if required.
+		 */
+		IF_REQUIRED,
+
+		/**
+		 * Never create an {@link HttpSession}.
+		 */
+		STATELESS
+
 	}
 
 }

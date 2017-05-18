@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,11 @@ import java.io.InputStream;
 public interface RandomAccessData {
 
 	/**
-	 * Returns an {@link InputStream} that can be used to read the underling data. The
+	 * Returns an {@link InputStream} that can be used to read the underlying data. The
 	 * caller is responsible close the underlying stream.
 	 * @param access hint indicating how the underlying data should be accessed
 	 * @return a new input stream that can be used to read the underlying data.
-	 * @throws IOException
+	 * @throws IOException if the stream cannot be opened
 	 */
 	InputStream getInputStream(ResourceAccess access) throws IOException;
 
@@ -53,7 +53,7 @@ public interface RandomAccessData {
 	/**
 	 * Lock modes for accessing the underlying resource.
 	 */
-	public static enum ResourceAccess {
+	enum ResourceAccess {
 
 		/**
 		 * Obtain access to the underlying resource once and keep it until the stream is

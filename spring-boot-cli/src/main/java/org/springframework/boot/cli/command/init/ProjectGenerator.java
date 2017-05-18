@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,15 +39,15 @@ class ProjectGenerator {
 
 	private final InitializrService initializrService;
 
-	public ProjectGenerator(InitializrService initializrService) {
+	ProjectGenerator(InitializrService initializrService) {
 		this.initializrService = initializrService;
 	}
 
 	public void generateProject(ProjectGenerationRequest request, boolean force)
 			throws IOException {
 		ProjectGenerationResponse response = this.initializrService.generate(request);
-		String fileName = (request.getOutput() != null ? request.getOutput() : response
-				.getFileName());
+		String fileName = (request.getOutput() != null ? request.getOutput()
+				: response.getFileName());
 		if (shouldExtract(request, response)) {
 			if (isZipArchive(response)) {
 				extractProject(response, request.getOutput(), force);
@@ -70,6 +70,9 @@ class ProjectGenerator {
 
 	/**
 	 * Detect if the project should be extracted.
+	 * @param request the generation request
+	 * @param response the generation response
+	 * @return if the project should be extracted
 	 */
 	private boolean shouldExtract(ProjectGenerationRequest request,
 			ProjectGenerationResponse response) {
@@ -90,6 +93,7 @@ class ProjectGenerator {
 				return ZIP_MIME_TYPE.equals(entity.getContentType().getMimeType());
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return false;
@@ -97,15 +101,17 @@ class ProjectGenerator {
 
 	private void extractProject(ProjectGenerationResponse entity, String output,
 			boolean overwrite) throws IOException {
-		File outputFolder = (output != null ? new File(output) : new File(
-				System.getProperty("user.dir")));
+		File outputFolder = (output != null ? new File(output)
+				: new File(System.getProperty("user.dir")));
 		if (!outputFolder.exists()) {
 			outputFolder.mkdirs();
 		}
-		ZipInputStream zipStream = new ZipInputStream(new ByteArrayInputStream(
-				entity.getContent()));
+		ZipInputStream zipStream = new ZipInputStream(
+				new ByteArrayInputStream(entity.getContent()));
 		try {
 			extractFromStream(zipStream, overwrite, outputFolder);
+			fixExecutableFlag(outputFolder, "mvnw");
+			fixExecutableFlag(outputFolder, "gradlew");
 			Log.info("Project extracted to '" + outputFolder.getAbsolutePath() + "'");
 		}
 		finally {
@@ -146,12 +152,19 @@ class ProjectGenerator {
 						+ "overwrite or specify an alternate location.");
 			}
 			if (!outputFile.delete()) {
-				throw new ReportableException("Failed to delete existing file "
-						+ outputFile.getPath());
+				throw new ReportableException(
+						"Failed to delete existing file " + outputFile.getPath());
 			}
 		}
 		FileCopyUtils.copy(entity.getContent(), outputFile);
 		Log.info("Content saved to '" + output + "'");
+	}
+
+	private void fixExecutableFlag(File dir, String fileName) {
+		File f = new File(dir, fileName);
+		if (f.exists()) {
+			f.setExecutable(true, false);
+		}
 	}
 
 }

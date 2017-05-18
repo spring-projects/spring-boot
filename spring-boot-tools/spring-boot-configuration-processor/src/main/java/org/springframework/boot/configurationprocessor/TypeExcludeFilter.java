@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.Set;
 import javax.lang.model.type.TypeMirror;
 
 /**
- * Filter to excluded elements that don't make sense to process.
+ * Filter to exclude elements that don't make sense to process.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
@@ -30,9 +30,9 @@ import javax.lang.model.type.TypeMirror;
  */
 class TypeExcludeFilter {
 
-	private final Set<String> excludes = new HashSet<String>();
+	private final Set<String> excludes = new HashSet<>();
 
-	public TypeExcludeFilter() {
+	TypeExcludeFilter() {
 		add("com.zaxxer.hikari.IConnectionCustomizer");
 		add("groovy.text.markup.MarkupTemplateEngine");
 		add("java.io.Writer");

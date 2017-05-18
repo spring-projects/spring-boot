@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
  *
  * @author Phillip Webb
  */
-public interface SpringApplicationRunnerConfiguration extends GroovyCompilerConfiguration {
+public interface SpringApplicationRunnerConfiguration
+		extends GroovyCompilerConfiguration {
 
 	/**
 	 * Returns {@code true} if the source file should be monitored for changes and
@@ -39,4 +40,5 @@ public interface SpringApplicationRunnerConfiguration extends GroovyCompilerConf
 	 * @return the logging level
 	 */
 	Level getLogLevel();
+
 }

@@ -7,8 +7,14 @@
  -----
 
   By default, the <<<repackage>>> goal will replace the original artifact with the
-  executable one. If you prefer to keep the original artifact and attach the executable
-  one with a different classifier, configure the plugin as follows:
+  repackaged one. That's a sane behaviour for modules that represent an app but if
+  your module is used as a dependency of another module, you need to provide a
+  classifier for the repackaged one.
+
+  The reason for that is that application classes are packaged in <<<BOOT-INF/classes>>>
+  so that the dependent module cannot load a repackaged jar's classes. If that is the
+  case or if you prefer to keep the original artifact and attach the repackaged one
+  with a different classifier, configure the plugin as follows:
 
 ---
 <project>
@@ -41,8 +47,8 @@
 </project>
 ---
 
-  This configuration will generate two artifacts: the original one and the executable counter
-  part produced by the repackage goal. Both will be installed/deployed accordingly.
+  This configuration will generate two artifacts: the original one and the repackaged counter
+  part produced by the repackage goal. Both will be installed/deployed transparently.
 
 
 

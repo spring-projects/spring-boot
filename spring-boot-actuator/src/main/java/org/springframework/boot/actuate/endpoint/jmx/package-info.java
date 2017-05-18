@@ -18,4 +18,3 @@
  * Actuator JMX endpoint support.
  */
 package org.springframework.boot.actuate.endpoint.jmx;
-

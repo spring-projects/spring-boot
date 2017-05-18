@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,32 +18,34 @@ package org.springframework.boot.actuate.endpoint;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link Sanitizer}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class SanitizerTests {
 
-	private Sanitizer sanitizer = new Sanitizer();
-
 	@Test
 	public void defaults() throws Exception {
-		assertEquals(this.sanitizer.sanitize("password", "secret"), "******");
-		assertEquals(this.sanitizer.sanitize("my-password", "secret"), "******");
-		assertEquals(this.sanitizer.sanitize("my-OTHER.paSSword", "secret"), "******");
-		assertEquals(this.sanitizer.sanitize("somesecret", "secret"), "******");
-		assertEquals(this.sanitizer.sanitize("somekey", "secret"), "******");
-		assertEquals(this.sanitizer.sanitize("find", "secret"), "secret");
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize("password", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("my-password", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("my-OTHER.paSSword", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("somesecret", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("somekey", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("token", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("sometoken", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("find", "secret")).isEqualTo("secret");
 	}
 
 	@Test
 	public void regex() throws Exception {
-		this.sanitizer.setKeysToSanitize(".*lock.*");
-		assertEquals(this.sanitizer.sanitize("verylOCkish", "secret"), "******");
-		assertEquals(this.sanitizer.sanitize("veryokish", "secret"), "secret");
+		Sanitizer sanitizer = new Sanitizer(".*lock.*");
+		assertThat(sanitizer.sanitize("verylOCkish", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("veryokish", "secret")).isEqualTo("secret");
 	}
 
 }

@@ -1,0 +1,12 @@
+=== /flyway
+This endpoint provides information about database migrations that have been performed
+by Flyway.
+
+Example curl request:
+include::{generated}/flyway/curl-request.adoc[]
+
+Example HTTP request:
+include::{generated}/flyway/http-request.adoc[]
+
+Example HTTP response:
+include::{generated}/flyway/http-response.adoc[]

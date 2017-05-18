@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.context.annotation.MBeanExportConfiguration.SpecificPlatform;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
@@ -45,22 +45,23 @@ import org.springframework.util.StringUtils;
  * {@link EnableAutoConfiguration Auto-configuration} to enable/disable Spring's
  * {@link EnableMBeanExport} mechanism based on configuration properties.
  * <p>
- * To disable auto export of annotation beans set <code>spring.jmx.enabled: false</code>.
+ * To disable auto export of annotation beans set {@code spring.jmx.enabled: false}.
  *
  * @author Christian Dupuis
+ * @author Madhura Bhave
  */
 @Configuration
 @ConditionalOnClass({ MBeanExporter.class })
 @ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware {
 
-	private RelaxedPropertyResolver propertyResolver;
+	private Environment environment;
 
 	private BeanFactory beanFactory;
 
 	@Override
 	public void setEnvironment(Environment environment) {
-		this.propertyResolver = new RelaxedPropertyResolver(environment, "spring.jmx.");
+		this.environment = environment;
 	}
 
 	@Override
@@ -69,14 +70,16 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 	}
 
 	@Bean
+	@Primary
 	@ConditionalOnMissingBean(value = MBeanExporter.class, search = SearchStrategy.CURRENT)
 	public AnnotationMBeanExporter mbeanExporter(ObjectNamingStrategy namingStrategy) {
 		AnnotationMBeanExporter exporter = new AnnotationMBeanExporter();
 		exporter.setRegistrationPolicy(RegistrationPolicy.FAIL_ON_EXISTING);
 		exporter.setNamingStrategy(namingStrategy);
-		String server = this.propertyResolver.getProperty("server", "mbeanServer");
-		if (StringUtils.hasLength(server)) {
-			exporter.setServer(this.beanFactory.getBean(server, MBeanServer.class));
+		String serverBean = this.environment.getProperty("spring.jmx.server",
+				"mbeanServer");
+		if (StringUtils.hasLength(serverBean)) {
+			exporter.setServer(this.beanFactory.getBean(serverBean, MBeanServer.class));
 		}
 		return exporter;
 	}
@@ -86,7 +89,7 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 	public ParentAwareNamingStrategy objectNamingStrategy() {
 		ParentAwareNamingStrategy namingStrategy = new ParentAwareNamingStrategy(
 				new AnnotationJmxAttributeSource());
-		String defaultDomain = this.propertyResolver.getProperty("default-domain");
+		String defaultDomain = this.environment.getProperty("spring.jmx.default-domain");
 		if (StringUtils.hasLength(defaultDomain)) {
 			namingStrategy.setDefaultDomain(defaultDomain);
 		}
@@ -104,7 +107,6 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 		factory.setLocateExistingServerIfPossible(true);
 		factory.afterPropertiesSet();
 		return factory.getObject();
-
 	}
 
 }

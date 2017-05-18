@@ -1,0 +1,9 @@
+<ehcache>
+
+	<cache name="cacheTest1" maxBytesLocalHeap="50m" timeToLiveSeconds="100">
+	</cache>
+
+	<cache name="cacheTest2" maxBytesLocalHeap="50m" timeToLiveSeconds="100">
+	</cache>
+
+</ehcache>

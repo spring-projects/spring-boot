@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,47 +17,53 @@
 package org.springframework.boot.autoconfigure.jackson;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.jackson.JsonComponent;
+import org.springframework.boot.jackson.JsonObjectSerializer;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.argThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JacksonAutoConfiguration}.
@@ -67,10 +73,12 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Marcel Overdijk
  * @author Sebastien Deleuze
+ * @author Johannes Edmeier
+ * @author Grzegorz Poznachowski
  */
 public class JacksonAutoConfigurationTests {
 
-	AnnotationConfigApplicationContext context;
+	private AnnotationConfigApplicationContext context;
 
 	@Before
 	public void setUp() {
@@ -89,19 +97,7 @@ public class JacksonAutoConfigurationTests {
 		this.context.register(JacksonAutoConfiguration.class);
 		this.context.refresh();
 		ObjectMapper objectMapper = this.context.getBean(ObjectMapper.class);
-		assertThat(objectMapper.canSerialize(LocalDateTime.class), is(true));
-	}
-
-	@Test
-	public void customJacksonModules() throws Exception {
-		this.context.register(ModuleConfig.class, MockObjectMapperConfig.class,
-				JacksonAutoConfiguration.class);
-		this.context.refresh();
-		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		@SuppressWarnings({ "unchecked", "unused" })
-		ObjectMapper result = verify(mapper).registerModules(
-				(Iterable<Module>) argThat(hasItem(this.context.getBean("jacksonModule",
-						Module.class))));
+		assertThat(objectMapper.canSerialize(LocalDateTime.class)).isTrue();
 	}
 
 	@Test
@@ -110,7 +106,7 @@ public class JacksonAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertEquals("{\"foo\":\"bar\"}", mapper.writeValueAsString(new Foo()));
+		assertThat(mapper.writeValueAsString(new Foo())).isEqualTo("{\"foo\":\"bar\"}");
 	}
 
 	/*
@@ -124,8 +120,7 @@ public class JacksonAutoConfigurationTests {
 		this.context.register(JacksonAutoConfiguration.class);
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
-		assertEquals(String.valueOf(date.getTime()), mapper.writeValueAsString(date));
+		assertThat(mapper.getDateFormat()).isInstanceOf(StdDateFormat.class);
 	}
 
 	@Test
@@ -135,11 +130,10 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.date-format:yyyyMMddHHmmss");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		DateTime dateTime = new DateTime(1988, 6, 25, 20, 30, DateTimeZone.UTC);
-		assertEquals("\"19880625203000\"", mapper.writeValueAsString(dateTime));
-		dateTime = new DateTime(1988, 6, 25, 20, 30);
-		Date date = dateTime.toDate();
-		assertEquals("\"19880625203000\"", mapper.writeValueAsString(date));
+		DateFormat dateFormat = mapper.getDateFormat();
+		assertThat(dateFormat).isInstanceOf(SimpleDateFormat.class);
+		assertThat(((SimpleDateFormat) dateFormat).toPattern())
+				.isEqualTo("yyyyMMddHHmmss");
 	}
 
 	@Test
@@ -151,89 +145,50 @@ public class JacksonAutoConfigurationTests {
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
 		DateTime dateTime = new DateTime(1988, 6, 25, 20, 30, DateTimeZone.UTC);
-		assertEquals("\"1988-06-25 20:30:00\"", mapper.writeValueAsString(dateTime));
-		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
-		assertEquals("\"19880625203000\"", mapper.writeValueAsString(date));
+		assertThat(mapper.writeValueAsString(dateTime))
+				.isEqualTo("\"1988-06-25 20:30:00\"");
+		Date date = dateTime.toDate();
+		assertThat(mapper.writeValueAsString(date)).isEqualTo("\"19880625203000\"");
 	}
 
 	@Test
 	public void customDateFormatClass() throws Exception {
 		this.context.register(JacksonAutoConfiguration.class);
-		EnvironmentTestUtils
-				.addEnvironment(
-						this.context,
-						"spring.jackson.date-format:org.springframework.boot.autoconfigure.jackson.JacksonAutoConfigurationTests.MyDateFormat");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.date-format:org.springframework.boot.autoconfigure.jackson.JacksonAutoConfigurationTests.MyDateFormat");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		DateTime dateTime = new DateTime(1988, 6, 25, 20, 30, DateTimeZone.UTC);
-		assertEquals("\"1988-06-25T20:30:00.000Z\"", mapper.writeValueAsString(dateTime));
-		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
-		assertEquals("\"1988-06-25 20:30:00\"", mapper.writeValueAsString(date));
+		assertThat(mapper.getDateFormat()).isInstanceOf(MyDateFormat.class);
 	}
-
-	public static class MyDateFormat extends SimpleDateFormat {
-
-		public MyDateFormat() {
-			super("yyyy-MM-dd HH:mm:ss");
-		}
-	}
-
-	/*
-	 * ObjectMapper does not contain method to get the property naming strategy of the
-	 * mapper. See https://github.com/FasterXML/jackson-databind/issues/559 If such a
-	 * method will be provided below tests can be simplified.
-	 */
 
 	@Test
 	public void noCustomPropertyNamingStrategy() throws Exception {
 		this.context.register(JacksonAutoConfiguration.class);
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertEquals("{\"propertyName\":null}", mapper.writeValueAsString(new Bar()));
+		assertThat(mapper.getPropertyNamingStrategy()).isNull();
 	}
 
 	@Test
-	public void customPropertyNamingStrategyCamelCaseToLowerCaseWithUnderscores()
-			throws Exception {
-		this.context.register(JacksonAutoConfiguration.class);
-		EnvironmentTestUtils
-				.addEnvironment(this.context,
-						"spring.jackson.property-naming-strategy:CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES");
-		this.context.refresh();
-		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertEquals("{\"property_name\":null}", mapper.writeValueAsString(new Bar()));
-	}
-
-	@Test
-	public void customPropertyNamingStrategyPascalCaseToCamelCase() throws Exception {
+	public void customPropertyNamingStrategyField() throws Exception {
 		this.context.register(JacksonAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jackson.property-naming-strategy:PASCAL_CASE_TO_CAMEL_CASE");
+				"spring.jackson.property-naming-strategy:SNAKE_CASE");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertEquals("{\"PropertyName\":null}", mapper.writeValueAsString(new Bar()));
-	}
-
-	@Test
-	public void customPropertyNamingStrategyLowerCase() throws Exception {
-		this.context.register(JacksonAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jackson.property-naming-strategy:LOWER_CASE");
-		this.context.refresh();
-		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertEquals("{\"propertyname\":null}", mapper.writeValueAsString(new Bar()));
+		assertThat(mapper.getPropertyNamingStrategy())
+				.isInstanceOf(SnakeCaseStrategy.class);
 	}
 
 	@Test
 	public void customPropertyNamingStrategyClass() throws Exception {
 		this.context.register(JacksonAutoConfiguration.class);
-		EnvironmentTestUtils
-				.addEnvironment(
-						this.context,
-						"spring.jackson.property-naming-strategy:com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.property-naming-strategy:com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertEquals("{\"property_name\":null}", mapper.writeValueAsString(new Bar()));
+		assertThat(mapper.getPropertyNamingStrategy())
+				.isInstanceOf(SnakeCaseStrategy.class);
 	}
 
 	@Test
@@ -243,9 +198,10 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.serialization.indent_output:true");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertFalse(SerializationFeature.INDENT_OUTPUT.enabledByDefault());
-		assertTrue(mapper.getSerializationConfig().hasSerializationFeatures(
-				SerializationFeature.INDENT_OUTPUT.getMask()));
+		assertThat(SerializationFeature.INDENT_OUTPUT.enabledByDefault()).isFalse();
+		assertThat(mapper.getSerializationConfig()
+				.hasSerializationFeatures(SerializationFeature.INDENT_OUTPUT.getMask()))
+						.isTrue();
 	}
 
 	@Test
@@ -255,9 +211,10 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.serialization.write_dates_as_timestamps:false");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertTrue(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS.enabledByDefault());
-		assertFalse(mapper.getSerializationConfig().hasSerializationFeatures(
-				SerializationFeature.WRITE_DATES_AS_TIMESTAMPS.getMask()));
+		assertThat(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS.enabledByDefault())
+				.isTrue();
+		assertThat(mapper.getSerializationConfig().hasSerializationFeatures(
+				SerializationFeature.WRITE_DATES_AS_TIMESTAMPS.getMask())).isFalse();
 	}
 
 	@Test
@@ -267,9 +224,10 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.deserialization.use_big_decimal_for_floats:true");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertFalse(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS.enabledByDefault());
-		assertTrue(mapper.getDeserializationConfig().hasDeserializationFeatures(
-				DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS.getMask()));
+		assertThat(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS.enabledByDefault())
+				.isFalse();
+		assertThat(mapper.getDeserializationConfig().hasDeserializationFeatures(
+				DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS.getMask())).isTrue();
 	}
 
 	@Test
@@ -279,9 +237,10 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.deserialization.fail-on-unknown-properties:false");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertTrue(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES.enabledByDefault());
-		assertFalse(mapper.getDeserializationConfig().hasDeserializationFeatures(
-				DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES.getMask()));
+		assertThat(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES.enabledByDefault())
+				.isTrue();
+		assertThat(mapper.getDeserializationConfig().hasDeserializationFeatures(
+				DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES.getMask())).isFalse();
 	}
 
 	@Test
@@ -291,11 +250,14 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.mapper.require_setters_for_getters:true");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertFalse(MapperFeature.REQUIRE_SETTERS_FOR_GETTERS.enabledByDefault());
-		assertTrue(mapper.getSerializationConfig().hasMapperFeatures(
-				MapperFeature.REQUIRE_SETTERS_FOR_GETTERS.getMask()));
-		assertTrue(mapper.getDeserializationConfig().hasMapperFeatures(
-				MapperFeature.REQUIRE_SETTERS_FOR_GETTERS.getMask()));
+		assertThat(MapperFeature.REQUIRE_SETTERS_FOR_GETTERS.enabledByDefault())
+				.isFalse();
+		assertThat(mapper.getSerializationConfig()
+				.hasMapperFeatures(MapperFeature.REQUIRE_SETTERS_FOR_GETTERS.getMask()))
+						.isTrue();
+		assertThat(mapper.getDeserializationConfig()
+				.hasMapperFeatures(MapperFeature.REQUIRE_SETTERS_FOR_GETTERS.getMask()))
+						.isTrue();
 	}
 
 	@Test
@@ -305,11 +267,11 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.mapper.use_annotations:false");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertTrue(MapperFeature.USE_ANNOTATIONS.enabledByDefault());
-		assertFalse(mapper.getDeserializationConfig().hasMapperFeatures(
-				MapperFeature.USE_ANNOTATIONS.getMask()));
-		assertFalse(mapper.getSerializationConfig().hasMapperFeatures(
-				MapperFeature.USE_ANNOTATIONS.getMask()));
+		assertThat(MapperFeature.USE_ANNOTATIONS.enabledByDefault()).isTrue();
+		assertThat(mapper.getDeserializationConfig()
+				.hasMapperFeatures(MapperFeature.USE_ANNOTATIONS.getMask())).isFalse();
+		assertThat(mapper.getSerializationConfig()
+				.hasMapperFeatures(MapperFeature.USE_ANNOTATIONS.getMask())).isFalse();
 	}
 
 	@Test
@@ -319,8 +281,9 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.parser.allow_single_quotes:true");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertFalse(JsonParser.Feature.ALLOW_SINGLE_QUOTES.enabledByDefault());
-		assertTrue(mapper.getFactory().isEnabled(JsonParser.Feature.ALLOW_SINGLE_QUOTES));
+		assertThat(JsonParser.Feature.ALLOW_SINGLE_QUOTES.enabledByDefault()).isFalse();
+		assertThat(mapper.getFactory().isEnabled(JsonParser.Feature.ALLOW_SINGLE_QUOTES))
+				.isTrue();
 	}
 
 	@Test
@@ -330,8 +293,9 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.parser.auto_close_source:false");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertTrue(JsonParser.Feature.AUTO_CLOSE_SOURCE.enabledByDefault());
-		assertFalse(mapper.getFactory().isEnabled(JsonParser.Feature.AUTO_CLOSE_SOURCE));
+		assertThat(JsonParser.Feature.AUTO_CLOSE_SOURCE.enabledByDefault()).isTrue();
+		assertThat(mapper.getFactory().isEnabled(JsonParser.Feature.AUTO_CLOSE_SOURCE))
+				.isFalse();
 	}
 
 	@Test
@@ -341,9 +305,10 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.generator.write_numbers_as_strings:true");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertFalse(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS.enabledByDefault());
-		assertTrue(mapper.getFactory().isEnabled(
-				JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS));
+		assertThat(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS.enabledByDefault())
+				.isFalse();
+		assertThat(mapper.getFactory()
+				.isEnabled(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS)).isTrue();
 	}
 
 	@Test
@@ -353,9 +318,9 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.generator.auto_close_target:false");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertTrue(JsonGenerator.Feature.AUTO_CLOSE_TARGET.enabledByDefault());
-		assertFalse(mapper.getFactory()
-				.isEnabled(JsonGenerator.Feature.AUTO_CLOSE_TARGET));
+		assertThat(JsonGenerator.Feature.AUTO_CLOSE_TARGET.enabledByDefault()).isTrue();
+		assertThat(mapper.getFactory().isEnabled(JsonGenerator.Feature.AUTO_CLOSE_TARGET))
+				.isFalse();
 	}
 
 	@Test
@@ -365,50 +330,137 @@ public class JacksonAutoConfigurationTests {
 		Jackson2ObjectMapperBuilder builder = this.context
 				.getBean(Jackson2ObjectMapperBuilder.class);
 		ObjectMapper mapper = builder.build();
-		assertTrue(MapperFeature.DEFAULT_VIEW_INCLUSION.enabledByDefault());
-		assertFalse(mapper.getDeserializationConfig().isEnabled(
-				MapperFeature.DEFAULT_VIEW_INCLUSION));
-		assertTrue(MapperFeature.DEFAULT_VIEW_INCLUSION.enabledByDefault());
-		assertFalse(mapper.getDeserializationConfig().isEnabled(
-				MapperFeature.DEFAULT_VIEW_INCLUSION));
-		assertFalse(mapper.getSerializationConfig().isEnabled(
-				MapperFeature.DEFAULT_VIEW_INCLUSION));
-		assertTrue(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES.enabledByDefault());
-		assertFalse(mapper.getDeserializationConfig().isEnabled(
-				DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));
-	}
-
-	@Test
-	public void httpMappersJsonPrettyPrintIsApplied() {
-		this.context.register(JacksonAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"http.mappers.json-pretty-print:true");
-		this.context.refresh();
-		ObjectMapper objectMapper = this.context.getBean(ObjectMapper.class);
-		assertTrue(objectMapper.getSerializationConfig().isEnabled(
-				SerializationFeature.INDENT_OUTPUT));
-	}
-
-	@Test
-	public void httpMappersJsonSortKeysIsApplied() {
-		this.context.register(JacksonAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"http.mappers.json-sort-keys:true");
-		this.context.refresh();
-		ObjectMapper objectMapper = this.context.getBean(ObjectMapper.class);
-		assertTrue(objectMapper.getSerializationConfig().isEnabled(
-				SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS));
+		assertThat(MapperFeature.DEFAULT_VIEW_INCLUSION.enabledByDefault()).isTrue();
+		assertThat(mapper.getDeserializationConfig()
+				.isEnabled(MapperFeature.DEFAULT_VIEW_INCLUSION)).isFalse();
+		assertThat(MapperFeature.DEFAULT_VIEW_INCLUSION.enabledByDefault()).isTrue();
+		assertThat(mapper.getDeserializationConfig()
+				.isEnabled(MapperFeature.DEFAULT_VIEW_INCLUSION)).isFalse();
+		assertThat(mapper.getSerializationConfig()
+				.isEnabled(MapperFeature.DEFAULT_VIEW_INCLUSION)).isFalse();
+		assertThat(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES.enabledByDefault())
+				.isTrue();
+		assertThat(mapper.getDeserializationConfig()
+				.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)).isFalse();
 	}
 
 	@Test
 	public void moduleBeansAndWellKnownModulesAreRegisteredWithTheObjectMapperBuilder() {
 		this.context.register(ModuleConfig.class, JacksonAutoConfiguration.class);
 		this.context.refresh();
-		ObjectMapper objectMapper = this.context.getBean(
-				Jackson2ObjectMapperBuilder.class).build();
-		assertThat(this.context.getBean(CustomModule.class).getOwners(),
-				hasItem((ObjectCodec) objectMapper));
-		assertThat(objectMapper.canSerialize(LocalDateTime.class), is(true));
+		ObjectMapper objectMapper = this.context
+				.getBean(Jackson2ObjectMapperBuilder.class).build();
+		assertThat(this.context.getBean(CustomModule.class).getOwners())
+				.contains((ObjectCodec) objectMapper);
+		assertThat(objectMapper.canSerialize(LocalDateTime.class)).isTrue();
+		assertThat(objectMapper.canSerialize(Baz.class)).isTrue();
+	}
+
+	@Test
+	public void defaultSerializationInclusion() {
+		this.context.register(JacksonAutoConfiguration.class);
+		this.context.refresh();
+		ObjectMapper objectMapper = this.context
+				.getBean(Jackson2ObjectMapperBuilder.class).build();
+		assertThat(objectMapper.getSerializationConfig().getDefaultPropertyInclusion()
+				.getValueInclusion()).isEqualTo(JsonInclude.Include.USE_DEFAULTS);
+	}
+
+	@Test
+	public void customSerializationInclusion() {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.default-property-inclusion:non_null");
+		this.context.refresh();
+		ObjectMapper objectMapper = this.context
+				.getBean(Jackson2ObjectMapperBuilder.class).build();
+		assertThat(objectMapper.getSerializationConfig().getDefaultPropertyInclusion()
+				.getValueInclusion()).isEqualTo(JsonInclude.Include.NON_NULL);
+	}
+
+	@Test
+	public void customTimeZoneFormattingADateTime() throws JsonProcessingException {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.time-zone:America/Los_Angeles");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.date-format:zzzz");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.jackson.locale:en");
+		this.context.refresh();
+		ObjectMapper objectMapper = this.context
+				.getBean(Jackson2ObjectMapperBuilder.class).build();
+		DateTime dateTime = new DateTime(1436966242231L, DateTimeZone.UTC);
+		assertThat(objectMapper.writeValueAsString(dateTime))
+				.isEqualTo("\"Pacific Daylight Time\"");
+	}
+
+	@Test
+	public void customTimeZoneFormattingADate() throws JsonProcessingException {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.time-zone:GMT+10");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.jackson.date-format:z");
+		this.context.refresh();
+		ObjectMapper objectMapper = this.context
+				.getBean(Jackson2ObjectMapperBuilder.class).build();
+		Date date = new Date(1436966242231L);
+		assertThat(objectMapper.writeValueAsString(date)).isEqualTo("\"GMT+10:00\"");
+	}
+
+	@Test
+	public void customLocale() throws JsonProcessingException {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.jackson.locale:de");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.date-format:zzzz");
+		this.context.refresh();
+		ObjectMapper objectMapper = this.context
+				.getBean(Jackson2ObjectMapperBuilder.class).build();
+
+		DateTime dateTime = new DateTime(1436966242231L, DateTimeZone.UTC);
+		assertThat(objectMapper.writeValueAsString(dateTime))
+				.isEqualTo("\"Koordinierte Universalzeit\"");
+	}
+
+	@Test
+	public void additionalJacksonBuilderCustomization() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class,
+				ObjectMapperBuilderCustomConfig.class);
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		assertThat(mapper.getDateFormat()).isInstanceOf(MyDateFormat.class);
+	}
+
+	@Test
+	public void parameterNamesModuleIsAutoConfigured() {
+		assertParameterNamesModuleCreatorBinding(Mode.DEFAULT,
+				JacksonAutoConfiguration.class);
+	}
+
+	@Test
+	public void customParameterNamesModuleCanBeConfigured() {
+		assertParameterNamesModuleCreatorBinding(Mode.DELEGATING,
+				ParameterNamesModuleConfig.class, JacksonAutoConfiguration.class);
+	}
+
+	private void assertParameterNamesModuleCreatorBinding(Mode expectedMode,
+			Class<?>... configClasses) {
+		this.context.register(configClasses);
+		this.context.refresh();
+		DeserializationConfig deserializationConfig = this.context
+				.getBean(ObjectMapper.class).getDeserializationConfig();
+		AnnotationIntrospector annotationIntrospector = deserializationConfig
+				.getAnnotationIntrospector().allIntrospectors().iterator().next();
+		assertThat(ReflectionTestUtils.getField(annotationIntrospector, "creatorBinding"))
+				.isEqualTo(expectedMode);
+	}
+
+	public static class MyDateFormat extends SimpleDateFormat {
+
+		public MyDateFormat() {
+			super("yyyy-MM-dd HH:mm:ss");
+		}
+
 	}
 
 	@Configuration
@@ -423,12 +475,14 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Configuration
+	@Import(BazSerializer.class)
 	protected static class ModuleConfig {
 
 		@Bean
 		public CustomModule jacksonModule() {
 			return new CustomModule();
 		}
+
 	}
 
 	@Configuration
@@ -441,8 +495,8 @@ public class JacksonAutoConfigurationTests {
 
 				@Override
 				public void serialize(Foo value, JsonGenerator jgen,
-						SerializerProvider provider) throws IOException,
-						JsonProcessingException {
+						SerializerProvider provider)
+								throws IOException, JsonProcessingException {
 					jgen.writeStartObject();
 					jgen.writeStringField("foo", "bar");
 					jgen.writeEndObject();
@@ -461,7 +515,33 @@ public class JacksonAutoConfigurationTests {
 
 	}
 
-	protected static class Foo {
+	@Configuration
+	protected static class ParameterNamesModuleConfig {
+
+		@Bean
+		public ParameterNamesModule parameterNamesModule() {
+			return new ParameterNamesModule(JsonCreator.Mode.DELEGATING);
+		}
+
+	}
+
+	@Configuration
+	protected static class ObjectMapperBuilderCustomConfig {
+
+		@Bean
+		public Jackson2ObjectMapperBuilderCustomizer customDateFormat() {
+			return new Jackson2ObjectMapperBuilderCustomizer() {
+				@Override
+				public void customize(
+						Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
+					jackson2ObjectMapperBuilder.dateFormat(new MyDateFormat());
+				}
+			};
+		}
+
+	}
+
+	protected static final class Foo {
 
 		private String name;
 
@@ -493,11 +573,26 @@ public class JacksonAutoConfigurationTests {
 		public void setPropertyName(String propertyName) {
 			this.propertyName = propertyName;
 		}
+
+	}
+
+	@JsonComponent
+	private static class BazSerializer extends JsonObjectSerializer<Baz> {
+
+		@Override
+		protected void serializeObject(Baz value, JsonGenerator jgen,
+				SerializerProvider provider) throws IOException {
+		}
+
+	}
+
+	private static class Baz {
+
 	}
 
 	private static class CustomModule extends SimpleModule {
 
-		private Set<ObjectCodec> owners = new HashSet<ObjectCodec>();
+		private Set<ObjectCodec> owners = new HashSet<>();
 
 		@Override
 		public void setupModule(SetupContext context) {
@@ -509,4 +604,5 @@ public class JacksonAutoConfigurationTests {
 		}
 
 	}
+
 }

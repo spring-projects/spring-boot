@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.metrics.writer;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.boot.actuate.metrics.Metric;
 
@@ -28,6 +30,8 @@ public class DefaultGaugeService implements GaugeService {
 
 	private final MetricWriter writer;
 
+	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<>();
+
 	/**
 	 * Create a {@link DefaultGaugeService} instance.
 	 * @param writer the underlying writer used to manage metrics
@@ -38,15 +42,21 @@ public class DefaultGaugeService implements GaugeService {
 
 	@Override
 	public void submit(String metricName, double value) {
-		this.writer.set(new Metric<Double>(wrap(metricName), value));
+		this.writer.set(new Metric<>(wrap(metricName), value));
 	}
 
 	private String wrap(String metricName) {
+		String cached = this.names.get(metricName);
+		if (cached != null) {
+			return cached;
+		}
 		if (metricName.startsWith("gauge") || metricName.startsWith("histogram")
 				|| metricName.startsWith("timer")) {
 			return metricName;
 		}
-		return "gauge." + metricName;
+		String name = "gauge." + metricName;
+		this.names.put(metricName, name);
+		return name;
 	}
 
 }

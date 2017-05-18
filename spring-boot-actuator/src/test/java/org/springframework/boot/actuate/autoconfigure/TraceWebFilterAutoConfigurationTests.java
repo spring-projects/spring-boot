@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,99 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import org.junit.Test;
-import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
+import org.junit.After;
+import org.junit.Test;
+
+import org.springframework.boot.actuate.trace.TraceProperties;
+import org.springframework.boot.actuate.trace.TraceRepository;
+import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link TraceWebFilterAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class TraceWebFilterAutoConfigurationTests {
 
+	private AnnotationConfigApplicationContext context;
+
+	@After
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Test
 	public void configureFilter() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class,
+		load();
+		assertThat(this.context.getBean(WebRequestTraceFilter.class)).isNotNull();
+	}
+
+	@Test
+	public void overrideTraceFilter() throws Exception {
+		load(CustomTraceFilterConfig.class);
+		WebRequestTraceFilter filter = this.context.getBean(WebRequestTraceFilter.class);
+		assertThat(filter).isInstanceOf(TestWebRequestTraceFilter.class);
+	}
+
+	@Test
+	public void skipsFilterIfPropertyDisabled() throws Exception {
+		load("endpoints.trace.filter.enabled:false");
+		assertThat(this.context.getBeansOfType(WebRequestTraceFilter.class).size())
+				.isEqualTo(0);
+	}
+
+	private void load(String... environment) {
+		load(null, environment);
+	}
+
+	private void load(Class<?> config, String... environment) {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, environment);
+		if (config != null) {
+			context.register(config);
+		}
+		context.register(PropertyPlaceholderAutoConfiguration.class,
 				TraceRepositoryAutoConfiguration.class,
 				TraceWebFilterAutoConfiguration.class);
-		assertNotNull(context.getBean(WebRequestTraceFilter.class));
-		context.close();
+		context.refresh();
+		this.context = context;
+	}
+
+	@Configuration
+	static class CustomTraceFilterConfig {
+
+		@Bean
+		public TestWebRequestTraceFilter testWebRequestTraceFilter(
+				TraceRepository repository, TraceProperties properties) {
+			return new TestWebRequestTraceFilter(repository, properties);
+		}
+
+	}
+
+	static class TestWebRequestTraceFilter extends WebRequestTraceFilter {
+
+		TestWebRequestTraceFilter(TraceRepository repository,
+				TraceProperties properties) {
+			super(repository, properties);
+		}
+
+		@Override
+		protected void postProcessRequestHeaders(Map<String, Object> headers) {
+			headers.clear();
+		}
+
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ public interface GroovyCompilerConfiguration {
 	/**
 	 * Constant to be used when there is no {@link #getClasspath() classpath}.
 	 */
-	public static final String[] DEFAULT_CLASSPATH = { "." };
+	String[] DEFAULT_CLASSPATH = { "." };
 
 	/**
 	 * Returns the scope in which the compiler operates.
@@ -59,7 +59,7 @@ public interface GroovyCompilerConfiguration {
 	boolean isAutoconfigure();
 
 	/**
-	 * Returns the classpath for local resources
+	 * Returns the classpath for local resources.
 	 * @return a path for local resources
 	 */
 	String[] getClasspath();
@@ -70,5 +70,11 @@ public interface GroovyCompilerConfiguration {
 	 * @return the repository configurations
 	 */
 	List<RepositoryConfiguration> getRepositoryConfiguration();
+
+	/**
+	 * Returns if running in quiet mode.
+	 * @return {@code true} if running in quiet mode
+	 */
+	boolean isQuiet();
 
 }

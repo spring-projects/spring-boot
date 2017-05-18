@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,20 +37,9 @@ import org.springframework.context.annotation.Conditional;
 public @interface ConditionalOnMissingClass {
 
 	/**
-	 * The classes that must not be present. Since this annotation parsed by loading class
-	 * bytecode it is safe to specify classes here that may ultimately not be on the
-	 * classpath.
-	 * @return the classes that must be present
-	 * @deprecated Since 1.1.0 due to the fact that the reflection errors can occur when
-	 * beans containing the annotation remain in the context. Use {@link #name()} instead.
+	 * The names of the classes that must not be present.
+	 * @return the names of the classes that must not be present
 	 */
-	@Deprecated
-	public Class<?>[] value() default {};
-
-	/**
-	 * The classes names that must not be present.
-	 * @return the class names that must be present.
-	 */
-	public String[] name() default {};
+	String[] value() default {};
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,14 +69,14 @@ public class OrderedHealthAggregator extends AbstractHealthAggregator {
 	@Override
 	protected Status aggregateStatus(List<Status> candidates) {
 		// Only sort those status instances that we know about
-		List<Status> filteredCandidates = new ArrayList<Status>();
+		List<Status> filteredCandidates = new ArrayList<>();
 		for (Status candidate : candidates) {
 			if (this.statusOrder.contains(candidate.getCode())) {
 				filteredCandidates.add(candidate);
 			}
 		}
 		// If no status is given return UNKNOWN
-		if (filteredCandidates.size() == 0) {
+		if (filteredCandidates.isEmpty()) {
 			return Status.UNKNOWN;
 		}
 		// Sort given Status instances by configured order
@@ -91,7 +91,7 @@ public class OrderedHealthAggregator extends AbstractHealthAggregator {
 
 		private final List<String> statusOrder;
 
-		public StatusComparator(List<String> statusOrder) {
+		StatusComparator(List<String> statusOrder) {
 			this.statusOrder = statusOrder;
 		}
 

@@ -20,4 +20,3 @@
  * @see org.springframework.boot.actuate.endpoint.Endpoint
  */
 package org.springframework.boot.actuate.endpoint;
-

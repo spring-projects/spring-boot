@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,14 @@
 package org.springframework.boot.configurationprocessor.metadata;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Configuration meta-data.
@@ -32,16 +36,25 @@ import java.util.regex.Pattern;
  */
 public class ConfigurationMetadata {
 
-	private static final Pattern CAMEL_CASE_PATTERN = Pattern.compile("([^A-Z-])([A-Z])");
+	private static final Set<Character> SEPARATORS;
 
-	private final List<ItemMetadata> items;
+	static {
+		List<Character> chars = Arrays.asList('-', '_');
+		SEPARATORS = Collections.unmodifiableSet(new HashSet<>(chars));
+	}
+
+	private final Map<String, List<ItemMetadata>> items;
+
+	private final Map<String, List<ItemHint>> hints;
 
 	public ConfigurationMetadata() {
-		this.items = new ArrayList<ItemMetadata>();
+		this.items = new LinkedHashMap<>();
+		this.hints = new LinkedHashMap<>();
 	}
 
 	public ConfigurationMetadata(ConfigurationMetadata metadata) {
-		this.items = new ArrayList<ItemMetadata>(metadata.getItems());
+		this.items = new LinkedHashMap<>(metadata.items);
+		this.hints = new LinkedHashMap<>(metadata.hints);
 	}
 
 	/**
@@ -49,24 +62,112 @@ public class ConfigurationMetadata {
 	 * @param itemMetadata the meta-data to add
 	 */
 	public void add(ItemMetadata itemMetadata) {
-		this.items.add(itemMetadata);
-		Collections.sort(this.items);
+		add(this.items, itemMetadata.getName(), itemMetadata);
 	}
 
 	/**
-	 * Add all properties from another {@link ConfigurationMetadata}.
+	 * Add item hint.
+	 * @param itemHint the item hint to add
+	 */
+	public void add(ItemHint itemHint) {
+		add(this.hints, itemHint.getName(), itemHint);
+	}
+
+	/**
+	 * Merge the content from another {@link ConfigurationMetadata}.
 	 * @param metadata the {@link ConfigurationMetadata} instance to merge
 	 */
-	public void addAll(ConfigurationMetadata metadata) {
-		this.items.addAll(metadata.getItems());
-		Collections.sort(this.items);
+	public void merge(ConfigurationMetadata metadata) {
+		for (ItemMetadata additionalItem : metadata.getItems()) {
+			mergeItemMetadata(additionalItem);
+		}
+		for (ItemHint itemHint : metadata.getHints()) {
+			add(itemHint);
+		}
 	}
 
 	/**
-	 * @return the meta-data properties.
+	 * Return item meta-data.
+	 * @return the items
 	 */
 	public List<ItemMetadata> getItems() {
-		return Collections.unmodifiableList(this.items);
+		return flattenValues(this.items);
+	}
+
+	/**
+	 * Return hint meta-data.
+	 * @return the hints
+	 */
+	public List<ItemHint> getHints() {
+		return flattenValues(this.hints);
+	}
+
+	protected void mergeItemMetadata(ItemMetadata metadata) {
+		ItemMetadata matching = findMatchingItemMetadata(metadata);
+		if (matching != null) {
+			if (metadata.getDescription() != null) {
+				matching.setDescription(metadata.getDescription());
+			}
+			if (metadata.getDefaultValue() != null) {
+				matching.setDefaultValue(metadata.getDefaultValue());
+			}
+			ItemDeprecation deprecation = metadata.getDeprecation();
+			ItemDeprecation matchingDeprecation = matching.getDeprecation();
+			if (deprecation != null) {
+				if (matchingDeprecation == null) {
+					matching.setDeprecation(deprecation);
+				}
+				else {
+					if (deprecation.getReason() != null) {
+						matchingDeprecation.setReason(deprecation.getReason());
+					}
+					if (deprecation.getReplacement() != null) {
+						matchingDeprecation.setReplacement(deprecation.getReplacement());
+					}
+				}
+			}
+		}
+		else {
+			add(this.items, metadata.getName(), metadata);
+		}
+	}
+
+	private <K, V> void add(Map<K, List<V>> map, K key, V value) {
+		List<V> values = map.get(key);
+		if (values == null) {
+			values = new ArrayList<>();
+			map.put(key, values);
+		}
+		values.add(value);
+	}
+
+	private ItemMetadata findMatchingItemMetadata(ItemMetadata metadata) {
+		List<ItemMetadata> candidates = this.items.get(metadata.getName());
+		if (candidates == null || candidates.isEmpty()) {
+			return null;
+		}
+		ListIterator<ItemMetadata> it = candidates.listIterator();
+		while (it.hasNext()) {
+			if (!it.next().hasSameType(metadata)) {
+				it.remove();
+			}
+		}
+		if (candidates.size() == 1) {
+			return candidates.get(0);
+		}
+		for (ItemMetadata candidate : candidates) {
+			if (nullSafeEquals(candidate.getSourceType(), metadata.getSourceType())) {
+				return candidate;
+			}
+		}
+		return null;
+	}
+
+	private boolean nullSafeEquals(Object o1, Object o2) {
+		if (o1 == o2) {
+			return true;
+		}
+		return o1 != null && o2 != null && o1.equals(o2);
 	}
 
 	public static String nestedPrefix(String prefix, String name) {
@@ -77,23 +178,32 @@ public class ConfigurationMetadata {
 	}
 
 	static String toDashedCase(String name) {
-		Matcher matcher = CAMEL_CASE_PATTERN.matcher(name);
-		StringBuffer result = new StringBuffer();
-		while (matcher.find()) {
-			matcher.appendReplacement(result, getDashed(matcher));
+		StringBuilder dashed = new StringBuilder();
+		Character previous = null;
+		for (char current : name.toCharArray()) {
+			if (SEPARATORS.contains(current)) {
+				dashed.append("-");
+			}
+			else if (Character.isUpperCase(current) && previous != null
+					&& !SEPARATORS.contains(previous)) {
+				dashed.append("-").append(current);
+			}
+			else {
+				dashed.append(current);
+			}
+			previous = current;
+
 		}
-		matcher.appendTail(result);
-		return result.toString().toLowerCase();
+		return dashed.toString().toLowerCase();
 	}
 
-	private static String getDashed(Matcher matcher) {
-		String first = matcher.group(1);
-		String second = matcher.group(2);
-		if (first.equals("_")) {
-			// not a word for the binder
-			return first + second;
+	private static <T extends Comparable<T>> List<T> flattenValues(Map<?, List<T>> map) {
+		List<T> content = new ArrayList<>();
+		for (List<T> values : map.values()) {
+			content.addAll(values);
 		}
-		return first + "-" + second;
+		Collections.sort(content);
+		return content;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -26,6 +27,7 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.Assert;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
@@ -41,6 +43,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Christian Dupuis
+ * @author Stephane Nicoll
  */
 class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 
@@ -48,18 +51,22 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 	public String[] selectImports(AnnotationMetadata metadata) {
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
 				EnableConfigurationProperties.class.getName(), false);
-		Object[] type = attributes == null ? null : (Object[]) attributes
-				.getFirst("value");
+		Object[] type = attributes == null ? null
+				: (Object[]) attributes.getFirst("value");
 		if (type == null || type.length == 0) {
-			return new String[] { ConfigurationPropertiesBindingPostProcessorRegistrar.class
-					.getName() };
+			return new String[] {
+					ConfigurationPropertiesBindingPostProcessorRegistrar.class
+							.getName() };
 		}
 		return new String[] { ConfigurationPropertiesBeanRegistrar.class.getName(),
 				ConfigurationPropertiesBindingPostProcessorRegistrar.class.getName() };
 	}
 
-	public static class ConfigurationPropertiesBeanRegistrar implements
-			ImportBeanDefinitionRegistrar {
+	/**
+	 * {@link ImportBeanDefinitionRegistrar} for configuration properties support.
+	 */
+	public static class ConfigurationPropertiesBeanRegistrar
+			implements ImportBeanDefinitionRegistrar {
 
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata metadata,
@@ -70,9 +77,10 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			List<Class<?>> types = collectClasses(attributes.get("value"));
 			for (Class<?> type : types) {
 				String prefix = extractPrefix(type);
-				String name = (StringUtils.hasText(prefix) ? prefix
-						+ ".CONFIGURATION_PROPERTIES" : type.getName());
-				if (!registry.containsBeanDefinition(name)) {
+				String name = (StringUtils.hasText(prefix) ? prefix + "-" + type.getName()
+						: type.getName());
+				if (!containsBeanDefinition((ConfigurableListableBeanFactory) registry,
+						name)) {
 					registerBeanDefinition(registry, type, name);
 				}
 			}
@@ -82,14 +90,13 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			ConfigurationProperties annotation = AnnotationUtils.findAnnotation(type,
 					ConfigurationProperties.class);
 			if (annotation != null) {
-				return (StringUtils.hasLength(annotation.value()) ? annotation.value()
-						: annotation.prefix());
+				return annotation.prefix();
 			}
 			return "";
 		}
 
 		private List<Class<?>> collectClasses(List<Object> list) {
-			ArrayList<Class<?>> result = new ArrayList<Class<?>>();
+			ArrayList<Class<?>> result = new ArrayList<>();
 			for (Object object : list) {
 				for (Object value : (Object[]) object) {
 					if (value instanceof Class && value != void.class) {
@@ -109,16 +116,26 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 
 			ConfigurationProperties properties = AnnotationUtils.findAnnotation(type,
 					ConfigurationProperties.class);
-			if (properties == null) {
-				registerPropertiesHolder(registry, name);
-			}
+			Assert.notNull(properties,
+					"No " + ConfigurationProperties.class.getSimpleName()
+							+ " annotation found on  '" + type.getName() + "'.");
 		}
 
-		private void registerPropertiesHolder(BeanDefinitionRegistry registry, String name) {
-			BeanDefinitionBuilder builder = BeanDefinitionBuilder
-					.genericBeanDefinition(ConfigurationPropertiesHolder.class);
-			builder.addConstructorArgReference(name);
-			registry.registerBeanDefinition(name + ".HOLDER", builder.getBeanDefinition());
+		private boolean containsBeanDefinition(
+				ConfigurableListableBeanFactory beanFactory, String name) {
+
+			boolean result = beanFactory.containsBeanDefinition(name);
+			if (result) {
+				return true;
+			}
+			if (beanFactory
+					.getParentBeanFactory() instanceof ConfigurableListableBeanFactory) {
+				return containsBeanDefinition(
+						(ConfigurableListableBeanFactory) beanFactory
+								.getParentBeanFactory(),
+						name);
+			}
+			return false;
 		}
 
 	}
