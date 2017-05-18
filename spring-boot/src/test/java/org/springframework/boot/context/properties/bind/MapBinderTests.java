@@ -376,58 +376,37 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapNonScalarCollectionShouldTriggerOnSuccess() throws Exception {
+	public void bindToMapNonScalarCollectionShouldPopulateMap() throws Exception {
 		Bindable<List<JavaBean>> valueType = Bindable.listOf(JavaBean.class);
-		ResolvableType mapType = ResolvableType.forClassWithGenerics(Map.class, ResolvableType.forClass(String.class), valueType.getType());
-		Bindable<Map<String, List<JavaBean>>> target = Bindable.of(mapType);
+		Bindable<Map<String, List<JavaBean>>> target = getMapBindable(String.class, valueType.getType());
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar[0].value", "a");
 		source.put("foo.bar[1].value", "b");
 		source.put("foo.bar[2].value", "c");
 		this.sources
 				.add(source);
-		BindHandler handler = mock(BindHandler.class,
-				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
-		this.binder.bind("foo", target, handler);
-		InOrder inOrder = inOrder(handler);
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.bar[0].value")),
-				eq(Bindable.of(String.class)), any(), eq("a"));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.bar[1].value")),
-				eq(Bindable.of(String.class)), any(), eq("b"));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.bar[2].value")),
-				eq(Bindable.of(String.class)), any(), eq("c"));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")),
-				eq(target), any(), isA(Map.class));
+		Map<String, List<JavaBean>> map = this.binder.bind("foo", target).get();
+		List<String> values = map.get("bar").stream().map(JavaBean::getValue).collect(Collectors.toList());
+		assertThat(values).containsExactly("a", "b", "c");
+
 	}
 
 	@Test
 	public void bindToPropertiesShouldBeEquivalentToMapOfStringString() throws Exception {
 		this.sources
 				.add(new MockConfigurationPropertySource("foo.bar.baz", "1", "line1"));
-		BindHandler handler = mock(BindHandler.class,
-				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
 		Bindable<Properties> target = Bindable.of(Properties.class);
-		this.binder.bind("foo", target, handler);
-		InOrder inOrder = inOrder(handler);
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.bar.baz")),
-				eq(Bindable.of(String.class)), any(), eq("1"));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")),
-				eq(target), any(), isA(Properties.class));
+		Properties properties = this.binder.bind("foo", target).get();
+		assertThat(properties.getProperty("bar.baz")).isEqualTo("1");
 	}
 
 	@Test
 	public void bindToMapShouldNotTreatClassWithStringConstructorAsScalar() throws Exception {
 		this.sources
 				.add(new MockConfigurationPropertySource("foo.bar.pattern", "1", "line1"));
-		BindHandler handler = mock(BindHandler.class,
-				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
-		Bindable<Map<String, Foo>> target = Bindable.of(ResolvableType.forClassWithGenerics(Map.class, String.class, Foo.class));
-		this.binder.bind("foo", target, handler);
-		InOrder inOrder = inOrder(handler);
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.bar.pattern")),
-				eq(Bindable.of(String.class)), any(), eq("1"));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")),
-				eq(target), any(), isA(Map.class));
+		Bindable<Map<String, Foo>> target = Bindable.mapOf(String.class, Foo.class);
+		Map<String, Foo> map = this.binder.bind("foo", target).get();
+		assertThat(map.get("bar").getPattern()).isEqualTo("1");
 	}
 
 	@Test
@@ -478,8 +457,8 @@ public class MapBinderTests {
 		this.sources
 				.add(mockSource);
 		Map<String, List<JavaBean>> map = this.binder.bind("foo", target).get();
-		List<JavaBean> values = map.get("bar.baz");
-		assertThat(values.stream().map(JavaBean::getValue).collect(Collectors.toList())).containsExactly("a", "b", "c");
+		List<String> values = map.get("bar.baz").stream().map(JavaBean::getValue).collect(Collectors.toList());
+		assertThat(values).containsExactly("a", "b", "c");
 	}
 
 	@Test
