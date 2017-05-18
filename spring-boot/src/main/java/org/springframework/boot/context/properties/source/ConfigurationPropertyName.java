@@ -97,10 +97,19 @@ public final class ConfigurationPropertyName
 	/**
 	 * Return if the an element in the name is indexed.
 	 * @param elementIndex the index of the element
-	 * @return {@code true} if the last element is indexed
+	 * @return {@code true} if the element is indexed
 	 */
 	boolean isIndexed(int elementIndex) {
 		return isIndexed(this.elements[elementIndex]);
+	}
+
+	/**
+	 * Return if the an element in the name is indexed and numeric.
+	 * @param elementIndex the index of the element
+	 * @return {@code true} if the element is indexed and numeric
+	 */
+	public boolean IsNumericIndex(int elementIndex) {
+		return isIndexed(elementIndex) && isNumeric(getElement(elementIndex, Form.ORIGINAL));
 	}
 
 	/**
@@ -390,6 +399,16 @@ public final class ConfigurationPropertyName
 		int length = element.length();
 		return length > 2 && element.charAt(0) == '['
 				&& element.charAt(length - 1) == ']';
+	}
+
+	private static boolean isNumeric(CharSequence element) {
+		int length = element.length();
+		for (int i = 0; i < length; i++) {
+			if (!Character.isDigit(element.charAt(i))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

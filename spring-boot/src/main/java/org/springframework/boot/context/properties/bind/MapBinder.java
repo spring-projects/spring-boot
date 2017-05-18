@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 
@@ -117,9 +118,25 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 
 		private ConfigurationPropertyName getEntryName(ConfigurationPropertySource source,
 				ConfigurationPropertyName name) {
+			Class<?> resolved = this.valueType.resolve();
+			if (Collection.class.isAssignableFrom(resolved)
+					|| this.valueType.isArray()) {
+				return chopNameAtNumericIndex(name);
+			}
 			if (!this.root.isParentOf(name)
 					&& (isValueTreatedAsNestedMap() || !isScalarValue(source, name))) {
 				return name.chop(this.root.getNumberOfElements() + 1);
+			}
+			return name;
+		}
+
+		private ConfigurationPropertyName chopNameAtNumericIndex(ConfigurationPropertyName name) {
+			int start = this.root.getNumberOfElements() + 1;
+			int size = name.getNumberOfElements();
+			for (int i = start; i < size; i++) {
+				if (name.IsNumericIndex(i)) {
+					return name.chop(i);
+				}
 			}
 			return name;
 		}
