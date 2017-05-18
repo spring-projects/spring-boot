@@ -397,7 +397,7 @@ For example, the following maps `FATAL` to `HttpStatus.SERVICE_UNAVAILABLE`:
 
 [source,properties,indent=0]
 ----
-	endpoints.health.mappings.FATAL=503
+	endpoints.health.mapping.FATAL=503
 ----
 
 
