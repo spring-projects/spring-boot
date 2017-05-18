@@ -387,7 +387,7 @@ to your application properties:
 
 [source,properties,indent=0]
 ----
-	management.health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP
+	management.health.status.order=FATAL, DOWN, OUT_OF_SERVICE, UNKNOWN, UP
 ----
 
 The HTTP status code in the response reflects the overall health status (e.g. `UP`
