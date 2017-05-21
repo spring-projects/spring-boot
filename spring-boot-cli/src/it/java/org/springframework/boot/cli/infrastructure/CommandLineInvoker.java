@@ -25,6 +25,9 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -107,6 +110,9 @@ public final class CommandLineInvoker {
 	 */
 	public static final class Invocation {
 
+		private static final long TIMEOUT = Duration.ofMinutes(1).toMillis();
+		private static final long WAIT_SLEEP = Duration.ofSeconds(1).toMillis();
+
 		private final StringBuffer err = new StringBuffer();
 
 		private final StringBuffer out = new StringBuffer();
@@ -178,6 +184,32 @@ public final class CommandLineInvoker {
 				streamReader.join();
 			}
 			return this.process.waitFor();
+		}
+
+		public void destroy() {
+			if (this.process.isAlive()) {
+				this.process.destroyForcibly();
+			}
+		}
+
+		public boolean isAlive() {
+			return this.process.isAlive();
+		}
+
+		public boolean waitForStarted() {
+			Instant started = Instant.now();
+			while (ChronoUnit.MILLIS.between(started, Instant.now()) < TIMEOUT) {
+				String output = getOutput();
+				if (output != null && output.contains("Started application in")) {
+					return true;
+				}
+				try {
+					Thread.sleep(WAIT_SLEEP);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			return false;
 		}
 
 		/**

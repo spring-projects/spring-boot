@@ -2,6 +2,8 @@ package org.test
 
 import static org.springframework.boot.groovy.GroovyTemplate.*;
 
+@Grab("groovy-templates")
+
 @Component
 class Example implements CommandLineRunner {
 
