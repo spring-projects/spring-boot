@@ -115,6 +115,9 @@ do as they were designed before this was clarified.
 | http://infinispan.org/[Infinispan]
 | https://github.com/infinispan/infinispan-spring-boot
 
+| http://teiid.org/[Teiid]
+| https://github.com/teiid/teiid-spring-boot
+
 | http://restfb.com/[RestFB] Messenger
 | https://github.com/marsbits/restfbmessenger
 
