@@ -32,7 +32,9 @@ import org.springframework.core.env.MutablePropertySources;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @since 1.4.0
+ * @deprecated since 2.0.0 in favor of {@link TestPropertyValues}
  */
+@Deprecated
 public abstract class EnvironmentTestUtils {
 
 	/**
