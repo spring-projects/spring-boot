@@ -94,6 +94,9 @@ public class TomcatWebServer implements WebServer {
 				// Start the server to trigger initialization listeners
 				this.tomcat.start();
 
+				// We can re-throw failure exception directly in the main thread
+				rethrowDeferredStartupExceptions();
+
 				Context context = findContext();
 				try {
 					ContextBindings.bindClassLoader(context, context.getNamingToken(),
@@ -136,6 +139,25 @@ public class TomcatWebServer implements WebServer {
 			this.serviceConnectors.put(service, connectors);
 			for (Connector connector : connectors) {
 				service.removeConnector(connector);
+			}
+		}
+	}
+
+	private void rethrowDeferredStartupExceptions() throws Exception {
+		Container[] children = this.tomcat.getHost().findChildren();
+		for (Container container : children) {
+			if (container instanceof TomcatEmbeddedContext) {
+				TomcatStarter tomcatStarter = ((TomcatEmbeddedContext) container)
+						.getStarter();
+				if (tomcatStarter != null) {
+					Exception exception = tomcatStarter.getStartUpException();
+					if (exception != null) {
+						throw exception;
+					}
+				}
+			}
+			if (!LifecycleState.STARTED.equals(container.getState())) {
+				throw new IllegalStateException(container + " failed to start");
 			}
 		}
 	}
