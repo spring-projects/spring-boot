@@ -724,7 +724,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.atomikos.properties.output-dir= # Directory in which to store the debug log files.
 	spring.jta.atomikos.properties.serial-jta-transactions=true # Specify if sub-transactions should be joined when possible.
 	spring.jta.atomikos.properties.service= # Transaction manager implementation that should be started.
-	spring.jta.atomikos.properties.threaded-two-phase-commit=true # Use different (and concurrent) threads for two-phase commit on the participating resources.
+	spring.jta.atomikos.properties.threaded-two-phase-commit=false # Use different (and concurrent) threads for two-phase commit on the participating resources.
 	spring.jta.atomikos.properties.transaction-manager-unique-name= # Transaction manager's unique name.
 
 	# BITRONIX
