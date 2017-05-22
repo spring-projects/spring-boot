@@ -246,6 +246,7 @@ content into your application; rather pick only the properties that you need.
 	server.undertow.buffer-size= # Size of each buffer in bytes.
 	server.undertow.direct-buffers= # Allocate buffers outside the Java heap.
 	server.undertow.io-threads= # Number of I/O threads to create for the worker.
+	server.undertow.eager-filter-init=true # Whether servlet filters should be initialized on startup.
 	server.undertow.max-http-post-size=0 # Maximum size in bytes of the HTTP post content.
 	server.undertow.worker-threads= # Number of worker threads.
 

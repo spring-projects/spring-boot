@@ -50,6 +50,9 @@ import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.GenericServlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -88,6 +91,7 @@ import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -942,6 +946,38 @@ public abstract class AbstractServletWebServerFactoryTests {
 		EmbeddedServletOptions options = (EmbeddedServletOptions) ReflectionTestUtils
 				.getField(jspServlet, "options");
 		assertThat(options.getDevelopment()).isEqualTo(false);
+	}
+
+	@Test
+	public void faultyFilterCausesStartFailure() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		factory.addInitializers(new ServletContextInitializer() {
+
+			@Override
+			public void onStartup(ServletContext servletContext) throws ServletException {
+				servletContext.addFilter("faulty", new Filter() {
+
+					@Override
+					public void init(FilterConfig filterConfig) throws ServletException {
+						throw new ServletException("Faulty filter");
+					}
+
+					@Override
+					public void doFilter(ServletRequest request, ServletResponse response,
+							FilterChain chain) throws IOException, ServletException {
+						chain.doFilter(request, response);
+					}
+
+					@Override
+					public void destroy() {
+					}
+
+				});
+			}
+
+		});
+		this.thrown.expect(WebServerException.class);
+		factory.getWebServer().start();
 	}
 
 	protected abstract void addConnector(int port,
