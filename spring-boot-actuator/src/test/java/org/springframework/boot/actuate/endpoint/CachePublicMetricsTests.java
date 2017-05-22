@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.endpoint;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +30,10 @@ import org.springframework.boot.actuate.cache.CaffeineCacheStatisticsProvider;
 import org.springframework.boot.actuate.cache.ConcurrentMapCacheStatisticsProvider;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.cache.support.SimpleCacheManager;
+import org.springframework.cache.transaction.TransactionAwareCacheDecorator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -76,6 +80,19 @@ public class CachePublicMetricsTests {
 		assertThat(metrics).containsOnly(entry("cache.cacheManager_foo.size", 0L),
 				entry("cache.bar.size", 0L),
 				entry("cache.anotherCacheManager_foo.size", 0L));
+	}
+
+	@Test
+	public void cacheMetricsWithTransactionAwareCacheDecorator() {
+		SimpleCacheManager cacheManager = new SimpleCacheManager();
+		cacheManager.setCaches(Collections.singletonList(
+				new TransactionAwareCacheDecorator(new ConcurrentMapCache("foo"))));
+		cacheManager.afterPropertiesSet();
+		this.cacheManagers.put("cacheManager", cacheManager);
+		CachePublicMetrics cpm = new CachePublicMetrics(this.cacheManagers,
+				providers(new ConcurrentMapCacheStatisticsProvider()));
+		Map<String, Number> metrics = metrics(cpm);
+		assertThat(metrics).containsOnly(entry("cache.foo.size", 0L));
 	}
 
 	private Map<String, Number> metrics(CachePublicMetrics cpm) {

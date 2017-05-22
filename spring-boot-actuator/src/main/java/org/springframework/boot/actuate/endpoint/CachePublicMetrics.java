@@ -27,7 +27,9 @@ import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.transaction.TransactionAwareCacheDecorator;
 import org.springframework.core.ResolvableType;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -89,7 +91,7 @@ public class CachePublicMetrics implements PublicMetrics {
 			List<CacheManagerBean> cacheManagerBeans) {
 		for (CacheManagerBean cacheManagerBean : cacheManagerBeans) {
 			CacheManager cacheManager = cacheManagerBean.getCacheManager();
-			Cache cache = cacheManager.getCache(cacheName);
+			Cache cache = unwrapIfNecessary(cacheManager.getCache(cacheName));
 			CacheStatistics statistics = getCacheStatistics(cache, cacheManager);
 			if (statistics != null) {
 				String prefix = cacheName;
@@ -100,6 +102,14 @@ public class CachePublicMetrics implements PublicMetrics {
 				metrics.addAll(statistics.toMetrics(prefix));
 			}
 		}
+	}
+
+	private Cache unwrapIfNecessary(Cache cache) {
+		if (ClassUtils.isPresent("org.springframework.cache.transaction.TransactionAwareCacheDecorator",
+				getClass().getClassLoader())) {
+			return TransactionAwareCacheDecoratorHandler.unwrapIfNecessary(cache);
+		}
+		return cache;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -140,6 +150,21 @@ public class CachePublicMetrics implements PublicMetrics {
 			return this.cacheManager;
 		}
 
+	}
+
+	private static class TransactionAwareCacheDecoratorHandler {
+
+		private static Cache unwrapIfNecessary(Cache cache) {
+			try {
+				if (cache instanceof TransactionAwareCacheDecorator) {
+					return ((TransactionAwareCacheDecorator) cache).getTargetCache();
+				}
+			}
+			catch (NoClassDefFoundError ex) {
+				// Ignore
+			}
+			return cache;
+		}
 	}
 
 }
