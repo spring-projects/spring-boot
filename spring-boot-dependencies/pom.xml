@@ -2575,6 +2575,11 @@
 					<version>${versions-maven-plugin.version}</version>
 				</plugin>
 				<plugin>
+					<groupId>org.flywaydb</groupId>
+					<artifactId>flyway-maven-plugin</artifactId>
+					<version>${flyway.version}</version>
+				</plugin>
+				<plugin>
 					<groupId>pl.project13.maven</groupId>
 					<artifactId>git-commit-id-plugin</artifactId>
 					<version>${git-commit-id-plugin.version}</version>
