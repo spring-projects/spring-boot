@@ -196,12 +196,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 						: ClassUtils.getDefaultClassLoader());
 		resetDefaultLocaleMapping(context);
 		addLocaleMappings(context);
-		try {
-			context.setUseRelativeRedirects(false);
-		}
-		catch (NoSuchMethodError ex) {
-			// Tomcat is < 8.0.30. Continue
-		}
+		context.setUseRelativeRedirects(false);
 		SkipPatternJarScanner.apply(context, this.tldSkipPatterns);
 		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
@@ -252,7 +247,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		// Otherwise the default location of a Spring DispatcherServlet cannot be set
 		defaultServlet.setOverridable(true);
 		context.addChild(defaultServlet);
-		addServletMapping(context, "/", "default");
+		context.addServletMappingDecoded("/", "default");
 	}
 
 	private void addJspServlet(Context context) {
@@ -266,13 +261,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		}
 		jspServlet.setLoadOnStartup(3);
 		context.addChild(jspServlet);
-		addServletMapping(context, "*.jsp", "jsp");
-		addServletMapping(context, "*.jspx", "jsp");
-	}
-
-	@SuppressWarnings("deprecation")
-	private void addServletMapping(Context context, String pattern, String name) {
-		context.addServletMapping(pattern, name);
+		context.addServletMappingDecoded("*.jsp", "jsp");
+		context.addServletMappingDecoded("*.jspx", "jsp");
 	}
 
 	private void addJasperInitializer(TomcatEmbeddedContext context) {
@@ -362,21 +352,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		protocol.setKeyPass(ssl.getKeyPassword());
 		protocol.setKeyAlias(ssl.getKeyAlias());
 		String ciphers = StringUtils.arrayToCommaDelimitedString(ssl.getCiphers());
-		protocol.setCiphers(StringUtils.hasText(ciphers) ? ciphers : null);
+		if (StringUtils.hasText(ciphers)) {
+			protocol.setCiphers(ciphers);
+		}
 		if (ssl.getEnabledProtocols() != null) {
-			try {
-				for (SSLHostConfig sslHostConfig : protocol.findSslHostConfigs()) {
-					sslHostConfig.setProtocols(StringUtils
-							.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
-				}
-			}
-			catch (NoSuchMethodError ex) {
-				// Tomcat 8.0.x or earlier
-				Assert.isTrue(
-						protocol.setProperty("sslEnabledProtocols",
-								StringUtils.arrayToCommaDelimitedString(
-										ssl.getEnabledProtocols())),
-						"Failed to set sslEnabledProtocols");
+			for (SSLHostConfig sslHostConfig : protocol.findSslHostConfigs()) {
+				sslHostConfig.setProtocols(StringUtils
+						.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
 			}
 		}
 		if (getSslStoreProvider() != null) {
@@ -542,18 +524,6 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 */
 	public void setBaseDirectory(File baseDirectory) {
 		this.baseDirectory = baseDirectory;
-	}
-
-	/**
-	 * A comma-separated list of jars to ignore for TLD scanning. See Tomcat's
-	 * catalina.properties for typical values. Defaults to a list drawn from that source.
-	 * @param tldSkip the jars to skip when scanning for TLDs etc
-	 * @deprecated as of 1.5 in favor of {@link #setTldSkipPatterns(Collection)}
-	 */
-	@Deprecated
-	public void setTldSkip(String tldSkip) {
-		Assert.notNull(tldSkip, "TldSkip must not be null");
-		setTldSkipPatterns(StringUtils.commaDelimitedListToSet(tldSkip));
 	}
 
 	/**

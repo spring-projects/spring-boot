@@ -67,13 +67,12 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * @see ConditionalOnClass
  * @see AutoConfigureAfter
  */
-@SuppressWarnings("deprecation")
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
 @AutoConfigurationPackage
-@Import(EnableAutoConfigurationImportSelector.class)
+@Import(AutoConfigurationImportSelector.class)
 public @interface EnableAutoConfiguration {
 
 	String ENABLED_OVERRIDE_PROPERTY = "spring.boot.enableautoconfiguration";

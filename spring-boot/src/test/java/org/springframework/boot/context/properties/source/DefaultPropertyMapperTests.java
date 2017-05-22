@@ -28,11 +28,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DefaultPropertyMapperTests extends AbstractPropertyMapperTests {
 
-	private DefaultPropertyMapper mapper = new DefaultPropertyMapper();
-
 	@Override
 	protected PropertyMapper getMapper() {
-		return this.mapper;
+		return DefaultPropertyMapper.INSTANCE;
 	}
 
 	@Test

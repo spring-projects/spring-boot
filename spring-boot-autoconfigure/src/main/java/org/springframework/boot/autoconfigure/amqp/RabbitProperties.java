@@ -22,7 +22,6 @@ import java.util.List;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -464,7 +463,51 @@ public class RabbitProperties {
 
 	}
 
+	public enum ContainerType {
+
+		/**
+		 * Container where the RabbitMQ consumer dispatches messages to an invoker thread.
+		 */
+		SIMPLE,
+
+		/**
+		 * Container where the listener is invoked directly on the RabbitMQ consumer
+		 * thread.
+		 */
+		DIRECT
+
+	}
+
 	public static class Listener {
+
+		/**
+		 * Listener container type.
+		 */
+		private ContainerType type = ContainerType.SIMPLE;
+
+		private final SimpleContainer simple = new SimpleContainer();
+
+		private final DirectContainer direct = new DirectContainer();
+
+		public ContainerType getType() {
+			return this.type;
+		}
+
+		public void setType(ContainerType containerType) {
+			this.type = containerType;
+		}
+
+		public SimpleContainer getSimple() {
+			return this.simple;
+		}
+
+		public DirectContainer getDirect() {
+			return this.direct;
+		}
+
+	}
+
+	public static abstract class AmqpContainer {
 
 		/**
 		 * Start the container automatically on startup.
@@ -477,26 +520,10 @@ public class RabbitProperties {
 		private AcknowledgeMode acknowledgeMode;
 
 		/**
-		 * Minimum number of consumers.
-		 */
-		private Integer concurrency;
-
-		/**
-		 * Maximum number of consumers.
-		 */
-		private Integer maxConcurrency;
-
-		/**
 		 * Number of messages to be handled in a single request. It should be greater than
 		 * or equal to the transaction size (if used).
 		 */
 		private Integer prefetch;
-
-		/**
-		 * Number of messages to be processed in a transaction. For best results it should
-		 * be less than or equal to the prefetch count.
-		 */
-		private Integer transactionSize;
 
 		/**
 		 * Whether rejected deliveries are requeued by default; default true.
@@ -511,7 +538,6 @@ public class RabbitProperties {
 		/**
 		 * Optional properties for a retry interceptor.
 		 */
-		@NestedConfigurationProperty
 		private final ListenerRetry retry = new ListenerRetry();
 
 		public boolean isAutoStartup() {
@@ -530,36 +556,12 @@ public class RabbitProperties {
 			this.acknowledgeMode = acknowledgeMode;
 		}
 
-		public Integer getConcurrency() {
-			return this.concurrency;
-		}
-
-		public void setConcurrency(Integer concurrency) {
-			this.concurrency = concurrency;
-		}
-
-		public Integer getMaxConcurrency() {
-			return this.maxConcurrency;
-		}
-
-		public void setMaxConcurrency(Integer maxConcurrency) {
-			this.maxConcurrency = maxConcurrency;
-		}
-
 		public Integer getPrefetch() {
 			return this.prefetch;
 		}
 
 		public void setPrefetch(Integer prefetch) {
 			this.prefetch = prefetch;
-		}
-
-		public Integer getTransactionSize() {
-			return this.transactionSize;
-		}
-
-		public void setTransactionSize(Integer transactionSize) {
-			this.transactionSize = transactionSize;
 		}
 
 		public Boolean getDefaultRequeueRejected() {
@@ -584,9 +586,75 @@ public class RabbitProperties {
 
 	}
 
+	/**
+	 * Configuration properties for {@code SimpleMessageListenerContainer}.
+	 */
+	public static class SimpleContainer extends AmqpContainer {
+
+		/**
+		 * Minimum number of listener invoker threads.
+		 */
+		private Integer concurrency;
+
+		/**
+		 * Maximum number of listener invoker threads.
+		 */
+		private Integer maxConcurrency;
+
+		/**
+		 * Number of messages to be processed in a transaction; number of messages between
+		 * acks. For best results it should be less than or equal to the prefetch count.
+		 */
+		private Integer transactionSize;
+
+		public Integer getConcurrency() {
+			return this.concurrency;
+		}
+
+		public void setConcurrency(Integer concurrency) {
+			this.concurrency = concurrency;
+		}
+
+		public Integer getMaxConcurrency() {
+			return this.maxConcurrency;
+		}
+
+		public void setMaxConcurrency(Integer maxConcurrency) {
+			this.maxConcurrency = maxConcurrency;
+		}
+
+		public Integer getTransactionSize() {
+			return this.transactionSize;
+		}
+
+		public void setTransactionSize(Integer transactionSize) {
+			this.transactionSize = transactionSize;
+		}
+
+	}
+
+	/**
+	 * Configuration properties for {@code DirectMessageListenerContainer}.
+	 */
+	public static class DirectContainer extends AmqpContainer {
+
+		/**
+		 * Number of consumers per queue.
+		 */
+		private Integer consumersPerQueue;
+
+		public Integer getConsumersPerQueue() {
+			return this.consumersPerQueue;
+		}
+
+		public void setConsumersPerQueue(Integer consumersPerQueue) {
+			this.consumersPerQueue = consumersPerQueue;
+		}
+
+	}
+
 	public static class Template {
 
-		@NestedConfigurationProperty
 		private final Retry retry = new Retry();
 
 		/**

@@ -16,8 +16,18 @@
 
 package org.springframework.boot.web.embedded.tomcat;
 
-import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
+import java.util.Arrays;
+
+import org.apache.catalina.Context;
+import org.junit.Test;
+import org.mockito.InOrder;
+
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
+import org.springframework.http.server.reactive.HttpHandler;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link TomcatReactiveWebServerFactory}.
@@ -28,8 +38,24 @@ public class TomcatReactiveWebServerFactoryTests
 		extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
-	protected AbstractReactiveWebServerFactory getFactory() {
+	protected TomcatReactiveWebServerFactory getFactory() {
 		return new TomcatReactiveWebServerFactory(0);
+	}
+
+	@Test
+	public void tomcatCustomizers() throws Exception {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		TomcatContextCustomizer[] listeners = new TomcatContextCustomizer[4];
+		for (int i = 0; i < listeners.length; i++) {
+			listeners[i] = mock(TomcatContextCustomizer.class);
+		}
+		factory.setTomcatContextCustomizers(Arrays.asList(listeners[0], listeners[1]));
+		factory.addContextCustomizers(listeners[2], listeners[3]);
+		this.webServer = factory.getWebServer(mock(HttpHandler.class));
+		InOrder ordered = inOrder((Object[]) listeners);
+		for (TomcatContextCustomizer listener : listeners) {
+			ordered.verify(listener).customize(any(Context.class));
+		}
 	}
 
 }

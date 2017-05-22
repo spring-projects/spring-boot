@@ -126,7 +126,7 @@ public class EndpointDocumentation {
 				.perform(post("/application/loggers/org.springframework.boot")
 						.contentType(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON)
 						.content("{\"configuredLevel\": \"DEBUG\"}"))
-				.andExpect(status().isOk()).andDo(document("set-logger"));
+				.andExpect(status().isNoContent()).andDo(document("set-logger"));
 	}
 
 	@Test

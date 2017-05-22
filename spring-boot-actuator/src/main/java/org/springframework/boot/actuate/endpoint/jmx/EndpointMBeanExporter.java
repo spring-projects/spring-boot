@@ -229,18 +229,6 @@ public class EndpointMBeanExporter extends MBeanExporter
 	 * @return an adapted endpoint
 	 */
 	protected JmxEndpoint adaptEndpoint(String beanName, Endpoint<?> endpoint) {
-		return getEndpointMBean(beanName, endpoint);
-	}
-
-	/**
-	 * Get a {@link EndpointMBean} for the specified {@link Endpoint}.
-	 * @param beanName the bean name
-	 * @param endpoint the endpoint
-	 * @return an {@link EndpointMBean}
-	 * @deprecated as of 1.5 in favor of {@link #adaptEndpoint(String, Endpoint)}
-	 */
-	@Deprecated
-	protected EndpointMBean getEndpointMBean(String beanName, Endpoint<?> endpoint) {
 		if (endpoint instanceof ShutdownEndpoint) {
 			return new ShutdownEndpointMBean(beanName, endpoint, this.objectMapper);
 		}

@@ -48,10 +48,10 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
@@ -85,6 +85,8 @@ import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.ConfigurableWebEnvironment;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -157,8 +159,8 @@ public class SpringApplicationTests {
 	@Test
 	public void sourcesMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Sources must not be empty");
-		new SpringApplication((Object[]) null).run();
+		this.thrown.expectMessage("PrimarySources must not be null");
+		new SpringApplication((Class<?>[]) null).run();
 	}
 
 	@Test
@@ -360,7 +362,6 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	public void eventsOrder() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -377,8 +378,6 @@ public class SpringApplicationTests {
 		application.addListeners(new ApplicationRunningEventListener());
 		this.context = application.run();
 		assertThat(events).hasSize(5);
-		assertThat(events.get(0)).isInstanceOf(
-				org.springframework.boot.context.event.ApplicationStartedEvent.class);
 		assertThat(events.get(0)).isInstanceOf(ApplicationStartingEvent.class);
 		assertThat(events.get(1)).isInstanceOf(ApplicationEnvironmentPreparedEvent.class);
 		assertThat(events.get(2)).isInstanceOf(ApplicationPreparedEvent.class);
@@ -577,20 +576,22 @@ public class SpringApplicationTests {
 
 	@Test
 	public void loadSources() throws Exception {
-		Object[] sources = { ExampleConfig.class, "a", TestCommandLineRunner.class };
+		Class<?>[] sources = { ExampleConfig.class, TestCommandLineRunner.class };
 		TestSpringApplication application = new TestSpringApplication(sources);
+		application.getSources().add("a");
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setUseMockLoader(true);
 		this.context = application.run();
 		Set<Object> allSources = application.getAllSources();
-		assertThat(allSources.toArray()).isEqualTo(sources);
+		assertThat(allSources).contains(ExampleConfig.class, TestCommandLineRunner.class,
+				"a");
 	}
 
 	@Test
 	public void wildcardSources() {
-		Object[] sources = {
-				"classpath:org/springframework/boot/sample-${sample.app.test.prop}.xml" };
-		TestSpringApplication application = new TestSpringApplication(sources);
+		TestSpringApplication application = new TestSpringApplication();
+		application.getSources().add(
+				"classpath:org/springframework/boot/sample-${sample.app.test.prop}.xml");
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 	}
@@ -604,7 +605,7 @@ public class SpringApplicationTests {
 	@Test
 	public void runComponents() throws Exception {
 		this.context = SpringApplication.run(
-				new Object[] { ExampleWebConfig.class, Object.class }, new String[0]);
+				new Class<?>[] { ExampleWebConfig.class, Object.class }, new String[0]);
 		assertThat(this.context).isNotNull();
 	}
 
@@ -870,8 +871,7 @@ public class SpringApplicationTests {
 		assertThat(this.context.getEnvironment().getProperty("foo")).isEqualTo("bar");
 		Iterator<PropertySource<?>> iterator = this.context.getEnvironment()
 				.getPropertySources().iterator();
-		assertThat(iterator.next().getName())
-				.isEqualTo(ConfigurationPropertySources.PROPERTY_SOURCE_NAME);
+		assertThat(iterator.next().getName()).isEqualTo("configurationProperties");
 		assertThat(iterator.next().getName()).isEqualTo(
 				TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
 	}
@@ -893,6 +893,16 @@ public class SpringApplicationTests {
 		int occurrences = StringUtils.countOccurrencesOf(this.output.toString(),
 				"Caused by: java.lang.RuntimeException: ExpectedError");
 		assertThat(occurrences).as("Expected single stacktrace").isEqualTo(1);
+	}
+
+	@Test
+	public void nonWebApplicationConfiguredViaAPropertyHasTheCorrectTypeOfContextAndEnvironment() {
+		ConfigurableApplicationContext context = new SpringApplication(
+				ExampleConfig.class).run("--spring.main.web-application-type=NONE");
+		assertThat(context).isNotInstanceOfAny(WebApplicationContext.class,
+				ReactiveWebApplicationContext.class);
+		assertThat(context.getEnvironment())
+				.isNotInstanceOfAny(ConfigurableWebEnvironment.class);
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(
@@ -962,12 +972,12 @@ public class SpringApplicationTests {
 
 		private Banner.Mode bannerMode;
 
-		TestSpringApplication(Object... sources) {
-			super(sources);
+		TestSpringApplication(Class<?>... primarySources) {
+			super(primarySources);
 		}
 
-		TestSpringApplication(ResourceLoader resourceLoader, Object... sources) {
-			super(resourceLoader, sources);
+		TestSpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+			super(resourceLoader, primarySources);
 		}
 
 		public void setUseMockLoader(boolean useMockLoader) {

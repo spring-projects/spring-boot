@@ -31,13 +31,13 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
- * @since 2.0.0
  */
-public class MapConfigurationPropertySource implements ConfigurationPropertySource {
+public class MapConfigurationPropertySource
+		implements IterableConfigurationPropertySource {
 
 	private final Map<String, Object> source;
 
-	private final ConfigurationPropertySource delegate;
+	private final IterableConfigurationPropertySource delegate;
 
 	/**
 	 * Create a new empty {@link MapConfigurationPropertySource} instance.
@@ -53,9 +53,9 @@ public class MapConfigurationPropertySource implements ConfigurationPropertySour
 	 */
 	public MapConfigurationPropertySource(Map<?, ?> map) {
 		this.source = new LinkedHashMap<>();
-		this.delegate = new PropertySourceConfigurationPropertySource(
+		this.delegate = new SpringIterableConfigurationPropertySource(
 				new MapPropertySource("source", this.source),
-				new DefaultPropertyMapper());
+				DefaultPropertyMapper.INSTANCE);
 		putAll(map);
 	}
 
@@ -65,6 +65,7 @@ public class MapConfigurationPropertySource implements ConfigurationPropertySour
 	 */
 	public void putAll(Map<?, ?> map) {
 		Assert.notNull(map, "Map must not be null");
+		assertNotReadOnlySystemAttributesMap(map);
 		map.forEach(this::put);
 	}
 
@@ -91,6 +92,16 @@ public class MapConfigurationPropertySource implements ConfigurationPropertySour
 	@Override
 	public Stream<ConfigurationPropertyName> stream() {
 		return this.delegate.stream();
+	}
+
+	private void assertNotReadOnlySystemAttributesMap(Map<?, ?> map) {
+		try {
+			map.size();
+		}
+		catch (UnsupportedOperationException ex) {
+			throw new IllegalArgumentException(
+					"Security restricted maps are not supported", ex);
+		}
 	}
 
 }

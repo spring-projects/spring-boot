@@ -19,18 +19,15 @@ package org.springframework.boot.diagnostics.analyzer;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.UnboundConfigurationPropertiesException;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
-import org.springframework.boot.context.properties.bind.validation.ValidationErrors;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
-import org.springframework.boot.origin.Origin;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 
 /**
  * An {@link AbstractFailureAnalyzer} that performs analysis of failures caused by a
- * {@link BindException}.
+ * {@link BindException} excluding {@link BindValidationException} and
+ * {@link UnboundConfigurationPropertiesException}.
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
@@ -39,54 +36,12 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, BindException cause) {
-		if (cause.getCause() instanceof BindValidationException) {
-			return analyzeBindValidationException(cause,
-					(BindValidationException) cause.getCause());
-		}
-		else if (cause.getCause() instanceof UnboundConfigurationPropertiesException) {
-			return analyzeUnboundConfigurationPropertiesException(cause,
-					(UnboundConfigurationPropertiesException) cause.getCause());
-		}
-		return analyzeGenericBindException(cause);
-	}
-
-	private FailureAnalysis analyzeBindValidationException(BindException cause,
-			BindValidationException validationException) {
-		ValidationErrors errors = validationException.getValidationErrors();
-		if (!errors.hasErrors()) {
+		Throwable rootCause = cause.getCause();
+		if (rootCause instanceof BindValidationException
+				|| rootCause instanceof UnboundConfigurationPropertiesException) {
 			return null;
 		}
-		StringBuilder description = new StringBuilder(
-				String.format("Binding to target %s failed:%n", cause.getTarget()));
-		for (ObjectError error : errors) {
-			if (error instanceof FieldError) {
-				appendFieldError(description, (FieldError) error);
-			}
-			description.append(
-					String.format("%n    Reason: %s%n", error.getDefaultMessage()));
-		}
-		return getFailureAnalysis(description, cause);
-	}
-
-	private void appendFieldError(StringBuilder description, FieldError error) {
-		Origin origin = Origin.from(error);
-		description.append(String.format("%n    Property: %s",
-				error.getObjectName() + "." + error.getField()));
-		description.append(String.format("%n    Value: %s", error.getRejectedValue()));
-		if (origin != null) {
-			description.append(String.format("%n    Origin: %s", origin));
-		}
-	}
-
-	private FailureAnalysis analyzeUnboundConfigurationPropertiesException(
-			BindException cause, UnboundConfigurationPropertiesException exception) {
-		StringBuilder description = new StringBuilder(
-				String.format("Binding to target %s failed:%n", cause.getTarget()));
-		for (ConfigurationProperty property : exception.getUnboundProperties()) {
-			buildDescription(description, property);
-			description.append(String.format("%n    Reason: %s", exception.getMessage()));
-		}
-		return getFailureAnalysis(description, cause);
+		return analyzeGenericBindException(cause);
 	}
 
 	private FailureAnalysis analyzeGenericBindException(BindException cause) {

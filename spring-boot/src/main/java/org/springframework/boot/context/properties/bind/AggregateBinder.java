@@ -85,22 +85,6 @@ abstract class AggregateBinder<T> {
 	}
 
 	/**
-	 * Roll up the given name to the first element below the root. For example a name of
-	 * {@code foo.bar.baz} rolled up to the root {@code foo} would be {@code foo.bar}.
-	 * @param name the name to roll up
-	 * @param root the root name
-	 * @return the rolled up name or {@code null}
-	 */
-	protected final ConfigurationPropertyName rollUp(ConfigurationPropertyName name,
-			ConfigurationPropertyName root) {
-		while (name != null && (name.getParent() != null)
-				&& (!root.equals(name.getParent()))) {
-			name = name.getParent();
-		}
-		return name;
-	}
-
-	/**
 	 * Internal class used to supply the aggregate and cache the value.
 	 * @param <T> The aggregate type
 	 */

@@ -17,8 +17,6 @@
 package org.springframework.boot.context.properties.source;
 
 import java.util.function.Predicate;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.springframework.util.Assert;
 
@@ -43,15 +41,29 @@ class FilteredConfigurationPropertiesSource implements ConfigurationPropertySour
 	}
 
 	@Override
-	public Stream<ConfigurationPropertyName> stream() {
-		return StreamSupport.stream(this.source.spliterator(), false).filter(this.filter);
+	public ConfigurationProperty getConfigurationProperty(
+			ConfigurationPropertyName name) {
+		boolean filtered = getFilter().test(name);
+		return (filtered ? getSource().getConfigurationProperty(name) : null);
 	}
 
 	@Override
-	public ConfigurationProperty getConfigurationProperty(
+	public ConfigurationPropertyState containsDescendantOf(
 			ConfigurationPropertyName name) {
-		return (this.filter.test(name) ? this.source.getConfigurationProperty(name)
-				: null);
+		ConfigurationPropertyState result = this.source.containsDescendantOf(name);
+		if (result == ConfigurationPropertyState.PRESENT) {
+			// We can't be sure a contained descendant won't be filtered
+			return ConfigurationPropertyState.UNKNOWN;
+		}
+		return result;
+	}
+
+	protected ConfigurationPropertySource getSource() {
+		return this.source;
+	}
+
+	protected Predicate<ConfigurationPropertyName> getFilter() {
+		return this.filter;
 	}
 
 }

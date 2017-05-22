@@ -31,7 +31,6 @@ import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.Netty4ClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
@@ -460,24 +459,6 @@ public class RestTemplateBuilderTests {
 	public void readTimeoutCanBeConfiguredOnSimpleRequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(SimpleClientHttpRequestFactory.class).setReadTimeout(1234)
-				.build().getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
-				.isEqualTo(1234);
-	}
-
-	@Test
-	public void connectTimeoutCanBeConfiguredOnNetty4RequestFactory() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(Netty4ClientHttpRequestFactory.class)
-				.setConnectTimeout(1234).build().getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
-				.isEqualTo(1234);
-	}
-
-	@Test
-	public void readTimeoutCanBeConfiguredOnNetty4RequestFactory() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(Netty4ClientHttpRequestFactory.class).setReadTimeout(1234)
 				.build().getRequestFactory();
 		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
 				.isEqualTo(1234);

@@ -61,6 +61,7 @@ import org.springframework.core.io.ResourceLoader;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @see SpringApplication
  */
 public class SpringApplicationBuilder {
 
@@ -72,7 +73,7 @@ public class SpringApplicationBuilder {
 
 	private final AtomicBoolean running = new AtomicBoolean(false);
 
-	private final Set<Object> sources = new LinkedHashSet<>();
+	private final Set<Class<?>> sources = new LinkedHashSet<>();
 
 	private final Map<String, Object> defaultProperties = new LinkedHashMap<>();
 
@@ -84,7 +85,7 @@ public class SpringApplicationBuilder {
 
 	private boolean configuredAsChild = false;
 
-	public SpringApplicationBuilder(Object... sources) {
+	public SpringApplicationBuilder(Class<?>... sources) {
 		this.application = createSpringApplication(sources);
 	}
 
@@ -96,7 +97,7 @@ public class SpringApplicationBuilder {
 	 * @return The {@link org.springframework.boot.SpringApplication} instance
 	 * @since 1.1.0
 	 */
-	protected SpringApplication createSpringApplication(Object... sources) {
+	protected SpringApplication createSpringApplication(Class<?>... sources) {
 		return new SpringApplication(sources);
 	}
 
@@ -165,7 +166,7 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplication build(String... args) {
 		configureAsChildIfNecessary(args);
-		this.application.setSources(this.sources);
+		this.application.addPrimarySources(this.sources);
 		return this.application;
 	}
 
@@ -175,7 +176,7 @@ public class SpringApplicationBuilder {
 	 * @param sources the sources for the application (Spring configuration)
 	 * @return the child application builder
 	 */
-	public SpringApplicationBuilder child(Object... sources) {
+	public SpringApplicationBuilder child(Class<?>... sources) {
 		SpringApplicationBuilder child = new SpringApplicationBuilder();
 		child.sources(sources);
 
@@ -193,7 +194,7 @@ public class SpringApplicationBuilder {
 		bannerMode(Banner.Mode.OFF);
 
 		// Make sure sources get copied over
-		this.application.setSources(this.sources);
+		this.application.addPrimarySources(this.sources);
 
 		return child;
 	}
@@ -204,7 +205,7 @@ public class SpringApplicationBuilder {
 	 * @param sources the sources for the application (Spring configuration)
 	 * @return the parent builder
 	 */
-	public SpringApplicationBuilder parent(Object... sources) {
+	public SpringApplicationBuilder parent(Class<?>... sources) {
 		if (this.parent == null) {
 			this.parent = new SpringApplicationBuilder(sources).web(false)
 					.properties(this.defaultProperties).environment(this.environment);
@@ -244,7 +245,7 @@ public class SpringApplicationBuilder {
 	 * @param sources the sources for the application (Spring configuration)
 	 * @return the new sibling builder
 	 */
-	public SpringApplicationBuilder sibling(Object... sources) {
+	public SpringApplicationBuilder sibling(Class<?>... sources) {
 		return runAndExtractParent().child(sources);
 	}
 
@@ -257,7 +258,7 @@ public class SpringApplicationBuilder {
 	 * parent
 	 * @return the new sibling builder
 	 */
-	public SpringApplicationBuilder sibling(Object[] sources, String... args) {
+	public SpringApplicationBuilder sibling(Class<?>[] sources, String... args) {
 		return runAndExtractParent(args).child(sources);
 	}
 
@@ -273,22 +274,12 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-	 * Add more sources to use in this application.
-	 * @param sources the sources to add
-	 * @return the current builder
-	 */
-	public SpringApplicationBuilder sources(Object... sources) {
-		this.sources.addAll(new LinkedHashSet<>(Arrays.asList(sources)));
-		return this;
-	}
-
-	/**
 	 * Add more sources (configuration classes and components) to this application.
 	 * @param sources the sources to add
 	 * @return the current builder
 	 */
 	public SpringApplicationBuilder sources(Class<?>... sources) {
-		this.sources.addAll(new LinkedHashSet<Object>(Arrays.asList(sources)));
+		this.sources.addAll(new LinkedHashSet<>(Arrays.asList(sources)));
 		return this;
 	}
 

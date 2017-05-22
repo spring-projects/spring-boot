@@ -16,7 +16,6 @@
 
 package org.springframework.boot.web.embedded.undertow;
 
-import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 
 /**
@@ -28,7 +27,7 @@ public class UndertowReactiveWebServerFactoryTests
 		extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
-	protected AbstractReactiveWebServerFactory getFactory() {
+	protected UndertowReactiveWebServerFactory getFactory() {
 		return new UndertowReactiveWebServerFactory(0);
 	}
 

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.servlet.support;
 
+import java.util.Collections;
+
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
@@ -45,7 +47,7 @@ import org.springframework.web.context.WebApplicationContext;
  * <p>
  * To configure the application either override the
  * {@link #configure(SpringApplicationBuilder)} method (calling
- * {@link SpringApplicationBuilder#sources(Object...)}) or make the initializer itself a
+ * {@link SpringApplicationBuilder#sources(Class...)}) or make the initializer itself a
  * {@code @Configuration}. If you are using {@link SpringBootServletInitializer} in
  * combination with other {@link WebApplicationInitializer WebApplicationInitializers} you
  * might also want to add an {@code @Ordered} annotation to configure a specific startup
@@ -115,16 +117,17 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		builder.contextClass(AnnotationConfigServletWebServerApplicationContext.class);
 		builder = configure(builder);
 		SpringApplication application = builder.build();
-		if (application.getSources().isEmpty() && AnnotationUtils
+		if (application.getAllSources().isEmpty() && AnnotationUtils
 				.findAnnotation(getClass(), Configuration.class) != null) {
-			application.getSources().add(getClass());
+			application.addPrimarySources(Collections.singleton(getClass()));
 		}
-		Assert.state(!application.getSources().isEmpty(),
+		Assert.state(!application.getAllSources().isEmpty(),
 				"No SpringApplication sources have been defined. Either override the "
 						+ "configure method or add an @Configuration annotation");
 		// Ensure error pages are registered
 		if (this.registerErrorPageFilter) {
-			application.getSources().add(ErrorPageFilterConfiguration.class);
+			application.addPrimarySources(
+					Collections.singleton(ErrorPageFilterConfiguration.class));
 		}
 		return run(application);
 	}

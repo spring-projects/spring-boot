@@ -25,6 +25,7 @@ import java.net.URLStreamHandlerFactory;
 
 import javax.servlet.ServletContainerInitializer;
 
+import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.webapp.WebAppContext;
 
@@ -69,11 +70,18 @@ class JasperInitializer extends AbstractLifeCycle {
 		if (this.initializer == null) {
 			return;
 		}
-		try {
-			URL.setURLStreamHandlerFactory(new WarUrlStreamHandlerFactory());
+		if (ClassUtils.isPresent(
+				"org.apache.catalina.webresources.TomcatURLStreamHandlerFactory",
+				getClass().getClassLoader())) {
+			TomcatURLStreamHandlerFactory.register();
 		}
-		catch (Error ex) {
-			// Ignore
+		else {
+			try {
+				URL.setURLStreamHandlerFactory(new WarUrlStreamHandlerFactory());
+			}
+			catch (Error ex) {
+				// Ignore
+			}
 		}
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		try {

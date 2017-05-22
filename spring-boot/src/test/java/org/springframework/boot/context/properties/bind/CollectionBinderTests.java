@@ -20,10 +20,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.boot.context.properties.bind.BinderTests.JavaBean;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
@@ -48,8 +50,7 @@ public class CollectionBinderTests {
 	private static final Bindable<List<String>> STRING_LIST = Bindable
 			.listOf(String.class);
 
-	private static final Bindable<Set<String>> STRING_SET = Bindable
-			.setOf(String.class);
+	private static final Bindable<Set<String>> STRING_SET = Bindable.setOf(String.class);
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
@@ -140,8 +141,7 @@ public class CollectionBinderTests {
 		source.put("foo[1]", "2");
 		source.put("foo[0]", "1");
 		source.put("foo[2]", "3");
-		source.setNonIterable(true);
-		this.sources.add(source);
+		this.sources.add(source.nonIterable());
 		List<Integer> result = this.binder.bind("foo", INTEGER_LIST).get();
 		assertThat(result).containsExactly(1, 2, 3);
 	}
@@ -267,7 +267,8 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionWhenEmptyStringShouldReturnEmptyCollection() throws Exception {
+	public void bindToCollectionWhenEmptyStringShouldReturnEmptyCollection()
+			throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "");
 		this.sources.add(source);
@@ -275,4 +276,17 @@ public class CollectionBinderTests {
 		assertThat(result).isNotNull().isEmpty();
 	}
 
+	@Test
+	public void bindToNonScalarCollectionShouldReturnPopulatedCollection() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo[0].value", "a");
+		source.put("foo[1].value", "b");
+		source.put("foo[2].value", "c");
+		this.sources.add(source);
+		Bindable<List<JavaBean>> target = Bindable.listOf(JavaBean.class);
+		List<JavaBean> result = this.binder.bind("foo", target).get();
+		assertThat(result).hasSize(3);
+		List<String> values = result.stream().map(JavaBean::getValue).collect(Collectors.toList());
+		assertThat(values).containsExactly("a", "b", "c");
+	}
 }

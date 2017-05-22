@@ -18,11 +18,11 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -33,13 +33,10 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.coyote.AbstractProtocol;
 import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.RequestLog;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -58,7 +55,6 @@ import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFa
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.mock.env.MockEnvironment;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -87,14 +83,6 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	public void setup() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		this.customizer = new DefaultServletWebServerFactoryCustomizer(this.properties);
-	}
-
-	@BeforeClass
-	@AfterClass
-	public static void uninstallUrlStreamHandlerFactory() {
-		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
-				null);
-		ReflectionTestUtils.setField(URL.class, "factory", null);
 	}
 
 	@Test
@@ -268,8 +256,10 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	public void defaultTomcatBackgroundProcessorDelay() throws Exception {
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 		this.customizer.customize(factory);
-		assertThat(((TomcatWebServer) factory.getWebServer()).getTomcat().getEngine()
-				.getBackgroundProcessorDelay()).isEqualTo(30);
+		TomcatWebServer webServer = (TomcatWebServer) factory.getWebServer();
+		assertThat(webServer.getTomcat().getEngine().getBackgroundProcessorDelay())
+				.isEqualTo(30);
+		webServer.stop();
 	}
 
 	@Test
@@ -279,8 +269,10 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 		this.customizer.customize(factory);
-		assertThat(((TomcatWebServer) factory.getWebServer()).getTomcat().getEngine()
-				.getBackgroundProcessorDelay()).isEqualTo(5);
+		TomcatWebServer webServer = (TomcatWebServer) factory.getWebServer();
+		assertThat(webServer.getTomcat().getEngine().getBackgroundProcessorDelay())
+				.isEqualTo(5);
+		webServer.stop();
 	}
 
 	@Test
@@ -560,6 +552,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		File logFile = File.createTempFile("jetty_log", ".log");
 		JettyServletWebServerFactory factory = new JettyServletWebServerFactory(0);
 		Map<String, String> map = new HashMap<>();
+		String timezone = TimeZone.getDefault().getID();
 		map.put("server.jetty.accesslog.enabled", "true");
 		map.put("server.jetty.accesslog.filename", logFile.getAbsolutePath());
 		map.put("server.jetty.accesslog.file-date-format", "yyyy-MM-dd");
@@ -568,7 +561,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		map.put("server.jetty.accesslog.extended-format", "true");
 		map.put("server.jetty.accesslog.date-format", "HH:mm:ss");
 		map.put("server.jetty.accesslog.locale", "en_BE");
-		map.put("server.jetty.accesslog.time-zone", "UTC");
+		map.put("server.jetty.accesslog.time-zone", timezone);
 		map.put("server.jetty.accesslog.log-cookies", "true");
 		map.put("server.jetty.accesslog.log-server", "true");
 		map.put("server.jetty.accesslog.log-latency", "true");
@@ -584,7 +577,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 			assertThat(requestLog.isExtended()).isTrue();
 			assertThat(requestLog.getLogDateFormat()).isEqualTo("HH:mm:ss");
 			assertThat(requestLog.getLogLocale()).isEqualTo(new Locale("en", "BE"));
-			assertThat(requestLog.getLogTimeZone()).isEqualTo("UTC");
+			assertThat(requestLog.getLogTimeZone()).isEqualTo(timezone);
 			assertThat(requestLog.getLogCookies()).isTrue();
 			assertThat(requestLog.getLogServer()).isTrue();
 			assertThat(requestLog.getLogLatency()).isTrue();

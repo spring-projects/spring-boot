@@ -17,8 +17,6 @@
 package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -227,8 +225,7 @@ public class ThymeleafProperties {
 		/**
 		 * Media types supported by the view technology.
 		 */
-		private List<MediaType> mediaTypes = new ArrayList<>(
-				Collections.singletonList(MediaType.TEXT_HTML));
+		private List<MediaType> mediaTypes;
 
 		public List<MediaType> getMediaTypes() {
 			return this.mediaTypes;

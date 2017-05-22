@@ -175,8 +175,7 @@ public class BinderTests {
 			throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource(
 				"foo.value", "bar");
-		source.setNonIterable(true);
-		this.sources.add(source);
+		this.sources.add(source.nonIterable());
 		JavaBean result = this.binder.bind("foo", Bindable.of(JavaBean.class)).get();
 		assertThat(result.getValue()).isEqualTo("bar");
 	}

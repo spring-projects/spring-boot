@@ -16,13 +16,9 @@
 
 package org.springframework.boot.devtools.integrationtest;
 
-import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -52,7 +48,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -72,14 +67,6 @@ public class HttpTunnelIntegrationTests {
 
 	@Autowired
 	private Config config;
-
-	@BeforeClass
-	@AfterClass
-	public static void uninstallUrlStreamHandlerFactory() {
-		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
-				null);
-		ReflectionTestUtils.setField(URL.class, "factory", null);
-	}
 
 	@Test
 	public void httpServerDirect() throws Exception {

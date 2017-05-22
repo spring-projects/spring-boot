@@ -29,7 +29,6 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.session.ExpiringSession;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.web.http.SessionRepositoryFilter;
@@ -66,7 +65,7 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 
 	@Test
 	public void backOffIfSessionRepositoryIsPresent() {
-		load(Collections.<Class<?>>singletonList(SessionRepositoryConfiguration.class),
+		load(Collections.singletonList(SessionRepositoryConfiguration.class),
 				"spring.session.store-type=redis");
 		MapSessionRepository repository = validateSessionRepository(
 				MapSessionRepository.class);
@@ -121,9 +120,8 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	static class SessionRepositoryConfiguration {
 
 		@Bean
-		public SessionRepository<?> mySessionRepository() {
-			return new MapSessionRepository(
-					Collections.<String, ExpiringSession>emptyMap());
+		public MapSessionRepository mySessionRepository() {
+			return new MapSessionRepository(Collections.emptyMap());
 		}
 
 	}

@@ -17,16 +17,12 @@
 package org.springframework.boot.autoconfigure.security;
 
 import java.io.IOException;
-import java.net.URL;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +43,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -60,14 +55,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
 	// gh-4154
-
-	@BeforeClass
-	@AfterClass
-	public static void uninstallUrlStreamHandlerFactory() {
-		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
-				null);
-		ReflectionTestUtils.setField(URL.class, "factory", null);
-	}
 
 	@Test
 	public void testSecurityFilterDoesNotCauseEarlyInitialization() throws Exception {

@@ -23,7 +23,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,6 +51,8 @@ import org.mockito.InOrder;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.WebServerException;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
@@ -262,8 +270,9 @@ public class JettyServletWebServerFactoryTests
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setThreadPool(null);
 		assertThat(factory.getThreadPool()).isNull();
-		JettyWebServer jettyWebServer = (JettyWebServer) factory.getWebServer();
-		assertThat(jettyWebServer.getServer().getThreadPool()).isNotNull();
+		this.webServer = factory.getWebServer();
+		assertThat(((JettyWebServer) this.webServer).getServer().getThreadPool())
+				.isNotNull();
 	}
 
 	@Test
@@ -271,8 +280,41 @@ public class JettyServletWebServerFactoryTests
 		JettyServletWebServerFactory factory = getFactory();
 		ThreadPool threadPool = mock(ThreadPool.class);
 		factory.setThreadPool(threadPool);
-		JettyWebServer jettyWebServer = (JettyWebServer) factory.getWebServer();
-		assertThat(jettyWebServer.getServer().getThreadPool()).isSameAs(threadPool);
+		this.webServer = factory.getWebServer();
+		assertThat(((JettyWebServer) this.webServer).getServer().getThreadPool())
+				.isSameAs(threadPool);
+	}
+
+	@Test
+	public void faultyFilterCausesStartFailure() throws Exception {
+		JettyServletWebServerFactory factory = getFactory();
+		factory.addInitializers(new ServletContextInitializer() {
+
+			@Override
+			public void onStartup(ServletContext servletContext) throws ServletException {
+				servletContext.addFilter("faulty", new Filter() {
+
+					@Override
+					public void init(FilterConfig filterConfig) throws ServletException {
+						throw new ServletException("Faulty filter");
+					}
+
+					@Override
+					public void doFilter(ServletRequest request, ServletResponse response,
+							FilterChain chain) throws IOException, ServletException {
+						chain.doFilter(request, response);
+					}
+
+					@Override
+					public void destroy() {
+					}
+
+				});
+			}
+
+		});
+		this.thrown.expect(WebServerException.class);
+		factory.getWebServer().start();
 	}
 
 	@Override

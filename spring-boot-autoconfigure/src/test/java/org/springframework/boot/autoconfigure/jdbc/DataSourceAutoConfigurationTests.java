@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverPropertyInfo;
@@ -162,6 +160,7 @@ public class DataSourceAutoConfigurationTests {
 		this.context.refresh();
 		DataSource bean = this.context.getBean(DataSource.class);
 		assertThat(bean).isNotNull();
+		@SuppressWarnings("resource")
 		HikariDataSource pool = (HikariDataSource) bean;
 		assertThat(pool.getDriverClassName()).isEqualTo("org.hsqldb.jdbcDriver");
 		assertThat(pool.getUsername()).isEqualTo("sa");
@@ -298,28 +297,6 @@ public class DataSourceAutoConfigurationTests {
 		@Override
 		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 			return mock(Logger.class);
-		}
-
-	}
-
-	private static final class HidePackagesClassLoader extends URLClassLoader {
-
-		private final String[] hiddenPackages;
-
-		private HidePackagesClassLoader(String... hiddenPackages) {
-			super(new URL[0], DataSourceAutoConfigurationTests.class.getClassLoader());
-			this.hiddenPackages = hiddenPackages;
-		}
-
-		@Override
-		protected Class<?> loadClass(String name, boolean resolve)
-				throws ClassNotFoundException {
-			for (String hiddenPackage : this.hiddenPackages) {
-				if (name.startsWith(hiddenPackage)) {
-					throw new ClassNotFoundException();
-				}
-			}
-			return super.loadClass(name, resolve);
 		}
 
 	}

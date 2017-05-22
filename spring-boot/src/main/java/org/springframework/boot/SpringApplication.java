@@ -65,11 +65,11 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
@@ -91,7 +91,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * <li>Trigger any {@link CommandLineRunner} beans</li>
  * </ul>
  *
- * In most circumstances the static {@link #run(Object, String[])} method can be called
+ * In most circumstances the static {@link #run(Class, String[])} method can be called
  * directly from your {@literal main} method to bootstrap your application:
  *
  * <pre class="code">
@@ -121,18 +121,13 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  *
  * {@link SpringApplication}s can read beans from a variety of different sources. It is
  * generally recommended that a single {@code @Configuration} class is used to bootstrap
- * your application, however, any of the following sources can also be used:
- *
+ * your application, however, you may also set {@link #getSources() sources} from:
  * <ul>
- * <li>{@link Class} - A Java class to be loaded by {@link AnnotatedBeanDefinitionReader}
- * </li>
- * <li>{@link Resource} - An XML resource to be loaded by {@link XmlBeanDefinitionReader},
- * or a groovy script to be loaded by {@link GroovyBeanDefinitionReader}</li>
- * <li>{@link Package} - A Java package to be scanned by
- * {@link ClassPathBeanDefinitionScanner}</li>
- * <li>{@link CharSequence} - A class name, resource handle or package name to loaded as
- * appropriate. If the {@link CharSequence} cannot be resolved to class and does not
- * resolve to a {@link Resource} that exists it will be considered a {@link Package}.</li>
+ * <li>The fully qualified class name to be loaded by
+ * {@link AnnotatedBeanDefinitionReader}</li>
+ * <li>The location of an XML resource to be loaded by {@link XmlBeanDefinitionReader}, or
+ * a groovy script to be loaded by {@link GroovyBeanDefinitionReader}</li>
+ * <li>The name of a package to be scanned by {@link ClassPathBeanDefinitionScanner}</li>
  * </ul>
  *
  * Configuration properties are also bound to the {@link SpringApplication}. This makes it
@@ -151,9 +146,9 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Michael Simons
  * @author Madhura Bhave
  * @author Brian Clozel
- * @see #run(Object, String[])
- * @see #run(Object[], String[])
- * @see #SpringApplication(Object...)
+ * @see #run(Class, String[])
+ * @see #run(Class[], String[])
+ * @see #SpringApplication(Class...)
  */
 public class SpringApplication {
 
@@ -213,9 +208,9 @@ public class SpringApplication {
 
 	private static final Log logger = LogFactory.getLog(SpringApplication.class);
 
-	private final Object[] primarySources;
+	private Set<Class<?>> primarySources;
 
-	private Set<Object> additionalSources = new LinkedHashSet<>();
+	private Set<String> sources = new LinkedHashSet<>();
 
 	private Class<?> mainApplicationClass;
 
@@ -255,13 +250,12 @@ public class SpringApplication {
 	 * documentation for details. The instance can be customized before calling
 	 * {@link #run(String...)}.
 	 * @param primarySources the primary bean sources
-	 * @see #run(Object, String[])
-	 * @see #SpringApplication(ResourceLoader, Object...)
+	 * @see #run(Class, String[])
+	 * @see #SpringApplication(ResourceLoader, Class...)
 	 * @see #setSources(Set)
 	 */
-	public SpringApplication(Object... primarySources) {
-		initialize(primarySources);
-		this.primarySources = primarySources;
+	public SpringApplication(Class<?>... primarySources) {
+		this(null, primarySources);
 	}
 
 	/**
@@ -271,18 +265,14 @@ public class SpringApplication {
 	 * {@link #run(String...)}.
 	 * @param resourceLoader the resource loader to use
 	 * @param primarySources the primary bean sources
-	 * @see #run(Object, String[])
-	 * @see #SpringApplication(ResourceLoader, Object...)
+	 * @see #run(Class, String[])
 	 * @see #setSources(Set)
 	 */
-	public SpringApplication(ResourceLoader resourceLoader, Object... primarySources) {
-		this.resourceLoader = resourceLoader;
-		this.primarySources = primarySources;
-		initialize(primarySources);
-	}
-
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void initialize(Object[] sources) {
+	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+		this.resourceLoader = resourceLoader;
+		Assert.notNull(primarySources, "PrimarySources must not be null");
+		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = deduceWebApplication();
 		setInitializers((Collection) getSpringFactoriesInstances(
 				ApplicationContextInitializer.class));
@@ -338,7 +328,6 @@ public class SpringApplication {
 			ConfigurableEnvironment environment = prepareEnvironment(listeners,
 					applicationArguments);
 			configureIgnoreBeanInfo(environment);
-			bindToSpringApplication(environment);
 			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
 			exceptionReporters = getSpringFactoriesInstances(
@@ -369,6 +358,7 @@ public class SpringApplication {
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		listeners.environmentPrepared(environment);
+		bindToSpringApplication(environment);
 		if (isWebEnvironment(environment)
 				&& this.webApplicationType == WebApplicationType.NONE) {
 			environment = convertToStandardEnvironment(environment);
@@ -1123,32 +1113,49 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Add additional items to the primary sources that will be added to an
+	 * ApplicationContext when {@link #run(String...)} is called.
+	 * <p>
+	 * The sources here are added to those that were set in the constructor. Most users
+	 * should consider using {@link #getSources()}/{@link #setSources(Set)} rather than
+	 * this calling method.
+	 * @param additionalPrimarySources the additional primary sources to add
+	 * @see #SpringApplication(Class...)
+	 * @see #getSources()
+	 * @see #setSources(Set)
+	 * @see #getAllSources()
+	 */
+	public void addPrimarySources(Collection<Class<?>> additionalPrimarySources) {
+		this.primarySources.addAll(additionalPrimarySources);
+	}
+
+	/**
 	 * Returns a mutable set of the sources that will be added to an ApplicationContext
 	 * when {@link #run(String...)} is called.
 	 * <p>
 	 * Sources set here will be used in addition to any primary sources set in the
 	 * constructor.
-	 * @return the sources the application sources.
-	 * @see #SpringApplication(Object...)
+	 * @return the application sources.
+	 * @see #SpringApplication(Class...)
 	 * @see #getAllSources()
 	 */
-	public Set<Object> getSources() {
-		return this.additionalSources;
+	public Set<String> getSources() {
+		return this.sources;
 	}
 
 	/**
 	 * Set additional sources that will be used to create an ApplicationContext. A source
-	 * can be: a class, class name, package, package name, or an XML resource location.
+	 * can be: a class name, package name, or an XML resource location.
 	 * <p>
 	 * Sources set here will be used in addition to any primary sources set in the
 	 * constructor.
-	 * @param sources the sources to set
-	 * @see #SpringApplication(Object...)
+	 * @param sources the application sources to set
+	 * @see #SpringApplication(Class...)
 	 * @see #getAllSources()
 	 */
-	public void setSources(Set<Object> sources) {
+	public void setSources(Set<String> sources) {
 		Assert.notNull(sources, "Sources must not be null");
-		this.additionalSources = new LinkedHashSet<>(sources);
+		this.sources = new LinkedHashSet<>(sources);
 	}
 
 	/**
@@ -1160,10 +1167,12 @@ public class SpringApplication {
 	 */
 	public Set<Object> getAllSources() {
 		Set<Object> allSources = new LinkedHashSet<>();
-		if (!ObjectUtils.isEmpty(this.primarySources)) {
-			allSources.addAll(Arrays.asList(this.primarySources));
+		if (!CollectionUtils.isEmpty(this.primarySources)) {
+			allSources.addAll(this.primarySources);
 		}
-		allSources.addAll(this.additionalSources);
+		if (!CollectionUtils.isEmpty(this.sources)) {
+			allSources.addAll(this.sources);
+		}
 		return Collections.unmodifiableSet(allSources);
 	}
 
@@ -1264,9 +1273,9 @@ public class SpringApplication {
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return the running {@link ApplicationContext}
 	 */
-	public static ConfigurableApplicationContext run(Object primarySource,
+	public static ConfigurableApplicationContext run(Class<?> primarySource,
 			String... args) {
-		return run(new Object[] { primarySource }, args);
+		return run(new Class<?>[] { primarySource }, args);
 	}
 
 	/**
@@ -1276,7 +1285,7 @@ public class SpringApplication {
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return the running {@link ApplicationContext}
 	 */
-	public static ConfigurableApplicationContext run(Object[] primarySources,
+	public static ConfigurableApplicationContext run(Class<?>[] primarySources,
 			String[] args) {
 		return new SpringApplication(primarySources).run(args);
 	}
@@ -1287,14 +1296,14 @@ public class SpringApplication {
 	 * argument.
 	 * <p>
 	 * Most developers will want to define their own main method and call the
-	 * {@link #run(Object, String...) run} method instead.
+	 * {@link #run(Class, String...) run} method instead.
 	 * @param args command line arguments
 	 * @throws Exception if the application cannot be started
-	 * @see SpringApplication#run(Object[], String[])
-	 * @see SpringApplication#run(Object, String...)
+	 * @see SpringApplication#run(Class[], String[])
+	 * @see SpringApplication#run(Class, String...)
 	 */
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(new Object[0], args);
+		SpringApplication.run(new Class<?>[0], args);
 	}
 
 	/**

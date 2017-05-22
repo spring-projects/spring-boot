@@ -45,7 +45,6 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Stephane Nicoll
  */
-@Deprecated
 class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 
 	@Override

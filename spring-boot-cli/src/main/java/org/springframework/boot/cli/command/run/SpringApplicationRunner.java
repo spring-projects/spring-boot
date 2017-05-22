@@ -98,7 +98,7 @@ public class SpringApplicationRunner {
 		synchronized (this.monitor) {
 			try {
 				stop();
-				Object[] compiledSources = compile();
+				Class<?>[] compiledSources = compile();
 				monitorForChanges();
 				// Run in new thread to ensure that the context classloader is setup
 				this.runThread = new RunThread(compiledSources);
@@ -125,8 +125,8 @@ public class SpringApplicationRunner {
 		}
 	}
 
-	private Object[] compile() throws IOException {
-		Object[] compiledSources = this.compiler.compile(this.sources);
+	private Class<?>[] compile() throws IOException {
+		Class<?>[] compiledSources = this.compiler.compile(this.sources);
 		if (compiledSources.length == 0) {
 			throw new RuntimeException(
 					"No classes found in '" + Arrays.toString(this.sources) + "'");
@@ -148,7 +148,7 @@ public class SpringApplicationRunner {
 
 		private final Object monitor = new Object();
 
-		private final Object[] compiledSources;
+		private final Class<?>[] compiledSources;
 
 		private Object applicationContext;
 
@@ -156,10 +156,10 @@ public class SpringApplicationRunner {
 		 * Create a new {@link RunThread} instance.
 		 * @param compiledSources the sources to launch
 		 */
-		RunThread(Object... compiledSources) {
+		RunThread(Class<?>... compiledSources) {
 			super("runner-" + (runnerCounter++));
 			this.compiledSources = compiledSources;
-			if (compiledSources.length != 0 && compiledSources[0] instanceof Class) {
+			if (compiledSources.length != 0) {
 				setContextClassLoader(((Class<?>) compiledSources[0]).getClassLoader());
 			}
 			setDaemon(true);

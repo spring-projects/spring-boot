@@ -44,7 +44,7 @@ import org.springframework.data.mapping.model.CamelCaseAbbreviatingFieldNamingSt
 import org.springframework.data.mapping.model.FieldNamingStrategy;
 import org.springframework.data.mapping.model.PropertyNameFieldNamingStrategy;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.convert.CustomConversions;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.core.mapping.BasicMongoPersistentEntity;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
@@ -205,8 +205,8 @@ public class MongoDataAutoConfigurationTests {
 	static class CustomConversionsConfig {
 
 		@Bean
-		public CustomConversions customConversions() {
-			return new CustomConversions(Arrays.asList(new MyConverter()));
+		public MongoCustomConversions customConversions() {
+			return new MongoCustomConversions(Arrays.asList(new MyConverter()));
 		}
 
 	}

@@ -62,10 +62,9 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public void starting() {
-		this.initialMulticaster
-				.multicastEvent(new ApplicationStartedEvent(this.application, this.args));
+		this.initialMulticaster.multicastEvent(
+				new ApplicationStartingEvent(this.application, this.args));
 	}
 
 	@Override

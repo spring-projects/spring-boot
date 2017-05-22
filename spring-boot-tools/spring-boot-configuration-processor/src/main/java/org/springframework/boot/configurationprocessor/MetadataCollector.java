@@ -16,8 +16,8 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -39,7 +39,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
  */
 public class MetadataCollector {
 
-	private final List<ItemMetadata> metadataItems = new ArrayList<>();
+	private final Set<ItemMetadata> metadataItems = new LinkedHashSet<>();
 
 	private final ProcessingEnvironment processingEnvironment;
 

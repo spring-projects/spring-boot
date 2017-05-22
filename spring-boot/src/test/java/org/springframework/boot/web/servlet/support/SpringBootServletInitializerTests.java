@@ -66,14 +66,14 @@ public class SpringBootServletInitializerTests {
 	public void withConfigurationAnnotation() throws Exception {
 		new WithConfigurationAnnotation()
 				.createRootApplicationContext(this.servletContext);
-		assertThat(this.application.getSources()).containsOnly(
+		assertThat(this.application.getAllSources()).containsOnly(
 				WithConfigurationAnnotation.class, ErrorPageFilterConfiguration.class);
 	}
 
 	@Test
 	public void withConfiguredSource() throws Exception {
 		new WithConfiguredSource().createRootApplicationContext(this.servletContext);
-		assertThat(this.application.getSources()).containsOnly(Config.class,
+		assertThat(this.application.getAllSources()).containsOnly(Config.class,
 				ErrorPageFilterConfiguration.class);
 	}
 

@@ -25,7 +25,6 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.info.InfoProperties;
-import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
 
@@ -93,9 +92,7 @@ public abstract class InfoPropertiesInfoContributor<T extends InfoProperties>
 	 * @return the raw content
 	 */
 	protected Map<String, Object> extractContent(PropertySource<?> propertySource) {
-		MutablePropertySources sources = new MutablePropertySources();
-		sources.addFirst(propertySource);
-		return new Binder(ConfigurationPropertySources.get(sources))
+		return new Binder(ConfigurationPropertySources.from(propertySource))
 				.bind("", STRING_OBJECT_MAP).orElseGet(LinkedHashMap::new);
 	}
 

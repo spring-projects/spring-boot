@@ -77,6 +77,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast-client</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.hazelcast</groupId>
 			<artifactId>hazelcast-spring</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -98,6 +103,11 @@
 		<dependency>
 			<groupId>de.flapdoodle.embed</groupId>
 			<artifactId>de.flapdoodle.embed.mongo</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>

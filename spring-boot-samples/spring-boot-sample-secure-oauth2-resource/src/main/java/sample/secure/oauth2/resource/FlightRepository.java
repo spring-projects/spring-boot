@@ -32,7 +32,7 @@ public interface FlightRepository extends CrudRepository<Flight, Long> {
 	Iterable<Flight> findAll();
 
 	@Override
-	Optional<Flight> findOne(Long aLong);
+	Optional<Flight> findById(Long aLong);
 
 	@Override
 	<S extends Flight> S save(S entity);

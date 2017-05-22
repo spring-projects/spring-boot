@@ -69,7 +69,8 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 				EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
 				Map<String, Object> properties = new LinkedHashMap<>();
 				for (String name : enumerable.getPropertyNames()) {
-					properties.put(name, sanitize(name, resolver.getProperty(name)));
+					Object resolved = resolver.getProperty(name, Object.class);
+					properties.put(name, sanitize(name, resolved));
 				}
 				properties = postProcessSourceProperties(sourceName, properties);
 				if (properties != null) {

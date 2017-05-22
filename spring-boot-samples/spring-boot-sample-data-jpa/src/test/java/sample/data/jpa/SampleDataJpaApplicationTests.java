@@ -48,8 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 // Enable JMX so we can test the MBeans (you can't do this in a properties file)
 @TestPropertySource(properties = { "spring.jmx.enabled:true",
-		"spring.datasource.jmx-enabled:true",
-		"spring.jpa.hibernate.use-new-id-generator-mappings=false" })
+		"spring.datasource.jmx-enabled:true" })
 @ActiveProfiles("scratch")
 // Separate profile for web tests to avoid clashing databases
 public class SampleDataJpaApplicationTests {

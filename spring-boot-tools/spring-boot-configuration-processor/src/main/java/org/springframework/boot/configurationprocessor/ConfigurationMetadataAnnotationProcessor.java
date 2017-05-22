@@ -294,7 +294,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			String name = entry.getKey();
 			VariableElement field = entry.getValue();
 			if (isLombokField(field, element)) {
-				processNestedType(prefix, element, source, name, null, field,
+				ExecutableElement getter = members.getPublicGetter(name, field.asType());
+				processNestedType(prefix, element, source, name, getter, field,
 						field.asType());
 			}
 		}
@@ -336,8 +337,23 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		if (hasAnnotation(field, nestedConfigurationPropertyAnnotation())) {
 			return true;
 		}
-		return this.typeUtils.isEnclosedIn(returnType, element)
+		return (isParentTheSame(returnType, element))
 				&& returnType.getKind() != ElementKind.ENUM;
+	}
+
+	private boolean isParentTheSame(Element returnType, TypeElement element) {
+		if (returnType == null || element == null) {
+			return false;
+		}
+		return getTopLevelType(returnType).equals(getTopLevelType(element));
+	}
+
+	private Element getTopLevelType(Element element) {
+		if ((element.getEnclosingElement() == null)
+				|| !(element.getEnclosingElement() instanceof TypeElement)) {
+			return element;
+		}
+		return getTopLevelType(element.getEnclosingElement());
 	}
 
 	private boolean isDeprecated(Element element) {

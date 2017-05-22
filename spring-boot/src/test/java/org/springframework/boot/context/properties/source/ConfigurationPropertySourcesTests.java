@@ -17,7 +17,6 @@
 package org.springframework.boot.context.properties.source;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -25,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -40,7 +40,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ConfigurationPropertySources}.
  *
  * @author Phillip Webb
- * @author Madhura Bhave
  */
 public class ConfigurationPropertySourcesTests {
 
@@ -48,103 +47,40 @@ public class ConfigurationPropertySourcesTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void createWhenPropertySourcesIsNullShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("PropertySources must not be null");
-		new ConfigurationPropertySources(null);
-	}
-
-	@Test
-	public void iteratorShouldAdaptPropertySource() throws Exception {
-		MutablePropertySources sources = new MutablePropertySources();
-		sources.addFirst(new MapPropertySource("test",
-				Collections.<String, Object>singletonMap("a", "b")));
-		Iterator<ConfigurationPropertySource> iterator = new ConfigurationPropertySources(
-				sources).iterator();
-		assertThat(iterator.next()
-				.getConfigurationProperty(ConfigurationPropertyName.of("a")).getValue())
-						.isEqualTo("b");
-		assertThat(iterator.hasNext()).isFalse();
-	}
-
-	@Test
-	public void iteratorShouldAdaptSystemEnvironmentPropertySource() throws Exception {
-		MutablePropertySources sources = new MutablePropertySources();
-		sources.addLast(new SystemEnvironmentPropertySource("system",
-				Collections.<String, Object>singletonMap("SERVER_PORT", "1234")));
-		Iterator<ConfigurationPropertySource> iterator = new ConfigurationPropertySources(
-				sources).iterator();
-		assertThat(
-				iterator.next()
-						.getConfigurationProperty(
-								ConfigurationPropertyName.of("server.port"))
-						.getValue()).isEqualTo("1234");
-		assertThat(iterator.hasNext()).isFalse();
-	}
-
-	@Test
-	public void iteratorShouldAdaptMultiplePropertySources() throws Exception {
-		MutablePropertySources sources = new MutablePropertySources();
-		sources.addLast(new SystemEnvironmentPropertySource("system",
-				Collections.<String, Object>singletonMap("SERVER_PORT", "1234")));
-		sources.addLast(new MapPropertySource("test1",
-				Collections.<String, Object>singletonMap("server.po-rt", "4567")));
-		sources.addLast(new MapPropertySource("test2",
-				Collections.<String, Object>singletonMap("a", "b")));
-		Iterator<ConfigurationPropertySource> iterator = new ConfigurationPropertySources(
-				sources).iterator();
-		assertThat(
-				iterator.next()
-						.getConfigurationProperty(
-								ConfigurationPropertyName.of("server.port"))
-						.getValue()).isEqualTo("1234");
-		assertThat(
-				iterator.next()
-						.getConfigurationProperty(
-								ConfigurationPropertyName.of("server.port"))
-						.getValue()).isEqualTo("4567");
-		assertThat(iterator.next()
-				.getConfigurationProperty(ConfigurationPropertyName.of("a")).getValue())
-						.isEqualTo("b");
-		assertThat(iterator.hasNext()).isFalse();
-	}
-
-	@Test
-	public void attachShouldAddAdapterAtBegining() throws Exception {
-		MutablePropertySources sources = new MutablePropertySources();
+	public void attachShouldAddAdapterAtBeginning() throws Exception {
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		MutablePropertySources sources = environment.getPropertySources();
 		sources.addLast(new SystemEnvironmentPropertySource("system",
 				Collections.<String, Object>singletonMap("SERVER_PORT", "1234")));
 		sources.addLast(new MapPropertySource("config",
 				Collections.<String, Object>singletonMap("server.port", "4568")));
-		assertThat(sources.size()).isEqualTo(2);
-		ConfigurationPropertySources.attach(sources);
+		int size = sources.size();
+		ConfigurationPropertySources.attach(environment);
+		assertThat(sources.size()).isEqualTo(size + 1);
 		PropertyResolver resolver = new PropertySourcesPropertyResolver(sources);
 		assertThat(resolver.getProperty("server.port")).isEqualTo("1234");
-		assertThat(sources.size()).isEqualTo(3);
+	}
+
+	@Test
+	public void getWhenNotAttachedShouldReturnAdapted() throws Exception {
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		assertThat(ConfigurationPropertySources.get(environment)).isNotEmpty();
 	}
 
 	@Test
 	public void getWhenAttachedShouldReturnAttached() throws Exception {
-		MutablePropertySources sources = new MutablePropertySources();
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		MutablePropertySources sources = environment.getPropertySources();
 		sources.addFirst(new MapPropertySource("test",
 				Collections.<String, Object>singletonMap("a", "b")));
-		ConfigurationPropertySources attached = ConfigurationPropertySources
-				.attach(sources);
-		assertThat(ConfigurationPropertySources.get(sources)).isSameAs(attached);
-	}
-
-	@Test
-	public void getWhenNotAttachedShouldReturnNew() throws Exception {
-		MutablePropertySources sources = new MutablePropertySources();
-		sources.addFirst(new MapPropertySource("test",
-				Collections.<String, Object>singletonMap("a", "b")));
-		assertThat(ConfigurationPropertySources.get(sources)).isNotNull();
-		assertThat(sources.size()).isEqualTo(1);
+		int expectedSize = sources.size();
+		ConfigurationPropertySources.attach(environment);
+		assertThat(ConfigurationPropertySources.get(environment)).hasSize(expectedSize);
 	}
 
 	@Test
 	public void environmentProperyExpansionShouldWorkWhenAttached() throws Exception {
-		StandardEnvironment environment = new StandardEnvironment();
+		ConfigurableEnvironment environment = new StandardEnvironment();
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("fooBar", "Spring ${barBaz} ${bar-baz}");
 		source.put("barBaz", "Boot");
@@ -155,7 +91,18 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void environmentSourceShouldBeFlattened() throws Exception {
+	public void fromPropertySourceShouldReturnSpringConfigurationPropertySource()
+			throws Exception {
+		PropertySource<?> source = new MapPropertySource("foo",
+				Collections.<String, Object>singletonMap("foo", "bar"));
+		ConfigurationPropertySource configurationPropertySource = ConfigurationPropertySources
+				.from(source).iterator().next();
+		assertThat(configurationPropertySource)
+				.isInstanceOf(SpringConfigurationPropertySource.class);
+	}
+
+	@Test
+	public void fromPropertySourcseShouldFlattenPropertySources() throws Exception {
 		StandardEnvironment environment = new StandardEnvironment();
 		environment.getPropertySources().addFirst(new MapPropertySource("foo",
 				Collections.<String, Object>singletonMap("foo", "bar")));
@@ -172,8 +119,8 @@ public class ConfigurationPropertySourcesTests {
 		});
 		sources.addLast(new MapPropertySource("baz",
 				Collections.<String, Object>singletonMap("baz", "barf")));
-		ConfigurationPropertySources configurationSources = ConfigurationPropertySources
-				.get(sources);
+		Iterable<ConfigurationPropertySource> configurationSources = ConfigurationPropertySources
+				.from(sources);
 		assertThat(configurationSources.iterator()).hasSize(5);
 	}
 

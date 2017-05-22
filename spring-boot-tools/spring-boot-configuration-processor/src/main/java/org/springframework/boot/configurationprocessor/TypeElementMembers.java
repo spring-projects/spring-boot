@@ -171,6 +171,22 @@ class TypeElementMembers {
 		return Collections.unmodifiableMap(this.publicGetters);
 	}
 
+	public ExecutableElement getPublicGetter(String name, TypeMirror type) {
+		ExecutableElement candidate = this.publicGetters.get(name);
+		if (candidate != null) {
+			TypeMirror returnType = candidate.getReturnType();
+			if (this.env.getTypeUtils().isSameType(returnType, type)) {
+				return candidate;
+			}
+			TypeMirror alternative = this.typeUtils.getWrapperOrPrimitiveFor(type);
+			if (alternative != null
+					&& this.env.getTypeUtils().isSameType(returnType, alternative)) {
+				return candidate;
+			}
+		}
+		return null;
+	}
+
 	public ExecutableElement getPublicSetter(String name, TypeMirror type) {
 		List<ExecutableElement> candidates = this.publicSetters.get(name);
 		if (candidates != null) {

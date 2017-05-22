@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import java.util.stream.Stream;
+
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
@@ -38,11 +40,18 @@ public interface BindContext {
 	int getDepth();
 
 	/**
-	 * Return the {@link ConfigurationPropertySource sources} being used by the
-	 * {@link Binder}.
+	 * Return an {@link Iterable} of the {@link ConfigurationPropertySource sources} being
+	 * used by the {@link Binder}.
 	 * @return the sources
 	 */
 	Iterable<ConfigurationPropertySource> getSources();
+
+	/**
+	 * Return a {@link Stream} of the {@link ConfigurationPropertySource sources} being
+	 * used by the {@link Binder}.
+	 * @return the sources
+	 */
+	Stream<ConfigurationPropertySource> streamSources();
 
 	/**
 	 * Return the {@link ConfigurationProperty} actually being bound or {@code null} if

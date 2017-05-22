@@ -76,11 +76,11 @@ public class ThymeleafServletAutoConfigurationTests {
 
 	@Test
 	public void createFromConfigClass() throws Exception {
-		load(BaseConfiguration.class, "spring.thymeleaf.mode:XHTML",
+		load(BaseConfiguration.class, "spring.thymeleaf.mode:HTML",
 				"spring.thymeleaf.suffix:");
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
-		String result = engine.process("template.txt", attrs);
+		String result = engine.process("template.html", attrs);
 		assertThat(result).isEqualTo("<html>bar</html>");
 	}
 

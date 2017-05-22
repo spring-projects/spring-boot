@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -320,9 +321,8 @@ public class EndpointAutoConfigurationTests {
 				if (!location.exists()) {
 					return;
 				}
-				MapConfigurationPropertySource source = new MapConfigurationPropertySource(
-						PropertiesLoaderUtils.loadProperties(location));
-				new Binder(source).bind("info",
+				Properties properties = PropertiesLoaderUtils.loadProperties(location);
+				new Binder(new MapConfigurationPropertySource(properties)).bind("info",
 						Bindable.of(STRING_OBJECT_MAP).withExistingValue(this.content));
 			}
 

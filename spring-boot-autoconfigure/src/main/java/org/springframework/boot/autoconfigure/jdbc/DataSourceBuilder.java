@@ -33,8 +33,8 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Convenience class for building a {@link DataSource} with common implementations and
- * properties. If Tomcat, HikariCP or Commons DBCP are on the classpath one of them will
- * be selected (in that order with Tomcat first). In the interest of a uniform interface,
+ * properties. If HikariCP, Tomcat or Commons DBCP are on the classpath one of them will
+ * be selected (in that order with Hikari first). In the interest of a uniform interface,
  * and so that there can be a fallback to an embedded database if one can be detected on
  * the classpath, only a small set of common configuration properties are supported. To
  * inject additional properties into the result you can downcast it, or use
@@ -47,8 +47,8 @@ import org.springframework.util.ClassUtils;
 public class DataSourceBuilder {
 
 	private static final String[] DATA_SOURCE_TYPE_NAMES = new String[] {
-			"org.apache.tomcat.jdbc.pool.DataSource",
 			"com.zaxxer.hikari.HikariDataSource",
+			"org.apache.tomcat.jdbc.pool.DataSource",
 			"org.apache.commons.dbcp2.BasicDataSource" };
 
 	private Class<? extends DataSource> type;

@@ -16,6 +16,8 @@
 
 package sample.xml;
 
+import java.util.Collections;
+
 import sample.xml.service.HelloWorldService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 
 public class SampleSpringXmlApplication implements CommandLineRunner {
+
+	private static final String CONTEXT_XML = "classpath:/META-INF/application-context.xml";
 
 	@Autowired
 	private HelloWorldService helloWorldService;
@@ -33,7 +37,9 @@ public class SampleSpringXmlApplication implements CommandLineRunner {
 	}
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run("classpath:/META-INF/application-context.xml", args);
+		SpringApplication application = new SpringApplication();
+		application.setSources(Collections.singleton(CONTEXT_XML));
+		application.run(args);
 	}
 
 }

@@ -28,6 +28,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
@@ -90,9 +91,20 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration config)
 			throws Exception {
+		Class<?>[] configClasses = config.getClasses();
+		String[] configLocations = config.getLocations();
+		Assert.state(
+				!ObjectUtils.isEmpty(configClasses)
+						|| !ObjectUtils.isEmpty(configLocations),
+				"No configuration classes "
+						+ "or locations found in @SpringApplicationConfiguration. "
+						+ "For default configuration detection to work you need "
+						+ "Spring 4.0.3 or better (found " + SpringVersion.getVersion()
+						+ ").");
 		SpringApplication application = getSpringApplication();
 		application.setMainApplicationClass(config.getTestClass());
-		application.setSources(getSources(config));
+		application.addPrimarySources(Arrays.asList(configClasses));
+		application.getSources().addAll(Arrays.asList(configLocations));
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
 			setActiveProfiles(environment, config.getActiveProfiles());
@@ -136,17 +148,6 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		return new SpringApplication();
 	}
 
-	private Set<Object> getSources(MergedContextConfiguration mergedConfig) {
-		Set<Object> sources = new LinkedHashSet<>();
-		sources.addAll(Arrays.asList(mergedConfig.getClasses()));
-		sources.addAll(Arrays.asList(mergedConfig.getLocations()));
-		Assert.state(!sources.isEmpty(), "No configuration classes "
-				+ "or locations found in @SpringApplicationConfiguration. "
-				+ "For default configuration detection to work you need "
-				+ "Spring 4.0.3 or better (found " + SpringVersion.getVersion() + ").");
-		return sources;
-	}
-
 	private void setActiveProfiles(ConfigurableEnvironment environment,
 			String[] profiles) {
 		EnvironmentTestUtils.addEnvironment(environment, "spring.profiles.active="
@@ -173,7 +174,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		return binder.bind("server.port", Bindable.of(String.class)).isBound();
 	}
 
-	private MapConfigurationPropertySource convertToConfigurationPropertySource(
+	private ConfigurationPropertySource convertToConfigurationPropertySource(
 			List<String> properties) {
 		String[] array = properties.toArray(new String[properties.size()]);
 		return new MapConfigurationPropertySource(

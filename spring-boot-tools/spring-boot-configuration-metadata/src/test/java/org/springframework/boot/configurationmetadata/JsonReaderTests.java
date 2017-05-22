@@ -148,7 +148,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 	public void deprecatedMetadata() throws IOException {
 		RawConfigurationMetadata rawMetadata = readFor("deprecated");
 		List<ConfigurationMetadataItem> items = rawMetadata.getItems();
-		assertThat(items).hasSize(3);
+		assertThat(items).hasSize(5);
 
 		ConfigurationMetadataItem item = items.get(0);
 		assertProperty(item, "server.port", "server.port", Integer.class, null);
@@ -157,19 +157,40 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 				.isEqualTo("Server namespace has moved to spring.server");
 		assertThat(item.getDeprecation().getReplacement())
 				.isEqualTo("server.spring.port");
+		assertThat(item.getDeprecation().getLevel()).isEqualTo(Deprecation.Level.WARNING);
 
 		ConfigurationMetadataItem item2 = items.get(1);
 		assertProperty(item2, "server.cluster-name", "server.cluster-name", String.class,
 				null);
 		assertThat(item2.isDeprecated()).isTrue();
-		assertThat(item2.getDeprecation().getReason()).isEqualTo(null);
-		assertThat(item2.getDeprecation().getReplacement()).isEqualTo(null);
+		assertThat(item2.getDeprecation().getReason()).isNull();
+		assertThat(item2.getDeprecation().getReplacement()).isNull();
+		assertThat(item.getDeprecation().getLevel()).isEqualTo(Deprecation.Level.WARNING);
 
 		ConfigurationMetadataItem item3 = items.get(2);
 		assertProperty(item3, "spring.server.name", "spring.server.name", String.class,
 				null);
 		assertThat(item3.isDeprecated()).isFalse();
 		assertThat(item3.getDeprecation()).isEqualTo(null);
+
+		ConfigurationMetadataItem item4 = items.get(3);
+		assertProperty(item4, "spring.server-name", "spring.server-name", String.class,
+				null);
+		assertThat(item4.isDeprecated()).isTrue();
+		assertThat(item4.getDeprecation().getReason()).isNull();
+		assertThat(item4.getDeprecation().getReplacement())
+				.isEqualTo("spring.server.name");
+		assertThat(item4.getDeprecation().getLevel()).isEqualTo(Deprecation.Level.ERROR);
+
+		ConfigurationMetadataItem item5 = items.get(4);
+		assertProperty(item5, "spring.server-name2", "spring.server-name2", String.class,
+				null);
+		assertThat(item5.isDeprecated()).isTrue();
+		assertThat(item5.getDeprecation().getReason()).isNull();
+		assertThat(item5.getDeprecation().getReplacement())
+				.isEqualTo("spring.server.name");
+		assertThat(item5.getDeprecation().getLevel())
+				.isEqualTo(Deprecation.Level.WARNING);
 	}
 
 	RawConfigurationMetadata readFor(String path) throws IOException {

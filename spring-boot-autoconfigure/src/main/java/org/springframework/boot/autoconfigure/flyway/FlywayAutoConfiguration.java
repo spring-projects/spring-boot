@@ -107,8 +107,7 @@ public class FlywayAutoConfiguration {
 			this.dataSource = dataSource.getIfUnique();
 			this.flywayDataSource = flywayDataSource.getIfAvailable();
 			this.migrationStrategy = migrationStrategy.getIfAvailable();
-			this.flywayCallbacks = flywayCallbacks
-					.getIfAvailable(() -> Collections.emptyList());
+			this.flywayCallbacks = flywayCallbacks.getIfAvailable(Collections::emptyList);
 		}
 
 		@PostConstruct

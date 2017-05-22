@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +46,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
@@ -298,7 +298,8 @@ public class ResourceServerTokenServicesConfiguration {
 			String username = this.resource.getClientId();
 			String password = this.resource.getClientSecret();
 			if (username != null && password != null) {
-				byte[] token = Base64.encode((username + ":" + password).getBytes());
+				byte[] token = Base64.getEncoder()
+						.encode((username + ":" + password).getBytes());
 				headers.add("Authorization", "Basic " + new String(token));
 			}
 			HttpEntity<Void> request = new HttpEntity<>(headers);

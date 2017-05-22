@@ -16,10 +16,13 @@
 
 package org.springframework.boot.autoconfigure.liquibase;
 
+import java.lang.reflect.Method;
+
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import liquibase.exception.LiquibaseException;
 import liquibase.integration.spring.SpringLiquibase;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -42,6 +45,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Liquibase.
@@ -98,10 +102,9 @@ public class LiquibaseAutoConfiguration {
 
 		@Bean
 		public SpringLiquibase liquibase() {
-			SpringLiquibase liquibase = new SpringLiquibase();
+			SpringLiquibase liquibase = createSpringLiquibase();
 			liquibase.setChangeLog(this.properties.getChangeLog());
 			liquibase.setContexts(this.properties.getContexts());
-			liquibase.setDataSource(getDataSource());
 			liquibase.setDefaultSchema(this.properties.getDefaultSchema());
 			liquibase.setDropFirst(this.properties.isDropFirst());
 			liquibase.setShouldRun(this.properties.isEnabled());
@@ -111,13 +114,29 @@ public class LiquibaseAutoConfiguration {
 			return liquibase;
 		}
 
+		private SpringLiquibase createSpringLiquibase() {
+			DataSource liquibaseDataSource = getDataSource();
+			if (liquibaseDataSource != null) {
+				SpringLiquibase liquibase = new SpringLiquibase();
+				liquibase.setDataSource(liquibaseDataSource);
+				return liquibase;
+			}
+			SpringLiquibase liquibase = new DataSourceClosingSpringLiquibase();
+			liquibase.setDataSource(createNewDataSource());
+			return liquibase;
+		}
+
 		private DataSource getDataSource() {
 			if (this.liquibaseDataSource != null) {
 				return this.liquibaseDataSource;
 			}
-			else if (this.properties.getUrl() == null) {
+			if (this.properties.getUrl() == null) {
 				return this.dataSource;
 			}
+			return null;
+		}
+
+		private DataSource createNewDataSource() {
 			return DataSourceBuilder.create().url(this.properties.getUrl())
 					.username(this.properties.getUser())
 					.password(this.properties.getPassword()).build();
@@ -137,6 +156,28 @@ public class LiquibaseAutoConfiguration {
 
 		public LiquibaseJpaDependencyConfiguration() {
 			super("liquibase");
+		}
+
+	}
+
+	/**
+	 * A custom {@link SpringLiquibase} extension that close the underlying
+	 * {@link DataSource} once the database has been migrated.
+	 */
+	private static final class DataSourceClosingSpringLiquibase extends SpringLiquibase {
+
+		@Override
+		public void afterPropertiesSet() throws LiquibaseException {
+			super.afterPropertiesSet();
+			closeDataSource();
+		}
+
+		private void closeDataSource() {
+			Class<?> dataSourceClass = getDataSource().getClass();
+			Method closeMethod = ReflectionUtils.findMethod(dataSourceClass, "close");
+			if (closeMethod != null) {
+				ReflectionUtils.invokeMethod(closeMethod, getDataSource());
+			}
 		}
 
 	}

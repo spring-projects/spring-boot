@@ -23,6 +23,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -39,7 +41,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * {@link MultipartConfigElement} bean to any {@link Servlet} beans.
  * <p>
  * The {@link javax.servlet.MultipartConfigElement} is a Servlet API that's used to
- * configure how the server handles file uploads. By default
+ * configure how the server handles file uploads.
  *
  * @author Greg Turnquist
  * @author Josh Long
@@ -48,7 +50,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Configuration
 @ConditionalOnClass({ Servlet.class, StandardServletMultipartResolver.class,
 		MultipartConfigElement.class })
-@ConditionalOnProperty(prefix = "spring.http.multipart", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.servlet.multipart", name = "enabled", matchIfMissing = true)
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(MultipartProperties.class)
 public class MultipartAutoConfiguration {
 

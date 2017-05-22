@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +43,7 @@ import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
@@ -415,6 +417,27 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.refresh();
 		int foo = this.context.getBean(TestConfiguration.class).getFoo();
 		assertThat(foo).isEqualTo(10);
+	}
+
+	@Test
+	public void rebindableConfigurationProperties() throws Exception {
+		// gh-9160
+		this.context = new AnnotationConfigApplicationContext();
+		MutablePropertySources sources = this.context.getEnvironment()
+				.getPropertySources();
+		Map<String, Object> source = new LinkedHashMap<String, Object>();
+		source.put("example.one", "foo");
+		sources.addFirst(new MapPropertySource("test-source", source));
+		this.context.register(PrototypePropertiesConfig.class);
+		this.context.refresh();
+		PrototypeBean first = this.context.getBean(PrototypeBean.class);
+		assertThat(first.getOne()).isEqualTo("foo");
+		source.put("example.one", "bar");
+		sources.addFirst(new MapPropertySource("extra",
+				Collections.<String, Object>singletonMap("example.two", "baz")));
+		PrototypeBean second = this.context.getBean(PrototypeBean.class);
+		assertThat(second.getOne()).isEqualTo("bar");
+		assertThat(second.getTwo()).isEqualTo("baz");
 	}
 
 	private void assertBindingFailure(int errorCount) {
@@ -794,6 +817,43 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 		public void setMap(Map<String, Map<String, String>> map) {
 			this.map = map;
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	public static class PrototypePropertiesConfig {
+
+		@Bean
+		@Scope("prototype")
+		@ConfigurationProperties("example")
+		public PrototypeBean prototypeBean() {
+			return new PrototypeBean();
+		}
+
+	}
+
+	public static class PrototypeBean {
+
+		private String one;
+
+		private String two;
+
+		public String getOne() {
+			return this.one;
+		}
+
+		public void setOne(String one) {
+			this.one = one;
+		}
+
+		public String getTwo() {
+			return this.two;
+		}
+
+		public void setTwo(String two) {
+			this.two = two;
 		}
 
 	}

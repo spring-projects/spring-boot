@@ -33,6 +33,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
+import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -74,6 +75,8 @@ public class KafkaProperties {
 
 	private final Ssl ssl = new Ssl();
 
+	private final Jaas jaas = new Jaas();
+
 	private final Template template = new Template();
 
 	public List<String> getBootstrapServers() {
@@ -114,6 +117,10 @@ public class KafkaProperties {
 
 	public Ssl getSsl() {
 		return this.ssl;
+	}
+
+	public Jaas getJaas() {
+		return this.jaas;
 	}
 
 	public Template getTemplate() {
@@ -772,6 +779,65 @@ public class KafkaProperties {
 
 		public void setTruststorePassword(String truststorePassword) {
 			this.truststorePassword = truststorePassword;
+		}
+
+	}
+
+	public static class Jaas {
+
+		/**
+		 * Enable JAAS configuration.
+		 */
+		private boolean enabled;
+
+		/**
+		 * Login module.
+		 */
+		private String loginModule = "com.sun.security.auth.module.Krb5LoginModule";
+
+		/**
+		 * Control flag for login configuration.
+		 */
+		private KafkaJaasLoginModuleInitializer.ControlFlag controlFlag = KafkaJaasLoginModuleInitializer.ControlFlag.REQUIRED;
+
+		/**
+		 * Additional JAAS options.
+		 */
+		private final Map<String, String> options = new HashMap<>();
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getLoginModule() {
+			return this.loginModule;
+		}
+
+		public void setLoginModule(String loginModule) {
+			this.loginModule = loginModule;
+		}
+
+		public KafkaJaasLoginModuleInitializer.ControlFlag getControlFlag() {
+			return this.controlFlag;
+		}
+
+		public void setControlFlag(
+				KafkaJaasLoginModuleInitializer.ControlFlag controlFlag) {
+			this.controlFlag = controlFlag;
+		}
+
+		public Map<String, String> getOptions() {
+			return this.options;
+		}
+
+		public void setOptions(Map<String, String> options) {
+			if (options != null) {
+				this.options.putAll(options);
+			}
 		}
 
 	}

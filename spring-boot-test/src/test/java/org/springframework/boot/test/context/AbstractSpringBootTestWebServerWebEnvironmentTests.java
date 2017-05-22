@@ -16,13 +16,8 @@
 
 package org.springframework.boot.test.context;
 
-import java.net.URL;
-
 import javax.servlet.ServletContext;
 
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +28,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
@@ -64,14 +58,6 @@ public abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
-
-	@BeforeClass
-	@AfterClass
-	public static void uninstallUrlStreamHandlerFactory() {
-		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
-				null);
-		ReflectionTestUtils.setField(URL.class, "factory", null);
-	}
 
 	public WebApplicationContext getContext() {
 		return this.context;

@@ -36,8 +36,8 @@ import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyState;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.util.Assert;
@@ -235,11 +235,14 @@ public class Binder {
 
 	private <T> Object bindObject(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context) throws Exception {
+		ConfigurationProperty property = findProperty(name, context);
+		if (property == null && containsNoDescendantOf(context.streamSources(), name)) {
+			return null;
+		}
 		AggregateBinder<?> aggregateBinder = getAggregateBinder(target, context);
 		if (aggregateBinder != null) {
 			return bindAggregate(name, target, handler, context, aggregateBinder);
 		}
-		ConfigurationProperty property = findProperty(name, context);
 		if (property != null) {
 			return bindProperty(name, target, handler, context, property);
 		}
@@ -288,10 +291,8 @@ public class Binder {
 
 	private Object bindBean(ConfigurationPropertyName name, Bindable<?> target,
 			BindHandler handler, Context context) {
-		boolean hasKnownBindableProperties = context.streamSources()
-				.flatMap((s) -> s.filter(name::isAncestorOf).stream()).findAny()
-				.isPresent();
-		if (!hasKnownBindableProperties && isUnbindableBean(target)) {
+		if (containsNoDescendantOf(context.streamSources(), name)
+				|| isUnbindableBean(name, target, context)) {
 			return null;
 		}
 		BeanPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(
@@ -301,13 +302,19 @@ public class Binder {
 			return null;
 		}
 		return context.withBean(type, () -> {
-			Stream<?> boundBeans = BEAN_BINDERS.stream().map(
-					(b) -> b.bind(target, hasKnownBindableProperties, propertyBinder));
+			Stream<?> boundBeans = BEAN_BINDERS.stream()
+					.map((b) -> b.bind(name, target, context, propertyBinder));
 			return boundBeans.filter(Objects::nonNull).findFirst().orElse(null);
 		});
 	}
 
-	private boolean isUnbindableBean(Bindable<?> target) {
+	private boolean isUnbindableBean(ConfigurationPropertyName name, Bindable<?> target,
+			Context context) {
+		if (context.streamSources().anyMatch((s) -> s
+				.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT)) {
+			// We know there are properties to bind so we can't bypass anything
+			return false;
+		}
 		Class<?> resolved = target.getType().resolve();
 		if (resolved.isPrimitive() || NON_BEAN_CLASSES.contains(resolved)) {
 			return true;
@@ -316,15 +323,20 @@ public class Binder {
 		return packageName.startsWith("java.");
 	}
 
+	private boolean containsNoDescendantOf(Stream<ConfigurationPropertySource> sources,
+			ConfigurationPropertyName name) {
+		return sources.allMatch(
+				(s) -> s.containsDescendantOf(name) == ConfigurationPropertyState.ABSENT);
+	}
+
 	/**
 	 * Create a new {@link Binder} instance from the specified environment.
-	 * @param environment the environment (must be a {@link ConfigurableEnvironment})
+	 * @param environment the environment source (must have attached
+	 * {@link ConfigurationPropertySources})
 	 * @return a {@link Binder} instance
 	 */
 	public static Binder get(Environment environment) {
-		Assert.isInstanceOf(ConfigurableEnvironment.class, environment);
-		return new Binder(
-				ConfigurationPropertySources.get((ConfigurableEnvironment) environment),
+		return new Binder(ConfigurationPropertySources.get(environment),
 				new PropertySourcesPlaceholdersResolver(environment));
 	}
 
@@ -392,19 +404,20 @@ public class Binder {
 			}
 		}
 
-		private Stream<ConfigurationPropertySource> streamSources() {
-			if (this.sourcePushCount > 0) {
-				return this.source.stream();
-			}
-			return StreamSupport.stream(Binder.this.sources.spliterator(), false);
-		}
-
 		@Override
 		public Iterable<ConfigurationPropertySource> getSources() {
 			if (this.sourcePushCount > 0) {
 				return this.source;
 			}
 			return Binder.this.sources;
+		}
+
+		@Override
+		public Stream<ConfigurationPropertySource> streamSources() {
+			if (this.sourcePushCount > 0) {
+				return this.source.stream();
+			}
+			return StreamSupport.stream(Binder.this.sources.spliterator(), false);
 		}
 
 		public boolean hasBoundBean(Class<?> bean) {

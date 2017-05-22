@@ -175,11 +175,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
 			<optional>true</optional>
@@ -324,11 +319,6 @@
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-all</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

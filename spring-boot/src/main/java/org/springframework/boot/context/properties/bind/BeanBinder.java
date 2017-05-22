@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 
 /**
@@ -29,15 +30,16 @@ interface BeanBinder {
 	/**
 	 * Return a bound bean instance or {@code null} if the {@link BeanBinder} does not
 	 * support the specified {@link Bindable}.
-	 * @param target the bindable to bind
-	 * @param hasKnownBindableProperties if this binder has known bindable elements. If
-	 * names from underlying {@link ConfigurationPropertySource} cannot be iterated this
-	 * method can be {@code false}, even though binding may ultimately succeed.
+	 * @param name the name being bound
+	 * @param target the bindable to bind names from underlying
+	 * {@link ConfigurationPropertySource} cannot be iterated this method can be
+	 * {@code false}, even though binding may ultimately succeed.
+	 * @param context the bind context
 	 * @param propertyBinder property binder
 	 * @param <T> The source type
 	 * @return a bound instance or {@code null}
 	 */
-	<T> T bind(Bindable<T> target, boolean hasKnownBindableProperties,
+	<T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindContext context,
 			BeanPropertyBinder propertyBinder);
 
 }

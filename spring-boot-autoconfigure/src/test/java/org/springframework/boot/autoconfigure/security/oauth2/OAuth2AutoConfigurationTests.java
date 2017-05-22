@@ -17,14 +17,11 @@
 package org.springframework.boot.autoconfigure.security.oauth2;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.springframework.aop.support.AopUtils;
@@ -72,7 +69,6 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
@@ -122,14 +118,6 @@ public class OAuth2AutoConfigurationTests {
 	private static final Class<?> AUTHORIZATION_SERVER_CONFIG = OAuth2AuthorizationServerConfiguration.class;
 
 	private AnnotationConfigServletWebServerApplicationContext context;
-
-	@BeforeClass
-	@AfterClass
-	public static void uninstallUrlStreamHandlerFactory() {
-		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
-				null);
-		ReflectionTestUtils.setField(URL.class, "factory", null);
-	}
 
 	@Test
 	public void testDefaultConfiguration() {
@@ -455,7 +443,7 @@ public class OAuth2AutoConfigurationTests {
 
 	private HttpHeaders getHeaders(ClientDetails config) {
 		HttpHeaders headers = new HttpHeaders();
-		String token = new String(Base64.encode(
+		String token = new String(Base64.getEncoder().encode(
 				(config.getClientId() + ":" + config.getClientSecret()).getBytes()));
 		headers.set("Authorization", "Basic " + token);
 		return headers;
