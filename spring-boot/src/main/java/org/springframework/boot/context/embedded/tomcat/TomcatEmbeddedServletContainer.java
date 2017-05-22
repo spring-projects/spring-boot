@@ -163,6 +163,9 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 					throw exception;
 				}
 			}
+			if (!LifecycleState.STARTED.equals(container.getState())) {
+				throw new IllegalStateException(container + " failed to start");
+			}
 		}
 	}
 

@@ -26,7 +26,13 @@ import java.util.concurrent.TimeUnit;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
@@ -53,6 +59,7 @@ import org.springframework.boot.context.embedded.AbstractEmbeddedServletContaine
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.testutil.InternalOutputCapture;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 
@@ -458,6 +465,38 @@ public class TomcatEmbeddedServletContainerFactoryTests
 				.getSessionIdGenerator();
 		assertThat(sessionIdGenerator).isInstanceOf(LazySessionIdGenerator.class);
 		assertThat(sessionIdGenerator.getJvmRoute()).isEqualTo("test");
+	}
+
+	@Test
+	public void faultyFilterCausesStartFailure() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.addInitializers(new ServletContextInitializer() {
+
+			@Override
+			public void onStartup(ServletContext servletContext) throws ServletException {
+				servletContext.addFilter("faulty", new Filter() {
+
+					@Override
+					public void init(FilterConfig filterConfig) throws ServletException {
+						throw new ServletException("Faulty filter");
+					}
+
+					@Override
+					public void doFilter(ServletRequest request, ServletResponse response,
+							FilterChain chain) throws IOException, ServletException {
+						chain.doFilter(request, response);
+					}
+
+					@Override
+					public void destroy() {
+					}
+
+				});
+			}
+
+		});
+		this.thrown.expect(EmbeddedServletContainerException.class);
+		factory.getEmbeddedServletContainer().start();
 	}
 
 	@Override
