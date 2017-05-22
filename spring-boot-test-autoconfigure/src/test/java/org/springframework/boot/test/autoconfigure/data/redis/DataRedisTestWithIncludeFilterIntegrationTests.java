@@ -16,11 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.data.redis;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import redis.embedded.RedisServer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -43,19 +40,6 @@ public class DataRedisTestWithIncludeFilterIntegrationTests {
 
 	@Autowired
 	private ExampleService service;
-
-	private static RedisServer redisServer;
-
-	@BeforeClass
-	public static void setUp() throws Exception {
-		redisServer = new RedisServer(6379);
-		redisServer.start();
-	}
-
-	@AfterClass
-	public static void tearDown() throws Exception {
-		redisServer.stop();
-	}
 
 	@Test
 	public void testService() {

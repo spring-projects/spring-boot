@@ -74,7 +74,6 @@
 		<ehcache.version>2.10.4</ehcache.version>
 		<ehcache3.version>3.3.1</ehcache3.version>
 		<embedded-mongo.version>2.0.0</embedded-mongo.version>
-		<embedded-redis.version>0.6</embedded-redis.version>
 		<flyway.version>4.2.0</flyway.version>
 		<freemarker.version>2.3.26-incubating</freemarker.version>
 		<elasticsearch.version>2.4.5</elasticsearch.version>
@@ -637,11 +636,6 @@
 				<groupId>com.github.ben-manes.caffeine</groupId>
 				<artifactId>caffeine</artifactId>
 				<version>${caffeine.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.github.kstyrc</groupId>
-				<artifactId>embedded-redis</artifactId>
-				<version>${embedded-redis.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.github.mxab.thymeleaf.extras</groupId>

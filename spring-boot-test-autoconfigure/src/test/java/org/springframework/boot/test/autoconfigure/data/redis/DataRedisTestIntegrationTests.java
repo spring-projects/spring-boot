@@ -18,13 +18,10 @@ package org.springframework.boot.test.autoconfigure.data.redis;
 
 import java.nio.charset.Charset;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import redis.embedded.RedisServer;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,19 +55,6 @@ public class DataRedisTestIntegrationTests {
 	private ApplicationContext applicationContext;
 
 	private static final Charset CHARSET = Charset.forName("UTF-8");
-
-	private static RedisServer redisServer;
-
-	@BeforeClass
-	public static void setUp() throws Exception {
-		redisServer = new RedisServer(6379);
-		redisServer.start();
-	}
-
-	@AfterClass
-	public static void tearDown() throws Exception {
-		redisServer.stop();
-	}
 
 	@Test
 	public void testRepository() {
