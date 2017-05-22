@@ -16,9 +16,7 @@
 
 package org.springframework.boot.jta.atomikos;
 
-import java.util.Map;
 import java.util.Properties;
-import java.util.TreeMap;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -35,8 +33,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "spring.jta.atomikos.properties")
 public class AtomikosProperties {
-
-	private final Map<String, String> values = new TreeMap<>();
 
 	/**
 	 * Transaction manager implementation that should be started.
@@ -128,7 +124,7 @@ public class AtomikosProperties {
 	 * Use different (and concurrent) threads for two-phase commit on the participating
 	 * resources.
 	 */
-	private boolean threadedTwoPhaseCommit = true;
+	private boolean threadedTwoPhaseCommit;
 
 	/**
 	 * Specifies the transaction manager implementation that should be started. There is
@@ -139,7 +135,6 @@ public class AtomikosProperties {
 	 */
 	public void setService(String service) {
 		this.service = service;
-		set("service", service);
 	}
 
 	public String getService() {
@@ -155,7 +150,6 @@ public class AtomikosProperties {
 	 */
 	public void setMaxTimeout(long maxTimeout) {
 		this.maxTimeout = maxTimeout;
-		set("max_timeout", maxTimeout);
 	}
 
 	public long getMaxTimeout() {
@@ -169,7 +163,6 @@ public class AtomikosProperties {
 	 */
 	public void setDefaultJtaTimeout(long defaultJtaTimeout) {
 		this.defaultJtaTimeout = defaultJtaTimeout;
-		set("default_jta_timeout", defaultJtaTimeout);
 	}
 
 	public long getDefaultJtaTimeout() {
@@ -186,7 +179,6 @@ public class AtomikosProperties {
 	 */
 	public void setMaxActives(int maxActives) {
 		this.maxActives = maxActives;
-		set("max_actives", maxActives);
 	}
 
 	public int getMaxActives() {
@@ -202,7 +194,6 @@ public class AtomikosProperties {
 	 */
 	public void setEnableLogging(boolean enableLogging) {
 		this.enableLogging = enableLogging;
-		set("enable_logging", enableLogging);
 	}
 
 	public boolean isEnableLogging() {
@@ -222,7 +213,6 @@ public class AtomikosProperties {
 	 */
 	public void setTransactionManagerUniqueName(String uniqueName) {
 		this.transactionManagerUniqueName = uniqueName;
-		set("tm_unique_name", uniqueName);
 	}
 
 	public String getTransactionManagerUniqueName() {
@@ -239,7 +229,6 @@ public class AtomikosProperties {
 	 */
 	public void setSerialJtaTransactions(boolean serialJtaTransactions) {
 		this.serialJtaTransactions = serialJtaTransactions;
-		set("serial_jta_transactions", serialJtaTransactions);
 	}
 
 	public boolean isSerialJtaTransactions() {
@@ -253,7 +242,6 @@ public class AtomikosProperties {
 	 */
 	public void setForceShutdownOnVmExit(boolean forceShutdownOnVmExit) {
 		this.forceShutdownOnVmExit = forceShutdownOnVmExit;
-		set("force_shutdown_on_vm_exit", forceShutdownOnVmExit);
 	}
 
 	public boolean isForceShutdownOnVmExit() {
@@ -269,7 +257,6 @@ public class AtomikosProperties {
 	 */
 	public void setLogBaseName(String logBaseName) {
 		this.logBaseName = logBaseName;
-		set("log_base_name", logBaseName);
 	}
 
 	public String getLogBaseName() {
@@ -285,7 +272,6 @@ public class AtomikosProperties {
 	 */
 	public void setLogBaseDir(String logBaseDir) {
 		this.logBaseDir = logBaseDir;
-		set("log_base_dir", logBaseDir);
 	}
 
 	public String getLogBaseDir() {
@@ -299,7 +285,6 @@ public class AtomikosProperties {
 	 */
 	public void setCheckpointInterval(long checkpointInterval) {
 		this.checkpointInterval = checkpointInterval;
-		set("checkpoint_interval", checkpointInterval);
 	}
 
 	public long getCheckpointInterval() {
@@ -312,7 +297,6 @@ public class AtomikosProperties {
 	 */
 	public void setConsoleLogLevel(AtomikosLoggingLevel consoleLogLevel) {
 		this.consoleLogLevel = consoleLogLevel;
-		set("console_log_level", consoleLogLevel);
 	}
 
 	public AtomikosLoggingLevel getConsoleLogLevel() {
@@ -326,7 +310,6 @@ public class AtomikosProperties {
 	 */
 	public void setOutputDir(String outputDir) {
 		this.outputDir = outputDir;
-		set("output_dir", outputDir);
 	}
 
 	public String getOutputDir() {
@@ -339,7 +322,6 @@ public class AtomikosProperties {
 	 */
 	public void setConsoleFileName(String consoleFileName) {
 		this.consoleFileName = consoleFileName;
-		set("console_file_name", consoleFileName);
 	}
 
 	public String getConsoleFileName() {
@@ -352,7 +334,6 @@ public class AtomikosProperties {
 	 */
 	public void setConsoleFileCount(int consoleFileCount) {
 		this.consoleFileCount = consoleFileCount;
-		set("console_file_count", consoleFileCount);
 	}
 
 	public int getConsoleFileCount() {
@@ -366,7 +347,6 @@ public class AtomikosProperties {
 	 */
 	public void setConsoleFileLimit(int consoleFileLimit) {
 		this.consoleFileLimit = consoleFileLimit;
-		set("console_file_limit", consoleFileLimit);
 	}
 
 	public int getConsoleFileLimit() {
@@ -384,24 +364,10 @@ public class AtomikosProperties {
 	 */
 	public void setThreadedTwoPhaseCommit(boolean threadedTwoPhaseCommit) {
 		this.threadedTwoPhaseCommit = threadedTwoPhaseCommit;
-		set("threaded_2pc", threadedTwoPhaseCommit);
 	}
 
 	public boolean isThreadedTwoPhaseCommit() {
 		return this.threadedTwoPhaseCommit;
-	}
-
-	private void set(String key, Object value) {
-		set("com.atomikos.icatch.", key, value);
-	}
-
-	private void set(String keyPrefix, String key, Object value) {
-		if (value != null) {
-			this.values.put(keyPrefix + key, value.toString());
-		}
-		else {
-			this.values.remove(keyPrefix + key);
-		}
 	}
 
 	/**
@@ -411,8 +377,31 @@ public class AtomikosProperties {
 	 */
 	public Properties asProperties() {
 		Properties properties = new Properties();
-		properties.putAll(this.values);
+		set(properties, "service", getService());
+		set(properties, "max_timeout", getMaxTimeout());
+		set(properties, "default_jta_timeout", getDefaultJtaTimeout());
+		set(properties, "max_actives", getMaxActives());
+		set(properties, "enable_logging", isEnableLogging());
+		set(properties, "tm_unique_name", getTransactionManagerUniqueName());
+		set(properties, "serial_jta_transactions", isSerialJtaTransactions());
+		set(properties, "force_shutdown_on_vm_exit", isForceShutdownOnVmExit());
+		set(properties, "log_base_name", getLogBaseName());
+		set(properties, "log_base_dir", getLogBaseDir());
+		set(properties, "checkpoint_interval", getCheckpointInterval());
+		set(properties, "console_log_level", getConsoleLogLevel());
+		set(properties, "output_dir", getOutputDir());
+		set(properties, "console_file_name", getConsoleFileName());
+		set(properties, "console_file_count", getConsoleFileCount());
+		set(properties, "console_file_limit", getConsoleFileLimit());
+		set(properties, "threaded_2pc", isThreadedTwoPhaseCommit());
 		return properties;
+	}
+
+	private void set(Properties properties, String key, Object value) {
+		String id = "com.atomikos.icatch." + key;
+		if (value != null && !properties.containsKey(id)) {
+			properties.setProperty(id, value.toString());
+		}
 	}
 
 }
