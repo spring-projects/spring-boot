@@ -18,33 +18,48 @@ package org.springframework.boot.actuate.health;
 
 import java.util.List;
 
+import com.couchbase.client.java.query.N1qlQuery;
+import com.couchbase.client.java.query.N1qlQueryResult;
+import com.couchbase.client.java.query.Statement;
 import com.couchbase.client.java.util.features.Version;
+import static com.couchbase.client.java.query.Select.select;
 
 import org.springframework.data.couchbase.core.CouchbaseOperations;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+
+
 /**
  * {@link HealthIndicator} for Couchbase.
  *
- * @author Eddú Meléndez
+ * @authors Eddú Meléndez, Kris Krishna
+ * 
  * @since 1.4.0
  */
 public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 
-	private CouchbaseOperations couchbaseOperations;
+  private CouchbaseOperations couchbaseOperations;
 
-	public CouchbaseHealthIndicator(CouchbaseOperations couchbaseOperations) {
-		Assert.notNull(couchbaseOperations, "CouchbaseOperations must not be null");
-		this.couchbaseOperations = couchbaseOperations;
-	}
+  public CouchbaseHealthIndicator(CouchbaseOperations couchbaseOperations) {
+    Assert.notNull(couchbaseOperations, "CouchbaseOperations must not be null");
+    this.couchbaseOperations = couchbaseOperations;
+  }
 
-	@Override
-	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		List<Version> versions = this.couchbaseOperations.getCouchbaseClusterInfo()
-				.getAllVersions();
-		builder.up().withDetail("versions",
-				StringUtils.collectionToCommaDelimitedString(versions));
-	}
+  @Override
+  protected void doHealthCheck(Health.Builder builder) throws Exception {
+    try {
+      List<Version> versions = this.couchbaseOperations.getCouchbaseClusterInfo().getAllVersions();
+      Statement statement = select("*").from("system:keyspaces");
+      N1qlQuery n1qlQuery = N1qlQuery.simple(statement);
+      N1qlQueryResult results = this.couchbaseOperations.queryN1QL(n1qlQuery);
+      if (results.finalSuccess()) {
+        builder.up().withDetail("versions", StringUtils.collectionToCommaDelimitedString(versions));
+        return;
+      }
+    } catch (Exception ex) {
+      builder.down(ex);
+    }
+  }
 
 }
