@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -195,6 +197,40 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		assertThat(map.get("address")).isEqualTo("192.168.1.10");
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testOutputAllOnlyGetterProperties() throws Exception {
+		this.context.register(OnlyGetterPropertiesConfig.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "foo.map.entryOne:true",
+				"foo.list[0]:abc");
+		this.context.refresh();
+		ConfigurationPropertiesReportEndpoint report = this.context
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
+		Map<String, Object> properties = report.invoke();
+		Map<String, Object> nestedProperties = (Map<String, Object>) properties
+				.get("foo");
+		assertThat(nestedProperties).isNotNull();
+		System.err.println(nestedProperties);
+		assertThat(nestedProperties.get("prefix")).isEqualTo("foo");
+		Map<String, Object> propertiesMap = (Map<String, Object>) nestedProperties
+				.get("properties");
+		assertThat(propertiesMap).isNotNull();
+		assertThat(propertiesMap).hasSize(4);
+		String summary = (String) propertiesMap
+				.get("summary");
+		assertThat(summary).isNull();
+		Map<String, Object> map = (Map<String, Object>) propertiesMap
+				.get("map");
+		assertThat(map).isNotNull();
+		assertThat(map).hasSize(1);
+		assertThat(map.get("entryOne")).isEqualTo(true);
+		List<String> list = (List<String>) propertiesMap
+				.get("list");
+		assertThat(list).isNotNull();
+		assertThat(list).hasSize(1);
+		assertThat(list.get(0)).isEqualTo("abc");
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	public static class Base {
@@ -288,6 +324,16 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 			return new Addressed();
 		}
 
+	}
+
+	@Configuration
+	@Import(Base.class)
+	public static class OnlyGetterPropertiesConfig {
+		@Bean
+		@ConfigurationProperties(prefix = "foo")
+		public OnlyGetterProperties foo() {
+			return new OnlyGetterProperties();
+		}
 	}
 
 	public static class Foo {
@@ -391,6 +437,19 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 			this.address = address;
 		}
 
+	}
+
+	public static class OnlyGetterProperties extends Foo {
+		private Map<String, Boolean> map = new HashMap<>();
+		private List<String> list = new ArrayList<>();
+
+		public Map<String, Boolean> getMap() {
+			return this.map;
+		}
+
+		public List<String> getList() {
+			return this.list;
+		}
 	}
 
 }
