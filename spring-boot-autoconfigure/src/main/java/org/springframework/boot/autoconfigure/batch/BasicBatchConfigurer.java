@@ -31,6 +31,7 @@ import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -145,6 +146,9 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 		String tablePrefix = this.properties.getTablePrefix();
 		if (StringUtils.hasText(tablePrefix)) {
 			factory.setTablePrefix(tablePrefix);
+		}
+		if (this.properties.isForceDefaultLobHandler()) {
+			factory.setLobHandler(new DefaultLobHandler());
 		}
 		factory.setTransactionManager(getTransactionManager());
 		factory.afterPropertiesSet();

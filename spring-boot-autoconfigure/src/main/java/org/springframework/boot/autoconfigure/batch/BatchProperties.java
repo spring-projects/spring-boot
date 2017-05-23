@@ -42,6 +42,11 @@ public class BatchProperties {
 	 */
 	private String tablePrefix;
 
+	/**
+	 * Force use of DefaultLobHandler as the LobHandler of the JobRepositoryFactoryBean
+	 */
+	private boolean forceDefaultLobHandler = false;
+
 	private final Initializer initializer = new Initializer();
 
 	private final Job job = new Job();
@@ -68,6 +73,14 @@ public class BatchProperties {
 
 	public String getTablePrefix() {
 		return this.tablePrefix;
+	}
+
+	public boolean isForceDefaultLobHandler() {
+		return forceDefaultLobHandler;
+	}
+
+	public void setForceDefaultLobHandler(boolean forceDefaultLobHandler) {
+		this.forceDefaultLobHandler = forceDefaultLobHandler;
 	}
 
 	public class Initializer {

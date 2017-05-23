@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -43,6 +46,7 @@ import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.repository.dao.JdbcExecutionContextDao;
 import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,9 +62,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.lob.DefaultLobHandler;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link BatchAutoConfiguration}.
@@ -267,6 +275,24 @@ public class BatchAutoConfigurationTests {
 				.queryForList("select * from BATCH_JOB_EXECUTION");
 	}
 
+	@Test
+	public void testForceDefaultLobHandlerInJobRepositoryFactoryBean() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.batch.forceDefaultLobHandler:true",
+				"spring.batch.initializer.enabled:false");
+		this.context.register(BatchConfigurationWithOracleDataSource.class,
+				BatchAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(BatchProperties.class).isForceDefaultLobHandler())
+				.isTrue();
+		JobRepository jobRepository = this.context.getBean(JobRepository.class);
+		JdbcExecutionContextDao jdbcExecutionContextDao =
+				(JdbcExecutionContextDao) ReflectionTestUtils.getField(jobRepository, "ecDao");
+		assertThat(ReflectionTestUtils.getField(jdbcExecutionContextDao, "lobHandler"))
+				.isInstanceOf(DefaultLobHandler.class);
+	}
+
 	@Configuration
 	protected static class EmptyConfiguration {
 
@@ -419,6 +445,22 @@ public class BatchAutoConfigurationTests {
 			};
 			job.setJobRepository(this.jobRepository);
 			return job;
+		}
+
+	}
+
+	@EnableBatchProcessing
+	protected static class BatchConfigurationWithOracleDataSource {
+
+		@Bean
+		public DataSource dataSource() throws SQLException {
+			DataSource dataSource = mock(DataSource.class);
+			Connection connection = mock(Connection.class);
+			DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+			given(dataSource.getConnection()).willReturn(connection);
+			given(connection.getMetaData()).willReturn(databaseMetaData);
+			given(databaseMetaData.getDatabaseProductName()).willReturn("Oracle");
+			return dataSource;
 		}
 
 	}
