@@ -36,6 +36,7 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -51,6 +52,7 @@ import org.springframework.boot.web.servlet.server.AbstractServletWebServerFacto
 import org.springframework.http.HttpHeaders;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -275,6 +277,22 @@ public class JettyServletWebServerFactoryTests
 		this.webServer = factory.getWebServer();
 		assertThat(((JettyWebServer) this.webServer).getServer().getThreadPool())
 				.isSameAs(threadPool);
+	}
+
+	@Test
+	public void startFailsWhenThreadPoolIsTooSmall() throws Exception {
+		JettyServletWebServerFactory factory = getFactory();
+		factory.addServerCustomizers(new JettyServerCustomizer() {
+
+			@Override
+			public void customize(Server server) {
+				QueuedThreadPool threadPool = server.getBean(QueuedThreadPool.class);
+				threadPool.setMaxThreads(2);
+				threadPool.setMinThreads(2);
+			}
+		});
+		this.thrown.expectCause(instanceOf(IllegalStateException.class));
+		factory.getWebServer().start();
 	}
 
 	@Override

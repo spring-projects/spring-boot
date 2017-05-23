@@ -27,6 +27,7 @@ import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.eclipse.jetty.util.component.AbstractLifeCycle;
 
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
@@ -83,11 +84,21 @@ public class JettyWebServer implements WebServer {
 	private void initialize() {
 		synchronized (this.monitor) {
 			try {
-				// Cache and clear the connectors to prevent requests being handled before
-				// the application context is ready
+				// Cache the connectors and then remove them to prevent requests being
+				// handled before the application context is ready.
 				this.connectors = this.server.getConnectors();
-				this.server.setConnectors(null);
+				this.server.addBean(new AbstractLifeCycle() {
 
+					@Override
+					protected void doStart() throws Exception {
+						for (Connector connector : JettyWebServer.this.connectors) {
+							Assert.state(connector.isStopped(), "Connector " + connector
+									+ " has been started prematurely");
+						}
+						JettyWebServer.this.server.setConnectors(null);
+					}
+
+				});
 				// Start the server so that the ServletContext is available
 				this.server.start();
 				this.server.setStopAtShutdown(false);
