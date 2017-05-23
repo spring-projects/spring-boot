@@ -98,13 +98,9 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 	private Class<?> findSharedClass(String name) {
 		try {
 			String path = name.replace('.', '/').concat(".class");
-			InputStream inputStream = getParent().getResourceAsStream(path);
-			if (inputStream != null) {
-				try {
+			try (InputStream inputStream = getParent().getResourceAsStream(path)) {
+				if (inputStream != null) {
 					return defineClass(name, FileCopyUtils.copyToByteArray(inputStream));
-				}
-				finally {
-					inputStream.close();
 				}
 			}
 			return null;

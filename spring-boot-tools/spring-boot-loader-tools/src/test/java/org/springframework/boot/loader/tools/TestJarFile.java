@@ -65,24 +65,16 @@ public class TestJarFile {
 	public void addFile(String filename, File fileToCopy) throws IOException {
 		File file = getFilePath(filename);
 		file.getParentFile().mkdirs();
-		InputStream inputStream = new FileInputStream(fileToCopy);
-		try {
+		try (InputStream inputStream = new FileInputStream(fileToCopy)) {
 			copyToFile(inputStream, file);
-		}
-		finally {
-			inputStream.close();
 		}
 	}
 
 	public void addManifest(Manifest manifest) throws IOException {
 		File manifestFile = new File(this.jarSource, "META-INF/MANIFEST.MF");
 		manifestFile.getParentFile().mkdirs();
-		OutputStream outputStream = new FileOutputStream(manifestFile);
-		try {
+		try (OutputStream outputStream = new FileOutputStream(manifestFile)) {
 			manifest.write(outputStream);
-		}
-		finally {
-			outputStream.close();
 		}
 	}
 
@@ -97,12 +89,8 @@ public class TestJarFile {
 
 	private void copyToFile(InputStream inputStream, File file)
 			throws FileNotFoundException, IOException {
-		OutputStream outputStream = new FileOutputStream(file);
-		try {
+		try (OutputStream outputStream = new FileOutputStream(file)) {
 			copy(inputStream, outputStream);
-		}
-		finally {
-			outputStream.close();
 		}
 	}
 

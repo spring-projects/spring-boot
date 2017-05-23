@@ -132,7 +132,8 @@ public class EndpointDocumentation {
 	@Test
 	public void auditEvents() throws Exception {
 		this.mockMvc
-				.perform(get("/application/auditevents").param("after", "2016-11-01T10:00:00+0000")
+				.perform(get("/application/auditevents")
+						.param("after", "2016-11-01T10:00:00+0000")
 						.accept(ActuatorMediaTypes.APPLICATION_ACTUATOR_V2_JSON))
 				.andExpect(status().isOk()).andDo(document("auditevents"));
 	}
@@ -188,14 +189,10 @@ public class EndpointDocumentation {
 		}
 		File file = new File(RESTDOCS_OUTPUT_DIR + "/endpoints.adoc");
 		file.getParentFile().mkdirs();
-		PrintWriter writer = new PrintWriter(file, "UTF-8");
-		try {
+		try (PrintWriter writer = new PrintWriter(file, "UTF-8")) {
 			Template template = this.templates.createTemplate(
 					new File("src/restdoc/resources/templates/endpoints.adoc.tpl"));
 			template.make(model).writeTo(writer);
-		}
-		finally {
-			writer.close();
 		}
 	}
 

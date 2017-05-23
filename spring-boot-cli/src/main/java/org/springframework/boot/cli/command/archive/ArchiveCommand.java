@@ -187,17 +187,13 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 				List<MatchedResource> classpathEntries, List<URL> dependencies)
 						throws FileNotFoundException, IOException, URISyntaxException {
 			final List<Library> libraries;
-			JarWriter writer = new JarWriter(file);
-			try {
+			try (JarWriter writer = new JarWriter(file)) {
 				addManifest(writer, compiledClasses);
 				addCliClasses(writer);
 				for (Class<?> compiledClass : compiledClasses) {
 					addClass(writer, compiledClass);
 				}
 				libraries = addClasspathEntries(writer, classpathEntries);
-			}
-			finally {
-				writer.close();
 			}
 			libraries.addAll(createLibraries(dependencies));
 			Repackager repackager = new Repackager(file);

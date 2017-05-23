@@ -164,35 +164,34 @@ public class PropertiesLauncher extends Launcher {
 			}
 		}
 		for (String config : configs) {
-			InputStream resource = getResource(config);
-			if (resource != null) {
-				debug("Found: " + config);
-				try {
-					this.properties.load(resource);
+			try (InputStream resource = getResource(config)) {
+				if (resource != null) {
+					debug("Found: " + config);
+					loadResource(resource);
+					// Load the first one we find
+					return;
 				}
-				finally {
-					resource.close();
+				else {
+					debug("Not found: " + config);
 				}
-				for (Object key : Collections.list(this.properties.propertyNames())) {
-					String text = this.properties.getProperty((String) key);
-					String value = SystemPropertyUtils
-							.resolvePlaceholders(this.properties, text);
-					if (value != null) {
-						this.properties.put(key, value);
-					}
-				}
-				if ("true".equals(getProperty(SET_SYSTEM_PROPERTIES))) {
-					debug("Adding resolved properties to System properties");
-					for (Object key : Collections.list(this.properties.propertyNames())) {
-						String value = this.properties.getProperty((String) key);
-						System.setProperty((String) key, value);
-					}
-				}
-				// Load the first one we find
-				return;
 			}
-			else {
-				debug("Not found: " + config);
+		}
+	}
+
+	private void loadResource(InputStream resource) throws IOException, Exception {
+		this.properties.load(resource);
+		for (Object key : Collections.list(this.properties.propertyNames())) {
+			String text = this.properties.getProperty((String) key);
+			String value = SystemPropertyUtils.resolvePlaceholders(this.properties, text);
+			if (value != null) {
+				this.properties.put(key, value);
+			}
+		}
+		if ("true".equals(getProperty(SET_SYSTEM_PROPERTIES))) {
+			debug("Adding resolved properties to System properties");
+			for (Object key : Collections.list(this.properties.propertyNames())) {
+				String value = this.properties.getProperty((String) key);
+				System.setProperty((String) key, value);
 			}
 		}
 	}

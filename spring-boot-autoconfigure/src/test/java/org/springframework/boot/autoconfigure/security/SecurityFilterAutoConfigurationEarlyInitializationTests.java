@@ -58,8 +58,7 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
 	@Test
 	public void testSecurityFilterDoesNotCauseEarlyInitialization() throws Exception {
-		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
-		try {
+		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext()) {
 			EnvironmentTestUtils.addEnvironment(context, "server.port:0",
 					"security.user.password:password");
 			context.register(Config.class);
@@ -70,10 +69,6 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 			// If early initialization occurred a ConverterNotFoundException is thrown
 
 		}
-		finally {
-			context.close();
-		}
-
 	}
 
 	@Configuration

@@ -122,6 +122,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Greg Turnquist
  * @author Andy Wilkinson
+ * @author Raja Kolli
  */
 public abstract class AbstractServletWebServerFactoryTests {
 
@@ -1058,12 +1059,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	protected String getResponse(String url, HttpMethod method, String... headers)
 			throws IOException, URISyntaxException {
-		ClientHttpResponse response = getClientResponse(url, method, headers);
-		try {
+		try (ClientHttpResponse response = getClientResponse(url, method, headers)) {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
-		}
-		finally {
-			response.close();
 		}
 	}
 
@@ -1076,13 +1073,9 @@ public abstract class AbstractServletWebServerFactoryTests {
 	protected String getResponse(String url, HttpMethod method,
 			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
 					throws IOException, URISyntaxException {
-		ClientHttpResponse response = getClientResponse(url, method, requestFactory,
-				headers);
-		try {
+		try (ClientHttpResponse response = getClientResponse(url, method, requestFactory,
+				headers)) {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
-		}
-		finally {
-			response.close();
 		}
 	}
 
@@ -1196,13 +1189,9 @@ public abstract class AbstractServletWebServerFactoryTests {
 			NoSuchAlgorithmException, CertificateException {
 		KeyStore keyStore = KeyStore.getInstance("JKS");
 		Resource resource = new ClassPathResource("test.jks");
-		InputStream inputStream = resource.getInputStream();
-		try {
+		try (InputStream inputStream = resource.getInputStream()) {
 			keyStore.load(inputStream, "secret".toCharArray());
 			return keyStore;
-		}
-		finally {
-			inputStream.close();
 		}
 	}
 

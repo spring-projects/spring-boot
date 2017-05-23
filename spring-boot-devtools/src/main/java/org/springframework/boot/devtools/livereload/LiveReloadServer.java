@@ -282,16 +282,10 @@ public class LiveReloadServer {
 
 		private void handle() throws Exception {
 			try {
-				try {
-					OutputStream outputStream = this.socket.getOutputStream();
-					try {
-						Connection connection = createConnection(this.socket,
-								this.inputStream, outputStream);
-						runConnection(connection);
-					}
-					finally {
-						outputStream.close();
-					}
+				try (OutputStream outputStream = this.socket.getOutputStream()) {
+					Connection connection = createConnection(this.socket,
+							this.inputStream, outputStream);
+					runConnection(connection);
 				}
 				finally {
 					this.inputStream.close();
