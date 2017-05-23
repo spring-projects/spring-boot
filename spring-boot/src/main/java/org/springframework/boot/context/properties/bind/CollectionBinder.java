@@ -51,9 +51,26 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	@Override
 	protected Collection<Object> merge(Collection<Object> existing,
 			Collection<Object> additional) {
-		existing.clear();
-		existing.addAll(additional);
-		return existing;
+		try {
+			existing.clear();
+			existing.addAll(additional);
+			return existing;
+		}
+		catch (UnsupportedOperationException ex) {
+			return createNewCollection(additional);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Collection<Object> createNewCollection(Collection<Object> additional) {
+		try {
+			Collection<Object> merged = additional.getClass().newInstance();
+			merged.addAll(additional);
+			return merged;
+		}
+		catch (Exception e) {
+			throw new IllegalStateException("Adding bound values to collection failed.");
+		}
 	}
 
 }
