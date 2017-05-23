@@ -18,16 +18,23 @@ package org.springframework.boot.actuate.health;
 
 import java.util.List;
 
+import com.couchbase.client.java.query.N1qlQuery;
+import com.couchbase.client.java.query.N1qlQueryResult;
+import com.couchbase.client.java.query.Statement;
 import com.couchbase.client.java.util.features.Version;
 
 import org.springframework.data.couchbase.core.CouchbaseOperations;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import static com.couchbase.client.java.query.Select.select;
+
+
 /**
  * {@link HealthIndicator} for Couchbase.
  *
  * @author Eddú Meléndez
+ * @author kriskrishna
  * @since 1.4.0
  */
 public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
@@ -41,10 +48,18 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		List<Version> versions = this.couchbaseOperations.getCouchbaseClusterInfo()
-				.getAllVersions();
-		builder.up().withDetail("versions",
-				StringUtils.collectionToCommaDelimitedString(versions));
+		try {
+			List<Version> versions = this.couchbaseOperations.getCouchbaseClusterInfo().getAllVersions();
+			Statement statement = select("*").from("system:keyspaces");
+			N1qlQuery q = N1qlQuery.simple(statement);
+			N1qlQueryResult results = this.couchbaseOperations.queryN1QL(q);
+			if (results.finalSuccess()) {
+				builder.up().withDetail("versions", StringUtils.collectionToCommaDelimitedString(versions));
+				return;
+			}
+		} catch (Exception ex) {
+			builder.down(ex);
+		}
 	}
 
 }
