@@ -124,4 +124,7 @@ do as they were designed before this was clarified.
 | https://github.com/membrane/service-proxy[Membrane Service Proxy]
 | https://github.com/membrane/membrane-spring-boot-starter
 
+| http://teiid.org/[Teiid]
+| https://github.com/teiid/teiid-spring-boot
+
 |===
