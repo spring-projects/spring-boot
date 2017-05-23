@@ -341,7 +341,8 @@ public class ConfigurationPropertiesReportEndpoint
 			// that's what the metadata generator does. This filter is not used if there
 			// is JSON metadata for the property, so it's mainly for user-defined beans.
 			return (setter != null)
-					|| ClassUtils.getPackageName(parentType).equals(ClassUtils.getPackageName(type))
+					|| ClassUtils.getPackageName(parentType)
+							.equals(ClassUtils.getPackageName(type))
 					|| Map.class.isAssignableFrom(type)
 					|| Collection.class.isAssignableFrom(type);
 		}

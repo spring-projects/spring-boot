@@ -190,7 +190,8 @@ public class WebFluxAutoConfigurationTests {
 				.getBeanNamesForType(javax.validation.Validator.class);
 		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
 		assertThat(jsrValidatorBeans).containsExactly("defaultValidator");
-		assertThat(springValidatorBeans).containsExactly("defaultValidator", "webFluxValidator");
+		assertThat(springValidatorBeans).containsExactly("defaultValidator",
+				"webFluxValidator");
 		Validator validator = this.context.getBean("webFluxValidator", Validator.class);
 		assertThat(validator).isInstanceOf(ValidatorAdapter.class);
 		Object defaultValidator = this.context.getBean("defaultValidator");
@@ -208,13 +209,14 @@ public class WebFluxAutoConfigurationTests {
 				.isEmpty();
 		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
 		assertThat(springValidatorBeans).containsExactly("webFluxValidator");
-		assertThat(this.context.getBean("webFluxValidator"))
-				.isSameAs(this.context.getBean(ValidatorWebFluxConfigurer.class).validator);
+		assertThat(this.context.getBean("webFluxValidator")).isSameAs(
+				this.context.getBean(ValidatorWebFluxConfigurer.class).validator);
 	}
 
 	@Test
 	public void validatorWithConfigurerDoesNotExposeJsr303() {
-		load(ValidatorJsr303WebFluxConfigurer.class, new Class<?>[] { ValidationAutoConfiguration.class });
+		load(ValidatorJsr303WebFluxConfigurer.class,
+				new Class<?>[] { ValidationAutoConfiguration.class });
 		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
 		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
 				.isEmpty();
@@ -222,8 +224,8 @@ public class WebFluxAutoConfigurationTests {
 		assertThat(springValidatorBeans).containsExactly("webFluxValidator");
 		Validator validator = this.context.getBean("webFluxValidator", Validator.class);
 		assertThat(validator).isInstanceOf(ValidatorAdapter.class);
-		assertThat(((ValidatorAdapter) validator).getTarget())
-				.isSameAs(this.context.getBean(ValidatorJsr303WebFluxConfigurer.class).validator);
+		assertThat(((ValidatorAdapter) validator).getTarget()).isSameAs(
+				this.context.getBean(ValidatorJsr303WebFluxConfigurer.class).validator);
 	}
 
 	@Test
@@ -233,10 +235,10 @@ public class WebFluxAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
 				.hasSize(1);
 		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
-		assertThat(springValidatorBeans)
-				.containsExactly("defaultValidator", "webFluxValidator");
-		assertThat(this.context.getBean("webFluxValidator"))
-				.isSameAs(this.context.getBean(ValidatorWebFluxConfigurer.class).validator);
+		assertThat(springValidatorBeans).containsExactly("defaultValidator",
+				"webFluxValidator");
+		assertThat(this.context.getBean("webFluxValidator")).isSameAs(
+				this.context.getBean(ValidatorWebFluxConfigurer.class).validator);
 		// Primary Spring validator is the auto-configured one as the WebFlux one has been
 		// customized via a WebFluxConfigurer
 		assertThat(this.context.getBean(Validator.class))
@@ -250,13 +252,12 @@ public class WebFluxAutoConfigurationTests {
 				.getBeanNamesForType(javax.validation.Validator.class);
 		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
 		assertThat(jsrValidatorBeans).containsExactly("defaultValidator");
-		assertThat(springValidatorBeans).containsExactly(
-				"customValidator", "defaultValidator", "webFluxValidator");
+		assertThat(springValidatorBeans).containsExactly("customValidator",
+				"defaultValidator", "webFluxValidator");
 		Validator validator = this.context.getBean("webFluxValidator", Validator.class);
 		assertThat(validator).isInstanceOf(ValidatorAdapter.class);
 		Object defaultValidator = this.context.getBean("defaultValidator");
-		assertThat(((ValidatorAdapter) validator).getTarget())
-				.isSameAs(defaultValidator);
+		assertThat(((ValidatorAdapter) validator).getTarget()).isSameAs(defaultValidator);
 		// Primary Spring validator is the one use by WebFlux behind the scenes
 		assertThat(this.context.getBean(Validator.class)).isEqualTo(defaultValidator);
 	}

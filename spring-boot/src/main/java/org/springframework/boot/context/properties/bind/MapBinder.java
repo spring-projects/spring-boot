@@ -119,8 +119,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		private ConfigurationPropertyName getEntryName(ConfigurationPropertySource source,
 				ConfigurationPropertyName name) {
 			Class<?> resolved = this.valueType.resolve();
-			if (Collection.class.isAssignableFrom(resolved)
-					|| this.valueType.isArray()) {
+			if (Collection.class.isAssignableFrom(resolved) || this.valueType.isArray()) {
 				return chopNameAtNumericIndex(name);
 			}
 			if (!this.root.isParentOf(name)
@@ -130,7 +129,8 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 			return name;
 		}
 
-		private ConfigurationPropertyName chopNameAtNumericIndex(ConfigurationPropertyName name) {
+		private ConfigurationPropertyName chopNameAtNumericIndex(
+				ConfigurationPropertyName name) {
 			int start = this.root.getNumberOfElements() + 1;
 			int size = name.getNumberOfElements();
 			for (int i = start; i < size; i++) {

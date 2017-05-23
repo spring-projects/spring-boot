@@ -61,16 +61,11 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private Collection<Object> createNewCollection(Collection<Object> additional) {
-		try {
-			Collection<Object> merged = additional.getClass().newInstance();
-			merged.addAll(additional);
-			return merged;
-		}
-		catch (Exception e) {
-			throw new IllegalStateException("Adding bound values to collection failed.");
-		}
+		Collection<Object> merged = CollectionFactory
+				.createCollection(additional.getClass(), additional.size());
+		merged.addAll(additional);
+		return merged;
 	}
 
 }

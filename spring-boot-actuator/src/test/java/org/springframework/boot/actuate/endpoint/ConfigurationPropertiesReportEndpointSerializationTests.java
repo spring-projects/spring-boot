@@ -217,11 +217,9 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> propertiesMap = (Map<String, Object>) nestedProperties
 				.get("properties");
 		assertThat(propertiesMap).containsOnlyKeys("bar", "name", "map", "list");
-		Map<String, Object> map = (Map<String, Object>) propertiesMap
-				.get("map");
+		Map<String, Object> map = (Map<String, Object>) propertiesMap.get("map");
 		assertThat(map).containsOnly(entry("entryOne", true));
-		List<String> list = (List<String>) propertiesMap
-				.get("list");
+		List<String> list = (List<String>) propertiesMap.get("list");
 		assertThat(list).containsExactly("abc");
 	}
 
