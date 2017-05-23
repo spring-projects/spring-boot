@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.web.reactive;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.ValidatorFactory;
 
@@ -359,8 +358,8 @@ public class WebFluxAutoConfigurationTests {
 		private final Validator validator = mock(Validator.class);
 
 		@Override
-		public Optional<Validator> getValidator() {
-			return Optional.of(this.validator);
+		public Validator getValidator() {
+			return this.validator;
 		}
 
 	}
@@ -371,8 +370,8 @@ public class WebFluxAutoConfigurationTests {
 		private final LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
 
 		@Override
-		public Optional<Validator> getValidator() {
-			return Optional.of(this.validator);
+		public Validator getValidator() {
+			return this.validator;
 		}
 
 	}
