@@ -513,17 +513,24 @@ public final class ConfigurationPropertyName
 		int start = 0;
 		boolean indexed = false;
 		int length = name.length();
+		int openBracketCount = 0;
 		for (int i = 0; i < length; i++) {
 			char ch = name.charAt(i);
-			if (indexed && ch == ']') {
-				processElement(processor, name, start, i + 1, indexed);
-				start = i + 1;
-				indexed = false;
+			if (ch == ']') {
+				openBracketCount--;
+				if (openBracketCount == 0) {
+					processElement(processor, name, start, i + 1, indexed);
+					start = i + 1;
+					indexed = false;
+				}
 			}
-			else if (!indexed && ch == '[') {
-				processElement(processor, name, start, i, indexed);
-				start = i;
-				indexed = true;
+			else if (ch == '[') {
+				openBracketCount++;
+				if (!indexed) {
+					processElement(processor, name, start, i, indexed);
+					start = i;
+					indexed = true;
+				}
 			}
 			else if (!indexed && ch == separator) {
 				processElement(processor, name, start, i, indexed);

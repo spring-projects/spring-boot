@@ -503,6 +503,15 @@ public class MapBinderTests {
 		assertThat(map.get(0)).containsExactly(8, 9);
 	}
 
+	@Test
+	public void bindingWithSquareBracketMap() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.[x [B] y]", "[ball]");
+		this.sources.add(source);
+		Map<String, String> map = this.binder.bind("foo", STRING_STRING_MAP).get();
+		assertThat(map).containsEntry("x [B] y", "[ball]");
+	}
+
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric, ResolvableType valueType) {
 		ResolvableType keyType = ResolvableType.forClass(keyGeneric);
 		return Bindable.of(ResolvableType.forClassWithGenerics(Map.class, keyType, valueType));
