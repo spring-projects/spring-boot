@@ -335,6 +335,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 				threadPool.setMaxThreads(2);
 				threadPool.setMinThreads(2);
 			}
+
 		});
 		this.thrown.expectCause(instanceOf(IllegalStateException.class));
 		factory.getEmbeddedServletContainer().start();
