@@ -38,7 +38,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.WebFilter;
-import org.springframework.web.server.WebHandler;
+import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.session.WebSessionManager;
 
@@ -108,15 +108,19 @@ public class HttpHandlerAutoConfiguration {
 			if (this.handlerStrategiesBuilder == null) {
 				this.handlerStrategiesBuilder = HandlerStrategies.builder();
 			}
+			if (this.webFilters != null) {
+				this.webFilters.forEach(this.handlerStrategiesBuilder::webFilter);
+			}
 			if (this.viewResolvers != null) {
 				this.viewResolvers.forEach(this.handlerStrategiesBuilder::viewResolver);
 			}
-			WebHandler webHandler = RouterFunctions.toHttpHandler(routerFunction,
+			HttpHandler httpHandler = RouterFunctions.toHttpHandler(routerFunction,
 					this.handlerStrategiesBuilder.build());
-			WebHttpHandlerBuilder builder = WebHttpHandlerBuilder.webHandler(webHandler)
-					.sessionManager(this.webSessionManager);
-			builder.filters(this.webFilters);
-			return builder.build();
+			if (this.webSessionManager != null) {
+				((HttpWebHandlerAdapter) httpHandler)
+						.setSessionManager(this.webSessionManager);
+			}
+			return httpHandler;
 		}
 
 	}
