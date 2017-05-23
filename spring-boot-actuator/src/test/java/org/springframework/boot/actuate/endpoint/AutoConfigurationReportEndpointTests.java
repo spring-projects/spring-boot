@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import javax.annotation.PostConstruct;
 
@@ -79,7 +80,7 @@ public class AutoConfigurationReportEndpointTests
 			report.recordEvaluationCandidates(Arrays.asList("a", "b"));
 			report.recordConditionEvaluation("a", mock(Condition.class),
 					mock(ConditionOutcome.class));
-			report.recordExclusions(Arrays.asList("com.foo.Bar"));
+			report.recordExclusions(Collections.singletonList("com.foo.Bar"));
 		}
 
 		@Bean
