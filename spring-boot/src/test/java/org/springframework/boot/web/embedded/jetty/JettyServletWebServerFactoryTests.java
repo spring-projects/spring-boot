@@ -52,7 +52,7 @@ import org.springframework.boot.web.servlet.server.AbstractServletWebServerFacto
 import org.springframework.http.HttpHeaders;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.isA;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -292,7 +292,7 @@ public class JettyServletWebServerFactoryTests
 			}
 
 		});
-		this.thrown.expectCause(instanceOf(IllegalStateException.class));
+		this.thrown.expectCause(isA(IllegalStateException.class));
 		factory.getWebServer().start();
 	}
 
