@@ -41,10 +41,17 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		List<Version> versions = this.couchbaseOperations.getCouchbaseClusterInfo()
-				.getAllVersions();
-		builder.up().withDetail("versions",
-				StringUtils.collectionToCommaDelimitedString(versions));
+		try {
+			List<Version> versions = this.couchbaseOperations.getCouchbaseClusterInfo().getAllVersions();
+			Statement statement = select("*").from("system:keyspaces");
+			N1qlQuery q = N1qlQuery.simple(statement);
+			N1qlQueryResult results = this.couchbaseOperations.queryN1QL(q);
+			if (results.finalSuccess()) {
+				builder.up().withDetail("versions", StringUtils.collectionToCommaDelimitedString(versions));
+				return;
+			}
+		} catch (Exception ex) {
+			builder.down(ex);			
+		}
 	}
-
 }
