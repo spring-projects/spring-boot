@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,19 +102,18 @@ public class NoUniqueBeanDefinitionFailureAnalyzerTests {
 	}
 
 	private BeanCreationException createFailure(Class<?> consumer) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.register(DuplicateBeansProducer.class, consumer);
-		context.setParent(new AnnotationConfigApplicationContext(ParentProducer.class));
-		try {
-			context.refresh();
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			context.register(DuplicateBeansProducer.class, consumer);
+			context.setParent(
+					new AnnotationConfigApplicationContext(ParentProducer.class));
+			try {
+				context.refresh();
+			}
+			catch (BeanCreationException ex) {
+				this.analyzer.setBeanFactory(context.getBeanFactory());
+				return ex;
+			}
 			return null;
-		}
-		catch (BeanCreationException ex) {
-			this.analyzer.setBeanFactory(context.getBeanFactory());
-			return ex;
-		}
-		finally {
-			context.close();
 		}
 	}
 

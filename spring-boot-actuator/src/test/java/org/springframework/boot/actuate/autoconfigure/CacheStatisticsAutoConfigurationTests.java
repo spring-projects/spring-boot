@@ -61,6 +61,7 @@ import static org.assertj.core.api.Assertions.offset;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Raja Kolli
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class CacheStatisticsAutoConfigurationTests {

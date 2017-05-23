@@ -83,13 +83,9 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 	}
 
 	private void createTestKeyspaceIfNotExists() {
-		Session session = this.cassandra.getCluster().connect();
-		try {
+		try (Session session = this.cassandra.getCluster().connect()) {
 			session.execute("CREATE KEYSPACE IF NOT EXISTS boot_test"
 					+ "  WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };");
-		}
-		finally {
-			session.close();
 		}
 	}
 

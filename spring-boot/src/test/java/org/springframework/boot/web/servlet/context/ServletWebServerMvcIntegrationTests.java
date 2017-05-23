@@ -101,14 +101,10 @@ public class ServletWebServerMvcIntegrationTests {
 		ClientHttpRequest request = clientHttpRequestFactory.createRequest(new URI(
 				"http://localhost:" + context.getWebServer().getPort() + resourcePath),
 				HttpMethod.GET);
-		ClientHttpResponse response = request.execute();
-		try {
+		try (ClientHttpResponse response = request.execute()) {
 			String actual = StreamUtils.copyToString(response.getBody(),
 					Charset.forName("UTF-8"));
 			assertThat(actual).isEqualTo("Hello World");
-		}
-		finally {
-			response.close();
 		}
 	}
 

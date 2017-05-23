@@ -235,19 +235,15 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	private FatalBeanException createFailure(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		this.analyzer.setBeanFactory(context.getBeanFactory());
-		EnvironmentTestUtils.addEnvironment(context, environment);
-		context.register(config);
-		try {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			this.analyzer.setBeanFactory(context.getBeanFactory());
+			EnvironmentTestUtils.addEnvironment(context, environment);
+			context.register(config);
 			context.refresh();
 			return null;
 		}
 		catch (FatalBeanException ex) {
 			return ex;
-		}
-		finally {
-			context.close();
 		}
 	}
 

@@ -36,7 +36,6 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
- * @since 1.2.0
  */
 class GroovyGrabDependencyResolver implements DependencyResolver {
 
@@ -70,17 +69,13 @@ class GroovyGrabDependencyResolver implements DependencyResolver {
 	private String createSources(List<String> artifactIdentifiers) throws IOException {
 		File file = File.createTempFile("SpringCLIDependency", ".groovy");
 		file.deleteOnExit();
-		OutputStreamWriter stream = new OutputStreamWriter(new FileOutputStream(file),
-				"UTF-8");
-		try {
+		try (OutputStreamWriter stream = new OutputStreamWriter(
+				new FileOutputStream(file), "UTF-8")) {
 			for (String artifactIdentifier : artifactIdentifiers) {
 				stream.write("@Grab('" + artifactIdentifier + "')");
 			}
 			// Dummy class to force compiler to do grab
 			stream.write("class Installer {}");
-		}
-		finally {
-			stream.close();
 		}
 		// Windows paths get tricky unless you work with URI
 		return file.getAbsoluteFile().toURI().toString();

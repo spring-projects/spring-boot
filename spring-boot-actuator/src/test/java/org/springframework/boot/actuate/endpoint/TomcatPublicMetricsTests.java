@@ -39,18 +39,14 @@ public class TomcatPublicMetricsTests {
 
 	@Test
 	public void tomcatMetrics() throws Exception {
-		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
-				Config.class);
-		try {
+		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
+				Config.class)) {
 			TomcatPublicMetrics tomcatMetrics = context
 					.getBean(TomcatPublicMetrics.class);
 			Iterator<Metric<?>> metrics = tomcatMetrics.metrics().iterator();
 			assertThat(metrics.next().getName()).isEqualTo("httpsessions.max");
 			assertThat(metrics.next().getName()).isEqualTo("httpsessions.active");
 			assertThat(metrics.hasNext()).isFalse();
-		}
-		finally {
-			context.close();
 		}
 	}
 

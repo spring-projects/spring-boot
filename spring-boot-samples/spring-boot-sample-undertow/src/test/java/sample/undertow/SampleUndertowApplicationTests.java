@@ -70,14 +70,11 @@ public class SampleUndertowApplicationTests {
 		ResponseEntity<byte[]> entity = this.restTemplate.exchange("/", HttpMethod.GET,
 				requestEntity, byte[].class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		GZIPInputStream inflater = new GZIPInputStream(
-				new ByteArrayInputStream(entity.getBody()));
-		try {
+
+		try (GZIPInputStream inflater = new GZIPInputStream(
+				new ByteArrayInputStream(entity.getBody()))) {
 			assertThat(StreamUtils.copyToString(inflater, Charset.forName("UTF-8")))
 					.isEqualTo("Hello World");
-		}
-		finally {
-			inflater.close();
 		}
 	}
 

@@ -108,16 +108,12 @@ public class SecurityAutoConfigurationTests {
 
 	@Test
 	public void testFilterIsNotRegisteredInNonWeb() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.register(SecurityAutoConfiguration.class,
-				SecurityFilterAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		try {
-			context.refresh();
-			assertThat(context.containsBean("securityFilterChainRegistration")).isFalse();
-		}
-		finally {
-			context.close();
+		try (AnnotationConfigApplicationContext customContext = new AnnotationConfigApplicationContext()) {
+			customContext.register(SecurityAutoConfiguration.class,
+					SecurityFilterAutoConfiguration.class,
+					PropertyPlaceholderAutoConfiguration.class);
+			customContext.refresh();
+			assertThat(customContext.containsBean("securityFilterChainRegistration")).isFalse();
 		}
 	}
 

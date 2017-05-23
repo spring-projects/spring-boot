@@ -173,19 +173,16 @@ public class ThymeleafServletAutoConfigurationTests {
 
 	@Test
 	public void renderNonWebAppTemplate() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+		try (AnnotationConfigApplicationContext customContext = new AnnotationConfigApplicationContext(
 				ThymeleafAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		assertThat(context.getBeanNamesForType(ViewResolver.class).length).isEqualTo(0);
-		try {
-			TemplateEngine engine = context.getBean(TemplateEngine.class);
+				PropertyPlaceholderAutoConfiguration.class)) {
+			assertThat(customContext.getBeanNamesForType(ViewResolver.class).length)
+					.isEqualTo(0);
+			TemplateEngine engine = customContext.getBean(TemplateEngine.class);
 			Context attrs = new Context(Locale.UK,
 					Collections.singletonMap("greeting", "Hello World"));
 			String result = engine.process("message", attrs);
 			assertThat(result).contains("Hello World");
-		}
-		finally {
-			context.close();
 		}
 	}
 

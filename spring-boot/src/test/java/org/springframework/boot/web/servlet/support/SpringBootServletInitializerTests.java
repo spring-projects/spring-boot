@@ -102,14 +102,10 @@ public class SpringBootServletInitializerTests {
 					@Override
 					public void onStartup(ServletContext servletContext)
 							throws ServletException {
-						AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
-								.createRootApplicationContext(servletContext);
-						try {
+						try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
+								.createRootApplicationContext(servletContext)) {
 							assertThat(context.getBeansOfType(ErrorPageFilter.class))
 									.hasSize(0);
-						}
-						finally {
-							context.close();
 						}
 					}
 				});
@@ -124,13 +120,9 @@ public class SpringBootServletInitializerTests {
 	@Test
 	public void executableWarThatUsesServletInitializerDoesNotHaveErrorPageFilterConfigured()
 			throws Exception {
-		ConfigurableApplicationContext context = new SpringApplication(
-				ExecutableWar.class).run();
-		try {
+		try (ConfigurableApplicationContext context = new SpringApplication(
+				ExecutableWar.class).run()) {
 			assertThat(context.getBeansOfType(ErrorPageFilter.class)).hasSize(0);
-		}
-		finally {
-			context.close();
 		}
 	}
 

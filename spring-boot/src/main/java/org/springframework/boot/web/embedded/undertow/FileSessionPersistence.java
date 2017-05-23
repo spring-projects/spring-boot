@@ -37,6 +37,7 @@ import org.springframework.core.ConfigurableObjectInputStream;
  *
  * @author Phillip Webb
  * @author Peter Leibiger
+ * @author Raja Kolli
  */
 class FileSessionPersistence implements SessionPersistenceManager {
 
@@ -59,12 +60,9 @@ class FileSessionPersistence implements SessionPersistenceManager {
 
 	private void save(Map<String, PersistentSession> sessionData, File file)
 			throws IOException {
-		ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file));
-		try {
+		try (ObjectOutputStream stream = new ObjectOutputStream(
+				new FileOutputStream(file))) {
 			save(sessionData, stream);
-		}
-		finally {
-			stream.close();
 		}
 	}
 

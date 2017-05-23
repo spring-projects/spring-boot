@@ -143,9 +143,8 @@ public class MessageSourceAutoConfigurationTests {
 
 	@Test
 	public void existingMessageSourceInParentIsIgnored() {
-		ConfigurableApplicationContext parent = new AnnotationConfigApplicationContext();
-		parent.refresh();
-		try {
+		try (ConfigurableApplicationContext parent = new AnnotationConfigApplicationContext()) {
+			parent.refresh();
 			this.context = new AnnotationConfigApplicationContext();
 			this.context.setParent(parent);
 			EnvironmentTestUtils.addEnvironment(this.context,
@@ -155,9 +154,6 @@ public class MessageSourceAutoConfigurationTests {
 			this.context.refresh();
 			assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
 					.isEqualTo("bar");
-		}
-		finally {
-			parent.close();
 		}
 	}
 

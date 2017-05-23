@@ -108,9 +108,8 @@ public class EmbeddedMongoAutoConfigurationTests {
 
 	@Test
 	public void portIsAvailableInParentContext() {
-		ConfigurableApplicationContext parent = new AnnotationConfigApplicationContext();
-		parent.refresh();
-		try {
+		try (ConfigurableApplicationContext parent = new AnnotationConfigApplicationContext()) {
+			parent.refresh();
 			this.context = new AnnotationConfigApplicationContext();
 			this.context.setParent(parent);
 			this.context.register(EmbeddedMongoAutoConfiguration.class,
@@ -118,9 +117,6 @@ public class EmbeddedMongoAutoConfigurationTests {
 			this.context.refresh();
 			assertThat(parent.getEnvironment().getProperty("local.mongo.port"))
 					.isNotNull();
-		}
-		finally {
-			parent.close();
 		}
 	}
 

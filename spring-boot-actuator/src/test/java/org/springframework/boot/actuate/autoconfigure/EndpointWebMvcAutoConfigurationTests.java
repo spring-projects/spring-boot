@@ -338,9 +338,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Test
 	public void specificPortsViaPropertiesWithClash() throws Exception {
 		int managementPort = ports.get().management;
-		ServerSocket serverSocket = new ServerSocket();
-		serverSocket.bind(new InetSocketAddress(managementPort));
-		try {
+		try (ServerSocket serverSocket = new ServerSocket()) {
+			serverSocket.bind(new InetSocketAddress(managementPort));
 			EnvironmentTestUtils.addEnvironment(this.applicationContext,
 					"server.port:" + ports.get().server,
 					"management.port:" + ports.get().management);
@@ -349,9 +348,6 @@ public class EndpointWebMvcAutoConfigurationTests {
 					ErrorMvcAutoConfiguration.class);
 			this.thrown.expect(WebServerException.class);
 			this.applicationContext.refresh();
-		}
-		finally {
-			serverSocket.close();
 		}
 	}
 
@@ -683,23 +679,17 @@ public class EndpointWebMvcAutoConfigurationTests {
 				httpClient);
 		ClientHttpRequest request = requestFactory.createRequest(
 				new URI(scheme + "://localhost:" + port + url), HttpMethod.GET);
-		try {
-			ClientHttpResponse response = request.execute();
+		try (ClientHttpResponse response = request.execute()) {
 			if (HttpStatus.NOT_FOUND.equals(response.getStatusCode())) {
 				throw new FileNotFoundException();
 			}
-			try {
-				String actual = StreamUtils.copyToString(response.getBody(),
-						Charset.forName("UTF-8"));
-				if (expected instanceof Matcher) {
-					assertThat(actual).is(Matched.by((Matcher<?>) expected));
-				}
-				else {
-					assertThat(actual).isEqualTo(expected);
-				}
+			String actual = StreamUtils.copyToString(response.getBody(),
+					Charset.forName("UTF-8"));
+			if (expected instanceof Matcher) {
+				assertThat(actual).is(Matched.by((Matcher<?>) expected));
 			}
-			finally {
-				response.close();
+			else {
+				assertThat(actual).isEqualTo(expected);
 			}
 		}
 		catch (Exception ex) {

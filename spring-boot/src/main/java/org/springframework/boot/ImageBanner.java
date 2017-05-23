@@ -44,6 +44,7 @@ import org.springframework.util.Assert;
  * @author Craig Burke
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Raja Kolli
  * @since 1.4.0
  */
 public class ImageBanner implements Banner {

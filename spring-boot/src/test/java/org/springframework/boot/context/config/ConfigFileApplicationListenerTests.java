@@ -196,12 +196,8 @@ public class ConfigFileApplicationListenerTests {
 		try {
 			Properties properties = new Properties();
 			properties.put("the.property", "fromlocalfile");
-			OutputStream out = new FileOutputStream(localFile);
-			try {
-				properties.store(out, "");
-			}
-			finally {
-				out.close();
+			try (OutputStream outputStream = new FileOutputStream(localFile)) {
+				properties.store(outputStream, "");
 			}
 			this.initializer.postProcessEnvironment(this.environment, this.application);
 			String property = this.environment.getProperty("the.property");

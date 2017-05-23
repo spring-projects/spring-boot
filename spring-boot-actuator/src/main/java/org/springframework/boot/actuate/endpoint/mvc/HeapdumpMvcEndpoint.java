@@ -51,7 +51,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  *
  * @author Lari Hotari
  * @author Phillip Webb
- * @author rajakolli
+ * @author Raja Kolli
  * @since 1.4.0
  */
 @ConfigurationProperties(prefix = "endpoints.heapdump")
@@ -146,9 +146,9 @@ public class HeapdumpMvcEndpoint extends AbstractNamedMvcEndpoint {
 		response.setHeader("Content-Disposition",
 				"attachment; filename=\"" + (heapDumpFile.getName() + ".gz") + "\"");
 		try (InputStream in = new FileInputStream(heapDumpFile);
-			GZIPOutputStream out = new GZIPOutputStream(response.getOutputStream())) {
-				StreamUtils.copy(in, out);
-				out.finish();
+				GZIPOutputStream out = new GZIPOutputStream(response.getOutputStream())) {
+			StreamUtils.copy(in, out);
+			out.finish();
 		}
 		catch (NullPointerException | FileNotFoundException ex) {
 		}

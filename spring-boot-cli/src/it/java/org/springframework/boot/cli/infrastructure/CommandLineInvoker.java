@@ -79,8 +79,7 @@ public final class CommandLineInvoker {
 				}
 
 			})[0];
-			ZipInputStream input = new ZipInputStream(new FileInputStream(zip));
-			try {
+			try (ZipInputStream input = new ZipInputStream(new FileInputStream(zip))) {
 				ZipEntry entry;
 				while ((entry = input.getNextEntry()) != null) {
 					File file = new File(unpacked, entry.getName());
@@ -89,21 +88,14 @@ public final class CommandLineInvoker {
 					}
 					else {
 						file.getParentFile().mkdirs();
-						FileOutputStream output = new FileOutputStream(file);
-						try {
+						try (FileOutputStream output = new FileOutputStream(file)) {
 							StreamUtils.copy(input, output);
 							if (entry.getName().endsWith("/bin/spring")) {
 								file.setExecutable(true);
 							}
 						}
-						finally {
-							output.close();
-						}
 					}
 				}
-			}
-			finally {
-				input.close();
 			}
 		}
 		File bin = new File(unpacked.listFiles()[0], "bin");

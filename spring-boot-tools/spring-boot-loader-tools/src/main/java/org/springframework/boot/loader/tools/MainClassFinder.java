@@ -141,8 +141,7 @@ public abstract class MainClassFinder {
 		while (!stack.isEmpty()) {
 			File file = stack.pop();
 			if (file.isFile()) {
-				InputStream inputStream = new FileInputStream(file);
-				try {
+				try (InputStream inputStream = new FileInputStream(file)) {
 					ClassDescriptor classDescriptor = createClassDescriptor(inputStream);
 					if (classDescriptor != null && classDescriptor.isMainMethodFound()) {
 						String className = convertToClassName(file.getAbsolutePath(),
@@ -153,9 +152,6 @@ public abstract class MainClassFinder {
 							return result;
 						}
 					}
-				}
-				finally {
-					inputStream.close();
 				}
 			}
 			if (file.isDirectory()) {
@@ -240,9 +236,8 @@ public abstract class MainClassFinder {
 		List<JarEntry> classEntries = getClassEntries(jarFile, classesLocation);
 		Collections.sort(classEntries, new ClassEntryComparator());
 		for (JarEntry entry : classEntries) {
-			InputStream inputStream = new BufferedInputStream(
-					jarFile.getInputStream(entry));
-			try {
+			try (InputStream inputStream = new BufferedInputStream(
+					jarFile.getInputStream(entry))) {
 				ClassDescriptor classDescriptor = createClassDescriptor(inputStream);
 				if (classDescriptor != null && classDescriptor.isMainMethodFound()) {
 					String className = convertToClassName(entry.getName(),
@@ -253,9 +248,6 @@ public abstract class MainClassFinder {
 						return result;
 					}
 				}
-			}
-			finally {
-				inputStream.close();
 			}
 		}
 		return null;

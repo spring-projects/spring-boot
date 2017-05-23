@@ -815,12 +815,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	private void writeMetadata(File metadataFile, JSONObject metadata) throws Exception {
-		FileWriter writer = new FileWriter(metadataFile);
-		try {
+		try (FileWriter writer = new FileWriter(metadataFile)) {
 			writer.append(metadata.toString(2));
-		}
-		finally {
-			writer.close();
 		}
 	}
 

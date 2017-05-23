@@ -57,6 +57,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Eddú Meléndez
  * @author Mathieu Ouellet
+ * @author Raja Kolli
  * @since 1.5.0
  */
 @Configuration
