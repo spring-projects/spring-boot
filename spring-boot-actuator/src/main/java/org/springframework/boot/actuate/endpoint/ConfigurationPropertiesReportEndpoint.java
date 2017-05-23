@@ -17,13 +17,13 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.BeanDescription;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -58,6 +58,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Christian Dupuis
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 @ConfigurationProperties(prefix = "endpoints.configprops")
 public class ConfigurationPropertiesReportEndpoint
@@ -330,17 +331,18 @@ public class ConfigurationPropertiesReportEndpoint
 
 		private boolean isReadable(BeanDescription beanDesc, BeanPropertyWriter writer) {
 			Class<?> parentType = beanDesc.getType().getRawClass();
-			JavaType type = writer.getType();
+			Class<?> type = writer.getType().getRawClass();
 			AnnotatedMethod setter = findSetter(beanDesc, writer);
 			// If there's a setter, we assume it's OK to report on the value,
 			// similarly, if there's no setter but the package names match, we assume
 			// that its a nested class used solely for binding to config props, so it
-			// should be kosher. This filter is not used if there is JSON metadata for
-			// the property, so it's mainly for user-defined beans.
+			// should be kosher. Lists and Maps are also auto-detected by default since
+			// that's what the metadata generator does. This filter is not used if there
+			// is JSON metadata for the property, so it's mainly for user-defined beans.
 			return (setter != null)
-					|| ClassUtils.getPackageName(parentType).equals(ClassUtils.getPackageName(type.getRawClass()))
-					|| type.isMapLikeType()
-					|| type.isCollectionLikeType();
+					|| ClassUtils.getPackageName(parentType).equals(ClassUtils.getPackageName(type))
+					|| Map.class.isAssignableFrom(type)
+					|| Collection.class.isAssignableFrom(type);
 		}
 
 		private AnnotatedMethod findSetter(BeanDescription beanDesc,
