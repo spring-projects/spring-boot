@@ -42,7 +42,7 @@ import org.springframework.boot.actuate.trace.TraceProperties.Include;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorAttributes;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
@@ -149,7 +149,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		if (isIncluded(Include.ERRORS) && exception != null
 				&& this.errorAttributes != null) {
 			trace.put("error", this.errorAttributes
-					.getErrorAttributes(new ServletRequestAttributes(request), true));
+					.getErrorAttributes(new ServletWebRequest(request), true));
 		}
 		return trace;
 	}
