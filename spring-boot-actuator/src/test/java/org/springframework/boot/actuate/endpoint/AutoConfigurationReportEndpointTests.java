@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import javax.annotation.PostConstruct;
 
@@ -58,6 +59,7 @@ public class AutoConfigurationReportEndpointTests
 		Report report = getEndpointBean().invoke();
 		assertThat(report.getPositiveMatches()).isEmpty();
 		assertThat(report.getNegativeMatches()).containsKey("a");
+		assertThat(report.getUnconditionalClasses()).contains("b");
 		assertThat(report.getExclusions()).contains("com.foo.Bar");
 	}
 
@@ -75,9 +77,10 @@ public class AutoConfigurationReportEndpointTests
 		public void setupAutoConfigurationReport() {
 			ConditionEvaluationReport report = ConditionEvaluationReport
 					.get(this.context.getBeanFactory());
+			report.recordEvaluationCandidates(Arrays.asList("a", "b"));
 			report.recordConditionEvaluation("a", mock(Condition.class),
 					mock(ConditionOutcome.class));
-			report.recordExclusions(Arrays.asList("com.foo.Bar"));
+			report.recordExclusions(Collections.singletonList("com.foo.Bar"));
 		}
 
 		@Bean
