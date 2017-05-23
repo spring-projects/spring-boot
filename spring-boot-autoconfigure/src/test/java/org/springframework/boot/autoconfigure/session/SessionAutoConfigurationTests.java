@@ -52,9 +52,17 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	@Test
 	public void contextFailsIfStoreTypeNotSet() {
 		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("No session repository could be auto-configured");
-		this.thrown.expectMessage("session store type is 'null'");
+		this.thrown.expectMessage("No Spring Session store is configured");
+		this.thrown.expectMessage("set the 'spring.session.store-type' property");
 		load();
+	}
+
+	@Test
+	public void contextFailsIfStoreTypeNotAvailable() {
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("No session repository could be auto-configured");
+		this.thrown.expectMessage("session store type is 'mongo'");
+		load("spring.session.store-type=mongo");
 	}
 
 	@Test
@@ -93,14 +101,6 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("Could not bind");
 		load("spring.session.store-type=hash-map", "spring.session.timeout=3000");
-	}
-
-	@Test
-	public void validationFailsIfSessionRepositoryIsNotConfigured() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("No session repository could be auto-configured");
-		this.thrown.expectMessage("session store type is 'JDBC'");
-		load("spring.session.store-type=jdbc");
 	}
 
 	@SuppressWarnings("unchecked")
