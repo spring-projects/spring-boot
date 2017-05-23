@@ -877,25 +877,6 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void failureResultsInSingleStackTrace() throws Exception {
-		ThreadGroup group = new ThreadGroup("main");
-		Thread thread = new Thread(group, "main") {
-			@Override
-			public void run() {
-				SpringApplication application = new SpringApplication(
-						FailingConfig.class);
-				application.setWebApplicationType(WebApplicationType.NONE);
-				application.run();
-			}
-		};
-		thread.start();
-		thread.join(6000);
-		int occurrences = StringUtils.countOccurrencesOf(this.output.toString(),
-				"Caused by: java.lang.RuntimeException: ExpectedError");
-		assertThat(occurrences).as("Expected single stacktrace").isEqualTo(1);
-	}
-
-	@Test
 	public void nonWebApplicationConfiguredViaAPropertyHasTheCorrectTypeOfContextAndEnvironment() {
 		ConfigurableApplicationContext context = new SpringApplication(
 				ExampleConfig.class).run("--spring.main.web-application-type=NONE");
@@ -1058,16 +1039,6 @@ public class SpringApplicationTests {
 		@Bean
 		public HttpHandler httpHandler() {
 			return (serverHttpRequest, serverHttpResponse) -> Mono.empty();
-		}
-
-	}
-
-	@Configuration
-	static class FailingConfig {
-
-		@Bean
-		public Object fail() {
-			throw new RuntimeException("ExpectedError");
 		}
 
 	}
