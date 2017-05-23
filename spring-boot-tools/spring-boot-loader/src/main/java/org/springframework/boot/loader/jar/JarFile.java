@@ -294,6 +294,7 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public void close() throws IOException {
+		super.close();
 		this.rootFile.close();
 	}
 
